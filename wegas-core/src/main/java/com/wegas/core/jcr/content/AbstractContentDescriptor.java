@@ -54,8 +54,6 @@ abstract public class AbstractContentDescriptor {
     private String path;
     private String note = "";
     private String description = "";
-    private Boolean privateContent;
-    private Boolean inheritedPrivate;
     /**
      *
      */
@@ -74,7 +72,6 @@ abstract public class AbstractContentDescriptor {
      * @param contentConnector
      */
     protected AbstractContentDescriptor(String absolutePath, ContentConnector contentConnector) {
-        this.privateContent = false;
         this.connector = contentConnector;
         this.parseAbsolutePath(absolutePath);
         this.buildNamespaceAbsolutePath();
@@ -87,7 +84,6 @@ abstract public class AbstractContentDescriptor {
      */
     protected AbstractContentDescriptor(String absolutePath, ContentConnector contentConnector, String mimeType) {
         this(absolutePath, contentConnector);
-        this.privateContent = false;
         this.mimeType = mimeType;
     }
 
@@ -97,7 +93,6 @@ abstract public class AbstractContentDescriptor {
      * @param contentConnector
      */
     protected AbstractContentDescriptor(String name, String path, ContentConnector contentConnector) {
-        this.privateContent = false;
         path = path.startsWith("/") ? path : "/" + path;
         this.connector = contentConnector;
         this.name = name;
@@ -113,7 +108,7 @@ abstract public class AbstractContentDescriptor {
      */
     protected AbstractContentDescriptor(String mimeType, String name, String path, ContentConnector contentConnector) {
         this(name, path, contentConnector);
-        this.privateContent = false;
+
         this.mimeType = mimeType;
     }
 
@@ -195,20 +190,6 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     * @return true if this is private
-     */
-    public Boolean isPrivateContent() {
-        return privateContent;
-    }
-
-    /**
-     * @param privateContent
-     */
-    public void setPrivateContent(Boolean privateContent) {
-        this.privateContent = privateContent;
-    }
-
-    /**
      * @return true if is synched
      */
     //@XmlTransient
@@ -278,10 +259,6 @@ abstract public class AbstractContentDescriptor {
         return 0L;
     }
 
-    public Boolean isInheritedPrivate() {
-        return this.inheritedPrivate;
-    }
-
     /**
      * @param force
      * @throws RepositoryException
@@ -307,8 +284,6 @@ abstract public class AbstractContentDescriptor {
         this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
         this.note = connector.getNote(fileSystemAbsolutePath);
         this.description = connector.getDescription(fileSystemAbsolutePath);
-        this.privateContent = connector.isPrivate(fileSystemAbsolutePath);
-        this.inheritedPrivate = connector.isInheritedPrivate(fileSystemAbsolutePath);
     }
 
     /**
@@ -320,7 +295,6 @@ abstract public class AbstractContentDescriptor {
         connector.setMimeType(fileSystemAbsolutePath, mimeType);
         connector.setNote(fileSystemAbsolutePath, note);
         connector.setDescription(fileSystemAbsolutePath, description);
-        connector.setPrivate(fileSystemAbsolutePath, privateContent);
         connector.save();
     }
 

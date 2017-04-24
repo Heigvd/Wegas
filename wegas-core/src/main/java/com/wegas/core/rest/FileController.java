@@ -11,8 +11,10 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
-import com.wegas.core.jcr.content.*;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
+import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import org.apache.shiro.SecurityUtils;
@@ -23,6 +25,7 @@ import org.xml.sax.SAXException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
@@ -36,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
-import javax.inject.Inject;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -74,9 +76,7 @@ public class FileController {
      * @param file
      * @param details
      * @param force       ovveride
-     *
      * @return HTTP 200 if everything ok, 4xx otherwise
-     *
      * @throws RepositoryException
      */
     @POST
@@ -84,13 +84,13 @@ public class FileController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{force: (force/)?}upload{directory : .*?}")
     public Response upload(@PathParam("gameModelId") Long gameModelId,
-            @FormDataParam("name") String name,
-            @FormDataParam("note") String note,
-            @FormDataParam("description") String description,
-            @PathParam("directory") String path,
-            @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details,
-            @PathParam("force") String force) throws RepositoryException {
+                           @FormDataParam("name") String name,
+                           @FormDataParam("note") String note,
+                           @FormDataParam("description") String description,
+                           @PathParam("directory") String path,
+                           @FormDataParam("file") InputStream file,
+                           @FormDataParam("file") FormDataBodyPart details,
+                           @PathParam("force") String force) throws RepositoryException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
@@ -134,16 +134,15 @@ public class FileController {
      * @param name
      * @param request
      * @param range       partial content range
-     *
      * @return the requested file with http 20x, 4xx if something went wrong
      */
     @GET
     @Path("read{absolutePath : .*?}")
     @CacheMaxAge(time = 48, unit = TimeUnit.HOURS)
     public Response read(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String name,
-            @Context Request request,
-            @HeaderParam("Range") String range) {
+                         @PathParam("absolutePath") String name,
+                         @Context Request request,
+                         @HeaderParam("Range") String range) {
 
         logger.debug("Asking file (/{})", name);
         AbstractContentDescriptor fileDescriptor;
@@ -153,9 +152,7 @@ public class FileController {
 
             fileDescriptor = DescriptorFactory.getDescriptor(name, connector);
             if (!SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + gameModelId)) {
-                if (fileDescriptor.isInheritedPrivate()) {
-                    return response.status(403).build();
-                }
+                return response.status(403).build();
             }
             if (fileDescriptor instanceof FileDescriptor) {
                 FileDescriptor fileD = (FileDescriptor) fileDescriptor;
@@ -224,14 +221,9 @@ public class FileController {
     @Path("meta{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractContentDescriptor getMeta(@PathParam("gameModelId") Long gameModelId, @PathParam("absolutePath") String name) {
+        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
         try (final ContentConnector connector = this.getContentConnector(gameModelId)) {
-            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(name, connector);
-            if (!SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + gameModelId)) {
-                if (descriptor.isInheritedPrivate()) {
-                    SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
-                }
-            }
-            return descriptor;
+            return DescriptorFactory.getDescriptor(name, connector);
         } catch (PathNotFoundException e) {
             logger.debug("Asked path does not exist: {}", e.getMessage());
 
@@ -244,7 +236,6 @@ public class FileController {
     /**
      * @param gameModelId
      * @param directory
-     *
      * @return list of directory content
      */
     @GET
@@ -259,9 +250,7 @@ public class FileController {
 
     /**
      * @param gameModelId
-     *
      * @return xml repository export
-     *
      * @throws RepositoryException
      * @throws IOException
      */
@@ -289,9 +278,7 @@ public class FileController {
 
     /**
      * @param gameModelId
-     *
      * @return gzipped XML repository export
-     *
      * @throws RepositoryException
      */
     @GET
@@ -324,9 +311,7 @@ public class FileController {
 
     /**
      * @param gameModelId
-     *
      * @return ZIP repository export
-     *
      * @throws RepositoryException
      */
     @GET
@@ -354,9 +339,7 @@ public class FileController {
      * @param gameModelId
      * @param file
      * @param details
-     *
      * @return imported repository elements
-     *
      * @throws RepositoryException
      * @throws IOException
      * @throws SAXException
@@ -368,8 +351,8 @@ public class FileController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public List<AbstractContentDescriptor> importXML(@PathParam("gameModelId") Long gameModelId,
-            @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details)
+                                                     @FormDataParam("file") InputStream file,
+                                                     @FormDataParam("file") FormDataBodyPart details)
             throws RepositoryException, IOException, SAXException,
             ParserConfigurationException, TransformerException {
 
@@ -401,9 +384,7 @@ public class FileController {
      * @param gameModelId
      * @param absolutePath
      * @param force
-     *
      * @return the destroyed element or HTTP not modified
-     *
      * @throws WegasErrorMessage when deleting a non empty directory without
      *                           force=true
      */
@@ -411,8 +392,8 @@ public class FileController {
     @Path("{force: (force/)?}delete{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object delete(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String absolutePath,
-            @PathParam("force") String force) {
+                         @PathParam("absolutePath") String absolutePath,
+                         @PathParam("force") String force) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -423,7 +404,6 @@ public class FileController {
      * @param tmpDescriptor
      * @param gameModelId
      * @param absolutePath
-     *
      * @return up to date descriptor
      */
     @PUT
@@ -431,8 +411,8 @@ public class FileController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractContentDescriptor update(AbstractContentDescriptor tmpDescriptor,
-            @PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String absolutePath) {
+                                            @PathParam("gameModelId") Long gameModelId,
+                                            @PathParam("absolutePath") String absolutePath) {
 
         AbstractContentDescriptor descriptor;
 
@@ -443,7 +423,6 @@ public class FileController {
             descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             descriptor.setNote(tmpDescriptor.getNote());
             descriptor.setDescription(tmpDescriptor.getDescription());
-            descriptor.setPrivateContent(tmpDescriptor.isPrivateContent());
             descriptor.setContentToRepository();
             descriptor.getContentFromRepository();                              //Update
             return descriptor;
