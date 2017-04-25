@@ -1,5 +1,6 @@
-package com.wegas.runtime;
+package com.wegas.integration;
 
+import com.wegas.core.persistence.game.GameModel;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +25,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -45,11 +44,12 @@ public class WegasTest {
 
     private Long artosId;
 
-    private static Logger logger = LoggerFactory.getLogger(WegasTest.class);
+    //private static Logger logger = LoggerFactory.getLogger(WegasTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        runtime = Wegas.boot("wegas_test", "localhost", null, true);
+        runtime = Wegas.boot("wegas_test", "localhost", null, true, 8280);
+         //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
     }
 
     @AfterClass

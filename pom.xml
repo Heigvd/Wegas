@@ -16,7 +16,6 @@
         <module>wegas-app</module>
         <module>wegas-resources</module>
         <!--<module>wegas-mcq</module>-->
-        <module>wegas-runtime</module>
     </modules>
 
     <developers>
@@ -93,8 +92,8 @@
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
         <!--<jersey.version>2.10</jersey.version>-->
         <jdk.version>1.8</jdk.version>
-        <payara.version>4.1.1.171.0.1</payara.version>
-        <payara-api.version>4.1.1.171</payara-api.version>
+        <payara.version>4.1.1.171.1</payara.version>
+        <payara-api.version>4.1.1.171.1</payara-api.version>
         <junit.version>4.10</junit.version>
         <exec.plugin.version>1.2</exec.plugin.version>
         <jar.plugin.version>2.3.1</jar.plugin.version>
@@ -473,12 +472,12 @@
                 <type>jar</type>
             </dependency>
 
-            <dependency>
+            <!--<dependency>
                 <groupId>fish.payara.extras</groupId>
                 <artifactId>payara-micro</artifactId>
                 <version>${payara.version}</version>
                 <scope>provided</scope>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>fish.payara.extras</groupId>
