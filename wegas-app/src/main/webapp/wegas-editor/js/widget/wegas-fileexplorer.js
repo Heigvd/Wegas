@@ -372,7 +372,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         if (n.expand) {
                             n.expand();
                         }
-                        this.listNodeData(n);
+                        n.add(this.createNode(e.data));
                         //    this.showMessage("success", "Folder successfully created");
                     },
                     this
