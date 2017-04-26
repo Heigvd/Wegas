@@ -331,6 +331,7 @@ public class RequestManager {
 
     /**
      * @param bundle
+     *
      * @return the ResourceBundle
      */
     public ResourceBundle getBundle(String bundle) {
@@ -376,6 +377,7 @@ public class RequestManager {
      * locked, false otherwise
      *
      * @param token
+     *
      * @return
      */
     public boolean tryLock(String token) {
@@ -386,17 +388,21 @@ public class RequestManager {
      *
      * @param token  token to tryLock
      * @param target scope to inform about the lock
+     *
      * @return
      */
     public boolean tryLock(String token, BroadcastTarget target) {
         String audience = getAudience(target);
+        //logger.error("TryLock " + token + " for " + audience);
         boolean tryLock = concurrentHelper.tryLock(token, audience);
         if (tryLock) {
+            //logger.error(" -> LOCKED");
             // Only register token if successfully locked
             if (!lockedToken.containsKey(token)) {
+                //logger.error("   -> NEW LOCK");
                 lockedToken.put(token, new ArrayList());
             }
-            lockedToken.get(token).add(getEffectiveAudience(audience));
+            this.registerLocalLock(token, audience);
         }
         return tryLock;
     }
@@ -409,6 +415,12 @@ public class RequestManager {
         this.lock(token, null);
     }
 
+    private void registerLocalLock(String token, String audience) {
+        String effectiveAudience = getEffectiveAudience(audience);
+        //logger.error("Register Local Lock: " + token + " -> " + effectiveAudience);
+        lockedToken.get(token).add(effectiveAudience);
+    }
+
     /**
      *
      * @param token  token to lock
@@ -416,11 +428,12 @@ public class RequestManager {
      */
     public void lock(String token, BroadcastTarget target) {
         String audience = getAudience(target);
+        //logger.error("LOCK " + token + " for " + audience);
         concurrentHelper.lock(token, audience);
         if (!lockedToken.containsKey(token)) {
             lockedToken.put(token, new ArrayList());
         }
-        lockedToken.get(token).add(getEffectiveAudience(audience));
+        this.registerLocalLock(token, audience);
     }
 
     /**
@@ -438,11 +451,16 @@ public class RequestManager {
      */
     public void unlock(String token, BroadcastTarget target) {
         String audience = getAudience(target);
+        //logger.error("UNLOCK " + token + " for " + audience);
         concurrentHelper.unlock(token, audience);
         if (lockedToken.containsKey(token)) {
             List<String> audiences = lockedToken.get(token);
-            audiences.remove(getEffectiveAudience(audience));
+
+            String effectiveAudience = getEffectiveAudience(audience);
+            //logger.error("Remove Local Lock: " + token + " -> " + effectiveAudience);
+            audiences.remove(effectiveAudience);
             if (audiences.isEmpty()) {
+                //logger.error("Remove Local Lock COMPLETELY: " + token);
                 lockedToken.remove(token);
             }
         }
@@ -583,7 +601,9 @@ public class RequestManager {
     @PreDestroy
     public void preDestroy() {
         for (Entry<String, List<String>> entry : lockedToken.entrySet()) {
+            //logger.error("PreDestroy Unlock: key: " + entry.getKey());
             for (String audience : entry.getValue()) {
+                //logger.error("->ConcurrentHelper unlockFull for " + audience);
                 concurrentHelper.unlockFull(entry.getKey(), audience);
             }
         }

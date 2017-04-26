@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * Internal Mechanism
- *
+ * <p>
  * PLEASE CONSIDER USING METHOD WITHIN REQUEST MANAGER
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -64,9 +64,9 @@ public class ConcurrentHelper {
             counter = 0;
         }
 
-        public String getLockName() {
-            return token;
-            //return hzInstance.getLock(token);
+        @Override
+        public String toString() {
+            return "RefCounterLock(token: " + token + "; audience: " + audience + "; count: " + counter + ");";
         }
     }
 
@@ -79,7 +79,9 @@ public class ConcurrentHelper {
     }
 
     private ILock getLock(RefCounterLock lock) {
-        return hzInstance.getLock(lock.getLockName());
+        String effectiveToken = getEffectiveToken(lock.token, lock.audience);
+        //logger.error("GET HZ LOCK " + effectiveToken);
+        return hzInstance.getLock(effectiveToken);
     }
 
     private void mainLock() {
@@ -93,17 +95,19 @@ public class ConcurrentHelper {
     /**
      * Acquire the lock only if it's not held by another thread at invocation
      * time.
-     *
+     * <p>
      * THE CALLING THREAD WILL NEVER BEEING BLOCKED WITHIN THIS METHOD AND WILL
      * RETURN EVEN IF IT HAS NOT SUCCESSFULY ACQUIRED THE LOCK !!!
      *
-     * @param token lock identifier
+     * @param token    lock identifier
+     * @param audience
+     *
      * @return true if the lock has been successfully acquired, false otherwise
      */
     //@Lock(LockType.READ)
     public boolean tryLock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        //logger.error("try to lock " + token);
+        //logger.error("try to lock " + token + " as " + effectiveToken);
 
         boolean r = false;
         this.mainLock();
@@ -117,6 +121,7 @@ public class ConcurrentHelper {
             lock = locks.get(effectiveToken);
 
             if (this.getLock(lock).tryLock()) {
+                //logger.error("LOCKED: " + lock);
                 r = true; // Successful
                 lock.counter++;
                 locks.put(effectiveToken, lock);
@@ -136,7 +141,7 @@ public class ConcurrentHelper {
 
     /**
      * Acquire the lock only if it's not held by another thread.
-     *
+     * <p>
      * The method will return only when the lock will be held by the calling
      * thread.
      *
@@ -145,7 +150,7 @@ public class ConcurrentHelper {
     //@Lock(LockType.READ)
     public void lock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        //logger.error("try to lock " + token);
+        //logger.error("LOCK " + token + " for " + audience);
 
         RefCounterLock lock;
         this.mainLock();
@@ -157,6 +162,7 @@ public class ConcurrentHelper {
             lock = locks.get(effectiveToken);
             lock.counter++;
             locks.put(effectiveToken, lock);
+            //logger.error("LOCKED: " + lock);
             if (audience != null && lock.counter == 1) { //just locked
                 websocketFacade.sendLock(audience, token);
             }
@@ -177,7 +183,9 @@ public class ConcurrentHelper {
      */
     private void unlock(RefCounterLock lock, String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
+        //logger.error("UNLOCK: " + lock);
         this.getLock(lock).unlock();
+        //logger.error("UNLOCKED");
         lock.counter--;
         if (lock.counter == 0) {
             if (audience != null && !audience.equals("internal")) {
@@ -223,9 +231,11 @@ public class ConcurrentHelper {
     //@javax.ejb.Lock(LockType.READ)
     public void unlockFull(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
+        //logger.error("UNLOCK FULL: " + token + " for " +audience);
         this.mainLock();
         try {
             RefCounterLock lock = locks.get(effectiveToken);
+            //logger.error(effectiveToken + " -> " + lock);
             //RefCounterLock lock = locks.getOrDefault(token, null);
             if (lock != null) {
                 while (this.getLock(lock).isLockedByCurrentThread()) {
