@@ -60,25 +60,26 @@ public class ApplicationStartup extends HttpServlet {
          * set the membership listener up
          */
         hzInstance.getCluster().addMembershipListener(applicationLifecycle);
+        hzInstance.getLifecycleService().addLifecycleListener(applicationLifecycle);
 
         /*
          * Inform client webapp is running
          */
-        websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.READY, null);
+        applicationLifecycle.sendWegasReadyEvent();
     }
 
     @Override
     public void destroy() {
         // hZinstance is not in cluster anymore here, no way to detect if this instance is the last one
-        logger.error("Servlet Destroy: " + applicationLifecycle.countMembers());
+        int count = applicationLifecycle.countMembers();
+        logger.error("Servlet Destroy: " + count);
 
         /*
          * is the last instance ? 
          */
-        if (applicationLifecycle.countMembers() <= 1) {
+        if (count <= 1) {
             // inform clients webapp is down
-            websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.DOWN, null);
+            applicationLifecycle.sendWegasDownEvent();
         }
     }
-
 }
