@@ -2,6 +2,8 @@
 target/*
 wegas-app/target
 wegas-core/target
+wegas-runtime/target/
+wegas-runtime/derby.log
 wegas-resources/target
 doc/Wegas.uml~
 #!target/site*

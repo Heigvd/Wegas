@@ -384,7 +384,7 @@ angular.module('wegas.models.scenarios', [])
 
         model.getVersionsHistory = function(scenarioId) {
             var deferred = $q.defer();
-            var url = "rest/Public/GameModel/" + scenarioId + "/File/list/History";
+            var url = "rest/Public/GameModel/" + scenarioId + "/History";
 
             $http.get(ServiceURL + url, {
                 "headers": {
@@ -422,7 +422,7 @@ angular.module('wegas.models.scenarios', [])
         model.addVersionHistory = function(scenarioId) {
             var deferred = $q.defer();
 
-            var url = "rest/Public/GameModel/" + scenarioId + "/CreateVersion";
+            var url = "rest/Public/GameModel/" + scenarioId + "/History/CreateVersion";
             $http.post(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"
@@ -454,7 +454,7 @@ angular.module('wegas.models.scenarios', [])
         };
         model.deleteVersionHistory = function(scenarioId, version) {
             var deferred = $q.defer();
-            var url = "rest/Public/GameModel/" + scenarioId + "/File/delete/History/" + version;
+            var url = "rest/Public/GameModel/" + scenarioId + "/History/" + version;
             $http.delete(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"
@@ -487,7 +487,7 @@ angular.module('wegas.models.scenarios', [])
 
         model.restoreVersionHistory = function(scenarioId, version) {
             var deferred = $q.defer(),
-                url = "rest/Public/GameModel/" + scenarioId + "/Restore/History/" + version;
+                url = "rest/Public/GameModel/" + scenarioId + "/History/Restore/" + version;
             $http.get(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"

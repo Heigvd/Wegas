@@ -190,8 +190,8 @@ YUI.add("wegas-teaching-main", function(Y) {
                     this.arrowEditor.hide();
 
                     Wegas.Facade.Variable.script.run(
-                        "Variable.find(gameModel, 'fleche" + this.currentArrow.get("id") + "').getInstance(self).properties.put('value','" + this.currentArrow.get("val") + "');" +
-                        "Variable.find(gameModel, 'fleche" + this.currentArrow.get("id") + "').getInstance(self).properties.put('text','" + this.currentArrow.get("text") + "');");
+                        "Variable.find(gameModel, 'fleche" + this.currentArrow.get("id") + "').getInstance(self).setProperty('value','" + this.currentArrow.get("val") + "');" +
+                        "Variable.find(gameModel, 'fleche" + this.currentArrow.get("id") + "').getInstance(self).setProperty('text','" + this.currentArrow.get("text") + "');");
                 }
             });
 

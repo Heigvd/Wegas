@@ -7,12 +7,12 @@
  */
 package com.wegas.core.jcr.content;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+
 /**
- *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class DescriptorFactory {
@@ -20,7 +20,6 @@ public class DescriptorFactory {
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(DescriptorFactory.class);
 
     /**
-     *
      * @param node
      * @param contentConnector
      * @return
@@ -29,11 +28,10 @@ public class DescriptorFactory {
         AbstractContentDescriptor abstractContentDescriptor = null;
         String nodePath = null;
         String mimeType = null;
-
         try {
-            nodePath = node.getPath();
-            if (nodePath.equals("/")) {
-                abstractContentDescriptor = new DirectoryDescriptor(nodePath, contentConnector);     //Root Node
+            nodePath = contentConnector.getWorkspacePath(node);
+            if (contentConnector.isRoot(node)) {
+                abstractContentDescriptor = new DirectoryDescriptor("/", contentConnector);     //Root Node
             } else {
                 mimeType = node.getProperty(WFSConfig.WFS_MIME_TYPE).getString();
                 abstractContentDescriptor
@@ -51,7 +49,6 @@ public class DescriptorFactory {
     }
 
     /**
-     *
      * @param absolutePath
      * @param contentConnector
      * @return

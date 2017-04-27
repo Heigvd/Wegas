@@ -7,57 +7,68 @@
  */
 package com.wegas.core.ejb;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.ejb.LocalBean;
-import javax.ejb.Lock;
-import javax.ejb.LockType;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.inject.Inject;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ILock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.cache.Cache;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Internal Mechanism
- *
+ * <p>
  * PLEASE CONSIDER USING METHOD WITHIN REQUEST MANAGER
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-@Singleton
+//@Singleton
+@Stateless
 @LocalBean
-@Startup
-public class MutexSingleton {
+//@Startup
+public class ConcurrentHelper {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConcurrentHelper.class);
+
+    @Inject
+    private HazelcastInstance hzInstance;
+
+    private static final String MAIN_LOCK_NAME = "ConcurrentHelper.lock";
+
+    @Inject
+    private Cache<String, RefCounterLock> locks;
 
     @Inject
     WebsocketFacade websocketFacade;
 
-    public static class RefCounterLock {
+    public static class RefCounterLock implements Serializable {
+
+        //HazelcastInstance instance;
+        //ILock lock = instance.getLock("token");
+        private static final long serialVersionUID = -5239056583611653597L;
 
         public int counter;
-        public ReentrantLock sem;
         public String token;
         public String audience;
 
-        public RefCounterLock(String token, String audience) {
-            this.token = token;
+        public RefCounterLock(String lockName, String audience) {
+            this.token = lockName;
             this.audience = audience;
             counter = 0;
-            sem = new ReentrantLock(false); // true will favorize long-waiting threads
+        }
+
+        @Override
+        public String toString() {
+            return "RefCounterLock(token: " + token + "; audience: " + audience + "; count: " + counter + ");";
         }
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(MutexSingleton.class);
-
-    Map<String, RefCounterLock> locks = new ConcurrentHashMap<>();
-
-    public ReentrantLock _lock = new ReentrantLock();
 
     private String getEffectiveToken(String token, String audience) {
         if (audience != null && !audience.isEmpty()) {
@@ -67,32 +78,53 @@ public class MutexSingleton {
         }
     }
 
+    private ILock getLock(RefCounterLock lock) {
+        String effectiveToken = getEffectiveToken(lock.token, lock.audience);
+        //logger.error("GET HZ LOCK " + effectiveToken);
+        return hzInstance.getLock(effectiveToken);
+    }
+
+    private void mainLock() {
+        hzInstance.getLock(MAIN_LOCK_NAME).lock();
+    }
+
+    private void mainUnlock() {
+        hzInstance.getLock(MAIN_LOCK_NAME).unlock();
+    }
+
     /**
      * Acquire the lock only if it's not held by another thread at invocation
      * time.
-     *
+     * <p>
      * THE CALLING THREAD WILL NEVER BEEING BLOCKED WITHIN THIS METHOD AND WILL
      * RETURN EVEN IF IT HAS NOT SUCCESSFULY ACQUIRED THE LOCK !!!
      *
-     * @param token lock identifier
+     * @param token    lock identifier
+     * @param audience
+     *
      * @return true if the lock has been successfully acquired, false otherwise
      */
-    @Lock(LockType.READ)
+    //@Lock(LockType.READ)
     public boolean tryLock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        //logger.error("try to lock " + token);
+        //logger.error("try to lock " + token + " as " + effectiveToken);
 
-        RefCounterLock lock;
         boolean r = false;
+        this.mainLock();
 
-        synchronized (this) {
+        try {
+            //logger.error("try to lock " + token);
+            RefCounterLock lock;
+
+            //synchronized (this) {
             locks.putIfAbsent(effectiveToken, new RefCounterLock(token, audience));
             lock = locks.get(effectiveToken);
 
-            if (lock.sem.tryLock()) {
+            if (this.getLock(lock).tryLock()) {
+                //logger.error("LOCKED: " + lock);
                 r = true; // Successful
                 lock.counter++;
-
+                locks.put(effectiveToken, lock);
                 if (audience != null && lock.counter == 1) { // just locked
                     websocketFacade.sendLock(audience, token);
                 }
@@ -100,36 +132,46 @@ public class MutexSingleton {
                 // since the lock is held by another process, the counter is always (thanks to sync(this)) >= 1)
                 locks.remove(token);*/
             }
+            //}
+        } finally {
+            this.mainUnlock();
         }
         return r;
     }
 
     /**
      * Acquire the lock only if it's not held by another thread.
-     *
+     * <p>
      * The method will return only when the lock will be held by the calling
      * thread.
      *
      * @param token lock identifier
      */
-    @Lock(LockType.READ)
+    //@Lock(LockType.READ)
     public void lock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        //logger.error("try to lock " + token);
+        //logger.error("LOCK " + token + " for " + audience);
 
         RefCounterLock lock;
+        this.mainLock();
 
-        synchronized (this) {
+        //logger.error("try to lock " + token);
+        try {
+            //synchronized (this) {
             locks.putIfAbsent(effectiveToken, new RefCounterLock(token, audience));
             lock = locks.get(effectiveToken);
             lock.counter++;
+            locks.put(effectiveToken, lock);
+            //logger.error("LOCKED: " + lock);
             if (audience != null && lock.counter == 1) { //just locked
-                {
-                    websocketFacade.sendLock(audience, token);
-                }
+                websocketFacade.sendLock(audience, token);
             }
+            //}
+        } finally {
+            this.mainUnlock();
         }
-        lock.sem.lock();
+
+        this.getLock(lock).lock();
         //logger.error("lock " + token + " acquired");
     }
 
@@ -141,14 +183,19 @@ public class MutexSingleton {
      */
     private void unlock(RefCounterLock lock, String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        lock.sem.unlock();
+        //logger.error("UNLOCK: " + lock);
+        this.getLock(lock).unlock();
+        //logger.error("UNLOCKED");
         lock.counter--;
         if (lock.counter == 0) {
             if (audience != null && !audience.equals("internal")) {
                 websocketFacade.sendUnLock(audience, token);
             }
+            this.getLock(lock).destroy();
             locks.remove(effectiveToken);
             //logger.error("CLEAN LOCK LIST");
+        } else {
+            locks.put(effectiveToken, lock);
         }
 
     }
@@ -158,14 +205,21 @@ public class MutexSingleton {
      *
      * @param token lock identifier
      */
-    @javax.ejb.Lock(LockType.READ)
+    //@javax.ejb.Lock(LockType.READ)
     public void unlock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        RefCounterLock lock = locks.getOrDefault(effectiveToken, null);
-        if (lock != null) {
-            synchronized (this) {
+        this.mainLock();
+        try {
+            //logger.error("unlock " + token);
+            RefCounterLock lock = locks.get(effectiveToken);
+            //RefCounterLock lock = locks.getOrDefault(token, null);
+            if (lock != null) {
+                //synchronized (this) {
                 this.unlock(lock, token, audience);
+                //}
             }
+        } finally {
+            this.mainUnlock();
         }
     }
 
@@ -174,23 +228,32 @@ public class MutexSingleton {
      *
      * @param token lock identifier
      */
-    @javax.ejb.Lock(LockType.READ)
+    //@javax.ejb.Lock(LockType.READ)
     public void unlockFull(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        RefCounterLock lock = locks.getOrDefault(effectiveToken, null);
-        if (lock != null) {
-            synchronized (this) {
-                while (lock.sem.getHoldCount() > 0) {
+        //logger.error("UNLOCK FULL: " + token + " for " +audience);
+        this.mainLock();
+        try {
+            RefCounterLock lock = locks.get(effectiveToken);
+            //logger.error(effectiveToken + " -> " + lock);
+            //RefCounterLock lock = locks.getOrDefault(token, null);
+            if (lock != null) {
+                while (this.getLock(lock).isLockedByCurrentThread()) {
+                    //while (lock.sem.getHoldCount() > 0) {
                     this.unlock(lock, token, audience);
                 }
             }
+        } finally {
+            this.mainUnlock();
         }
     }
 
-    @javax.ejb.Lock(LockType.READ)
+    //@javax.ejb.Lock(LockType.READ)
     public Collection<String> getTokensByAudiences(List<String> audiences) {
         Collection<String> tokens = new ArrayList<>();
-        for (Entry<String, RefCounterLock> entry : this.locks.entrySet()) {
+        Iterator<Cache.Entry<String, RefCounterLock>> iterator = this.locks.iterator();
+        while (iterator.hasNext()) {
+            Cache.Entry<String, RefCounterLock> entry = iterator.next();
             if (audiences.contains(entry.getValue().audience)) {
                 tokens.add(entry.getValue().token);
             }

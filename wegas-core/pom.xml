@@ -5,7 +5,7 @@
     <parent>
         <artifactId>wegas-project</artifactId>
         <groupId>com.wegas</groupId>
-        <version>2.5-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
 
     <groupId>com.wegas</groupId>
@@ -15,10 +15,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-
         <!-- Apache Shiro Dependencies -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -68,23 +71,37 @@
 
         <!-- Java Content Repository -->
         <dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
-            <!--            <scope>compile</scope>-->
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>oak-jcr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2-mvstore</artifactId>
+            <version>1.4.194</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-core</artifactId>
+            <artifactId>oak-segment-tar</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+            <!--            <scope>compile</scope>-->
         </dependency>
         <dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>json-patch</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
-        </dependency>
+        </dependency> -->
         <!--<dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-jaxb-annotations</artifactId>
@@ -131,6 +148,8 @@
         <dependency>
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-embedded-all</artifactId>
+            <version>4.1.1.171.0.1</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -138,9 +157,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.extension</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>fish.payara.api</groupId>
+            <artifactId>payara-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
         </dependency>
     </dependencies>
 

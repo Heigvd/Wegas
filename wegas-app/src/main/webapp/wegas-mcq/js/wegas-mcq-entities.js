@@ -257,6 +257,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             replies: {
                 value: [],
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("createdTime") - b.get("createdTime");
+                    });
+                    return v;
+                },
                 type: ARRAY,
                 _inputex: {
                     _type: HIDDEN
@@ -915,6 +921,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 _inputex: {
                     _type: HIDDEN
                 },
+                "transient": true
+            },
+            createdTime: {
                 "transient": true
             }
         }

@@ -58,6 +58,12 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
     @BeforeClass
     public static void setUp() throws Exception {
         if (container == null) {
+
+            String clusterNameKey = "wegas.hazelcast.clustername";
+            String clusterName = "hz_wegas_test_cluster_" + Helper.genToken(5);
+
+            System.setProperty(clusterNameKey, clusterName);
+
             Map<String, Object> properties = new HashMap<>();                       // Init Ejb container
             properties.put(EJBContainer.MODULES, new File[]{new File("../wegas-core/target/embed-classes")});
             properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "../wegas-core/src/test/glassfish");

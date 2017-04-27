@@ -921,8 +921,88 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @function
          */
+        _clearAll: function() {
+            var cache = this.getCache();
+            while (cache.length > 0) {
+                this.updateCache("DELETE", cache[0]);
+            }
+        },
+        /*
+         * Use to propagate root descriptor orderd changes 
+         * 
+         * on:
+         *  - new root descriptor
+         *  - descriptor moved from root
+         *  - descriptor moved to root
+         *  - root descriptor new order (moved from and to root)
+         *  
+         * Never call to reflect a delection
+         * @param {type} newRootDescriptors
+         * @returns {undefined}
+         */
+        mergeRoot: function(newRootDescriptors) {
+            var items = newRootDescriptors.get("items"), i, j, item,
+                fromSub, cId,
+                localCache = this.getCache();
+            // detect 
+            for (i in items) {
+                cId = items[i].get("id");
+
+                // look for items[i] within localCache
+                for (j = 0; j < localCache.length; j++) {
+                    if (localCache[j].get("id") === cId) {
+                        break;
+                    }
+                }
+                if (j !== i) {
+                    if (j < localCache.length) {
+                        // moved from root to root
+                        item = localCache.splice(j, 1)[0];
+                        Y.log("MOVED ROOT:" + item.get("label"));
+                        localCache.splice(i, 0, item);
+                    } else {
+                        item = this.find(ID, cId);
+                        if (item) {
+                            //moved from sub dir
+                            Y.log("MOVED FROM SUBDIR :" + item.get("label"));
+                            localCache.splice(i, 0, item);
+                        } else {
+                            Y.log("NEW DESC:" + items[i].get("label"));
+                            //new descriptor 
+                            this.updateCache(POST, items[i], true);
+                        }
+                    }
+                }
+            }
+
+            for (i in localCache) {
+                cId = localCache[i].get("id");
+                for (j = 0; j < items.length; j++) {
+                    if (items[j].get("id") === cId) {
+                        break;
+                    }
+                }
+                if (j >= items.length) {
+                    // Moved within subdir
+                    localCache.splice(j, 1)[0];
+                    Y.log("MOVED IN SUBDIR");
+                }
+            }
+
+            this.get(HOST).fire("rootUpdate");
+        },
         updateCache: function(method, entity) {
-            if (entity instanceof Wegas.persistence.VariableInstance) {
+            if (entity instanceof Wegas.persistence.RootDescriptors) {
+                this.mergeRoot(entity);
+                //debugger;
+                /*var items = entity.get("items"), i;
+                 this._clearAll();
+                 for (i in items) {
+                 this.updateCache(method, items[i], true);
+                 }
+                 */
+                return Y.Wegas.Facade.Variable;
+            } else if (entity instanceof Wegas.persistence.VariableInstance) {
                 return Y.Wegas.Facade.Instance.cache.updateCache(method, entity);
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
                 return VariableDescriptorCache.superclass.updateCache.apply(this, arguments);
@@ -973,7 +1053,7 @@ YUI.add('wegas-datasource', function(Y) {
         findParentDescriptor: function(entity) {
             return this.find("id", entity.get("parentDescriptorId"));
         },
-        move: function(entity, parentEntity, index) {
+        move: function(entity, parentEntity, index, localOnly) {
             var request,
                 host = this.get(HOST),
                 oParentEntity = this.findParentDescriptor(entity),
@@ -1003,23 +1083,25 @@ YUI.add('wegas-datasource', function(Y) {
                 entity.parentDescriptor = null;
                 request = "/" + entity.get(ID) + "/Move/" + index;
             }
-            host.sendRequest({
-                request: request,
-                cfg: {
-                    method: PUT
-                },
-                on: {
-                    success: Y.bind(function(tId, e) {
-                        Y.log("Item moved", "info", "Wegas.VariableTreeView");
-                        this.get(HOST).fire(GLOBAL_UPDATE_EVENT);
-                        // TODO -> Send  updatedDescriptor events
-                    }, this),
-                    failure: function(tId, e) {
-                        //@todo Reset the whole treeview
-                        Y.log("Error moving item", "error");
+            if (!localOnly) {
+                host.sendRequest({
+                    request: request,
+                    cfg: {
+                        method: PUT
+                    },
+                    on: {
+                        success: Y.bind(function(tId, e) {
+                            Y.log("Item moved", "info", "Wegas.VariableTreeView");
+                            this.get(HOST).fire(GLOBAL_UPDATE_EVENT);
+                            // TODO -> Send  updatedDescriptor events
+                        }, this),
+                        failure: function(tId, e) {
+                            //@todo Reset the whole treeview
+                            Y.log("Error moving item", "error");
+                        }
                     }
-                }
-            });
+                });
+            }
         },
         remoteSearch: function(query, callback, containsAll) {
             return this.sendRequest({

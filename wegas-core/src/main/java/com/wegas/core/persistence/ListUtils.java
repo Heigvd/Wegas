@@ -26,6 +26,7 @@ public class ListUtils {
      *
      * @param list the list to clone
      * @param <E>  parametrized list type
+     *
      * @return a new list with the same content as the original list
      */
     public static <E> List<E> clone(final List<E> list) {
@@ -46,6 +47,7 @@ public class ListUtils {
      * @param list    List to clone
      * @param element vararg N element to add to the cloned list
      * @param <E>     parametrized list type
+     *
      * @return a new list with same content as the original list. element added
      */
     @SafeVarargs
@@ -70,6 +72,7 @@ public class ListUtils {
      * @param <V>  The value class
      * @param list The List to convert
      * @param key  ListKeyToMap object
+     *
      * @return Map
      */
     public static <K, V> Map<K, V> listAsMap(final Collection<V> list, final ListKeyToMap<K, V> key) {
@@ -92,9 +95,25 @@ public class ListUtils {
          * retrieve a key from an object
          *
          * @param item
+         *
          * @return the key
          */
         K getKey(V item);
+    }
+
+    public static <K, V, E> Map<K, V> mapEntries(final Collection<E> list, final EntryExtractor<K, V, E> extractor) {
+        final Map<K, V> map = new HashMap<>();
+        for (E item : list) {
+            map.put(extractor.getKey(item), extractor.getValue(item));
+        }
+        return map;
+    }
+
+    public interface EntryExtractor<K, V, E> {
+
+        K getKey(E item);
+
+        V getValue(E item);
     }
 
     /**
@@ -112,6 +131,7 @@ public class ListUtils {
      * @param oldList  The list containing old elements
      * @param newList  The list containing new elements
      * @param callback
+     *
      * @return A merged list
      */
     public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList, Updater callback, ListKeyToMap<Object, E> converter) {
@@ -201,6 +221,7 @@ public class ListUtils {
      * @param <E>     extends (@see AbstractEntity) the element type
      * @param oldList The list containing old elements
      * @param newList The list containing new elements
+     *
      * @return A merged list
      */
     public static <E extends AbstractEntity> List<E> mergeReplace(List<E> oldList, List<E> newList) {

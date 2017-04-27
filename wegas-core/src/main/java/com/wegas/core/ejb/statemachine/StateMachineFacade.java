@@ -132,7 +132,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
          */
         getEntityManager().flush();
         if (playerAction.getClear()) {
-            getEntityManager().clear();
+            requestManager.clear();
         }
     }
 
@@ -295,7 +295,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         List<SelectedTransition> selectedTransitions = new ArrayList<>();
         StateMachineCounter stateMachineCounter = requestManager.getStateMachineCounter();
 
-        List<Transition> transitions;
         StateMachineInstance smi;
         Boolean validTransition;
         StateMachineDescriptor sm;
@@ -311,8 +310,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
             /*if (!smi.getEnabled() || smi.getCurrentState() == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
                 continue;
             }*/
-            transitions = smi.getCurrentState().getTransitions();
-            for (Transition transition : transitions) {
+            for (Transition transition : smi.getCurrentState().getSortedTransitions()) {
                 String transitionUID = smi.getId() + "-" + transition.getId();
 
                 if (stateMachineCounter.hasAlreadyBeenWalked(transitionUID)) {

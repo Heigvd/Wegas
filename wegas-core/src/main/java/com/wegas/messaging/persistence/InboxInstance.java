@@ -7,11 +7,13 @@
  */
 package com.wegas.messaging.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -21,12 +23,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 //import javax.xml.bind.annotation.XmlType;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -48,7 +47,7 @@ public class InboxInstance extends VariableInstance {
     @JsonView(Views.ExtendedI.class)
     @OneToMany(mappedBy = "inboxInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
 //    @OrderBy("sentTime DESC, id")
-     /*
+    /*
      Quote from GF4 development guide:
 
      *Using @OrderBy with a Shared Session Cache
@@ -64,18 +63,20 @@ public class InboxInstance extends VariableInstance {
      */
     @JsonManagedReference("inbox-message")
     private List<Message> messages = new ArrayList<>();
-
     /**
      * @return the replies
      */
     public List<Message> getMessages() {
-        Collections.sort(this.messages, new Comparator<Message>() {
-            @Override
-            public int compare(Message o1, Message o2) {
-                return o2.getTime().compareTo(o1.getTime()); // newer first
-            }
-        });
-        return this.messages;
+        return messages;
+    }
+
+
+    /**
+     * @return unmodifiable messages list, sorted by date (newer first)
+     */
+    @JsonIgnore
+    public List<Message> getSortedMessages() {
+        return Helper.copyAndSort(this.messages, new EntityComparators.ReverseCreateTimeComparator<>());
     }
 
     /**
@@ -122,6 +123,7 @@ public class InboxInstance extends VariableInstance {
      * @param from    message sender
      * @param subject message subject
      * @param body    message body
+     *
      * @return The sent message
      */
     public Message sendMessage(String from, String subject, String body) {
@@ -135,6 +137,7 @@ public class InboxInstance extends VariableInstance {
      * @param subject message subject
      * @param body    message body
      * @param token   ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
+     *
      * @return The sent message
      */
     public Message sendWithToken(String from, String subject, String body, String token) {
@@ -148,6 +151,7 @@ public class InboxInstance extends VariableInstance {
      * @param subject message subject
      * @param body    message body
      * @param date    ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     *
      * @return The sent message
      */
     public Message sendMessage(String from, String subject, String body, String date) {
@@ -161,6 +165,7 @@ public class InboxInstance extends VariableInstance {
      * @param subject      message subject
      * @param body         message body
      * @param attachements
+     *
      * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final List<String> attachements) {
@@ -175,6 +180,7 @@ public class InboxInstance extends VariableInstance {
      * @param body         message body
      * @param date         ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @param attachements
+     *
      * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, final List<String> attachements) {
@@ -190,6 +196,7 @@ public class InboxInstance extends VariableInstance {
      * @param date         ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @param token        ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
      * @param attachements
+     *
      * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachements) {
@@ -221,6 +228,7 @@ public class InboxInstance extends VariableInstance {
 
     /**
      * @param subject
+     *
      * @return the most recent message that match the given subject
      */
     public Message getMessageBySubject(String subject) {
@@ -236,6 +244,7 @@ public class InboxInstance extends VariableInstance {
      * get the first message identified by "token"
      *
      * @param token
+     *
      * @return the first (ie. most recent) message matching the token
      */
     public Message getMessageByToken(String token) {
@@ -253,6 +262,7 @@ public class InboxInstance extends VariableInstance {
      * Return true is a message identified by the token exists and has been read
      *
      * @param token
+     *
      * @return true if such a message exists and has been read
      */
     public boolean isTokenMarkedAsRead(String token) {
