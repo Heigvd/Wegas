@@ -46,24 +46,28 @@ public class UtilsController {
 
     @GET
     @Path("version")
+    @Produces(MediaType.TEXT_PLAIN)
     public String getVersion() {
         return Helper.getWegasProperty("wegas.build.version", "unknown");
     }
 
     @GET
     @Path("build_number")
+    @Produces(MediaType.TEXT_PLAIN)
     public String getBuildNumber() {
         return Helper.getWegasProperty("wegas.build.number", "unknown");
     }
 
     @GET
     @Path("full_version")
+    @Produces(MediaType.TEXT_PLAIN)
     public String getFullVersion() {
         return "Wegas-" + this.getVersion();
     }
 
     @GET
     @Path("build_details")
+    @Produces(MediaType.TEXT_PLAIN)
     public String getBuildDetails() {
         StringBuilder sb = new StringBuilder(this.getFullVersion());
 
