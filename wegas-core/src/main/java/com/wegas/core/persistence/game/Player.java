@@ -8,6 +8,8 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.security.aai.AaiAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.Date;
 import java.util.Objects;
@@ -78,6 +80,13 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     @JoinColumn(name = "parentteam_id")
     //@XmlInverseReference(mappedBy = "players")
     private Team team;
+
+
+    @Transient
+    private Boolean verifiedId = null;
+
+    @Transient
+    private String homeOrg = null;
 
     /**
      *
@@ -246,6 +255,48 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     public void setJoinTime(Date joinTime) {
         this.joinTime = joinTime != null ? new Date(joinTime.getTime()) : null;
     }
+
+    /*
+     * @return true if the user's main account is an AaiAccount or equivalent
+     */
+    @Transient
+    public boolean isVerifiedId(){
+        if (verifiedId != null){
+            return verifiedId.booleanValue();
+        } else {
+            if (this.user != null) {
+                boolean verif = user.getMainAccount() instanceof AaiAccount;
+                verifiedId = verif;
+                return verif;
+            } else {
+                return false;
+            }
+        }
+    }
+
+
+   /*
+    * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the empty string
+    */
+    @Transient
+    public String getHomeOrg(){
+        if (homeOrg != null){
+            return homeOrg;
+        } else {
+            if (this.user != null) {
+                AbstractAccount acct = user.getMainAccount();
+                if (acct instanceof AaiAccount){
+                    homeOrg = ((AaiAccount) acct).getHomeOrg();
+                } else {
+                    homeOrg = "";
+                }
+                return homeOrg;
+            } else {
+                return "";
+            }
+        }
+    }
+
 
     /**
      * Retrieve all variableInstances that belongs to this player only (ie.

@@ -138,6 +138,9 @@
             background:none;
             color:$type-color;
             transition-duration: 0.2s;
+            &.transparent{
+                color:inherit;
+            }
             .button__label{
                 color:$type-color;
             }
@@ -148,7 +151,10 @@
                 background-color:lighten($default-color, 78%);
                 text-decoration: none;
             }
-
+            &.transparent:hover{
+                background-color:$type-color;
+                text-decoration: none !important;
+            }
             &.button--active{
                 background-color:lighten($type-color, 50%);
                 cursor:default;

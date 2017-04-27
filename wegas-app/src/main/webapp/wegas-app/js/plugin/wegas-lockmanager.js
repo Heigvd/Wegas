@@ -93,11 +93,28 @@ YUI.add('wegas-lockmanager', function(Y) {
 
     Lockable = Y.Base.create("wegas-lockable", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
+            this.after("tokenChange", this.onTokenChange, this);
+            this.onTokenChange();
+        },
+        destructor: function() {
+            this.unregister();
+        },
+        register: function() {
             this._counter = 0;
             Y.Wegas.app.lockmanager.register(this.get("token"), this);
         },
-        destructor: function() {
+        unregister: function() {
             Y.Wegas.app.lockmanager.unregister(this.get("token"), this);
+        },
+        onTokenChange: function() {
+            var newToken = this.get("token");
+            if (newToken !== this._token) {
+                if (this._token) {
+                    this.unregister();
+                }
+                this.register();
+                this._token = newToken;
+            }
         },
         lock: function() {
             if (this._counter === 0) {

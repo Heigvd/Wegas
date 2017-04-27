@@ -16,19 +16,15 @@ import com.wegas.core.rest.util.PusherChannelExistenceWebhook;
 import com.wegas.core.rest.util.PusherWebhooks;
 import com.wegas.core.security.util.OnlineUser;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.List;
-import javax.crypto.Mac;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -146,6 +142,20 @@ public class WebsocketController {
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<OnlineUser> getOnlineUsers() {
 
+        return websocketFacade.getOnlineUsers();
+    }
+
+    /**
+     * Retrieve the list of online users
+     *
+     * @return
+     */
+    @GET
+    @Path("OnlineUser/Sync")
+    @RequiresRoles("Administrator")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Collection<OnlineUser> syncAndgetOnlineUsers() {
+        websocketFacade.syncOnlineUsers();
         return websocketFacade.getOnlineUsers();
     }
 

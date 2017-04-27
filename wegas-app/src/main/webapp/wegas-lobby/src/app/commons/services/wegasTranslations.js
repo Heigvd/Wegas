@@ -211,41 +211,47 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Username and password cannot be empty",
                             'fr': "Veuillez renseigner l'email et le mot de passe"
                         },
+                        /*
                         'CREATE-ACCOUNT-LABEL': {
                             'en': "New user?",
                             'fr': "Nouvel utilisateur ?"
                         },
+                        */
+                        'LOGIN-AAI-ACCOUNT-BTN': {
+                            'en': "Recommended to AAI users:",
+                            'fr': "Recommandé aux utilisateurs AAI:"
+                        },
                         'CREATE-ACCOUNT-BTN': {
-                            'en': "Create account",
-                            'fr': "Créer un compte"
+                            'en': "Create Wegas account",
+                            'fr': "Créer un compte Wegas"
                         },
                         'CREATE-ACCOUNT-TITLE': {
                             'en': "Create account",
                             'fr': "Créer un compte"
                         },
                         'CREATE-ACCOUNT-INPUT-EMAIL': {
-                            'en': "e-mail",
-                            'fr': "e-mail"
+                            'en': "E-mail",
+                            'fr': "E-mail"
                         },
                         'CREATE-ACCOUNT-INPUT-PASSWORD': {
-                            'en': "password",
-                            'fr': "mot de passe"
+                            'en': "Password",
+                            'fr': "Mot de passe"
                         },
                         'CREATE-ACCOUNT-INPUT-PASSWORD-AGAIN': {
-                            'en': "password again",
-                            'fr': "mot de passe à nouveau"
+                            'en': "Password again",
+                            'fr': "Répéter le mot de passe"
                         },
                         'CREATE-ACCOUNT-INPUT-USERNAME': {
-                            'en': "username",
-                            'fr': "nom d'utilisateur"
+                            'en': "Username",
+                            'fr': "Nom d'utilisateur"
                         },
                         'CREATE-ACCOUNT-INPUT-FIRSTNAME': {
-                            'en': "first name",
-                            'fr': "prénom"
+                            'en': "First name",
+                            'fr': "Prénom"
                         },
                         'CREATE-ACCOUNT-INPUT-LASTNAME': {
-                            'en': "last name",
-                            'fr': "nom de famille"
+                            'en': "Last name",
+                            'fr': "Nom de famille"
                         },
                         'CREATE-ACCOUNT-INPUT-AGREE': {
                             'en': 'I agree with',
@@ -258,6 +264,21 @@ angular.module('wegas.service.wegasTranslations', [])
                         'CREATE-ACCOUNT-SEND-BTN': {
                             'en': "Let's go!",
                             'fr': "C'est parti !"
+                        },
+                        // Referenced server side:
+                        'CREATE-ACCOUNT-TAKEN-USERNAME': {
+                            'en': "This username is already taken",
+                            'fr': "Ce nom d'utilisateur est déjà pris"
+                        },
+                        // Referenced server side:
+                        'CREATE-ACCOUNT-TAKEN-EMAIL': {
+                            'en': "This e-mail address is already taken",
+                            'fr': "Cette adresse e-mail est déjà prise"
+                        },
+                        // Referenced server side:
+                        'CREATE-ACCOUNT-INVALID-EMAIL': {
+                            'en': "This e-mail address is not valid",
+                            'fr': "Cette adresse e-mail n'est pas valide"
                         },
                         'CREATE-ACCOUNT-FLASH-WRONG-EMAIL': {
                             'en': "An e-mail address is required",
@@ -477,6 +498,16 @@ angular.module('wegas.service.wegasTranslations', [])
                         'COMMONS-SESSIONS-UPDATE-FLASH-ERROR': {
                             'en': "Error while updating  " + keywords.session.singular.en,
                             'fr': "Une erreur est survenue durant la mise à jour de la " + keywords.session.singular.fr
+                        },
+                        // Referenced server side:
+                        'COMMONS-SESSIONS-EMPTY-TOKEN-ERROR': {
+                            'en': "Access key cannot be empty",
+                            'fr': "La clé d'accès ne peut pas être vide"
+                        },
+                        // Referenced server side:
+                        'COMMONS-SESSIONS-TAKEN-TOKEN-ERROR': {
+                            'en': "This access key is already used for another "  + keywords.session.singular.en,
+                            'fr': "Cette clé d'accès est déjà utilisée pour une autre " + keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR': {
                             'en': "No " + keywords.session.singular.en + " to update",
@@ -915,6 +946,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Edit profile",
                             'fr': "Editer mon profil"
                         },
+                        'PRIVATE-WS-UNMODIFIABLE-PROFILE-BTN': {
+                            'en': "Your user profile is not modifiable",
+                            'fr': "Votre profil utilisateur n'est pas modifiable"
+                        },
                         'PRIVATE-WS-ACCESS-KEY': {
                             'en': startSentence(keywords.token.singular.en),
                             'fr': startSentence(keywords.token.singular.fr)
@@ -922,6 +957,18 @@ angular.module('wegas.service.wegasTranslations', [])
                         'PRIVATE-WS-LOGOUT-BTN': {
                             'en': "Logout",
                             'fr': "Déconnexion"
+                        },
+                        'PRIVATE-AGREE-TITLE': {
+                            'en': "Welcome to Wegas",
+                            'fr': "Bienvenue sur Wegas"
+                        },
+                        'PRIVATE-AGREE-SUBTITLE': {
+                            'en': "Please take note of our terms of use and click on the button \"Agree and continue\".",
+                            'fr': "Veuillez prendre note de nos conditions d'utilisation et cliquer sur le bouton \"Accepter et continuer\"."
+                        },
+                        'PRIVATE-AGREE-BTN': {
+                            'en': "Agree and continue",
+                            'fr': "Accepter et continuer"
                         },
                         'PRIVATE-MODALE-SESSION-SETTINGS-BASED-ON': {
                             'en': startSentence(keywords.scenario.singular.en) + ": ",
@@ -1549,6 +1596,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Upload a " + keywords.scenario.singular.en,
                             'fr': "Télécharger un " + keywords.scenario.singular.fr
                         },
+                        'ADMIN-WHO-SYNC-BTN': {
+                            'en': "sync online user list",
+                            'fr': "synchroniser la liste des utilisateurs connectés"
+                        },
                         'ADMIN-WHO-SINGULAR-TITLE': {
                             'en': "connected user",
                             'fr': "utilisateur connecté"
@@ -1580,6 +1631,22 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-USERS-MODALE-EDIT-TITLE': {
                             'en': "Edit profile",
                             'fr': "Modifier le profil"
+                        },
+                        'ADMIN-USERS-NONLOCAL-TITLE': {
+                            'en': "AAI account - Personal data is not editable",
+                            'fr': "Compte AAI - Les données personnelles ne sont pas éditables"
+                        },
+                        'ADMIN-USERS-NONLOCAL-NAME': {
+                            'en': "Name",
+                            'fr': "Nom"
+                        },
+                        'ADMIN-USERS-NONLOCAL-EMAIL': {
+                            'en': "E-mail",
+                            'fr': "E-mail"
+                        },
+                        'ADMIN-USERS-NONLOCAL-HOMEORG': {
+                            'en': "Affiliation",
+                            'fr': "Etablissement"
                         },
                         'ADMIN-USERS-MODALE-AGREED': {
                             'en': "Agreed to terms of use",

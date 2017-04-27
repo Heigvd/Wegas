@@ -16,7 +16,7 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
         review: {
             orchestrator: {
                 mainTitle: "Processus d'évaluations croisées pour \"{{variableName}}\"",
-                includeEvicted: "Permettre aux auteurs n'ayant pas fourni de données à examiner de recevoir quelques chose à évaluer",
+                includeEvicted: "Les auteurs qui n'ont pas soumis de données à examiner doivent quand-même recevoir quelque chose à évaluer",
                 state: {
                     edition: {
                         title: "Édition",
@@ -42,7 +42,7 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                 charts: "Statistiques",
                 playerData: "Informations revues par les pairs pour le joueur \"{{playerName}}\"",
                 teamData: "Informations revues par les pairs pour l'équipe \"{{teamName}}\"",
-                goNextConfirmation: "Cette action est irréversible.<br />\nẼtes-bous sûr de vouloir passer à l'étape suivante du processus d'évaluation croisée ?",
+                goNextConfirmation: "Cette action est irréversible.<br />\nÊtes-vous sûr de vouloir passer à l'étape suivante ?",
                 stats: {
                     mean: "moy.",
                     median: "med.",
@@ -56,14 +56,14 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
             },
             global: {
                 submit: "Valider",
-                confirmation: "Une fois validées, vous ne pourrez plus modifier ces informations.<br />Ẽtes-vous sûr de vouloir continuer ?",
+                confirmation: "Une fois validées, vous ne pourrez plus modifier ces informations.<br />Êtes-vous sûr de vouloir continuer ?",
                 save: "Sauver"
             },
             tabview: {
                 emptyness_message: "Aucune évaluation n'est actuellement visible",
                 toReviewTitle: "Évaluer vos pairs",
                 toReview: "Soumission",
-                toCommentTitle: "Avis concernant votre sousmission",
+                toCommentTitle: "Avis concernant votre soumission",
                 toComment: "Avis"
             },
             editor: {
