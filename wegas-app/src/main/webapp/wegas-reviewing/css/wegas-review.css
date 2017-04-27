@@ -109,7 +109,7 @@
 
 
 /*
- * Orchestrator 
+ * Orchestrator
  */
 
 
@@ -141,7 +141,7 @@
 }
 
 .wegas-review-orchestrator .header{
-    position:relative;    
+    position:relative;
 }
 
 .wegas-review-orchestrator .header h2 {
@@ -156,7 +156,7 @@
 }
 
 .wegas-review-orchestrator .control-panel {
-    height: 125px;
+    height: 135px;
 }
 
 .wegas-review-orchestrator .control-panel > * {
@@ -201,7 +201,11 @@
 }
 
 .wegas-review-orchestrator .properties .include-evicted.selected .checkbox:before {
-    background:#ed6a3b;
+    background:none;
+    content:"\2714";
+    color: black;
+    font-weight: bold;
+    text-align: center;
 }
 
 .wegas-review-orchestrator .control-panel .state.current {
@@ -217,7 +221,7 @@
 
 .wegas-review-orchestrator .control-panel .state {
     background-color: #bbb;
-    width: 200px;
+    width: 197px;
     border-radius: 5px;
     text-align: center;
     border: 1px solid #999;
@@ -233,7 +237,7 @@
 
 .wegas-review-orchestrator .control-panel .transition span{
     color: #DDDDDD;
-    padding-top: 46px;
+    padding: 50px 2px 0;
     position: relative;
 }
 
@@ -379,7 +383,7 @@
 
 
 .wegas-review-orchestrator td.yui3-datatable-cell i:before {
-    color: #6262A7;    
+    color: #6262A7;
 }
 
 

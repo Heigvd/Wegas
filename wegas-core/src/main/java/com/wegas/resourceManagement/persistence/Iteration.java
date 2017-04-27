@@ -99,7 +99,6 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      */
     @ManyToOne(optional = false)
     @JsonBackReference
-    @JsonIgnore
     private BurndownInstance burndownInstance;
 
     /**

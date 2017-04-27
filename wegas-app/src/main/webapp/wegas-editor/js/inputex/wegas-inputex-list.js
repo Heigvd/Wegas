@@ -50,6 +50,8 @@ YUI.add("wegas-inputex-list", function(Y) {
             this.options.className = options.className || 'inputEx-Field inputEx-ListField';
             this.options.addType = options.addType;
             this.options.sortable = options.sortable || false;
+            this.options.removable = options.removable || false;
+            this.options.numbered = options.numbered || false;
         },
         /**
          * Render the addButton
@@ -84,16 +86,22 @@ YUI.add("wegas-inputex-list", function(Y) {
         },
         renderField: function(fieldOptions) {
             var fieldInstance = ListField.superclass.renderField.call(this, fieldOptions);
+            if (this.options.numbered !== false) {
+                this.addClassName("numbered");
+            }
+            if (this.options.removable === false) {
+                this.addClassName("hide-first-removebutton");
+            }
             fieldInstance._handlers = [];
             fieldInstance._handlers.push(
-                new Y.Wegas.Button({//                                              // Render remove line button
+                new Y.Wegas.Button({                                            // Render remove line button
                     label: '<span class="wegas-icon wegas-icon-remove"></span>',
                     cssClass: "wegas-removebutton",
                     on: {
                         click: Y.bind(this.onRemove, this, fieldInstance)
                     }
                 }).render(fieldInstance.divEl)
-                );
+            );
             if (this.options.sortable) {                                        // Render move up/down buttons
                 fieldInstance._handlers.push(
                     new Y.Wegas.Button({

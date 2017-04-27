@@ -134,10 +134,10 @@ public class UserFacadeTest extends AbstractEJBTestBase {
      */
     //@Test
     public void testSendNewPassword() throws Exception {
-        JpaAccount acc = accountFacade.findByEmail(EMAIL);
+        JpaAccount acc = accountFacade.findJpaByEmail(EMAIL);
         String oldPwd = acc.getPasswordHex();
         userFacade.sendNewPassword(EMAIL);
-        acc = accountFacade.findByEmail(EMAIL);
+        acc = accountFacade.findJpaByEmail(EMAIL);
         Assert.assertFalse(oldPwd.equals(acc.getPasswordHex()));
     }
 

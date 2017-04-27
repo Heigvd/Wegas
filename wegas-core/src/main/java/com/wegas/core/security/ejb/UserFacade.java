@@ -22,6 +22,7 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.Email;
+import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -255,6 +256,19 @@ public class UserFacade extends BaseFacade<User> {
         User u = null;
         try {
             u = accountFacade.findByUsername(username).getUser();
+        } catch (WegasNoResultException e) {
+        }
+        return u;
+    }
+
+    /**
+     * @param persistentId String representing the user
+     * @return a User entity, based on the persistentId
+     */
+    public User getUserByPersistentId(String persistentId) {
+        User u = null;
+        try {
+            u = accountFacade.findByPersistentId(persistentId).getUser();
         } catch (WegasNoResultException e) {
         }
         return u;
@@ -591,8 +605,8 @@ public class UserFacade extends BaseFacade<User> {
     public void grantGameModelPermissionToUser(Long userId, Long gameModelId, String permissions) {
         User user = this.find(userId);
 
-        /* 
-         * Revoke previous permissions (do not use removeScenarist method since 
+        /*
+         * Revoke previous permissions (do not use removeScenarist method since
          * this method prevents to remove one own permissions,
          */
         this.deletePermissions(user, "GameModel:%:gm" + gameModelId);
@@ -619,7 +633,7 @@ public class UserFacade extends BaseFacade<User> {
      */
     public void sendNewPassword(String email) {
         try {
-            JpaAccount acc = accountFacade.findByEmail(email);
+            JpaAccount acc = accountFacade.findJpaByEmail(email);
             EMailFacade emailFacade = new EMailFacade();
             RandomNumberGenerator rng = new SecureRandomNumberGenerator();
             String newPassword = rng.nextBytes().toHex().substring(0, 12);
@@ -647,10 +661,9 @@ public class UserFacade extends BaseFacade<User> {
         for (Player p : email.getTo()) {
             Player rP = playerFacade.find(p.getId());
             AbstractAccount mainAccount = rP.getUser().getMainAccount();
-            if (mainAccount instanceof JpaAccount) {
-                JpaAccount jpaAccount = (JpaAccount) mainAccount;
+            if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
                 try {
-                    emailFacade.send(jpaAccount.getEmail(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
+                    emailFacade.send(mainAccount.getEmail(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
                 } catch (MessagingException e) {
                     nbExceptions++;
                 }

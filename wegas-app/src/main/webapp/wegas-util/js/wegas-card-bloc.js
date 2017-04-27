@@ -88,7 +88,7 @@ YUI.add('wegas-card-bloc', function(Y) {
                 this.get("boundingBox").on("click", function (event) {
                     event.halt(true);
                     event.ctx = ctx.get("ctx");
-                    ctx.get("do")(event, ctx.get("value"));
+                    ctx.get("do")(event, ctx.get("value"), ctx);
                 }, this.get("ctx"));
             }
         },
@@ -107,6 +107,8 @@ YUI.add('wegas-card-bloc', function(Y) {
             "formatter": {},
             "do": {},
             "ctx": {},
+            "userCfg": {},
+            "aPlayerId": {},
             "icon": {}
         }
     });

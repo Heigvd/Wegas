@@ -11,6 +11,7 @@ import com.wegas.core.security.jparealm.*;
 import com.wegas.core.Helper;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
 import javax.naming.NamingException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -44,7 +45,17 @@ public class GuestRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
-        return new SimpleAuthenticationInfo(authcToken.getPrincipal(), "", this.getName());
+        Long accountId = (Long) authcToken.getPrincipal();
+        try {
+            AbstractAccount account = accountFacade().find(accountId);
+
+            if (account != null && account instanceof GuestJpaAccount) {
+                return new SimpleAuthenticationInfo(authcToken.getPrincipal(), "", this.getName());
+            }
+
+        } catch (NamingException ex) {
+        }
+        return null;
     }
 
     @Override
@@ -73,7 +84,7 @@ public class GuestRealm extends AuthorizingRealm {
         } catch (EJBException e) {
             return null;
         }
-        */
+         */
     }
 
     /**

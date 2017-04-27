@@ -112,7 +112,7 @@ public class GameFacade extends BaseFacade<Game> {
     public void publishAndCreate(final Long gameModelId, final Game game) throws IOException {
         GameModel gm = gameModelFacade.createGameGameModel(gameModelId);
         this.create(gm, game);
-        
+
         // Since Permission on gameModel is provided through game induced permission, revice initial permission on gamemodel:
         userFacade.deletePermissions(userFacade.getCurrentUser(), "GameModel:%:gm" +  gm.getId());
     }
@@ -140,7 +140,7 @@ public class GameFacade extends BaseFacade<Game> {
         if (game.getToken() == null) {
             game.setToken(this.createUniqueToken(game));
         } else if (this.findByToken(game.getToken()) != null) {
-            throw WegasErrorMessage.error("This token is already in use.");
+            throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
         }
 
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
@@ -216,13 +216,13 @@ public class GameFacade extends BaseFacade<Game> {
     public Game update(final Long entityId, final Game entity) {
         String token = entity.getToken().toLowerCase().replace(" ", "-");
         if (token.length() == 0) {
-            throw WegasErrorMessage.error("Access key cannot be empty");
+            throw WegasErrorMessage.error("Access key cannot be empty", "COMMONS-SESSIONS-EMPTY-TOKEN-ERROR");
         }
 
         Game theGame = this.findByToken(entity.getToken());
 
         if (theGame != null && !theGame.getId().equals(entity.getId())) {
-            throw WegasErrorMessage.error("This access key is already in use");
+            throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
         }
         return super.update(entityId, entity);
     }

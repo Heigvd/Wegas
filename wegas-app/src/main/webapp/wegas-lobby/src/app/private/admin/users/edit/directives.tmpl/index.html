@@ -1,4 +1,4 @@
-<form class="form">
+<form class="form" ng-controller="AdminUsersEditIndexController as adminUsersEditIndexCtrl">
     <div class="modal__header">
         <div class="modal__illustration illustration illustration--medium illustration--icon"
              illustration="ICON_grey_user"></div>
@@ -9,44 +9,48 @@
         </a>
     </div>
     <div class="modal__content modal__content--nav-off">
-        <h2>{{'ADMIN-USERS-MODALE-EDIT-TITLE'| translate}}</h2>
-
-        <div class="form__row">
-            <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.firstname"
-                   placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-FIRSTNAME'| translate}}" autocomplete="off">
+        <h2>{{(adminUsersEditIndexCtrl.user.isNonLocal ? 'ADMIN-USERS-NONLOCAL-TITLE' : 'ADMIN-USERS-MODALE-EDIT-TITLE')| translate}}</span></h2>
+        <div id="editable-user-profile" ng-if="!adminUsersEditIndexCtrl.user.isNonLocal">
+            <div class="form__row">
+                <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.firstname"
+                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-FIRSTNAME'| translate}}" autocomplete="off">
+            </div>
+            <div class="form__row">
+                <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.lastname"
+                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-LASTNAME'| translate}}" autocomplete="off">
+            </div>
+            <div class="form__row">
+                <input class="input" type="email" ng-model="adminUsersEditIndexCtrl.user.account.email"
+                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-EMAIL'| translate}}" autocomplete="off">
+            </div>
+            <div class="form__row">
+                <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.username"
+                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-USERNAME'| translate}}" autocomplete="off">
+            </div>
+            <div class="form__row">
+                <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password"
+                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD'| translate}}" autocomplete="new-password">
+            </div>
+            <div class="form__row">
+                <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password2"
+                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD-AGAIN'| translate}}" autocomplete="new-password">
+            </div>
         </div>
-        <div class="form__row">
-            <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.lastname"
-                   placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-LASTNAME'| translate}}" autocomplete="off">
-        </div>
-        <div class="form__row">
-            <input class="input" type="email" ng-model="adminUsersEditIndexCtrl.user.account.email"
-                   placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-EMAIL'| translate}}" autocomplete="off">
-        </div>
-        <div class="form__row">
-            <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.username"
-                   placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-USERNAME'| translate}}" autocomplete="off">
-        </div>
-        <div class="form__row">
-            <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password"
-                   placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD'| translate}}" autocomplete="off">
-        </div>
-        <div class="form__row">
-            <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password2"
-                   placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD-AGAIN'| translate}}" autocomplete="off">
+        <div id="non-editable-user-profile" style="margin: 8px 20px; border-left: 2px solid gray; padding-left: 10px; padding-bottom: 3px;" ng-if="adminUsersEditIndexCtrl.user.isNonLocal">
+            {{'ADMIN-USERS-NONLOCAL-NAME'| translate}}: {{adminUsersEditIndexCtrl.user.account.firstname}} {{adminUsersEditIndexCtrl.user.account.lastname}}<br/>
+            {{'ADMIN-USERS-NONLOCAL-HOMEORG'| translate}}: {{adminUsersEditIndexCtrl.user.account.homeOrg}}<br/>
+            {{'ADMIN-USERS-NONLOCAL-EMAIL'| translate}}: {{adminUsersEditIndexCtrl.user.account.email}}
         </div>
         <div class="form__row">&nbsp;
-            {{'ADMIN-USERS-MODALE-AGREED'| translate}}: {{ adminUsersEditIndexCtrl.user.account.agreedTime === null ? ('ADMIN-USERS-MODALE-AGREED-NOTYET' | translate) : (adminUsersEditIndexCtrl.user.account.agreedTime | date:"dd.MM.yyyy HH:mm:ss")}}
-        </div>
-        <div class="form__row">
+            {{'ADMIN-USERS-MODALE-AGREED'| translate}}: {{ adminUsersEditIndexCtrl.user.account.agreedTime === null ? ('ADMIN-USERS-MODALE-AGREED-NOTYET' | translate) : (adminUsersEditIndexCtrl.user.account.agreedTime | date:"dd.MM.yyyy HH:mm:ss")}}<br/>
             <hr/>
         </div>
         <admin-users-edit-groups user="adminUsersEditIndexCtrl.user"></admin-users-edit-groups>
-        <!--<div class="form__row">
-            <hr/>
-        </div>-->
         <div ng-if="false">
-            <!-- One should be able to easily enable this part... -->
+            <!-- One should be able to easily re-enable this part... -->
+            <div class="form__row">
+                <hr/>
+            </div>
             <div>
                 <strong>{{'ADMIN-MODALE-PERMISSION-TITLE'| translate}}</strong>
                 <a class="button button--small button--round button--label-off button--reverse-default button--add"
@@ -63,9 +67,6 @@
                     <permission-edit></permission-edit>
                 </div>
             </div>
-            <!--<div class="form__row">
-                <hr/>
-            </div>-->
         </div>
     </div>
     <div class="modal__tools">

@@ -38,7 +38,7 @@
 
     <ul class="view__sub-menu">
         <li class="action">
-            <a ng-click="logout()" class="button button--default-reverse button--label-off button--sign-out"
+            <a ng-if="user.hasAgreed" ng-click="logout()" class="button button--default-reverse button--label-off button--sign-out"
                title="{{'PRIVATE-WS-LOGOUT-BTN' | translate}}"><span class="button__label">{{'PRIVATE-WS-LOGOUT-BTN' | translate}}</span></a>
         </li>
         <li class="action action--language" ng-if="languages.length > 1">
@@ -51,13 +51,16 @@
                 </li>
             </ul>
         </li>
-        <li ng-if="!user.isGuest" class="action">
+        <li ng-if="user.isLocalAccount && !user.isGuest" class="action">
             <a ng-click="editProfile()" class="button button--default-reverse button--user button-without-label"
                title="{{'PRIVATE-WS-PROFILE-BTN' | translate}}"><span
                 class="button__label">{{ user.username }}</span></a>
         </li>
-        <li ng-if="user.isGuest" class="action">
+        <li ng-if="user.isGuest" class="action" style="cursor: default">
             <a class="button button--default-reverse button--user button-without-label unclickable"><span class="button__label">GUEST</span></a>
+        </li>
+        <li ng-if="!user.isLocalAccount" class="action" style="cursor: default">
+            <a class="button button--default-reverse button--user button-without-label unclickable"><span class="button__label">{{ user.username }}</span></a>
         </li>
     </ul>
 

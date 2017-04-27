@@ -8,10 +8,12 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.*;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 
@@ -34,15 +36,16 @@ import java.util.*;
  @Index(columnList = "email", unique = true)
  })*/
 @NamedQueries({
-    @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE a.username = :username")
+    @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND a.username = :username"),
+    @NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.email) LIKE LOWER(:email)"),
+    @NamedQuery(name = "AbstractAccount.findByFullName", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.firstname) LIKE LOWER(:firstname) AND LOWER(a.lastname) LIKE LOWER(:lastname)"),
+    @NamedQuery(name = "AbstractAccount.findAllNonGuests", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount")
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class)
-    ,
-    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class)
-    ,
-    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class)
-    ,
+    @JsonSubTypes.Type(name = "AaiAccount", value = AaiAccount.class),
+    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
+    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
+    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
     @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
@@ -88,9 +91,20 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      *
      */
+    private String email = "";
+
+    /**
+     *
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @JsonIgnore
     private Date createdTime = new Date();
+
+    /**
+     * When the terms of use have been agreed to by the user (usually at signup, except for guests and long time users)
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date agreedTime = null;
 
     /**
      *
@@ -130,6 +144,11 @@ public abstract class AbstractAccount extends AbstractEntity {
             this.setFirstname(a.getFirstname());
             this.setLastname(a.getLastname());
             this.setUsername(a.getUsername());
+            this.setEmail(a.getEmail());
+            if (a.getAgreedTime()!=null) {
+                // Never reset this attribute:
+                this.setAgreedTime(a.getAgreedTime());
+            }
             if (a.getDeserializedPermissions() != null && !a.getDeserializedPermissions().isEmpty()) {
                 // Pass through setter to update user
                 this.getUser().setPermissions(ListUtils.mergeLists(this.getUser().getPermissions(), a.getDeserializedPermissions()));
@@ -296,7 +315,34 @@ public abstract class AbstractAccount extends AbstractEntity {
 
     /**
      *
-     * @return
+     * @return the email
      */
-    public abstract String getEmail();
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return md5 address hash
+     */
+    public String getHash() {
+        if (email != null) {
+            return Helper.md5Hex(email);
+
+        } else {
+            return Helper.md5Hex("default");
+        }
+    }
+
+    public Date getAgreedTime() {
+        return agreedTime != null ? new Date(agreedTime.getTime()) : null;
+    }
+
+    public void setAgreedTime(Date agreedTime) {
+        this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
+    }
+
 }

@@ -12,6 +12,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 
 import javax.persistence.*;
@@ -57,6 +58,7 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
     @GeneratedValue
     private Long id;
 
+    @Enumerated(value = EnumType.STRING)
     private ReviewState reviewState;
 
     /**
@@ -223,5 +225,25 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
     @Override
     public String getRequieredReadPermission() {
         return this.getAuthor().getRequieredReadPermission() + "," + this.getReviewer().getRequieredReadPermission();
+    }
+
+    @Override
+    public void updateCacheOnDelete(Beanjection beans) {
+        PeerReviewInstance theAuthor = this.getAuthor();
+        PeerReviewInstance theReviewer = this.getReviewer();
+
+        if (theAuthor != null) {
+            theAuthor = (PeerReviewInstance) beans.getVariableInstanceFacade().find(theAuthor.getId());
+            if (theAuthor != null) {
+                theAuthor.getReviewed().remove(this);
+            }
+        }
+
+        if (theReviewer != null) {
+            theReviewer = (PeerReviewInstance) beans.getVariableInstanceFacade().find(theReviewer.getId());
+            if (theReviewer != null) {
+                theReviewer.getToReview().remove(this);
+            }
+        }
     }
 }

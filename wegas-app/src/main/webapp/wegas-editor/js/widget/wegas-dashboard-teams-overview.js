@@ -87,7 +87,8 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         BASE_TEMPLATE: "<div class='wrapper__bloc-details bloc-details--close'>" + "<div class='bloc-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
         TEAM_LIST_TEMPLATE: "<div class='bloc-details__players'>" + "<h3>Players</h3>" + "<ul class='bloc-details__players__list'></ul>" + "</div>",
         SIZE_TEMPLATE: "<span></span>",
-        PLAYER_TEMPLATE: "<li class='bloc-details__player'></li>",
+        PLAYER_TEMPLATE: "<li class='bloc-details__player' title='✘ Unverified identity'></li>",
+        VERIFIED_PLAYER_TEMPLATE: "<li class='bloc-details__player verified'></li>",
         _saveNotes: function(context) {
             context.get("team").set("notes", context.get("editor").getContent());
             Y.Wegas.Facade.Game.cache.put(context.get("team").toObject("players"), {});
@@ -117,8 +118,14 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                         teamList.one("h3").setContent("Players "+realSize+"&nbsp;of&nbsp;"+declSize);
                     }
                     Y.Array.each(this.get("team").get("players"), function(player) {
-                        player = Y.Node.create(this.PLAYER_TEMPLATE).append(player.get("name"));
-                        teamList.one(".bloc-details__players__list").append(player);
+                        var playerNode;
+                        if (player.get("verifiedId") === true) {
+                            playerNode = Y.Node.create(this.VERIFIED_PLAYER_TEMPLATE).append(player.get("name"));
+                            playerNode.set("title", '✔ verified ' + player.get("homeOrg").toUpperCase() + ' member');
+                        } else {
+                            playerNode = Y.Node.create(this.PLAYER_TEMPLATE).append(player.get("name"));
+                        }
+                        teamList.one(".bloc-details__players__list").append(playerNode);
                     }, this);
                     base.prepend(teamList);
                 }

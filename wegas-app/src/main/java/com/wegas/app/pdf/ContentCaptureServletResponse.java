@@ -25,31 +25,31 @@ public class ContentCaptureServletResponse extends HttpServletResponseWrapper {
     private PrintWriter writer;
 
     public ContentCaptureServletResponse(HttpServletResponse response) {
-	super(response);
+        super(response);
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
-	if (writer == null){
-	    writer = new PrintWriter(getContentBuffer());
-	}
-	return writer;
+        if (writer == null) {
+            writer = new PrintWriter(getContentBuffer());
+        }
+        return writer;
     }
 
-    private ByteArrayOutputStream getContentBuffer(){
-        if (contentBuffer == null){
+    private ByteArrayOutputStream getContentBuffer() {
+        if (contentBuffer == null) {
             contentBuffer = new ByteArrayOutputStream();
         }
         return contentBuffer;
     }
 
-    public String getContent() throws IOException{
-	getWriter().flush();
-	String xhtmlContent = new String(getContentBuffer().toString()); // Do not to double-encode UTF8 strings
+    public String getContent() throws IOException {
+        getWriter().flush();
+        String xhtmlContent = new String(getContentBuffer().toString()); // Do not to double-encode UTF8 strings
 
-	xhtmlContent = xhtmlContent.replaceAll("<thead>|</thead>|"+ "<tbody>|</tbody>", "");
-	xhtmlContent = xhtmlContent.replaceAll("<br>", "<br />");
+        xhtmlContent = xhtmlContent.replaceAll("<thead>|</thead>|" + "<tbody>|</tbody>", "");
+        xhtmlContent = xhtmlContent.replaceAll("<br>", "<br />");
 
-	return xhtmlContent;
+        return xhtmlContent;
     }
 }

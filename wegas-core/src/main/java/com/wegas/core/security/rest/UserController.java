@@ -16,6 +16,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.rest.util.Email;
+import com.wegas.core.security.aai.*;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
@@ -100,17 +101,17 @@ public class UserController {
 
     /**
      * @return list of all users, sorted by names
+     *
      * @throws AuthorizationException if current user doesn't have the
      *                                permission to see other users
      */
     @GET
     public Collection<User> index() {
-
         SecurityUtils.getSubject().checkPermission("User:Edit");
 
         //List<User> findAll = userFacade.findAll();
         List<User> findAll = new ArrayList<>();
-        for (JpaAccount account : accountFacade.findAllRegistered()) {
+        for (AbstractAccount account : accountFacade.findAllRegistered()) {
             findAll.add(account.getUser());
         }
 
@@ -122,7 +123,9 @@ public class UserController {
      * Get a specific user
      *
      * @param entityId user id to look for
+     *
      * @return the user matching entityId
+     *
      * @throws AuthorizationException if searched users id not the current one
      *                                or current one doesn't have the
      *                                permissions to see others users
@@ -138,44 +141,12 @@ public class UserController {
     }
 
     /**
-     * Returns the given user's e-mail address, with more relaxed security
-     * requirements than for getting the whole user profile: The caller must be
-     * trainer for the given game, and the given user must be a player of the
-     * same game.
-     *
-     * @param entityId
-     * @param gameId
-     * @return
-     */
-    /*
-    @GET
-    @Path("{entityId : [1-9][0-9]*}/Email/{gameId : [1-9][0-9]*}")
-    public String getEmail(@PathParam("entityId") Long entityId, @PathParam("gameId") Long gameId) {
-        if (!userFacade.getCurrentUser().getId().equals(entityId)) {
-            // Caller must be trainer for the given game:
-            final Game g = gameFacade.find(gameId);
-            SecurityHelper.checkPermission(g, "Edit");
-            // And user must be a player of the same game:
-            if (playerFacade.checkExistingPlayer(gameId, entityId) == null) {
-                throw new AuthorizationException("Not a player of this game");
-            }
-        }
-
-        AbstractAccount mainAccount = userFacade.find(entityId).getMainAccount();
-
-        if (mainAccount instanceof JpaAccount) {
-            return ((JpaAccount) mainAccount).getEmail();
-        } else {
-            return "";
-        }
-    }
-     */
-    /**
      * Returns the e-mail addresses of all players of the given game, with more
      * relaxed security requirements than for getting the whole user profile:
      * The caller must be trainer for the given game.
      *
      * @param gameId
+     *
      * @return
      */
     @GET
@@ -202,6 +173,7 @@ public class UserController {
      * the same game.
      *
      * @param gameId
+     *
      * @return
      */
     @GET
@@ -222,6 +194,7 @@ public class UserController {
 
     /**
      * @param team
+     *
      * @return List<String>
      */
     protected List<String> collectEmails(Team team) {
@@ -239,8 +212,8 @@ public class UserController {
             } else {
                 Long userId = p.getUserId();
                 AbstractAccount mainAccount = userFacade.find(userId).getMainAccount();
-                if (mainAccount instanceof JpaAccount) { // Skip guest accounts and other specialties.
-                    emails.add(((JpaAccount) mainAccount).getEmail());
+                if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) { // Skip guest accounts and other specialties.
+                    emails.add(mainAccount.getEmail());
                 }
             }
         }
@@ -249,11 +222,12 @@ public class UserController {
 
     /**
      * @param value
-     * @return list of JpaAccount matching the token
+     *
+     * @return list of AbstractAccounts (excluding guests) matching the token
      */
     @GET
     @Path("AutoComplete/{value}")
-    public List<JpaAccount> getAutoComplete(@PathParam("value") String value) {
+    public List<AbstractAccount> getAutoComplete(@PathParam("value") String value) {
         return accountFacade.getAutoComplete(value);
     }
 
@@ -268,12 +242,13 @@ public class UserController {
      * @param value  token to search
      * @param gameId id of the game targeted account cannot be already
      *               registered in
+     *
      * @return list of account matching given search value which are not yet
      *         member of the given game
      */
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
-    public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
+    public List<AbstractAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
         return accountFacade.getAutoCompleteFull(value, gameId);
     }
 
@@ -284,12 +259,13 @@ public class UserController {
      * @param value     account search token
      * @param rolesList list of roles targeted account should be members (only
      *                  one membership is sufficient)
-     * @return list of JpaAccount matching the token that are member of at least
+     *
+     * @return list of AbstractAccount matching the token that are member of at least
      *         one given role
      */
     @POST
     @Path("AutoComplete/{value}")
-    public List<JpaAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, List<String>> rolesList) {
+    public List<AbstractAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, List<String>> rolesList) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
@@ -298,7 +274,9 @@ public class UserController {
 
     /**
      * @param values
+     *
      * @return dunno
+     *
      * @deprecated
      */
     @GET
@@ -310,13 +288,15 @@ public class UserController {
 
     /**
      * @param values
+     *
      * @return dunno
+     *
      * @deprecated
      */
     @GET
     @Deprecated
     @Path("FindAccountsByName")
-    public List<JpaAccount> findAccountsByName(@QueryParam("values") List<String> values) {
+    public List<AbstractAccount> findAccountsByName(@QueryParam("values") List<String> values) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
@@ -327,7 +307,9 @@ public class UserController {
      * Create a new user
      *
      * @param user new user to save
+     *
      * @return the new user
+     *
      * @throws AuthorizationException if the current user doesn't have the
      *                                permission to create users
      */
@@ -344,7 +326,9 @@ public class UserController {
      *
      * @param entityId id of user to update
      * @param entity   user to read new values from
+     *
      * @return the updated user
+     *
      * @throws AuthorizationException if current user is not the updated user or
      *                                if the current user doesn't have the
      *                                permission to edit others users
@@ -364,7 +348,9 @@ public class UserController {
      * Delete a user by account id (why not by user id ???)
      *
      * @param accountId id of account linked to the user to delete
+     *
      * @return the user that has been deleted
+     *
      * @throws AuthorizationException currentUser does not have the permission
      *                                to delete users
      */
@@ -396,7 +382,9 @@ public class UserController {
      * @param authInfo
      * @param request
      * @param response
+     *
      * @return User the current user
+     *
      * @throws WegasErrorMessage when authInfo values are incorrect
      * @throws ServletException
      * @throws IOException
@@ -411,6 +399,7 @@ public class UserController {
 
     /**
      * Logout
+     * A
      *
      * @return 200 OK
      */
@@ -461,10 +450,10 @@ public class UserController {
     }
 
     /**
-     * See like an other user specified by it's jpaAccount id. Administrators
-     * only.
+     * Look like an other user specified by its Account id. Administrators only.
      *
-     * @param accountId jpaAccount id
+     * @param accountId AbstractAccount id
+     *
      * @throws AuthorizationException if current user is not an administrator
      */
     @POST
@@ -476,7 +465,7 @@ public class UserController {
             oSubject.releaseRunAs(); //@TODO: check shiro version > 1.2.1 (SHIRO-380)
         }
         oSubject.checkRole("Administrator");
-        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm");
+        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm"); // NB: this also seems to work with AaiAccounts ...
         oSubject.runAs(subject);
     }
 
@@ -508,10 +497,11 @@ public class UserController {
     }
 
     /**
-     * Create a user based with a JpAAccount
+     * Create a user based on a JpaAccount
      *
      * @param account
      * @param request
+     *
      * @return Response : Status Not acceptable if email is wrong or username
      *         already exist. Created otherwise.
      */
@@ -519,26 +509,136 @@ public class UserController {
     @Path("Signup")
     public Response signup(JpaAccount account,
             @Context HttpServletRequest request) {
+        WegasErrorMessage error;
 
         try {
             return Response.status(Response.Status.CREATED).entity(userFacade.signup(account)).build();
         } catch (AddressException ex) {
-            String msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail n'est pas valide." : "This e-mail address is not valid.";
-            return Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+            error = WegasErrorMessage.error("This e-mail address is not valid", "CREATE-ACCOUNT-INVALID-EMAIL");
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         } catch (WegasConflictException ex) {
             String msg;
             switch (ex.getMessage()) {
                 case "email":
-                    msg = detectBrowserLocale(request).equals("fr") ? "Cette adresse e-mail est déjà prise." : "This email address is already taken.";
+                    error = WegasErrorMessage.error("This email address is already taken", "CREATE-ACCOUNT-TAKEN-EMAIL");
                     break;
                 case "username":
-                    msg = detectBrowserLocale(request).equals("fr") ? "Ce nom d'utilisateur est déjà pris." : "This username is already taken.";
+                    error = WegasErrorMessage.error("This username is already taken", "CREATE-ACCOUNT-TAKEN-USERNAME");
                     break;
                 default:
-                    msg = "unknown error";
+                    error = WegasErrorMessage.error("UnknownError");
             }
-            return Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(msg)).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
+    }
+
+    /**
+     * Create a user based on an AaiAccount
+     *
+     * @param account
+     * @param request
+     *
+     * @return void
+     */
+    public void create(AaiAccount account,
+            @Context HttpServletRequest request) {
+        if (!this.checkExistingPersistentId(account.getPersistentId())) {
+            User user = new User(account);
+            userFacade.create(user);
+        } else {
+            logger.error("This AAI account is already registered.");
+        }
+    }
+
+    /**
+     * Logs in an AAI-authenticated user or creates a new account for him.
+     *
+     * @return AaiLoginResponse telling e.g. if the user is new.
+     *         Session cookies for the user's browser are also returned.
+     *
+     * @param userDetails
+     */
+    @POST
+    @Path("AaiLogin")
+    public AaiLoginResponse aaiLogin(AaiUserDetails userDetails,
+            @Context HttpServletRequest request,
+            @Context HttpServletResponse response) throws ServletException, IOException {
+
+        // Check if the invocation is by HTTPS. @TODO: verify certificate.
+        if (!request.isSecure()) {
+            return new AaiLoginResponse("AAI login request must be made by HTTPS", false, false);
+        }
+
+        if (!AaiConfigInfo.isAaiEnabled()) {
+            logger.error("AAI login refused because it's configured to be inactive.");
+            return new AaiLoginResponse("Sorry, AAI login is currently not possible.", false, false);
+        }
+
+        String server = AaiConfigInfo.getAaiServer(); // Ignored if empty !
+        String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
+        if (server.length() != 0 && !getRequestingIP(request).equals(server)
+                || secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
+            logger.error("Real secret: " + userDetails.getSecret() + ", expected: " + secret);
+            logger.error("Real remote host: " + getRequestingIP(request) + ", expected: " + server);
+            Enumeration<String> headerNames = request.getHeaderNames();
+            if (headerNames != null) {
+                while (headerNames.hasMoreElements()) {
+                    String hdr = headerNames.nextElement();
+                    logger.error("    HTTP header: " + hdr + ":" + request.getHeader(hdr));
+                }
+            }
+            return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);
+        }
+        // Get rid of shared secret:
+        userDetails.setSecret("checked");
+
+        // It should not be possible for the caller (our AAI login server) to be already logged in...
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated()) {
+            subject.logout();
+            throw WegasErrorMessage.error("Logging out an already logged in user (internal error?)");
+        }
+
+        try {
+            Long accountId = (Long) subject.getPrincipal();
+            AaiToken token = new AaiToken(accountId, userDetails);
+            token.setRememberMe(userDetails.isRememberMe());
+            subject.login(token);
+            accountFacade.refreshAaiAccount(userDetails);
+            return new AaiLoginResponse("Login successful", true, false);
+        } catch (AuthenticationException aex) {
+            logger.error("User not found, creating new account.");
+            AaiAccount account = new AaiAccount(userDetails);
+            this.create(account, request);
+            // Try to log in the new user:
+            try {
+                AaiToken token = new AaiToken((Long) account.getId(), userDetails);
+                token.setRememberMe(userDetails.isRememberMe());
+                subject.login(token);
+            } catch (AuthenticationException aex2) {
+                return new AaiLoginResponse("New account created, could not login to it", false, true);
+            }
+            return new AaiLoginResponse("New account created, login successful", true, true);
+        }
+    }
+
+    /**
+     * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
+     * Depending on local config, it may be necessary to check additional headers.
+     *
+     * @param request
+     *
+     * @return the IP address
+     */
+    public String getRequestingIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-FORWARDED-FOR");
+        if (ip == null) {
+            ip = request.getHeader("X-Real-IP");
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
+        }
+        return ip;
     }
 
     /**
@@ -567,12 +667,12 @@ public class UserController {
             name = "anonymous";
         }
 
-        if (mainAccount instanceof JpaAccount) {
-            email.setReplyTo(((JpaAccount) mainAccount).getEmail());
+        if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
+            email.setReplyTo(mainAccount.getEmail());
         }
 
         String body = email.getBody();
-        body += "<br /><br /><hr /><i> Sent by " + name + " from " + "albasim.ch</i>";
+        body += "<br /><br /><hr /><i> Sent by " + name + " from albasim.ch</i>";
         email.setBody(body);
 
         email.setFrom(name + " via Wegas <noreply@" + Helper.getWegasProperty("mail.default_domain") + ">");
@@ -589,7 +689,9 @@ public class UserController {
      * deprecated ?
      *
      * @param instance
+     *
      * @return list of "Role"
+     *
      * @throws AuthorizationException when current user doesn't have edit
      *                                permission on given instance
      */
@@ -640,6 +742,7 @@ public class UserController {
      * Find a team for the current user.
      *
      * @param teamId the id of the team joined by the current user.
+     *
      * @return Response, No Content if no team found, the team otherwise
      */
     @GET
@@ -665,6 +768,7 @@ public class UserController {
 
     /**
      * @param entityId
+     *
      * @return all users having any permissions related to game or gameModel
      *         identified by entityId
      */
@@ -679,6 +783,7 @@ public class UserController {
 
     /**
      * @param entityId
+     *
      * @return all users having any permissions related to game or gameModel
      *         identified by entityId
      */
@@ -693,6 +798,7 @@ public class UserController {
      * Get role members
      *
      * @param roleId
+     *
      * @return all members with the given role
      */
     @GET
@@ -782,9 +888,10 @@ public class UserController {
         }
     }
 
-    /*
+    <<<<<<< HEAD /*
     ** @return the browser's preference among the languages supported by Wegas
-     */
+             */
+
     private String detectBrowserLocale(HttpServletRequest request) {
         String supportedLanguages = "en fr";
 
@@ -797,9 +904,57 @@ public class UserController {
                     return loc;
                 }
             }
+             == == ==
+                    = /**
+                     * Check if email is valid. (Only a string test)
+                     *
+                     * @param email
+                     *
+                     * @return true if given address is valid
+                     */
+
+    private boolean checkEmailString(String email) {
+        boolean validEmail = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            validEmail = false;
         }
-        // No match found, return the default "en":
-        return "en";
+        return validEmail;
+    }
+
+    /**
+     * Check if username is already in use
+     *
+     * @param username username to check
+     *
+     * @return true is username is already in use
+     */
+    private boolean checkExistingUsername(String username) {
+        boolean existingUsername = false;
+        User user = userFacade.getUserByUsername(username);
+        if (user != null) {
+            existingUsername = true;
+        }
+        return existingUsername;
+    }
+
+    /**
+     * Check if persistent ID is already in use
+     *
+     * @param persistentId to check
+     *
+     * @return true is persistentId is already in use
+     */
+    private boolean checkExistingPersistentId(String persistentId) {
+        boolean existingId = false;
+        User user = userFacade.getUserByPersistentId(persistentId);
+        if (user != null) {
+            existingId = true;
+             >>> >>> > origin / wegas - 2.5 - maintenance
+        }
+        return existingId;
     }
 
 }

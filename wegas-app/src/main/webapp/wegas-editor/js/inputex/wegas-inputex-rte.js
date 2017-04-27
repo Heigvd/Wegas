@@ -185,9 +185,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
             }
             //return RTEField.superclass.getValue.call(this).replace(reg, "data-file=\"$3\" $1");
             return RTEField.superclass.getValue.call(this)
-                .replace(new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"),
+                .replace(new RegExp("((src|href)=\"[^\"]*/rest/File/GameModelId/[^\"]*/read([^\"]*)\")", "gi"),
                     "data-file=\"$3\"") // Replace absolute path with injector style path
-                .replace(new RegExp("((src|href)=\".*/rest/GameModel/.*/File/read([^\"]*)\")", "gi"),
+                .replace(new RegExp("((src|href)=\"[^\"]*/rest/GameModel/[^\"]*/File/read([^\"]*)\")", "gi"),
                     "data-file=\"$3\""); // Replace absolute path with injector style path
 
         }

@@ -55,10 +55,23 @@ angular.module('wegas.service.pusher', [])
             return deferred.promise;
         };
 
+        service.disconnect = function() {
+            if (pusher) {
+                pusher.disconnect();
+            }
+        };
+
         // Public method for getting the current list of members:
         service.getMembers = function() {
             return $http.get(ServiceURL + "rest/Pusher/OnlineUser");
         };
+
+        // Public method to sync the current list of members on the server
+        service.syncMembers = function() {
+            return $http.get(ServiceURL + "rest/Pusher/OnlineUser/Sync");
+        };
+
+
 
         // Public method for getting the list of roles:
         service.getRoles = function() {

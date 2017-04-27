@@ -7,7 +7,6 @@
  */
 package com.wegas.core.security.jparealm;
 
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.persistence.AbstractAccount;
 import org.apache.shiro.crypto.RandomNumberGenerator;
@@ -27,27 +26,18 @@ import java.util.Date;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-/*@Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
-})*/
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = :accountClass")
-    ,
-    @NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE LOWER(a.email) LIKE LOWER(:email)")
-    ,
-    @NamedQuery(name = "JpaAccount.findByFullName", query = "SELECT a FROM JpaAccount a WHERE LOWER(a.firstname) LIKE LOWER(:firstname) AND  LOWER(a.lastname) LIKE LOWER(:lastname)")
+    @NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount"),
+    @NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount AND LOWER(a.email) LIKE LOWER(:email)"),
+    @NamedQuery(name = "JpaAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) = JpaAccount AND a.username = :username")
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class JpaAccount extends AbstractAccount {
 
     private static final long serialVersionUID = 1L;
-    /**
-     *
-     */
-    private String email;
     /**
      *
      */
@@ -66,20 +56,11 @@ public class JpaAccount extends AbstractAccount {
     @JsonIgnore
     private String salt;
 
-    /**
-     * When the terms of use have been agreed to (usually at signup, except for
-     * guests and long time users)
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date agreedTime = new Date();
-
     @Override
     public void merge(AbstractEntity other) {
         if (other instanceof JpaAccount) {
             super.merge(other);
             JpaAccount a = (JpaAccount) other;
-            this.setEmail(a.getEmail());
-            this.setAgreedTime(a.getAgreedTime());
             if (a.getPassword() != null && !a.getPassword().isEmpty()) {                                          // Only update the password if it is set
                 this.setPassword(a.getPassword());
                 this.setPasswordHex(null);                                          // Force jpa update
@@ -110,6 +91,7 @@ public class JpaAccount extends AbstractAccount {
         if (this.password != null && !this.password.isEmpty()) {
             this.passwordHex = new Sha256Hash(this.password,
                     (new SimpleByteSource(this.getSalt())).getBytes()).toHex();
+            this.password = null;
         }
     }
 
@@ -157,39 +139,4 @@ public class JpaAccount extends AbstractAccount {
         this.salt = salt;
     }
 
-    /**
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * @return md5 address hash
-     */
-    @Deprecated
-    @JsonIgnore
-    public String getHash() {
-        if (email != null) {
-            return Helper.md5Hex(email);
-
-        } else {
-            return Helper.md5Hex("default");
-        }
-    }
-
-    /**
-     * @param email the email to set
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Date getAgreedTime() {
-        return agreedTime != null ? new Date(agreedTime.getTime()) : null;
-    }
-
-    public void setAgreedTime(Date agreedTime) {
-        this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
-    }
 }
