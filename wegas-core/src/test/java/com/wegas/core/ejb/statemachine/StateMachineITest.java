@@ -253,7 +253,7 @@ public class StateMachineITest extends AbstractEJBTest {
         /*
          *  Simulate new request, otherwise, trigger will not be retriggered
          */
-        rf.getRequestManager().clear();
+        rf.getRequestManager().clearFsmData();
         rf.getRequestManager().setPlayer(null);
         logger.error("CLEAR");
 

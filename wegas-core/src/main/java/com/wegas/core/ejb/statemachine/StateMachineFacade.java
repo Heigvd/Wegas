@@ -232,7 +232,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
      * @param resetEvent
      */
     public void resetEventListener(@Observes ResetEvent resetEvent) throws WegasScriptException {
-        requestManager.clear();
+        requestManager.clearFsmData();
         getEntityManager().flush();
 
         List<Player> concernedPlayers = resetEvent.getConcernedPlayers();

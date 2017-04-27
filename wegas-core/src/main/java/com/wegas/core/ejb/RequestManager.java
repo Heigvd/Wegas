@@ -635,7 +635,7 @@ public class RequestManager {
         this.requestFacade.commit(this.getPlayer(), true);
     }
 
-    public void clear() {
+    public void clearFsmData() {
         this.requestFacade.getScriptEventFacade().detachAll();
         this.getStateMachineCounter().clear();
     }
