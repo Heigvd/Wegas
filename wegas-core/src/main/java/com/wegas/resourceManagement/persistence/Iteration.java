@@ -106,7 +106,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
                 @JoinColumn(name = "tasks_variableinstance_id", referencedColumnName = "variableinstance_id")
             }
     )
-    private List<TaskInstance> tasks;
+    private List<TaskInstance> tasks = new ArrayList<>();
 
     /**
      * parent BurndownInstance
@@ -376,10 +376,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             this.setTotalWorkload(other.getTotalWorkload());
 
             this.setPlannedWorkloads(new HashMap<>());
-            this.getPlannedWorkloads().putAll(other.getPlannedWorkloads());
+            this.getModifiablePlannedWorkloads().putAll(other.getPlannedWorkloads());
 
             this.setReplannedWorkloads(new HashMap<>());
-            this.getReplannedWorkloads().putAll(other.getReplannedWorkloads());
+            this.getModifiableReplannedWorkloads().putAll(other.getReplannedWorkloads());
 
             this.setWorkloads(ListUtils.mergeLists(this.getWorkloads(), other.getWorkloads()));
 

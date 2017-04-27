@@ -1,6 +1,5 @@
 package com.wegas.integration;
 
-import com.wegas.core.persistence.game.GameModel;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class WegasTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         runtime = Wegas.boot("wegas_test", "localhost", null, true, 8280);
-         //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
+        //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
     }
 
     @AfterClass
