@@ -60,10 +60,13 @@ YUI.add('wegas-lockmanager', function(Y) {
         lock: function(token) {
             var i;
             this.register(token, null);
-            this._locks[token].locked = true;
+            if (!this._locks[token].locked) {
+                // avoid to relock already locked elements
+                this._locks[token].locked = true;
 
-            for (i in this._locks[token].listeners) {
-                this._locks[token].listeners[i].lock();
+                for (i in this._locks[token].listeners) {
+                    this._locks[token].listeners[i].lock();
+                }
             }
         },
         unlock: function(token) {
@@ -90,11 +93,28 @@ YUI.add('wegas-lockmanager', function(Y) {
 
     Lockable = Y.Base.create("wegas-lockable", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
+            this.after("tokenChange", this.onTokenChange, this);
+            this.onTokenChange();
+        },
+        destructor: function() {
+            this.unregister();
+        },
+        register: function() {
             this._counter = 0;
             Y.Wegas.app.lockmanager.register(this.get("token"), this);
         },
-        destructor: function() {
+        unregister: function() {
             Y.Wegas.app.lockmanager.unregister(this.get("token"), this);
+        },
+        onTokenChange: function() {
+            var newToken = this.get("token");
+            if (newToken !== this._token) {
+                if (this._token) {
+                    this.unregister();
+                }
+                this.register();
+                this._token = newToken;
+            }
         },
         lock: function() {
             if (this._counter === 0) {

@@ -1,7 +1,7 @@
 /*
-** This service subscribes to the default presence channel to stay informed about connected users.
-** Client modules are in turn informed via events "wegaspusher:update-members" and "wegaspusher:service-error".
-*/
+ ** This service subscribes to the default presence channel to stay informed about connected users.
+ ** Client modules are in turn informed via events "wegaspusher:update-members" and "wegaspusher:service-error".
+ */
 
 angular.module('wegas.service.pusher', [])
 
@@ -12,13 +12,23 @@ angular.module('wegas.service.pusher', [])
             pusher,
             channels = [],
             presence = null,
-            memberlist = [];
+            userChannel = null,
+            adminChannel = null;
 
-        /*
-            for (var j=0; j<200; j++) {
-                memberlist.push({id: j, fullname: ('dummy ' + j), email: j+"@root.com", roles: ""});
-            }
-        */
+        // Exported roles:
+        service.ADMIN_ID = 0;
+        service.SCENARIST_TRAINER_ID = 1;
+        service.PLAYER_ID = 2;
+        service.GUEST_ID = 3;
+        service.NONE_ID = 4;
+
+        var roles = [
+            {id: service.ADMIN_ID, name: "Admin"},
+            {id: service.SCENARIST_TRAINER_ID, name: "Scenarist/Trainer"},
+            {id: service.PLAYER_ID, name: "Player"},
+            {id: service.GUEST_ID, name: "Guest"},
+            {id: service.NONE_ID, name: "No role ???"}
+        ];
 
         /*global Pusher*/
         service.start = function() {
@@ -29,10 +39,14 @@ angular.module('wegas.service.pusher', [])
                         authEndpoint: ServiceURL + "rest/Pusher/auth",
                         cluster: authInfo.cluster
                     });
-                    presence = channels["presence-global"] = pusher.subscribe('presence-global');
+                    presence = channels["global"] = pusher.subscribe('global-channel');
                     Auth.getAuthenticatedUser().then(function(user) {
-                        if (user && user.isAdmin) {
-                            initListening();
+                        if (user) {
+                            userChannel = channels["user"] = pusher.subscribe('private-User-' + user.id);
+                            if (user.isAdmin) {
+                                adminChannel = channels["admin"] = pusher.subscribe('private-Admin');
+                                initListening();
+                            }
                         }
                     });
                 }
@@ -41,92 +55,32 @@ angular.module('wegas.service.pusher', [])
             return deferred.promise;
         };
 
+        service.disconnect = function() {
+            if (pusher) {
+                pusher.disconnect();
+            }
+        };
+
         // Public method for getting the current list of members:
         service.getMembers = function() {
-            return memberlist;
-        }
+            return $http.get(ServiceURL + "rest/Pusher/OnlineUser");
+        };
 
-        function initListening(){
-            presence.bind('pusher:subscription_succeeded', function(members) {
-                clearMemberlist();
-                members.each(function(member) {
-                    addMember(member);
-                });
+        // Public method to sync the current list of members on the server
+        service.syncMembers = function() {
+            return $http.get(ServiceURL + "rest/Pusher/OnlineUser/Sync");
+        };
+
+
+
+        // Public method for getting the list of roles:
+        service.getRoles = function() {
+            return roles;
+        };
+
+        function initListening() {
+            adminChannel.bind('online-users', function() {
                 $rootScope.$emit('wegaspusher:update-members');
             });
-
-            presence.bind('pusher:pusher:subscription_error', function(members) {
-                clearMemberlist();
-                $rootScope.$emit('wegaspusher:service-error', "Connection error - please try again later ...");
-            });
-
-            presence.bind('pusher:member_added', function(member) {
-                addMember(member);
-                $rootScope.$emit('wegaspusher:update-members');
-            });
-
-            presence.bind('pusher:member_removed', function(member) {
-                removeMember(member);
-                $rootScope.$emit('wegaspusher:update-members');
-            });
-        }
-
-        function clearMemberlist(){
-            memberlist = [];
-        }
-
-        function addMember(m) { // m = { m.id, m.info }
-
-            function listRoles(roles){
-                var res = "",
-                    isAdmin = false,
-                    isScenarist = false,
-                    isTrainer = false;
-                // Identify the roles we want to make explicit:
-                roles.forEach(function(elem) {
-                    switch (elem.name) {
-                        case "Trainer":
-                            isTrainer = true;
-                            break;
-                        case "Scenarist":
-                            isScenarist = true;
-                            break;
-                        case "Administrator":
-                            isAdmin = true;
-                            break;
-                    }
-                });
-                // Order the resulting roles:
-                if (isAdmin) res = "Admin ";
-                if (isScenarist) res += "Scenarist ";
-                if (isTrainer) res += "Trainer ";
-                return res;
-            }
-
-            var member = { id: m.id, fullname: m.info.name };
-            UsersModel.getFullUser(m.id).then(function(response) {
-                if (!response.isErroneous()) {
-                    member.username = response.data.account.username || "no username ???";
-                    member.email = response.data.account.email || "no email ???";
-                    member.roles = listRoles(response.data.roles);
-                } else {
-                    console.log("WegasPusher: could not get details for user " + m.id + " " + m.fullname);
-                }
-            });
-            member.connectionDate = Date.now();
-            memberlist.push(member);
-        }
-
-        function removeMember(m) {
-            var id = m.id,
-                len = memberlist.length,
-                i;
-            for (i=0; i<len; i++){
-                if (memberlist[i].id == id){
-                    memberlist.splice(i, 1);
-                    return;
-                }
-            }
-            console.log("WegasPusher: could not remove unknown member " + id + " " + m.fullname);
         }
     });

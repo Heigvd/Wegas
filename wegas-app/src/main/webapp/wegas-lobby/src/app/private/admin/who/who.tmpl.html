@@ -1,21 +1,42 @@
 <h3 ng-if="(adminWhoCtrl.message.length == 0)">{{adminWhoCtrl.who.length}} {{(adminWhoCtrl.who.length == 1 ? 'ADMIN-WHO-SINGULAR-TITLE' : 'ADMIN-WHO-PLURAL-TITLE') | translate}}</h3>
 <h3 ng-if="(adminWhoCtrl.message.length != 0)" style="color:red;">{{adminWhoCtrl.message}}</h3>
+<div class="button button--small button--round button--default-reverse button--label-off button--refresh" style="margin: 22px 0 -10px;"
+     ng-class="{true:'button--disable button--spinner button--rotate'}[adminWhoCtrl.syncing]"
+     title="Sync"
+     ng-click="adminWhoCtrl.sync()">
+    <span class="button__label">{{'ADMIN-WHO-SYNC-BTN'| translate}}</span>
+</div>
 <div ng-if="!adminWhoCtrl.loading"
      class="view__list" style="height: calc( 100% - 75px );">
-    <div class="card card--admin-who"
-         ng-repeat="user in adminWhoCtrl.who | orderBy:['-roles.length','-connectionDate']"
-         user="user">
-        <div class="card__description" title="ID: {{ user.id }}  Username: {{ user.username }}">
-            <div class="line line--primary" style="padding: 0px;">
-                <div class="card-number">{{ ($index+1) + "." }}</div>
-                <div class="card-fullname">{{ user.fullname }}</div>
-                <div ng-if="user.roles" class="card-roles">[ {{ user.roles }}]</div>
-                <div class="card-email">{{ user.email }}</div>
+    <div ng-repeat="role in adminWhoCtrl.roles| orderBy:'id'"
+         role="role">
+        <div ng-if="(adminWhoCtrl.who | filter: {highestRole: role.id}).length != 0"
+             class="group-title">{{role.name}}&thinsp;:</div>
+        <div class="card card--admin-who" style="transition: none;"
+             ng-repeat="user in adminWhoCtrl.who| filter: {highestRole: role.id} | orderBy:'connectionDate':true"
+             user="user">
+            <div class="card__description" title="ID: {{ user.userId}}  Username: {{ user.username}} - Connection: {{ adminWhoCtrl.getConnectionDate(user)}}">
+                <div class="line line--primary" style="padding: 0px; line-height: 17px;">
+                    <div class="card-number">{{ ($index + 1) + "."}}</div>
+                    <div class="card-fullname">{{ user.fullname}}</div>
+                    <div class="card-be button button--small button--round button--default-reverse button--label-off button--play"
+                         title="Impersonate !"
+                         ng-controller="AdminUsersCtrl as adminUsersCtrl"
+                         ng-click="adminUsersCtrl.beByAccountId(user.mainAccountId, user.fullname)">
+                        <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}</span>
+                    </div>
+                    <div class="card-be button button--small button--round button--default-reverse button--label-off button--customize"
+                         title="{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}"
+                         ui-sref="wegas.private.admin.users.edit({id: user.userId})">
+                        <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}</span>
+                    </div>
+                    <div class="card-email">{{ user.email}}</div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <div ng-if="adminWhoCtrl.loading"
      class="view__list view__list--loading"
-     content-loading="{{'ADMIN-USERS-LOADING' | translate}}">
+     content-loading="{{'ADMIN-USERS-LOADING'| translate}}">
 </div>

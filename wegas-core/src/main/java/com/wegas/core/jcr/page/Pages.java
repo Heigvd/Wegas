@@ -143,6 +143,9 @@ public class Pages implements AutoCloseable {
         if (page.getName() != null) {
             n.setProperty(Page.NAME_KEY, page.getName());
         }
+        if (page.getIndex() != null) {
+            n.setProperty(Page.INDEX_KEY, page.getIndex());
+        }
     }
 
     /**
@@ -154,6 +157,8 @@ public class Pages implements AutoCloseable {
     }
 
     /**
+     * Delete all pages.
+     *
      * @throws RepositoryException
      */
     public void delete() throws RepositoryException {
@@ -215,7 +220,7 @@ public class Pages implements AutoCloseable {
 
     public Page getDefaultPage() throws RepositoryException {
         final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('/" + this.gameModelId + "') order by n.index, localname(n)", 1);
-        if(query.hasNext()){
+        if (query.hasNext()) {
             return new Page(query.nextNode());
         }
         return null;

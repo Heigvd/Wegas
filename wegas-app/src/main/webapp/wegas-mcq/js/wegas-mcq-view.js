@@ -45,10 +45,19 @@ YUI.add('wegas-mcq-view', function(Y) {
              * Reference to each used Event handlers
              */
             this.handlers = [];
-
-            this.plug(Y.Plugin.Lockable, {token: "MCQ-" + this.get("variable.evaluated").getInstance().get("id")});
-
             this.on("disabledChange", this.syncUI, this);
+            this.plugLockable();
+        },
+        plugLockable: function() {
+            var theVar = this.get("variable.evaluated"), token;
+            if (theVar) {
+                token = "MCQ-" + this.get("variable.evaluated").getInstance().get("id");
+                if (this.lockable) {
+                    this.lockable.set("token", token);
+                } else {
+                    this.plug(Y.Plugin.Lockable, {token: token});
+                }
+            }
         },
         /**
          * @function
@@ -86,6 +95,8 @@ YUI.add('wegas-mcq-view', function(Y) {
          * When datasource is updated, do syncUI;
          */
         bindUI: function() {
+            this.after("variableChange", this.plugLockable, this);
+
             this.handlers.push(Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
                 var question = this.get("variable.evaluated");
                 if (question && question.get("id") === e.entity.get("id")) {
@@ -361,7 +372,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     choiceI = choiceD.getInstance();
                     choiceID = choiceD.get("id");
                     currDescr = question.get("items")[i].get("description") || "";
-                    isChosenReply = answerable || questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceID;
+                    isChosenReply = answerable || (allReplies[0] && allReplies[0].getChoiceDescriptor().get("id") === choiceID);
                     if (!choiceI.get("active")) {
                     } else {
                         var noTitle = (choiceD.get("title").trim() == '');

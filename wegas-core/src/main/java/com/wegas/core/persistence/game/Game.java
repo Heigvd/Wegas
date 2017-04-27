@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
@@ -438,7 +439,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
     @Override
     @JsonIgnore
     public String getChannel() {
-        return "Game-" + getId();
+        return Helper.GAME_CHANNEL_PREFIX + getId();
     }
 
     /**

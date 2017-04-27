@@ -21,9 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.Broadcastable;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  *
@@ -188,6 +186,7 @@ public class Message extends NamedEntity /*implements Broadcastable*/ {
             super.merge(a);
             Message other = (Message) a;
             this.setBody(other.getBody());
+            this.setFrom(other.getFrom());
             this.setUnread(other.getUnread());
             this.setTime(other.getTime());
             this.setDate(other.getDate());

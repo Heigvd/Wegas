@@ -22,8 +22,8 @@
     <option value="10">&nbsp;&nbsp;10</option>
 </select>
 
-<a class="button button--create-team button--default" ng-click="create()"
-   ng-class="{true:'button--disable'}[newTeam.alreadyUsed || newTeam.name === '' || !newTeam.validSize]">
+<a class="button button--create-team" ng-click="create()"
+   ng-class="{true:'button--disable button--default', false:'button--success'}[newTeam.alreadyUsed || newTeam.name === '' || !newTeam.validSize]">
         {{'PLAYER-MODALE-JOIN-TEAM-CREATE-BTN' | translate}}
 </a>
 

@@ -29,6 +29,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.options.expects = options.expects || "statement";              // conditon/statement/getter
             this.options.classFilter = options.classFilter;
             this.options.messages.invalid = "";                                 //Invalid message should appear near invalid fields
+            this.options.removable = options.removable;
+            this.options.sortable = options.sortable;
+            this.options.numbered = options.numbered;
         },
         /**
          *
@@ -229,7 +232,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 this.exprList = Y.inputEx({//                                   // Render the expression as a Y.inputEx.Wegas.ListField
                     type: "listfield",
                     fields: fields,
-                    sortable: true,
+                    sortable: (typeof this.options.sortable === "undefined") ? true : this.options.sortable,
+                    removable: this.options.removable,
+                    numbered: this.options.numbered,
                     parentEl: this.fieldContainer,
                     addType: {
                         type: this.options.expects, // conditon/statement/getter,

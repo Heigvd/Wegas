@@ -275,6 +275,12 @@
             &.view__list--with-archive {
                 height: calc(100% - 160px);
             }
+
+            .group-title {
+                font-weight:bold;
+                font-size: 16px;
+                padding-top: 10px;
+            }
         }
         .view__no-group {
             @include make-xs-column(12);
@@ -571,6 +577,33 @@
         top: 40%;
         padding: 0px 64px;
         margin-top: -136px;
+    }
+
+    .view__aai-login {
+        background-image: URL('../images/switch_aai.png');
+        background-repeat: no-repeat;
+        background-size: 13px 16px;
+        background-position: 6px center;
+        background-color: #eee !important;
+        display: inline-block;
+        font-family: Verdana, sans-serif;
+        font-size: 14px;
+        color: #666 !important;
+        text-decoration: none;
+        text-transform: none;
+        border-radius: 5px;
+        height: 25px;
+        padding: 0 6px 3px 24px;
+        border: 2px outset #e7e7e7;
+    }
+
+    .view__aai-login:hover {
+        background-color: #ccc !important;
+        color: black !important;
+    }
+
+    .view__aai-login:focus {
+        outline: none;
     }
 
     .view__form--choose-team {

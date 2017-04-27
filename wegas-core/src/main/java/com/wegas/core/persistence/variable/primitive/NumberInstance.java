@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -21,8 +22,8 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.OrderColumn;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,11 +44,6 @@ public class NumberInstance extends VariableInstance {
     /**
      *
      */
-    public static final int HISTORYSIZE = 20;
-
-    /**
-     *
-     */
     private double val;
 
     /**
@@ -55,8 +51,8 @@ public class NumberInstance extends VariableInstance {
      */
     @ElementCollection
     @JsonView(Views.ExtendedI.class)
-    @OrderColumn
-    private List<Double> history = new ArrayList<>();
+    //@OrderColumn
+    private List<NumberHistoryEntry> history = new ArrayList<>();
 
     /**
      *
@@ -102,24 +98,47 @@ public class NumberInstance extends VariableInstance {
      *
      */
     public void saveHistory() {
-        this.history.add(this.val);
-        if (this.history.size() > HISTORYSIZE) {
-            this.history.remove(0);
-        }
+        List<Double> currentHistory = this.getHistory();
+        currentHistory.add(this.getValue());
+        this.setHistory(currentHistory);
     }
 
     /**
      * @return
      */
     public List<Double> getHistory() {
-        return history;
+        Collections.sort(this.history, new EntityComparators.OrderComparators<>());
+
+        List<Double> h = new ArrayList<>();
+        for (NumberHistoryEntry entry : this.history) {
+            h.add(entry.getValue());
+        }
+        return h;
     }
 
     /**
      * @param history
      */
     public void setHistory(List<Double> history) {
-        this.history = history;
+        this.history.clear();
+        if (history != null) {
+            VariableDescriptor theDesc = this.findDescriptor();
+            Integer maxHSize = null;
+
+            if (theDesc instanceof NumberDescriptor) {
+                /*
+                select vd.* from variabledescriptor as vd inner join variableinstance as vi on vi.variableinstance_id = vd.defaultinstance_variableinstance_id  where vd.dtype = 'ListDescriptor' and vi.dtype <> 'ListInstance';
+                 */
+                maxHSize = ((NumberDescriptor) theDesc).getHistorySize();
+            }
+
+            int toSave = maxHSize != null && history.size() > maxHSize ? maxHSize : history.size();
+            int delta = history.size() - toSave;
+
+            for (int i = 0; i < toSave; i++) {
+                this.history.add(new NumberHistoryEntry(history.get(i + delta), i));
+            }
+        }
     }
 
     /**
@@ -131,8 +150,7 @@ public class NumberInstance extends VariableInstance {
             super.merge(a);
             NumberInstance vi = (NumberInstance) a;
             this.setValue(vi.getValue());
-            this.setHistory(new ArrayList<>());
-            this.getHistory().addAll(vi.getHistory());
+            this.setHistory(vi.getHistory());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
