@@ -114,7 +114,7 @@ angular.module('private.admin.users', [
             } else {
                 maxItemsDisplayed = Math.min(maxItemsDisplayed + ITEMS_IN_NEXT_BATCHES, nbItems(list));
             }
-            if (console.log) console.log("maxItemsDisplayed: " + maxItemsDisplayed + " / " + nbItems(list));
+            // if (console.log) console.log("maxItemsDisplayed: " + maxItemsDisplayed + " / " + nbItems(list));
             updateDisplay(list);
         }
 
@@ -130,19 +130,24 @@ angular.module('private.admin.users', [
                     return;
                 }
                 rawGroups = $filter('orderBy')(response.data, 'id') || [];
-                var promises = [];
+                var promises = [],
+                    maxId = 0;
                 for (var g = 0; g < rawGroups.length; g++) {
-                    promises.push(updateGroupMembers(rawGroups[g]));
+                    var group = rawGroups[g];
+                    promises.push(updateGroupMembers(group));
+                    if (maxId < group.id) {
+                        maxId = group.id;
+                    }
                 }
                 UsersModel.getUsers().then(function(response) {
                     if (response.isErroneous()) {
                         response.flash();
                     } else {
                         allUsers = $filter('orderBy')(response.data, 'name') || [];
-                        // Manually create the "Players" (all users) group at last position:
+                        // Manually create the "Player" (all users) pseudo-group at last position:
                         rawGroups.push({
-                            id: 4294967295, // 2^32-1 (try to safely set this group as the last one to be displayed)
-                            name: "Players",
+                            id: maxId+1, // Give this pseudo-group an unused id.
+                            name: "Player",
                             numberOfMember: allUsers.length,
                             realSize: allUsers.length,
                             users: allUsers,
