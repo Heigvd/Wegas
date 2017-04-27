@@ -13,7 +13,7 @@ angular.module('private.logout', [])
         ;
     })
     .controller('LogoutController',
-        function LogoutController($state, Auth, SessionsModel, ScenariosModel, TeamsModel, UsersModel, GroupsModel) {
+        function LogoutController($state, Auth, SessionsModel, ScenariosModel, TeamsModel, UsersModel, GroupsModel, WegasPusher) {
             "use strict";
             Auth.logout().then(function(response) {
                 $("body").removeClass("player scenarist trainer admin guest");
@@ -22,6 +22,7 @@ angular.module('private.logout', [])
                 TeamsModel.clearCache();
                 UsersModel.clearCache();
                 GroupsModel.clearCache();
+                WegasPusher.disconnect();
                 $state.go("wegas.public.login");
             });
         });
