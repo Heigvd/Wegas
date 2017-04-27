@@ -684,6 +684,8 @@ YUI.add("wegas-statemachine-entities", function (Y) {
             Y.Promise.all(availableActions).then(function (transitions) {
                 callback(Y.Array.filter(transitions, function (element) {
                     return !!element;
+                }).sort(function(a, b) {
+                    return a.get("index") - b.get("index");
                 }));
             });
         },

@@ -515,8 +515,10 @@ YUI.add("wegas-plugin", function(Y) {
                 host = this.get(HOST),
                 guest = host.get("root"),
                 variable = this.get("variable.evaluated"),
-                data = "var objProp = Variable.find(gameModel, \"" + variable.get("name") + "\").getInstance(self)" + ".properties;",
-                script = data + (this.get("clearStorage") ? "objProp.clear();" : "");
+                //data = "var objProp = Variable.find(gameModel, \"" + variable.get("name") + "\").getInstance(self)" + ".properties;",
+                //script = data + (this.get("clearStorage") ? "objProp.clear();" : "");
+                data = "var instance = Variable.find(gameModel, \"" + variable.get("name") + "\").getInstance(self);",
+                script = data + (this.get("clearStorage") ? "instance.clearProperties();" : "");
 
             if (guest.showOverlay && guest.hideOverlay) {
                 overlayGuest = guest;
@@ -524,8 +526,8 @@ YUI.add("wegas-plugin", function(Y) {
             }
 
             for (i in e.value) {
-                script += "objProp.put('" + (i + "").replace(/'/g, "\\'") + "','" +
-                    (e.value[i] + "").replace(/'/g, "\\'") + "');";
+                script += "instance.setProperty('" + (i + "").replace(/'/g, "\\'") + "','" + (e.value[i] + "").replace(/'/g, "\\'") + "');";
+                //script += "objProp.put('" + (i + "").replace(/'/g, "\\'") + "','" + (e.value[i] + "").replace(/'/g, "\\'") + "');";
             }
 
             Wegas.Facade.Variable.script.run(script, {

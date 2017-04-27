@@ -7,11 +7,14 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.persistence.VariableProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
@@ -25,7 +28,7 @@ import javax.persistence.Lob;
 /*@Table(indexes = {
  @Index(columnList = "properties.objectdescriptor_variabledescriptor_id")
  })*/
-public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
+public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -37,7 +40,14 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
      *
      */
     @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
+    @JsonIgnore
+    private List<VariableProperty> properties = new ArrayList<>();
+
+    @Override
+    @JsonIgnore
+    public List<VariableProperty> getInternalProperties() {
+        return this.properties;
+    }
 
     /**
      *
@@ -49,8 +59,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
 
         ObjectDescriptor other = (ObjectDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setProperties(new HashMap<>());
-        this.getProperties().putAll(other.getProperties());
+        this.setProperties(other.getProperties());
     }
 
     /**
@@ -68,22 +77,9 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
     }
 
     /**
-     * @return the properties
-     */
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    /**
      *
      * @param p
+     *
      * @return
      */
     public int size(Player p) {
@@ -95,6 +91,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
      *
      * @param p
      * @param key
+     *
      * @return
      */
     public String getProperty(Player p, String key) {
@@ -108,7 +105,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
      * @param value
      */
     public void setProperty(Player p, String key, String value) {
-        this.getInstance(p).getProperties().put(key, value);
+        this.getInstance(p).setProperty(key, value);
     }
 
     /**
@@ -117,13 +114,14 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
      * @param key
      */
     public void removeProperty(Player p, String key) {
-        this.getInstance(p).getProperties().remove(key);
+        this.getInstance(p).removeProperty(key);
     }
 
     /**
      *
      * @param p
      * @param key
+     *
      * @return
      */
     public String getInstanceProperty(Player p, String key) {
@@ -141,7 +139,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
     }
 
     public double getNumberInstanceProperty(Player p, String key) {
-        String value = this.getInstance(p).getProperty(key);
+        String value = this.getProperty(p, key);
         double parsedValue;
         try {
             parsedValue = Double.parseDouble(value);

@@ -186,7 +186,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
         getDatasourceFromEntity: function(entity) {
             if (entity instanceof Y.Wegas.persistence.VariableInstance) {
                 return Y.Wegas.Facade.Instance;
-            } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {
+            } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor ||
+                entity instanceof Y.Wegas.persistence.RootDescriptors) {
                 return Y.Wegas.Facade.Variable;
             } else if (entity instanceof Y.Wegas.persistence.Game) {
                 return Y.Wegas.Facade.Game;

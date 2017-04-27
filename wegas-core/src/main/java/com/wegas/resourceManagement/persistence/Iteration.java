@@ -12,15 +12,21 @@ import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import javax.swing.plaf.ListUI;
 
 /**
  * PMG Related !
@@ -33,7 +39,7 @@ import java.util.Map;
 @Table(indexes = {
     @Index(columnList = "burndowninstance_variableinstance_id")
 })
-public class Iteration extends AbstractEntity /*implements Broadcastable */ {
+public class Iteration extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,6 +50,9 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime = new Date();
 
     /**
      * Iteration Name
@@ -64,14 +73,16 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      * planned workload from beginAt period
      */
     @ElementCollection
-    private Map<Long, Double> plannedWorkloads = new HashMap<>();
+    @JsonIgnore
+    private List<IterationPlanning> plannedWorkloads = new ArrayList<>();
 
     /**
      * maps a period number with workload for current period and future ones:
      * Indicate the planned workload consumption
      */
     @ElementCollection
-    private Map<Long, Double> replannedWorkloads = new HashMap<>();
+    @JsonIgnore
+    private List<IterationPlanning> replannedWorkloads = new ArrayList<>();
 
     /**
      * maps a period number with workload for past period and current one:
@@ -111,6 +122,21 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    /**
+     * @return the createdTime
+     */
+    @Override
+    public Date getCreatedTime() {
+        return createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    /**
+     * @param createdTime the createdTime to set
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     public String getName() {
@@ -175,8 +201,14 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      *
      * @return planned workload, mapped by relative period number
      */
+    @JsonIgnore
+    private Map<Long, Double> getModifiablePlannedWorkloads() {
+        return ListUtils.mapEntries(this.plannedWorkloads, new IterationPlanning.Extractor());
+    }
+
+    @JsonProperty
     public Map<Long, Double> getPlannedWorkloads() {
-        return plannedWorkloads;
+        return Collections.unmodifiableMap(this.getModifiablePlannedWorkloads());
     }
 
     /**
@@ -184,8 +216,12 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      *
      * @param plannedWorkloads the planning
      */
+    @JsonProperty
     public void setPlannedWorkloads(Map<Long, Double> plannedWorkloads) {
-        this.plannedWorkloads = plannedWorkloads;
+        this.plannedWorkloads.clear();
+        for (Entry<Long, Double> entry : plannedWorkloads.entrySet()) {
+            this.plannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+        }
     }
 
     /**
@@ -225,8 +261,14 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      *
      * @return the planned workloads consumption
      */
+    @JsonIgnore
+    private Map<Long, Double> getModifiableReplannedWorkloads() {
+        return ListUtils.mapEntries(this.plannedWorkloads, new IterationPlanning.Extractor());
+    }
+
+    @JsonProperty
     public Map<Long, Double> getReplannedWorkloads() {
-        return replannedWorkloads;
+        return Collections.unmodifiableMap(this.getModifiableReplannedWorkloads());
     }
 
     /**
@@ -235,7 +277,10 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
      * @param replannedWorkloads
      */
     public void setReplannedWorkloads(Map<Long, Double> replannedWorkloads) {
-        this.replannedWorkloads = replannedWorkloads;
+        this.replannedWorkloads.clear();
+        for (Entry<Long, Double> entry : replannedWorkloads.entrySet()) {
+            this.replannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+        }
     }
 
     /**
@@ -285,11 +330,15 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
     }
 
     public void plan(Long periodNumber, Double workload) {
-        internalPlan(periodNumber, workload, this.getPlannedWorkloads());
+        Map<Long, Double> planning = this.getModifiablePlannedWorkloads();
+        internalPlan(periodNumber, workload, planning);
+        this.setPlannedWorkloads(planning);
     }
 
     public void replan(Long periodNumber, Double workload) {
-        internalPlan(periodNumber, workload, this.getReplannedWorkloads());
+        Map<Long, Double> planning = this.getModifiableReplannedWorkloads();
+        internalPlan(periodNumber, workload, planning);
+        this.setReplannedWorkloads(planning);
     }
 
     /**
@@ -304,8 +353,8 @@ public class Iteration extends AbstractEntity /*implements Broadcastable */ {
             this.setName(other.getName());
 
             //ListUtils.updateList(tasks, other.getTasks());
-            //this.setPlannedWorkload(other.getPlannedWorkload());
-            //this.setReplannedWorkloads(replannedWorkloads);
+            //this.setPlannedWorkloads(other.getPlannedWorkloads());
+            //this.setReplannedWorkloads(other.getReplannedWorkloads());
             //this.setTotalWorkload(other.getTotalWorkload());
             //this.setWorkloads();
         } else {

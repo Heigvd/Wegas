@@ -189,7 +189,6 @@ public class PdfRenderer implements Filter {
                     InputStream iStream = new StringInputStream(content);
                     tidy.parse(iStream, os);
 
-                    //tidy.parse(new StringInputStream(content), os);
                     String toString = os.toString();
 
                     StringReader contentReader = new StringReader(toString);
@@ -369,7 +368,6 @@ public class PdfRenderer implements Filter {
             logger.info(msg, t);
         } else {
             logger.info(msg);
-
         }
     }
 

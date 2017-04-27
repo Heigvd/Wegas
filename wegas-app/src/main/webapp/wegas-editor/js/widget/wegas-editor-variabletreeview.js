@@ -206,6 +206,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             if (ds) {
                 this.handlers.push(ds.after("failure", this.defaultFailureHandler, this)); // GLOBAL error message
 
+                this.handlers.push(ds.after("rootUpdate", this.syncUI, this));
                 this.handlers.push(ds.after("updatedDescriptor", this.updateDescriptor, this));
                 this.handlers.push(instanceDs.after("updatedInstance", this.updateInstance, this));
                 //this.handlers.push(instanceDs.after("addedInstance", this.updateInstance, this));

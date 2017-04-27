@@ -7,6 +7,8 @@
  */
 package com.wegas.admin;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ILock;
 import com.wegas.admin.persistence.GameAdmin;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
@@ -24,6 +26,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +36,14 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class AdminFacade extends BaseFacade<GameAdmin> {
+
     private final Logger logger = LoggerFactory.getLogger(AdminFacade.class);
 
     @EJB
     private GameFacade gameFacade;
+
+    @Inject
+    private HazelcastInstance hzInstance;
 
     public AdminFacade() {
         super(GameAdmin.class);
@@ -145,13 +152,21 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
 
     @Schedule(hour = "4", dayOfMonth = "Last Sun")
     public void deleteGames() {
-        TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
-        final List<GameAdmin> resultList = query.getResultList();
-        for(GameAdmin ga : resultList){
-            this.deleteGame(ga);
+        ILock lock = hzInstance.getLock("AdminFacade.Schedule");
+        if (lock.tryLock()) {
+            try {
+                TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
+                final List<GameAdmin> resultList = query.getResultList();
+                for (GameAdmin ga : resultList) {
+                    this.deleteGame(ga);
+                }
+                // Flush to trigger EntityListener events before loosing RequestManager !
+                getEntityManager().flush();
+            } finally {
+                lock.unlock();
+                lock.destroy();
+            }
         }
-        // Flush to trigger EntityListener events before loosing RequestManager !
-        getEntityManager().flush();
     }
 
     @Override

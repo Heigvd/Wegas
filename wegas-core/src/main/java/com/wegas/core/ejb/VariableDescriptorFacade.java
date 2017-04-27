@@ -13,10 +13,12 @@ import com.wegas.core.Helper;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.persistence.variable.RootDescriptors;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
@@ -43,7 +45,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -69,6 +73,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      */
     @Inject
     private Event<DescriptorRevivedEvent> descriptorRevivedEvent;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -121,7 +128,27 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         list.addItem(entity);
         this.revive(gameModel, entity, true);
 
+        if (list instanceof GameModel) {
+            this.propagateRootVariableDescriptors((GameModel) list);
+        }
         return list;
+    }
+
+    private void propagateRootVariableDescriptors(GameModel gameModel) {
+        RootDescriptors rd = new RootDescriptors();
+        rd.setId(gameModel.getId());
+        rd.setItems(gameModel.getItems());
+
+        List<AbstractEntity> entities = new ArrayList<>();
+
+        entities.add(rd);
+
+        Map<String, List<AbstractEntity>> map = new HashMap();
+
+        map.put(gameModel.getChannel(), entities);
+
+        requestManager.addUpdatedEntities(map);
+
     }
 
     /**
@@ -303,7 +330,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
             query.setParameter("name", name);
             return query.getSingleResult();
         } catch (NoResultException ex) {
-            throw new WegasNoResultException(ex);
+            throw new WegasNoResultException("Variable \"" + name + "\" not found in gameModel " + gameModel, ex);
         }
     }
 
@@ -446,8 +473,14 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final int index) {
         final VariableDescriptor vd = this.find(descriptorId);                  // Remove from the previous list
-        vd.getParent().remove(vd);
-        targetListDescriptor.addItem(index, vd);                                // Then add to the new one
+        DescriptorListI from = vd.getParent();
+        from.remove(vd);
+        targetListDescriptor.addItem(index, vd);
+        if (from instanceof GameModel) {
+            this.propagateRootVariableDescriptors((GameModel) from);
+        } else if (targetListDescriptor instanceof GameModel) {
+            this.propagateRootVariableDescriptors((GameModel) targetListDescriptor);
+        }
     }
 
     /**

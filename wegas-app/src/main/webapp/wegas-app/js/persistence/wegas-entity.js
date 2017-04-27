@@ -27,7 +27,7 @@ YUI.add("wegas-entity", function(Y) {
         IDATTRDEF = {
             type: STRING,
             optional: true, //                                                  // The id is optional for entites that
-            // have not been persisted
+                            // have not been persisted
             view: {
                 type: HIDDEN,
             }
@@ -179,7 +179,7 @@ YUI.add("wegas-entity", function(Y) {
                             value: false,
                             label: "in team"
                         }]
-                    }, { /*
+                        }, {/*
                         name: "imageUri",
                         label: "Thumbnail",
                         type: "wegasurl"
@@ -241,6 +241,21 @@ YUI.add("wegas-entity", function(Y) {
             },
             createdByName: {
                 "transient": true
+            }
+        },
+        EDITMENU: []
+    });
+
+
+    /**
+     * GameModel root descriptor encapsulation
+     */
+    persistence.RootDescriptors = Base.create("RootDescriptors", persistence.Entity, [], {}, {
+        EDITORNAME: "Scenario Root Descriptors",
+        ATTRS: {
+            items: {
+                type: ARRAY,
+                value: []
             }
         },
         EDITMENU: []
@@ -352,7 +367,7 @@ YUI.add("wegas-entity", function(Y) {
                     label: "Option 1: Player accesses through his account",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-token",
                     description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
-                        + "The enrolment key can be used by an unlimited number of players."
+                                 + "The enrolment key can be used by an unlimited number of players."
                 }
             },
             keys: {
@@ -363,7 +378,7 @@ YUI.add("wegas-entity", function(Y) {
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-keys",
                     _type: "enrolmentkeylist",
                     description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
-                        + "Each enrolment key can be used only once."
+                                 + "Each enrolment key can be used only once."
                 }
             },
             accountkeys: {
@@ -375,7 +390,7 @@ YUI.add("wegas-entity", function(Y) {
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-users",
                     index: 2,
                     description: "Player directly joins the game with username/password.<br />"
-                        + " Each username/password can be used only once."
+                                 + " Each username/password can be used only once."
                 }
             },
             playersCount: {

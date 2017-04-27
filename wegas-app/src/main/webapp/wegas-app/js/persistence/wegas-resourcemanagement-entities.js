@@ -204,8 +204,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                             className: "short-input",
                                             label: "Period number"
                             }
+                            }
                         }
-                                }
                     },
                             view: {
                                 className: 'wegas-advanced-feature editor-resources-occupations',
@@ -347,7 +347,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         label: "Description",
                                 type: HIDDEN
                     }
-                        }
+                    }
                 ]
             },
             removeOccupationsAtTime: {
@@ -454,6 +454,13 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             occupations: {
                 type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("time") - b.get("time");
+                    });
+                    return v;
+                },
+                value: [],
                 view: {
                     type: HIDDEN
                 }
@@ -911,6 +918,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             iterations: {
                 type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("createdTime") - b.get("createdTime");
+                    });
+                    return v;
+                },
                 value: []
             }
         }
@@ -1005,6 +1018,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             taskDescriptorsId: {
                 type: ARRAY
+            },
+            createdTime: {
+                transient: true
             }
         }
     });

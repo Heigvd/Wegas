@@ -13,11 +13,11 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.VariableProperty;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -36,7 +36,7 @@ import javax.persistence.Transient;
     @Index(columnList = "plannification.taskinstance_variableinstance_id"),
     @Index(columnList = "properties.taskinstance_variableinstance_id")
 })*/
-public class TaskInstance extends VariableInstance {
+public class TaskInstance extends VariableInstance implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -57,7 +57,8 @@ public class TaskInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
+    @JsonIgnore
+    private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
      */
@@ -101,6 +102,12 @@ public class TaskInstance extends VariableInstance {
         }
     }
 
+    @JsonIgnore
+    @Override
+    public List<VariableProperty> getInternalProperties() {
+        return this.properties;
+    }
+
     /**
      * @return the plannification
      */
@@ -116,40 +123,9 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * @return the properties
-     */
-    public Map<String, String> getProperties() {
-        return this.properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    /**
-     *
-     * @param key
-     * @return the instance property mapped by the given key
-     */
-    public String getProperty(String key) {
-        return this.properties.get(key);
-    }
-
-    /**
-     *
-     * @param key
-     * @return the instance property mapped by the given key, double castes
-     */
-    public double getPropertyD(String key) {
-        return Double.valueOf(this.properties.get(key));
-    }
-
-    /**
      *
      * @param index
+     *
      * @return WRequirement
      */
     public WRequirement getRequirement(Integer index) {
@@ -159,6 +135,7 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      * @param id
+     *
      * @return requirement matching given id
      */
     public WRequirement getRequirementById(Long id) {
@@ -226,8 +203,7 @@ public class TaskInstance extends VariableInstance {
             TaskInstance other = (TaskInstance) a;
             this.setActive(other.getActive());
             //this.setDuration(other.getDuration());
-            this.setProperties(new HashMap<>());
-            this.getProperties().putAll(other.getProperties());
+            this.setProperties(other.getProperties());
             ListUtils.ListKeyToMap<Object, WRequirement> converter;
             converter = new WRequirementToNameConverter();
 
@@ -254,15 +230,6 @@ public class TaskInstance extends VariableInstance {
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
-    }
-
-    /**
-     *
-     * @param key
-     * @param val
-     */
-    public void setProperty(String key, String val) {
-        this.properties.put(key, val);
     }
 
     private static class WRequirementToNameConverter implements ListUtils.ListKeyToMap<Object, WRequirement> {

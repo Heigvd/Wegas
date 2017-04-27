@@ -1309,6 +1309,13 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             },
             messages: {
                 type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        // newer first
+                        return b.get("time") - a.get("time");
+                    });
+                    return v;
+                },
                 "transient": true,
                 value: []
             },
@@ -1336,6 +1343,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             from: {},
             token: {},
             date: {},
+            time: {
+                "transient": true
+            },
             attachements: {}
         }
     });
