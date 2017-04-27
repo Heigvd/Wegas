@@ -250,6 +250,16 @@ angular.module('wegas.models.users', [])
                                     delete user.name;
                                     delete user.password2;
 
+                                    if (user.roles) {
+                                        for (var i = 0; i < user.roles.length; i++) {
+                                            var role = user.roles[i];
+                                            // Additional attributes created in user admin code:
+                                            delete role.users;
+                                            delete role.isExpanded;
+                                            delete role.realSize;
+                                        }
+                                    }
+
                                     var url = "rest/Extended/User/Account/" + user.id;
                                     $http
                                         .put(ServiceURL + url, user, {
