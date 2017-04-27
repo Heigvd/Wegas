@@ -43,9 +43,12 @@ import java.util.*;
 })
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "AaiAccount", value = AaiAccount.class),
-    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
-    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
-    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
+    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class)
+    ,
+    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class)
+    ,
+    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class)
+    ,
     @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
@@ -120,7 +123,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @JsonView(Views.ExtendedI.class)
     @Transient
-    private Set<Role> roles = new HashSet<>();
+    private Collection<Role> roles = new ArrayList<>();
 
     /**
      * @return the id
@@ -145,7 +148,7 @@ public abstract class AbstractAccount extends AbstractEntity {
             this.setLastname(a.getLastname());
             this.setUsername(a.getUsername());
             this.setEmail(a.getEmail());
-            if (a.getAgreedTime()!=null) {
+            if (a.getAgreedTime() != null) {
                 // Never reset this attribute:
                 this.setAgreedTime(a.getAgreedTime());
             }
@@ -250,14 +253,14 @@ public abstract class AbstractAccount extends AbstractEntity {
     }
 
     @JsonIgnore
-    public Set<Role> getDeserialisedRoles() {
+    public Collection<Role> getDeserialisedRoles() {
         return roles;
     }
 
     /**
      * @param roles the roles to set
      */
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
 

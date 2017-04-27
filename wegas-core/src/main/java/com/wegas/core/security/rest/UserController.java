@@ -888,58 +888,6 @@ public class UserController {
         }
     }
 
-    <<<<<<< HEAD /*
-    ** @return the browser's preference among the languages supported by Wegas
-             */
-
-    private String detectBrowserLocale(HttpServletRequest request) {
-        String supportedLanguages = "en fr";
-
-        if (request != null) {
-            Enumeration locales = request.getLocales();
-            while (locales.hasMoreElements()) {
-                Locale locale = (Locale) locales.nextElement();
-                String loc = locale.getLanguage();
-                if (supportedLanguages.contains(loc)) {
-                    return loc;
-                }
-            }
-             == == ==
-                    = /**
-                     * Check if email is valid. (Only a string test)
-                     *
-                     * @param email
-                     *
-                     * @return true if given address is valid
-                     */
-
-    private boolean checkEmailString(String email) {
-        boolean validEmail = true;
-        try {
-            InternetAddress emailAddr = new InternetAddress(email);
-            emailAddr.validate();
-        } catch (AddressException ex) {
-            validEmail = false;
-        }
-        return validEmail;
-    }
-
-    /**
-     * Check if username is already in use
-     *
-     * @param username username to check
-     *
-     * @return true is username is already in use
-     */
-    private boolean checkExistingUsername(String username) {
-        boolean existingUsername = false;
-        User user = userFacade.getUserByUsername(username);
-        if (user != null) {
-            existingUsername = true;
-        }
-        return existingUsername;
-    }
-
     /**
      * Check if persistent ID is already in use
      *
@@ -952,9 +900,7 @@ public class UserController {
         User user = userFacade.getUserByPersistentId(persistentId);
         if (user != null) {
             existingId = true;
-             >>> >>> > origin / wegas - 2.5 - maintenance
         }
         return existingId;
     }
-
 }
