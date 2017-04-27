@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.persistence.variable.Beanjection;
+import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -41,6 +43,15 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class),
     @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class)
 })
+
+/**
+ * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for new object with @ElementCollection annotated fields.
+ * SEND_NEW_OBJECTS_WITH_CHANGES does not fix the issue.
+ * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
+ * 
+ */
+//@Cache(coordinationType = CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES)
+//@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
 public abstract class AbstractEntity implements Serializable, Cloneable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);

@@ -28,7 +28,7 @@ public class EntityComparators {
      *
      * @param <T> extends Orderable
      */
-    public static class OrderComparators<T extends Orderable> implements Comparator<T> {
+    public static class OrderComparator<T extends Orderable> implements Comparator<T> {
 
         @Override
         public int compare(T o1, T o2) {
@@ -39,6 +39,34 @@ public class EntityComparators {
                 return 0;
             }
             return o1.getOrder().compareTo(o2.getOrder());
+        }
+    }
+
+    public static class CreateTimeComparator<T extends DatedEntity> implements Comparator<T> {
+
+        @Override
+        public int compare(T o1, T o2) {
+            if (o1.getCreatedTime() == null ^ o2.getCreatedTime() == null) {
+                return o1.getCreatedTime() == null ? -1 : 1;
+            }
+            if (o1.getCreatedTime() == null && o2.getCreatedTime() == null) {
+                return 0;
+            }
+            return o1.getCreatedTime().compareTo(o2.getCreatedTime());
+        }
+    }
+
+    public static class ReverseCreateTimeComparator<T extends DatedEntity> implements Comparator<T> {
+
+        @Override
+        public int compare(T o1, T o2) {
+            if (o1.getCreatedTime() == null ^ o2.getCreatedTime() == null) {
+                return o1.getCreatedTime() == null ? 1 : -1;
+            }
+            if (o1.getCreatedTime() == null && o2.getCreatedTime() == null) {
+                return 0;
+            }
+            return o2.getCreatedTime().compareTo(o1.getCreatedTime());
         }
     }
 

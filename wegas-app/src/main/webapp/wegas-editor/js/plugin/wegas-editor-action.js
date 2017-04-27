@@ -558,7 +558,7 @@ YUI.add('wegas-editor-action', function(Y) {
                         inFormEntity = Y.Wegas.Facade.Variable.cache.find("id", inFormEntity.get("descriptorId"));
                     }
 
-                    if (entity instanceof Y.Wegas.persistence.FSMDescriptor) {
+                    if (Y.Wegas.persistence.FSMDescriptor && entity instanceof Y.Wegas.persistence.FSMDescriptor) {
                         if (inFormEntity.get("@class") === "Transition" || inFormEntity.get("@class") === "State") {
                             removeTab = inFormEntity.get("stateMachineId") === entity.get("id");
                         }

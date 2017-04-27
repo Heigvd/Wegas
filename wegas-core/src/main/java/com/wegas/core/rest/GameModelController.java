@@ -15,13 +15,10 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -46,11 +43,6 @@ public class GameModelController {
      */
     @EJB
     private GameModelFacade gameModelFacade;
-    /**
-     *
-     */
-    @EJB
-    private UserFacade userFacade;
 
     /**
      *
@@ -323,90 +315,5 @@ public class GameModelController {
             }
         }
         return games;
-    }
-
-    /**
-     * Create a new gameModel based on a JSON version
-     *
-     * @param gameModelId
-     * @param path
-     * @return the restored gameModel
-     * @throws IOException
-     */
-    @GET
-    @Path("{gameModelId: [1-9][0-9]*}/Restore/{path: .*}")
-    public GameModel restoreVersion(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("path") String path) throws IOException {
-
-        //SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        //InputStream file = fileController.getFile(gameModelId, path);           // Retrieve file from content repository
-        //
-        //ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-        //GameModel version = mapper.readValue(file, GameModel.class);            // and deserialize file
-        //
-        //GameModel gm = gameModelFacade.find(gameModelId);
-        //gm.setChildVariableDescriptors(version.getChildVariableDescriptors());
-        //gm.merge(version);
-        // Todo: pages
-        return this.createFromVersion(gameModelId, path);
-    }
-
-    /**
-     *
-     * @param gameModelId
-     * @param path
-     * @return the restored gameModel
-     * @throws IOException
-     */
-    @GET
-    @Path("{gameModelId: [1-9][0-9]*}/CreateFromVersion/{path: .*}")
-    public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("path") String path) throws IOException {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-
-        return gameModelFacade.createFromVersion(gameModelId, path);
-    }
-
-    /**
-     *
-     * @param gameModelId
-     * @param name
-     * @throws RepositoryException
-     * @throws IOException
-     */
-    @POST
-    @Path("{gameModelId: [1-9][0-9]*}/CreateVersion/{version: .*}")
-    public void createVersion(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("version") String name) throws RepositoryException, IOException {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        gameModelFacade.createVersion(gameModelId, name);
-    }
-
-    /**
-     *
-     * @param gameModelId
-     * @throws RepositoryException
-     * @throws IOException
-     */
-    @POST
-    @Path("{gameModelId: [1-9][0-9]*}/CreateVersion")
-    public void createVersion(@PathParam("gameModelId") Long gameModelId) throws RepositoryException, IOException {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        gameModelFacade.createVersion(gameModelId, new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date())
-                + " by " + userFacade.getCurrentUser().getName());
-    }
-
-    /**
-     *
-     * @throws IOException
-     * @throws RepositoryException
-     */
-    @POST
-    @Path("AutoVersion")
-    public void automaticVersionCreation() throws IOException, RepositoryException {
-        gameModelFacade.automaticVersionCreation();
     }
 }

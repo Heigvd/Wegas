@@ -7,9 +7,9 @@
  */
 package com.wegas.core.rest;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasForbiddenException;
-import com.wegas.core.rest.util.CacheManagerHolder;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import com.wegas.core.security.util.BlacklistFilter;
 
@@ -21,11 +21,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import javax.ejb.EJB;
+import javax.cache.Cache;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -36,8 +38,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,12 +66,17 @@ public class ComboController {
      */
     final static public String MediaTypeJs = "text/javascript; charset=UTF-8";
 
-    @EJB
-    private CacheManagerHolder cacheManagerHolder;
+    private static final String CACHE_DISABLED_KEY = "wegas.combocache.enabled";
+
+    //@EJB
+    ///private CacheManagerHolder cacheManagerHolder;
+    @Inject
+    private Cache<Integer, CacheObject> cache;
+
+    @Inject
+    private HazelcastInstance hzInstance;
 
     private static final Logger logger = LoggerFactory.getLogger(ComboController.class);
-
-    private final static String CACHE_NAME = "combo";
 
     /**
      *
@@ -85,11 +90,44 @@ public class ComboController {
     @Context
     private ServletContext servletContext;
 
+    private boolean isCacheEnable() {
+        return hzInstance.getAtomicLong(CACHE_DISABLED_KEY).get() == 0;
+    }
+
+    @GET
+    @Path("enable")
+    public void enable() throws IOException {
+        this.hzInstance.getAtomicLong(CACHE_DISABLED_KEY).set(0l);
+    }
+
+    @GET
+    @Path("disable")
+    public void disable() throws IOException {
+        this.hzInstance.getAtomicLong(CACHE_DISABLED_KEY).set(1l);
+        this.clear();
+    }
+
+    @GET
+    @Path("count")
+    public long listCacheContent() {
+        long count = 0;
+
+        Iterator<Cache.Entry<Integer, CacheObject>> iterator = cache.iterator();
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+
+        return count;
+    }
+
     /**
      * Retrieve
      *
      * @param req
+     *
      * @return HTTP 200 with requested data or HTTP forbidden response
+     *
      * @throws IOException
      */
     @GET
@@ -97,15 +135,14 @@ public class ComboController {
     @CacheMaxAge(time = 3, unit = TimeUnit.HOURS)
     public Response index(@Context Request req) throws IOException {
         try {
-            Ehcache cache = cacheManagerHolder.getInstance().getEhcache(CACHE_NAME);
+            //Ehcache cache = cacheManagerHolder.getInstance().getEhcache(CACHE_NAME);
 
             final int hash = this.uriInfo.getRequestUri().getQuery().hashCode();
 
-            final Element combo = cache.get(hash);
             CacheObject comboCache;
 
-            if (combo != null) { // Get from cache
-                comboCache = (CacheObject) combo.getObjectValue();
+            if (isCacheEnable() && cache.containsKey(hash)) { //Get from cache
+                comboCache = cache.get(hash);
             } else { // build Cache.
                 //final Set<String> files = this.uriInfo.getQueryParameters().keySet(); // Old version, removed cause query parameters where in the wrong order
                 ArrayList<String> files = new ArrayList<>();                         // New version, with parameters in the right order
@@ -120,8 +157,9 @@ public class ComboController {
                 final String mediaType = (files.iterator().next().endsWith("css"))
                         ? MediaTypeCss : MediaTypeJs;            // Select the content-type based on the first file extension
                 comboCache = new CacheObject(this.getCombinedFile(files, mediaType), mediaType);
-                cache.put(new Element(hash, comboCache));
-
+                if (isCacheEnable()) {
+                    cache.put(hash, comboCache);
+                }
             }
             ResponseBuilder rb = req.evaluatePreconditions(new EntityTag(comboCache.getETag()));
             if (rb != null) {
@@ -146,8 +184,7 @@ public class ComboController {
     @DELETE
     @Produces(MediaType.WILDCARD)
     public Response clear() {
-        Ehcache cache = cacheManagerHolder.getInstance().getEhcache(CACHE_NAME);
-        cache.removeAll();
+        cache.clear();
         return Response.ok().build();
     }
 

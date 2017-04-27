@@ -30,19 +30,6 @@ YUI.add("wegas-content-entities", function(Y) {
                     _type: "uneditable"
                 }
             },
-            privateContent: {
-                type: "boolean",
-                _inputex: {
-                    label: "Private"
-                }
-            },
-            inheritedPrivate: {
-                type: "boolean",
-                "transient": true,
-                _inputex: {
-                    _type: "uneditable"
-                }
-            },
             path: {
                 type: "string",
                 _inputex: {

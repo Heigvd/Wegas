@@ -7,183 +7,109 @@
  */
 package com.wegas.core.jcr;
 
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.ReadConcern;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.game.GameModel;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.apache.jackrabbit.api.JackrabbitRepositoryFactory;
-import org.apache.jackrabbit.api.management.DataStoreGarbageCollector;
-import org.apache.jackrabbit.api.management.RepositoryManager;
-import org.apache.jackrabbit.core.RepositoryFactoryImpl;
+import org.apache.jackrabbit.oak.Oak;
+import org.apache.jackrabbit.oak.jcr.Jcr;
+import org.apache.jackrabbit.oak.plugins.document.DocumentMK;
+import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
+import org.apache.jackrabbit.oak.segment.SegmentNodeStore;
+import org.apache.jackrabbit.oak.segment.SegmentNodeStoreBuilders;
+import org.apache.jackrabbit.oak.segment.file.FileStore;
+import org.apache.jackrabbit.oak.segment.file.FileStoreBuilder;
+import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.sql.DataSource;
+import javax.jcr.Repository;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
- * Implementation specific garbageCollector
+ * Jackrabbit repository init
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@Startup
 @Singleton
+@Startup
 public class JackrabbitConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
-    final private static String DIR = Helper.getWegasProperty("jcr.repository.basedir");
-    private static JackrabbitRepository repo;
-    final private JackrabbitRepositoryFactory rf = new RepositoryFactoryImpl();
+    final private static String URI = Helper.getWegasProperty("jcr.repository.URI");
+    private static Repository repo;
+    private static DocumentNodeStore nodeStore;
+    private static FileStore fileStore;
 
-    @PersistenceContext(name = "wegasPU")
-    private EntityManager em;
-
-    @PostConstruct
-    protected void init() {
-        Properties prop = new Properties();
-        prop.setProperty("org.apache.jackrabbit.repository.home", DIR);
-        prop.setProperty("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
-        try {
-            repo = (JackrabbitRepository) rf.getRepository(prop);
-            logger.info("Jackrabbit will read setup from {}", DIR);
-        } catch (RepositoryException ex) {
-            logger.error("Check your repository setup {}", DIR);
-        }
-        //Enable GC on startup
-        //this.runGC();
-    }
-
-    @Schedule(hour = "3", minute = "0")
-    private void runGC() {
-    }
-
-    private void _runGC() {
-        try {
-            logger.info("Running Jackrabbit GarbageCollector");
-            final RepositoryManager rm = rf.getRepositoryManager(JackrabbitConnector.repo);
-            final Session session = SessionHolder.getSession(null);
-            Integer countDeleted = 0;
-            DataStoreGarbageCollector gc = rm.createDataStoreGarbageCollector();
+    private synchronized static void init() {
+        if (JackrabbitConnector.repo == null) {
+            if (Helper.isNullOrEmpty(URI)) {
+                // In memory
+                JackrabbitConnector.repo = new Jcr(new Oak()).createRepository();
+                return;
+            }
             try {
-                gc.mark();
-                countDeleted = gc.sweep();
-            } finally {
-                gc.close();
-            }
-
-            SessionHolder.closeSession(session);
-            rm.stop();
-            logger.info("Jackrabbit GarbageCollector ended, {} items removed", countDeleted);
-        } catch (RepositoryException ex) {
-            logger.error("Jackrabbit garbage collector failed. Check repository configuration");
-        }
-    }
-
-    /**
-     * Project specific, remove database's table and jcr filesystem workspace
-     *
-     * @param toDelete
-     */
-    private static void deleteWorkspaces(List<String> toDelete) {
-        String dbName = Helper.getWegasProperty("jcr.jdbc.resource-name");
-        try {
-            DataSource ds = (DataSource) new InitialContext().lookup(dbName);
-            try (Connection con = ds.getConnection()) {
-                for (String workspaceName : toDelete) {
-                    logger.warn("Delete " + workspaceName);
-                    try (Statement statement = con.createStatement()) {
-                        try {
-                            /* DROP TABLES */
-                            String dropQuery = "DROP table IF EXISTS "
-                                    + workspaceName + "_binval, "
-                                    + workspaceName + "_refs, "
-                                    + workspaceName + "_bundle, "
-                                    + workspaceName + "_names CASCADE";
-
-                            statement.execute(dropQuery);
-                            con.commit();
-                            deleteWorkspaceDirectory(workspaceName);
-                        } catch (SQLException ex) {
-                            logger.warn("Delete workspace failed", ex);
-                            statement.cancel();
-                            con.rollback();
-                        }
+                final URI uri = new URI(URI);
+                if (uri.getScheme().equals("mongodb")) {
+                    // Remote
+                    String hostPort = uri.getHost();
+                    if (uri.getPort() > -1) {
+                        hostPort += ":" + uri.getPort();
                     }
+                    String dbName = uri.getPath().replaceFirst("/", "");
+                    final DB db = new MongoClient(hostPort, MongoClientOptions.builder()
+                            .readConcern(ReadConcern.MAJORITY)
+                            .build())
+                            .getDB(dbName);
+                    nodeStore = new DocumentMK.Builder()
+                            .setLeaseCheck(false)
+                            .setMongoDB(db)
+                            .getNodeStore();
+                    JackrabbitConnector.repo = new Jcr(new Oak(nodeStore)).createRepository();
+                } else if (uri.getScheme().equals("file")) {
+                    // Local
+                    try {
+                        fileStore = FileStoreBuilder.fileStoreBuilder(new File(uri.getPath())).build();
+                    } catch (InvalidFileStoreVersionException | IOException e) {
+                        logger.error("Failed to read repository {}", uri.getPath(), e);
+                        return;
+                    }
+                    final SegmentNodeStore segmentNodeStore = SegmentNodeStoreBuilders.builder(fileStore).build();
+                    JackrabbitConnector.repo = new Jcr(new Oak(segmentNodeStore)).createRepository();
                 }
-
-            } catch (SQLException ex) {
-                logger.warn("Delete workspace failed: getConnection failed");
+            } catch (URISyntaxException | NullPointerException e) {
+                logger.error("Failed to define JCR repository mode", e);
             }
-        } catch (NamingException ex) {
-            logger.warn("Delete workspace failed: no \"" + dbName + "\" resource found");
+
         }
     }
 
     /**
-     * @return
+     * @return Repository
      */
-    protected javax.jcr.Repository getRepo() {
+    protected static Repository getRepo() {
+        if (JackrabbitConnector.repo == null) {
+            JackrabbitConnector.init();
+        }
         return JackrabbitConnector.repo;
     }
 
     @PreDestroy
-    private void close() {
-        try {
-            //Build a list of workspace which have no more dependant gameModel
-            Session admin = SessionHolder.getSession(null);
-            String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
-            SessionHolder.closeSession(admin);
-            final List<GameModel> gameModels = em.createNamedQuery("GameModel.findAll", GameModel.class).getResultList();
-            final List<String> workspacesToKeep = new ArrayList<>();
-            final List<String> toDelete = new ArrayList<>();
-            // Workspaces which have an associated gameModel.
-            for (GameModel gameModel : gameModels) {
-                workspacesToKeep.add("GM_" + gameModel.getId());
-            }
-            for (String workspace : workspaces) {
-                if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
-                    if (!workspacesToKeep.contains(workspace)) {
-                        toDelete.add(workspace);
-                        logger.info("Marked for deletion : {}", workspace);
-                    }
-                }
-            }
-            //run garbage collector
-            this.runGC();
-            JackrabbitConnector.repo.shutdown();
-            // delete marked for deletion
-            deleteWorkspaces(toDelete);
-        } catch (RepositoryException ex) {
-            logger.warn("Unable to close repository: " + ex.getMessage());
+    private void preDestroy() {
+        if (nodeStore != null) {
+            nodeStore.dispose();
         }
-    }
-
-    /**
-     * Delete workspace Directory
-     *
-     * @param workspaceName directory to delete.
-     */
-    private static void deleteWorkspaceDirectory(String workspaceName) {
-        try {
-            Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
-        } catch (IOException ex) {
-            logger.warn("Delete workspace files failed", ex);
+        if (fileStore != null) {
+            fileStore.close();
         }
+        nodeStore = null;
+        repo = null;
+        fileStore = null;
     }
 }

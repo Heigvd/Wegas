@@ -10,7 +10,6 @@ package com.wegas.resourceManagement.persistence;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityIdComparator;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 
@@ -18,8 +17,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -44,7 +41,6 @@ public class BurndownInstance extends VariableInstance {
      * @return get all iterations
      */
     public List<Iteration> getIterations() {
-        Collections.sort(this.iterations, new EntityIdComparator<>());
         return iterations;
     }
 

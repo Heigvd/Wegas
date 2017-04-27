@@ -36,4 +36,8 @@ public class WegasNoResultException extends WegasInternalException {
     public WegasNoResultException(final Throwable cause) {
         super(cause);
     }
+
+    public WegasNoResultException(String message, final Throwable cause) {
+        super(message, cause);
+    }
 }
