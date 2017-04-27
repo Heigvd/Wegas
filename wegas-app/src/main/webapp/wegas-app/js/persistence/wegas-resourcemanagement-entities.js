@@ -491,7 +491,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             assignments: {
                 type: ARRAY,
-                value: []
+                value: [],
+                _inputex: {
+                    _type: HIDDEN
+                }
             },
             occupations: {
                 type: ARRAY,
@@ -508,7 +511,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             activities: {
                 type: ARRAY,
-                value: []
+                value: [],
+                _inputex: {
+                    _type: HIDDEN
+                }
             }
         }
     });
