@@ -10,7 +10,6 @@ package com.wegas.unit.pmg;
 import org.junit.Test;
 
 /**
- *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class PMGTest extends PMGameAbstractTest {
@@ -145,7 +144,7 @@ public class PMGTest extends PMGameAbstractTest {
     public void testUnworkwesReq() {
         this.evalScript("PMGTest.testUnworkedReq()");
     }
-*/
+// */
 
     @Override
     protected String getGameModelPath() {

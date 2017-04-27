@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
+import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.AbstractEntity;
@@ -76,6 +77,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private Event<InstanceRevivedEvent> instanceRevivedEvent;
 
     /**
      *
@@ -163,7 +167,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         }
 
         /*
-         * This flush is required by several DescriptorRevivedEvent listener, 
+         * This flush is required by several EntityRevivedEvent listener, 
          * which opperate some SQL queries (which didn't return anything before
          * entites has been flushed to database
          */
@@ -177,6 +181,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         }
 
         descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
+        instanceRevivedEvent.fire(new InstanceRevivedEvent(entity.getDefaultInstance()));
+
         gameModel.addToVariableDescriptors(entity);
         if (entity instanceof DescriptorListI) {
             this.reviveItems(gameModel, (DescriptorListI) entity, propagate); // also revive children

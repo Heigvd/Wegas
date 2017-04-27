@@ -8,10 +8,10 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.event.internal.InstanceRevivedEvent;
+import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.NoGameException;
 import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.exception.internal.NoTeamException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -28,6 +28,9 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -69,10 +72,14 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     @EJB
     private GameFacade gameFacade;
 
+    @Inject
+    private Event<InstanceRevivedEvent> instanceRevivedEvent;
+
     /**
      *
      * @param variableDescriptorId
      * @param player
+     *
      * @return variableDescriptor instance owned by player
      */
     public VariableInstance find(Long variableDescriptorId,
@@ -160,6 +167,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      *
      * @param variableDescriptorId
      * @param playerId
+     *
      * @return variableDescriptor instance owned by player
      */
     public VariableInstance find(Long variableDescriptorId,
@@ -174,6 +182,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * and a gameModel scoped, every players known in the gameModel
      *
      * @param instance
+     *
      * @return list of instance owners
      */
     public List<Player> findAllPlayer(VariableInstance instance) {
@@ -201,7 +210,9 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * From an instance, retrieve the game it is part of
      *
      * @param instance
+     *
      * @return the corresponding game
+     *
      * @throws UnsupportedOperationException when instance is a default instance
      */
     public Game findGame(VariableInstance instance) {
@@ -223,7 +234,9 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * From an instance, retrieve the team it is part f
      *
      * @param instance
+     *
      * @return the team the instance belongs to
+     *
      * @throws UnsupportedOperationException when instance is a default
      *                                       instance, a gameModel scoped or
      *                                       game scoped one
@@ -248,6 +261,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * {@link GameFacade#find(java.lang.Long) GameFacade.find()}
      *
      * @param instanceId
+     *
      * @return the game matching the id.
      */
     public Game findGame(Long instanceId) {
@@ -259,63 +273,59 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * Descriptor.getInstance(player) = instance)
      *
      * @param instance
+     *
      * @return any player
+     *
      * @throws NoPlayerException             if there is no such a player
      * @throws UnsupportedOperationException for default instances
      */
     public Player findAPlayer(VariableInstance instance)
             throws NoPlayerException {
-        Player p;
-        try {
-            // make sure to have a managed instance to have the scope !
-            instance = this.find(instance.getId());
-            if (instance.getScope() instanceof PlayerScope) {
-                p = playerFacade.find(instance.getPlayer().getId());
-                if (p == null) {
-                    throw new NoPlayerException();
-                }
-                return p;
-            } else if (instance.getScope() instanceof TeamScope) {
-                try {
-                    p = teamFacade.find(instance.getTeam().getId()).getPlayers().get(0);
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
-                }
-                return p;
-            } else if (instance.getScope() instanceof GameScope) {
+        // make sure to have a managed instance to have the scope !
+        instance = this.find(instance.getId());
 
-                try {
-                    p = gameFacade.find(instance.getGame().getId()).getPlayers().get(0);
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
-                }
-                return p;                          // @fixme
-            } else if (instance.getScope() instanceof GameModelScope) {
-                Game g;
-                Team t;
-                try {
-                    g = instance.getDescriptor().getGameModel().getGames().get(0);
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new NoGameException("GameModel [" + instance.getDescriptor().getGameModel().getName() + "] has no game");
-                }
-                try {
-                    t = g.getTeams().get(0);
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new NoTeamException("Game [" + g.getName() + "] has no team");
-                }
-                try {
-                    p = t.getPlayers().get(0);
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    throw new NoPlayerException("Team [" + t.getName() + "] has no player");
-                }
-
-                return p;
-
-            } else {
-                throw new UnsupportedOperationException();  // Should never occur
+        if (instance.getScope() instanceof PlayerScope) {
+            Player p = playerFacade.find(instance.getPlayer().getId());
+            if (p == null) {
+                throw new NoPlayerException();
             }
-        } catch (NoTeamException | NoGameException ex) {
-            throw new NoPlayerException(ex.getMessage(), ex);
+            return p;
+        } else if (instance.getScope() instanceof TeamScope) {
+            Team t = teamFacade.find(instance.getTeam().getId());
+            if (t.getPlayers().isEmpty()) {
+                throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
+            } else {
+                return teamFacade.find(instance.getTeam().getId()).getPlayers().get(0);
+            }
+        } else if (instance.getScope() instanceof GameScope) {
+
+            Game g = gameFacade.find(instance.getGame().getId());
+            if (g.getPlayers().isEmpty()) {
+                throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
+            } else {
+                return gameFacade.find(instance.getGame().getId()).getPlayers().get(0);
+            }
+        } else if (instance.getScope() instanceof GameModelScope) {
+            Game g;
+            Team t;
+            if (instance.getDescriptor().getGameModel().getGames().isEmpty()) {
+                throw new NoPlayerException("GameModel [" + instance.getDescriptor().getGameModel().getName() + "] has no game");
+            } else {
+                g = instance.getDescriptor().getGameModel().getGames().get(0);
+                if (g.getTeams().isEmpty()) {
+                    throw new NoPlayerException("Game [" + g.getName() + "] has no team");
+                } else {
+                    t = g.getTeams().get(0);
+                    if (t.getPlayers().isEmpty()) {
+                        throw new NoPlayerException("Team [" + t.getName() + "] has no player");
+                    } else {
+                        return t.getPlayers().get(0);
+                    }
+                }
+            }
+        } else {
+            // default instance case
+            throw new UnsupportedOperationException();  // Should never occur
         }
     }
 
@@ -326,6 +336,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      * @param variableDescriptorId
      * @param playerId
      * @param variableInstance
+     *
      * @return up to date instance
      */
     public VariableInstance update(Long variableDescriptorId,
@@ -334,6 +345,9 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         VariableInstance vi = vd.getScope().getVariableInstance(playerFacade.find(playerId));
         vi.merge(variableInstance);
+
+        instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+
         return vi;
     }
 
@@ -347,9 +361,10 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     public VariableInstance update(final Long entityId, final VariableInstance entity) {
         if (requestFacade.getRequestManager().getPlayer() == null) {
             /*
-             * When there is no player in the current requestFacade context and 
-             * since requestFacade will blindly selects any player in such a case.
-             * A player who match the given variableInstance scope must be 
+             * When there is no player in the current requestFacade context and
+             * since requestFacade will blindly selects any player in such a
+             * case.
+             * A player who match the given variableInstance scope must be
              * manually selected !
              */
             try {
@@ -376,9 +391,11 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         } else if (entity.getGame() != null) {
             entity.getGame().getPrivateInstances().remove(entity);
         }
-        /* else {
-             nothing to do for GameModelScoped instance nor for default one
-        } */
+        /*
+         * else {
+         * nothing to do for GameModelScoped instance nor for default one
+         * }
+         */
     }
 
     /**
@@ -386,6 +403,12 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      */
     public VariableInstanceFacade() {
         super(VariableInstance.class);
+    }
+
+    public void resetEventListener(@Observes ResetEvent resetEvent) {
+        for (VariableInstance variableInstance : resetEvent.getContext().getAllInstances()) {
+            instanceRevivedEvent.fire(new InstanceRevivedEvent(variableInstance));
+        }
     }
 
     /**

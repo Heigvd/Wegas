@@ -226,12 +226,14 @@ public class PlayerFacade extends BaseFacade<Player> {
     private List<VariableInstance> getGameModelInstances(GameModel gameModel) {
         List<VariableInstance> result = new ArrayList<>();
         /**
-         * Define a more straightforward way to fetch those instances !!!
+         * Define a more straightforward way to fetch those instances !!! for
+         * (VariableDescriptor vd : gameModel.getVariableDescriptors()) { if
+         * (vd.getScope() instanceof GameModelScope) {
+         * result.add(vd.getScope().getInstance()); } }
          */
-        for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
-            if (vd.getScope() instanceof GameModelScope) {
-                result.add(vd.getScope().getInstance());
-            }
+
+        for (VariableInstance instance : gameModel.getPrivateInstances()) {
+            result.add(instance);
         }
 
         return result;

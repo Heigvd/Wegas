@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.ListUtils;
@@ -26,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.swing.plaf.ListUI;
 
 /**
  * PMG Related !
@@ -42,6 +40,10 @@ import javax.swing.plaf.ListUI;
 public class Iteration extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
+
+    @JsonIgnore
+    @Transient
+    private List<String> deserialisedNames;
 
     /**
      *
@@ -96,15 +98,15 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     @JsonIgnore
     @ManyToMany
-    @JoinTable(name = "iteration_taskdescriptor",
+    @JoinTable(name = "iteration_taskinstance",
             joinColumns = {
                 @JoinColumn(name = "iteration_id", referencedColumnName = "id")
             },
             inverseJoinColumns = {
-                @JoinColumn(name = "tasks_variabledescriptor_id", referencedColumnName = "variabledescriptor_id")
+                @JoinColumn(name = "tasks_variableinstance_id", referencedColumnName = "variableinstance_id")
             }
     )
-    private List<TaskDescriptor> tasks;
+    private List<TaskInstance> tasks;
 
     /**
      * parent BurndownInstance
@@ -117,6 +119,14 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      */
     public Iteration() {
+    }
+
+    public List<String> getDeserialisedNames() {
+        return deserialisedNames;
+    }
+
+    public void setDeserialisedNames(List<String> deserialisedNames) {
+        this.deserialisedNames = deserialisedNames;
     }
 
     @Override
@@ -288,7 +298,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      * @return get all tasks
      */
-    public List<TaskDescriptor> getTasks() {
+    public List<TaskInstance> getTasks() {
         return tasks;
     }
 
@@ -297,28 +307,40 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      * @param tasks tasks composing the iteration
      */
-    public void setTasks(List<TaskDescriptor> tasks) {
+    public void setTasks(List<TaskInstance> tasks) {
         this.tasks = tasks;
-    }
-
-    public void addTask(TaskDescriptor taskD) {
-        this.tasks.add(taskD);
-    }
-
-    public void removeTask(TaskDescriptor task) {
-        this.tasks.remove(task);
-    }
-
-    public List<Long> getTaskDescriptorsId() {
-        List<Long> ids = new ArrayList<>();
-        for (TaskDescriptor td : getTasks()) {
-            ids.add(td.getId());
+        if (tasks != null) {
+            for (TaskInstance taskInstance : tasks) {
+                taskInstance.getIterations().add(this);
+            }
+            this.setDeserialisedNames(null);
         }
-        return ids;
     }
 
-    public void setTaskDescriptorsId(List<Long> taskDescriptorsId) {
-        // NOPE 
+    public void addTask(TaskInstance taskD) {
+        this.tasks.add(taskD);
+        this.setDeserialisedNames(null);
+    }
+
+    public void removeTask(TaskInstance task) {
+        this.tasks.remove(task);
+        this.setDeserialisedNames(null);
+    }
+
+    public List<String> getTaskNames() {
+        if (this.getDeserialisedNames() == null || this.getDeserialisedNames().isEmpty()) {
+            List<String> names = new ArrayList<>();
+            for (TaskInstance ti : getTasks()) {
+                names.add(ti.findDescriptor().getName());
+            }
+            return names;
+        } else {
+            return this.getDeserialisedNames();
+        }
+    }
+
+    public void setTaskNames(List<String> names) {
+        this.deserialisedNames = names;
     }
 
     private void internalPlan(Long periodNumber, Double workload, Map<Long, Double> planning) {
@@ -351,12 +373,17 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             Iteration other = (Iteration) a;
             this.setBeginAt(other.getBeginAt());
             this.setName(other.getName());
+            this.setTotalWorkload(other.getTotalWorkload());
 
-            //ListUtils.updateList(tasks, other.getTasks());
-            //this.setPlannedWorkloads(other.getPlannedWorkloads());
-            //this.setReplannedWorkloads(other.getReplannedWorkloads());
-            //this.setTotalWorkload(other.getTotalWorkload());
-            //this.setWorkloads();
+            this.setPlannedWorkloads(new HashMap<>());
+            this.getPlannedWorkloads().putAll(other.getPlannedWorkloads());
+
+            this.setReplannedWorkloads(new HashMap<>());
+            this.getReplannedWorkloads().putAll(other.getReplannedWorkloads());
+
+            this.setWorkloads(ListUtils.mergeLists(this.getWorkloads(), other.getWorkloads()));
+
+            this.setDeserialisedNames(other.getTaskNames());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -372,7 +399,6 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }*/
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
-        VariableDescriptorFacade vdf = beans.getVariableDescriptorFacade();
         BurndownInstance theBdI = this.getBurndownInstance();
 
         if (theBdI != null) {
@@ -381,8 +407,8 @@ public class Iteration extends AbstractEntity implements DatedEntity {
                 theBdI.getIterations().remove(this);
             }
         }
-        for (TaskDescriptor task : this.getTasks()) {
-            task = (TaskDescriptor) vdf.find(task.getId());
+        for (TaskInstance task : this.getTasks()) {
+            task = (TaskInstance) beans.getVariableInstanceFacade().find(task.getId());
             if (task != null) {
                 task.getIterations().remove(this);
             }
