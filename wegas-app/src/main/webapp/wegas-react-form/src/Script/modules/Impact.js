@@ -3,8 +3,20 @@ import React from 'react';
 import Form from 'jsoninput';
 import { print, parse } from 'recast';
 import { schema as variableSchema, varExist } from './Variable';
-import { methodSchema, genChoices, extractMethod, buildMethod, handleArgs } from './method';
-import { genChoices as genGlobalChoices, handleArgs as handleGlobalArgs, methodDescriptor } from './globalMethod';
+import ArgForm from './ArgForm';
+
+import {
+    methodSchema,
+    genChoices,
+    extractMethod,
+    buildMethod,
+    getMethodDescriptor
+} from './method';
+import { valueToType } from './args';
+import {
+    genChoices as genGlobalChoices,
+    methodDescriptor
+} from './globalMethod';
 import styles from '../Views/conditionImpact.css';
 
 const upgradeSchema = (varSchema, methodType = 'getter') => {
@@ -27,19 +39,16 @@ const upgradeSchema = (varSchema, methodType = 'getter') => {
 class Impact extends React.Component {
     constructor(props) {
         super(props);
-        const {
-            global,
-            method,
-            member,
-            variable,
-            args
-        } = extractMethod(props.node);
+        const { global, method, member, variable, args } = extractMethod(
+            props.node
+        );
         this.state = {
             global,
             variable,
             method,
             member,
-            args
+            args,
+            methodSchem: undefined
         };
         this.handleVariableChange = this.handleVariableChange.bind(this);
     }
@@ -65,14 +74,31 @@ class Impact extends React.Component {
         return '';
     }
     checkVariableMethod() {
-        const schema = methodSchema(this.props.view.method, this.state.variable, this.props.type);
-        if (!schema || !schema.view.choices.some(c => c.value === this.state.method)) {
-            this.setState({ // method does not exist in method's schema, remove it
+        const schema = this.state.methodSchem;
+        if (
+            !schema ||
+            !schema.view.choices.some(c => c.value === this.state.method)
+        ) {
+            this.setState({
+                // method does not exist in method's schema, remove it
                 method: undefined
             });
         } else if (this.state.variable && this.state.method) {
             try {
-                this.props.onChange(buildMethod(this.state, this.props.type));
+                const mergedArgs = getMethodDescriptor(
+                    this.state.variable,
+                    this.state.method
+                ).arguments.map(
+                    (v, i) => this.state.args[i] || valueToType(undefined, v)
+                );
+                this.setState(
+                    {
+                        args: mergedArgs
+                    },
+                    this.props.onChange(
+                        buildMethod(this.state, this.props.type)
+                    )
+                );
             } catch (e) {
                 console.error(e);
             }
@@ -84,85 +110,143 @@ class Impact extends React.Component {
         }
     }
     handleVariableChange(v) {
-        if (v.indexOf('.') > -1) { // global
+        if (v !== undefined && v.indexOf('.') > -1) {
+            // global
             const split = v.split('.');
-            this.setState({
-                global: true,
-                member: split[0],
-                method: split[1],
-                variable: undefined
-            }, this.checkGlobalMethod);
-        } else {
-            this.setState({
-                global: false,
-                variable: v,
-                member: undefined
+            const mergedArgs = methodDescriptor(
+                split[0],
+                split[1]
+            ).arguments.map(
+                (v, i) => this.state.args[i] || valueToType(undefined, v)
+            );
+            this.setState(
+                (prevState, props) => ({
+                    global: true,
+                    member: split[0],
+                    method: split[1],
+                    args: mergedArgs,
+                    variable: undefined
+                }),
+                this.checkGlobalMethod
+            );
+        } else if (v !== undefined) {
+            this.setState((prevState, props) => {
+                const methodSchem = methodSchema(
+                    props.view.method,
+                    v,
+                    props.type
+                );
+                return {
+                    global: false,
+                    variable: v,
+                    methodSchem,
+                    member: undefined
+                };
             }, this.checkVariableMethod);
         }
     }
     render() {
-        const {
-            view,
-            type,
-            node
-        } = this.props;
+        const { view, type, node } = this.props;
         const error = this.checkHandled();
         if (error) {
-            return (<div >
-                <input
-                    defaultValue={print(node).code}
-                    onChange={ev => this.setState(extractMethod(parse(ev.target.value)),
-                        () => this.props.onChange(buildMethod(this.state, type)))
-                    }
-                />
-                <div>{error}</div>
-            </div>);
+            return (
+                <div>
+                    <input
+                        defaultValue={print(node).code}
+                        onChange={ev =>
+                            this.setState(
+                                extractMethod(parse(ev.target.value)),
+                                () =>
+                                    this.props.onChange(
+                                        buildMethod(this.state, type)
+                                    )
+                            )}
+                    />
+                    <div>{error}</div>
+                </div>
+            );
         }
-        let child = [(
+        let child = [
             <div key="variable" className={styles.container}>
                 <Form
                     schema={upgradeSchema(variableSchema(view.variable), type)}
-                    value={this.state.global ? `${this.state.member}.${this.state.method}` : this.state.variable}
+                    value={
+                        this.state.global
+                            ? `${this.state.member}.${this.state.method}`
+                            : this.state.variable
+                    }
                     onChange={this.handleVariableChange}
                 />
             </div>
-        )];
+        ];
         if (this.state.variable) {
-            const schema = methodSchema(view.method, this.state.variable, type);
+            const schema = this.state.methodSchem;
             if (schema) {
                 child.push(
-                    <div key="method" className={styles.container} >
+                    <div key="method" className={styles.container}>
                         <Form
-                            schema={methodSchema(view.method, this.state.variable, type)}
+                            schema={schema}
                             value={this.state.method}
-                            onChange={v => this.setState({
-                                method: v
-                            }, this.checkVariableMethod)}
+                            onChange={v =>
+                                this.setState(
+                                    {
+                                        method: v
+                                    },
+                                    this.checkVariableMethod
+                                )}
                         />
                     </div>
                 );
             }
         }
         if (this.state.method && this.state.variable) {
-            const {
-                variable,
-                method,
-                args
-            } = this.state;
+            const { variable, method, args } = this.state;
+            const methodDesc = getMethodDescriptor(variable, method);
+            const argsDescr = (methodDesc && methodDesc.arguments) || [];
             child = child.concat(
-                handleArgs(variable, method, args, v => this.setState({
-                    args: v
-                }, this.checkVariableMethod))
-                    .map((form, i) => (<div key={i} className={styles.container} >{form}</div>))
+                argsDescr.map((argDescr, i) => (
+                    <ArgForm
+                        key={i}
+                        schema={argDescr}
+                        value={args[i]}
+                        onChange={v => {
+                            this.setState(prevState => {
+                                const newArgs = prevState.args.map((a, j) => {
+                                    if (i === j) {
+                                        return v;
+                                    }
+                                    return a;
+                                });
+                                return { args: newArgs };
+                            }, this.checkVariableMethod);
+                        }}
+                    />
+                ))
             );
         }
         if (this.state.member && this.state.method) {
+            const { member, method, args } = this.state;
+            const methodDesc = methodDescriptor(member, method);
+            const argsDescr = (methodDesc && methodDesc.arguments) || [];
             child = child.concat(
-                handleGlobalArgs(this.state.member, this.state.method, this.state.args, v =>
-                    this.setState({
-                        args: v
-                    }, this.checkGlobalMethod)
-                )
+                argsDescr.map((argDescr, i) => (
+                    <ArgForm
+                        key={i}
+                        schema={argDescr}
+                        value={args[i]}
+                        onChange={v => {
+                            this.setState(prevState => {
+                                const newArgs = prevState.args.map((a, j) => {
+                                    if (i === j) {
+                                        return v;
+                                    }
+                                    return a;
+                                });
+                                return { args: newArgs };
+                            }, this.checkGlobalMethod);
+                        }}
+                    />
+                ))
             );
         }
         return (

@@ -7,14 +7,13 @@ import { getY } from '../../index';
 import { isVariable, extractVar, build } from './Variable';
 import { handleMethodArgs } from './args';
 
-const {
-    builders: b,
-    visit
-} = types;
+const { builders: b, visit } = types;
 const Y = getY();
 function methodDescriptor(variable, method) {
     try {
-        return Y.Wegas.Facade.Variable.cache.find('name', variable).getMethodCfgs()[method];
+        return Y.Wegas.Facade.Variable.cache
+            .find('name', variable)
+            .getMethodCfgs()[method];
     } catch (e) {
         return null;
     }
@@ -29,31 +28,28 @@ function genChoices(variable, type) {
     const descr = Y.Wegas.Facade.Variable.cache.find('name', variable);
     const methods = descr.getMethodCfgs();
     return Object.keys(methods)
-        .filter(k => ('returns' in methods[k] && type === 'condition') ||
-            (!('returns' in methods[k]) && type === 'getter'))
+        .filter(
+            k =>
+                ('returns' in methods[k] && type === 'condition') ||
+                (!('returns' in methods[k]) && type === 'getter')
+        )
         .map(v => ({
             value: v,
             label: methods[v].label || v
         }));
 }
+function getMethodDescriptor(variable, method) {
+    return Y.Wegas.Facade.Variable.cache.find('name', variable).getMethodCfgs()[
+        method
+    ];
+}
 function handleArgs(variable, method, args, onChange) {
-    const methodDescr = Y.Wegas.Facade.Variable.cache.find('name', variable)
-        .getMethodCfgs()[method];
+    const methodDescr = getMethodDescriptor(variable, method);
     return handleMethodArgs(methodDescr, args, onChange, variable);
 }
 // Replace with select with if it stays in this shape
-function MethodView({
-    value,
-    onChange,
-    view
-}) {
-    return (
-        <SelectView
-            value={value}
-            onChange={onChange}
-            view={view}
-        />
-    );
+function MethodView({ value, onChange, view }) {
+    return <SelectView value={value} onChange={onChange} view={view} />;
 }
 
 MethodView.propTypes = {
@@ -78,9 +74,7 @@ const methodSchema = (view, variable, type) => {
 };
 const buildMethod = (v, type) => {
     if (type === 'getter') {
-        return b.expressionStatement(
-            buildMethod(v)
-        );
+        return b.expressionStatement(buildMethod(v));
     }
     return b.callExpression(
         b.memberExpression(
@@ -90,20 +84,21 @@ const buildMethod = (v, type) => {
         v.args
     );
 };
-const isGlobalMethod = node => isMatch(node, {
-    type: 'CallExpression',
-    callee: {
-        type: 'MemberExpression'
-    }
-});
-const isVarMethod = node => isMatch(node, {
-    type: 'CallExpression',
-    callee: {
-        type: 'MemberExpression'
-    }
-}) &&
-    isVariable(node.callee.object);
-const extractMethod = (node) => {
+const isGlobalMethod = node =>
+    isMatch(node, {
+        type: 'CallExpression',
+        callee: {
+            type: 'MemberExpression'
+        }
+    });
+const isVarMethod = node =>
+    isMatch(node, {
+        type: 'CallExpression',
+        callee: {
+            type: 'MemberExpression'
+        }
+    }) && isVariable(node.callee.object);
+const extractMethod = node => {
     const ret = {
         global: false,
         variable: undefined,
@@ -115,13 +110,15 @@ const extractMethod = (node) => {
         visitCallExpression: function visitCallExpression(path) {
             const nod = path.node;
             if (isVarMethod(nod)) {
-                ret.method = nod.callee.property.value || nod.callee.property.name;
+                ret.method =
+                    nod.callee.property.value || nod.callee.property.name;
                 ret.args = nod.arguments;
                 ret.variable = extractVar(nod.callee.object);
                 return false;
             } else if (isGlobalMethod(nod)) {
                 ret.global = true;
-                ret.method = nod.callee.property.value || nod.callee.property.name;
+                ret.method =
+                    nod.callee.property.value || nod.callee.property.name;
                 ret.args = nod.arguments;
                 ret.member = nod.callee.object.name;
                 return false;
@@ -132,4 +129,12 @@ const extractMethod = (node) => {
     return ret;
 };
 
-export { methodSchema, methodDescriptor, genChoices, extractMethod, buildMethod, handleArgs };
+export {
+    methodSchema,
+    methodDescriptor,
+    genChoices,
+    extractMethod,
+    buildMethod,
+    handleArgs,
+    getMethodDescriptor
+};

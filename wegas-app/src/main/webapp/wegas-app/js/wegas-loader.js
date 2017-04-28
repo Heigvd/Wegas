@@ -703,7 +703,7 @@ YUI().use(function (Y) {
             },
             "wegas-console-custom": {
                 path: "js/widget/wegas-console-custom-min.js",
-                requires: ["wegas-react-form", "wegas-formcss"],
+                requires: ["wegas-react-form"],
                 provides: "CustomConsole"
             },
             "wegas-editor-treeview": {
@@ -745,7 +745,7 @@ YUI().use(function (Y) {
             },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",
-                requires: ["wegas-statemachineviewercss", "wegas-statemachine-entities",
+                requires: ["wegas-statemachineviewercss", "wegas-inputex-wysiwygscript", "wegas-statemachine-entities",
                     "dd-constrain", "jsplumb-dom", "button", "event-mousewheel",
                     "slider", "wegas-panel-node", "wegas-inputex-wysiwygscript"],
                 ws_provides: "StateMachineViewer"

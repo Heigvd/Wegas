@@ -2,16 +2,14 @@ import React from 'react';
 import { types, print, parse, visit } from 'recast';
 import Form from 'jsoninput';
 
-const {
-    builders: b
-} = types;
+const { builders: b } = types;
 /**
  * Handle a Form's' schema for unknown datatypes
  * @param {{type:string}} schema The schema
  * @param {?=} entity optional object to merge into the schema
  * @returns {{type:string}} a corrected / increased schema
  */
-const argSchema = (schema, entity) => {
+export const argSchema = (schema, entity) => {
     const type = schema.type === 'identifier' ? 'string' : schema.type;
     return Object.assign({}, schema, {
         type,
@@ -33,19 +31,19 @@ export function valueToType(value, schema) {
         return b.identifier('undefined');
     }
     switch (schema.type) {
-    case 'string':
-    case 'number':
-    case 'boolean':
-        return b.literal(value);
-    case 'identifier':
-        return b.identifier(value);
-    case 'array':
-    case 'object': {
-        const x = parse(JSON.stringify(value)).program.body[0].expression;
-        return x;
-    }
-    default:
-        throw Error(`implement me ${schema.type}`);
+        case 'string':
+        case 'number':
+        case 'boolean':
+            return b.literal(value);
+        case 'identifier':
+            return b.identifier(value);
+        case 'array':
+        case 'object': {
+            const x = parse(JSON.stringify(value)).program.body[0].expression;
+            return x;
+        }
+        default:
+            throw Error(`implement me ${schema.type}`);
     }
 }
 
@@ -62,30 +60,30 @@ export function typeToValue(value, schema) {
         return undefined;
     }
     switch (schema.type) {
-    case 'string':
-    case 'boolean':
-        return value.value;
-    case 'number':
+        case 'string':
+        case 'boolean':
+            return value.value;
+        case 'number':
             // handle negative values.
-        visit(value, {
-            visitUnaryExpression: function visitUnaryExpression(path) {
-                tmp.push(path.node.operator);
-                this.traverse(path);
-            },
-            visitLiteral: function visitLiteral(path) {
-                tmp.push(path.node.value);
-                return false;
-            }
-        });
-        tmpNum = tmp.join('');
-        return isNaN(tmpNum) ? tmpNum : Number(tmpNum);
-    case 'identifier':
-        return value.name;
-    case 'array':
-    case 'object':
-        return Function(`"use strict";return ${print(value).code};`)(); // eslint-disable-line no-new-func
-    default:
-        throw Error(`implement me ${schema.type}`);
+            visit(value, {
+                visitUnaryExpression: function visitUnaryExpression(path) {
+                    tmp.push(path.node.operator);
+                    this.traverse(path);
+                },
+                visitLiteral: function visitLiteral(path) {
+                    tmp.push(path.node.value);
+                    return false;
+                }
+            });
+            tmpNum = tmp.join('');
+            return isNaN(tmpNum) ? tmpNum : Number(tmpNum);
+        case 'identifier':
+            return value.name;
+        case 'array':
+        case 'object':
+            return Function(`"use strict";return ${print(value).code};`)(); // eslint-disable-line no-new-func
+        default:
+            throw Error(`implement me ${schema.type}`);
     }
 }
 
@@ -94,12 +92,14 @@ export function typeToValue(value, schema) {
  * @param {Object} value The ast node
  * @param {{type:string}} schema The schema to check against
  */
-function matchSchema(value, schema) {
+export function matchSchema(value, schema) {
     const newVal = valueToType(typeToValue(value, schema), schema);
-    return value &&
+    return (
+        value &&
         newVal.type === value.type &&
         newVal.name === value.name &&
-        newVal.value === value.value;
+        newVal.value === value.value
+    );
 }
 /**
  * Create a Form for an AST node
@@ -111,13 +111,16 @@ function matchSchema(value, schema) {
  * @returns {JSX.Element} Form element
  */
 export function renderForm(astValue, descriptor, onChange, entity, key) {
+    // validate it : ref={n => n && n.validate()}
     return (
         <Form
             key={key}
             schema={argSchema(descriptor, entity)}
-            value={matchSchema(astValue, descriptor) ?
-                typeToValue(astValue, descriptor) :
-                undefined}
+            value={
+                matchSchema(astValue, descriptor)
+                    ? typeToValue(astValue, descriptor)
+                    : undefined
+            }
             onChange={v => onChange(valueToType(v, descriptor))}
         />
     );
@@ -154,8 +157,15 @@ export function handleMethodArgs(methodDescr, args, onChange, entity) {
     // }
     return argDescr.map((a, i) => {
         const val = ret[i];
-        return renderForm(val, a, (v) => {
-            ret[i] = v; onChange(ret);
-        }, entity, i);
+        return renderForm(
+            val,
+            a,
+            v => {
+                ret[i] = v;
+                onChange(ret);
+            },
+            entity,
+            i
+        );
     });
 }
