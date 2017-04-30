@@ -45,16 +45,16 @@ angular.module('private.admin.users', [
                 // Make a quick but safe computation that does not require the page to be rendered beforehand.
                 winheight = $window.innerHeight;
                 ITEMS_PER_PAGE = Math.ceil((winheight - SEARCH_FIELD_HEIGHT - MENU_HEIGHT - ADMIN_MENU_HEIGHT) / CARD_HEIGHT);
-                ITEMS_IN_FIRST_BATCH = nbFixedItems() + ITEMS_PER_PAGE;
+                ITEMS_IN_FIRST_BATCH = nbFixedItems(rawGroups) + ITEMS_PER_PAGE;
                 ITEMS_IN_NEXT_BATCHES = ITEMS_PER_PAGE * 2;
             }
         }
 
         // Returns the number of items/cards in the fixed size part (groups + users with roles, i.e. excluding the users of the "Players" group).
-        function nbFixedItems() {
-            var count = rawGroups.length;
-            for (var i = 0; i < rawGroups.length -1; i++) { // Exclude users of the "Players" group
-                count += rawGroups[i].users.length;
+        function nbFixedItems(list) {
+            var count = list.length;
+            for (var i = 0; i < list.length -1; i++) { // Exclude users of the "Players" group
+                count += list[i].users.length;
             }
             return count;
         }
@@ -87,7 +87,7 @@ angular.module('private.admin.users', [
                     playerGroup = nbGroups - 1;
                 // First we copy all groups except Players:
                 ctrl.groups = source.slice(0, playerGroup);
-                var remaining = maxItemsDisplayed - nbFixedItems();
+                var remaining = maxItemsDisplayed - nbFixedItems(source);
                 if (remaining < 0){
                     remaining = source[playerGroup].users.length;
                 }
@@ -389,7 +389,8 @@ angular.module('private.admin.users', [
         $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (e.currentScope.currentRole === "ADMIN") {
                 var list = ctrl.groups;
-                if (list[list.length-1].isExpanded) { // No need to extend if the "Players" group is not expanded.
+                if (list && list.length > 0 && // It seems that ctrl.groups is not always accessible from here.
+                    list[list.length-1].isExpanded) { // No need to extend if the "Players" group is not expanded.
                     extendDisplayedItems();
                     if ( ! $rootScope.$$phase) {
                         $scope.$apply();
