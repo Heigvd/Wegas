@@ -1263,9 +1263,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     }, {
                         type: STRING,
                             view: {
-                        label: "Token",
+                                label: "Token",
                                 className: "wegas-advanced-feature",
-                        description: "like an message identifier, may be used to reference the message within FSM/Trigger condition"
+                                description: "like an message identifier, may be used to reference the message within FSM/Trigger condition"
                             }
                     }, {
                             type: "array",

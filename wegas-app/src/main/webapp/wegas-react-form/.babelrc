@@ -5,7 +5,7 @@
             "env",
             {
                 "useBuiltIns": true,
-                "debug": true,
+                "debug": false,
                 "modules": false,
                 "loose": true,
                 "targets": {

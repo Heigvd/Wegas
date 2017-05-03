@@ -29,8 +29,9 @@ function multipleStatement(Comp) {
         const rootExpression = [];
         if (type === TYPE.GETTER) {
             visit(code, {
-                visitExpressionStatement: collector(rootExpression),
-                visitEmptyStatement: collector(rootExpression)
+                visitNode: collector(rootExpression)
+                // visitExpressionStatement: collector(rootExpression),
+                // visitEmptyStatement: collector(rootExpression)
             });
         } else if (type === TYPE.CONDITION) {
             visit(code, {

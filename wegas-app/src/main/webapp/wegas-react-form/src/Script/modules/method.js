@@ -7,13 +7,11 @@ import { getY } from '../../index';
 import { isVariable, extractVar, build } from './Variable';
 import { handleMethodArgs } from './args';
 
-const { builders: b, visit } = types;
+const { builders: b, visit, namedTypes: n } = types;
 const Y = getY();
 function methodDescriptor(variable, method) {
     try {
-        return Y.Wegas.Facade.Variable.cache
-            .find('name', variable)
-            .getMethodCfgs()[method];
+        return Y.Wegas.Facade.Variable.cache.find('name', variable).getMethodCfgs()[method];
     } catch (e) {
         return null;
     }
@@ -39,9 +37,7 @@ function genChoices(variable, type) {
         }));
 }
 function getMethodDescriptor(variable, method) {
-    return Y.Wegas.Facade.Variable.cache.find('name', variable).getMethodCfgs()[
-        method
-    ];
+    return Y.Wegas.Facade.Variable.cache.find('name', variable).getMethodCfgs()[method];
 }
 function handleArgs(variable, method, args, onChange) {
     const methodDescr = getMethodDescriptor(variable, method);
@@ -110,20 +106,24 @@ const extractMethod = node => {
         visitCallExpression: function visitCallExpression(path) {
             const nod = path.node;
             if (isVarMethod(nod)) {
-                ret.method =
-                    nod.callee.property.value || nod.callee.property.name;
+                ret.method = nod.callee.property.value || nod.callee.property.name;
                 ret.args = nod.arguments;
                 ret.variable = extractVar(nod.callee.object);
                 return false;
             } else if (isGlobalMethod(nod)) {
                 ret.global = true;
-                ret.method =
-                    nod.callee.property.value || nod.callee.property.name;
+                ret.method = nod.callee.property.value || nod.callee.property.name;
                 ret.args = nod.arguments;
                 ret.member = nod.callee.object.name;
                 return false;
             }
-            return this.traverse(path);
+            return false;
+        },
+        visitNode: function visitNode(path) {
+            if (n.ExpressionStatement.check(path.node)) {
+                this.traverse(path);
+            }
+            return false;
         }
     });
     return ret;
