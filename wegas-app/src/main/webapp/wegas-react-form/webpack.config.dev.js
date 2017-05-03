@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     devtool: 'inline-source-map',
@@ -32,13 +31,7 @@ module.exports = {
             minChunks: Infinity
         }),
         //   new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin(),
-        new CopyWebpackPlugin([
-            {
-                from: 'node_modules/monaco-editor/min/vs',
-                to: 'vs'
-            }
-        ])
+        new webpack.NoEmitOnErrorsPlugin()
     ],
     module: {
         rules: [

@@ -16,6 +16,10 @@
             }
         ],
         "comma-dangle": 0,
+        "max-len": [
+            1,
+            80
+        ],
         "arrow-parens": [
             "error",
             "as-needed"
