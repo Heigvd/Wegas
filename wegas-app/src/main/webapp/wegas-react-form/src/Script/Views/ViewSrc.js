@@ -1,14 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
-import { asyncReactor } from 'async-reactor';
 import styles from '../../css/string.css';
 import debounced from '../../HOC/callbackDebounce';
+import JSEditor from './asyncJSEditor';
 
-function JSE(props) {
-    return import('./JSEditor').then(({ JSEditor }) => <JSEditor {...props} />);
-}
-const Editor = asyncReactor(JSE, () => <i>Loading ...</i>);
 /**
  * Toggle view between parsed and code
  */
@@ -22,7 +18,7 @@ class ViewSrc extends React.Component {
         let child;
         if (this.state.src || this.props.error) {
             child = [
-                <Editor
+                <JSEditor
                     key="editor"
                     value={this.props.value}
                     width="100%"

@@ -3,7 +3,15 @@ import AceEditor from 'react-ace';
 import 'brace/theme/kuroir';
 import 'brace/mode/javascript';
 
-function JSEditor(props) {
-    return <AceEditor {...props} mode="javascript" theme="kuroir" />;
+export default function JSEditor(props) {
+    return (
+        <AceEditor
+            width="100%"
+            {...props}
+            mode="javascript"
+            theme="kuroir"
+            editorProps={{ $blockScrolling: Infinity }}
+        />
+    );
 }
 export { JSEditor };

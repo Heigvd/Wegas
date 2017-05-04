@@ -23,6 +23,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, 'dist'),
         filename: '[name].js',
+        chunkFilename: '[name].js',
         publicPath: 'wegas-react-form/dist/'
     },
     resolve: {

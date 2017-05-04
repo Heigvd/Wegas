@@ -12,7 +12,11 @@ import {
     getMethodDescriptor
 } from './method';
 import { valueToType } from './args';
-import { genChoices as genGlobalChoices, methodDescriptor } from './globalMethod';
+import {
+    genChoices as genGlobalChoices,
+    methodDescriptor
+} from './globalMethod';
+import JSEditor from '../Views/asyncJSEditor';
 import styles from '../Views/conditionImpact.css';
 
 const upgradeSchema = (varSchema, methodType = 'getter') => {
@@ -35,7 +39,9 @@ const upgradeSchema = (varSchema, methodType = 'getter') => {
 class Impact extends React.Component {
     constructor(props) {
         super(props);
-        const { global, method, member, variable, args } = extractMethod(props.node);
+        const { global, method, member, variable, args } = extractMethod(
+            props.node
+        );
         this.state = {
             global,
             variable,
@@ -69,7 +75,10 @@ class Impact extends React.Component {
     }
     checkVariableMethod() {
         const schema = this.state.methodSchem;
-        if (!schema || !schema.view.choices.some(c => c.value === this.state.method)) {
+        if (
+            !schema ||
+            !schema.view.choices.some(c => c.value === this.state.method)
+        ) {
             this.setState({
                 // method does not exist in method's schema, remove it
                 method: undefined
@@ -79,12 +88,16 @@ class Impact extends React.Component {
                 const mergedArgs = getMethodDescriptor(
                     this.state.variable,
                     this.state.method
-                ).arguments.map((v, i) => this.state.args[i] || valueToType(undefined, v));
+                ).arguments.map(
+                    (v, i) => this.state.args[i] || valueToType(undefined, v)
+                );
                 this.setState(
                     {
                         args: mergedArgs
                     },
-                    this.props.onChange(buildMethod(this.state, this.props.type))
+                    this.props.onChange(
+                        buildMethod(this.state, this.props.type)
+                    )
                 );
             } catch (e) {
                 console.error(e);
@@ -100,7 +113,10 @@ class Impact extends React.Component {
         if (v !== undefined && v.indexOf('.') > -1) {
             // global
             const split = v.split('.');
-            const mergedArgs = methodDescriptor(split[0], split[1]).arguments.map(
+            const mergedArgs = methodDescriptor(
+                split[0],
+                split[1]
+            ).arguments.map(
                 (val, i) => this.state.args[i] || valueToType(undefined, val)
             );
             this.setState(
@@ -115,7 +131,11 @@ class Impact extends React.Component {
             );
         } else if (v !== undefined) {
             this.setState((prevState, props) => {
-                const methodSchem = methodSchema(props.view.method, v, props.type);
+                const methodSchem = methodSchema(
+                    props.view.method,
+                    v,
+                    props.type
+                );
                 return {
                     global: false,
                     variable: v,
@@ -131,13 +151,20 @@ class Impact extends React.Component {
         if (error) {
             return (
                 <div>
-                    <input
-                        defaultValue={print(node).code}
-                        onChange={ev => {
-                            const body =
-                                parse(ev.target.value).program.body[0] ||
-                                types.builders.emptyStatement();
-                            this.setState(extractMethod(body), () => this.props.onChange(body));
+                    <JSEditor
+                        value={print(node).code}
+                        maxLines={5}
+                        onChange={val => {
+                            try {
+                                const body =
+                                    parse(val).program.body[0] ||
+                                    types.builders.emptyStatement();
+                                this.setState(extractMethod(body), () =>
+                                    this.props.onChange(body)
+                                );
+                            } catch (e) {
+                                // do nothing
+                            }
                         }}
                     />
                     <div>{error}</div>
