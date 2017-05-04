@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { asyncReactor } from 'async-reactor';
 import Form from 'jsoninput';
-import async from '../../HOC/async';
 import Menu from '../../Components/Menu';
 import { getY } from '../../index';
-
-const asyncForm = async(Form);
 
 const SCHEMA = {
     schema: {
@@ -18,7 +16,7 @@ const SCHEMA = {
                     type: 'uneditable'
                 }
             },
-            cfg: undefined,
+            cfg: undefined
         }
     }
 };
@@ -27,28 +25,30 @@ function updateCfg(cfg) {
     schema.schema.properties.cfg = cfg;
     return schema;
 }
-const AsyncForm = asyncForm(({ value }) => {
+
+const AsyncForm = asyncReactor(({ value, onChange }) => {
     const Y = getY();
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
+        let schema;
         if (value && value.fn) {
-            Y.Wegas.use({ type: value.fn }, () => { // load required modules
+            Y.Wegas.use({ type: value.fn }, () => {
+                // load required modules
                 const targetPlg = Y.Plugin[value.fn];
                 const w = new Y.Wegas.Text(); // Use this hack to retrieve a plugin config
                 w.plug(targetPlg);
                 const cfg = w[targetPlg.NS].getFormCfg();
                 cfg.name = targetPlg.NAME;
-                resolve(updateCfg(cfg));
+                schema = updateCfg(cfg);
             });
         } else {
-            resolve(updateCfg());
+            schema = updateCfg();
         }
+        resolve(<Form schema={schema} value={value} onChange={onChange} />);
     });
 });
 function PluginElement({ value, onChange, view }) {
     if (value && value.fn) {
-        return (
-            <AsyncForm value={value} onChange={onChange} />
-        );
+        return <AsyncForm value={value} onChange={onChange} />;
     }
     return <Menu menu={view.choices} onChange={o => onChange({ fn: o })} />;
 }

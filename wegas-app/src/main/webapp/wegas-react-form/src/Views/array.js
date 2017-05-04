@@ -9,39 +9,36 @@ function ArrayWidget(props) {
     const { maxItems = Infinity, minItems = 0 } = props.schema;
     function renderChild(child, index) {
         return (
-            <div
-                style={{ clear: 'both' }}
-                className={styles.liste}
-            >
-                <div
-                    className={styles.liste2}
-                >
+            <div style={{ clear: 'both' }} className={styles.liste}>
+                <div className={styles.liste2}>
                     <span>
                         {child}
                     </span>
-                    <div
-                        className={styles.opacity}
-                    >
-                        {minItems < valueLength ? <IconButton
-                            icon="fa fa-trash"
-                            tooltip="remove"
-                            onClick={props.onChildRemove(index)}
-                            grey
-                        /> : null}
+                    <div className={styles.opacity}>
+                        {minItems < valueLength
+                            ? <IconButton
+                                icon="fa fa-trash"
+                                tooltip="remove"
+                                onClick={() => props.onChildRemove(index)}
+                                grey
+                            />
+                            : null}
                     </div>
                 </div>
-            </div>);
+            </div>
+        );
     }
 
     const children = React.Children.map(props.children, renderChild);
     return (
-
         <div>
-            {maxItems > valueLength ? <IconButton
-                icon="fa fa-plus"
-                onClick={props.onChildAdd}
-                tooltip="add"
-            /> : null}
+            {maxItems > valueLength
+                ? <IconButton
+                    icon="fa fa-plus"
+                    onClick={props.onChildAdd}
+                    tooltip="add"
+                />
+                : null}
             {children}
         </div>
     );

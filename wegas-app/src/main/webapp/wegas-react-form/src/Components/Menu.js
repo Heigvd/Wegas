@@ -1,38 +1,45 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import IconButton from 'material-ui/IconButton/IconButton';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
+import Menu, { Item, SubMenu } from 'rc-menu';
+// eslint-disable-next-line
+import '!!style-loader!css-loader!rc-menu/assets/index.css';
 
-function genItems(callback) {
-    return (o, i) => {
-        const hasSubMenu = Array.isArray(o.children);
+function genItems(o, i) {
+    const hasSubMenu = Array.isArray(o.children);
+    if (hasSubMenu) {
+        const key = o.value || i;
         return (
-            <MenuItem
-                key={i}
-                primaryText={o.label}
-                disabled={o.disabled}
-                rightIcon={hasSubMenu ? <ArrowDropRight /> : undefined}
-                onTouchTap={!hasSubMenu ? () => callback(o.value) : undefined}
-                menuItems={hasSubMenu ? o.children.map(genItems(callback)) : undefined}
-            />
+            <SubMenu key={key} title={o.label}>
+                {o.children.map(genItems)}
+            </SubMenu>
         );
-    };
-}
-function Menu({ menu, onChange }) {
-    const menuItems = menu.map(genItems(onChange));
+    }
     return (
-        <IconMenu
-            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-        >
-            {menuItems}
-        </IconMenu>
+        <Item key={o.value} disabled={o.disabled}>
+            {o.label}
+        </Item>
     );
 }
-Menu.propTypes = {
-    menu: PropTypes.array.isRequired,
+function WMenu({ menu, onChange }) {
+    const menuItems = menu.map(genItems);
+    return (
+        <Menu
+            style={{ display: 'inline-block' }}
+            onClick={value => onChange(value.key)}
+        >
+            {menuItems}
+        </Menu>
+    );
+}
+WMenu.propTypes = {
+    menu: PropTypes.arrayOf(
+        PropTypes.shape({
+            label: PropTypes.string.isRequired,
+            value: PropTypes.string,
+            disabled: PropTypes.bool,
+            children: PropTypes.array
+        })
+    ).isRequired,
     onChange: PropTypes.func.isRequired
 };
-export default Menu;
+export default WMenu;

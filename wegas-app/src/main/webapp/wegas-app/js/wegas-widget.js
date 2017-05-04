@@ -439,10 +439,10 @@ YUI.add("wegas-widget", function(Y) {
                         fn: {
                             type: "string"
                         },
-                                    cfg: {
+                        cfg: {
                             type: "object"
                         }
-                                        },
+                    },
                     view: {
                         type: "pluginlist",
                         choices: [
@@ -450,7 +450,7 @@ YUI.add("wegas-widget", function(Y) {
                                 label: "On click",
                                 children: [
                                     {
-                                                label: "Open page",
+                                        label: "Open page",
                                         value: "OpenPageAction"
                                     },
                                     {
