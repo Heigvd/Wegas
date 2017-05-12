@@ -13,10 +13,17 @@ const IMPACT = {
                     type: 'hidden'
                 }
             }, {
-                type: 'string',
-                view: {
-                    type: 'html'
-                }
+                type: 'object',
+                properties: {
+                    content: {
+                        type: 'string',
+                        view: {
+                            label: 'Message:',
+                            type: 'html'
+                        }
+                    }
+                },
+                additionalProperties: false
             }]
         },
         'Event.fire': {

@@ -39,7 +39,7 @@ export function valueToType(value, schema) {
             return b.identifier(value);
         case 'array':
         case 'object': {
-            const x = parse(JSON.stringify(value)).program.body[0].expression;
+            const x = parse(`( ${JSON.stringify(value)} )`).program.body[0].expression;
             return x;
         }
         default:
