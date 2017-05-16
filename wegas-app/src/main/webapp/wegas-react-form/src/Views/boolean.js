@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import classNames from 'classnames';
 import styles from '../css/boolean.css';
 
 function BooleanView(props) {
@@ -8,7 +9,16 @@ function BooleanView(props) {
     };
     const id = props.path.join('-');
     return (
-        <div style={{ marginTop: '7px' }}>
+        <div
+            className={classNames(
+                props.view.className,
+                styles.container,
+                {
+                    [styles.indent]: props.view.indent
+                })
+            }
+            style={{ marginTop: '7px' }}
+        >
             <input
                 id={id}
                 checked={props.value}
@@ -29,7 +39,8 @@ BooleanView.propTypes = {
     onChange: PropTypes.func.isRequired,
     view: PropTypes.shape({
         label: PropTypes.string,
-        className: PropTypes.string
+        className: PropTypes.string,
+        indent: PropTypes.bool
     }).isRequired,
     value: PropTypes.bool,
     path: PropTypes.arrayOf(PropTypes.string).isRequired

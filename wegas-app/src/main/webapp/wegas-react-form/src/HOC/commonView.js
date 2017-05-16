@@ -23,7 +23,8 @@ export default function commonView(Comp) {
                         [styles.shortInline]: layout === 'shortInline',
                         [styles.long]: layout === 'long',
                         [styles.extraShort]: layout === 'extraShort',
-                        [styles.borderTop]: props.view.borderTop
+                        [styles.borderTop]: props.view.borderTop,
+                        [styles.indent]: props.view.indent
                     })
                 }
                 style={props.view.style}
@@ -36,7 +37,7 @@ export default function commonView(Comp) {
                 <Comp {...props} />
                 <div
                     className={classNames({
-                        [styles.infos]: props.view.description,
+                        [styles.infos]: props.view.description
                     })
                     }
                 >
@@ -57,6 +58,7 @@ export default function commonView(Comp) {
             description: PropTypes.string,
             className: PropTypes.string,
             borderTop: PropTypes.bool,
+            indent: PropTypes.bool,
             style: PropTypes.object,
             layout: PropTypes.string
         })

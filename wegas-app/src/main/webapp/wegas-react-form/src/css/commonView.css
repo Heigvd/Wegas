@@ -1,6 +1,6 @@
 .container {
     position: relative;
-    margin-top:1em;
+    margin-top: 1.3em;
 }
 
 .extraShort {
@@ -40,10 +40,19 @@
     font-size: 125%;
     max-width: 100%;
     margin-bottom:3px;
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 }
 
 .borderTop {
     border-top: solid 2px #6a95b6;
     width: 40em;
     padding-top:1em;
+}
+
+.indent {
+    margin-left: 22px !important;
 }
