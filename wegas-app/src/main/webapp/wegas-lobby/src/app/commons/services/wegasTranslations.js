@@ -1689,12 +1689,24 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Modifier le groupe"
                         },
                         'ADMIN-GROUPS-CARD-MEMBER-BTN': {
-                            'en': "Goup members",
+                            'en': "Group members",
                             'fr': "Membres du groupe"
+                        },
+                        'ADMIN-GROUPS-CARD-TOGGLE-MEMBERS-BTN': {
+                            'en': "Show/Hide group members",
+                            'fr': "Afficher/Cacher les membres du groupe"
+                        },
+                        'ADMIN-GROUPS-NO-MEMBERS-ERROR': {
+                            'en': "This group is empty!",
+                            'fr': "Ce groupe est vide !"
                         },
                         'ADMIN-GROUPS-CARD-DELETE-BTN': {
                             'en': "Delete group",
                             'fr': "Supprimer le groupe"
+                        },
+                        'ADMIN-GROUPS-CARD-EMAILS-BTN': {
+                            'en': "Get e-mail addresses",
+                            'fr': "Obtenir les adresses e-mail"
                         },
                         'ADMIN-GROUPS-CARD-DELETE-CONFIRM': {
                             'en': "Are you sure you want to delete this group ? This action is irreversible.",
