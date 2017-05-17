@@ -661,10 +661,12 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     optional: true,
                     errored: function(val,formVal){
                         var errors=[];
-                        if (val>formVal.defaultInstance.value){
+                        var max = typeof formVal.maxValue === "number" ? formVal.maxValue : Infinity;
+                        var min = typeof val === "number" ? val : -Infinity;
+                        if (min > formVal.defaultInstance.value){
                             errors.push("Minimum is greater than default value");
                         }
-                        if (val>formVal.maxValue){
+                        if (min > max){
                             errors.push("Minimum is greater than maximum");
                         }
                         return errors.join(", ");
@@ -679,10 +681,12 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     optional: true,
                     errored: function(val,formVal){
                         var errors=[];
-                        if (val<formVal.defaultInstance.value){
+                        var max = typeof val === "number" ? val : Infinity;
+                        var min = typeof formVal.minValue === "number" ? formVal.minValue : -Infinity;
+                        if (max < formVal.defaultInstance.value){
                             errors.push("Maximum is less than default value");
                         }
-                        if (val<formVal.minValue){
+                        if (max < min){
                             errors.push("Maximum is less than minimum");
                         }
                         return errors.join(", ");
@@ -732,10 +736,12 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                             required: true,
                             errored: function(val,formVal){
                                 var errors=[];
-                                if (val>formVal.maxValue){
+                                var max = typeof formVal.maxValue === "number" ? formVal.maxValue : Infinity;
+                                var min = typeof formVal.minValue === "number" ? formVal.minValue : -Infinity;
+                                if (val > max){
                                     errors.push("Default value is greater than maximum");
                                 }
-                                if (val<formVal.minValue){
+                                if (val < min){
                                     errors.push("Default value is less than minimum");
                                 }
                                 return errors.join(", ");
