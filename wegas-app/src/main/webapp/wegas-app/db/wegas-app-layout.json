@@ -6,7 +6,8 @@
     "plugins": [{
             "fn": "Injector"
         }, {
-            "fn": "PopupListener"
+            "fn": "PopupListener",
+            "cfg": { "alignAttr": null }
         }, {
             "fn": "ServerPopupListener"
         }, {
