@@ -25,7 +25,6 @@ BooleanView.defaultProps = {
     value: false,
     view: {
         className: styles.label,
-        marginTop: '7px'
     }
 };
 
@@ -34,7 +33,7 @@ BooleanView.propTypes = {
     view: PropTypes.shape({
         label: PropTypes.string,
         className: PropTypes.string,
-        boolean: PropTypes.bool,
+        //boolean: PropTypes.bool,
     }).isRequired,
     value: PropTypes.bool,
     path: PropTypes.arrayOf(PropTypes.string).isRequired

@@ -40,10 +40,6 @@
     font-size: 125%;
     max-width: 100%;
     margin-bottom:3px;
-    -webkit-touch-callout:none;
-    -webkit-user-select:none;
-    -moz-user-select:none;
-    -ms-user-select:none;
     user-select:none;
 }
 

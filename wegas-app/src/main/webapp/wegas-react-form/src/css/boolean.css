@@ -1,15 +1,12 @@
 .boolean {
     margin-top: -5px;
+    font-size: 90%;
 }
 
 .boolean .label {
     color: #6a95b6;
     font-size: 15px;
     vertical-align: 1px;
-    -webkit-touch-callout:none;
-    -webkit-user-select:none;
-    -moz-user-select:none;
-    -ms-user-select:none;
     user-select:none;
 }
 
