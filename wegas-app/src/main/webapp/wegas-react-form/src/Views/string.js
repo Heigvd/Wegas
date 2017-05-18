@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import debounce from '../HOC/callbackDebounce';
+import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 import styles from '../css/string.css';
 
@@ -61,4 +62,4 @@ StringView.propTypes = {
     }).isRequired
 };
 
-export default commonView(debounceOnChange(StringView));
+export default commonView(labeled(debounceOnChange(StringView)));

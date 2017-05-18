@@ -74,6 +74,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
             title: {
                 type: NULLSTRING,
                 optional: true,
+                value: "",
                 index: -1,
                 view: {
                     label: "Label",
@@ -100,12 +101,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
             tabular: {
                 type: BOOLEAN,
                 value: false,
+                visible: function (val, formVal) {
+                    return formVal.cbx;
+                },
                 view: {
                     label: "Tabular layout",
                     description: "Replies are presented horizontally",
-                    className: 'wegas-advanced-feature'
+                    // className: 'wegas-advanced-feature',
+                    indent: true
                 },
-                    index: 10
+                index: 10
             },
             description: {
                 type: NULLSTRING,
@@ -295,6 +300,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 },
                 title: {
                     type: STRING,
+                    value: "",
                     optional: true,
                     index: -1,
                     view: {
@@ -590,7 +596,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 view: {
                                     type: HTML,
                                     label: "Feedback when ignored",
-                                    legend: "Only for checkbox replies",
+                                    description: "Only for checkbox replies",
                                     borderTop: true
                                 }
                             },
