@@ -5,7 +5,7 @@
         <input
             class="tool__input"
             ng-model="search"
-            type="text"
+               type="text"
             ng-change="adminUsersCtrl.filterUsers(search);"
             ng-init="adminUsersCtrl.filterUsers(search);"
         />
@@ -46,36 +46,36 @@
              class="card--group-users-list">
         <div class="card card--player-mini"
              ng-repeat="user in group.users"
-             user="user">
+         user="user">
             <div ng-if="!user.isVerified" class="card__illustration illustration illustration--icon" illustration="ICON_grey_user_wif" title="✘ Unverified identity"></div>
             <div ng-if="user.isVerified"  class="card__illustration illustration illustration--icon" illustration="ICON_grey_id-card-o_fa" title="✔ verified identity"></div>
-            <div class="card__description card__description--two-lines">
-                <div class="line line--primary">
+        <div class="card__description card__description--two-lines">
+            <div class="line line--primary">
                     {{ user.account.name }} <span ng-if="user.account.username">({{user.account.username}})</span>
-                </div>
-                <div class="line line--secondary">
-                    {{ user.account.email }} -- {{user.id}}
-                </div>
             </div>
-            <div class="card__actions">
-                <a class="button button--small button--round button--default-reverse button--label-off button--customize"
-                   title="{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}"
-                   ui-sref="wegas.private.admin.users.edit({id: user.id})">
-                    <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
-                </a>
-                <a class="button button--small button--round button--default-reverse button--label-off button--play"
-                   title="Be!"
-                   ng-click="adminUsersCtrl.be(user)">
-                    <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
-                </a>
-                <a class="button button--small button--round button--default-reverse button--label-off button--trash"
-                   title="{{'ADMIN-USERS-CARD-DELETE-BTN' | translate}}"
-                   confirmed-click="adminUsersCtrl.deleteUser(user.id)"
-                   ng-confirm-click="{{'ADMIN-USERS-CARD-DELETE-CONFIRM' | translate}}">
-                    <span class="button__label">{{'ADMIN-USERS-CARD-DELETE-BTN' | translate}}</span>
-                </a>
+            <div class="line line--secondary">
+                {{ user.account.email }} -- {{user.id}}
             </div>
         </div>
+        <div class="card__actions">
+            <a class="button button--small button--round button--default-reverse button--label-off button--customize"
+               title="{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}"
+               ui-sref="wegas.private.admin.users.edit({id: user.id})">
+                <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
+            </a>
+            <a class="button button--small button--round button--default-reverse button--label-off button--play"
+               title="Be!"
+               ng-click="adminUsersCtrl.be(user)">
+                <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN' | translate}}</span>
+            </a>
+            <a class="button button--small button--round button--default-reverse button--label-off button--trash"
+               title="{{'ADMIN-USERS-CARD-DELETE-BTN' | translate}}"
+               confirmed-click="adminUsersCtrl.deleteUser(user.id)"
+               ng-confirm-click="{{'ADMIN-USERS-CARD-DELETE-CONFIRM' | translate}}">
+                <span class="button__label">{{'ADMIN-USERS-CARD-DELETE-BTN' | translate}}</span>
+            </a>
+        </div>
+    </div>
     </div>
     </div>
 </div>

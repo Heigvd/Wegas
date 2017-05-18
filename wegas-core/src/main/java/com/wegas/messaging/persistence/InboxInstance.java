@@ -44,7 +44,6 @@ public class InboxInstance extends VariableInstance {
     /**
      *
      */
-    @JsonView(Views.ExtendedI.class)
     @OneToMany(mappedBy = "inboxInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
 //    @OrderBy("sentTime DESC, id")
     /*

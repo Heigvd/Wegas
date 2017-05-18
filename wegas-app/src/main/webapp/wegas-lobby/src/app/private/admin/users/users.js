@@ -73,7 +73,7 @@ angular.module('private.admin.users', [
             var len = nbItems(currentList());
             if (len === 0 || len > ITEMS_IN_FIRST_BATCH) {
                 maxItemsDisplayed = ITEMS_IN_FIRST_BATCH;
-            } else {
+                } else {
                 // The number of users (and groups) is low enough to display them entirely:
                 maxItemsDisplayed = len;
             }
@@ -99,7 +99,7 @@ angular.module('private.admin.users', [
                         isExpanded: srcPlayers.isExpanded,
                         realSize: srcPlayers.realSize,
                         users: srcPlayers.users.slice(0, remaining)
-                    };
+            };
                 ctrl.groups.push(newPlayers);
 
                 prevSource = source;
@@ -113,10 +113,10 @@ angular.module('private.admin.users', [
                 initMaxItemsDisplayed();
             } else {
                 maxItemsDisplayed = Math.min(maxItemsDisplayed + ITEMS_IN_NEXT_BATCHES, nbItems(list));
-            }
+                }
             // if (console.log) console.log("maxItemsDisplayed: " + maxItemsDisplayed + " / " + nbItems(list));
             updateDisplay(list);
-        }
+            }
 
         ctrl.updateGroups = function(extendDisplay){
             var hideScrollbarDuringInitialRender = (rawGroups.length === 0);
@@ -139,10 +139,10 @@ angular.module('private.admin.users', [
                         maxId = group.id;
                     }
                 }
-                UsersModel.getUsers().then(function(response) {
-                    if (response.isErroneous()) {
-                        response.flash();
-                    } else {
+            UsersModel.getUsers().then(function(response) {
+                if (response.isErroneous()) {
+                    response.flash();
+                } else {
                         allUsers = $filter('orderBy')(response.data, 'name') || [];
                         // Manually create the "Player" (all users) pseudo-group at last position:
                         rawGroups.push({
@@ -160,14 +160,14 @@ angular.module('private.admin.users', [
                         var searchField = document.getElementById('searchField');
                         if (searchField) {
                             ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
-                        }
+                    }
                         ctrl.filterUsers(ctrl.search);
                         if (extendDisplay) {
                             extendDisplayedItems();
-                        }
-                        if (hideScrollbarDuringInitialRender) {
-                            $timeout(function() {
-                                $('#admin-index-list').css('overflow-y', 'auto');
+                }
+                if (hideScrollbarDuringInitialRender) {
+                    $timeout(function() {
+                        $('#admin-index-list').css('overflow-y', 'auto');
                             }, 5000);
                         }
                         // Keep the "loading" indicator on screen as long as possible:
@@ -257,7 +257,7 @@ angular.module('private.admin.users', [
                 if (ctrl.search != search) {
                     ctrl.search = search;
                 }
-            }
+                }
         };
 
         ctrl.toggleExpansion = function(group) {
@@ -270,7 +270,7 @@ angular.module('private.admin.users', [
             } else {
                 $translate('ADMIN-GROUPS-NO-MEMBERS-ERROR').then(function (message) {
                     Flash.danger(message);
-                });
+            });
 
             }
         };
