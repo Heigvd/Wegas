@@ -28,12 +28,7 @@ export default function commonView(Comp) {
                     })
                 }
                 style={props.view.style}
-            >
-                <div
-                    className={styles.label}
                 >
-                    {props.view.label}
-                </div>
                 <Comp {...props} />
                 <div
                     className={classNames({
