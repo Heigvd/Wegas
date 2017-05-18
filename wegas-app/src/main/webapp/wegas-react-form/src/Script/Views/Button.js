@@ -1,27 +1,40 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { css } from 'glamor';
 import IconButton from '../../Components/IconButton';
-import styles from './Button.css';
+
+const removeStatement = css({
+    zoom: 0.8,
+    ':hover': { backgroundColor: 'indianred' }
+});
+const addStatement = css({
+    textAlign: 'center',
+    ':hover': { backgroundColor: 'darkslategrey' }
+});
+const container = css({ display: 'inline-block', width: '22px' });
 
 export function RemoveStatementButton(props) {
     return (
-        <span style={{ display: 'inline-block', width: '22px' }}>
+        <span className={container.toString()}>
             <IconButton
                 icon="fa fa-minus"
                 onClick={props.onClick}
                 tooltip="remove"
-                className={styles.removeStatement}
+                className={removeStatement.toString()}
             />
-        </span>);
+        </span>
+    );
 }
 
 export function AddStatementButton(props) {
-    return (<IconButton
-        onClick={props.onClick}
-        iconColor="#9DC06F"
-        icon="fa fa-plus"
-        tooltip="add"
-        label={props.label}
-        className={styles.addStatement}
-    />);
+    return (
+        <IconButton
+            onClick={props.onClick}
+            iconColor="#9DC06F"
+            icon="fa fa-plus"
+            tooltip="add"
+            label={props.label}
+            className={addStatement.toString()}
+        />
+    );
 }
