@@ -1,5 +1,7 @@
+import React from 'react';
+
 function HiddenView() {
-    return null;
+    return <noscript />; // Could be null, but Typescript doesn't allow it.
 }
 
 export default HiddenView;
