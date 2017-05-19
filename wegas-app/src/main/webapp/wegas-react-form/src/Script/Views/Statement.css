@@ -1,6 +1,0 @@
-.Statement {
-    display: inline-block;
-    padding-bottom: 5px;
-    /* remove button width */
-    width: calc(100% - 22px);
-}

@@ -14,7 +14,7 @@ import {
 } from './Script/index';
 
 const Y = getY(); // Current YUI instance
-const Wegas = Y.Wegas;
+const Wegas: { [key: string]: any } = Y.Wegas;
 // const inputEx = Y.inputEx;
 const FORM = 'form';
 
@@ -236,7 +236,8 @@ const Form = Y.Base.create(
         },
     },
 );
-Form.Script = {
+
+(Form as any).Script = {
     register, // Register Global script methods
     MultiVariableMethod: IndependantMultiVariableMethod,
     MultiVariableCondition: IndependantMultiVariableCondition,

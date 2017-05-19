@@ -5,7 +5,7 @@ const { CheckerPlugin } = require('awesome-typescript-loader');
 module.exports = {
     devtool: 'inline-source-map',
     entry: {
-        bundle: './src/index.js'
+        bundle: './src/index.ts'
     },
     output: {
         path: path.join(__dirname, 'dist'),

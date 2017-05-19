@@ -18,7 +18,7 @@ const webpack = require('webpack');
 module.exports = {
     devtool: 'source-map',
     entry: {
-        bundle: './src/index.js'
+        bundle: './src/index.ts'
     },
     output: {
         path: path.join(__dirname, 'dist'),

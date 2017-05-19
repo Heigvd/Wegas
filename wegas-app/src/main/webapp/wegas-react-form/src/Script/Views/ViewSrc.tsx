@@ -1,19 +1,32 @@
-import PropTypes from 'prop-types';
-import React from 'react';
 import classNames from 'classnames';
-import styles from '../../css/string.css';
+import { css } from 'glamor';
+import React from 'react';
 import debounced from '../../HOC/callbackDebounce';
 import JSEditor from './asyncJSEditor';
 
+interface IProps {
+    value: string;
+    error: string;
+    onChange: (value: string) => void;
+}
 /**
  * Toggle view between parsed and code
  */
-class ViewSrc extends React.Component {
-    constructor(props) {
+class ViewSrc extends React.Component<IProps, { src: boolean }> {
+    constructor(props: IProps) {
         super(props);
         this.state = { src: false };
+        this.toggleState = this.toggleState.bind(this);
+        this.handleChange.bind(this);
     }
-
+    toggleState() {
+        this.setState({
+            src: !this.state.src,
+        });
+    }
+    handleChange(value: string) {
+        this.props.onChange(value);
+    }
     render() {
         let child;
         if (this.state.src || this.props.error) {
@@ -24,9 +37,9 @@ class ViewSrc extends React.Component {
                     width="100%"
                     height="200px"
                     focus
-                    onChange={v => this.props.onChange(v)}
+                    onChange={this.handleChange}
                 />,
-                <div key="error">{this.props.error || <br />}</div>
+                <div key="error">{this.props.error || <br />}</div>,
             ];
         } else {
             child = this.props.children;
@@ -34,11 +47,8 @@ class ViewSrc extends React.Component {
         return (
             <span>
                 <i
-                    className={classNames('fa fa-code', styles.icon)}
-                    onClick={() =>
-                        this.setState({
-                            src: !this.state.src
-                        })}
+                    className={classNames('fa fa-code', css({ icon: 'pointer' }).toString())}
+                    onClick={this.toggleState}
                 />
                 <div>
                     {child}
@@ -47,11 +57,5 @@ class ViewSrc extends React.Component {
         );
     }
 }
-ViewSrc.propTypes = {
-    value: PropTypes.string,
-    onChange: PropTypes.func,
-    children: PropTypes.element.isRequired,
-    error: PropTypes.string
-};
 
 export default debounced('onChange')(ViewSrc);
