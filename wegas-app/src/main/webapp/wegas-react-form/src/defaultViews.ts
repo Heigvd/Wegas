@@ -1,47 +1,47 @@
 import { setDefaultWidgets } from 'jsoninput';
-import StringView from './Views/string';
-import BooleanView from './Views/boolean';
-import UneditableView from './Views/uneditable';
-import HiddenView from './Views/hidden';
-import TextareaView from './Views/textarea';
-import SelectView from './Views/select';
-import ObjectView from './Views/object';
-import ArrayView from './Views/array';
-import HTMLView from './Views/html';
-import HashlistView from './Views/hashlist';
-import WegasUrl from './Views/wegas-url';
-import WegasImageUrl from './Views/wegas-image-url';
-import FlatVariableSelect from './Views/Interacting/flatvariableselect';
-import PluginList from './Views/Interacting/pluginlist';
-import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
-import PageSelect from './Views/Interacting/pageselect';
-import TreeVariableSelect from './Views/Interacting/treevariableselect';
 import {
-    VariableStatement,
+    MultiVariableCondition,
     MultiVariableMethod,
-    MultiVariableCondition
+    VariableStatement,
 } from './Script/index';
+import ArrayView from './Views/array';
+import BooleanView from './Views/boolean';
+import HashlistView from './Views/hashlist';
+import HiddenView from './Views/hidden';
+import HTMLView from './Views/html';
+import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
+import FlatVariableSelect from './Views/Interacting/flatvariableselect';
+import PageSelect from './Views/Interacting/pageselect';
+import PluginList from './Views/Interacting/pluginlist';
+import TreeVariableSelect from './Views/Interacting/treevariableselect';
+import ObjectView from './Views/object';
+import SelectView from './Views/select';
+import StringView from './Views/string';
+import TextareaView from './Views/textarea';
+import UneditableView from './Views/uneditable';
+import WegasImageUrl from './Views/wegas-image-url';
+import WegasUrl from './Views/wegas-url';
 
 setDefaultWidgets({
-    object: ObjectView,
     array: ArrayView,
-    string: StringView,
-    number: StringView,
     boolean: BooleanView,
-    uneditable: UneditableView,
-    hidden: HiddenView,
-    textarea: TextareaView,
-    select: SelectView,
-    html: HTMLView,
-    hashlist: HashlistView,
-    wegasurl: WegasUrl,
-    wegasimageurl: WegasImageUrl,
-    flatvariableselect: FlatVariableSelect,
-    pluginlist: PluginList,
     entityarrayfieldselect: EntityArrayFieldSelect,
+    flatvariableselect: FlatVariableSelect,
+    hashlist: HashlistView,
+    hidden: HiddenView,
+    html: HTMLView,
+    number: StringView,
+    object: ObjectView,
     pageselect: PageSelect,
-    variableselect: VariableStatement,
+    pluginlist: PluginList,
     script: MultiVariableMethod,
     scriptcondition: MultiVariableCondition,
-    treevariableselect: TreeVariableSelect
+    select: SelectView,
+    string: StringView,
+    textarea: TextareaView,
+    treevariableselect: TreeVariableSelect,
+    uneditable: UneditableView,
+    variableselect: VariableStatement,
+    wegasimageurl: WegasImageUrl,
+    wegasurl: WegasUrl,
 });

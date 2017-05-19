@@ -55,6 +55,7 @@
     "raw-loader": "^0.5.1",
     "rimraf": "^2.5.4",
     "style-loader": "^0.17.0",
+    "tslint": "^5.2.0",
     "typescript": "^2.4.0-dev.20170518",
     "webpack": "^2.4.1"
   }
