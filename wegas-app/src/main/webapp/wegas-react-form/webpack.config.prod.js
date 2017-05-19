@@ -18,7 +18,7 @@ const webpack = require('webpack');
 module.exports = {
     devtool: 'source-map',
     entry: {
-        bundle: './src/index.js'
+        bundle: './src/index.ts'
     },
     output: {
         path: path.join(__dirname, 'dist'),
@@ -27,6 +27,7 @@ module.exports = {
         publicPath: 'wegas-react-form/dist/'
     },
     resolve: {
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
@@ -60,6 +61,10 @@ module.exports = {
     ],
     module: {
         rules: [
+            {
+                test: /\.tsx?$/,
+                loader: 'awesome-typescript-loader'
+            },
             {
                 test: /\.jsx?$/,
                 loaders: ['babel-loader'],

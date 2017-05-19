@@ -6,13 +6,12 @@
  * Licensed under the MIT License
  */
 
-let Z;
+let Z: Y.YUI;
 /* global YUI */
 YUI.add('wegas-react-form', (Y) => {
     Z = Y;
-    require('./wegas-react-form'); // eslint-disable-line
+    _import('./wegas-react-form');
 });
-
-export function getY() { // eslint-disable-line
+export function getY() {
     return Z;
 }

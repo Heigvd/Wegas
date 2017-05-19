@@ -1,28 +1,35 @@
 // polyfill injection point
 import 'core-js';
 // end polyfill injection point
+import RForm, { Schema } from 'jsoninput';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
-import RForm from 'jsoninput';
 import './defaultViews';
-import { register, IndependantVariableStatement, IndependantMultiVariableMethod, IndependantMultiVariableCondition } from './Script/index';
 import { getY } from './index';
+import {
+    IndependantMultiVariableCondition,
+    IndependantMultiVariableMethod,
+    IndependantVariableStatement,
+    register,
+} from './Script/index';
 
 const Y = getY(); // Current YUI instance
-const Wegas = Y.Wegas;
+const Wegas: { [key: string]: any } = Y.Wegas;
 // const inputEx = Y.inputEx;
 const FORM = 'form';
 
-const Form = Y.Base.create('wegas-react-form', Y.Widget,
-    [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-
+const Form = Y.Base.create(
+    'wegas-react-form',
+    Y.Widget,
+    [Y.WidgetChild, Wegas.Widget, Wegas.Editable],
+    {
         initializer() {
             this.plug(Y.Plugin.WidgetToolbar);
             this.publish('submit', {
-                emitFacade: true
+                emitFacade: true,
             });
             this.publish('updated', {
-                emitFacade: false
+                emitFacade: false,
             });
         },
         renderUI() {
@@ -30,21 +37,29 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             // ctrl-s shortcut
             this.get('contentBox').on('key', this.save, 'down:83+ctrl', this);
         },
-        renderForm(value, schema) {
+        renderForm(value: {} | undefined, schema: Schema) {
             if (schema) {
-                const boundFire = (val) => {
+                const boundFire = (val: {}) => {
                     this.fire('updated', val);
                 };
-                render((
-                    <div style={{ postion: 'relative', width: '100%', paddingLeft: '1em', boxSizing: 'border-box' }}>
+                render(
+                    <div
+                        style={{
+                            postion: 'relative',
+                            width: '100%',
+                            paddingLeft: '1em',
+                            boxSizing: 'border-box',
+                        }}
+                    >
                         <RForm
-                            ref={form => this.set(FORM, form)}
+                            ref={(form) => this.set(FORM, form)}
                             schema={schema}
                             value={value}
                             onChange={boundFire}
                         />
-                    </div>
-                ), this.get('contentBox').getDOMNode());
+                    </div>,
+                    this.get('contentBox').getDOMNode(),
+                );
             }
         },
         getValue() {
@@ -57,19 +72,23 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             unmountComponentAtNode(this.get('contentBox').getDOMNode());
             this.set(FORM, null);
         },
-        addButton(b) {
+        addButton(b: any) {
             const btn = b;
             switch (b.action) {
                 case 'submit':
                     btn.on = {
-                        click: Y.bind(this.save, this)
+                        click: Y.bind(this.save, this),
                     };
                     break;
                 default:
                     btn.on = {
-                        click: Y.bind(function click(action) {
-                            this.fire(action);
-                        }, this, b.action)
+                        click: Y.bind(
+                            function click(this: any, action: string) {
+                                this.fire(action);
+                            },
+                            this,
+                            b.action,
+                        ),
                     };
                     break;
             }
@@ -78,29 +97,28 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
         destroyForm() {
             this.set(FORM, null);
         },
-        save(e) {
+        save(e: any) {
             e.halt(true);
 
             const form = this.get(FORM);
             const val = form.getValue();
 
             if (form.validate().length) {
-                console.log(form.validate());
                 this.showMessage('error', 'Some fields are not valid.');
                 return;
             }
-            console.log(val);
             // if (val.valueselector) {
             //     val = val.valueselector;
             // }
             this.fire('submit', {
-                value: val
+                value: val,
             });
         },
         validate() {
             return this.get('form').validate();
-        }
-    }, {
+        },
+    },
+    {
         /** @lends Y.Wegas.Form */
         EDITORNAME: 'Form',
         /**
@@ -121,16 +139,16 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             values: {
                 transient: true,
                 value: undefined,
-                setter(val) {
+                setter(this: any, val: any) {
                     this.renderForm(val, this.get('cfg'));
                     return val;
-                }
+                },
             },
             /**
              * The form to manage
              */
             form: {
-                transient: true
+                transient: true,
             },
             /**
              * Configuation of the form
@@ -142,7 +160,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                     type: {
                         type: 'string',
                         value: 'object',
-                        view: { type: 'hidden' }
+                        view: { type: 'hidden' },
                     },
                     properties: {
                         type: 'object',
@@ -160,64 +178,70 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                                         choices: [
                                             { value: 'string' },
                                             { value: 'number' },
-                                            { value: 'boolean' }
-                                        ]
-                                    }
+                                            { value: 'boolean' },
+                                        ],
+                                    },
                                 },
                                 required: {
                                     type: 'boolean',
-                                    view: { label: 'Required' }
+                                    view: { label: 'Required' },
                                 },
                                 view: {
                                     type: 'object',
                                     value: {},
                                     properties: {
                                         label: {
-                                            errored: function requiredString(v) {
+                                            errored: function requiredString(
+                                                v: string,
+                                            ) {
                                                 if (v && v.trim()) {
                                                     return '';
                                                 }
                                                 return 'is required';
                                             },
                                             view: {
-                                                label: 'Label'
+                                                label: 'Label',
                                             },
-                                            type: 'string'
-                                        }
-                                    }
-                                }
-                            }
+                                            type: 'string',
+                                        },
+                                    },
+                                },
+                            },
                         },
                         view: {
                             type: 'hashlist',
                             label: 'Fields',
-                            keyLabel: 'Name'
-                        }
-                    }
+                            keyLabel: 'Name',
+                        },
+                    },
                 },
-                setter(cfg) {
+                setter(this: any, cfg: {}) {
                     this.renderForm(this.get('values'), cfg);
                     // this.setCfg(val);
                     return cfg;
                 },
-                index: 8
+                index: 8,
             },
             buttons: {
                 type: 'array',
-                valueFn: () => [{
-                    type: 'Button',
-                    action: 'submit',
-                    label: '<span class="wegas-icon wegas-icon-save" ></span>Save'
-                }],
-                view: { type: 'hidden' }
-            }
-        }
-    });
-Form.Script = {
+                valueFn: () => [
+                    {
+                        type: 'Button',
+                        action: 'submit',
+                        label: '<span class="wegas-icon wegas-icon-save" ></span>Save',
+                    },
+                ],
+                view: { type: 'hidden' },
+            },
+        },
+    },
+);
+
+(Form as any).Script = {
     register, // Register Global script methods
     MultiVariableMethod: IndependantMultiVariableMethod,
     MultiVariableCondition: IndependantMultiVariableCondition,
-    VariableStatement: IndependantVariableStatement
+    VariableStatement: IndependantVariableStatement,
 };
 
 /* Add relevant plugin*/

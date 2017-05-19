@@ -48,7 +48,7 @@ class Impact extends React.Component {
             method,
             member,
             args,
-            methodSchem: undefined
+            methodSchem: methodSchema(props.view.method, variable, props.type)
         };
         this.handleVariableChange = this.handleVariableChange.bind(this);
     }
@@ -216,13 +216,9 @@ class Impact extends React.Component {
                         value={args[i]}
                         onChange={v => {
                             this.setState(prevState => {
-                                const newArgs = prevState.args.map((a, j) => {
-                                    if (i === j) {
-                                        return v;
-                                    }
-                                    return a;
-                                });
-                                return { args: newArgs };
+                                const prevArgs = prevState.args;
+                                prevArgs[i] = v;
+                                return { args: prevArgs };
                             }, this.checkVariableMethod);
                         }}
                     />

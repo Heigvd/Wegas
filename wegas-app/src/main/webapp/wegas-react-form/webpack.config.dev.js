@@ -1,10 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
+const { CheckerPlugin } = require('awesome-typescript-loader');
 
 module.exports = {
     devtool: 'inline-source-map',
     entry: {
-        bundle: './src/index.js'
+        bundle: './src/index.ts'
     },
     output: {
         path: path.join(__dirname, 'dist'),
@@ -13,6 +14,7 @@ module.exports = {
         publicPath: 'wegas-react-form/dist/'
     },
     resolve: {
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
@@ -32,10 +34,15 @@ module.exports = {
             minChunks: Infinity
         }),
         //   new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin()
+        new webpack.NoEmitOnErrorsPlugin(),
+        new CheckerPlugin()
     ],
     module: {
         rules: [
+            {
+                test: /\.tsx?$/,
+                use: ['babel-loader', 'awesome-typescript-loader']
+            },
             {
                 test: /\.jsx?$/,
                 loaders: ['babel-loader'],

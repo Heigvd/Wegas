@@ -11,7 +11,9 @@ const { builders: b, visit, namedTypes: n } = types;
 const Y = getY();
 function methodDescriptor(variable, method) {
     try {
-        return Y.Wegas.Facade.Variable.cache.find('name', variable).getMethodCfgs()[method];
+        return Y.Wegas.Facade.Variable.cache
+            .find('name', variable)
+            .getMethodCfgs()[method];
     } catch (e) {
         return null;
     }
@@ -37,7 +39,9 @@ function genChoices(variable, type) {
         }));
 }
 function getMethodDescriptor(variable, method) {
-    return Y.Wegas.Facade.Variable.cache.find('name', variable).getMethodCfgs()[method];
+    return Y.Wegas.Facade.Variable.cache.find('name', variable).getMethodCfgs()[
+        method
+    ];
 }
 function handleArgs(variable, method, args, onChange) {
     const methodDescr = getMethodDescriptor(variable, method);
@@ -54,6 +58,9 @@ MethodView.propTypes = {
     onChange: PropTypes.func
 };
 const methodSchema = (view, variable, type) => {
+    if (variable === undefined) {
+        return null;
+    }
     const choices = genChoices(variable, type);
     if (!choices.length) {
         return null;
@@ -106,13 +113,15 @@ const extractMethod = node => {
         visitCallExpression: function visitCallExpression(path) {
             const nod = path.node;
             if (isVarMethod(nod)) {
-                ret.method = nod.callee.property.value || nod.callee.property.name;
+                ret.method =
+                    nod.callee.property.value || nod.callee.property.name;
                 ret.args = nod.arguments;
                 ret.variable = extractVar(nod.callee.object);
                 return false;
             } else if (isGlobalMethod(nod)) {
                 ret.global = true;
-                ret.method = nod.callee.property.value || nod.callee.property.name;
+                ret.method =
+                    nod.callee.property.value || nod.callee.property.name;
                 ret.args = nod.arguments;
                 ret.member = nod.callee.object.name;
                 return false;
