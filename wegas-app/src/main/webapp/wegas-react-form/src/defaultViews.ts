@@ -1,4 +1,4 @@
-import Form from 'jsoninput';
+import { setDefaultWidgets } from 'jsoninput';
 import StringView from './Views/string';
 import BooleanView from './Views/boolean';
 import UneditableView from './Views/uneditable';
@@ -16,9 +16,13 @@ import PluginList from './Views/Interacting/pluginlist';
 import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
 import PageSelect from './Views/Interacting/pageselect';
 import TreeVariableSelect from './Views/Interacting/treevariableselect';
-import { VariableStatement, MultiVariableMethod, MultiVariableCondition } from './Script/index';
+import {
+    VariableStatement,
+    MultiVariableMethod,
+    MultiVariableCondition
+} from './Script/index';
 
-Form.setDefaultWidgets({
+setDefaultWidgets({
     object: ObjectView,
     array: ArrayView,
     string: StringView,

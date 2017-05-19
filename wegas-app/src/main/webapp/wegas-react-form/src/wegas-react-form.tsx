@@ -3,9 +3,14 @@ import 'core-js';
 // end polyfill injection point
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
-import RForm from 'jsoninput';
+import RForm, { Schema } from 'jsoninput';
 import './defaultViews';
-import { register, IndependantVariableStatement, IndependantMultiVariableMethod, IndependantMultiVariableCondition } from './Script/index';
+import {
+    register,
+    IndependantVariableStatement,
+    IndependantMultiVariableMethod,
+    IndependantMultiVariableCondition
+} from './Script/index';
 import { getY } from './index';
 
 const Y = getY(); // Current YUI instance
@@ -13,9 +18,11 @@ const Wegas = Y.Wegas;
 // const inputEx = Y.inputEx;
 const FORM = 'form';
 
-const Form = Y.Base.create('wegas-react-form', Y.Widget,
-    [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-
+const Form = Y.Base.create(
+    'wegas-react-form',
+    Y.Widget,
+    [Y.WidgetChild, Wegas.Widget, Wegas.Editable],
+    {
         initializer() {
             this.plug(Y.Plugin.WidgetToolbar);
             this.publish('submit', {
@@ -30,21 +37,29 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             // ctrl-s shortcut
             this.get('contentBox').on('key', this.save, 'down:83+ctrl', this);
         },
-        renderForm(value, schema) {
+        renderForm(value: {} | undefined, schema: Schema) {
             if (schema) {
-                const boundFire = (val) => {
+                const boundFire = (val: {}) => {
                     this.fire('updated', val);
                 };
-                render((
-                    <div style={{ postion: 'relative', width: '100%', paddingLeft: '1em', boxSizing: 'border-box' }}>
+                render(
+                    <div
+                        style={{
+                            postion: 'relative',
+                            width: '100%',
+                            paddingLeft: '1em',
+                            boxSizing: 'border-box'
+                        }}
+                    >
                         <RForm
                             ref={form => this.set(FORM, form)}
                             schema={schema}
                             value={value}
                             onChange={boundFire}
                         />
-                    </div>
-                ), this.get('contentBox').getDOMNode());
+                    </div>,
+                    this.get('contentBox').getDOMNode()
+                );
             }
         },
         getValue() {
@@ -57,7 +72,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             unmountComponentAtNode(this.get('contentBox').getDOMNode());
             this.set(FORM, null);
         },
-        addButton(b) {
+        addButton(b: any) {
             const btn = b;
             switch (b.action) {
                 case 'submit':
@@ -67,9 +82,13 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                     break;
                 default:
                     btn.on = {
-                        click: Y.bind(function click(action) {
-                            this.fire(action);
-                        }, this, b.action)
+                        click: Y.bind(
+                            function click(this: any, action: string) {
+                                this.fire(action);
+                            },
+                            this,
+                            b.action
+                        )
                     };
                     break;
             }
@@ -78,7 +97,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
         destroyForm() {
             this.set(FORM, null);
         },
-        save(e) {
+        save(e: any) {
             e.halt(true);
 
             const form = this.get(FORM);
@@ -100,7 +119,8 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
         validate() {
             return this.get('form').validate();
         }
-    }, {
+    },
+    {
         /** @lends Y.Wegas.Form */
         EDITORNAME: 'Form',
         /**
@@ -121,7 +141,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             values: {
                 transient: true,
                 value: undefined,
-                setter(val) {
+                setter(this: any, val: any) {
                     this.renderForm(val, this.get('cfg'));
                     return val;
                 }
@@ -173,7 +193,9 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                                     value: {},
                                     properties: {
                                         label: {
-                                            errored: function requiredString(v) {
+                                            errored: function requiredString(
+                                                v: string
+                                            ) {
                                                 if (v && v.trim()) {
                                                     return '';
                                                 }
@@ -195,7 +217,7 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
                         }
                     }
                 },
-                setter(cfg) {
+                setter(this: any, cfg: {}) {
                     this.renderForm(this.get('values'), cfg);
                     // this.setCfg(val);
                     return cfg;
@@ -204,15 +226,18 @@ const Form = Y.Base.create('wegas-react-form', Y.Widget,
             },
             buttons: {
                 type: 'array',
-                valueFn: () => [{
-                    type: 'Button',
-                    action: 'submit',
-                    label: '<span class="wegas-icon wegas-icon-save" ></span>Save'
-                }],
+                valueFn: () => [
+                    {
+                        type: 'Button',
+                        action: 'submit',
+                        label: '<span class="wegas-icon wegas-icon-save" ></span>Save'
+                    }
+                ],
                 view: { type: 'hidden' }
             }
         }
-    });
+    }
+);
 Form.Script = {
     register, // Register Global script methods
     MultiVariableMethod: IndependantMultiVariableMethod,

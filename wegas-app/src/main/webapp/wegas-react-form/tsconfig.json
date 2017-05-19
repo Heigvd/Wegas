@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "jsx": "preserve",
+        "allowJs": true,
+        "module": "es2015",
+        "outDir": "dist",
+        "strict": true,
+        "noUnusedLocals": true,
+        "moduleResolution": "node",
+        "noEmit": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "include": [
+        "src",
+        "typings"
+    ],
+    "awesomeTypescriptLoaderOptions": {
+        "useBabel": true,
+        "useCache": true,
+        "useTranspileModule": true
+    }
+}

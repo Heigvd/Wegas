@@ -27,6 +27,7 @@ module.exports = {
         publicPath: 'wegas-react-form/dist/'
     },
     resolve: {
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
@@ -60,6 +61,10 @@ module.exports = {
     ],
     module: {
         rules: [
+            {
+                test: /\.tsx?$/,
+                loader: 'awesome-typescript-loader'
+            },
             {
                 test: /\.jsx?$/,
                 loaders: ['babel-loader'],
