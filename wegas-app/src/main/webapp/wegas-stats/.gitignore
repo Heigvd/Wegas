@@ -1,6 +1,5 @@
 ##
 node_modules/
 #build/
-typings/
 jsconfig.json
 .idea/

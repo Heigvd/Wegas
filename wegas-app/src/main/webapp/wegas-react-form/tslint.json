@@ -1,7 +1,8 @@
 {
     "defaultSeverity": "error",
     "extends": [
-        "tslint:latest"
+        "tslint:latest",
+        "tslint-react"
     ],
     "jsRules": {
         "quotemark": [
@@ -19,7 +20,24 @@
             "jsx-double",
             "avoid-escape"
         ],
-        "object-literal-sort-keys": false
+        "object-literal-sort-keys": false,
+        "ordered-imports": [
+            false
+        ],
+        "member-access": [
+            false
+        ],
+        "array-type": [
+            true,
+            "array"
+        ],
+        "jsx-wrap-multiline": [
+            false
+        ],
+        "jsx-boolean-value": [
+            true,
+            "never"
+        ]
     },
     "rulesDirectory": []
 }

@@ -8,7 +8,8 @@
     "clean": "rimraf dist",
     "build:webpack": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
     "build": "npm run clean && npm run lint && npm run build:webpack",
-    "lint": "eslint src/**/*.js src/**/*.jsx",
+    "lint": "tslint src/**/*.ts src/**/*.tsx",
+    "eslint": "eslint src/**/*.js src/**/*.jsx",
     "dev:build": "webpack --config webpack.config.dev.js"
   },
   "author": "CiGit",
@@ -56,6 +57,7 @@
     "rimraf": "^2.5.4",
     "style-loader": "^0.17.0",
     "tslint": "^5.2.0",
+    "tslint-react": "^3.0.0",
     "typescript": "^2.4.0-dev.20170518",
     "webpack": "^2.4.1"
   }
