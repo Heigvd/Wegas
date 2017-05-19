@@ -1,9 +1,23 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
-import styles from '../../css/string.css';
+import { css } from 'glamor';
 import debounced from '../../HOC/callbackDebounce';
 import JSEditor from './asyncJSEditor';
+
+
+const iconStyle = css({
+    cursor: 'pointer',
+    verticalAlign: '1px',
+    padding: '8px',
+    borderRadius: '50%',
+    ':hover': {
+        background: 'lightgray'
+    }
+});
+
+const viewSourceTooltip = "View source code",
+      hideSourceTooltip = "Hide source code";
 
 /**
  * Toggle view between parsed and code
@@ -34,7 +48,8 @@ class ViewSrc extends React.Component {
         return (
             <span>
                 <i
-                    className={classNames('fa fa-code', styles.icon)}
+                    className={classNames('fa fa-code', `${iconStyle}` )}
+                    title={this.state.src ? hideSourceTooltip : viewSourceTooltip}
                     onClick={() =>
                         this.setState({
                             src: !this.state.src

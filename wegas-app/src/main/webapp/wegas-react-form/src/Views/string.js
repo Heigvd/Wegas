@@ -3,7 +3,40 @@ import React from 'react';
 import debounce from '../HOC/callbackDebounce';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
-import styles from '../css/string.css';
+import { css } from 'glamor';
+import FormStyles from './form-styles';
+
+const inputStyle = css({
+    borderRadius: '3px',
+    boxSizing: 'border-box',
+    border: '1px solid lightgrey',
+    fontSize: '13px',
+    color: 'darkslategrey',
+    width: '100%',
+    maxWidth: FormStyles.textInputWidth,
+    padding: '0px'
+});
+
+const textareaFocus = css({
+    ':focus': {
+        border: '1px solid lightgrey',
+        marginTop: '-17px'
+    }
+});
+
+const textareaStyle = css(
+    {
+        borderRadius: '3px',
+        width: '100%',
+        maxWidth: FormStyles.textareaWidth,
+        fontStyle: 'italic',
+        fontSize: '15px',
+        border: 'none',
+        color: 'darkgrey'
+    },
+    textareaFocus
+);
+
 
 const debounceOnChange = debounce('onChange');
 function fromNotToEmpty(value) {
@@ -30,6 +63,7 @@ class StringView extends React.Component {
         if (typeof this.props.view.rows === 'number') {
             return (
                 <textarea
+                    className={textareaStyle}
                     rows={this.props.view.rows}
                     onChange={ev => this.handleChange(ev)}
                     placeholder={this.props.view.placeholder}
@@ -40,7 +74,7 @@ class StringView extends React.Component {
         }
         return (
             <input
-                className={styles.input}
+                className={inputStyle}
                 type="text"
                 placeholder={this.props.view.placeholder}
                 value={this.state.value}

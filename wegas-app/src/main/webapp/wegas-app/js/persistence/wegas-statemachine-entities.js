@@ -469,7 +469,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     index: 1,
                     view: {
                         label: 'Disable itself',
-                        description: 'Disable once triggered.<br> May be rearmed afterwards'
+                        description: 'Disable once triggered. May be rearmed afterwards'
                     }
                 },
                 oneShot: {

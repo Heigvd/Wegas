@@ -1,9 +1,32 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import classNames from 'classnames';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
-import styles from '../css/boolean.css';
+import { css } from 'glamor';
+import FormStyles from './form-styles';
+
+const booleanContainerStyle = css({
+    marginTop: '-5px',
+    '& label': {
+        fontSize: FormStyles.labelFontSize,
+        verticalAlign: '1px'
+    },
+    // Vertically align the following 'info' field on the label:
+    '& + div': {
+        marginLeft: '22px'
+    }
+});
+
+const checkboxStyle = css({
+    borderRadius: '3px',
+    border: 'lightgrey solid 1px',
+    marginTop: '5px',
+    marginRight: '6px',
+    width: '15px!important',
+    maxWidth: '15px!important',
+    fontSize: '14px'
+});
+
 
 function BooleanView(props) {
     const onChange = function onChange(event) {
@@ -15,28 +38,23 @@ function BooleanView(props) {
                 id={id}
                 checked={props.value}
                 type="checkbox"
-                className={styles.checkbox}
+                className={checkboxStyle}
                 onChange={onChange}
             />
     );
 }
 
 BooleanView.defaultProps = {
-    value: false,
-    view: {
-        className: styles.label,
-    }
+    value: false
 };
 
 BooleanView.propTypes = {
     onChange: PropTypes.func.isRequired,
     view: PropTypes.shape({
         label: PropTypes.string,
-        className: PropTypes.string,
-        //boolean: PropTypes.bool,
     }).isRequired,
     value: PropTypes.bool,
     path: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
-export default commonView(labeled(BooleanView, styles.boolean, true));
+export default commonView(labeled(BooleanView, `${booleanContainerStyle}`, true));
