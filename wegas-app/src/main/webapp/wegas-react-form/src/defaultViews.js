@@ -7,6 +7,7 @@ import TextareaView from './Views/textarea';
 import SelectView from './Views/select';
 import ObjectView from './Views/object';
 import ArrayView from './Views/array';
+import ReviewView from './Views/review';
 import HTMLView from './Views/html';
 import HashlistView from './Views/hashlist';
 import WegasUrl from './Views/wegas-url';
@@ -21,6 +22,7 @@ import { VariableStatement, MultiVariableMethod, MultiVariableCondition } from '
 Form.setDefaultWidgets({
     object: ObjectView,
     array: ArrayView,
+    PeerReviewDescriptor: ReviewView,
     string: StringView,
     number: StringView,
     boolean: BooleanView,

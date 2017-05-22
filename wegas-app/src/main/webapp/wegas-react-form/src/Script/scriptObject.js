@@ -4,7 +4,7 @@ import { css } from 'glamor';
 import FormStyles from '../Views/form-styles';
 
 /**
- * HOC Handle Wegas's script object
+ * HOC Handle Wegas' script object
  * @param {React.Component} Comp Component to augment
  */
 

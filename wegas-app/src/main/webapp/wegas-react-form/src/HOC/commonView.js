@@ -14,7 +14,7 @@ const extraShortStyle = css({
 });
 
 const shortStyle = css({
-    maxWidth: '9em'
+    maxWidth: '10em'
 });
 
 const shortInlineStyle = css(
@@ -47,7 +47,7 @@ const errorStyle = css({
 });
 
 
-// @TODO Where did this one come from ???
+// Used e.g. inside "Choices" (answers to questions):
 const borderTopStyle = css({
     borderTop: '2px solid #6a95b6',
     width: '40em',
@@ -105,8 +105,6 @@ export default function commonView(Comp) {
             label: PropTypes.string,
             description: PropTypes.string,
             className: PropTypes.string,
-            //borderTop: PropTypes.bool,
-            //indent: PropTypes.bool,
             style: PropTypes.object,
             layout: PropTypes.string
         })

@@ -19,7 +19,7 @@ export function RemoveStatementButton(props) {
             <IconButton
                 icon="fa fa-minus"
                 onClick={props.onClick}
-                tooltip="remove"
+                tooltip="Remove"
                 className={removeStatement.toString()}
             />
         </span>
@@ -32,7 +32,7 @@ export function AddStatementButton(props) {
             onClick={props.onClick}
             iconColor="#9DC06F"
             icon="fa fa-plus"
-            tooltip="add"
+            tooltip="Add"
             label={props.label}
             className={addStatement.toString()}
         />

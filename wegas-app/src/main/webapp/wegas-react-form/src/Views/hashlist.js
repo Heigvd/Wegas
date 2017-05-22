@@ -53,8 +53,8 @@ class HashlistView extends React.Component {
             return (
                 <div key={child.props.editKey}>
                     <IconButton
-                        icon="fa fa-minus"
-                        tooltip="remove"
+                        icon="fa fa-trash"
+                        tooltip="Remove property"
                         onClick={remove}
                     />
                     <div style={{ position: 'relative' }}>
@@ -93,8 +93,8 @@ class HashlistView extends React.Component {
                 />
                 <IconButton
                     key="newkeyadd"
-                    icon="fa fa-plus"
-                    tooltip="add"
+                    icon="fa fa-plus-circle"
+                    tooltip="Add property value"
                     onClick={this.addChild}
                 />
             </ObjectView>

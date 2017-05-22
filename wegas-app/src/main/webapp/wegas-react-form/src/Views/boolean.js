@@ -8,6 +8,7 @@ import FormStyles from './form-styles';
 const booleanContainerStyle = css({
     marginTop: '-5px',
     '& label': {
+        display: 'inline-block',
         fontSize: FormStyles.labelFontSize,
         verticalAlign: '1px'
     },

@@ -19,8 +19,7 @@ const inputStyle = css({
 
 const textareaFocus = css({
     ':focus': {
-        border: '1px solid lightgrey',
-        marginTop: '-17px'
+        border: '1px solid lightgrey'
     }
 });
 

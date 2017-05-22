@@ -747,7 +747,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     className: "wegas-advanced-feature",
                     label: "Script alias",
                     //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
-                    description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
+                    description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
                 },
                 validator: function (s) {
                     return s === null || Y.Lang.isString(s);
