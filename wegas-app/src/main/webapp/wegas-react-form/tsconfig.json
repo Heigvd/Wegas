@@ -15,6 +15,9 @@
         "src",
         "typings"
     ],
+    "exclude": [
+        "node_modules"
+    ],
     "awesomeTypescriptLoaderOptions": {
         "useBabel": true,
         "useCache": true,

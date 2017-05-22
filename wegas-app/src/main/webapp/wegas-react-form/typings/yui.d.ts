@@ -1810,7 +1810,7 @@ declare module Y {
         Global: EventTarget;
         meta: any;
         version: string;
-        [namespace: string]: {};
+        [namespace: string]: any;
         applyTo(id: string, method: string, args: any[]): any;
         applyConfig(o: any): any;
         cached(source: Function, cache?: any, refetch?: any): Function;
@@ -4038,7 +4038,7 @@ declare module Y {
         Cache: Plugin_Cache;
         AutoComplete: Plugin_AutoComplete;
         WidgetAnim: Plugin_WidgetAnim;
-        [PluginName: string]: Plugin_Base | Plugin_Host;
+        [PluginName: string]: Plugin_Base | Plugin_Host
 
     }
 
@@ -4079,7 +4079,6 @@ declare module Y {
     }
 
     interface Plugin_Cache extends Plugin_Base {
-
         NS: string;
         NAME: string;
 
@@ -4162,11 +4161,11 @@ declare module Y {
 
 
         hasPlugin(ns: string): Plugin;
-        plug(P: Function, config: any): Base;
-        plug(P: any, config: any): Base;
-        plug(P: any[], config: any): Base;
-        unplug(plugin: string): Base;
-        unplug(plugin: Function): Base;
+        plug(P: Plugin_Base, config: any): this;
+        plug(P: Plugin_Base, config?: any): this;
+        plug(P: Plugin_Base[], config?: any): this;
+        unplug(plugin: string): this;
+        unplug(plugin: Plugin_Base): this;
     }
 
     interface Plugin_Pjax extends Plugin_Base {

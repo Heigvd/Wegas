@@ -24,16 +24,16 @@
         "ordered-imports": [
             false
         ],
-        "member-access": [
-            false
-        ],
+        "jsx-no-multiline-js": false,
+        "jsx-no-lambda": {
+            "severity": "warning"
+        },
+        "member-access": false,
         "array-type": [
             true,
             "array"
         ],
-        "jsx-wrap-multiline": [
-            false
-        ],
+        "jsx-wrap-multiline": false,
         "jsx-boolean-value": [
             true,
             "never"

@@ -876,11 +876,8 @@ YUI().use(function (Y) {
         modules: {
             "wegas-react-form": {
                 path: "dist/bundle.js",
-                requires: ["wegas-react-manifest", "wegas-react-vendor", "roboto-font", "tinymce", "wegas-panel-fileselect"],
+                requires: ["wegas-react-manifest", "roboto-font", "tinymce", "wegas-panel-fileselect"],
                 ws_provides: "RForm"
-            },
-            "wegas-react-vendor": {
-                path: "dist/vendor.js"
             },
             "wegas-react-manifest": {
                 path: "dist/manifest.js"

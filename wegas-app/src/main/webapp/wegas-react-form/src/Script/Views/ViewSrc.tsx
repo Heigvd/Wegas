@@ -11,17 +11,17 @@ interface IProps {
 }
 
 const iconStyle = css({
-    cursor: 'pointer',
-    verticalAlign: '1px',
-    padding: '8px',
-    borderRadius: '50%',
+    'cursor': 'pointer',
+    'verticalAlign': '1px',
+    'padding': '8px',
+    'borderRadius': '50%',
     ':hover': {
-        background: 'lightgray'
-    }
+        background: 'lightgray',
+    },
 });
 
-const viewSourceTooltip = "View source code",
-    hideSourceTooltip = "Hide source code";
+const viewSourceTooltip = 'View source code';
+const hideSourceTooltip = 'Hide source code';
 
 /**
  * Toggle view between parsed and code
@@ -61,7 +61,7 @@ class ViewSrc extends React.Component<IProps, { src: boolean }> {
         return (
             <span>
                 <i
-                    className={classNames('fa fa-code', `${iconStyle}` )}
+                    className={classNames('fa fa-code', `${iconStyle}`)}
                     title={this.state.src ? hideSourceTooltip : viewSourceTooltip}
                     onClick={this.toggleState}
                 />
