@@ -1,9 +1,27 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { css } from 'glamor';
+import FormStyles from '../Views/form-styles';
+
 /**
- * HOC Handle Wegas's script object
+ * HOC Handle Wegas' script object
  * @param {React.Component} Comp Component to augment
  */
+
+const labelStyle = css(
+    FormStyles.labelStyle,
+    {
+        marginTop: '8px',
+        marginRight: '2px',
+    }
+);
+
+const containerStyle = css({
+    marginTop: '15px',
+    maxWidth: '100%',
+    marginRight: '10px'
+});
+
 function scriptObject(Comp) {
     /**
      * @template Script
@@ -14,20 +32,10 @@ function scriptObject(Comp) {
         const val = value || { content: '' };
         return (
             <div
-                style={{
-                    marginTop: '15px',
-                    maxWidth: '100%',
-                    marginRight: '10px'
-                }}
+                className={containerStyle}
             >
                 <span
-                    style={{
-                        fontSize: '15px',
-                        color: '#6A95B6',
-                        marginTop: '8px',
-                        marginRight: '10px',
-                        display: 'inline-block'
-                    }}
+                    className={labelStyle}
                 >
                     {view.label}
                 </span>

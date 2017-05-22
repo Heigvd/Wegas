@@ -1,9 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
+import labeled from '../HOC/labeled';
 import async from '../HOC/async';
 import commonView from '../HOC/commonView';
-import styles from '../css/select.css';
+import { css } from 'glamor';
+
+const selectStyle = css({
+    padding: '2px',
+    borderRadius: '3px',
+    border: '1px solid lightgray'
+});
+
 
 function genItems(o, i) {
     if (typeof o !== 'object') {
@@ -35,7 +43,7 @@ function SelectView(props) {
     const menuItems = choices.map(genItems);
     return (
         <select
-            className={classNames(props.view.className, styles.select)}
+            className={classNames(props.view.className, `${selectStyle}` )}
             value={props.value || ''}
             onChange={onChange}
         >
@@ -62,7 +70,7 @@ SelectView.propTypes = {
 };
 
 
-export default commonView(async(SelectView)(({ view }) => {
+export default commonView(async(labeled(SelectView))(({ view }) => {
     const { choices } = view;
     if (typeof choices === 'function') {
         return Promise.resolve(choices()).then(ch => ({ view: { ...view, choices: ch } }));

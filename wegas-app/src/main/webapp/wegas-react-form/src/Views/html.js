@@ -2,10 +2,22 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import TinyMCE from 'react-tinymce';
+import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
-import styles from '../css/html.css';
+import { css } from 'glamor';
+import FormStyles from './form-styles';
+
+const marginStyle = css({
+    width: FormStyles.textInputWidth,
+    marginTop: '4px',
+    fontSize: '13px',
+    minHeight: '45px',
+    color: 'darkslategrey',
+    // border: '1px solid lightgrey',
+    // borderRadius: '3px',
+});
 
 const Wegas = getY().Wegas;
 
@@ -112,10 +124,9 @@ function HTMLView(props) {
     };
     return (
         <div
-            className={styles.margin}
+            className={marginStyle}
         >
             <TinyMCE
-                style={{ minHeight: '45px' }}
                 content={props.value}
                 config={TINYCONFIG}
                 onChange={onValueChange}
@@ -129,4 +140,4 @@ HTMLView.propTypes = {
     value: PropTypes.string
 };
 
-export default commonView(HTMLView);
+export default commonView(labeled(HTMLView));

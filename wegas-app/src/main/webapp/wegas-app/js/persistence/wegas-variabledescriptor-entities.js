@@ -129,7 +129,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             var key, scope;
             player = player || Wegas.Facade.Game.get("currentPlayer");
             switch (this.get("scope").get("@class")) {
-                case "PlayerScope": 
+                case "PlayerScope":
                     key = player.get("id");
                     break;
                 case "TeamScope":
@@ -222,9 +222,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     index: -1,
                     view: {
                         className: "wegas-advanced-feature",
-                    label: "Script alias",
-                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
-                    description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
+                        label: "Script alias",
+                        //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                        description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
                 },
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
@@ -754,7 +754,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         history: {
                             type: ARRAY,
                             view: {
-                                className: "wegas-advanced-feature"
+                                className: "wegas-advanced-feature",
+                                label: "History"
                         }
                         }
 
@@ -817,7 +818,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             history: {
                 type: ARRAY,
                 view: {
-                    className: "wegas-advanced-feature"
+                    className: "wegas-advanced-feature",
+                    label: "History"
                 }
             }
         }
@@ -972,8 +974,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         required: true,
                         view: {
                             type: SELECT,
-                            label: "type",
-                        choices: AVAILABLE_TYPES
+                            label: "Type",
+                            choices: AVAILABLE_TYPES
                     }
                 }
             },
@@ -981,7 +983,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     type: STRING,
                     view: {
                         type: SELECT,
-                    label: "default children type",
+                    label: "Default child type",
                     choices: OPTIONAL_AVAILABLE_TYPES
                 }
             }
