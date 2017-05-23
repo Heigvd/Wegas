@@ -166,7 +166,7 @@ const Form = Y.Base.create(
                         type: 'object',
                         required: true,
                         value: {},
-                        defaultProperties: {
+                        additionalProperties: {
                             type: 'object',
                             properties: {
                                 type: {

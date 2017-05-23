@@ -139,7 +139,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 },
                 properties: {
                     type: OBJECT,
-                    defaultProperties: {
+                    additionalProperties: {
                         type: STRING,
                         required: true,
                         view: {
@@ -215,7 +215,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         },
                     properties: {
                             type: OBJECT,
-                            defaultProperties: {
+                            additionalProperties: {
                                 type: STRING,
                                 required: true,
                                 view: {
@@ -435,7 +435,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             properties: {
                 type: OBJECT,
-                defaultProperties: {
+                additionalProperties: {
                     type: STRING,
                     required: true,
                     view: {
@@ -634,7 +634,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         }
                     },
                     properties: {
-                            defaultProperties: {
+                            additionalProperties: {
                                 view: { label: VALUE }
                             },
                             view: {
@@ -648,7 +648,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             properties: {
                     type: OBJECT,
                     index: 2,
-                    defaultProperties: {
+                    additionalProperties: {
                         type: STRING,
                         view: {
                             label: VALUE

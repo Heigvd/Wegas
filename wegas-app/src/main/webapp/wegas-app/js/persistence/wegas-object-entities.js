@@ -59,7 +59,7 @@ YUI.add('wegas-object-entities', function(Y) {
             },
             properties: {
                 type: "object",
-                defaultProperties: {
+                additionalProperties: {
                     type: STRING,
                     required: true,
                     view: {
@@ -87,7 +87,7 @@ YUI.add('wegas-object-entities', function(Y) {
                     descriptorId: IDATTRDEF,
                     properties: {
                         type: "object",
-                        defaultProperties: {
+                        additionalProperties: {
                             type: STRING,
                             required: true,
                             view: {
@@ -147,7 +147,7 @@ YUI.add('wegas-object-entities', function(Y) {
                 value: "ObjectInstance"
             },
             properties: {
-                defaultProperties: {
+                additionalProperties: {
                     type: STRING,
                     required: true,
                     view: {
