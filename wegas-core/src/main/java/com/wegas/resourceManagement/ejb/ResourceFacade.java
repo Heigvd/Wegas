@@ -167,8 +167,7 @@ public class ResourceFacade {
     public ResourceInstance moveAssignment(final Long assignmentId, final int index) {
         final Assignment assignment = this.findAssignment(assignmentId);
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
-        resourceInstance.getAssignments().remove(assignment);
-        resourceInstance.getAssignments().add(index, assignment);
+        resourceInstance.moveAssignment(assignment, index);
         return resourceInstance;
     }
 

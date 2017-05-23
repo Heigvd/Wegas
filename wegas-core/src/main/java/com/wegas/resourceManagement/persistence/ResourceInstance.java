@@ -23,8 +23,6 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
-import java.util.Collections;
-import java.util.Comparator;
 
 /**
  *
@@ -177,12 +175,30 @@ public class ResourceInstance extends VariableInstance implements Propertable {
         this.assignments = assignments;
     }
 
+    public void moveAssignment(Assignment assignment, final int index) {
+        this.removeAssignment(assignment);
+        this.addAssignment(assignment, index);
+
+        List<Assignment> newAssignments =new ArrayList<>();
+
+        for (Assignment a : this.getAssignments()){
+            newAssignments.add(a);
+        }
+
+        this.setAssignments(newAssignments);
+    }
+
     /**
      *
      * @param assignment
      */
     public void addAssignment(Assignment assignment) {
         assignments.add(assignment);
+        assignment.setResourceInstance(this);
+    }
+
+    public void addAssignment(Assignment assignment, final int index) {
+        assignments.add(index, assignment);
         assignment.setResourceInstance(this);
     }
 
