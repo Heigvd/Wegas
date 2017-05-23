@@ -17,7 +17,6 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
         Wegas = Y.Wegas,
         WidgetAction, EditWidgetAction,
         AddChildWidgetAction,
-        Promise = Y.Promise,
         DeleteWidgetAction,
         PAGEDATASOURCE = Wegas.Facade.Page.cache,
         UPDATED_MSG = 'Item updated';
@@ -89,7 +88,6 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                         plugins = {},
                         pls, plugin, cfg,
                         oldCfg = entity.get('root').toObject();
-                        val = Y.JSON.parse(Y.JSON.stringify(val)); // Immutability -> clone
                     /* Retrieve page's name if it has one */
                     if (val.hasOwnProperty(PAGE_META)) {
                         PAGEDATASOURCE.editMeta(entity.get('@pageId'), val[PAGE_META], function () {

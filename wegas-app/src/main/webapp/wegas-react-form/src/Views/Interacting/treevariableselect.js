@@ -83,17 +83,21 @@ class TreeVariableSelect extends React.Component {
      * @returns {Array} items generated from variable and additional
      */
     genItems() {
+        const add = Array.isArray(this.props.view.additional)
+            ? this.props.view.additional.map(i => ({
+                  ...i,
+                  className: classnames(i.className, styles.globalMethod)
+              }))
+            : [];
         return genVarItems(
             variableFacade.data.concat(),
             this.props.view.selectable
-        ).concat(
-            this.props.view.additional.map(i => ({
-                ...i,
-                className: classnames(i.className, styles.globalMethod)
-            }))
-        );
+        ).concat(add);
     }
     labelForAdditional(value) {
+        if (!Array.isArray(this.props.view.additional)) {
+            return '';
+        }
         const found = this.props.view.additional.find(i => i.value === value);
         if (found) {
             return found.label || value;

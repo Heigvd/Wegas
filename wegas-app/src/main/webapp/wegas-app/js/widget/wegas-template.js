@@ -124,7 +124,7 @@ YUI.add("wegas-template", function (Y) {
             data: {
                 type: 'object',
                 value: { label: '' },
-                defaultProperties: {
+                additionalProperties: {
                     type: 'string'
                 },
                 view: {
