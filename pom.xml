@@ -92,8 +92,8 @@
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
         <!--<jersey.version>2.10</jersey.version>-->
         <jdk.version>1.8</jdk.version>
-        <payara.version>4.1.1.171.1</payara.version>
-        <payara-api.version>4.1.1.171.1</payara-api.version>
+        <payara.version>4.1.2.172</payara.version>
+        <payara-api.version>4.1.2.172</payara-api.version>
         <junit.version>4.10</junit.version>
         <exec.plugin.version>1.2</exec.plugin.version>
         <jar.plugin.version>2.3.1</jar.plugin.version>
