@@ -61,7 +61,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 type: NUMBER,
                 value: 3,
                 view: {
-                    label: "Number of reviews"
+                    label: "Number of reviews",
+                    description: "Maximum reviews per user. Preferably greater than one."
                 }
             },
             toReview: {
@@ -116,8 +117,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 index: 2,
                 view: {
                     //label: "Dispatch to evicted",
-                    label: "Also dispatch to users who did not submit anything",
-                    className: 'wegas-advanced-feature',
+                    label: "Also dispatch to peers who did not submit anything",
                 }
             },
             defaultInstance: {
