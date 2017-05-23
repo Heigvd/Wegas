@@ -15,7 +15,6 @@ import PageSelect from './Views/Interacting/pageselect';
 import PluginList from './Views/Interacting/pluginlist';
 import TreeVariableSelect from './Views/Interacting/treevariableselect';
 import ObjectView from './Views/object';
-import ReviewView from './Views/review';
 import SelectView from './Views/select';
 import StringView from './Views/string';
 import TextareaView from './Views/textarea';
@@ -25,9 +24,6 @@ import WegasUrl from './Views/wegas-url';
 
 setDefaultWidgets({
     array: ArrayView,
-    peerReviewDescriptor: ReviewView,
-    string: StringView,
-    number: StringView,
     boolean: BooleanView,
     entityarrayfieldselect: EntityArrayFieldSelect,
     flatvariableselect: FlatVariableSelect,
