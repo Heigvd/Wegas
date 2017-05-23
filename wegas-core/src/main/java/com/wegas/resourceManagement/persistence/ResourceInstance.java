@@ -17,8 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wegas.core.Helper;
-import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Propertable;
@@ -31,16 +30,20 @@ import com.wegas.core.persistence.VariableProperty;
 @Entity
 @Access(AccessType.FIELD)
 @JsonIgnoreProperties({"moralHistory", "confidenceHistory"})
-/*@Table(indexes = {
-    @Index(columnList = "properties.resourceinstance_variableinstance_id")
-})*/
+/*
+ * @Table(indexes = {
+ * @Index(columnList = "properties.resourceinstance_variableinstance_id")
+ * })
+ */
 public class ResourceInstance extends VariableInstance implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
-    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}/*
+     * , orphanRemoval = true
+     */)
     @JsonManagedReference
     @OrderColumn
     private List<Assignment> assignments = new ArrayList<>();
@@ -103,21 +106,13 @@ public class ResourceInstance extends VariableInstance implements Propertable {
                         ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
                             @Override
                             public void addEntity(AbstractEntity entity) {
-                                if (entity instanceof Assignment) {
-                                    Assignment assignment = (Assignment) entity;
-                                    TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
-                                    if (parent == null) {
-                                        parent = assignment.getTaskDescriptor();
-                                    }
-                                    parent.addAssignment(assignment);
-                                }
                             }
 
                             @Override
                             public void removeEntity(AbstractEntity entity) {
                                 if (entity instanceof Assignment) {
                                     Assignment assignment = (Assignment) entity;
-                                    TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                                    TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());
                                     if (parent != null) {
                                         parent.removeAssignment(assignment);
                                     }
@@ -129,22 +124,19 @@ public class ResourceInstance extends VariableInstance implements Propertable {
                 this.setActivities(ListUtils.mergeLists(this.getActivities(), other.getActivities(), new ListUtils.Updater() {
                     @Override
                     public void addEntity(AbstractEntity entity) {
-                        Activity activity = (Activity) entity;
-                        TaskDescriptor tdParent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(activity.getTaskDescriptorId());
-                        if (tdParent != null) {
-                            tdParent.addActivity(activity);
-                        }
-                        activity.getRequirement().addActivity(activity);
+                        // activity.taskInstance is revived in ResourceFacade.revive
                     }
 
                     @Override
                     public void removeEntity(AbstractEntity entity) {
                         Activity activity = (Activity) entity;
-                        TaskDescriptor tdParent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(activity.getTaskDescriptorId());
+                        TaskInstance tdParent = (TaskInstance) VariableInstanceFacade.lookup().find(activity.getTaskInstance().getId());
                         if (tdParent != null) {
                             tdParent.removeActivity(activity);
                         }
-                        activity.getRequirement().removeActivity(activity);
+                        if (activity.getRequirement() != null) {
+                            activity.getRequirement().removeActivity(activity);
+                        }
                     }
                 }));
             }
@@ -172,6 +164,9 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      * @param assignments
      */
     public void setAssignments(List<Assignment> assignments) {
+        for (Assignment assignment : assignments) {
+            assignment.setResourceInstance(this);
+        }
         this.assignments = assignments;
     }
 
@@ -217,6 +212,9 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      * @param activities
      */
     public void setActivities(List<Activity> activities) {
+        for (Activity activity : activities) {
+            activity.setResourceInstance(this);
+        }
         this.activities = activities;
     }
 
@@ -395,22 +393,23 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     }
 
     /*
-    private class UpdaterImpl implements ListUtils.Updater {
-
-        private ResourceInstance parent;
-
-        public UpdaterImpl(ResourceInstance parent) {
-            this.parent = parent;
-        }
-
-        @Override
-        public void addEntity(AbstractEntity entity) {
-            Occupation o = (Occupation) entity;
-            o.setResourceInstance(parent);
-        }
-
-        @Override
-        public void removeEntity(AbstractEntity entity) {
-        } 
-    } */
+     * private class UpdaterImpl implements ListUtils.Updater {
+     *
+     * private ResourceInstance parent;
+     *
+     * public UpdaterImpl(ResourceInstance parent) {
+     * this.parent = parent;
+     * }
+     *
+     * @Override
+     * public void addEntity(AbstractEntity entity) {
+     * Occupation o = (Occupation) entity;
+     * o.setResourceInstance(parent);
+     * }
+     *
+     * @Override
+     * public void removeEntity(AbstractEntity entity) {
+     * }
+     * }
+     */
 }

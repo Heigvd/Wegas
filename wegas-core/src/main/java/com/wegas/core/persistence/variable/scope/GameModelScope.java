@@ -9,7 +9,6 @@ package com.wegas.core.persistence.variable.scope;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -58,6 +57,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
             VariableInstance clone = vd.getDefaultInstance().clone();
+            gameModel.getPrivateInstances().add(clone);
             this.setVariableInstance(gameModel, clone);
         } else {
             Long version = vi.getVersion();
@@ -106,6 +106,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
     /**
      *
      * @param player
+     *
      * @return
      */
     @Override
@@ -122,6 +123,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
     public void setVariableInstance(GameModel key, VariableInstance v) {
         this.setVariableInstance(v);
         v.setGameModelScope(this);
+        v.setGameModel(key);
     }
 
     /**

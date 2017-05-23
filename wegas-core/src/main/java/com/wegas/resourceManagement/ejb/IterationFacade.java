@@ -12,13 +12,24 @@ import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.event.internal.InstanceRevivedEvent;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.Iteration;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
+import com.wegas.resourceManagement.persistence.TaskInstance;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
 import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +43,6 @@ public class IterationFacade extends BaseFacade<Iteration> {
 
     static final private Logger logger = LoggerFactory.getLogger(IterationFacade.class);
 
-    /**
-     *
-     */
-    @EJB
-    private PlayerFacade playerFacade;
     /**
      *
      */
@@ -67,8 +73,7 @@ public class IterationFacade extends BaseFacade<Iteration> {
     }
 
     public Iteration addIteration(Long burndownInstanceId, Iteration iteration) {
-        BurndownInstance findBurndownInstance = this.findBurndownInstance(burndownInstanceId);
-        return this.addIteration(findBurndownInstance, iteration);
+        return this.addIteration(this.findBurndownInstance(burndownInstanceId), iteration);
     }
 
     public void removeIteration(Long iterationId) {
@@ -76,14 +81,22 @@ public class IterationFacade extends BaseFacade<Iteration> {
         getEntityManager().remove(findIteration);
     }
 
-    public void addTaskToIteration(TaskDescriptor task, Iteration iteration) {
+    public void addTaskToIteration(TaskInstance task, Iteration iteration) {
         iteration.addTask(task);
         task.getIterations().add(iteration);
     }
 
-    public void removeTaskFromIteration(TaskDescriptor task, Iteration iteration) {
+    public void addTaskToIteration(Long taskInstanceId, Long iterationId) {
+        this.addTaskToIteration((TaskInstance) variableInstanceFacade.find(taskInstanceId), this.find(iterationId));
+    }
+
+    public void removeTaskFromIteration(TaskInstance task, Iteration iteration) {
         iteration.removeTask(task);
         task.getIterations().remove(iteration);
+    }
+
+    public void removeTaskFromIteration(Long taskInstanceId, Long iterationId) {
+        this.removeTaskFromIteration((TaskInstance) variableInstanceFacade.find(taskInstanceId), this.find(iterationId));
     }
 
     @Override
@@ -94,6 +107,56 @@ public class IterationFacade extends BaseFacade<Iteration> {
     @Override
     public void remove(Iteration entity) {
         getEntityManager().remove(entity);
+    }
+
+    public void instanceRevivedListener(@Observes InstanceRevivedEvent event) throws WegasNoResultException, NoPlayerException {
+        if (event.getEntity() instanceof BurndownInstance) {
+            BurndownInstance burndownInstance = (BurndownInstance) event.getEntity();
+            BurndownDescriptor burndownDescriptor = (BurndownDescriptor) burndownInstance.findDescriptor();
+
+            GameModel gameModel = burndownDescriptor.getGameModel();
+
+            Player currentPlayer = null;
+            boolean isDefault = burndownInstance.isDefaultInstance();
+            if (!isDefault) {
+                currentPlayer = variableInstanceFacade.findAPlayer(burndownInstance);
+            }
+
+            for (Iteration iteration : burndownInstance.getIterations()) {
+                if (iteration.getDeserialisedNames() != null) {
+
+                    /**
+                     * remove old references
+                     */
+                    for (TaskInstance instance : iteration.getTasks()) {
+                        instance.getIterations().remove(iteration);
+                    }
+
+                    List<TaskInstance> tasks = new ArrayList<>();
+                    for (String taskName : iteration.getDeserialisedNames()) {
+                        VariableDescriptor find = variableDescriptorFacade.find(gameModel, taskName);
+                        if (find instanceof TaskDescriptor) {
+                            TaskDescriptor theTask = (TaskDescriptor) find;
+                            TaskInstance taskInstance;
+
+                            if (isDefault) {
+                                taskInstance = theTask.getDefaultInstance();
+                            } else {
+                                taskInstance = theTask.getInstance(currentPlayer);
+                            }
+                            tasks.add(taskInstance);
+
+                        } else {
+                            throw WegasErrorMessage.error("Incompatible type, TaskDescriptor expected but " + find.getClass().getSimpleName() + " found");
+                        }
+                    }
+                    /**
+                     * setup new references
+                     */
+                    iteration.setTasks(tasks);
+                }
+            }
+        }
     }
 
     /**

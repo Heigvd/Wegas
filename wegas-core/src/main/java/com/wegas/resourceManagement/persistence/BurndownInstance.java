@@ -51,6 +51,11 @@ public class BurndownInstance extends VariableInstance {
      */
     public void setIterations(List<Iteration> iterations) {
         this.iterations = iterations;
+        if (this.iterations != null) {
+            for (Iteration iteration : iterations) {
+                iteration.setBurndownInstance(this);
+            }
+        }
     }
 
     /**

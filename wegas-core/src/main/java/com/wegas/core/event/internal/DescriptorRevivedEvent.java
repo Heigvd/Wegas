@@ -8,45 +8,20 @@
 package com.wegas.core.event.internal;
 
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.io.Serializable;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class DescriptorRevivedEvent implements Serializable {
+public class DescriptorRevivedEvent extends EntityRevivedEvent<VariableDescriptor> {
 
-    private static final long serialVersionUID = 1L;
-    /**
-     *
-     */
-    private VariableDescriptor entity;
+    private static final long serialVersionUID = 4127903472615797668L;
 
-    /**
-     *
-     */
     public DescriptorRevivedEvent() {
+        super();
     }
 
-    /**
-     *
-     * @param entity
-     */
-    public DescriptorRevivedEvent(VariableDescriptor entity) {
-        this.entity = entity;
-    }
-
-    /**
-     * @return the entity
-     */
-    public VariableDescriptor getEntity() {
-        return entity;
-    }
-
-    /**
-     * @param entity the entity to set
-     */
-    public void setEntity(VariableDescriptor entity) {
-        this.entity = entity;
+    public DescriptorRevivedEvent(VariableDescriptor vd) {
+        super(vd);
     }
 }
