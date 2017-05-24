@@ -1,8 +1,18 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
 import { css } from 'glamor';
 
+type Props = {
+    icon: string;
+    onClick: () => void;
+    label?: string;
+    disabled?: boolean;
+    opacity?: boolean;
+    grey?: boolean;
+    iconColor?: string;
+    tooltip?: string;
+    className?: string;
+}
 const shapeStyle = css({
     width: 'auto',
     minWidth: '16px',
@@ -11,7 +21,7 @@ const shapeStyle = css({
     display: 'inline-block',
     cursor: 'pointer',
     color: 'gray',
-    ':hover' : {
+    ':hover': {
         color: 'black'
     }
 });
@@ -19,7 +29,6 @@ const shapeStyle = css({
 const labelStyle = css({
     marginLeft: '0.35em'
 });
-
 
 const disabledStyle = css({
     color: 'black',
@@ -36,15 +45,14 @@ const grayStyle = css({
     fontSize: '15px',
     backgroundColor: 'white',
     backgroundOpacity: 0,
-    ':hover' : {
+    ':hover': {
         backgroundOpacity: 1
     }
 });
 
-
-function renderLabel(label) {
+function renderLabel(label?: string) {
     if (label) {
-        return <span className={labelStyle}>{label}</span>;
+        return <span className={labelStyle.toString()}>{label}</span>;
     }
     return null;
 }
@@ -58,7 +66,7 @@ function IconButton({
     opacity,
     className,
     label
-}) {
+}: Props) {
     return (
         <span
             onClick={onClick}
@@ -75,14 +83,4 @@ function IconButton({
     );
 }
 
-IconButton.propTypes = {
-    icon: PropTypes.string.isRequired,
-    onClick: PropTypes.func.isRequired,
-    disabled: PropTypes.bool,
-    opacity: PropTypes.bool,
-    grey: PropTypes.bool,
-    iconColor: PropTypes.string,
-    tooltip: PropTypes.string,
-    className: PropTypes.string
-};
 export default IconButton;
