@@ -17,7 +17,7 @@ import {
     methodDescriptor
 } from './globalMethod';
 import JSEditor from '../Views/asyncJSEditor';
-import styles from '../Views/conditionImpact.css';
+import { containerStyle } from '../Views/conditionImpactStyle';
 
 const upgradeSchema = (varSchema, methodType = 'getter') => {
     const ret = {
@@ -172,7 +172,7 @@ class Impact extends React.Component {
             );
         }
         let child = [
-            <div key="variable" className={styles.container}>
+            <div key="variable" className={containerStyle}>
                 <Form
                     schema={upgradeSchema(variableSchema(view.variable), type)}
                     value={
@@ -188,7 +188,7 @@ class Impact extends React.Component {
             const schema = this.state.methodSchem;
             if (schema) {
                 child.push(
-                    <div key="method" className={styles.container}>
+                    <div key="method" className={containerStyle}>
                         <Form
                             schema={schema}
                             value={this.state.method}
@@ -251,7 +251,7 @@ class Impact extends React.Component {
             );
         }
         return (
-            <span className={styles.container}>
+            <span className={containerStyle}>
                 {child}
             </span>
         );
