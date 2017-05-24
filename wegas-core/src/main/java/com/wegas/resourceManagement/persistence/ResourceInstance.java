@@ -10,7 +10,6 @@ package com.wegas.resourceManagement.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
@@ -18,11 +17,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.ListUtils;
-import java.util.Collections;
-import java.util.Comparator;
+import com.wegas.core.persistence.variable.Propertable;
+import com.wegas.core.persistence.VariableProperty;
 
 /**
  *
@@ -31,16 +30,20 @@ import java.util.Comparator;
 @Entity
 @Access(AccessType.FIELD)
 @JsonIgnoreProperties({"moralHistory", "confidenceHistory"})
-/*@Table(indexes = {
-    @Index(columnList = "properties.resourceinstance_variableinstance_id")
-})*/
-public class ResourceInstance extends VariableInstance {
+/*
+ * @Table(indexes = {
+ * @Index(columnList = "properties.resourceinstance_variableinstance_id")
+ * })
+ */
+public class ResourceInstance extends VariableInstance implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
-    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}/*
+     * , orphanRemoval = true
+     */)
     @JsonManagedReference
     @OrderColumn
     private List<Assignment> assignments = new ArrayList<>();
@@ -69,7 +72,8 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
+    @JsonIgnore
+    private List<VariableProperty> properties = new ArrayList<>();
     /**
      * @deprecated
      */
@@ -79,6 +83,12 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     private int confidence;
+
+    @JsonIgnore
+    @Override
+    public List<VariableProperty> getInternalProperties() {
+        return properties;
+    }
 
     /**
      *
@@ -96,21 +106,13 @@ public class ResourceInstance extends VariableInstance {
                         ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
                             @Override
                             public void addEntity(AbstractEntity entity) {
-                                if (entity instanceof Assignment) {
-                                    Assignment assignment = (Assignment) entity;
-                                    TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
-                                    if (parent == null) {
-                                        parent = assignment.getTaskDescriptor();
-                                    }
-                                    parent.addAssignment(assignment);
-                                }
                             }
 
                             @Override
                             public void removeEntity(AbstractEntity entity) {
                                 if (entity instanceof Assignment) {
                                     Assignment assignment = (Assignment) entity;
-                                    TaskDescriptor parent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(assignment.getTaskDescriptorId());
+                                    TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());
                                     if (parent != null) {
                                         parent.removeAssignment(assignment);
                                     }
@@ -122,31 +124,27 @@ public class ResourceInstance extends VariableInstance {
                 this.setActivities(ListUtils.mergeLists(this.getActivities(), other.getActivities(), new ListUtils.Updater() {
                     @Override
                     public void addEntity(AbstractEntity entity) {
-                        Activity activity = (Activity) entity;
-                        TaskDescriptor tdParent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(activity.getTaskDescriptorId());
-                        if (tdParent != null) {
-                            tdParent.addActivity(activity);
-                        }
-                        activity.getRequirement().addActivity(activity);
+                        // activity.taskInstance is revived in ResourceFacade.revive
                     }
 
                     @Override
                     public void removeEntity(AbstractEntity entity) {
                         Activity activity = (Activity) entity;
-                        TaskDescriptor tdParent = (TaskDescriptor) VariableDescriptorFacade.lookup().find(activity.getTaskDescriptorId());
+                        TaskInstance tdParent = (TaskInstance) VariableInstanceFacade.lookup().find(activity.getTaskInstance().getId());
                         if (tdParent != null) {
                             tdParent.removeActivity(activity);
                         }
-                        activity.getRequirement().removeActivity(activity);
+                        if (activity.getRequirement() != null) {
+                            activity.getRequirement().removeActivity(activity);
+                        }
                     }
                 }));
             }
             if (other.getOccupations() != null) {
                 //this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations(), new UpdaterImpl(this)));
-                this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations()));
+                this.setOccupations(ListUtils.mergeLists(this.occupations, other.occupations));
             }
-            this.setProperties(new HashMap<>());
-            this.getProperties().putAll(other.getProperties());
+            this.setProperties(other.getProperties());
             //this.setProperties(other.getProperties());
             //this.setMoral(other.getMoral());
             this.setConfidence(other.getConfidence());
@@ -166,7 +164,23 @@ public class ResourceInstance extends VariableInstance {
      * @param assignments
      */
     public void setAssignments(List<Assignment> assignments) {
+        for (Assignment assignment : assignments) {
+            assignment.setResourceInstance(this);
+        }
         this.assignments = assignments;
+    }
+
+    public void moveAssignment(Assignment assignment, final int index) {
+        this.removeAssignment(assignment);
+        this.addAssignment(assignment, index);
+
+        List<Assignment> newAssignments =new ArrayList<>();
+
+        for (Assignment a : this.getAssignments()){
+            newAssignments.add(a);
+        }
+
+        this.setAssignments(newAssignments);
     }
 
     /**
@@ -175,6 +189,11 @@ public class ResourceInstance extends VariableInstance {
      */
     public void addAssignment(Assignment assignment) {
         assignments.add(assignment);
+        assignment.setResourceInstance(this);
+    }
+
+    public void addAssignment(Assignment assignment, final int index) {
+        assignments.add(index, assignment);
         assignment.setResourceInstance(this);
     }
 
@@ -193,6 +212,9 @@ public class ResourceInstance extends VariableInstance {
      * @param activities
      */
     public void setActivities(List<Activity> activities) {
+        for (Activity activity : activities) {
+            activity.setResourceInstance(this);
+        }
         this.activities = activities;
     }
 
@@ -227,6 +249,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      * @param task
+     *
      * @return the activity public Activity createActivity(TaskDescriptor task)
      *         { final Activity activity = new Activity(task);
      *         this.addActivity(activity); return activity; }
@@ -235,13 +258,14 @@ public class ResourceInstance extends VariableInstance {
      * @return the activities
      */
     public List<Occupation> getOccupations() {
-        Collections.sort(this.occupations, new Comparator<Occupation>() {
+        return occupations;
+        /*Collections.sort(this.occupations, new Comparator<Occupation>() {
             @Override
             public int compare(Occupation a, Occupation b) {
                 return ((Double) a.getTime()).compareTo(b.getTime());
             }
         });
-        return occupations;
+        return occupations;*/
     }
 
     private Occupation getOccupation(double time) {
@@ -318,50 +342,8 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * @return the properties
-     */
-    public Map<String, String> getProperties() {
-        return this.properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    /**
-     *
-     * @param key
-     * @param val
-     */
-    public void setProperty(String key, String val) {
-        this.properties.put(key, val);
-    }
-
-    /**
-     *
-     * @param key
-     * @return true is the resourceInstance is active
-     */
-    public String getProperty(String key) {
-        return this.properties.get(key);
-    }
-
-    /**
-     * get property by key, cast to double
-     *
-     * @param key
-     * @return the value mapped by key, cast to double
-     * @throws NumberFormatException if the property is not a number
-     */
-    public double getPropertyD(String key) {
-        return Double.valueOf(this.properties.get(key));
-    }
-
-    /**
      * @return the moral
+     *
      * @deprecated
      */
     @JsonIgnore
@@ -371,6 +353,7 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      * @param moral the moral to set
+     *
      * @deprecated
      */
     @JsonProperty
@@ -398,7 +381,9 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param currentPosition
      * @param nextPosition
+     *
      * @return assignment list with up to date order
+     *
      * @deprecated
      */
     public List<Assignment> moveAssignemnt(Integer currentPosition, Integer nextPosition) {
@@ -408,22 +393,23 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /*
-    private class UpdaterImpl implements ListUtils.Updater {
-
-        private ResourceInstance parent;
-
-        public UpdaterImpl(ResourceInstance parent) {
-            this.parent = parent;
-        }
-
-        @Override
-        public void addEntity(AbstractEntity entity) {
-            Occupation o = (Occupation) entity;
-            o.setResourceInstance(parent);
-        }
-
-        @Override
-        public void removeEntity(AbstractEntity entity) {
-        } 
-    } */
+     * private class UpdaterImpl implements ListUtils.Updater {
+     *
+     * private ResourceInstance parent;
+     *
+     * public UpdaterImpl(ResourceInstance parent) {
+     * this.parent = parent;
+     * }
+     *
+     * @Override
+     * public void addEntity(AbstractEntity entity) {
+     * Occupation o = (Occupation) entity;
+     * o.setResourceInstance(parent);
+     * }
+     *
+     * @Override
+     * public void removeEntity(AbstractEntity entity) {
+     * }
+     * }
+     */
 }

@@ -9,7 +9,7 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
-import com.wegas.core.event.internal.DescriptorRevivedEvent;
+import com.wegas.core.event.internal.EntityRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -116,7 +116,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      * @param event
      */
-    public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
+    public void descriptorRevivedEvent(@Observes EntityRevivedEvent event) {
         logger.debug("Received DescriptorRevivedEvent event");
 
         if (event.getEntity() instanceof ChoiceDescriptor) {

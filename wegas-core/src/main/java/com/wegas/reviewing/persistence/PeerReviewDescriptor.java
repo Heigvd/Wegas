@@ -281,7 +281,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     }
 
     public Boolean getIncludeEvicted() {
-        return includeEvicted;
+        return includeEvicted != null && includeEvicted;
     }
 
     public void setIncludeEvicted(Boolean includeEvicted) {

@@ -10,7 +10,7 @@ package com.wegas.reviewing.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityIdComparator;
+import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
@@ -41,7 +41,7 @@ import java.util.*;
     @Index(columnList = "author_variableinstance_id"),
     @Index(columnList = "reviewer_variableinstance_id")
 })
-public class Review extends AbstractEntity /* implements Broadcastable */ {
+public class Review extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,6 +57,9 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
     @Id
     @GeneratedValue
     private Long id;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime = new Date();
 
     @Enumerated(value = EnumType.STRING)
     private ReviewState reviewState;
@@ -92,6 +95,21 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
     @Override
     public Long getId() {
         return id;
+    }
+
+    /**
+     * @return the createdTime
+     */
+    @Override
+    public Date getCreatedTime() {
+        return createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    /**
+     * @param createdTime the createdTime to set
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     /**
@@ -154,7 +172,6 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
      * @return the list of evaluation instance composing the feedback
      */
     public List<EvaluationInstance> getFeedback() {
-        Collections.sort(this.feedback, new EntityIdComparator<>());
         return this.feedback;
     }
 
@@ -173,7 +190,6 @@ public class Review extends AbstractEntity /* implements Broadcastable */ {
      * @return the list of evaluation instances composing the feedback comments
      */
     public List<EvaluationInstance> getComments() {
-        Collections.sort(this.comments, new EntityIdComparator<>());
         return this.comments;
     }
 

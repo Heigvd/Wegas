@@ -46,13 +46,17 @@ angular.module('private.trainer.directives', [
             // Computes the number of elements to display.
             initMaxItemsDisplayed = function() {
                 checkWindowSize();
-                var len = isFiltering ? filtered.length : rawSessions.length;
-                if (len ===0 || len > ITEMS_IN_FIRST_BATCH) {
+                var len = currentList().length;
+                if (len === 0 || len > ITEMS_IN_FIRST_BATCH) {
                     maxItemsDisplayed = ITEMS_IN_FIRST_BATCH;
                 } else {
                     // The number of sessions is low enough to display them entirely:
                     maxItemsDisplayed = len;
                 }
+            },
+            // Returns the session list to be displayed now.
+            currentList = function() {
+                return isFiltering ? filtered : rawSessions;
             },
             // Updates the display buffer (ctrl.sessions) if needed.
             updateDisplay = function(source) {
@@ -63,7 +67,7 @@ angular.module('private.trainer.directives', [
             },
             // Adds some sessions to the bottom of the display.
             extendDisplayedItems = function() {
-                var list = isFiltering ? filtered : rawSessions;
+                var list = currentList();
                 if (maxItemsDisplayed === null) {
                     initMaxItemsDisplayed();
                 } else {
@@ -212,7 +216,7 @@ angular.module('private.trainer.directives', [
         $(window).on("resize.doResize", _.debounce(function (){
             $scope.$apply(function(){
                 initMaxItemsDisplayed();
-                updateDisplay(rawSessions);
+                updateDisplay(currentList());
             });
         },100));
 

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.DatedEntity;
 import java.util.ArrayList;
 
 /**
@@ -35,7 +36,7 @@ import java.util.ArrayList;
     @Index(columnList = "inboxinstance_variableinstance_id")
 })
 
-public class Message extends NamedEntity /*implements Broadcastable*/ {
+public class Message extends NamedEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -174,6 +175,12 @@ public class Message extends NamedEntity /*implements Broadcastable*/ {
         this.date = date;
         this.token = token;
         this.attachements = attachements;
+    }
+
+    @Override
+    @JsonIgnore
+    public Date getCreatedTime() {
+        return this.getTime();
     }
 
     /**

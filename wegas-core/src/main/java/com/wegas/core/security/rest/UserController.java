@@ -752,8 +752,7 @@ public class UserController {
         User currentUser = userFacade.getCurrentUser();
         final Collection<Game> playedGames = gameFacade.findRegisteredGames(currentUser.getId());
         for (Game g : playedGames) {
-            Collection<Team> teams = g.getTeams();
-            for (Team t : teams) {
+            for (Team t : g.getTeams()) {
                 if (teamId.equals(t.getId())) {
                     for (Player p : t.getPlayers()) {
                         if (p.getUserId().equals(currentUser.getId())) {

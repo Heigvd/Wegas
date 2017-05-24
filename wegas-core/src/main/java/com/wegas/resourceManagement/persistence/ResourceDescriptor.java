@@ -7,13 +7,12 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -21,13 +20,17 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.variable.Propertable;
+import com.wegas.core.persistence.VariableProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
+public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -41,7 +44,14 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      *
      */
     @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
+    @JsonIgnore
+    private List<VariableProperty> properties = new ArrayList<>();
+
+    @JsonIgnore
+    @Override
+    public List<VariableProperty> getInternalProperties() {
+        return properties;
+    }
 
     /**
      *
@@ -53,8 +63,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
             super.merge(a);
             ResourceDescriptor other = (ResourceDescriptor) a;
             this.setDescription(other.getDescription());
-            this.setProperties(new HashMap<>());
-            this.getProperties().putAll(other.getProperties());
+            this.setProperties(other.getProperties());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -72,50 +81,6 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * @return the properties
-     */
-    public Map<String, String> getProperties() {
-        return this.properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    /**
-     *
-     * @param key
-     * @param val
-     */
-    public void setProperty(String key, String val) {
-        this.properties.put(key, val);
-    }
-
-    /**
-     * get property by key
-     *
-     * @param key
-     * @return the key property or null
-     */
-    public String getProperty(String key) {
-        return this.properties.get(key);
-    }
-
-    /**
-     * get property by key, cast to double
-     *
-     * @param key
-     * @return the value mapped by key, cast to double
-     * @throws NumberFormatException if the property is not a number
-     */
-    public double getPropertyD(String key) {
-        return Double.valueOf(this.properties.get(key));
     }
 
     // **** Sugar for editor *** //
@@ -149,7 +114,9 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     /**
      *
      * @param p
+     *
      * @return resource moral
+     *
      * @deprecated
      */
     public Integer getMoral(Player p) {
@@ -160,6 +127,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      *
      * @param p
      * @param value
+     *
      * @deprecated
      */
     public void setMoral(Player p, Integer value) {
@@ -170,6 +138,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      *
      * @param p
      * @param value
+     *
      * @deprecated
      */
     public void addAtMoral(Player p, Integer value) {
@@ -181,8 +150,9 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      *
      * @param p
      * @param key
+     *
      * @return value matching the key from given player's instance, cast to
-     * double, or Double.NaN
+     *         double, or Double.NaN
      */
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getInstance(p).getProperty(key);
@@ -199,6 +169,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      *
      * @param p
      * @param key
+     *
      * @return value matching the key from given player's instance
      */
     public String getStringInstanceProperty(Player p, String key) {
@@ -348,6 +319,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     /**
      *
      * @param p
+     *
      * @return true is the player's resourceInstance is active
      */
     public boolean getActive(Player p) {

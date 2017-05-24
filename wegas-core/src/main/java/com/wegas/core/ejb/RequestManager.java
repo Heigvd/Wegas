@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.DependsOn;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -54,7 +53,6 @@ import org.apache.shiro.subject.Subject;
  */
 @Named("RequestManager")
 @RequestScoped
-@DependsOn("MutexSingleton")
 public class RequestManager {
 
     @PersistenceContext(unitName = "wegasPU")
@@ -75,7 +73,7 @@ public class RequestManager {
     private TransactionSynchronizationRegistry txReg;
      */
     @Inject
-    private MutexSingleton mutexSingleton;
+    ConcurrentHelper concurrentHelper;
 
     @Inject
     private GameFacade gameFacade;
@@ -391,6 +389,7 @@ public class RequestManager {
 
     /**
      * @param bundle
+     *
      * @return the ResourceBundle
      */
     public ResourceBundle getBundle(String bundle) {
@@ -436,6 +435,7 @@ public class RequestManager {
      * locked, false otherwise
      *
      * @param token
+     *
      * @return
      */
     public boolean tryLock(String token) {
@@ -446,17 +446,21 @@ public class RequestManager {
      *
      * @param token  token to tryLock
      * @param target scope to inform about the lock
+     *
      * @return
      */
     public boolean tryLock(String token, BroadcastTarget target) {
         String audience = getAudienceToLock(target);
-        boolean tryLock = mutexSingleton.tryLock(token, audience);
+        //logger.error("TryLock " + token + " for " + audience);
+        boolean tryLock = concurrentHelper.tryLock(token, audience);
         if (tryLock) {
+            //logger.error(" -> LOCKED");
             // Only register token if successfully locked
             if (!lockedToken.containsKey(token)) {
+                //logger.error("   -> NEW LOCK");
                 lockedToken.put(token, new ArrayList());
             }
-            lockedToken.get(token).add(getEffectiveAudience(audience));
+            this.registerLocalLock(token, audience);
         }
         return tryLock;
     }
@@ -469,6 +473,12 @@ public class RequestManager {
         this.lock(token, null);
     }
 
+    private void registerLocalLock(String token, String audience) {
+        String effectiveAudience = getEffectiveAudience(audience);
+        //logger.error("Register Local Lock: " + token + " -> " + effectiveAudience);
+        lockedToken.get(token).add(effectiveAudience);
+    }
+
     /**
      *
      * @param token  token to lock
@@ -476,11 +486,12 @@ public class RequestManager {
      */
     public void lock(String token, BroadcastTarget target) {
         String audience = getAudienceToLock(target);
-        mutexSingleton.lock(token, audience);
+        //logger.error("LOCK " + token + " for " + audience);
+        concurrentHelper.lock(token, audience);
         if (!lockedToken.containsKey(token)) {
             lockedToken.put(token, new ArrayList());
         }
-        lockedToken.get(token).add(getEffectiveAudience(audience));
+        this.registerLocalLock(token, audience);
     }
 
     /**
@@ -498,18 +509,23 @@ public class RequestManager {
      */
     public void unlock(String token, BroadcastTarget target) {
         String audience = getAudienceToLock(target);
-        mutexSingleton.unlock(token, audience);
+        //logger.error("UNLOCK " + token + " for " + audience);
+        concurrentHelper.unlock(token, audience);
         if (lockedToken.containsKey(token)) {
             List<String> audiences = lockedToken.get(token);
-            audiences.remove(getEffectiveAudience(audience));
+
+            String effectiveAudience = getEffectiveAudience(audience);
+            //logger.error("Remove Local Lock: " + token + " -> " + effectiveAudience);
+            audiences.remove(effectiveAudience);
             if (audiences.isEmpty()) {
+                //logger.error("Remove Local Lock COMPLETELY: " + token);
                 lockedToken.remove(token);
             }
         }
     }
 
     public Collection<String> getTokensByAudiences(List<String> audiences) {
-        return mutexSingleton.getTokensByAudiences(audiences);
+        return concurrentHelper.getTokensByAudiences(audiences);
     }
 
     public void setStatus(Response.StatusType statusInfo) {
@@ -636,11 +652,17 @@ public class RequestManager {
         this.markProcessingStartTime();
     }
 
+    public void clear() {
+        this.getEntityManager().clear();
+    }
+
     @PreDestroy
     public void preDestroy() {
         for (Entry<String, List<String>> entry : lockedToken.entrySet()) {
+            //logger.error("PreDestroy Unlock: key: " + entry.getKey());
             for (String audience : entry.getValue()) {
-                mutexSingleton.unlockFull(entry.getKey(), audience);
+                //logger.error("->ConcurrentHelper unlockFull for " + audience);
+                concurrentHelper.unlockFull(entry.getKey(), audience);
             }
         }
         if (this.currentScriptContext != null) {
@@ -651,7 +673,7 @@ public class RequestManager {
         this.logRequest();
 
         //this.getEntityManager().flush();
-        this.getEntityManager().clear();
+        this.clear();
     }
 
     public void commit(Player player, boolean clear) {

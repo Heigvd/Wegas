@@ -12,6 +12,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 
@@ -39,7 +40,7 @@ import java.util.Map;
 })
 @NamedQueries({
     @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")})
-public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget {
+public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -233,6 +234,7 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
     /**
      * @return the createdTime
      */
+    @Override
     public Date getCreatedTime() {
         return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
@@ -286,8 +288,19 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      *
      * @return all team's teamScoped instances
      */
+    @Override
     public List<VariableInstance> getPrivateInstances() {
         return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        List<VariableInstance> instances = new ArrayList<>();
+        instances.addAll(getPrivateInstances());
+        for (Player p : getPlayers()) {
+            instances.addAll(p.getAllInstances());
+        }
+        return instances;
     }
 
     /**

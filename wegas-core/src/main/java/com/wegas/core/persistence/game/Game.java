@@ -16,6 +16,8 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.jparealm.GameAccount;
@@ -48,7 +50,7 @@ import javax.validation.constraints.Pattern;
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game extends NamedEntity implements Broadcastable, BroadcastTarget {
+public class Game extends NamedEntity implements Broadcastable, BroadcastTarget, DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -168,9 +170,9 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
     public void prePersist() {
         this.setCreatedTime(new Date());
         /*
-        if (this.getTeams().isEmpty()) {
-            this.addTeam(new DebugTeam());
-        }
+         * if (this.getTeams().isEmpty()) {
+         * this.addTeam(new DebugTeam());
+         * }
          */
         this.preUpdate();
     }
@@ -197,12 +199,6 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
     @JsonManagedReference("game-team")
     @JsonView(Views.IndexI.class)
     public List<Team> getTeams() {
-        Collections.sort(this.teams, new Comparator<Team>() {
-            @Override
-            public int compare(Team a, Team b) {
-                return a.getCreatedTime().compareTo(b.getCreatedTime());
-            }
-        });
         return this.teams;
     }
 
@@ -306,6 +302,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
     /**
      * @return the createdTime
      */
+    @Override
     public Date getCreatedTime() {
         return createdTime != null ? new Date(createdTime.getTime()) : null;
     }
@@ -416,8 +413,19 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget 
      *
      * @return all game gameScoped instances
      */
+    @Override
     public List<VariableInstance> getPrivateInstances() {
         return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        List<VariableInstance> instances = new ArrayList<>();
+        instances.addAll(getPrivateInstances());
+        for (Team t : getTeams()) {
+            instances.addAll(t.getAllInstances());
+        }
+        return instances;
     }
 
     /**

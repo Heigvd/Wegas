@@ -7,11 +7,12 @@
  */
 package com.wegas.core.security.util;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.Collection;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -19,10 +20,9 @@ import java.util.Iterator;
  *
  * @author Maxence Laurent (maxence laurent gmail.com)
  */
-public class OnlineUser {
+public class OnlineUser implements Serializable {
 
-    @JsonIgnore
-    private final User user;
+    private static final long serialVersionUID = -8980828303309755447L;
 
     private final String fullname;
     private final String email;
@@ -32,7 +32,6 @@ public class OnlineUser {
     private final Long mainAccountId;
 
     public OnlineUser(User user) {
-        this.user = user;
         this.fullname = user.getName();
         this.username = user.getMainAccount().getUsername();
         this.email = user.getMainAccount().getEmail();
@@ -90,6 +89,7 @@ public class OnlineUser {
      * @return
      */
     public int getHighestRole() {
+        User user = UserFacade.lookup().find(userId);
         if (OnlineUser.hasAnyRoles(user, "Administrator")) {
             return 0;
         } else if (OnlineUser.hasAnyRoles(user, "Scenarist", "Trainer")) {

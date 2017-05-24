@@ -15,9 +15,11 @@ import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
@@ -26,7 +28,6 @@ import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.annotation.PreDestroy;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
 
@@ -138,6 +139,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     private List<VariableDescriptor> childVariableDescriptors = new ArrayList<>();
 
     /**
+     * All gameModelScoped instances
+     */
+    @JsonIgnore
+    @OneToMany(mappedBy = "gameModel", cascade = CascadeType.ALL)
+    private List<VariableInstance> privateInstances = new ArrayList<>();
+
+    /**
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -199,6 +207,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     /**
      * @param pageMap
+     *
      * @throws RepositoryException
      */
     @JsonCreator
@@ -403,6 +412,25 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         }
     }
 
+    @Override
+    public List<VariableInstance> getPrivateInstances() {
+        return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        List<VariableInstance> instances = new ArrayList<>();
+        instances.addAll(getPrivateInstances());
+        for (Game g : getGames()) {
+            instances.addAll(g.getAllInstances());
+        }
+        return instances;
+    }
+
+    public void setPrivateInstances(List<VariableInstance> privateInstances) {
+        this.privateInstances = privateInstances;
+    }
+
     /**
      * @return a list of Variable Descriptors that are at the root level of the
      *         hierarchy (other VariableDescriptor can be placed inside of a
@@ -443,13 +471,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonIgnore
     public List<Game> getGames() {
-        Collections.sort(this.games, new Comparator<Game>() {
-            @Override
-            public int compare(Game g1, Game g2) {
-                return g1.getCreatedTime().compareTo(g2.getCreatedTime());
-            }
-        });
-        return this.games;
+        return games;
     }
 
     /**
@@ -557,7 +579,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return the pages
      */
     public Map<String, JsonNode> getPages() {
-        try (final Pages pagesDAO = new Pages(this.id.toString())) {
+        try (final Pages pagesDAO = new Pages(this.id)) {
             return pagesDAO.getPagesContent();
         } catch (RepositoryException ex) {
             return new HashMap<>();
@@ -606,7 +628,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @PostPersist
     private void storePages() {
         if (this.pages != null) {
-            try (final Pages pagesDAO = new Pages(this.id.toString())) {
+            try (final Pages pagesDAO = new Pages(this.id)) {
                 pagesDAO.delete();                                              // Remove existing pages
                 // Pay Attention: this.pages != this.getPages() ! 
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository

@@ -13,8 +13,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import java.util.Date;
 
 import javax.persistence.*;
 
@@ -25,13 +27,14 @@ import javax.persistence.*;
 //@XmlType(name = "Reply")
 @JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
-    @Index(columnList = "variableinstance_id"),
+    @Index(columnList = "variableinstance_id")
+    ,
     @Index(columnList = "result_id")
 })
 @NamedQueries({
     @NamedQuery(name = "Reply.countForInstance", query = "SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :instanceId")
 })
-public class Reply extends AbstractEntity /*implements Broadcastable */ {
+public class Reply extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -40,8 +43,13 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
     @Id
     @GeneratedValue
     private Long id;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime = new Date();
     /**
-     *
+     * /
+     **
+     * <p>
      */
     private Long startTime;
     /**
@@ -98,6 +106,21 @@ public class Reply extends AbstractEntity /*implements Broadcastable */ {
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    /**
+     * @return the createdTime
+     */
+    @Override
+    public Date getCreatedTime() {
+        return createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    /**
+     * @param createdTime the createdTime to set
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
     /**

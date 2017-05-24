@@ -12,6 +12,13 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.TextDescriptor;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.GameScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import java.util.List;
@@ -77,7 +84,39 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
     //@Test
     public void getInstances() {
+        TextDescriptor gmScoped = new TextDescriptor();
+        gmScoped.setName("gmScoped");
+        gmScoped.setScope(new GameModelScope());
+        gmScoped.setDefaultInstance(new TextInstance());
+
+        TextDescriptor gScoped = new TextDescriptor();
+        gScoped.setName("gScoped");
+        gScoped.setScope(new GameScope());
+        gScoped.setDefaultInstance(new TextInstance());
+
+        TextDescriptor tScoped = new TextDescriptor();
+        tScoped.setName("tScoped");
+        tScoped.setScope(new TeamScope());
+        tScoped.setDefaultInstance(new TextInstance());
+
+        TextDescriptor pScoped = new TextDescriptor();
+        pScoped.setName("pScoped");
+        pScoped.setScope(new PlayerScope());
+        pScoped.setDefaultInstance(new TextInstance());
+
+        variableDescriptorFacade.create(gameModel.getId(), gmScoped);
+        variableDescriptorFacade.create(gameModel.getId(), gScoped);
+        variableDescriptorFacade.create(gameModel.getId(), tScoped);
+        variableDescriptorFacade.create(gameModel.getId(), pScoped);
+
         List<VariableInstance> instances = playerFacade.getInstances(player.getId());
+
+        Assert.assertEquals(1, gameModelFacade.find(gameModel.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, gameFacade.find(game.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, teamFacade.find(team.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, playerFacade.find(player.getId()).getPrivateInstances().size());
+
+        Assert.assertEquals(4, instances.size());
     }
 
     private Team createTeam(Game g, String name) {

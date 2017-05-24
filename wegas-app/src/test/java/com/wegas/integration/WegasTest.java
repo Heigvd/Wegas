@@ -1,10 +1,3 @@
-/*
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
- * Licensed under the MIT License
- */
 package com.wegas.integration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import junit.framework.Assert;
 //import net.sourceforge.jwebunit.api.IElement;
 //import net.sourceforge.jwebunit.junit.JWebUnit;
 //import static net.sourceforge.jwebunit.junit.JWebUnit.*;
@@ -38,6 +30,7 @@ import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,11 +39,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Maxence Laurent <maxence.laurent at gmail.com>
+ * @author maxence
  */
-public class IntegrationTest {
+public class WegasTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(IntegrationTest.class);
+    private static final String WEGAS_ROOT_DIR = "../wegas-app/";
+
+    private static Wegas.WegasRuntime runtime;
+
+    private static final Logger logger = LoggerFactory.getLogger(WegasTest.class);
 
     private static GlassFish glassfish;
     private static String appName;
@@ -65,30 +62,14 @@ public class IntegrationTest {
 
     private GameModel artos;
 
+    //private static Logger logger = LoggerFactory.getLogger(WegasTest.class);
+
     @BeforeClass
     public static void setUpClass() throws Exception {
-        BootstrapProperties bootstrapProperties = new BootstrapProperties();
 
-        GlassFishProperties glassfishProperties = new GlassFishProperties();
-        glassfishProperties.setPort("http-listener-1", 5454);
-        glassfishProperties.setPort("http-listener-2", 5353);
-        //glassfishProperties.setInstanceRoot("./src/test/glassfish/domains/domain1");
-        glassfishProperties.setConfigFileURI((new File("./src/test/glassfish/domains/domain1/config/domain.xml")).toURI().toString());
-        //glassfishProperties.setConfigFileReadOnly(false);
-        TestHelper.resetTestDB();
-        glassfish = GlassFishRuntime.bootstrap(bootstrapProperties).newGlassFish(glassfishProperties);
-        //Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
-        //Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
-        glassfish.start();
-
-        File war = new File("./target/Wegas.war");
-        Deployer deployer = glassfish.getDeployer();
-        appName = deployer.deploy(war);
-
-        File appDirectory = new File("target/Wegas/");
-        Helper.setWegasRootDirectory(appDirectory.getAbsolutePath());
-
-        base = "http://localhost:5454/Wegas";
+        runtime = Wegas.boot("wegas_test", "localhost", null, true, 8280);
+        //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
+        
         client = new WegasRESTClient(base);
 
         scenarist = client.signup("scenarist@local", "1234");
@@ -105,13 +86,7 @@ public class IntegrationTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        if (glassfish != null) {
-            Deployer deployer = glassfish.getDeployer();
-            if (deployer != null) {
-                deployer.undeploy(appName);
-            }
-            glassfish.dispose();
-        }
+        Wegas.shutdown(runtime);
     }
 
     @Before
@@ -191,9 +166,7 @@ public class IntegrationTest {
 
     @Test
     public void testUpdateAndCreateGame() throws IOException, JSONException {
-
         GameModel myGameModel = client.postJSONFromFile("/rest/GameModel", "src/test/resources/gmScope.json", GameModel.class);
-
         Game myGame = client.postJSON_asString("/rest/GameModel/" + myGameModel.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + myGameModel.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Test Game\"}", Game.class);
         myGame.getId();
     }
@@ -260,4 +233,5 @@ public class IntegrationTest {
 
         logger.error("TESTS:  " + pContent + "/" + tContent);
     }
+
 }

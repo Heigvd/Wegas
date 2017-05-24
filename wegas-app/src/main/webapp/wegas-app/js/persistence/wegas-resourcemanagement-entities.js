@@ -491,10 +491,19 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             assignments: {
                 type: ARRAY,
-                value: []
+                value: [],
+                _inputex: {
+                    _type: HIDDEN
+                }
             },
             occupations: {
                 type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("time") - b.get("time");
+                    });
+                    return v;
+                },
                 value: [],
                 _inputex: {
                     _type: HIDDEN
@@ -502,7 +511,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             activities: {
                 type: ARRAY,
-                value: []
+                value: [],
+                _inputex: {
+                    _type: HIDDEN
+                }
             }
         }
     });
@@ -517,7 +529,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 assignments = employee.getInstance().get(abstractAssignments);
                 for (i = 0; i < assignments.length; i++) {
                     dict = {};
-                    if (assignments[i].get('taskDescriptorId') === this.get("id")) {
+                    if (assignments[i].get('taskDescriptorName') === this.get("name")) {
                         dict.taskDescriptor = this;
                         dict.ressourceInstance = employee.getInstance();
                         dict.ressourceDescriptor = employee;
@@ -845,7 +857,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "Activity"
             },
-            taskDescriptorId: {
+            taskDescriptorName: {
                 type: STRING
             },
             time: {
@@ -875,9 +887,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             editable: {
                 type: BOOLEAN
-            },
-            taskDescriptorId: {
-                type: STRING
             }
         }
     });
@@ -889,7 +898,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "TaskInstance"
             },
-            taskDescriptorId: {
+            taskDescriptorName: {
                 type: STRING
             }
         }
@@ -959,24 +968,30 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             iterations: {
                 type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("createdTime") - b.get("createdTime");
+                    });
+                    return v;
+                },
                 value: []
             }
         }
     });
 
     persistence.Iteration = Y.Base.create("Iteration", persistence.Entity, [], {
-        getTaskDescriptors: function() {
-            var ids = this.get("taskDescriptorsId"), i, taskDs = [];
+        getTaskInstances: function() {
+            var ids = this.get("taskInstancesId"), i, taskDs = [];
             for (i = 0; i < ids.length; i += 1) {
-                taskDs.push(Y.Wegas.Facade.Variable.cache.find("id", ids[i]));
+                taskDs.push(Y.Wegas.Facade.Instance.cache.find("id", ids[i]));
             }
             return taskDs;
         },
         getRemainingWorkload: function() {
-            var taskI, taskDs, i, workload = 0;
-            taskDs = this.getTaskDescriptors();
-            for (i = 0; i < taskDs.length; i += 1) {
-                taskI = taskDs[i].getInstance();
+            var taskI, taskIs, i, workload = 0;
+            taskIs = this.getTaskInstances();
+            for (i = 0; i < taskIs.length; i += 1) {
+                taskI = taskIs[i];
                 if (taskI.get("properties.completeness") < 100) {
                     workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
                         return previous + current.get("quantity") * (100 - current.get("completeness")) / 100;
@@ -986,13 +1001,13 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             return workload;
         },
         getTotalWorkload: function() {
-            var taskI, taskDs, i, workload = 0;
+            var taskI, taskIs, i, workload = 0;
             if (this.hasBegun()) {
                 return this.get("totalWorkload");
             } else {
-                taskDs = this.getTaskDescriptors();
-                for (i = 0; i < taskDs.length; i += 1) {
-                    taskI = taskDs[i].getInstance();
+                taskIs = this.getTaskInstances();
+                for (i = 0; i < taskIs.length; i += 1) {
+                    taskI = taskIs[i];
                     workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
                         return previous + current.get("quantity");
                     });
@@ -1001,14 +1016,14 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
         },
         getStatus: function() {
-            var tasks = this.getTaskDescriptors(),
+            var tasks = this.getTaskInstances(),
                 i, taskI, started, completed = tasks.length > 0,
                 completeness;
 
             started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
 
             for (i = 0; i < tasks.length; i += 1) {
-                taskI = tasks[i].getInstance();
+                taskI = tasks[i];
                 completeness = taskI.get("properties.completeness");
                 if (completeness < 100) {
                     completed = false;
@@ -1051,8 +1066,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             workloads: {
                 type: ARRAY
             },
-            taskDescriptorsId: {
+            taskInstancesId: {
                 type: ARRAY
+            },
+            createdTime: {
+                transient: true
             }
         }
     });

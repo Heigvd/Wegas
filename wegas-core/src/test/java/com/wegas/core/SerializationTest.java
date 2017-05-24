@@ -161,7 +161,7 @@ public class SerializationTest {
         ObjectInstance objI = new ObjectInstance();
         objD.setDefaultInstance(objI);
         objI.setDefaultDescriptor(objD);
-        objI.getProperties().put("Key", "Value");
+        objI.setProperty("Key", "Value");
 
         StringDescriptor stringD = new StringDescriptor();
         StringInstance stringI = new StringInstance();
@@ -314,23 +314,37 @@ public class SerializationTest {
     }
 
     @Test
-    public void testResourceManagementSerialization() throws JsonProcessingException {
+    public void testResourceManagementSerialization() throws JsonProcessingException, IOException {
         /*
          *  RESOURCE MANAGEMENT  
          */
+
+        String propertyValue = "Some value";
+
         TaskDescriptor taskD = new TaskDescriptor();
         TaskDescriptor taskD2 = new TaskDescriptor();
         taskD.setDescription("DESC");
         taskD.addPredecessor(taskD2);
         taskD.setName("taskD");
+        taskD.setProperty("descriptorProperty", propertyValue);
         TaskInstance taskI = new TaskInstance();
         taskI.setDefaultDescriptor(taskD);
         taskD.setDefaultInstance(taskI);
         taskI.getPlannification().add(1);
         taskI.getPlannification().add(2);
+        taskI.setProperty("instanceProperty", propertyValue);
 
         assertPropertyEquals(mapper.writeValueAsString(taskD), "@class", "TaskDescriptor");
         assertPropertyEquals(mapper.writeValueAsString(taskI), "@class", "TaskInstance");
+
+        String strTaskD = mapper.writeValueAsString(taskD);
+        String strTaskI = mapper.writeValueAsString(taskI);
+
+        TaskInstance readTaskI = mapper.readValue(strTaskI, TaskInstance.class);
+        TaskDescriptor readTaskD = mapper.readValue(strTaskD, TaskDescriptor.class);
+
+        assertEquals(propertyValue, readTaskI.getProperty("instanceProperty"));
+        assertEquals(propertyValue, readTaskD.getProperty("descriptorProperty"));
 
         ResourceDescriptor resourceD = new ResourceDescriptor();
         resourceD.setName("resourceD");
@@ -343,9 +357,10 @@ public class SerializationTest {
         assertPropertyEquals(mapper.writeValueAsString(resourceI), "@class", "ResourceInstance");
 
         Activity activity = new Activity();
-        taskD.addActivity(activity);
+        taskI.addActivity(activity);
 
-        Assignment assignment = new Assignment(taskD);
+        Assignment assignment = new Assignment();
+        assignment.setTaskInstance(taskI);
         assignment.setResourceInstance(resourceI);
 
         Occupation occupation = new Occupation(2.0);

@@ -7,10 +7,9 @@
  */
 package com.wegas.core.jcr.content;
 
-import com.wegas.core.jcr.SessionHolder;
+import com.wegas.core.jcr.SessionManager;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import javax.jcr.*;
 import java.io.ByteArrayInputStream;
@@ -19,6 +18,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -30,9 +31,17 @@ public class ContentConnector implements AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
 
-    static final private String EXPORT_NODE_NAME = "exportedFiles";
+    private final long gameModelId;
 
     final private Session session;
+
+    private String workspaceRoot;
+    private final WorkspaceType workspaceType;
+
+    public static enum WorkspaceType {
+        FILES,
+        HISTORY
+    }
 
     /**
      * @param bytes
@@ -48,23 +57,37 @@ public class ContentConnector implements AutoCloseable {
         return String.format("%.1f%sB", bytes / Math.pow(unit, exponent), prefix);
     }
 
+    public static ContentConnector getFilesConnector(long gameModelId) throws RepositoryException {
+        return new ContentConnector(gameModelId, WorkspaceType.FILES);
+    }
+
+    public static ContentConnector getHistoryConnector(long gameModelId) throws RepositoryException {
+        return new ContentConnector(gameModelId, WorkspaceType.HISTORY);
+    }
+
+
     /**
      * @param gameModelId
      * @throws RepositoryException
      */
-    protected ContentConnector(Long gameModelId) throws RepositoryException {
-        String workspace = "GM_" + gameModelId;
-        this.session = SessionHolder.getSession(workspace);
-        this.initializeNamespaces();
-
-    }
-
-    /**
-     * @throws RepositoryException
-     */
-    protected ContentConnector() throws RepositoryException {
-        this.session = SessionHolder.getSession(null);
-        this.initializeNamespaces();
+    public ContentConnector(long gameModelId, WorkspaceType workspaceType) throws RepositoryException {
+        this.gameModelId = gameModelId;
+        this.workspaceType = workspaceType;
+        switch (workspaceType) {
+            case FILES:
+                this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
+                break;
+            case HISTORY:
+                this.workspaceRoot = WFSConfig.HISTORY_ROOT.apply(gameModelId);
+                break;
+        }
+        this.session = SessionManager.getSession();
+        if (!this.session.nodeExists(this.workspaceRoot)) {
+            Node n = SessionManager.createPath(this.session, this.workspaceRoot);
+            this.initializeNamespaces();
+            n.setProperty(WFSConfig.WFS_MIME_TYPE, DirectoryDescriptor.MIME_TYPE);
+            this.save(); // write it so that concurrent session may access it.
+        }
     }
 
     /**
@@ -74,7 +97,7 @@ public class ContentConnector implements AutoCloseable {
      */
     protected Node getNode(String absolutePath) throws RepositoryException {
         try {
-            return session.getNode(absolutePath);
+            return session.getNode(this.workspaceRoot + absolutePath);
         } catch (PathNotFoundException ex) {
             logger.debug("Could not retrieve node ({})", ex.getMessage());
             return null;
@@ -87,14 +110,14 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     protected boolean nodeExist(String absolutePath) throws RepositoryException {
-        return session.nodeExists(absolutePath);
+        return session.nodeExists(this.workspaceRoot + absolutePath);
     }
 
     /**
      * @param absolutePath
      * @throws RepositoryException
      */
-    protected void deleteFile(String absolutePath) throws RepositoryException {
+    protected void deleteNode(String absolutePath) throws RepositoryException {
         this.getNode(absolutePath).remove();
         session.save();
     }
@@ -106,7 +129,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     protected NodeIterator listChildren(String path) throws RepositoryException {
-        return session.getNode(path).getNodes(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
+        return this.getNode(path).getNodes("*");
     }
 
     /*
@@ -249,54 +272,6 @@ public class ContentConnector implements AutoCloseable {
      * @return
      * @throws RepositoryException
      */
-    protected Boolean isPrivate(String absolutePath) throws RepositoryException {
-        try {
-            return this.getProperty(absolutePath, WFSConfig.WFS_PRIVATE).getBoolean();
-        } catch (NullPointerException ex) {
-            return false;
-        }
-    }
-
-    /**
-     * @param absolutePath
-     * @param priv
-     * @throws RepositoryException
-     */
-    protected void setPrivate(String absolutePath, Boolean priv) throws RepositoryException {
-        this.getNode(absolutePath).setProperty(WFSConfig.WFS_PRIVATE, priv);
-    }
-
-    /**
-     * Check the entire path for a private property set to true
-     *
-     * @param absolutePath
-     * @return
-     */
-    protected Boolean isInheritedPrivate(String absolutePath) {
-        Boolean ret = false;
-        Node node;
-        try {
-            node = this.getNode(absolutePath);
-            while (!ret && !isRoot(node)) {
-                try {
-                    ret = node.getProperty(WFSConfig.WFS_PRIVATE).getBoolean();
-                } catch (PathNotFoundException e) {
-                    ret = false;
-                }
-                node = node.getParent();
-            }
-            ret = ret || (node.hasProperty(WFSConfig.WFS_PRIVATE) && node.getProperty(WFSConfig.WFS_PRIVATE).getBoolean());
-        } catch (RepositoryException | NullPointerException ex) {
-            return false;
-        }
-        return ret;
-    }
-
-    /**
-     * @param absolutePath
-     * @return
-     * @throws RepositoryException
-     */
     protected Calendar getLastModified(String absolutePath) throws RepositoryException {
         return this.getProperty(absolutePath, WFSConfig.WFS_LAST_MODIFIED).getDate();
     }
@@ -350,67 +325,27 @@ public class ContentConnector implements AutoCloseable {
     }
 
     /**
-     * Jackrabbit doesn't handle workspace deletetion, falling back to remove
-     * all undelying nodes
+     * Remove root node.
      *
      * @throws RepositoryException
      */
-    public void deleteWorkspace() throws RepositoryException {
-        //throw new UnsupportedOperationException("Jackrabbit: There is currently no programmatic way to delete workspaces. You can delete a workspace by manually removing the workspace directory when the repository instance is not running.");
-        String name = session.getWorkspace().getName();
-        Session adminSession = SessionHolder.getSession(null);
-        try {
-            adminSession.getWorkspace().deleteWorkspace(name);
-        } catch (UnsupportedRepositoryOperationException ex) {
-            logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace.");
-            this.clearWorkspace();
-        } finally {
-            SessionHolder.closeSession(adminSession);
-        }
+    public void deleteRoot() throws RepositoryException {
+        this.getNode("/").remove();
     }
 
     /**
-     * @param oldGameModelId
+     * @param fromGameModel
      * @throws RepositoryException
      */
-    public void cloneWorkspace(Long oldGameModelId) throws RepositoryException {
-        try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(oldGameModelId)) {
-            NodeIterator it = connector.listChildren("/");
-
-            String path;
-            while (it.hasNext()) {
-                path = it.nextNode().getPath();
-                session.getWorkspace().clone("GM_" + oldGameModelId, path, path, true);
-            }
-            PropertyIterator propertyIterator = connector.getNode("/").getProperties(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
-            Property prop;
-            while (propertyIterator.hasNext()) {
-                prop = propertyIterator.nextProperty();
-                session.getRootNode().setProperty(prop.getName(), prop.getValue());
-            }
-            session.save();
+    public void cloneRoot(Long fromGameModel) throws RepositoryException {
+        try (ContentConnector connector = new ContentConnector(fromGameModel, workspaceType)) {
+            final String fromPath = connector.getNode("/").getPath();
+            this.session.refresh(true);
+            final String destPath = this.getNode("/").getPath();
+            this.getNode("/").remove();
+            this.save();
+            this.session.getWorkspace().copy(fromPath, destPath);
         }
-    }
-
-    /**
-     * @throws RepositoryException
-     */
-    public void clearWorkspace() throws RepositoryException {
-        NodeIterator it = session.getRootNode().getNodes("*");
-        while (it.hasNext()) {
-            Node node = it.nextNode();
-            if (!(node.getName().equals("jcr:system") || node.getName().equals("rep:policy"))) {
-                node.remove();
-            }
-        }
-        PropertyIterator properties = session.getRootNode().getProperties();
-        while (properties.hasNext()) {
-            Property property = properties.nextProperty();
-            if (!(property.getName().startsWith("jcr:") || property.getName().startsWith("rep:") || property.getName().startsWith("sling:"))) {
-                property.remove();
-            }
-        }
-        this.save();
     }
 
     /**
@@ -430,17 +365,10 @@ public class ContentConnector implements AutoCloseable {
      * @param out
      * @throws RepositoryException
      * @throws IOException
-     * @throws SAXException
      */
     public void exportXML(OutputStream out) throws RepositoryException, IOException {
-        final NodeIterator nodeIterator = this.listChildren("/");
-        final Node exportNode = session.getRootNode().addNode(EXPORT_NODE_NAME);
-        while (nodeIterator.hasNext()) {
-            Node n = nodeIterator.nextNode();
-            session.move(n.getPath(), exportNode.getPath() + "/" + n.getName());
-        }
-        session.exportSystemView(exportNode.getPath(), out, false, false);
-        session.refresh(false); // Discard change.
+        // Export /wegas/GM_<ID>/files/ to out
+        session.exportSystemView(this.getNode("/").getPath(), out, false, false);
     }
 
     /**
@@ -450,16 +378,10 @@ public class ContentConnector implements AutoCloseable {
      */
     public void importXML(InputStream input) throws RepositoryException, IOException {
         try {
-            this.clearWorkspace();                                              // Remove nodes first
-            final Node rootNode = session.getRootNode();
+            this.deleteRoot();                                              // Remove nodes first
             session.save();
-            session.getWorkspace().importXML("/", input, ImportUUIDBehavior.IMPORT_UUID_COLLISION_THROW);
-            final NodeIterator nodes = rootNode.getNode(EXPORT_NODE_NAME).getNodes(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
-            while (nodes.hasNext()) {
-                final Node node = nodes.nextNode();
-                session.getWorkspace().move(node.getPath(), "/" + node.getName());
-            }
-            rootNode.getNode(EXPORT_NODE_NAME).remove();
+            session.getWorkspace().importXML(WFSConfig.GM_ROOT.apply(gameModelId), input, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING);
+            session.save();
         } catch (RepositoryException | IOException ex) {
             logger.error("File repository import failed", ex);
             throw ex;
@@ -481,19 +403,19 @@ public class ContentConnector implements AutoCloseable {
         }
     }
 
-    private static Boolean isRoot(Node node) throws RepositoryException {
-        try {
-            node.getParent();
-        } catch (ItemNotFoundException ex) {
-            return true;
-        }
-        return false;
+    protected Boolean isRoot(Node node) throws RepositoryException {
+        return node.getPath().equals(this.workspaceRoot);
+    }
+
+    protected String getWorkspacePath(Node node) throws RepositoryException {
+        final Pattern pattern = Pattern.compile("^" + this.workspaceRoot);
+        final Matcher matcher = pattern.matcher(node.getPath());
+        return matcher.replaceFirst("");
     }
 
     @Override
     public void close() {
         this.save();
-        SessionHolder.closeSession(session);
-
+        SessionManager.closeSession(session);
     }
 }

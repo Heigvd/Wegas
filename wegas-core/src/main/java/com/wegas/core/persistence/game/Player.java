@@ -309,8 +309,22 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
      *
      * @return all player playerScoped instances
      */
+    @Override
     public List<VariableInstance> getPrivateInstances() {
         return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        return getPrivateInstances();
+    }
+
+    @Override
+    @JsonIgnore
+    public List<Player> getPlayers() {
+        ArrayList<Player> pl = new ArrayList<>();
+        pl.add(this);
+        return pl;
     }
 
     /**

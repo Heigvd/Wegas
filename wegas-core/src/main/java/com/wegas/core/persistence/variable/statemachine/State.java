@@ -194,9 +194,10 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return unmodifiable list of transitions, sorted by index
      */
-    public List<Transition> getTransitions() {
+    @JsonIgnore
+    public List<Transition> getSortedTransitions() {
         Collections.sort(this.transitions, new Comparator<Transition>() {
             @Override
             public int compare(Transition t1, Transition t2) {
@@ -204,6 +205,13 @@ public class State extends AbstractEntity implements Searchable, Scripted {
             }
         });
         return this.transitions;
+    }
+
+    /**
+     * @return
+     */
+    public List<Transition> getTransitions() {
+        return transitions;
     }
 
     public Transition addTransition(Transition t) {

@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
@@ -15,9 +14,7 @@ import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
-import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
@@ -27,13 +24,11 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.FileController;
-import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.Views;
+import com.wegas.core.rest.HistoryController;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,10 +40,7 @@ import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -59,11 +51,6 @@ import java.util.*;
 public class GameModelFacade extends BaseFacade<GameModel> {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelFacade.class);
-
-    /**
-     *
-     */
-    final static String HISTORYPATH = "History";
 
     /**
      * fire before GameModel is removed
@@ -102,6 +89,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     private FileController fileController;
 
     @EJB
+    private HistoryController historyController;
+
+    @EJB
     private PlayerFacade playerFacade;
 
     @EJB
@@ -135,6 +125,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * already exists
      *
      * @param gameModel
+     *
      * @return true if a new debugGame has been added, false if the gameModel
      *         already has one
      */
@@ -162,6 +153,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @param toUpdate GameModel to update
      * @param source   GameModel to fetch instance from
      * @param player   instances owner
+     *
      * @return the gameModel with default instance merged with player's ones
      */
     public GameModel setDefaultInstancesFromPlayer(GameModel toUpdate, GameModel source, Player player) {
@@ -186,6 +178,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     /**
      * @param gameModelId
      * @param playerId
+     *
      * @return the gameModel with default instance merged with player's ones
      */
     public GameModel setDefaultInstancesFromPlayer(Long gameModelId, Long playerId) {
@@ -195,6 +188,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     /**
      * @param gameModelId
      * @param playerId
+     *
      * @return a new gameModel with default instance merged with player's ones
      */
     public GameModel createFromPlayer(Long gameModelId, Long playerId) {
@@ -233,6 +227,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * Find a unique name for this new game (e.g. Oldname(1))
      *
      * @param oName
+     *
      * @return new unique name
      */
     public String findUniqueName(String oName) {
@@ -251,12 +246,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     private void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
-        try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId())) {                                                                   // Clone files and pages
-            connector.cloneWorkspace(srcGameModel.getId());
-            newGameModel.setPages(srcGameModel.getPages());
-        } catch (RepositoryException ex) {
-            logger.error("Duplicating repository {} failure, {}", srcGameModel.getId(), ex.getMessage());
-        }
+// Clone Pages
+            // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
+
+            //Clone files & history (?)
+            for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
+                try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
+                    connector.cloneRoot(srcGameModel.getId());
+                } catch (RepositoryException ex) {
+                    logger.error("Duplicating repository {} failure, {}", srcGameModel.getId(), ex.getMessage());
+                }
+            }
     }
 
     public GameModel createGameGameModel(final Long entityId) throws IOException {
@@ -289,7 +289,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             this.create(newGameModel);
 
             this.duplicateRepository(newGameModel, srcGameModel);
-
             return newGameModel;
         } else {
             throw new WegasNotFoundException("GameModel not found");
@@ -298,7 +297,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     /**
      * @param gameModelId
+     *
      * @return gameModel copy
+     *
      * @throws IOException
      */
     public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
@@ -319,17 +320,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         getEntityManager().remove(gameModel);
         // Remove pages.
-        try (Pages pages = new Pages(id.toString())) {
+        try (Pages pages = new Pages(id)) {
             pages.delete();
         } catch (RepositoryException e) {
             logger.error("Error suppressing pages for gameModel {}, {}", id, e.getMessage());
         }
-        // Remove jcr repo.
-        // @TODO : in fact, removes all files but not the workspace.
-        try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
-            connector.deleteWorkspace();
-        } catch (RepositoryException ex) {
-            logger.error("Error suppressing repository {}, {}", id, ex.getMessage());
+        for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
+            try (ContentConnector connector = new ContentConnector(gameModel.getId(), wt)) {
+                connector.deleteRoot();
+            } catch (RepositoryException ex) {
+                logger.error("Error suppressing repository {}, {}", id, ex.getMessage());
+            }
         }
     }
 
@@ -368,6 +369,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     /**
      * @param status
+     *
      * @return all gameModel matching the given status
      */
     public List<GameModel> findByStatus(final GameModel.Status status) {
@@ -386,7 +388,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     /**
      * @param name
+     *
      * @return the gameModel with the given name
+     *
      * @throws WegasNoResultException gameModel not exists
      */
     public GameModel findByName(final String name) throws NonUniqueResultException, WegasNoResultException {
@@ -417,93 +421,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         //getEntityManager().flush();
         // Send an reset event (for the state machine and other)
         resetEvent.fire(new ResetEvent(gameModel));
-    }
-
-    /**
-     * @param gameModelId
-     * @param name
-     * @param serializedGameModel
-     * @throws RepositoryException
-     * @throws IOException
-     */
-    private void createVersion(Long gameModelId, String name, String serializedGameModel) throws RepositoryException, IOException {
-
-        if (!fileController.directoryExists(gameModelId, "/" + HISTORYPATH)) {  // Create version folder if it does not exist
-            fileController.createDirectory(gameModelId, HISTORYPATH, "/", null, null);
-        }
-
-        fileController.createFile(gameModelId, name + ".json", "/" + HISTORYPATH,
-                "application/octet-stream", null, null,
-                new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")), false);// Create a file containing the version
-    }
-
-    /**
-     * @param gameModelId
-     * @param name
-     * @throws RepositoryException
-     * @throws IOException
-     */
-    public void createVersion(Long gameModelId, String name) throws RepositoryException, IOException {
-        this.createVersion(gameModelId, name, this.find(gameModelId).toJson(Views.Export.class));
-    }
-
-    /**
-     * @throws IOException
-     */
-    //@Schedule(hour = "2")
-    public void automaticVersionCreation() throws IOException, RepositoryException {
-        for (GameModel model : this.findByStatus(Status.LIVE)) {
-
-            String serialized = model.toJson(Views.Export.class);
-            String hash = Integer.toHexString(serialized.hashCode());
-
-            //logger.info("for" + model + "*" + hash);
-            if (!fileController.directoryExists(model.getId(), "/" + HISTORYPATH)) {// Create version folder if it does not exist
-                fileController.createDirectory(model.getId(), HISTORYPATH, "/", null, null);
-            }
-
-            List<AbstractContentDescriptor> history = fileController.listDirectory(model.getId(), "/" + HISTORYPATH);
-            boolean found = false;
-            for (AbstractContentDescriptor item : history) {
-                //logger.info.println("checking" + item.getName() + "*" + hash);
-                if (item.getName().contains(hash)) {
-                    //logger.info.println("fOUND");
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                this.createVersion(model.getId(),
-                        new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
-                        serialized);
-            }
-
-            //System.gc();
-        }
-    }
-
-    /**
-     * create gameModel from a JSON version file
-     *
-     * @param gameModelId
-     * @param path
-     * @return the new gameModel
-     * @throws IOException
-     */
-    public GameModel createFromVersion(Long gameModelId, String path) throws IOException {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-
-        InputStream file = fileController.getFile(gameModelId, path);           // Retrieve file from content repository
-
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-        GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
-
-        gm.setName(this.findUniqueName(gm.getName()));               // Find a unique name for this new game
-
-        this.createWithDebugGame(gm);
-        return gm;
     }
 
     public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {

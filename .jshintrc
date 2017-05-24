@@ -24,9 +24,7 @@
         "YUI": true,
         "$": true,
         "_": true,
-        // Angular Mocks
         "inject": false,
-        // JASMINE
         "describe": false,
         "it": false,
         "before": false,

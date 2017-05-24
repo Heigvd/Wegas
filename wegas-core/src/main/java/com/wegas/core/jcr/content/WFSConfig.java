@@ -8,19 +8,38 @@
 package com.wegas.core.jcr.content;
 
 import com.wegas.core.Helper;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
- *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-final class WFSConfig {
+public final class WFSConfig {
 
     /**
-     * JNDI name for Repository lookup {@value #jndiRepo}
+     * JCR wegas storage root
      */
-    static final String jndiRepo = "jcr/jackrabbit";
+    static final private String WEGAS_ROOT = "/wegas";
+
+    /**
+     * gameModel root path
+     */
+    public static final Function<Long, String> GM_ROOT = (Long gameModelId) -> String.format("%s/GM_%d", WEGAS_ROOT, gameModelId);
+    /**
+     *
+     * path for gameModel files (inside workspace)
+     */
+    public static final Function<Long, String> WFS_ROOT = (Long gameModelId) -> String.format("%s/files", GM_ROOT.apply(gameModelId));
+    /**
+     * path for gameModel pages
+     */
+    public static final Function<Long, String> PAGES_ROOT = (Long gameModelId) -> String.format("%s/pages", GM_ROOT.apply(gameModelId));
+    /**
+     * path for gameModel pages
+     */
+    public static final Function<Long, String> HISTORY_ROOT = (Long gameModelId) -> String.format("%s/history", GM_ROOT.apply(gameModelId));
     /**
      * WeGAS file system namespace prefix for use with XPATH
      * <b>{@value #WeGAS_FILE_SYSTEM_PREFIX}</b>
@@ -64,7 +83,7 @@ final class WFSConfig {
      */
     static final Map<String, String> namespaces = new HashMap<String, String>() {
         {
-            put("wfs", "http://wegas.albasim.ch/wfs/1.0");                         //WeGAS File System
+            put("wfs", "http://www.wegas.com/wfs/1.0");                         //WeGAS File System
         }
     };
 }

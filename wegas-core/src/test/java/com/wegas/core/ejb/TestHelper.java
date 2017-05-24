@@ -19,7 +19,6 @@ import javax.naming.NamingException;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -51,6 +50,10 @@ public class TestHelper {
     public static synchronized EJBContainer getEJBContainer() throws NamingException {
         if (container == null) {
             try {
+                String clusterNameKey = "wegas.hazelcast.clustername";
+                String clusterName = "hz_wegas_test_cluster_" + Helper.genToken(5);
+                System.setProperty(clusterNameKey, clusterName);
+
                 Map<String, Object> properties = new HashMap<>();                       // Init Ejb container
                 properties.put(EJBContainer.MODULES, new File[]{new File("target/embed-classes")});
                 properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");

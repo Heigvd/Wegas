@@ -11,19 +11,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
+import java.util.Date;
 import java.util.Objects;
 import javax.persistence.*;
 
 /**
  * Evaluation instance is the abstract parent of different kind of evaluation.
- *
+ * <p>
  * such an instance is the effective evaluation that corresponding to an
  * EvaluationDescriptor
- *
+ * <p>
  * An evaluation instance belongs to a review, either as member of the feedback
  * (through feedbackReview 'field' or as member of the feedback comments
  * (through the 'commentsReview')
@@ -33,11 +35,13 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(value = TextEvaluationInstance.class),
-    @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
+    @JsonSubTypes.Type(value = TextEvaluationInstance.class)
+    ,
+    @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class)
+    ,
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
-public abstract class EvaluationInstance extends AbstractEntity /*implements Broadcastable */ {
+public abstract class EvaluationInstance extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -134,6 +138,20 @@ public abstract class EvaluationInstance extends AbstractEntity /*implements Bro
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    /**
+    @Override
+     * @return index
+     */
+    public int getIndex() {
+        return this.getDescriptor() != null ? this.getDescriptor().getIndex() : 0;
+    }
+
+    /**
+     * @param index the index number to set
+     */
+    public void setIndex(int index) {
     }
 
     /**

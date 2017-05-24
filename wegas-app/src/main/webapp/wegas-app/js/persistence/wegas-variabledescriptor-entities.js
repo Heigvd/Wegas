@@ -440,7 +440,11 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     /**
      * VariableInstance mapper
      */
-    persistence.VariableInstance = Base.create("VariableInstance", persistence.Entity, [], {}, {
+    persistence.VariableInstance = Base.create("VariableInstance", persistence.Entity, [], {
+        getDescriptor: function() {
+            return Y.Wegas.Facade.Variable.cache.find("id", this.get("descriptorId"));
+        }
+    }, {
         ATTRS: {
             version: {
                 type: NUMBER,
@@ -1287,6 +1291,13 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             },
             messages: {
                 type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        // newer first
+                        return b.get("time") - a.get("time");
+                    });
+                    return v;
+                },
                 "transient": true,
                 value: []
             },
@@ -1314,6 +1325,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             from: {},
             token: {},
             date: {},
+            time: {
+                "transient": true
+            },
             attachements: {}
         }
     });

@@ -9,10 +9,10 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
-import com.wegas.core.persistence.EntityIdComparator;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import org.eclipse.persistence.annotations.BatchFetch;
@@ -93,11 +93,18 @@ public class QuestionInstance extends VariableInstance {
     }
 
     /**
+     * @return unmodifiable reply list, ordered by createdTime
+     */
+    @JsonIgnore
+    public List<Reply> getSortedReplies() {
+        return Helper.copyAndSort(this.replies, new EntityComparators.CreateTimeComparator<>());
+    }
+
+    /**
      * @return the replies
      */
     @JsonManagedReference
     public List<Reply> getReplies() {
-        Collections.sort(this.replies, new EntityIdComparator<>());
         return replies;
     }
 
@@ -175,6 +182,7 @@ public class QuestionInstance extends VariableInstance {
 
     /**
      * @param index
+     *
      * @return iest choiceDescriptor
      */
     public ChoiceDescriptor item(int index) {

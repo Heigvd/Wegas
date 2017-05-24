@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import java.io.Serializable;
 
 /**
  *
@@ -24,9 +25,9 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 @Table(indexes = {
     @Index(columnList = "variableinstance_id")
 })
-public class Occupation extends AbstractAssignement /* implements Broadcastable */ {
+public class Occupation extends AbstractEntity {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5183770682755470296L;
     /**
      *
      */
@@ -50,13 +51,6 @@ public class Occupation extends AbstractAssignement /* implements Broadcastable 
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
     private String description = "";
-    /**
-     *
-     *
-     * @ManyToOne(optional = true)
-     * @JoinColumn(name = "taskdescriptor_id", nullable = true)
-     * @JsonIgnore private TaskDescriptor taskDescriptor;
-     */
 
     /**
      *
@@ -111,7 +105,6 @@ public class Occupation extends AbstractAssignement /* implements Broadcastable 
         return this.getResourceInstance().getEntities();
     }
      */
-
     @Override
     public Long getId() {
         return this.id;
@@ -148,25 +141,6 @@ public class Occupation extends AbstractAssignement /* implements Broadcastable 
         this.resourceInstance = resourceInstance;
     }
 
-    /**
-     *
-     * @return
-     *
-     * @JsonIgnore public Long getTaskDescriptorId() { if (this.taskDescriptor
-     * != null) { return this.taskDescriptor.getId(); } else { return null; } }
-     */
-    /**
-     * @return the taskInstance
-     *
-     * @JsonIgnore public TaskDescriptor getTaskDescriptor() { return
-     * taskDescriptor; }
-     */
-    /**
-     * @param taskDescriptor
-     *
-     * public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
-     * this.taskDescriptor = taskDescriptor; }
-     */
     /**
      * @return the editable
      */
