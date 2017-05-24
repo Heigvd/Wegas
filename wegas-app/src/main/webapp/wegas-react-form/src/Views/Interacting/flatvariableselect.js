@@ -15,12 +15,6 @@ function genChoices(items, level, maxLevel, classFilter, selectable) {
     const enableFolder = classFilter.indexOf('ListDescriptor') > -1;
     let ret = [];
     if (level <= maxLevel) {
-        ret.push({
-            label: "- please select -",
-            value: "",
-            disabled: true,
-            selected: true
-        });
         items.forEach((i) => {
             if (i.get('@class') === 'ListDescriptor') {
                 const newItems = genChoices(

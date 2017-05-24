@@ -15,6 +15,7 @@ type Item = {
     className?: string;
     items?: Item[];
 }
+
 interface ITreeSelectProps extends WidgetProps.BaseProps {
     view: {
         selectable?: (item: Y.BaseCore) => boolean;

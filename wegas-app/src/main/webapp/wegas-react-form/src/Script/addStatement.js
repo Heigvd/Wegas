@@ -3,7 +3,28 @@ import React from 'react';
 import { types } from 'recast';
 import { RemoveStatementButton, AddStatementButton } from './Views/Button';
 import Statement from './Views/Statement';
-import styles from './Views/addStatement.css';
+import {css} from 'glamor';
+
+const removeButtonStyle = css({
+    opacity: 0,
+    marginTop: '1.5em',
+    verticalAlign: 'top',
+    display: 'inline-block',
+    transition: 'opacity 500ms 300ms'
+});
+
+const containerStyle = css({
+    // borderLeft: 'solid 1px lightsteelblue',
+    marginTop: '2em',
+    paddingLeft: '5px',
+    transition: 'border-color 500ms 300ms',
+    ':hover' : {
+        // border-left: solid 1px cornflowerblue;
+    },
+    ':hover .removeButton' : {
+        opacity: 1
+    }
+});
 
 export default function addStatement(Comp) {
     class AddStatement extends React.Component {
@@ -49,8 +70,8 @@ export default function addStatement(Comp) {
 export const removeStatement = Comp => {
     function RemoveStatement(props) {
         return (
-            <div className={styles.container}>
-                <div className={styles.removeButton}>
+            <div className={containerStyle}>
+                <div className={removeButtonStyle}>
                     <RemoveStatementButton onClick={props.onRemove} />
                 </div>
                 <Statement><Comp {...props} /></Statement>
