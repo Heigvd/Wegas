@@ -173,7 +173,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 returns: STRING,
                 arguments: [SELFARG],
                 choices: [{
-                        value: "NOT_STARTED xxx",
+                        value: "NOT_STARTED",
                         label: "editing"
                     }, {
                         value: "SUBMITTED",

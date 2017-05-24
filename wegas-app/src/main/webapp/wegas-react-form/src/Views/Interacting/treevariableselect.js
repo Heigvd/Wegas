@@ -159,7 +159,7 @@ class TreeVariableSelect extends React.Component {
                     </div>
                     {labelIconForVariable(this.props.value) ||
                         this.labelIconForAdditional(this.props.value) ||
-                        'select...'}
+                        'please select...'}
                 </a>
             </div>
         );
