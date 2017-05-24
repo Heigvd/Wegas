@@ -67,18 +67,20 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             toReview: {
                 type: STRING,
+                value: "",
                 "transient": true,
+                view: { type: HIDDEN },
                 getter: function() {
-                    return Wegas.Facade.Variable.cache.find("name", this.get("toReviewName")); // @TODO CHECK THIS
+                    return Wegas.Facade.Variable.cache.find("name", this.get("toReviewName"));
                 }
             },
             toReviewName: {
                 type: STRING,
+                required: true,
                 index: -1,
                 view: {
                     label: "To Review",
-                    type: "flatvariableselect",    // @TODO This type has to be fixed
-                    required: true,
+                    type: "flatvariableselect",
                     classFilter: ["TextDescriptor", "NumberDescriptor"]
                 }
             },
@@ -92,24 +94,32 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 }
             },
             feedback: {
-                "@class": {
-                    value: "EvaluationDescriptorContainer",
-                    type: STRING,
+                type: OBJECT,
+                value: {
+                    "@class": "EvaluationDescriptorContainer"
+                },
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "EvaluationDescriptorContainer"
+                    }
                 },
                 index: 1,
-                view: {
-                    type: HIDDEN
-                }
+                view: { type: HIDDEN }
             },
             fbComments: {
-                "@class": {
-                    value: "EvaluationDescriptorContainer",
-                    type: STRING,
+                type: OBJECT,
+                value: {
+                    "@class": "EvaluationDescriptorContainer"
+                },
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "EvaluationDescriptorContainer"
+                    }
                 },
                 index: 1,
-                view: {
-                    type: HIDDEN
-                }
+                view: { type: HIDDEN }
             },
             includeEvicted: {
                 type: BOOLEAN,
@@ -121,7 +131,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 }
             },
             defaultInstance: {
-                type: "object",
+                type: OBJECT,
                 required: true,
                 properties: {
                     "@class": {
@@ -148,7 +158,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                         type: ARRAY,
                         value: [],
                         view: { type: HIDDEN }
-                    }
+                    },
+
                 },
                 index: 3
             }
@@ -348,13 +359,18 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 value: "EvaluationDescriptor"
             },
             name: {
-                type: STRING
+                type: STRING,
+                required: true,
+                view: {
+                    label: "Name"
+                }
             },
             description: {
                 type: NULLSTRING,
                 optional: true,
                 view: {
                     type: HTML,
+                    label: "Description",
                     height: '50px'
                 }
             }/*,
