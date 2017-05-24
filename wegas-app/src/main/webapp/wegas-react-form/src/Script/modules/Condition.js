@@ -6,7 +6,7 @@ import { methodDescriptor, extractMethod } from './method';
 import { methodDescriptor as globalMethodDescriptor } from './globalMethod';
 import ConditionOperator from './ConditionOperator';
 import { renderForm, valueToType } from './args';
-import styles from '../Views/conditionImpact.css';
+import { containerStyle } from '../Views/conditionImpactStyle';
 
 const b = types.builders;
 /**
@@ -84,7 +84,7 @@ class Condition extends React.Component {
                 required: true
             };
             container = [(
-                <div key="operator" className={styles.container} >
+                <div key="operator" className={containerStyle} >
                     <ConditionOperator
                         operator={this.state.operator}
                         onChange={v => this.setState({ operator: v }, this.check)}
@@ -92,7 +92,7 @@ class Condition extends React.Component {
                     />
                 </div>
             ),
-            (<div key="right" className={styles.container} >
+            (<div key="right" className={containerStyle} >
                 {renderForm(this.state.right, schema, v => this.setState({ right: v }, this.check), undefined, 'right')}
             </div>)];
         }
