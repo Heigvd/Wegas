@@ -8,7 +8,7 @@
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-YUI.add('wegas-reviewing-entities', function (Y) {
+YUI.add('wegas-reviewing-entities', function(Y) {
     "use strict";
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", ENUM = "enum",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
@@ -38,7 +38,7 @@ YUI.add('wegas-reviewing-entities', function (Y) {
      * PeerReviewescriptor mapper
      */
     persistence.PeerReviewDescriptor = Y.Base.create("PeerReviewDescriptor", persistence.VariableDescriptor, [], {
-        helloWorld: function () {
+        helloWorld: function() {
             return "hello, world!\n";
         }
     }, {
@@ -57,7 +57,7 @@ YUI.add('wegas-reviewing-entities', function (Y) {
             toReview: {
                 type: STRING,
                 "transient": true,
-                getter: function () {
+                getter: function() {
                     return Wegas.Facade.Variable.cache.find("name", this.get("toReviewName"));
                 }
             },
@@ -220,6 +220,12 @@ YUI.add('wegas-reviewing-entities', function (Y) {
             "feedback": {
                 type: ARRAY,
                 value: [],
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("index") - b.get("index");
+                    });
+                    return v;
+                },
                 _inputex: {
                     _type: HIDDEN
                 }
@@ -227,6 +233,12 @@ YUI.add('wegas-reviewing-entities', function (Y) {
             "comments": {
                 type: ARRAY,
                 value: [],
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("index") - b.get("index");
+                    });
+                    return v;
+                },
                 _inputex: {
                     _type: HIDDEN
                 }
@@ -243,6 +255,12 @@ YUI.add('wegas-reviewing-entities', function (Y) {
             evaluations: {
                 type: ARRAY,
                 value: [],
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("index") - b.get("index");
+                    });
+                    return v;
+                },
                 _inputex: {
                     _type: HIDDEN,
                     index: 1
@@ -300,6 +318,9 @@ YUI.add('wegas-reviewing-entities', function (Y) {
             },
             name: {
                 type: STRING
+            },
+            index: {
+                type: NUMBER
             },
             description: {
                 type: STRING,
@@ -366,10 +387,10 @@ YUI.add('wegas-reviewing-entities', function (Y) {
      * GradeDescriptor
      */
     persistence.GradeDescriptor = Y.Base.create("GradeDescriptor", persistence.EvaluationDescriptor, [], {
-        getMaxValue: function () {
+        getMaxValue: function() {
             return this.get("maxValue");
         },
-        getMinValue: function () {
+        getMinValue: function() {
             return this.get("minValue");
         }
     }, {
@@ -425,6 +446,9 @@ YUI.add('wegas-reviewing-entities', function (Y) {
             },
             descriptor: {
                 type: "EvaluationDescriptor"
+            },
+            index: {
+                type: NUMBER
             }
         }
     });

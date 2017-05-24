@@ -20,10 +20,10 @@ import javax.persistence.*;
 
 /**
  * Evaluation instance is the abstract parent of different kind of evaluation.
- *
+ * <p>
  * such an instance is the effective evaluation that corresponding to an
  * EvaluationDescriptor
- *
+ * <p>
  * An evaluation instance belongs to a review, either as member of the feedback
  * (through feedbackReview 'field' or as member of the feedback comments
  * (through the 'commentsReview')
@@ -37,7 +37,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
-public abstract class EvaluationInstance extends AbstractEntity /*implements Broadcastable */ {
+public abstract class EvaluationInstance extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -134,6 +134,19 @@ public abstract class EvaluationInstance extends AbstractEntity /*implements Bro
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    /**
+     * @return index
+     */
+    public int getIndex() {
+        return this.getDescriptor() != null ? this.getDescriptor().getIndex() : 0;
+    }
+
+    /**
+     * @param index the index number to set
+     */
+    public void setIndex(int index) {
     }
 
     /**
