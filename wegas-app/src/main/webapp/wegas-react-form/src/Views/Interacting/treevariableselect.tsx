@@ -1,21 +1,47 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import classnames from 'classnames';
 import Popover from '../../Components/Popover';
 import TreeSelect from '../../Components/tree/TreeSelect';
 import { getY } from '../../index';
 import styles from './css/treevariableselect.css';
+import { WidgetProps } from "jsoninput/typings/types";
+import { css } from "glamor";
 
+const SeparatorCss = css({ borderTop: "solid 1px" })
+console.log(SeparatorCss, SeparatorCss.toString());
+type Item = {
+    label: string;
+    value?: string;
+    className?: string;
+    items?: Item[];
+}
+interface ITreeSelectProps extends WidgetProps.BaseProps {
+    view: {
+        selectable?: (item: Y.BaseCore) => boolean;
+        additional: Item[];
+        classFilter?: string | string[];
+        // maxLevel?: number;
+        // root?: string;
+        // selectableLevels?: number[];
+    };
+
+    value?: string;
+}
 const variableFacade = getY().Wegas.Facade.Variable;
 function defaultTrue() {
     return true;
 }
-
-function labelForVariable(name) {
+function normalizeClassFilter(classFilter: string | string[] = []): string[] {
+    if (typeof classFilter === 'string') {
+        return [classFilter];
+    }
+    return classFilter;
+}
+function labelForVariable(name?: string) {
     const target = getY().Wegas.Facade.Variable.cache.find('name', name);
     return target ? target.getEditorLabel() : '';
 }
-function labelIconForVariable(name) {
+function labelIconForVariable(name?: string) {
     const target = getY().Wegas.Facade.Variable.cache.find('name', name);
     if (target) {
         return (
@@ -29,11 +55,11 @@ function labelIconForVariable(name) {
     return '';
 }
 
-function match(item, search) {
+function match(item: Item, search: string) {
     return item.label.toLowerCase().indexOf(search.toLowerCase()) > -1;
 }
 
-function buildPath(name) {
+function buildPath(name?: string) {
     const variable = getY().Wegas.Facade.Variable.cache.find('name', name);
     const path = [];
     if (!variable) {
@@ -47,30 +73,44 @@ function buildPath(name) {
     return path.reverse().join(' \u21E8 ');
 }
 
-function genVarItems(items, selectableFn = defaultTrue) {
-    function mapItem(item) {
+function genVarItems(
+    items: Y.BaseCore[],
+    selectableFn: (item: Y.BaseCore) => boolean = defaultTrue,
+    classFilter: string[]
+): Item[] {
+    function mapItem(item: Y.BaseCore) {
+        const child = item.get('items') ?
+            genVarItems(item.get('items'), selectableFn, classFilter) : undefined;
+        let select = selectableFn(item);
+        if (classFilter.length > 0 && !classFilter.includes(item.get('@class'))) {
+            select = false;
+        }
         return {
             label: item.get('label'),
-            value: selectableFn(item) ? item.get('name') : undefined,
-            items: item.get('items') &&
-                genVarItems(item.get('items'), selectableFn)
+            value: select ? item.get('name') : undefined,
+            items: child
         };
     }
-    return items.map(mapItem);
+    return items.map(mapItem)
+        .filter(i => !(i.value === undefined && (i.items === undefined || i.items.length === 0)));
 }
 
-class TreeVariableSelect extends React.Component {
-    constructor(props) {
+class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: string, searching: boolean }> {
+    public static defaultProps = {
+        value: ''
+    };
+    items: Item[];
+    constructor(props: ITreeSelectProps) {
         super(props);
         this.state = {
             search: labelForVariable(props.value) ||
-                this.labelForAdditional(props.value),
+            this.labelForAdditional(props.value),
             searching: !props.value
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
         this.items = this.genItems();
     }
-    handleOnSelect(v) {
+    handleOnSelect(v: string) {
         this.setState(
             {
                 searching: false,
@@ -84,17 +124,18 @@ class TreeVariableSelect extends React.Component {
      */
     genItems() {
         const add = Array.isArray(this.props.view.additional)
-            ? this.props.view.additional.map(i => ({
-                  ...i,
-                  className: classnames(i.className, styles.globalMethod)
-              }))
+            ? this.props.view.additional.map((i, index) => ({
+                ...i,
+                className: classnames(i.className, { [SeparatorCss.toString()]: index === 0 })
+            }))
             : [];
         return genVarItems(
             variableFacade.data.concat(),
-            this.props.view.selectable
+            this.props.view.selectable,
+            normalizeClassFilter(this.props.view.classFilter)
         ).concat(add);
     }
-    labelForAdditional(value) {
+    labelForAdditional(value?: string) {
         if (!Array.isArray(this.props.view.additional)) {
             return '';
         }
@@ -104,7 +145,7 @@ class TreeVariableSelect extends React.Component {
         }
         return '';
     }
-    labelIconForAdditional(value) {
+    labelIconForAdditional(value?: string) {
         const label = this.labelForAdditional(value);
         if (label) {
             return (
@@ -124,7 +165,7 @@ class TreeVariableSelect extends React.Component {
                         this.setState({
                             searching: false,
                             search: labelForVariable(this.props.value) ||
-                                this.labelForAdditional(this.props.value) // Reset search
+                            this.labelForAdditional(this.props.value) // Reset search
                         })}
                 >
                     <input
@@ -151,7 +192,7 @@ class TreeVariableSelect extends React.Component {
                     </div>
                 </Popover>
                 <a
-                    tabIndex="0"
+                    tabIndex={0}
                     onFocus={() =>
                         this.setState({
                             searching: true
@@ -170,27 +211,5 @@ class TreeVariableSelect extends React.Component {
     }
 }
 
-TreeVariableSelect.propTypes = {
-    view: PropTypes.shape({
-        selectable: PropTypes.func,
-        additional: PropTypes.arrayOf(
-            PropTypes.shape(TreeSelect.propTypes.items)
-        )
-        // maxLevel: PropTypes.number,
-        // root: PropTypes.string,
-        // classFilter: PropTypes.oneOfType([
-        //     PropTypes.arrayOf(PropTypes.string),
-        //     PropTypes.string
-        // ]),
-        // selectableLevels: PropTypes.arrayOf(PropTypes.number)
-    }),
-    value: PropTypes.string,
-    onChange: PropTypes.func.isRequired
-};
-TreeVariableSelect.defaultProps = {
-    view: {
-        additional: []
-    },
-    value: ''
-};
+
 export default TreeVariableSelect;

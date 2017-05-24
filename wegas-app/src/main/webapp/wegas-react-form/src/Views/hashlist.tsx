@@ -1,30 +1,27 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import TextField from './string';
 import commonView from '../HOC/commonView';
 import ObjectView from './object';
 import IconButton from '../Components/IconButton';
+import { WidgetProps } from "jsoninput/typings/types";
 
-const halfWidth = {
+const halfWidth: CSSProperties = {
     display: 'inline-block',
     position: 'relative',
     width: '50%'
 };
-const minusStyle = {
-    float: 'left',
-    marginTop: '12px'
-};
-class HashlistView extends React.Component {
-    constructor(props) {
+class HashlistView extends React.Component<WidgetProps.ObjectProps, { newInputValue: string }> {
+    child: { [key: string]: HTMLElement };
+    constructor(props: WidgetProps.ObjectProps) {
         super(props);
         this.state = {
             newInputValue: ''
         };
-        this.child = [];
+        this.child = {};
         this.addChild = this.addChild.bind(this);
         this.onAdderChange = this.onAdderChange.bind(this);
     }
-    onAdderChange(value) {
+    onAdderChange(value: string) {
         this.setState({
             newInputValue: value
         });
@@ -36,17 +33,20 @@ class HashlistView extends React.Component {
         });
         this.props.addKey(newInputValue);
         setTimeout(() => {
-            this.child[newInputValue].querySelector('input').focus();
+            const input = this.child[newInputValue].querySelector('input');
+            if (input !== null) {
+                input.focus();
+            }
         }, 20);
     }
     render() {
         const { removeKey, alterKey, children, ...restProps } = this.props;
-        const newChildren = React.Children.map(children, child => {
+        const newChildren = React.Children.map(children, (child: React.ReactElement<any>) => {
             function remove() {
                 removeKey(child.props.editKey);
             }
 
-            function onKeyChange(value) {
+            function onKeyChange(value: string) {
                 alterKey(child.props.editKey, value);
             }
 
@@ -101,13 +101,4 @@ class HashlistView extends React.Component {
         );
     }
 }
-HashlistView.propTypes = {
-    addKey: PropTypes.func.isRequired,
-    removeKey: PropTypes.func.isRequired,
-    alterKey: PropTypes.func.isRequired,
-    children: PropTypes.node,
-    view: PropTypes.shape({
-        keyLabel: PropTypes.string
-    })
-};
 export default commonView(HashlistView);

@@ -31,7 +31,7 @@ class ViewSrc extends React.Component<IProps, { src: boolean }> {
         super(props);
         this.state = { src: false };
         this.toggleState = this.toggleState.bind(this);
-        this.handleChange.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
     toggleState() {
         this.setState({

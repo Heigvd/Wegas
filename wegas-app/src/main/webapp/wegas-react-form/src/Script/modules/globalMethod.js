@@ -1,4 +1,7 @@
+import { css } from 'glamor';
 import { handleMethodArgs } from './args';
+
+const GlobalMethodTreeCss = css({ color: 'hotpink' });
 /**
  * hold Global Methods
  */
@@ -6,33 +9,38 @@ const IMPACT = {
     getter: {
         'RequestManager.sendCustomEvent': {
             label: 'Send popup',
-            arguments: [{
-                type: 'string',
-                value: 'popupEvent',
-                view: {
-                    type: 'hidden'
-                }
-            }, {
-                type: 'object',
-                properties: {
-                    content: {
-                        type: 'string',
-                        view: {
-                            label: 'Message',
-                            type: 'html'
-                        }
+            arguments: [
+                {
+                    type: 'string',
+                    value: 'popupEvent',
+                    view: {
+                        type: 'hidden'
                     }
                 },
-                additionalProperties: false
-            }]
+                {
+                    type: 'object',
+                    properties: {
+                        content: {
+                            type: 'string',
+                            view: {
+                                label: 'Message',
+                                type: 'html'
+                            }
+                        }
+                    },
+                    additionalProperties: false
+                }
+            ]
         },
         'Event.fire': {
             label: 'Fire event',
-            arguments: [{
-                type: 'string',
-                required: true,
-                view: { label: 'Event name' }
-            }]
+            arguments: [
+                {
+                    type: 'string',
+                    required: true,
+                    view: { label: 'Event name' }
+                }
+            ]
         },
         'DelayedEvent.delayedFire': {
             label: 'Fire delayed event',
@@ -41,26 +49,31 @@ const IMPACT = {
                     type: 'number',
                     required: true,
                     view: { label: 'Minutes' }
-                }, {
+                },
+                {
                     type: 'number',
                     scriptType: 'string',
                     required: true,
                     view: { label: 'Seconds' }
-                }, {
+                },
+                {
                     type: 'string',
                     required: true,
                     view: { label: 'Event name' }
-                }]
+                }
+            ]
         }
     },
     condition: {
         'Event.fired': {
             returns: 'boolean',
             label: 'Event has been fired',
-            arguments: [{
-                type: 'string',
-                view: { label: 'Event name' }
-            }]
+            arguments: [
+                {
+                    type: 'string',
+                    view: { label: 'Event name' }
+                }
+            ]
         }
     }
 };
@@ -78,7 +91,7 @@ export function genChoices(type = 'getter') {
     return Object.keys(impacts).map(k => ({
         label: impacts[k].label,
         value: k,
-        className: impacts[k].className
+        className: `${impacts[k].className} ${GlobalMethodTreeCss}`
     }));
 }
 /**
@@ -91,7 +104,10 @@ export function genChoices(type = 'getter') {
             returns:string=}} the schema
  */
 export function methodDescriptor(member, method) {
-    return IMPACT.condition[`${member}.${method}`] || IMPACT.getter[`${member}.${method}`];
+    return (
+        IMPACT.condition[`${member}.${method}`] ||
+        IMPACT.getter[`${member}.${method}`]
+    );
 }
 /**
  * get argument's form for given method.
