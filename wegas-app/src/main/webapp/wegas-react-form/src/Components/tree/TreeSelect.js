@@ -3,7 +3,7 @@ import React from 'react';
 import TreeNode from './TreeNode';
 import HandleUpDown from './HandleUpDown';
 import searchable from './searchable';
-import style from './Tree.css';
+
 
 class TreeSelect extends React.Component {
     constructor(props) {
@@ -47,7 +47,7 @@ class TreeSelect extends React.Component {
     render() {
         const items = this.state.items;
         return (
-            <HandleUpDown selector={`.${style.treeHead}`}>
+            <HandleUpDown selector={`.${TreeNode.treeHeadStyle}`}>
                 {items.map((item, index) => (
                     <TreeNode
                         key={index}

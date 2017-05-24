@@ -9,21 +9,12 @@
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 YUI.add('wegas-reviewing-entities', function(Y) {
-    'use strict';
-    var STRING = 'string',
-        HIDDEN = 'hidden',
-        ARRAY = 'array',
-        ENUM = 'enum',
-        SELF = 'self',
-        BOOLEAN = 'boolean',
-        BUTTON = 'Button',
-        OBJECT = 'object',
-        HTML = 'html',
-        SCRIPT = 'script',
-        NUMBER = 'number',
-        NULLSTRING = ['null', STRING],
-        Wegas = Y.Wegas,
-        persistence = Wegas.persistence,
+    "use strict";
+    var STRING = "string", HIDDEN = "hidden", ARRAY = "array", ENUM = "enum",
+        SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
+        HTML = "html", SCRIPT = "script", NUMBER = "number",
+        NULLSTRING = ["null", STRING],
+        Wegas = Y.Wegas, persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
         SELFARG,
         IDATTRDEF;
@@ -34,6 +25,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             type: HIDDEN
         }
     };
+
 
     IDATTRDEF = {
         type: NUMBER,
@@ -52,384 +44,336 @@ YUI.add('wegas-reviewing-entities', function(Y) {
     /**
      * PeerReviewescriptor mapper
      */
-    persistence.PeerReviewDescriptor = Y.Base.create(
-        'PeerReviewDescriptor',
-        persistence.VariableDescriptor,
-        [],
-        {
-            helloWorld: function() {
-                return 'hello, world!\n';
+    persistence.PeerReviewDescriptor = Y.Base.create("PeerReviewDescriptor", persistence.VariableDescriptor, [], {
+        helloWorld: function() {
+            return "hello, world!\n";
+        },
+        getIconCss: function () {
+            return 'fa fa-users fa-1';
+        }
+    }, {
+        ATTRS: {
+            "@class": {
+                type: STRING,
+                value: "PeerReviewDescriptor"
             },
-            getIconCss: function() {
-                return 'fa fa-users fa-1';
+            maxNumberOfReview: {
+                type: NUMBER,
+                value: 3,
+                view: {
+                    label: "Number of reviews",
+                    description: "Maximum reviews per user. Preferably greater than one."
+                }
+            },
+            toReview: {
+                type: STRING,
+                value: "",
+                "transient": true,
+                view: { type: HIDDEN },
+                getter: function() {
+                    return Wegas.Facade.Variable.cache.find("name", this.get("toReviewName"));
+                }
+            },
+            toReviewName: {
+                type: STRING,
+                required: true,
+                index: -1,
+                view: {
+                    label: "To Review",
+                    type: "flatvariableselect",
+                    classFilter: ["TextDescriptor", "NumberDescriptor"]
+                }
+            },
+            description: {
+                type: NULLSTRING,
+                format: HTML,
+                optional: true,
+                view: {
+                    type: HTML,
+                    label: "Description"
+                }
+            },
+            feedback: {
+                type: OBJECT,
+                value: {
+                    "@class": "EvaluationDescriptorContainer"
+                },
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "EvaluationDescriptorContainer"
+                    }
+                },
+                index: 1,
+                view: { type: HIDDEN }
+            },
+            fbComments: {
+                type: OBJECT,
+                value: {
+                    "@class": "EvaluationDescriptorContainer"
+                },
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "EvaluationDescriptorContainer"
+                    }
+                },
+                index: 1,
+                view: { type: HIDDEN }
+            },
+            includeEvicted: {
+                type: BOOLEAN,
+                value: false,
+                index: 2,
+                view: {
+                    //label: "Dispatch to evicted",
+                    label: "Also dispatch to peers who did not submit anything",
+                }
+            },
+            defaultInstance: {
+                type: OBJECT,
+                required: true,
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "PeerReviewInstance",
+                        view: {
+                            type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
+                    reviewState: {
+                        type: STRING,
+                        value: "NOT_STARTED",
+                        view: { type: HIDDEN }
+                    },
+                    reviewed: {
+                        type: ARRAY,
+                        value: [],
+                        view: { type: HIDDEN }
+                    },
+                    toReview: {
+                        type: ARRAY,
+                        value: [],
+                        view: { type: HIDDEN }
+                    },
+
+                },
+                index: 3
             }
         },
-        {
-            ATTRS: {
-                '@class': {
-                    type: STRING,
-                    value: 'PeerReviewDescriptor'
-                },
-                maxNumberOfReview: {
-                    type: NUMBER,
-                    value: 3,
-                    view: {
-                        label: 'Number of reviews',
-                        description: 'Maximum reviews per user. Preferably greater than one.'
-                    }
-                },
-                toReview: {
-                    type: STRING,
-                    transient: true,
-                    getter: function() {
-                        return Wegas.Facade.Variable.cache.find(
-                            'name',
-                            this.get('toReviewName')
-                        ); // @TODO CHECK THIS
-                    }
-                },
-                toReviewName: {
-                    type: STRING,
-                    required: true,
-                    index: -1,
-                    view: {
-                        label: 'To Review',
-                        type: 'flatvariableselect', // @TODO This type has to be fixed
-                        classFilter: ['TextDescriptor', 'NumberDescriptor']
-                    }
-                },
-                description: {
-                    type: NULLSTRING,
-                    format: HTML,
-                    optional: true,
-                    view: {
-                        type: HTML,
-                        label: 'Description'
-                    }
-                },
-                feedback: {
-                    type: 'object',
-                    value: {
-                        '@class': 'EvaluationDescriptorContainer'
-                    },
-                    properties: {
-                        '@class': {
-                            value: 'EvaluationDescriptorContainer',
-                            type: STRING
-                        }
-                    },
-                    index: 1,
-                    view: {
-                        type: HIDDEN
-                    }
-                },
-                fbComments: {
-                    type: 'object',
-                    value: {
-                        '@class': 'EvaluationDescriptorContainer'
-                    },
-                    properties: {
-                        '@class': {
-                            value: 'EvaluationDescriptorContainer',
-                            type: STRING
-                        }
-                    },
-                    index: 1,
-                    view: {
-                        type: HIDDEN
-                    }
-                },
-                includeEvicted: {
-                    type: BOOLEAN,
-                    value: false,
-                    index: 2,
-                    view: {
-                        //label: "Dispatch to evicted",
-                        label: 'Also dispatch to peers who did not submit anything'
-                    }
-                },
-                defaultInstance: {
-                    type: 'object',
-                    required: true,
-                    properties: {
-                        '@class': {
-                            type: STRING,
-                            value: 'PeerReviewInstance',
-                            view: {
-                                type: HIDDEN
-                            }
-                        },
-                        id: IDATTRDEF,
-                        version: VERSION_ATTR_DEF,
-                        descriptorId: IDATTRDEF,
-                        reviewState: {
-                            type: STRING,
-                            value: 'NOT_STARTED',
-                            view: { type: HIDDEN }
-                        },
-                        reviewed: {
-                            type: ARRAY,
-                            value: [],
-                            view: { type: HIDDEN }
-                        },
-                        toReview: {
-                            type: ARRAY,
-                            value: [],
-                            view: { type: HIDDEN }
-                        }
-                    },
-                    index: 3
-                }
-            },
-            EDITMENU: [
-                {
-                    type: 'EditEntityButton'
-                },
-                {
-                    type: BUTTON,
-                    label: 'Copy',
-                    plugins: [
-                        {
-                            fn: 'DuplicateEntityAction'
-                        }
-                    ]
-                },
-                {
-                    type: 'DeleteEntityButton'
-                }
-            ],
-            /**
+        EDITMENU: [{
+                type: "EditEntityButton"
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
+                type: "DeleteEntityButton"
+            }],
+        /**
          * WYSIWYG editor
          */
-            METHODS: {
-                getState: {
-                    label: 'state',
-                    returns: STRING,
-                    arguments: [SELFARG],
-                    choices: [
-                        {
-                            value: 'NOT_STARTED xxx',
-                            label: 'editing'
-                        },
-                        {
-                            value: 'SUBMITTED',
-                            label: 'ready to review'
-                        },
-                        {
-                            value: 'DISPATCHED',
-                            label: 'reviewing'
-                        },
-                        {
-                            value: 'NOTIFIED',
-                            label: 'notified'
-                        },
-                        {
-                            value: 'COMPLETED',
-                            label: 'completed'
-                        },
-                        {
-                            value: 'DISCARDED',
-                            label: 'discarded'
-                        },
-                        {
-                            value: 'EVICTED',
-                            label: 'evicted'
-                        }
-                    ]
-                }
+        METHODS: {
+            getState: {
+                label: "state",
+                returns: STRING,
+                arguments: [SELFARG],
+                choices: [{
+                        value: "NOT_STARTED",
+                        label: "editing"
+                    }, {
+                        value: "SUBMITTED",
+                        label: "ready to review"
+                    }, {
+                        value: "DISPATCHED",
+                        label: "reviewing"
+                    }, {
+                        value: "NOTIFIED",
+                        label: "notified"
+                    }, {
+                        value: "COMPLETED",
+                        label: "completed"
+                    }, {
+                        value: "DISCARDED",
+                        label: "discarded"
+                    }, {
+                        value: "EVICTED",
+                        label: "evicted"
+                    }
+                ]
             }
         }
-    );
+    });
     /**
      * PeerReviewInstance mapper
      */
-    Wegas.persistence.PeerReviewInstance = Y.Base.create(
-        'PeerReviewInstance',
-        Wegas.persistence.VariableInstance,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'PeerReviewInstance'
+    Wegas.persistence.PeerReviewInstance = Y.Base.create("PeerReviewInstance", Wegas.persistence.VariableInstance, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "PeerReviewInstance"
+            },
+            reviewState: {
+                type: STRING,
+                value: "not-started"
+            },
+            "toReview": {
+                type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("createdTime") - b.get("createdTime");
+                    });
+                    return v;
                 },
-                reviewState: {
-                    type: STRING,
-                    value: 'not-started'
+                value: [],
+                view: {
+                    type: HIDDEN
+                }
+            },
+            "reviewed": {
+                type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("createdTime") - b.get("createdTime");
+                    });
+                    return v;
                 },
-                toReview: {
-                    type: ARRAY,
-                    setter: function(v) {
-                        v.sort(function(a, b) {
-                            return a.get('createdTime') - b.get('createdTime');
-                        });
-                        return v;
-                    },
-                    value: [],
-                    view: {
-                        type: HIDDEN
-                    }
-                },
-                reviewed: {
-                    type: ARRAY,
-                    setter: function(v) {
-                        v.sort(function(a, b) {
-                            return a.get('createdTime') - b.get('createdTime');
-                        });
-                        return v;
-                    },
-                    value: [],
-                    view: {
-                        type: HIDDEN
-                    }
+                value: [],
+                view: {
+                    type: HIDDEN
                 }
             }
         }
-    );
+    });
     /**
      * Review mapper
      */
-    Wegas.persistence.Review = Y.Base.create(
-        'Review',
-        Wegas.persistence.Entity,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'Review'
+    Wegas.persistence.Review = Y.Base.create("Review", Wegas.persistence.Entity, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "Review"
+            },
+            "reviewState": {
+                type: STRING
+            },
+            "feedback": {
+                type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("createdTime") - b.get("createdTime");
+                    });
+                    return v;
                 },
-                reviewState: {
-                    type: STRING
-                },
-                feedback: {
-                    type: ARRAY,
-                    setter: function(v) {
-                        v.sort(function(a, b) {
-                            return a.get('createdTime') - b.get('createdTime');
-                        });
-                        return v;
-                    },
-                    value: [],
-                    view: {
-                        type: HIDDEN
-                    }
-                },
-                comments: {
-                    type: ARRAY,
-                    setter: function(v) {
-                        v.sort(function(a, b) {
-                            return a.get('createdTime') - b.get('createdTime');
-                        });
-                        return v;
-                    },
-                    value: [],
-                    view: {
-                        type: HIDDEN
-                    }
-                },
-                createdTime: {
-                    transient: true
-                }
-            }
-        }
-    );
-    /**
-     * EvaluationDescriptor
-     */
-    persistence.EvaluationDescriptorContainer = Y.Base.create(
-        'EvaluationDescriptorContainer',
-        persistence.Entity,
-        [],
-        {},
-        {
-            EDITORNAME: 'Evaluations',
-            ATTRS: {
-                evaluations: {
-                    type: ARRAY,
-                    value: [],
-                    index: 1,
-                    view: {
-                        type: HIDDEN
-                    }
+                value: [],
+                view: {
+                    type: HIDDEN
                 }
             },
-            EDITMENU: [
-                {
-                    type: 'EditEntityButton'
+            "comments": {
+                type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("createdTime") - b.get("createdTime");
+                    });
+                    return v;
                 },
-                {
-                    type: BUTTON,
-                    label: '<span class="wegas-icon wegas-icon-new"></span>Add Grade',
-                    plugins: [
-                        {
-                            fn: 'EditEntityArrayFieldAction',
-                            cfg: {
-                                targetClass: 'GradeDescriptor',
-                                method: 'POST',
-                                attributeKey: 'evaluations',
-                                showEditionAfterRequest: true
-                            }
-                        }
-                    ]
-                },
-                {
-                    type: BUTTON,
-                    label: '<span class="wegas-icon wegas-icon-new"></span>Add Text',
-                    plugins: [
-                        {
-                            fn: 'EditEntityArrayFieldAction',
-                            cfg: {
-                                targetClass: 'TextEvaluationDescriptor',
-                                method: 'POST',
-                                attributeKey: 'evaluations',
-                                showEditionAfterRequest: true
-                            }
-                        }
-                    ]
-                },
-                {
-                    type: BUTTON,
-                    label: '<span class="wegas-icon wegas-icon-new"></span>Add Categorization',
-                    plugins: [
-                        {
-                            fn: 'EditEntityArrayFieldAction',
-                            cfg: {
-                                targetClass: 'CategorizedEvaluationDescriptor',
-                                method: 'POST',
-                                attributeKey: 'evaluations',
-                                showEditionAfterRequest: true
-                            }
-                        }
-                    ]
+                value: [],
+                view: {
+                    type: HIDDEN
                 }
-            ]
+            },
+            createdTime: {
+                "transient": true
+            }
         }
-    );
+    });
     /**
      * EvaluationDescriptor
      */
-    persistence.EvaluationDescriptor = Y.Base.create(
-        'EvaluationDescriptor',
-        persistence.Entity,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'EvaluationDescriptor'
-                },
-                name: {
-                    type: STRING
-                },
-                description: {
-                    type: NULLSTRING,
-                    optional: true,
-                    view: {
-                        type: HTML,
-                        height: '50px'
-                    }
-                } /*,
+    persistence.EvaluationDescriptorContainer = Y.Base.create("EvaluationDescriptorContainer", persistence.Entity, [], {
+    }, {
+        EDITORNAME: "Evaluations",
+        ATTRS: {
+            evaluations: {
+                type: ARRAY,
+                value: [],
+                index: 1,
+                view: {
+                    type: HIDDEN,
+                }
+            }
+        },
+        EDITMENU: [{
+                type: "EditEntityButton"
+            }, {
+                type: BUTTON,
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Grade",
+                plugins: [{
+                        fn: "EditEntityArrayFieldAction",
+                        cfg: {
+                            targetClass: "GradeDescriptor",
+                            method: "POST",
+                            attributeKey: "evaluations",
+                            showEditionAfterRequest: true
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Text",
+                plugins: [{
+                        fn: "EditEntityArrayFieldAction",
+                        cfg: {
+                            targetClass: "TextEvaluationDescriptor",
+                            method: "POST",
+                            attributeKey: "evaluations",
+                            showEditionAfterRequest: true
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Categorization",
+                plugins: [{
+                        fn: "EditEntityArrayFieldAction",
+                        cfg: {
+                            targetClass: "CategorizedEvaluationDescriptor",
+                            method: "POST",
+                            attributeKey: "evaluations",
+                            showEditionAfterRequest: true
+                        }
+                    }]
+            }]
+    });
+    /**
+     * EvaluationDescriptor
+     */
+    persistence.EvaluationDescriptor = Y.Base.create("EvaluationDescriptor", persistence.Entity, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "EvaluationDescriptor"
+            },
+            name: {
+                type: STRING,
+                required: true,
+                view: {
+                    label: "Name"
+                }
+            },
+            description: {
+                type: NULLSTRING,
+                optional: true,
+                view: {
+                    type: HTML,
+                    label: "Description",
+                    height: '50px'
+                }
+            }/*,
              container: {
              type: "evaluationdescriptorcontainer",
              optional: true,
@@ -437,206 +381,161 @@ YUI.add('wegas-reviewing-entities', function(Y) {
              _type: HIDDEN
              }
              }*/
-            },
-            EDITMENU: [
-                {
-                    type: BUTTON,
-                    label: 'Edit',
-                    plugins: [
-                        {
-                            fn: 'EditEntityArrayFieldAction',
-                            cfg: {
-                                attributeKey: 'evaluations'
-                            }
+        },
+        EDITMENU: [{
+                type: BUTTON,
+                label: "Edit",
+                plugins: [{
+                        fn: "EditEntityArrayFieldAction",
+                        cfg: {
+                            attributeKey: "evaluations"
                         }
-                    ]
-                },
-                {
-                    type: BUTTON,
-                    label: 'Copy',
-                    plugins: [
-                        {
-                            fn: 'EditEntityArrayFieldAction',
-                            cfg: {
-                                method: 'copy',
-                                attributeKey: 'evaluations'
-                            }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                        fn: "EditEntityArrayFieldAction",
+                        cfg: {
+                            method: "copy",
+                            attributeKey: "evaluations"
                         }
-                    ]
-                },
-                {
-                    type: BUTTON,
-                    label: 'Delete',
-                    plugins: [
-                        {
-                            fn: 'EditEntityArrayFieldAction',
-                            cfg: {
-                                method: 'delete',
-                                attributeKey: 'evaluations'
-                            }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "Delete",
+                plugins: [{
+                        fn: "EditEntityArrayFieldAction",
+                        cfg: {
+                            method: "delete",
+                            attributeKey: "evaluations"
                         }
-                    ]
-                }
-            ]
-        }
-    );
+                    }]
+            }]
+
+    });
     /**
      * TextEvaluationDescriptor
      */
-    persistence.TextEvaluationDescriptor = Y.Base.create(
-        'TextEvaluationDescriptor',
-        persistence.EvaluationDescriptor,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'TextEvaluationDescriptor'
-                }
+    persistence.TextEvaluationDescriptor = Y.Base.create("TextEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "TextEvaluationDescriptor"
             }
         }
-    );
+    });
     /**
      * GradeDescriptor
      */
-    persistence.GradeDescriptor = Y.Base.create(
-        'GradeDescriptor',
-        persistence.EvaluationDescriptor,
-        [],
-        {
-            getMaxValue: function() {
-                return this.get('maxValue');
-            },
-            getMinValue: function() {
-                return this.get('minValue');
-            }
+    persistence.GradeDescriptor = Y.Base.create("GradeDescriptor", persistence.EvaluationDescriptor, [], {
+        getMaxValue: function() {
+            return this.get("maxValue");
         },
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'GradeDescriptor'
-                },
-                minValue: {
-                    type: NUMBER,
-                    optional: true,
-                    view: {
-                        label: 'Minimum'
-                    }
-                },
-                maxValue: {
-                    type: NUMBER,
-                    optional: true,
-                    view: {
-                        label: 'Maximum'
-                    }
+        getMinValue: function() {
+            return this.get("minValue");
+        }
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "GradeDescriptor"
+            },
+            minValue: {
+                type: NUMBER,
+                optional: true,
+                view: {
+                    label: "Minimum"
+                }
+            },
+            maxValue: {
+                type: NUMBER,
+                optional: true,
+                view: {
+                    label: "Maximum"
                 }
             }
         }
-    );
+    });
     /**
      * CategorizedEvaluationDescriptor
      */
-    persistence.CategorizedEvaluationDescriptor = Y.Base.create(
-        'CategorizedEvaluationDescriptor',
-        persistence.EvaluationDescriptor,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'CategorizedEvaluationDescriptor'
-                },
-                categories: {
-                    type: ARRAY,
-                    items: {
-                        required: true,
-                        type: STRING
-                    },
-                    view: {
-                        label: 'Categories',
-                        type: ARRAY
-                    }
-                }
-            }
-        }
-    );
-    /**
-     * EvaluationDescriptor
-     */
-    persistence.EvaluationInstance = Y.Base.create(
-        'EvaluationInstance',
-        persistence.Entity,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'EvaluationInstance'
-                },
-                descriptor: {
-                    type: 'EvaluationDescriptor'
-                },
-                createdTime: {
-                    transient: true
-                }
-            }
-        }
-    );
-    /**
-     * EvaluationDescriptor
-     */
-    persistence.GradeInstance = Y.Base.create(
-        'GradeInstance',
-        persistence.EvaluationInstance,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'GradeInstance'
-                },
-                value: {
-                    type: 'number'
-                }
-            }
-        }
-    );
-    /**
-     * EvaluationDescriptor
-     */
-    persistence.TextEvaluationInstance = Y.Base.create(
-        'TextEvaluationInstance',
-        persistence.EvaluationInstance,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'TextEvaluationInstance'
-                },
-                value: {
+    persistence.CategorizedEvaluationDescriptor = Y.Base.create("CategorizedEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "CategorizedEvaluationDescriptor"
+            },
+            categories: {
+                type: ARRAY,
+                items: {
+                    required: true,
                     type: STRING
+                },
+                view: {
+                    label: "Categories",
+                    type: ARRAY
                 }
             }
         }
-    );
+    });
     /**
      * EvaluationDescriptor
      */
-    persistence.CategorizedEvaluationInstance = Y.Base.create(
-        'CategorizedEvaluationInstance',
-        persistence.EvaluationInstance,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'CategorizesEvaluationInstance'
-                },
-                value: {
-                    type: STRING
-                }
+    persistence.EvaluationInstance = Y.Base.create("EvaluationInstance", persistence.Entity, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "EvaluationInstance"
+            },
+            descriptor: {
+                type: "EvaluationDescriptor"
+            },
+            createdTime: {
+                "transient": true
             }
         }
-    );
+    });
+    /**
+     * EvaluationDescriptor
+     */
+    persistence.GradeInstance = Y.Base.create("GradeInstance", persistence.EvaluationInstance, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "GradeInstance"
+            },
+            value: {
+                type: "number"
+            }
+        }
+    });
+    /**
+     * EvaluationDescriptor
+     */
+    persistence.TextEvaluationInstance = Y.Base.create("TextEvaluationInstance", persistence.EvaluationInstance, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "TextEvaluationInstance"
+            },
+            value: {
+                type: STRING
+            }
+        }
+    });
+    /**
+     * EvaluationDescriptor
+     */
+    persistence.CategorizedEvaluationInstance = Y.Base.create("CategorizedEvaluationInstance", persistence.EvaluationInstance, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "CategorizesEvaluationInstance"
+            },
+            value: {
+                type: STRING
+            }
+        }
+    });
 });
+
