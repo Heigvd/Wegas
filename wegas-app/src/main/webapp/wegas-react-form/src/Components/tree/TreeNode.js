@@ -1,7 +1,88 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import cx from 'classnames';
-import style from './Tree.css';
+import {css} from 'glamor';
+
+const pointerStyle = css({
+    cursor: 'pointer',
+    ':hover' : {
+        background: 'lightgray'
+    }
+});
+
+const selectedStyle = css({
+    fontStyle: 'italic',
+    color: 'pink'
+});
+
+const noDisplayStyle = css({
+    display: 'none'
+});
+
+const noSelectStyle = css({
+    fontStyle: 'italic',
+    opacity: 0.7
+});
+
+const treeNodeContainerStyle = css({
+    listStyle: 'none',
+    '& a': {
+        padding: '0 3px'
+    },
+    '& > ul': {
+        marginLeft: '.5em',
+        listStyle: 'none',
+        position: 'relative',
+
+        ':before' : {
+            content: '',
+            display: 'block',
+            width: 0,
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            borderLeft: '1px solid'
+        }
+    },
+
+    '& &':{
+        // margin: '0 0 0.5em 0',
+        padding: '0 1.5em',
+        lineHeight: '2em',
+        position: 'relative',
+
+        '&::before' : {
+            content: '',
+            display: 'block',
+            width: '10px',
+            height: 0,
+            borderTop: '1px solid',
+            marginTop: '-1px',
+            position: 'absolute',
+            top: '1em',
+            left: 0
+        },
+
+        '&:last-child::before' : {
+            background: 'white',
+            height: 'auto',
+            top: '1em',
+            bottom: 0
+        }
+    }
+});
+
+
+// Shared with TreeSelect:
+TreeNode.treeHeadStyle = css({
+    position: 'relative',
+    ':focus':{
+        outline: 'none',
+        textDecoration: 'underline'
+    }
+});
+
 
 function noop() {
 }
@@ -74,11 +155,11 @@ export default function TreeNode(props) {
 
 
     return (
-        <li className={cx(className, style.treeNodeContainer)}>
+        <li className={cx(className, `${treeNodeContainerStyle}`)}>
             {items ?
                 <a
                     tabIndex="-1"
-                    className={style.pointer}
+                    className={pointerStyle}
                     onClick={toggle}
                 >
                     {expanded ? '\u25BC' : '\u25B6'}
@@ -87,18 +168,18 @@ export default function TreeNode(props) {
                 tabIndex={match ? '0' : '-1'}
                 onClick={handleSelect}
                 onKeyDown={handleKeyDown}
-                className={cx(style.treeHead, {
-                    [style.noSelect]: !value,
-                    [style.pointer]: value,
-                    [style.selected]: selected && selected === value
+                className={cx(TreeNode.treeHeadStyle, {
+                    [noSelectStyle]: !value,
+                    [pointerStyle]: value,
+                    [selectedStyle]: selected && selected === value
                 })}
             >
                 {label !== undefined ? label : value}
             </a>
             {items ?
                 <ul
-                    className={cx(style.treeChildren, {
-                        [style.noDisplay]: !expanded
+                    className={cx({ // treeChildren style is undefined....
+                        [noDisplayStyle]: !expanded
                     })}
                 >
                     {items.map((c, i) => (
