@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * Encapsulate gameModel root variable descriptor for websocket propagation
+ *
  * @author Maxence
  */
 public class RootDescriptors extends AbstractEntity {
@@ -41,6 +42,11 @@ public class RootDescriptors extends AbstractEntity {
 
     public void setItems(List<VariableDescriptor> items) {
         this.rootLevelDescriptors = items;
+    }
+
+    @Override
+    public String getRequieredUpdatePermission() {
+        return null;
     }
 
     @Override
