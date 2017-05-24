@@ -127,15 +127,22 @@ YUI.add("wegas-entitychooser", function(Y) {
             ATTRS: {
                 variable: {
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    _inputex: {
-                        _type: "variableselect",
+                    view: {
+                        type: "variableselect",
                         label: "Folder",
                         classFilter: ["ListDescriptor"]
                     }
                 },
                 widget: {
+                    type: "object",
                     value: {
                         type: "HistoryDialog"
+                    },
+                    properties:{
+                        type: {
+                            type: "string",
+                            view: { label:"Type" }
+                        }
                     },
                     getter: function(v) {
                         return Y.JSON.parse(Y.JSON.stringify(v));
@@ -151,17 +158,21 @@ YUI.add("wegas-entitychooser", function(Y) {
                 },
                 widgetAttr: {
                     value: "dialogueVariable",
-                    type: "string"
+                    type: "string",
+                    view: { label: "Widget Attribute" }
                 },
                 flatten: {
                     type: "boolean",
-                    value: "true"
+                    value: "true",
+                    view: { label: "Flatten" }
                 },
                 classFilter: {
                     type: "array",
-                    _inputex: {
-                        elementType: {
-                            required: true,
+                    value: [],
+                    required: true,
+                    items: {
+                        type: "string",
+                        view: {
                             type: "select",
                             choices: Y.Wegas.persistence.AVAILABLE_TYPES
                         }
@@ -316,14 +327,14 @@ YUI.add("wegas-entitychooser", function(Y) {
             ATTRS: {
                 variable: {
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    _inputex: {
-                        _type: "variableselect",
-                        legend: "Folder",
+                    view: {
+                        type: "variableselect",
+                        label: "Folder",
                         classFilter: ["ListDescriptor"]
                     }
                 },
                 widgets: {
-                    optional: false,
+                    required: true,
                     _inputex: {
                         _type: "hashlist",
                         keyField: "dataType",
@@ -366,24 +377,25 @@ YUI.add("wegas-entitychooser", function(Y) {
                 },
                 markUnread: {
                     type: "boolean",
-                    value: false
+                    value: false,
+                    view: { label: "Mark as unread"}
                 },
                 autoSelectFirstUnread: {
                     type: "boolean",
                     value: true,
-                    optional: true
+                    view: { label:"Autoselect first unread" }
                 },
                 userCounters: {
                     type: "object",
                     value: {},
-                    optional: true,
-                    _inputex: {
+                    view: {
                         type: "hidden"
                     }
                 },
                 flatten: {
                     type: "boolean",
-                    value: "true"
+                    value: "true",
+                    view: {label:"flatter"}
                 }
             }
         });
