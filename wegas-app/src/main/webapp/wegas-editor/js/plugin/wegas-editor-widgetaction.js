@@ -81,6 +81,10 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                     // return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
                     return (i.label && (i.label !== 'New' && i.label.indexOf('Edit') < 0));
                 }); // Retrieve menu and remove the first item
+                 formCfg.properties.children = {
+                     type: "array",
+                     view: { type: "hidden" }
+                 };
             showForm = Y.bind(function (cfg) {
                 var form = Plugin.EditEntityAction.showEditForm(widget, Y.bind(function (val, entity) {
                     Plugin.EditEntityAction.showEditFormOverlay();
@@ -168,7 +172,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                     showForm(formCfg);
                 });
             } else {
-                showForm();
+                showForm(formCfg);
             }
 
             this.highlight(widget, true);
