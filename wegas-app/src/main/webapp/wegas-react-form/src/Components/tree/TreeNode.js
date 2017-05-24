@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import cx from 'classnames';
-import {css} from 'glamor';
+import { css } from 'glamor';
 
 const pointerStyle = css({
     cursor: 'pointer',
-    ':hover' : {
+    ':hover': {
         background: 'lightgray'
     }
 });
@@ -34,7 +34,7 @@ const treeNodeContainerStyle = css({
         listStyle: 'none',
         position: 'relative',
 
-        ':before' : {
+        ':before': {
             content: '',
             display: 'block',
             width: 0,
@@ -46,13 +46,13 @@ const treeNodeContainerStyle = css({
         }
     },
 
-    '& &':{
+    '& &': {
         // margin: '0 0 0.5em 0',
         padding: '0 1.5em',
         lineHeight: '2em',
         position: 'relative',
 
-        '&::before' : {
+        '&::before': {
             content: '',
             display: 'block',
             width: '10px',
@@ -64,7 +64,7 @@ const treeNodeContainerStyle = css({
             left: 0
         },
 
-        '&:last-child::before' : {
+        '&:last-child::before': {
             background: 'white',
             height: 'auto',
             top: '1em',
@@ -73,19 +73,16 @@ const treeNodeContainerStyle = css({
     }
 });
 
-
 // Shared with TreeSelect:
-TreeNode.treeHeadStyle = css({
+export const treeHeadStyle = css({
     position: 'relative',
-    ':focus':{
+    ':focus': {
         outline: 'none',
         textDecoration: 'underline'
     }
 });
 
-
-function noop() {
-}
+function noop() {}
 
 function update(props, val) {
     return {
@@ -107,9 +104,11 @@ export default function TreeNode(props) {
         onChange = noop
     } = props;
     function toggle() {
-        onChange(update(props, {
-            expanded: !expanded
-        }));
+        onChange(
+            update(props, {
+                expanded: !expanded
+            })
+        );
     }
 
     function handleSelect() {
@@ -120,55 +119,52 @@ export default function TreeNode(props) {
 
     function onChildChange(i) {
         return function childChange(child) {
-            onChange(update(props, {
-                items: [
-                    ...items.slice(0, i),
-                    child,
-                    ...items.slice(i + 1, items.length)
-                ]
-            }));
+            onChange(
+                update(props, {
+                    items: [
+                        ...items.slice(0, i),
+                        child,
+                        ...items.slice(i + 1, items.length)
+                    ]
+                })
+            );
         };
     }
 
-
     function handleKeyDown(event) {
         switch (event.key) {
-        case 'Enter':
-            handleSelect();
-            event.preventDefault();
-            event.stopPropagation();
-            break;
-        case 'ArrowRight':
-            if (!expanded) toggle();
-            event.preventDefault();
-            event.stopPropagation();
-            break;
-        case 'ArrowLeft':
-            if (expanded) toggle();
-            event.preventDefault();
-            event.stopPropagation();
-            break;
-        default:
+            case 'Enter':
+                handleSelect();
+                event.preventDefault();
+                event.stopPropagation();
+                break;
+            case 'ArrowRight':
+                if (!expanded) toggle();
+                event.preventDefault();
+                event.stopPropagation();
+                break;
+            case 'ArrowLeft':
+                if (expanded) toggle();
+                event.preventDefault();
+                event.stopPropagation();
+                break;
+            default:
         }
         return false;
     }
 
-
     return (
         <li className={cx(className, `${treeNodeContainerStyle}`)}>
-            {items ?
-                <a
-                    tabIndex="-1"
-                    className={pointerStyle}
-                    onClick={toggle}
-                >
-                    {expanded ? '\u25BC' : '\u25B6'}
-                </a> : null}
+            {items
+                ? <a tabIndex="-1" className={pointerStyle} onClick={toggle}>
+                      {expanded ? '\u25BC' : '\u25B6'}
+                  </a>
+                : null}
             <a
                 tabIndex={match ? '0' : '-1'}
                 onClick={handleSelect}
                 onKeyDown={handleKeyDown}
-                className={cx(TreeNode.treeHeadStyle, {
+                className={cx(treeHeadStyle.toString(), {
                     [noSelectStyle]: !value,
                     [pointerStyle]: value,
                     [selectedStyle]: selected && selected === value
@@ -176,22 +172,24 @@ export default function TreeNode(props) {
             >
                 {label !== undefined ? label : value}
             </a>
-            {items ?
-                <ul
-                    className={cx({ // treeChildren style is undefined....
-                        [noDisplayStyle]: !expanded
-                    })}
-                >
-                    {items.map((c, i) => (
-                        <TreeNode
-                            {...c}
-                            key={String(i)}
-                            onSelect={onSelect}
-                            selected={selected}
-                            onChange={onChildChange(i)}
-                        />
+            {items
+                ? <ul
+                      className={cx({
+                          // treeChildren style is undefined....
+                          [noDisplayStyle]: !expanded
+                      })}
+                  >
+                      {items.map((c, i) => (
+                          <TreeNode
+                              {...c}
+                              key={String(i)}
+                              onSelect={onSelect}
+                              selected={selected}
+                              onChange={onChildChange(i)}
+                          />
                       ))}
-                </ul> : null}
+                  </ul>
+                : null}
         </li>
     );
 }

@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import TreeNode from './TreeNode';
+import TreeNode, { treeHeadStyle } from './TreeNode';
 import HandleUpDown from './HandleUpDown';
 import searchable from './searchable';
-
 
 class TreeSelect extends React.Component {
     constructor(props) {
@@ -31,23 +30,27 @@ class TreeSelect extends React.Component {
         this.setState(state);
     }
     onSelect(v) {
-        this.setState({
-            selected: v
-        }, () => this.props.onSelect(this.state.selected));
+        this.setState(
+            {
+                selected: v
+            },
+            () => this.props.onSelect(this.state.selected)
+        );
     }
     onChildChange(i) {
-        return child => this.setState({
-            items: [
-                ...this.state.items.slice(0, i),
-                child,
-                ...this.state.items.slice(i + 1, this.state.items.length)
-            ]
-        });
+        return child =>
+            this.setState({
+                items: [
+                    ...this.state.items.slice(0, i),
+                    child,
+                    ...this.state.items.slice(i + 1, this.state.items.length)
+                ]
+            });
     }
     render() {
         const items = this.state.items;
         return (
-            <HandleUpDown selector={`.${TreeNode.treeHeadStyle}`}>
+            <HandleUpDown selector={`.${treeHeadStyle}`}>
                 {items.map((item, index) => (
                     <TreeNode
                         key={index}
@@ -56,16 +59,19 @@ class TreeSelect extends React.Component {
                         onSelect={this.onSelect}
                         onChange={this.onChildChange(index)}
                     />
-                 ))}
-            </HandleUpDown>);
+                ))}
+            </HandleUpDown>
+        );
     }
 }
 
 TreeSelect.propTypes = {
-    items: PropTypes.arrayOf(PropTypes.shape({
-        label: PropTypes.string,
-        value: PropTypes.string
-    })).isRequired,
+    items: PropTypes.arrayOf(
+        PropTypes.shape({
+            label: PropTypes.string,
+            value: PropTypes.string
+        })
+    ).isRequired,
     selected: PropTypes.string,
     onSelect: PropTypes.func.isRequired
 };
