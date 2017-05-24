@@ -8,7 +8,7 @@ import { WidgetProps } from "jsoninput/typings/types";
 import { css } from "glamor";
 
 const SeparatorCss = css({ borderTop: "solid 1px" })
-console.log(SeparatorCss, SeparatorCss.toString());
+
 type Item = {
     label: string;
     value?: string;
