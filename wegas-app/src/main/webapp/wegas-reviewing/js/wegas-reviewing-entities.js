@@ -231,26 +231,26 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             "feedback": {
                 type: ARRAY,
+                value: [],
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        return a.get("createdTime") - b.get("createdTime");
+                        return a.get("index") - b.get("index");
                     });
                     return v;
                 },
-                value: [],
                 _inputex: {
                     _type: HIDDEN
                 }
             },
             "comments": {
                 type: ARRAY,
+                value: [],
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        return a.get("createdTime") - b.get("createdTime");
+                        return a.get("index") - b.get("index");
                     });
                     return v;
                 },
-                value: [],
                 _inputex: {
                     _type: HIDDEN
                 }
@@ -270,6 +270,12 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             evaluations: {
                 type: ARRAY,
                 value: [],
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("index") - b.get("index");
+                    });
+                    return v;
+                },
                 _inputex: {
                     _type: HIDDEN,
                     index: 1
@@ -327,6 +333,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             name: {
                 type: STRING
+            },
+            index: {
+                type: NUMBER
             },
             description: {
                 type: STRING,
@@ -453,8 +462,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             descriptor: {
                 type: "EvaluationDescriptor"
             },
-            createdTime: {
-                "transient": true
+            index: {
+                type: NUMBER
             }
         }
     });

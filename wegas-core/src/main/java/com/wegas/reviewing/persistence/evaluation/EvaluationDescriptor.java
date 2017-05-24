@@ -23,7 +23,7 @@ import javax.persistence.*;
  *
  * An evaluation descriptor is the abstract parent of different kind of
  * evaluation description.
- *
+ * <p>
  * Such en evaluation is either one that compose a feedback (ie the review of a
  * variable) or one that compose a feedback evaluation (ie the evaluation of a
  * review of a variable)
@@ -35,8 +35,10 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(uniqueConstraints = {})
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(value = TextEvaluationDescriptor.class),
-    @JsonSubTypes.Type(value = CategorizedEvaluationDescriptor.class),
+    @JsonSubTypes.Type(value = TextEvaluationDescriptor.class)
+    ,
+    @JsonSubTypes.Type(value = CategorizedEvaluationDescriptor.class)
+    ,
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends NamedEntity {
@@ -52,6 +54,11 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+
+    /**
+     * to sort evaluation descriptor and instance
+     */
+    private Integer index;
 
     /**
      * Evaluation name as displayed to players
@@ -86,12 +93,21 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.name = name;
     }
 
+    public int getIndex() {
+        return index != null ? index : 0;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
         if (a instanceof EvaluationDescriptor) {
             EvaluationDescriptor o = (EvaluationDescriptor) a;
             this.setDescription(o.getDescription());
+            this.setIndex(o.getIndex());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
