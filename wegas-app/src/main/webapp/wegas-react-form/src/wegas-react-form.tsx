@@ -53,8 +53,8 @@ const Form = Y.Base.create(
                     >
                         <RForm
                             ref={(form) => this.set(FORM, form)}
-                            schema={JSON.parse(JSON.stringify(schema))}
-                            value={JSON.parse(JSON.stringify(value))}
+                            schema={schema}
+                            value={value}
                             onChange={boundFire}
                         />
                     </div>,
