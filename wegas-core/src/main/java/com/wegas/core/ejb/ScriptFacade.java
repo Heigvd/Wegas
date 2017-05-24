@@ -148,6 +148,7 @@ public class ScriptFacade {
         bindings.put("self", player);                           // Inject current player
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
         bindings.put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
+        bindings.put("Instance", variableInstanceFacade);
         bindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
         bindings.put("RequestManager", requestManager);                  // Inject the request manager
         bindings.put("Event", event);                                    // Inject the Event manager
@@ -255,7 +256,7 @@ public class ScriptFacade {
             ctx.setAttribute(ScriptEngine.FILENAME, script.getContent(), ScriptContext.ENGINE_SCOPE);
             return engine.eval(script.getContent(), ctx);
         } catch (ScriptException ex) {
-            throw new WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage());
+            throw new WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage(), ex);
         } catch (WegasRuntimeException ex) { // throw our exception as-is
             throw ex;
         } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)

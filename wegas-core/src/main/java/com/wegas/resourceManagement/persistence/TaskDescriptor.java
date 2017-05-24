@@ -23,7 +23,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -32,9 +31,7 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.resourceManagement.ejb.IterationFacade;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.OneToMany;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,21 +85,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      */
     @Transient
-    private List<String> predecessorNames/* = new ArrayList<>()*/;
-
-    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @JsonIgnore
-    private List<Activity> activities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @JsonIgnore
-    private List<Assignment> assignments = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "tasks")
-    @JsonView(Views.ExtendedI.class)
-    private List<Iteration> iterations;
+    private List<String> predecessorNames/*
+             * = new ArrayList<>()
+             */;
 
     @JsonIgnore
     @Override
@@ -213,24 +198,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     public void removeDependency(final TaskDescriptor taskDescriptor) {
         this.dependencies.remove(taskDescriptor);
-    }
-
-    /**
-     *
-     * @return get all iterations this task is part of
-     */
-    @JsonIgnore
-    public List<Iteration> getIterations() {
-        return iterations;
-    }
-
-    /**
-     *
-     * @param iterations
-     */
-    @JsonIgnore
-    public void setIterations(List<Iteration> iterations) {
-        this.iterations = iterations;
     }
 
     //Methods for impacts
@@ -433,64 +400,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         this.predecessorNames = exportedPredecessors;
     }
 
-    /**
-     * @return the activities
-     */
-    public List<Activity> getActivities() {
-        return activities;
-    }
-
-    /**
-     * @param activities
-     */
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
-    }
-
-    /**
-     *
-     * @param activity
-     */
-    public void addActivity(Activity activity) {
-        this.activities.add(activity);
-        activity.setTaskDescriptor(this);
-    }
-
-    /**
-     *
-     * @param activity
-     */
-    public void removeActivity(Activity activity) {
-        this.activities.remove(activity);
-    }
-
-    /**
-     * @return the assignments
-     */
-    public List<Assignment> getAssignments() {
-        return assignments;
-    }
-
-    /**
-     * @param assignments
-     */
-    public void setAssignments(List<Assignment> assignments) {
-        this.assignments = assignments;
-    }
-
-    /**
-     *
-     * @param assignment
-     */
-    public void addAssignment(Assignment assignment) {
-        assignments.add(assignment);
-        assignment.setTaskDescriptor(this);
-    }
-
-    public void removeAssignment(Assignment assignment) {
-        assignments.remove(assignment);
-    }
-
     @Override
     public Boolean containsAll(List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getDescription(), criterias)
@@ -518,14 +427,29 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         }
         this.setPredecessors(new ArrayList<>());
 
-        for (Iteration iteration : this.getIterations()) {
-            iteration = iteF.find(iteration.getId());
-            if (iteration != null) {
-                iteration.removeTask(this);
-            }
-        }
-        this.setIterations(new ArrayList<>());
-
         super.updateCacheOnDelete(beans);
+    }
+
+    /*
+     * BACKWARD COMPAT
+     */
+    /**
+     * @param iterations
+     */
+    public void setIterations(List<Iteration> iterations) {
+        /*
+         * if (this.getDefaultInstance().getIterations() == null ||
+         * this.getDefaultInstance().getIterations().isEmpty()) {
+         * this.getDefaultInstance().setIterations(iterations);
+         * }
+         */
+    }
+
+    public void setActivities(List<Activity> iterations) {
+
+    }
+
+    public void setAssignments(List<Assignment> iterations) {
+
     }
 }

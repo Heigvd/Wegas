@@ -14,8 +14,12 @@ import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
+import com.wegas.core.event.internal.InstanceRevivedEvent;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
@@ -85,6 +89,7 @@ public class ResourceFacade {
     /**
      *
      * @param id
+     *
      * @return occupation identified by id
      */
     public Occupation findOccupation(Long id) {
@@ -94,6 +99,7 @@ public class ResourceFacade {
     /**
      *
      * @param id
+     *
      * @return activity identified by id
      */
     public Activity findActivity(Long id) {
@@ -103,6 +109,7 @@ public class ResourceFacade {
     /**
      *
      * @param id
+     *
      * @return assignment identified by id
      */
     public Assignment findAssignment(Long id) {
@@ -116,16 +123,17 @@ public class ResourceFacade {
     /**
      * Is the given resource assign to the given task descriptor ?
      *
-     * @param resourceId       resourceInstance id
-     * @param taskDescriptorId taskDescripto id
+     * @param resourceId     resourceInstance id
+     * @param taskInstanceId taskInstance id
+     *
      * @return the assignment id resource is assigned to the task, null
      *         otherwise
      */
-    public Assignment findAssignment(Long resourceId, Long taskDescriptorId) {
+    public Assignment findAssignment(Long resourceId, Long taskInstanceId) {
         EntityManager em = getEntityManager();
-        TypedQuery<Assignment> query = em.createNamedQuery("Assignment.findByResourceInstanceIdAndTaskDescriptorId", Assignment.class).
+        TypedQuery<Assignment> query = em.createNamedQuery("Assignment.findByResourceInstanceIdAndTaskInstanceId", Assignment.class).
                 setParameter("resourceInstanceId", resourceId).
-                setParameter("taskDescriptorId", taskDescriptorId);
+                setParameter("taskInstanceId", taskInstanceId);
         return query.getSingleResult();
     }
 
@@ -133,6 +141,7 @@ public class ResourceFacade {
      * Find a taskInstance by id
      *
      * @param id task instance id
+     *
      * @return task instance matching id
      */
     public TaskInstance findTaskInstance(Long id) {
@@ -143,16 +152,17 @@ public class ResourceFacade {
      * Assign a resource to a task
      *
      * @param resourceInstanceId
-     * @param taskDescriptorId
+     * @param taskInstanceId
+     *
      * @return the new assignment
      */
-    public Assignment assign(Long resourceInstanceId, Long taskDescriptorId) {
+    public Assignment assign(Long resourceInstanceId, Long taskInstanceId) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
-        TaskDescriptor taskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId);
+        TaskInstance taskInstance = (TaskInstance) variableInstanceFacade.find(taskInstanceId);
 
         final Assignment assignment = new Assignment();
         resourceInstance.addAssignment(assignment);
-        taskDescriptor.addAssignment(assignment);
+        taskInstance.addAssignment(assignment);
 
         return assignment;
     }
@@ -162,6 +172,7 @@ public class ResourceFacade {
      *
      * @param assignmentId
      * @param index
+     *
      * @return assigned resource containing assignment in the new order
      */
     public ResourceInstance moveAssignment(final Long assignmentId, final int index) {
@@ -175,6 +186,7 @@ public class ResourceFacade {
      * Remove an assignment
      *
      * @param assignmentId
+     *
      * @return the resource instance who was assigned, with the updated list of
      *         assignments
      */
@@ -187,14 +199,15 @@ public class ResourceFacade {
      * Remove
      *
      * @param assignment
+     *
      * @return the resource instance who was assigned, with the updated list of
      *         assignments
      */
     public ResourceInstance removeAssignment(Assignment assignment) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
-        TaskDescriptor taskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(assignment.getTaskDescriptor().getId());
+        TaskInstance taskInstance = (TaskInstance) variableInstanceFacade.find(assignment.getTaskInstance().getId());
 
-        taskDescriptor.removeAssignment(assignment);
+        taskInstance.removeAssignment(assignment);
         resourceInstance.removeAssignment(assignment);
 
         this.getEntityManager().remove(assignment);
@@ -204,19 +217,20 @@ public class ResourceFacade {
 
     /**
      * Create an Activity (ie. a resourceInstance worked on a specific
-     * taskDescriptor)
+     * taskInstance)
      *
      * @param resourceInstanceId
-     * @param taskDescriptorId
+     * @param taskInstanceId
+     *
      * @return the new activity
      */
-    public Activity createActivity(Long resourceInstanceId, Long taskDescriptorId) {
+    public Activity createActivity(Long resourceInstanceId, Long taskInstanceId) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
-        TaskDescriptor taskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId);
+        TaskInstance taskInstance = (TaskInstance) variableInstanceFacade.find(taskInstanceId);
 
         final Activity activity = new Activity();
         resourceInstance.addActivity(activity);
-        taskDescriptor.addActivity(activity);
+        taskInstance.addActivity(activity);
 
         return activity;
     }
@@ -224,7 +238,7 @@ public class ResourceFacade {
     /**
      * Change activity sub requirements. If a resource continue to work on the
      * same task, but on a different requirements,
-     *
+     * <p>
      * THIS BEHAVIOUR SHOULD NOT EXIST. IMO, different req means different
      * activity
      *
@@ -240,6 +254,14 @@ public class ResourceFacade {
     }
 
     /**
+     * @param activityId
+     * @param newReqId
+     */
+    public void changeActivityReq(Long activityId, Long newReqId) {
+        this.changeActivityReq(this.findActivity(activityId), this.findRequirement(newReqId));
+    }
+
+    /**
      * Destroy an activity
      *
      * @param activityId id of activity to destroy
@@ -249,7 +271,7 @@ public class ResourceFacade {
         Activity activity = this.findActivity(activityId);
         activity.getResourceInstance().removeActivity(activity);
         activity.getRequirement().removeActivity(activity);
-        activity.getTaskDescriptor().removeActivity(activity);
+        activity.getTaskInstance().removeActivity(activity);
 
         this.getEntityManager().remove(activity);
     }
@@ -260,6 +282,7 @@ public class ResourceFacade {
      * @param resourceInstanceId
      * @param editable
      * @param time
+     *
      * @return the new resource occupation
      */
     public Occupation addOccupation(Long resourceInstanceId,
@@ -291,6 +314,7 @@ public class ResourceFacade {
      * @param player
      * @param taskInstanceId
      * @param period
+     *
      * @return the taskInstance, which contains the new planning
      */
     public TaskInstance plan(Player player, Long taskInstanceId, Integer period) {
@@ -313,6 +337,7 @@ public class ResourceFacade {
      * @param playerId
      * @param taskInstanceId
      * @param period
+     *
      * @return the taskInstance, which contains the new planning
      */
     public TaskInstance plan(Long playerId, Long taskInstanceId, Integer period) {
@@ -326,6 +351,7 @@ public class ResourceFacade {
      * @param player
      * @param taskInstanceId
      * @param period
+     *
      * @return the taskInstance, which contains the new planning
      */
     public TaskInstance unplan(Player player, Long taskInstanceId, Integer period) {
@@ -344,6 +370,7 @@ public class ResourceFacade {
      * @param playerId
      * @param taskInstanceId
      * @param period
+     *
      * @return the taskInstance, which contains the new planning
      */
     public TaskInstance unplan(Long playerId, Long taskInstanceId, Integer period) {
@@ -355,6 +382,7 @@ public class ResourceFacade {
     /**
      *
      * @param event
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) throws WegasNoResultException {
@@ -403,6 +431,78 @@ public class ResourceFacade {
             if (skills != null && skills.size() > 0) {
                 Long level = (Long) skills.values().toArray()[0];
                 ri.setProperty("level", level.toString());
+            }
+        }
+    }
+
+    public void instanceRevivedListener(@Observes InstanceRevivedEvent event) throws WegasNoResultException, NoPlayerException {
+        if (event.getEntity() instanceof ResourceInstance) {
+            this.reviveResourceInstance((ResourceInstance) event.getEntity());
+        }
+    }
+
+    public void reviveResourceInstance(ResourceInstance resourceInstance) throws WegasNoResultException, NoPlayerException {
+
+        if ((resourceInstance.getAssignments() != null && resourceInstance.getAssignments().size() > 0)
+                || (resourceInstance.getActivities() != null && resourceInstance.getActivities().size() > 0)) {
+            ResourceDescriptor rd = (ResourceDescriptor) resourceInstance.findDescriptor();
+            GameModel gm = rd.getGameModel();
+
+            Player currentPlayer = null;
+            boolean isDefault = resourceInstance.isDefaultInstance();
+            if (!isDefault) {
+                currentPlayer = variableInstanceFacade.findAPlayer(resourceInstance);
+            }
+
+            for (Assignment assignment : resourceInstance.getAssignments()) {
+                if (!Helper.isNullOrEmpty(assignment.getDeserialisedTaskDescriptorName())) {
+                    TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, assignment.getDeserialisedTaskDescriptorName());
+                    TaskInstance newTaskInstance;
+                    if (isDefault) {
+                        newTaskInstance = newTaskDescriptor.getDefaultInstance();
+                    } else {
+                        newTaskInstance = newTaskDescriptor.getInstance(currentPlayer);
+                    }
+
+                    TaskInstance oldTaskInstance = assignment.getTaskInstance();
+                    if (oldTaskInstance != null) {
+                        oldTaskInstance.removeAssignment(assignment);
+                    }
+                    assignment.setTaskInstance(newTaskInstance);
+                    newTaskInstance.addAssignment(assignment);
+                }
+            }
+
+            for (Activity activity : resourceInstance.getActivities()) {
+                if (!Helper.isNullOrEmpty(activity.getDeserialisedTaskDescriptorName())) {
+                    TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, activity.getDeserialisedTaskDescriptorName());
+                    TaskInstance newTaskInstance;
+                    if (isDefault) {
+                        newTaskInstance = newTaskDescriptor.getDefaultInstance();
+                    } else {
+                        newTaskInstance = newTaskDescriptor.getInstance(currentPlayer);
+                    }
+
+                    TaskInstance oldTaskInstance = activity.getTaskInstance();
+                    if (oldTaskInstance != null) {
+                        oldTaskInstance.removeActivity(activity);
+                    }
+                    activity.setTaskInstance(newTaskInstance);
+                    newTaskInstance.addActivity(activity);
+                }
+
+                // Process req after the taskInstance
+                if (!Helper.isNullOrEmpty(activity.getDeserialisedRequirementName())) {
+                    String deserialisedRequirementName = activity.getDeserialisedRequirementName();
+                    if (activity.getTaskInstance() != null) {
+                        WRequirement req = activity.getTaskInstance().getRequirementByName(deserialisedRequirementName);
+                        if (req != null) {
+                            activity.setRequirement(req);
+                        }
+                    } else {
+                        throw WegasErrorMessage.error("Invalid Activity (no task)");
+                    }
+                }
             }
         }
     }
