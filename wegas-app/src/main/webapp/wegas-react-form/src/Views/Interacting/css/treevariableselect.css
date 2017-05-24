@@ -6,7 +6,7 @@
 
 .icon {
     color: black;
-    font-size:85%;
+    font-size: 85%;
 }
 
 .tree {
@@ -29,10 +29,6 @@
     bottom: 150%;
 }
 
-.globalMethod {
-    color: hotpink;
-}
-
-.label{
-    color:black;
+.label {
+    color: black;
 }
