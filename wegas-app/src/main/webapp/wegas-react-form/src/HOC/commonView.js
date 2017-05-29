@@ -27,7 +27,7 @@ const shortInlineStyle = css(
 );
 
 const longStyle = css({
-    maxWidth: FormStyles.textInputWidth
+    maxWidth: FormStyles.defaultEditorWidth
 });
 
 const infoStyle = css(

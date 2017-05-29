@@ -7,21 +7,17 @@ import {css} from 'glamor';
 
 const removeButtonStyle = css({
     opacity: 0,
-    marginTop: '1.5em',
+    marginTop: '1.6em',
     verticalAlign: 'top',
+    paddingRight: '5px',
     display: 'inline-block',
-    transition: 'opacity 500ms 300ms'
+    transition: 'opacity 500ms 200ms'
 });
 
-const containerStyle = css({
+const removeContainerStyle = css({
     // borderLeft: 'solid 1px lightsteelblue',
-    marginTop: '2em',
-    paddingLeft: '5px',
-    transition: 'border-color 500ms 300ms',
-    ':hover' : {
-        // border-left: solid 1px cornflowerblue;
-    },
-    ':hover .removeButton' : {
+    // marginTop: '2em',
+    ':hover *' : {
         opacity: 1
     }
 });
@@ -70,7 +66,7 @@ export default function addStatement(Comp) {
 export const removeStatement = Comp => {
     function RemoveStatement(props) {
         return (
-            <div className={containerStyle}>
+            <div className={removeContainerStyle}>
                 <div className={removeButtonStyle}>
                     <RemoveStatementButton onClick={props.onRemove} />
                 </div>

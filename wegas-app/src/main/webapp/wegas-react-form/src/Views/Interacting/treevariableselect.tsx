@@ -3,11 +3,46 @@ import classnames from 'classnames';
 import Popover from '../../Components/Popover';
 import TreeSelect from '../../Components/tree/TreeSelect';
 import { getY } from '../../index';
-import styles from './css/treevariableselect.css';
 import { WidgetProps } from "jsoninput/typings/types";
 import { css } from "glamor";
 
-const SeparatorCss = css({ borderTop: "solid 1px" })
+const separatorCss = css({ borderTop: "solid 1px" });
+
+const containerCss = css({
+    color: '#6A95B6',
+    display: 'inline-block',
+    marginTop: '1.5em'
+});
+
+const iconCss = css({
+    color: 'black',
+    fontSize: '85%'
+});
+
+const treeCss = css({
+    padding: '5px 10px',
+    backgroundColor: 'white',
+    boxShadow: '0 2px 5px black',
+    borderRadius: '3px',
+    width: 'auto'
+});
+
+const selectorLinkCss = css({
+    position: 'relative',
+    marginRight: '1em'
+});
+
+const pathCss = css({
+    position: 'absolute',
+    fontSize: '75%',
+    whiteSpace: 'nowrap',
+    bottom: '150%'
+});
+
+const labelCss = css({
+    color: 'black'
+});
+
 
 type Item = {
     label: string;
@@ -46,8 +81,8 @@ function labelIconForVariable(name?: string) {
     const target = getY().Wegas.Facade.Variable.cache.find('name', name);
     if (target) {
         return (
-            <span className={styles.label}>
-                <span className={`${target.getIconCss()} ${styles.icon}`} />
+            <span className={`${labelCss}`}>
+                <span className={`${target.getIconCss()} ${iconCss}`} />
                 {' '}
                 {target.getEditorLabel()}
             </span>
@@ -127,7 +162,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
         const add = Array.isArray(this.props.view.additional)
             ? this.props.view.additional.map((i, index) => ({
                 ...i,
-                className: classnames(i.className, { [SeparatorCss.toString()]: index === 0 })
+                className: classnames(i.className, { [separatorCss.toString()]: index === 0 })
             }))
             : [];
         return genVarItems(
@@ -151,7 +186,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
         if (label) {
             return (
                 <span>
-                    <span className={`${styles.icon} fa fa-globe `} /> {label}
+                    <span className={`${iconCss} fa fa-globe `} /> {label}
                 </span>
             );
         }
@@ -159,7 +194,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
     }
     render() {
         return (
-            <div className={styles.container}>
+            <div className={`${containerCss}`}>
                 <Popover
                     show={this.state.searching}
                     onClickOutside={() =>
@@ -182,7 +217,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
                                 search: ev.target.value
                             })}
                     />
-                    <div className={styles.tree}>
+                    <div className={`${treeCss}`}>
                         <TreeSelect
                             match={match}
                             selected={this.props.value}
@@ -198,9 +233,9 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
                         this.setState({
                             searching: true
                         })}
-                    className={styles.selectorLink}
+                    className={`${selectorLinkCss}`}
                 >
-                    <div className={styles.path}>
+                    <div className={`${pathCss}`}>
                         {buildPath(this.props.value)}
                     </div>
                     {labelIconForVariable(this.props.value) ||

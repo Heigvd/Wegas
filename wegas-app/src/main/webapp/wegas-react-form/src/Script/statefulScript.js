@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 /**
- * Transform a stateless Script Component into a statefull Component.
+ * Transform a stateless Script Component into a stateful Component.
  */
-export default function statefullScript(Comp) {
-    class StatefullScript extends React.Component {
+export default function statefulScript(Comp) {
+    class StatefulScript extends React.Component {
         constructor(props) {
             super(props);
             this.state = {
@@ -25,13 +25,13 @@ export default function statefullScript(Comp) {
             return (<Comp {...this.props} onChange={this.handleChange} value={this.state.value} />);
         }
     }
-    StatefullScript.propTypes = {
+    StatefulScript.propTypes = {
         value: PropTypes.any,
         onChange: PropTypes.func
     };
-    StatefullScript.defaultProps = {
+    StatefulScript.defaultProps = {
         value: { '@class': 'Script', content: '' },
         onChange: function noop() { }
     };
-    return StatefullScript;
+    return StatefulScript;
 }
