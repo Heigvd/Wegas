@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Wegas Form with react",
   "main": "src/index.js",
+  "private": true,
   "scripts": {
     "start": "webpack --config webpack.config.dev.js --watch",
     "clean": "rimraf dist",

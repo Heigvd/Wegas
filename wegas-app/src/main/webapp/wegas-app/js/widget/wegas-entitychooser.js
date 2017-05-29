@@ -141,19 +141,11 @@ YUI.add("wegas-entitychooser", function(Y) {
                     properties:{
                         type: {
                             type: "string",
-                            view: { label:"Type" }
+                            view: { label: "Type" }
                         }
                     },
                     getter: function(v) {
                         return Y.JSON.parse(Y.JSON.stringify(v));
-                    },
-                    _inputex: {
-                        _type: "group",
-                        fields: [{
-                                type: "string",
-                                name: "type",
-                                label: "Type"
-                            }]
                     }
                 },
                 widgetAttr: {
@@ -170,6 +162,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                     type: "array",
                     value: [],
                     required: true,
+                    view:{ label: "ClassFilter" },
                     items: {
                         type: "string",
                         view: {
@@ -335,45 +328,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                 },
                 widgets: {
                     required: true,
-                    _inputex: {
-                        _type: "hashlist",
-                        keyField: "dataType",
-                        valueField: "config",
-                        elementType: {
-                            type: "combine",
-                            fields: [{
-                                    name: "dataType",
-                                    type: "select",
-                                    value: "DialogueDescriptor",
-                                    choices: Y.Wegas.persistence.AVAILABLE_TYPES
-                                }, {
-                                    name: "config",
-                                    type: "group",
-                                    fields: [{
-                                            name: "widget",
-                                            type: "group",
-                                            value: {
-                                                type: "HistoryDialogue"
-                                            },
-                                            fields: [{
-                                                    type: "string",
-                                                    name: "type",
-                                                    label: "Type"
-                                                }]
-                                        }, {
-                                            name: "widgetAttr",
-                                            value: "dialogueVariable",
-                                            type: "string"
-                                        }, {
-                                            name: "getLabel",
-                                            value: null,
-                                            type: "function"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
+                    view:{ type: "hidden" }
                 },
                 markUnread: {
                     type: "boolean",
