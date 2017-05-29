@@ -330,7 +330,16 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
 
     @Override
     public String getRequieredUpdatePermission() {
-        return this.getChannel();
+        /*
+         * since a player should be able to join a team by itself
+         * restricting update permission is not possible.
+         *
+         * A player shouldn't be authorized to join a team by itself.
+         * A player should be able to create a team and a team member should be able 
+         * to invite others player within the team. Such behaviour allow to set an updatePermission
+         */
+        return null;
+        //return this.getChannel();
     }
 
     @Override

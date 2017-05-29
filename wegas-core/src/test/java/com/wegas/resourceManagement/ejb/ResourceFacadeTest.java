@@ -210,7 +210,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /**
          * Reset and propagate to players
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         Assert.assertEquals(1, task.getInstance(player).getAssignments().size());
         Assert.assertEquals(1, res.getInstance(player).getAssignments().size());
@@ -230,7 +230,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /**
          * Reset and propagate to players
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         Assert.assertEquals(0, task.getInstance(player).getAssignments().size());
         Assert.assertEquals(0, res.getInstance(player).getAssignments().size());
@@ -246,30 +246,30 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 
         BurndownDescriptor bdown = new BurndownDescriptor();
         bdown.setDefaultInstance(new BurndownInstance());
-        variableDescriptorFacade.create(gameModel.getId(), bdown);
+        variableDescriptorFacade.create(scenario.getId(), bdown);
 
         // Create a resource
         ResourceDescriptor paulD = new ResourceDescriptor();
         paulD.setLabel("Paul");
         paulD.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), paulD);
+        variableDescriptorFacade.create(scenario.getId(), paulD);
 
         // Create a resource
         ResourceDescriptor rogerD = new ResourceDescriptor();
         rogerD.setLabel("Roger");
         rogerD.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), rogerD);
+        variableDescriptorFacade.create(scenario.getId(), rogerD);
 
         // Create tasks
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task1);
+        variableDescriptorFacade.create(scenario.getId(), task1);
 
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My second task");
         task2.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task2);
 
         Iteration it1 = new Iteration();
 
@@ -392,18 +392,18 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 
         BurndownDescriptor bdown = new BurndownDescriptor();
         bdown.setDefaultInstance(new BurndownInstance());
-        variableDescriptorFacade.create(gameModel.getId(), bdown);
+        variableDescriptorFacade.create(scenario.getId(), bdown);
 
         // Create tasks
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task1);
+        variableDescriptorFacade.create(scenario.getId(), task1);
 
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My second task");
         task2.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task2);
 
         Iteration it1 = new Iteration();
 
@@ -423,7 +423,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /*
          * propagate to players
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
@@ -450,7 +450,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /*
          * propagation iteration task(s) to player(s)
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -483,7 +483,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /*
          * erase player modification
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -513,7 +513,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /*
          * erase player modification
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -537,7 +537,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /*
          * erase player modification
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -560,7 +560,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /*
          * erase player modification
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -621,7 +621,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor resD = new ResourceDescriptor();
         resD.setLabel("Paul");
         resD.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), resD);
+        variableDescriptorFacade.create(scenario.getId(), resD);
 
         // Create a task1
         TaskDescriptor taskD = new TaskDescriptor();
@@ -630,7 +630,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         WRequirement req = new WRequirement();
         req.setWork("carpenter");
         taskD.getDefaultInstance().addRequirement(req);
-        variableDescriptorFacade.create(gameModel.getId(), taskD);
+        variableDescriptorFacade.create(scenario.getId(), taskD);
 
         ResourceInstance resource = resD.getDefaultInstance();
         TaskInstance task = taskD.getDefaultInstance();
@@ -651,7 +651,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /**
          * Reset and propagate to players
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         taskD = (TaskDescriptor) variableDescriptorFacade.find(taskD.getId());
         resD = (ResourceDescriptor) variableDescriptorFacade.find(resD.getId());
@@ -683,7 +683,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /**
          * Reset and propagate to players
          */
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         Assert.assertEquals(0, taskD.getInstance(player).getActivities().size());
         Assert.assertEquals(0, resD.getInstance(player).getActivities().size());

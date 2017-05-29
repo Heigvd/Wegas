@@ -127,7 +127,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
     }
 
     private Player createPlayer(Team t, int i, int j) {
-        User u = PlayerFacadeTest.signup("massive_player_" + i + "_" + j + "@local");
+        WegasUser u = PlayerFacadeTest.signup("massive_player_" + i + "_" + j + "@local");
 
         return gameFacade.joinTeam(t.getId(), u.getId());
     }

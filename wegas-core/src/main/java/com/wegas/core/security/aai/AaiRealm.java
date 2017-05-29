@@ -41,31 +41,8 @@ public class AaiRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-
-// NB: This is copied from JpaRealm.doGetAuthorizationInfo !
-
-        try {
-            AbstractAccount account = accountFacade().find((Long) principals.getPrimaryPrincipal());
-            User user = account.getUser();
-            SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-            for (Role role : user.getRoles()) {
-                info.addRole(role.getName());
-
-                for (Permission p : role.getPermissions()) {
-                    addPermissions(info, p);
-                }
-            }
-
-            for (Permission p : user.getPermissions()) {
-                addPermissions(info, p);
-            }
-            return info;
-        } catch (EJBException e) {
-            return null;
-        } catch (NamingException ex) {
-            logger.error("Unable to find AccountFacade EJB", ex);
-            return null;
-        }
+        //Effective authorisations are fetched by JpaRealm in all case
+        return new SimpleAuthorizationInfo();
     }
 
     @Override

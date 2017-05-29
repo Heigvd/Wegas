@@ -23,6 +23,7 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
@@ -45,6 +46,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.junit.Before;
 
@@ -99,7 +101,7 @@ public class AbstractEJBTestBase {
     protected static Role scenarists;
     protected static Role trainers;
 
-    protected static User admin;
+    protected static WegasUser admin;
 
     @BeforeClass
     public static void setUpFacades() throws NamingException {
@@ -158,7 +160,6 @@ public class AbstractEJBTestBase {
         requestManager.clearOutdatedEntities();
 
         //requestManager.clearPermissions();
-
         TestHelper.wipeEmCache();
         userFacade.logout();
 
@@ -173,7 +174,7 @@ public class AbstractEJBTestBase {
             setupQuery += "INSERT INTO permission (id, permissions, role_id) VALUES (2, 'Game:*:*', 1);";
             setupQuery += "INSERT INTO permission (id, permissions, role_id) VALUES (3, 'User:*:*', 1);";
             setupQuery += "INSERT INTO users (id) VALUES (1);";
-            setupQuery += "INSERT INTO abstractaccount (id, email, dtype, user_id, passwordhex, salt) VALUES (1, 'root@local', 'JpaAccount', '1', 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');";
+            setupQuery += "INSERT INTO abstractaccount (id, username, email, dtype, user_id, passwordhex, salt) VALUES (1, 'root', 'root@local', 'JpaAccount', '1', 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');";
             setupQuery += "INSERT INTO users_roles (users_id, roles_id) VALUES (1, 1);";
             setupQuery += "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';";
             statement.execute(setupQuery);
@@ -182,7 +183,7 @@ public class AbstractEJBTestBase {
         admins = roleFacade.findByName("Administrator");
         scenarists = roleFacade.findByName("Scenarist");
         trainers = roleFacade.findByName("Trainer");
-        admin = userFacade.find(1l);
+        admin = new WegasUser(userFacade.find(1l), "root", "1234");
         login(admin);
     }
 
@@ -190,39 +191,48 @@ public class AbstractEJBTestBase {
         userFacade.logout();
     }
 
-    public static void login(User user) {
+    public static void login(WegasUser user) {
         Subject subject = SecurityUtils.getSubject();
         userFacade.logout();
-        subject.login(new GuestToken(user.getMainAccount().getId()));
+        if (user.getUser().getMainAccount() instanceof GuestJpaAccount) {
+            subject.login(new GuestToken(user.getUser().getMainAccount().getId()));
+        } else {
+            subject.login(new UsernamePasswordToken(user.getUsername(), user.getPassword()));
+        }
+
         User currentUser = userFacade.getCurrentUser();
-        if (!currentUser.equals(user)) {
+        if (!currentUser.equals(user.getUser())) {
             throw WegasErrorMessage.error("LOGIN FAILURE");
         }
     }
 
-    public static User signup(String email) {
+    public static WegasUser signup(String email) {
         JpaAccount ja = new JpaAccount();
         ja.setEmail(email);
+        String password = Helper.genRandomLetters(10);
+        ja.setPassword(password);
         try {
-            return userFacade.signup(ja);
+            User signup = userFacade.signup(ja);
+            return new WegasUser(signup, email, password);
         } catch (AddressException ex) {
             throw WegasErrorMessage.error("Not a email address");
         }
     }
 
-    public static User guestLogin() {
+    public static WegasUser guestLogin() {
         /*AuthenticationInformation authInfo = new AuthenticationInformation();
         authInfo.setRemember(true);*/
-        return userFacade.guestLogin();
+        return new WegasUser(userFacade.guestLogin(), null, null);
     }
 
-    public static User addRoles(User user, Role... roles) {
-        user = userFacade.find(user.getId());
+    public static WegasUser addRoles(WegasUser user, Role... roles) {
+        User u = userFacade.find(user.user.getId());
         for (Role role : roles) {
-            userFacade.addRole(user.getId(), role.getId());
+            userFacade.addRole(u.getId(), role.getId());
         }
         //userFacade.merge(user);
-        return userFacade.find(user.getId());
+        user.user = userFacade.find(u.getId());
+        return user;
     }
 
     @AfterClass
@@ -232,5 +242,34 @@ public class AbstractEJBTestBase {
 
     private static <T> T lookupBy(Class<T> type) throws NamingException {
         return Helper.lookupBy(ejbContainer.getContext(), type, type);
+    }
+
+    public static class WegasUser {
+
+        User user;
+        String username;
+        String password;
+
+        public WegasUser(User user, String username, String password) {
+            this.user = user;
+            this.username = username;
+            this.password = password;
+        }
+
+        public Long getId() {
+            return user.getId();
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public User getUser() {
+            return user;
+        }
+
+        public String getUsername() {
+            return username;
+        }
     }
 }

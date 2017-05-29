@@ -25,11 +25,11 @@ public class RemoveGuestTest extends AbstractEJBTest {
         scenario.getProperties().setFreeForAll(true);
         gameModelFacade.update(scenario.getId(), scenario);
 
-        User oldGuest = guestLogin();
+        WegasUser oldGuest = guestLogin();
         Calendar calendar = Calendar.getInstance();
 
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 13);
-        AbstractAccount account = oldGuest.getMainAccount();
+        AbstractAccount account = oldGuest.getUser().getMainAccount();
 
         account.setCreatedTime(calendar.getTime());
         accountFacade.merge(account);

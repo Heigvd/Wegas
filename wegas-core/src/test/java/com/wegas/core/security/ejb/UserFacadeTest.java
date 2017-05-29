@@ -26,7 +26,7 @@ public class UserFacadeTest extends AbstractEJBTestBase {
 
     private static JpaAccount abstractAccount;
 
-    private static User u;
+    private static WegasUser u;
 
     private static Role role1;
 
@@ -49,7 +49,7 @@ public class UserFacadeTest extends AbstractEJBTestBase {
 
         u = AbstractEJBTestBase.signup(EMAIL);
         login(u);
-        abstractAccount = (JpaAccount) u.getMainAccount();
+        abstractAccount = (JpaAccount) u.getUser().getMainAccount();
 
         login(admin);
         addRoles(u, role1, role2);
@@ -63,14 +63,14 @@ public class UserFacadeTest extends AbstractEJBTestBase {
 
         // findAll()
         List<User> users = userFacade.findAll();
-        Assert.assertTrue(users.contains(u));
-        Assert.assertTrue(users.contains(admin));
+        Assert.assertTrue(users.contains(u.getUser()));
+        Assert.assertTrue(users.contains(admin.getUser()));
 
         Assert.assertEquals(2l, users.size());
 
         // find
-        Assert.assertEquals(u, userFacade.find(u.getId()));
-        Assert.assertEquals(admin, userFacade.find(admin.getId()));
+        Assert.assertEquals(u.getUser(), userFacade.find(u.getId()));
+        Assert.assertEquals(admin.getUser(), userFacade.find(admin.getId()));
     }
 
     @Test
@@ -78,18 +78,18 @@ public class UserFacadeTest extends AbstractEJBTestBase {
         final String PERM = "GameModel:*:*";
         final String PERM2 = "Game2:*:*";
 
-        userFacade.addUserPermission(u, PERM);
+        userFacade.addUserPermission(u.getUser(), PERM);
         accountFacade.update(abstractAccount.getId(), abstractAccount);
         AbstractAccount a = accountFacade.find(abstractAccount.getId());
-        Assert.assertEquals(PERM, u.getPermissions().get(0).getValue());
+        Assert.assertEquals(PERM, u.getUser().getPermissions().get(0).getValue());
 
-        userFacade.addUserPermission(u, PERM2);
+        userFacade.addUserPermission(u.getUser(), PERM2);
         accountFacade.update(abstractAccount.getId(), a);
         a = accountFacade.find(abstractAccount.getId());
-        Assert.assertEquals(PERM2, u.getPermissions().get(1).getValue());
+        Assert.assertEquals(PERM2, u.getUser().getPermissions().get(1).getValue());
 
-        u.removePermission(new Permission(PERM));
-        u.removePermission(new Permission(PERM2));
+        u.getUser().removePermission(new Permission(PERM));
+        u.getUser().removePermission(new Permission(PERM2));
         accountFacade.update(a.getId(), a);
         a = accountFacade.find(abstractAccount.getId());
         Assert.assertTrue(a.getPermissions().isEmpty());
@@ -146,8 +146,8 @@ public class UserFacadeTest extends AbstractEJBTestBase {
      */
     @Test(expected = EJBException.class)
     public void testCreateSameUser() throws WegasErrorMessage {
-        u.addAccount(abstractAccount);
-        userFacade.create(u);
+        u.getUser().addAccount(abstractAccount);
+        userFacade.create(u.getUser());
     }
 
     @Test

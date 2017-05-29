@@ -46,6 +46,7 @@ import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -446,7 +447,7 @@ public class SerializationTest {
 
         String strJa = mapper.writeValueAsString(ja);
 
-        mapper.readValue(strJa, JpaAccount.class);
+        mapper.readValue(strJa, AbstractAccount.class);
 
         // 
     }

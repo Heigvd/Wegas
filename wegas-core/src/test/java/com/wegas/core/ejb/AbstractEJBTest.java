@@ -51,13 +51,13 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     protected static Player player2;
     protected static Player player21;
 
-    protected static User scenarist;
-    protected static User trainer;
-    protected static User user;
-    protected static User guest;
+    protected static WegasUser scenarist;
+    protected static WegasUser trainer;
+    protected static WegasUser user;
+    protected static WegasUser guest;
 
-    protected User user2;
-    protected User user21;
+    protected WegasUser user2;
+    protected WegasUser user21;
 
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
@@ -86,7 +86,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         gameModelFacade.create(gameModel);
         gameModel = gameModelFacade.find(gameModel.getId());
 
-        userController.shareGameModel(gameModel.getId(), "Instantiate", trainer.getMainAccount().getId());
+        userController.shareGameModel(gameModel.getId(), "Instantiate", trainer.getUser().getMainAccount().getId());
 
         login(trainer);
         game = new Game();

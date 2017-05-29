@@ -340,6 +340,10 @@ public abstract class AbstractAccount extends AbstractEntity {
         }
     }
 
+    public void setHash(String hash){
+        /* Jackson useless sugar */
+    }
+
     public Date getAgreedTime() {
         return agreedTime != null ? new Date(agreedTime.getTime()) : null;
     }
