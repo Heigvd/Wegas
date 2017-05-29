@@ -3,6 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
+
+
     <name>wegas-project</name>
     <description>Wegas (Web Game Authoring System) is an engine for web-based multiplayer games.</description>
     <url>http://wegas.albasim.ch</url>
