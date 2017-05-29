@@ -21,15 +21,18 @@ import TextareaView from './Views/textarea';
 import UneditableView from './Views/uneditable';
 import WegasImageUrl from './Views/wegas-image-url';
 import WegasUrl from './Views/wegas-url';
-
+import ColorPicker from './Views/color-picker';
+import KeyChoice from './Views/keychoice';
 setDefaultWidgets({
     array: ArrayView,
     boolean: BooleanView,
+    colorpicker: ColorPicker,
     entityarrayfieldselect: EntityArrayFieldSelect,
     flatvariableselect: FlatVariableSelect,
     hashlist: HashlistView,
     hidden: HiddenView,
     html: HTMLView,
+    keychoice: KeyChoice,
     number: StringView,
     object: ObjectView,
     pageselect: PageSelect,

@@ -28,6 +28,7 @@
     "rc-menu": "^5.0.10",
     "react": "^15.5.4",
     "react-ace": "^5.0.1",
+    "react-color": "^2.11.7",
     "react-dom": "^15.5.4",
     "react-tinymce": "^0.5.1",
     "recast": "^0.12.3"

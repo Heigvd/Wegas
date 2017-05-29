@@ -244,8 +244,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
              */
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "variable",
                     classFilter: ["NumberDescriptor"]
                 }
@@ -257,22 +257,25 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             label: {
                 type: "string",
                 optional: true,
+                index:0,
                 validator: Y.Lang.isString,
-                _inputex: {
+                view: {
                     label: "Label"
                 }
             },
             minValue: {
                 type: "number",
                 optional: true,
-                _inputex: {
+                index:1,
+                view: {
                     label: "Display from"
                 }
             },
             maxValue: {
                 type: "number",
                 optional: true,
-                _inputex: {
+                index:2,
+                view: {
                     label: "to"
                 }
             },
@@ -280,7 +283,101 @@ YUI.add('wegas-gaugedisplay', function(Y) {
              * The configuration of the gauge (object)
              */
             cfg: {
+                type: "object",
+                index: 4,
                 value: {},
+                view: {
+                    type: "keychoice",
+                    label: "Configuration",
+                    addKeyLabel: "Add configuration"
+                },
+                properties:{
+                    pointer:{
+                        type: "object",
+                        properties:{
+                            pointerlength:{
+                                type:"number",
+                                required:true,
+                                view: {
+                                    label: "Pointer length",
+                                    description:"length 0.5 [0.1 - ...]"
+                                }
+                            },
+                            strokeWidth:{
+                                type: "number",
+                                required: true,
+                                view:{
+                                    label:"Stroke Width",
+                                    description:"width 0.035 [0.02 - 0.5]"
+                                }
+                            },
+                            color:{
+                                type: "string",
+                                required:true,
+                                view:{
+                                    type: "colorpicker",
+                                    label: "Color"
+                                }
+                            }
+                        }
+                    },
+                    backgroundPercentColors:{
+                        type: "array",
+                        value:[undefined, undefined],
+                        minItems:2,
+                        maxItems:2,
+                        items:[
+                            {
+                                type: "string",
+                                view:{
+                                    label: "Value",
+                                    description: "Percent value [0 - 1]"
+                                }
+                            },
+                            {
+                                type:"string",
+                                view:{
+                                    label: "Color",
+                                    type: "colorpicker"
+                                }
+                            }
+                        ]
+                    },
+                    percentColors:{
+                        type:"array",
+                        value: [undefined, undefined],
+                        minItems:2,
+                        maxItems:2,
+                        items:[
+                            {
+                                type: "string",
+                                view:{
+                                    label: "Value",
+                                    description: "Percent value [0 - 1]"
+                                }
+                            },
+                            {
+                                type: "string",
+                                view: {
+                                    label: "Color",
+                                    type: "colorpicker"
+                                }
+                            }
+                        ]
+                    },
+                    lineWidth:{
+                        type:"number",
+                        view:{
+                            description:"0.44 [0 - 0.7]"
+                        }
+                    },
+                    angle:{
+                        type:"number",
+                        view:{
+                            description:"126° [0° - 180°]",
+                        }
+                    }
+                },
                 _inputex: {
                     _type: "wegasobject",
                     label: "Configuration",
