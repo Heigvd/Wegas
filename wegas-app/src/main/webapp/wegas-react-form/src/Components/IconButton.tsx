@@ -15,7 +15,7 @@ type Props = {
 }
 const shapeStyle = css({
     width: 'auto',
-    minWidth: '16px',
+    //minWidth: '16px',
     height: '16px',
     textAlign: 'center',
     display: 'inline-block',

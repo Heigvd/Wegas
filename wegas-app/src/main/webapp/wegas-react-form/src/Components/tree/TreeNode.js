@@ -26,9 +26,12 @@ const noSelectStyle = css({
 
 const treeNodeContainerStyle = css({
     listStyle: 'none',
+    whiteSpace: 'nowrap',
+
     '& a': {
         padding: '0 3px'
     },
+
     '& > ul': {
         marginLeft: '.5em',
         listStyle: 'none',

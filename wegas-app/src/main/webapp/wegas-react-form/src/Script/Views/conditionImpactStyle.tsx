@@ -1,5 +1,6 @@
 import { css } from 'glamor';
 
 export const containerStyle = css({
-    display: 'inline-block'
+    display: 'inline-block',
+    verticalAlign: 'top'
 });

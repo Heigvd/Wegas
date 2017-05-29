@@ -4,20 +4,19 @@ import { css } from 'glamor';
 import IconButton from '../../Components/IconButton';
 
 const removeStatement = css({
-    zoom: 0.8,
-    ':hover': { backgroundColor: 'indianred' }
+    ':hover': { color: 'indianred' }
 });
 const addStatement = css({
     textAlign: 'center',
-    ':hover': { backgroundColor: 'darkslategrey' }
+    ':hover': { backgroundColor: 'lightgrey' }
 });
-const container = css({ display: 'inline-block', width: '22px' });
+const container = css({ display: 'inline-block' });
 
 export function RemoveStatementButton(props) {
     return (
         <span className={container.toString()}>
             <IconButton
-                icon="fa fa-minus"
+                icon="fa fa-minus-circle"
                 onClick={props.onClick}
                 tooltip="Remove"
                 className={removeStatement.toString()}
@@ -31,7 +30,7 @@ export function AddStatementButton(props) {
         <IconButton
             onClick={props.onClick}
             iconColor="#9DC06F"
-            icon="fa fa-plus"
+            icon="fa fa-plus-circle"
             tooltip="Add"
             label={props.label}
             className={addStatement.toString()}

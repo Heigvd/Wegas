@@ -22,7 +22,11 @@ const selectStyle = css({
     border: '1px solid lightgray'
 });
 
-
+const selectContainerStyle = css({
+    '& label': {
+        fontSize: '100%'
+    }
+});
 
 function genItems(o: (string | choice), i: number) {
     if (typeof o !== 'object') {
@@ -75,7 +79,7 @@ SelectView.defaultProps = {
 };
 */
 
-export default commonView(async(labeled(SelectView))(({ view }: any) => {       // @TODO any what ?
+export default commonView(async(labeled(SelectView, `${selectContainerStyle}`))(({ view }: any) => {       // @TODO any what ?
     const { choices } = view;
     if (typeof choices === 'function') {
         return Promise.resolve(choices()).then(ch => ({ view: { ...view, choices: ch } }));

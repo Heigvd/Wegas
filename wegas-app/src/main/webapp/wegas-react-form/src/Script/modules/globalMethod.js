@@ -23,7 +23,6 @@ const IMPACT = {
                         content: {
                             type: 'string',
                             view: {
-                                label: 'Message',
                                 type: 'html'
                             }
                         }

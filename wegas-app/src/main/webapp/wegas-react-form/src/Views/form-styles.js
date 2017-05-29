@@ -3,7 +3,8 @@ import { css } from 'glamor';
 
 export default class FormStyles {}
 
-FormStyles.textInputWidth = '33em';
+FormStyles.defaultEditorWidth = '30em';
+FormStyles.textInputWidth = '30em';
 FormStyles.textareaWidth = '30em';
 
 FormStyles.labelColor = '#6A95B6';

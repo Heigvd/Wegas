@@ -9,7 +9,7 @@ import Condition from './modules/Condition';
 import Variable from './modules/Variable';
 import condition from './condition';
 import { register } from './modules/globalMethod';
-import statefullScript from './statefullScript';
+import statefulScript from './statefulScript';
 
 const VariableStatement = scriptObject(parsed(singleStatement(Variable)));
 const MultiVariableMethod = scriptObject(parsed(multipleStatement(Impact)));
@@ -34,9 +34,9 @@ function scriptRenderer(Component) {
     };
 }
 
-const IndependantMultiVariableMethod = scriptRenderer(statefullScript(MultiVariableMethod));
-const IndependantMultiVariableCondition = scriptRenderer(statefullScript(MultiVariableCondition));
-const IndependantVariableStatement = scriptRenderer(statefullScript(VariableStatement));
+const IndependantMultiVariableMethod = scriptRenderer(statefulScript(MultiVariableMethod));
+const IndependantMultiVariableCondition = scriptRenderer(statefulScript(MultiVariableCondition));
+const IndependantVariableStatement = scriptRenderer(statefulScript(VariableStatement));
 
 export {
     VariableStatement,
