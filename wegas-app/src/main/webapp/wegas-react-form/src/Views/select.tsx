@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import labeled from '../HOC/labeled';
-import async from '../HOC/async';
+import asyncComp from '../HOC/async';
 import commonView from '../HOC/commonView';
 import { css } from 'glamor';
 import { WidgetProps } from "jsoninput/typings/types";
@@ -79,7 +79,7 @@ SelectView.defaultProps = {
 };
 */
 
-export default commonView(async(labeled(SelectView, `${selectContainerStyle}`))(({ view }: any) => {       // @TODO any what ?
+export default commonView(asyncComp(labeled(SelectView, `${selectContainerStyle}`))(({ view }: any) => {       // @TODO any what ?
     const { choices } = view;
     if (typeof choices === 'function') {
         return Promise.resolve(choices()).then(ch => ({ view: { ...view, choices: ch } }));
