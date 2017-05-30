@@ -10,9 +10,10 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-inbox-list', function(Y) {
-    "use strict";
-
-    var CONTENTBOX = 'contentBox', Micro = Y.Template.Micro, Wegas = Y.Wegas,
+    'use strict';
+    var CONTENTBOX = 'contentBox',
+        Micro = Y.Template.Micro,
+        Wegas = Y.Wegas,
         InboxList;
     /**
      * @name Y.Wegas.InboxList
@@ -22,10 +23,14 @@ YUI.add('wegas-inbox-list', function(Y) {
      * @constructor
      * @description Display and allow to manage e-mail sent to the current player
      */
-    InboxList = Y.Base.create("wegas-inbox-list", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-        /** @lends Y.Wegas.InboxList# */
-        // ** Private fields ** //
-        /**
+    InboxList = Y.Base.create(
+        'wegas-inbox-list',
+        Y.Widget,
+        [Y.WidgetChild, Wegas.Widget, Wegas.Editable],
+        {
+            /** @lends Y.Wegas.InboxList# */
+            // ** Private fields ** //
+            /**
          * Holds compiled templates. Add templates in scope variable TEMPLATES
          *
          * define tab and content Templates, add new ones :
@@ -37,131 +42,165 @@ YUI.add('wegas-inbox-list', function(Y) {
          * {tab: Y.Template.Micro.compile(tab_text_template),
          * content: Y.Template.Micro.compile(content_text_template)}
          */
-        TEMPLATES: {
-            "default": Micro.compile("<div class='msg msg-toggled'><div class='msg-header'>"
-                + "<div class='msg-subject'><%=this.get('subject')%></div>"
-                + "<% if (this.get('date')) { %><div class='msg-date'><%= this.get('date') %></div><% } %>"
-                + "<div style=\"clear: both;\"></div>"
-                + "<% if (this.get('from')) { %><div class='msg-from'><%= this.get('from') %></div><% } %>"
-                + "<% if (this.get('attachements') && this.get('attachements').length) {%>"
-                + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>"
-                + "<% } %><div style=\"clear: both;\"></div></div>"
-                + "<div class='msg-body'><div class='msg-body-content'><%== this.get('body') %></div></div>"
-                + "<a href='#' class='msg-showmore'>More...</a>"
-                + "</div>")
-        },
-        // *** Lifecycle Methods *** //
-        /**
+            TEMPLATES: {
+                default: Micro.compile(
+                    "<div class='msg msg-toggled'><div class='msg-header'>" +
+                        "<div class='msg-subject'><%=this.get('subject')%></div>" +
+                        "<% if (this.get('date')) { %><div class='msg-date'><%= this.get('date') %></div><% } %>" +
+                        '<div style="clear: both;"></div>' +
+                        "<% if (this.get('from')) { %><div class='msg-from'><%= this.get('from') %></div><% } %>" +
+                        "<% if (this.get('attachements') && this.get('attachements').length) {%>" +
+                        "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>" +
+                        '<% } %><div style="clear: both;"></div></div>' +
+                        "<div class='msg-body'><div class='msg-body-content'><%== this.get('body') %></div></div>" +
+                        "<a href='#' class='msg-showmore'>More...</a>" +
+                        '</div>'
+                )
+            },
+            // *** Lifecycle Methods *** //
+            /**
          * @function
          * @private
          * @description bind function to events.
          * When dataSource is updated, do syncUI
          */
-        bindUI: function() {
-            this.dataUpdatedHandler = Wegas.Facade.Instance.after("updatedInstance", this.onUpdatedInstance, this);// Sync view on cache update
+            bindUI: function() {
+                this.dataUpdatedHandler = Wegas.Facade.Instance.after(
+                    'updatedInstance',
+                    this.onUpdatedInstance,
+                    this
+                ); // Sync view on cache update
 
-            this.get(CONTENTBOX).delegate("click", function(e) {                // Whenever a collapsed message is clicked,
-                e.currentTarget.toggleClass("msg-toggled");                      // open it
-            }, ".msg-toggled");
-        },
-        onUpdatedInstance: function(e) {
-            if (e.entity.get("id") === this.get("variable.evaluated").getInstance().get("id")) {
-                this.syncUI();
-            }
-        },
-        /**
+                this.get(CONTENTBOX).delegate(
+                    'click',
+                    function(e) {
+                        // Whenever a collapsed message is clicked,
+                        e.currentTarget.toggleClass('msg-toggled'); // open it
+                    },
+                    '.msg-toggled'
+                );
+            },
+            onUpdatedInstance: function(e) {
+                if (
+                    e.entity.get('id') ===
+                    this.get('variable.evaluated').getInstance().get('id')
+                ) {
+                    this.syncUI();
+                }
+            },
+            /**
          * @function
          * @private
          * Re-select the current selected msg;
          */
-        syncUI: function() {
-            var inboxDescriptor = this.get('variable.evaluated'),
-                inboxInstanceId = inboxDescriptor.getInstance().get("id");
+            syncUI: function() {
+                var inboxDescriptor = this.get('variable.evaluated'),
+                    inboxInstanceId = inboxDescriptor.getInstance().get('id');
 
-            if (!inboxDescriptor) {
-                this.get(CONTENTBOX).setHTML("<center><em>Unable to find inbox variable</em></center>");
-                return;
-            }
-            this.showOverlay();
-            Wegas.Facade.Variable.sendRequest({//                               // Retrieve the messages from the server
-                request: "/Inbox/" + inboxInstanceId + "/Message/?view=Extended",
-                cfg: {
-                    updateCache: false
-                },
-                on: {
-                    success: Y.bind(function(e) {
-                        if (this.get("destroyed")) {
-                            return;
-                        }
-                        this._updateView(inboxInstanceId, e.response.entities);
-                        this.hideOverlay();
-                    }, this)
+                if (!inboxDescriptor) {
+                    this.get(CONTENTBOX).setHTML(
+                        '<center><em>Unable to find inbox variable</em></center>'
+                    );
+                    return;
                 }
-            });
-        },
-        /**
+                this.showOverlay();
+                Wegas.Facade.Variable.sendRequest({
+                    //                               // Retrieve the messages from the server
+                    request: '/Inbox/' +
+                        inboxInstanceId +
+                        '/Message/?view=Extended',
+                    cfg: {
+                        updateCache: false
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            if (this.get('destroyed')) {
+                                return;
+                            }
+                            this._updateView(
+                                inboxInstanceId,
+                                e.response.entities
+                            );
+                            this.hideOverlay();
+                        }, this)
+                    }
+                });
+            },
+            /**
          * @function
          * @private
          * @description Destroy all eventHandlers created by this widget
          */
-        destructor: function() {
-            this.dataUpdatedHandler.detach();
-        },
-        // *** Private Methods *** //
-        /**
+            destructor: function() {
+                this.dataUpdatedHandler.detach();
+            },
+            // *** Private Methods *** //
+            /**
          * @private
          * @param {Array of entity} entities
          * @returns {undefined}
          */
-        _updateView: function(inboxInstanceId, entities) {
-            var cb = this.get(CONTENTBOX), readMessages = false;
+            _updateView: function(inboxInstanceId, entities) {
+                var cb = this.get(CONTENTBOX), readMessages = false;
 
-            cb.setContent("");
+                cb.setContent('');
 
-            if (entities.length === 0) {
-                cb.setHTML("<center><em>Empty</em></center>");
-            }
-            Y.Array.each(entities, function(entity) {
-                cb.append(this.TEMPLATES[this.get("template")](entity));
-
-                if (entity.get("unread")) {
-                    readMessages = true;
+                if (entities.length === 0) {
+                    cb.setHTML('<center><em>Empty</em></center>');
                 }
-            }, this);
+                Y.Array.each(
+                    entities,
+                    function(entity) {
+                        cb.append(this.TEMPLATES[this.get('template')](entity));
 
-            if (readMessages) {
-                Y.Wegas.Facade.Variable.sendRequest({// Send reqest to mark as read
-                    request: "/Inbox/" + inboxInstanceId + "/ReadAll",
-                    cfg: {
-                        method: "PUT"
-                    }
-                });
-            }
+                        if (entity.get('unread')) {
+                            readMessages = true;
+                        }
+                    },
+                    this
+                );
 
-            cb.all(".msg").each(function(m) {
-                /*
+                if (readMessages) {
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        // Send reqest to mark as read
+                        request: '/Inbox/' + inboxInstanceId + '/ReadAll',
+                        cfg: {
+                            method: 'PUT'
+                        }
+                    });
+                }
+
+                cb.all('.msg').each(function(m) {
+                    /*
                  * If the content is bigger than the available height (max-height style)
                  *  add msg-body-toggled class and content of the read more menu
                  */
-                if (parseInt(m.one(".msg-body").getStyle("maxHeight"))
-                    > parseInt(m.one(".msg-body-content").getComputedStyle("height"))) {
-                    m.removeClass("msg-toggled");
+                    if (
+                        parseInt(m.one('.msg-body').getStyle('maxHeight')) >
+                        parseInt(
+                            m
+                                .one('.msg-body-content')
+                                .getComputedStyle('height')
+                        )
+                    ) {
+                        m.removeClass('msg-toggled');
+                    }
+                });
+            },
+            getEditorLabel: function() {
+                var variable = this.get('variable.evaluated');
+                if (variable) {
+                    return variable.getEditorLabel();
                 }
-            });
-        },
-        getEditorLabel: function() {
-            var variable = this.get("variable.evaluated");
-            if (variable) {
-                return variable.getEditorLabel();
+                return null;
             }
-            return null;
-        }
-    }, {
-        /**
+        },
+        {
+            /**
          * @lends Y.Wegas.InboxList
          */
-        EDITORNAME: "Inbox list",
-        /**
+            EDITORNAME: 'Inbox list',
+            /**
          * @field
          * @static
          * @description
@@ -171,33 +210,39 @@ YUI.add('wegas-inbox-list', function(Y) {
          *     attribute, and if absent by evaluating the expr attribute.</li>
          * </ul>
          */
-        ATTRS: {
-            /**
+            ATTRS: {
+                /**
              * The target variable, returned either based on the name
              * attribute, and if absent by evaluating the expr attribute.
              */
-            variable: {
-                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
-                    label: "variable",
-                    classFilter: "InboxDescriptor"
-                }
-            },
-            /**
+                variable: {
+                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    view: {
+                        type: 'variableselect',
+                        label: 'variable',
+                        classFilter: 'InboxDescriptor'
+                    }
+                },
+                /**
              *
              */
-            template: {
-                value: "default",
-                type: "string",
-                choices: [{
-                        value: "default"
-                    }],
-                _inputex: {
-                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                template: {
+                    value: 'default',
+                    type: 'string',
+
+                    view: {
+                        type: 'select',
+                        choices: [
+                            {
+                                value: 'default'
+                            }
+                        ],
+                        label: 'Template',
+                        className: 'wegas-advanced-feature'
+                    }
                 }
             }
         }
-    });
+    );
     Wegas.InboxList = InboxList;
 });
