@@ -159,7 +159,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             autologin: {
                 value: true,
                 type: "boolean",
-                _inputex: {
+                view: {
                     label: "Auto login",
                     description: "If allowed, will try to login with a new guest."
                 }
