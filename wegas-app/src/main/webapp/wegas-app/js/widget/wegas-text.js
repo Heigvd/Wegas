@@ -9,10 +9,9 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-text", function (Y) {
-    "use strict";
-
-    var CONTENTBOX = "contentBox", Text;
+YUI.add('wegas-text', function(Y) {
+    'use strict';
+    var CONTENTBOX = 'contentBox', Text;
 
     /**
      * @name Y.Wegas.Text
@@ -22,37 +21,43 @@ YUI.add("wegas-text", function (Y) {
      * @constructor
      * @description  Display a string (given as ATTRS) in content box
      */
-    Text = Y.Base.create("wegas-text", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /** @lends Y.Wegas.Text# */
+    Text = Y.Base.create(
+        'wegas-text',
+        Y.Widget,
+        [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable],
+        {
+            /** @lends Y.Wegas.Text# */
 
-        /**
+            /**
          * @function
          * @private
          * @description set the "content" ATTRS (which set the contentbox)
          */
-        syncUI: function () {
-            //this.set("content", this.get("content"));
-            this.cleanMarkup();
-            this.get(CONTENTBOX).setContent(Y.Template.Micro.compile(this.get("content") || "")());
+            syncUI: function() {
+                //this.set("content", this.get("content"));
+                this.cleanMarkup();
+                this.get(CONTENTBOX).setContent(
+                    Y.Template.Micro.compile(this.get('content') || '')()
+                );
+            },
+            cleanMarkup: function() {
+                this.get(CONTENTBOX).all('video').each(function(e) {
+                    var video = e.getDOMNode();
+                    video.pause();
+                    video.src = '';
+                    video.load();
+                });
+            },
+            getEditorLabel: function() {
+                return this.get(CONTENTBOX).get('text');
+            },
+            destructor: function() {
+                this.cleanMarkup();
+            }
         },
-        cleanMarkup: function () {
-            this.get(CONTENTBOX).all("video").each(function (e) {
-                var video = e.getDOMNode();
-                video.pause();
-                video.src = "";
-                video.load();
-            });
-        },
-        getEditorLabel: function () {
-            return this.get(CONTENTBOX).get("text");
-        },
-        destructor: function () {
-            this.cleanMarkup();
-        }
-
-    }, {
+        {
             /** @lends Y.Wegas.Text */
-            EDITORNAME: "Text",
+            EDITORNAME: 'Text',
             /**
              * @field
              * @static
@@ -69,13 +74,14 @@ YUI.add("wegas-text", function (Y) {
                  * Format html.
                  */
                 content: {
-                    type: "string",
+                    type: 'string',
                     view: {
-                        type: 'html'
+                        type: 'html',
+                        label: 'Content'
                     }
                 }
             }
-        });
+        }
+    );
     Y.Wegas.Text = Text;
-
 });
