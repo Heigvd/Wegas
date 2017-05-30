@@ -432,7 +432,11 @@ YUI.add("wegas-widget", function(Y) {
                 type: "array",
                 value: [],
                 "transient": false,
-                    index: 10,
+                view: {
+                    label: "Options", // The term "Plugins" doesn't mean anything to the user
+                    tooltip: "Add option"
+                },
+                index: 10,
                 items: {
                     type: "object",
                     properties: {

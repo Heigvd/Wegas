@@ -65,6 +65,7 @@ function ArrayWidget(props) {
     }
 
     const children = React.Children.map(props.children, renderChild);
+    const tooltip = props.view && props.view.tooltip ? props.view.tooltip : "Add element";
     return (
         <div className={arrayStyle}>
             {maxItems > valueLength
@@ -72,7 +73,7 @@ function ArrayWidget(props) {
                     className={`${inlinePlusStyle}`}
                     icon="fa fa-plus-circle"
                     onClick={props.onChildAdd}
-                    tooltip="Add element"
+                    tooltip={tooltip}
                 />
                 : null}
             {children}
@@ -84,7 +85,10 @@ ArrayWidget.propTypes = {
     children: PropTypes.arrayOf(PropTypes.element),
     onChildRemove: PropTypes.func.isRequired,
     onChildAdd: PropTypes.func.isRequired,
-    view: PropTypes.object,
+    view: PropTypes.shape({
+        label: PropTypes.string,
+        tooltip: PropTypes.string
+    }),
     value: PropTypes.array,
     schema: PropTypes.shape({
         minItems: PropTypes.number,
