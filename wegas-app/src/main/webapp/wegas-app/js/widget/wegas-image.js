@@ -100,6 +100,7 @@ YUI.add("wegas-image", function(Y) {
                     return val;
                 },
                 view: {
+                    label: "URL",
                     type: "wegasimageurl"
                 }
             },
