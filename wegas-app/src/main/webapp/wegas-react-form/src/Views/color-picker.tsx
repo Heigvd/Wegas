@@ -5,7 +5,7 @@ import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 
 interface IColorProps { value?: string; onChange: (value?: string) => void; }
-
+const absolute = css({ position: 'absolute', zIndex: 1 })
 class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
     constructor(props: IColorProps) {
         super(props);
@@ -16,7 +16,7 @@ class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
     render() {
         if (this.state.pick) {
             return (
-                <div {...css({ position: 'absolute', zIndex: 1 }) }>
+                <div {...absolute}>
                     <ChromePicker
                         disableAlpha
                         color={this.props.value}

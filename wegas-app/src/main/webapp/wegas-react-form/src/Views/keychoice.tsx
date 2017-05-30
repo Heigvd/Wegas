@@ -23,7 +23,6 @@ interface IProps {
 function KeyChoice(props: WidgetProps.ObjectProps & IProps) {
     const valueKeys = Object.keys(props.value);
     const keys = Object.keys(props.schema.properties).filter(c => !valueKeys.includes(c));
-    console.log(props.value, valueKeys, keys);
     return (
         <div>
             {filterChildren(valueKeys, props.children).map((c: React.ReactElement<any>) => {
