@@ -1,8 +1,0 @@
-{
-  "resolution": "main",
-  "tree": {
-    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/767cdfc00c03e941639790d53b1f72ad7e424127/react-color/index.d.ts",
-    "raw": "registry:dt/react-color#2.11.0+20170214021035",
-    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/767cdfc00c03e941639790d53b1f72ad7e424127/react-color/index.d.ts"
-  }
-}

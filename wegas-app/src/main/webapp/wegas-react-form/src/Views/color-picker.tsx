@@ -1,17 +1,17 @@
 import React from 'react';
 import { ChromePicker } from 'react-color';
-import { css } from "glamor";
-import labeled from "../HOC/labeled";
-import commonView from "../HOC/commonView";
+import { css } from 'glamor';
+import labeled from '../HOC/labeled';
+import commonView from '../HOC/commonView';
 
-type IColorProps = { value?: string, onChange: (value?: string) => void }
+interface IColorProps { value?: string; onChange: (value?: string) => void; }
 
 class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
     constructor(props: IColorProps) {
         super(props);
         this.state = {
-            pick: false
-        }
+            pick: false,
+        };
     }
     render() {
         if (this.state.pick) {
@@ -30,9 +30,9 @@ class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
             width: '10px',
             height: '10px',
             backgroundColor: this.props.value,
-            border: 'solid 1px black'
+            border: 'solid 1px black',
         });
-        return <div onClick={() => this.setState({ pick: true })} ><span {...style}/> {this.props.value}</div>;
+        return <div onClick={() => this.setState({ pick: true })} ><span {...style} /> {this.props.value}</div>;
     }
 }
 export default commonView(labeled(ColorPicker));
