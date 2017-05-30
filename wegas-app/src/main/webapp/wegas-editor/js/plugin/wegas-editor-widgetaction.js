@@ -154,11 +154,15 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                                     type: 'string',
                                     value: meta.id,
                                     view: {
+                                        label: 'Page id',
                                         type: 'uneditable'
                                     }
                                 }, name: {
                                     value: meta.name,
-                                    type: 'string'
+                                    type: 'string',
+                                    view: {
+                                        label: 'Page name'
+                                    }
                                 }, index: {
                                     value: meta.index,
                                     type: 'number',
