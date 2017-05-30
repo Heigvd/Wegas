@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/9505baf036887c87e752cbc7b1e137f8b2f023e4/react-color/lib/components/photoshop/Photoshop.d.ts",
+    "raw": "registry:dt/react-color/lib/components/photoshop/photoshop#0.0.0+20170213052022",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/9505baf036887c87e752cbc7b1e137f8b2f023e4/react-color/lib/components/photoshop/Photoshop.d.ts"
+  }
+}
