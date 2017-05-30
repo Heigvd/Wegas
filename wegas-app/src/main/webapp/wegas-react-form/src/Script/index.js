@@ -10,23 +10,26 @@ import Variable from './modules/Variable';
 import condition from './condition';
 import { register } from './modules/globalMethod';
 import statefulScript from './statefulScript';
+import commonView from '../HOC/commonView';
 
-const VariableStatement = scriptObject(parsed(singleStatement(Variable)));
+const VariableStatement = commonView(
+    scriptObject(parsed(singleStatement(Variable)))
+);
 const MultiVariableMethod = scriptObject(parsed(multipleStatement(Impact)));
 const MultiVariableCondition = scriptObject(
-    parsed(
-        condition(
-            multipleStatement(Condition)
-        )
-    )
+    parsed(condition(multipleStatement(Condition)))
 );
 // Using Script edition outside form.
 function scriptRenderer(Component) {
     return (props, container) => {
         const comp = render(<Component {...props} />, container);
         return {
-            validate: function validate() { return comp.validate(); },
-            getValue: function getValue() { return comp.state.value; },
+            validate: function validate() {
+                return comp.validate();
+            },
+            getValue: function getValue() {
+                return comp.state.value;
+            },
             destroy: function destroy() {
                 unmountComponentAtNode(container);
             }
@@ -34,9 +37,15 @@ function scriptRenderer(Component) {
     };
 }
 
-const IndependantMultiVariableMethod = scriptRenderer(statefulScript(MultiVariableMethod));
-const IndependantMultiVariableCondition = scriptRenderer(statefulScript(MultiVariableCondition));
-const IndependantVariableStatement = scriptRenderer(statefulScript(VariableStatement));
+const IndependantMultiVariableMethod = scriptRenderer(
+    statefulScript(MultiVariableMethod)
+);
+const IndependantMultiVariableCondition = scriptRenderer(
+    statefulScript(MultiVariableCondition)
+);
+const IndependantVariableStatement = scriptRenderer(
+    statefulScript(VariableStatement)
+);
 
 export {
     VariableStatement,
