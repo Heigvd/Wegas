@@ -7,8 +7,8 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.AbstractEJBTest;
-import com.wegas.core.ejb.TestHelper;
+import com.wegas.test.AbstractEJBTest;
+import com.wegas.test.TestHelper;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -18,19 +18,11 @@ import org.junit.Test;
 import javax.naming.NamingException;
 
 import static org.junit.Assert.assertEquals;
-import org.junit.BeforeClass;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
-
-    private static QuestionDescriptorFacade qdf;
-
-    @BeforeClass
-    public static void setUpClass() {
-        qdf = QuestionDescriptorFacade.lookup();
-    }
 
     /**
      * Test of selectChoice method, of class QuestionController.
@@ -54,7 +46,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice.addResult(r);
         variableDescriptorFacade.createChild(question.getId(), choice);
 
-        qdf.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
+        questionDescriptorFacade.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
         assertEquals(10.0, ((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0.1);
 
         variableDescriptorFacade.duplicate(question.getId());                                        // Test duplication on question
@@ -101,9 +93,9 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice2.addResult(r2);
         variableDescriptorFacade.createChild(question.getId(), choice2);
 
-        qdf.selectChoice(choice1.getId(), player.getId());                       // Select reply and validate question
+        questionDescriptorFacade.selectChoice(choice1.getId(), player.getId());                       // Select reply and validate question
         QuestionInstance qif = question.getInstance(player);
-        qdf.validateQuestion(qif.getId(), player.getId());
+        questionDescriptorFacade.validateQuestion(qif.getId(), player.getId());
         assertEquals(10.0, ((NumberInstance) variableInstanceFacade.find(myNumber1.getId(), player.getId())).getValue(), 0.1);
         assertEquals(50.0, ((NumberInstance) variableInstanceFacade.find(myNumber2.getId(), player.getId())).getValue(), 0.1);
 
@@ -133,10 +125,10 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice.addResult(r);
         variableDescriptorFacade.createChild(question.getId(), choice);
         TestHelper.wipeEmCache();
-        final Reply reply = qdf.selectChoice(choice.getId(), player.getId());
+        final Reply reply = questionDescriptorFacade.selectChoice(choice.getId(), player.getId());
         assertEquals(((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0, 0.0); // Nothing happened
         assertEquals(((QuestionInstance) variableInstanceFacade.find(question.getId(), player.getId())).getReplies().size(), 1);
-        final Reply reply1 = qdf.cancelReply(player.getId(), reply.getId());
+        final Reply reply1 = questionDescriptorFacade.cancelReply(player.getId(), reply.getId());
         assertEquals(0, reply1.getQuestionInstance().getReplies().size());
         assertEquals(((QuestionInstance) variableInstanceFacade.find(question.getId(), player.getId())).getReplies().size(), 0);
         variableDescriptorFacade.remove(question.getId());

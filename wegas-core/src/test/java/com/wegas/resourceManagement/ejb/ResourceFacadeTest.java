@@ -7,7 +7,7 @@
  */
 package com.wegas.resourceManagement.ejb;
 
-import com.wegas.core.ejb.AbstractEJBTest;
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.resourceManagement.persistence.Activity;
@@ -39,12 +39,6 @@ import org.slf4j.LoggerFactory;
 public class ResourceFacadeTest extends AbstractEJBTest {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
-    private static ResourceFacade resourceFacade;
-
-    @BeforeClass
-    public static void setUpClass() {
-        resourceFacade = ResourceFacade.lookup();
-    }
 
     @Test
     public void testAssignmentsCascadeFromTaskDescriptor() throws Exception {

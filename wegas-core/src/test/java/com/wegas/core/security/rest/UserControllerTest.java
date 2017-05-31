@@ -8,7 +8,7 @@
 package com.wegas.core.security.rest;
 
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.AbstractEJBTestBase;
+import com.wegas.test.AbstractEJBTestBase;
 import com.wegas.core.security.jparealm.JpaAccount;
 import java.io.IOException;
 import javax.inject.Inject;

@@ -7,6 +7,8 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.test.TestHelper;
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.*;
 import junit.framework.Assert;
 import org.junit.Test;

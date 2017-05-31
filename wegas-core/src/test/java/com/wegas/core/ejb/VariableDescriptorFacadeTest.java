@@ -7,8 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import static com.wegas.core.ejb.AbstractEJBTest.gameModelFacade;
-import static com.wegas.core.ejb.AbstractEJBTest.player;
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -24,7 +23,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.wegas.core.ejb.AbstractEJBTest.scenario;
 
 /**
  *

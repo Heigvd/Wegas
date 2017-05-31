@@ -5,10 +5,20 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb;
+package com.wegas.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.ScriptCheck;
+import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -31,6 +41,7 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.rest.UserController;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.messaging.ejb.MessageFacade;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -56,8 +67,8 @@ import org.junit.Before;
 public class AbstractEJBTestBase {
 
     // *** Static *** //
-    private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTestBase.class);
-    private static EJBContainer ejbContainer = null;
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractEJBTestBase.class);
+    protected static EJBContainer ejbContainer = null;
 
     protected static GameModelController gameModelController;
     protected static GameController gameController;
@@ -89,6 +100,8 @@ public class AbstractEJBTestBase {
     protected static QuestionDescriptorFacade questionDescriptorFacade;
     protected static MessageFacade messageFacade;
 
+    protected static ResourceFacade resourceFacade;
+
     protected static RequestFacade requestFacade;
     protected static RequestManager requestManager;
 
@@ -103,12 +116,11 @@ public class AbstractEJBTestBase {
 
     protected static WegasUser admin;
 
-    @BeforeClass
-    public static void setUpFacades() throws NamingException {
+    public static void setUpFacades(String rootPath) throws NamingException {
         jsonMapper = JacksonMapperProvider.getMapper();
 
         if (ejbContainer == null) {
-            ejbContainer = TestHelper.getEJBContainer();
+            ejbContainer = TestHelper.getEJBContainer(rootPath);
 
             gameModelController = lookupBy(GameModelController.class);
             gameController = lookupBy(GameController.class);
@@ -139,6 +151,7 @@ public class AbstractEJBTestBase {
 
             questionDescriptorFacade = QuestionDescriptorFacade.lookup();
             messageFacade = lookupBy(MessageFacade.class);
+            resourceFacade = ResourceFacade.lookup();
 
             requestFacade = RequestFacade.lookup();
             requestManager = requestFacade.getRequestManager();

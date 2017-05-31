@@ -1,5 +1,6 @@
 package com.wegas.messaging.ejb;
 
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.ejb.*;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;

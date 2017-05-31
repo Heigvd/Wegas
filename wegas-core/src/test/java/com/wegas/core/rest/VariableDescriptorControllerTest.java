@@ -7,7 +7,7 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.AbstractEJBTest;
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;

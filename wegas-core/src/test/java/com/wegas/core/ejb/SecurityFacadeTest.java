@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.persistence.User;
 import javax.ejb.EJBException;

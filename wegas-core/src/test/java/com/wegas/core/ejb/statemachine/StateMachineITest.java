@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb.statemachine;
 
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;

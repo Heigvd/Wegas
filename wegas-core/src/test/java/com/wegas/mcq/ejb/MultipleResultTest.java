@@ -7,7 +7,7 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.AbstractEJBTest;
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.mcq.persistence.*;

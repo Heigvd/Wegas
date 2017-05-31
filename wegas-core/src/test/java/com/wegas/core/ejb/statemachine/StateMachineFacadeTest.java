@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb.statemachine;
 
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
@@ -25,8 +26,8 @@ import javax.naming.NamingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.wegas.core.ejb.TestHelper.toList;
-import static com.wegas.core.ejb.TestHelper.toMap;
+import static com.wegas.test.TestHelper.toList;
+import static com.wegas.test.TestHelper.toMap;
 import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
 

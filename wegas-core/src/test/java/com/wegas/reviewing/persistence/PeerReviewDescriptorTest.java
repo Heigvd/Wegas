@@ -9,7 +9,7 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.wegas.core.ejb.AbstractEJBTest;
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.TeamFacade;

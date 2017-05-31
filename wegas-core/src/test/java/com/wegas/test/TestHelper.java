@@ -5,9 +5,10 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb;
+package com.wegas.test;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.HelperBean;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
@@ -47,7 +48,13 @@ public class TestHelper {
 
     private static final String PASSWORD = "1234";
 
-    public static synchronized EJBContainer getEJBContainer() throws NamingException {
+    /**
+     * 
+     * @param rootPath 
+     * @return
+     * @throws NamingException 
+     */
+    public static synchronized EJBContainer getEJBContainer(String rootPath) throws NamingException {
         if (container == null) {
             try {
                 String clusterNameKey = "wegas.hazelcast.clustername";
@@ -55,8 +62,8 @@ public class TestHelper {
                 System.setProperty(clusterNameKey, clusterName);
 
                 Map<String, Object> properties = new HashMap<>();                       // Init Ejb container
-                properties.put(EJBContainer.MODULES, new File[]{new File("target/embed-classes")});
-                properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
+                properties.put(EJBContainer.MODULES, new File[]{new File(rootPath + "/target/embed-classes")});
+                properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", rootPath + "/src/test/glassfish");
                 //properties.put(EJBContainer.APP_NAME,"class");
                 //ejbContainer.getContext().rebind("inject", this);
 

@@ -1,6 +1,6 @@
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.AbstractEJBTest;
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;

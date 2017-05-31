@@ -7,7 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.wegas.core.ejb.AbstractEJBTest;
+import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.Calendar;

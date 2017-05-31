@@ -5,7 +5,7 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb;
+package com.wegas.test;
 
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.NamingException;
+import org.junit.BeforeClass;
 
 /**
  *
@@ -62,6 +63,11 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
+
+    @BeforeClass
+    public static void setUpClass() throws NamingException {
+        AbstractEJBTestBase.setUpFacades(".");
+    }
 
     @Before
     public final void setUp() throws NamingException, WegasNoResultException, SQLException, IOException {

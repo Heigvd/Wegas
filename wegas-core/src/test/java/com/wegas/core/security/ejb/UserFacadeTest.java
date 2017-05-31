@@ -1,7 +1,7 @@
 package com.wegas.core.security.ejb;
 
-import com.wegas.core.ejb.AbstractEJBTestBase;
-import com.wegas.core.ejb.TestHelper;
+import com.wegas.test.AbstractEJBTestBase;
+import com.wegas.test.TestHelper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
