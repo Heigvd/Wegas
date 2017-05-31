@@ -4,17 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import com.wegas.utils.TestHelper;
 import com.wegas.utils.WegasRESTClient;
 import com.wegas.utils.WegasRESTClient.TestAuthenticationInformation;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +20,7 @@ import java.util.Map.Entry;
 //import net.sourceforge.jwebunit.junit.JWebUnit;
 //import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.codehaus.jettison.json.JSONException;
-import org.glassfish.embeddable.BootstrapProperties;
-import org.glassfish.embeddable.Deployer;
-import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishProperties;
-import org.glassfish.embeddable.GlassFishRuntime;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,8 +41,6 @@ public class WegasTest {
 
     private static final Logger logger = LoggerFactory.getLogger(WegasTest.class);
 
-    private static GlassFish glassfish;
-    private static String appName;
     private static String base;
 
     private static WegasRESTClient client;
@@ -63,13 +53,12 @@ public class WegasTest {
     private GameModel artos;
 
     //private static Logger logger = LoggerFactory.getLogger(WegasTest.class);
-
     @BeforeClass
     public static void setUpClass() throws Exception {
 
         runtime = Wegas.boot("wegas_test", "localhost", null, true, 8280);
         //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
-        
+
         client = new WegasRESTClient(base);
 
         scenarist = client.signup("scenarist@local", "1234");
@@ -160,7 +149,7 @@ public class WegasTest {
 
         List<Team> userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
         });
-        
+
         Assert.assertEquals(1, userTeams.size()); // artos +empty
     }
 

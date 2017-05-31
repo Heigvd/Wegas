@@ -14,6 +14,8 @@ import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,6 +31,8 @@ public class Wegas {
 
     private static final String WEGAS_HTTP_THREADS_KEY = "wegas.http.threads";
     private static final String WEGAS_HTTP_THREADS_DEFAULTVALUE = "5";
+
+    private static final Logger logger = LoggerFactory.getLogger(Wegas.class);
 
     //private static final Logger logger = LoggerFactory.getLogger(Wegas.class);
     private static void resetDB(String dbName) {
@@ -142,13 +146,10 @@ public class Wegas {
 
     public static void main(String... args) throws IOException, InterruptedException, GlassFishException {
         WegasRuntime boot = Wegas.boot("wegas_dev", "localhost", 5, false, 5454);
-
-        Thread.currentThread().wait();
-
-        Wegas.shutdown(boot);
     }
 
     public static void shutdown(WegasRuntime runtime) throws GlassFishException {
+        logger.error("Wegas is shutting down now !");
         GlassFish payara = runtime.getPayara();
         if (payara != null) {
             String appName = runtime.getAppName();

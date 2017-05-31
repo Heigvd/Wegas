@@ -98,6 +98,22 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- WEGAS-CORE TEST DEP-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wegas-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+            <type>test-jar</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+
+
         <!-- log4j -->
         <dependency>
             <groupId>org.slf4j</groupId>

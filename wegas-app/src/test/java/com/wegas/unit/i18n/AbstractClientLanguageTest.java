@@ -8,7 +8,6 @@
 package com.wegas.unit.i18n;
 
 import com.wegas.unit.AbstractEJBContainerTest;
-import com.wegas.unit.pmg.*;
 import java.io.IOException;
 import java.util.List;
 import org.glassfish.embeddable.GlassFishException;
@@ -39,7 +38,7 @@ public abstract class AbstractClientLanguageTest extends AbstractEJBContainerTes
 
     @After
     public void cleanGM() {
-        this.getGameModelFacade().remove(getGameModel().getId());
+        gameModelFacade.remove(getGameModel().getId());
         cleanData();
     }
 
