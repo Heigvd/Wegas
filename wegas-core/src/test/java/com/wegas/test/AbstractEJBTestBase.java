@@ -219,10 +219,16 @@ public class AbstractEJBTestBase {
         }
     }
 
-    public static WegasUser signup(String email) {
+    public static User login(String username, String password) {
+        Subject subject = SecurityUtils.getSubject();
+        userFacade.logout();
+        subject.login(new UsernamePasswordToken(username, password));
+        return userFacade.getCurrentUser();
+    }
+
+    public static WegasUser signup(String email, String password) {
         JpaAccount ja = new JpaAccount();
         ja.setEmail(email);
-        String password = Helper.genRandomLetters(10);
         ja.setPassword(password);
         try {
             User signup = userFacade.signup(ja);
@@ -230,6 +236,10 @@ public class AbstractEJBTestBase {
         } catch (AddressException ex) {
             throw WegasErrorMessage.error("Not a email address");
         }
+    }
+
+    public static WegasUser signup(String email) {
+        return signup(email, Helper.genRandomLetters(10));
     }
 
     public static WegasUser guestLogin() {
