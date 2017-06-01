@@ -311,6 +311,6 @@ YUI.add('wegas-form', function(Y) {
     Wegas.Form.ATTRS.plugins = Y.clone(Wegas.Widget.ATTRS.plugins);
     Wegas.Form.ATTRS.plugins.view.choices.push({
         label: 'Save to',
-        value: 'SaveObjectAction'
+        value: { fn: 'SaveObjectAction' }
     });
 });

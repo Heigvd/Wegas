@@ -37,7 +37,7 @@ WMenu.propTypes = {
     menu: PropTypes.arrayOf(
         PropTypes.shape({
             label: PropTypes.string.isRequired,
-            value: PropTypes.string,
+            value: PropTypes.any,
             disabled: PropTypes.bool,
             children: PropTypes.array
         })
