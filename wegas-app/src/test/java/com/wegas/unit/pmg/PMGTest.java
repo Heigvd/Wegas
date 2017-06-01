@@ -21,6 +21,16 @@ public class PMGTest extends PMGameAbstractTest {
 
     /*
     @Test
+    public void testAuto() {
+        this.evalScript("PMGTest.testAuto()");
+    }
+
+    @Test
+    public void testTracking() {
+        this.evalScript("PMGTest.testTrackingMessages()");
+    }
+
+    @Test
     public void testNormalAssign() {
         this.evalScript("PMGTest.testNormalAssignment()");
     }
