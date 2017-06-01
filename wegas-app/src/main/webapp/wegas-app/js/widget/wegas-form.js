@@ -309,7 +309,7 @@ YUI.add('wegas-form', function(Y) {
 
     /* Add relevant plugin*/
     Wegas.Form.ATTRS.plugins = Y.clone(Wegas.Widget.ATTRS.plugins);
-    Wegas.Form.ATTRS.plugins.items.view.choices.push({
+    Wegas.Form.ATTRS.plugins.view.choices.push({
         label: 'Save to',
         value: 'SaveObjectAction'
     });

@@ -1,7 +1,6 @@
 import React from 'react';
 import { asyncReactor } from 'async-reactor';
 import Form from 'jsoninput';
-import Menu from '../../Components/Menu';
 import { getY } from '../../index';
 
 const SCHEMA = {
@@ -50,6 +49,6 @@ function PluginElement({ value, onChange, view }:
     if (value && value.fn) {
         return <AsyncForm value={value} onChange={onChange} />;
     }
-    return <Menu menu={view.choices} onChange={(o: string) => onChange({ fn: o })} />;
+    return <span>Wrong config</span>;
 }
 export default PluginElement;

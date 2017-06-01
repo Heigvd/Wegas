@@ -12,7 +12,7 @@ import HTMLView from './Views/html';
 import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
 import FlatVariableSelect from './Views/Interacting/flatvariableselect';
 import PageSelect from './Views/Interacting/pageselect';
-import PluginList from './Views/Interacting/pluginlist';
+import PluginElement from './Views/Interacting/pluginelement';
 import TreeVariableSelect from './Views/Interacting/treevariableselect';
 import ObjectView from './Views/object';
 import SelectView from './Views/select';
@@ -36,7 +36,7 @@ setDefaultWidgets({
     number: StringView,
     object: ObjectView,
     pageselect: PageSelect,
-    pluginlist: PluginList,
+    plugin: PluginElement,
     script: MultiVariableMethod,
     scriptcondition: MultiVariableCondition,
     select: SelectView,
