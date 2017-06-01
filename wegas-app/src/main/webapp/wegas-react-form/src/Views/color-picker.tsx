@@ -3,9 +3,10 @@ import { ChromePicker } from 'react-color';
 import { css } from 'glamor';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
+import { Cover } from "../Components/Cover";
 
 interface IColorProps { value?: string; onChange: (value?: string) => void; }
-const absolute = css({ position: 'absolute', zIndex: 1 })
+
 class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
     constructor(props: IColorProps) {
         super(props);
@@ -16,19 +17,19 @@ class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
     render() {
         if (this.state.pick) {
             return (
-                <div {...absolute}>
+                <Cover zIndex={100} onClick={() => this.setState({ pick: false })}>
                     <ChromePicker
                         disableAlpha
                         color={this.props.value}
                         onChange={(color) => this.props.onChange(color.hex)}
-                        onChangeComplete={() => this.setState({ pick: false })}
                     />
-                </div>);
+                </Cover>
+            );
         }
         const style = css({
             display: 'inline-block',
-            width: '10px',
-            height: '10px',
+            width: '12px',
+            height: '12px',
             backgroundColor: this.props.value,
             border: 'solid 1px black',
         });
