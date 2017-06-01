@@ -48,7 +48,7 @@ public class ScriptFacadeTest extends AbstractEJBTest {
         // Eval a dummy script
         final Script s = new Script();
         s.setLanguage("JavaScript");
-        s.setContent(VARIABLENAME + ".value = \"" + VALUE2 + "\"");
+        s.setContent("Variable.find(gameModel, \"" + VARIABLENAME + "\").setValue(self, \"" + VALUE2 + "\");");
         scriptFacade.eval(player.getId(), s, null);
         logger.info("Tested " + scriptFacade);
 
