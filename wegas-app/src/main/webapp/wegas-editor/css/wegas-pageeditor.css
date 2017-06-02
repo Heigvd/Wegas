@@ -216,6 +216,7 @@ body > .wegas-pageloader {
     background: url(../images/wegas-icon-files.png) 1px -225px no-repeat;
     margin: -4px 0 -6px;
     height: 24px;
+    width: 24px;
 }
 .wegas-page-editor .yui3-treenode-content-icon {
     background: url(../../wegas-app/images/wegas-app-sprite.png) 0px -1468px no-repeat;

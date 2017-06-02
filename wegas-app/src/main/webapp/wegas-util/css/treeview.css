@@ -28,6 +28,7 @@
     background-position: -0px -112px;
     cursor:pointer;
     margin-left: -3px;
+    padding-right: 6px;
 }
 .yui3-treenode-collapsed .yui3-treenode-content-toggle{
     background-position: 0px -74px;
