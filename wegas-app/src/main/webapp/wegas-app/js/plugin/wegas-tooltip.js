@@ -28,7 +28,7 @@ YUI.add('wegas-tooltip', function(Y) {
      *  @constructor
      */
     TooltipPlg = Y.Base.create(
-        'wegas-tooltipplugin',
+        'Tooltip',
         Y.Plugin.Base,
         [Wegas.Plugin, Wegas.Editable],
         {
