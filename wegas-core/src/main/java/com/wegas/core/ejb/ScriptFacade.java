@@ -154,6 +154,11 @@ public class ScriptFacade {
         bindings.put("Event", event);                                    // Inject the Event manager
         bindings.put("DelayedEvent", delayedEvent);
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
+
+        bindings.remove("exit");
+        bindings.remove("quit");
+        bindings.remove("loadWithNewGlobal");
+        
         event.detachAll();
         ScriptContext ctx = new SimpleScriptContext();
         ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
