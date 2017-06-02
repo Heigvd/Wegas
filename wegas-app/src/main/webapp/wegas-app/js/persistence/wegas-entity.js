@@ -31,6 +31,38 @@ YUI.add('wegas-entity', function(Y) {
             view: {
                 type: HIDDEN
             }
+        },
+        PERMISSION = {
+            optional: true,
+            type: ARRAY,
+            items: {
+                type: 'object',
+                properties: {
+                    id: {
+                        type: 'number',
+                        view: { type: 'hidden' }
+                    },
+                    '@class': {
+                        value: 'Permission',
+                        view: { type: 'hidden' }
+                    },
+                    value: {
+                        type: 'string',
+                        view: {
+                            label: 'Value'
+                        }
+                    },
+                    inducedPermission: {
+                        type: 'string',
+                        view: {
+                            label: ' Induced permission'
+                        }
+                    }
+                }
+            },
+            view: {
+                className: 'wegas-advanced-feature'
+            }
         };
 
     /**
@@ -547,34 +579,7 @@ YUI.add('wegas-entity', function(Y) {
                     format: TEXT,
                     optional: true
                 },
-                permissions: {
-                    optional: true,
-                    type: ARRAY,
-                    items: {
-                        _inputex: {
-                            _type: GROUP,
-                            fields: [
-                                {
-                                    name: 'id',
-                                    type: HIDDEN,
-                                    value: null
-                                },
-                                {
-                                    name: '@class',
-                                    type: HIDDEN,
-                                    value: 'Permission'
-                                },
-                                {
-                                    name: 'value'
-                                },
-                                {
-                                    name: 'inducedPermission',
-                                    value: null
-                                }
-                            ]
-                        }
-                    }
-                }
+                permissions: PERMISSION
             },
             EDITMENU: [
                 {
@@ -683,38 +688,7 @@ YUI.add('wegas-entity', function(Y) {
                         label: 'Groups'
                     }
                 },
-                permissions: {
-                    optional: true,
-                    type: ARRAY,
-                    items: {
-                        type: 'object',
-                        properties: {
-                            id: {
-                                type: 'number',
-                                view: { type: 'hidden' }
-                            },
-                            '@class': {
-                                value: 'Permission',
-                                view: { type: 'hidden' }
-                            },
-                            value: {
-                                type: 'string',
-                                view: {
-                                    label: 'Value'
-                                }
-                            },
-                            inducedPermission: {
-                                type: 'string',
-                                view: {
-                                    label: ' Induced permission'
-                                }
-                            }
-                        }
-                    },
-                    view: {
-                        className: 'wegas-advanced-feature'
-                    }
-                }
+                permissions: PERMISSION
             },
             EDITMENU: [
                 {
@@ -789,38 +763,7 @@ YUI.add('wegas-entity', function(Y) {
                         label: 'Groups'
                     }
                 },
-                permissions: {
-                    optional: true,
-                    type: ARRAY,
-                    items: {
-                        type: 'object',
-                        properties: {
-                            id: {
-                                type: 'number',
-                                view: { type: 'hidden' }
-                            },
-                            '@class': {
-                                value: 'Permission',
-                                view: { type: 'hidden' }
-                            },
-                            value: {
-                                type: 'string',
-                                view: {
-                                    label: 'Value'
-                                }
-                            },
-                            inducedPermission: {
-                                type: 'string',
-                                view: {
-                                    label: ' Induced permission'
-                                }
-                            }
-                        }
-                    },
-                    view: {
-                        className: 'wegas-advanced-feature'
-                    }
-                }
+                permissions: PERMISSION
             },
             EDITMENU: [
                 {
