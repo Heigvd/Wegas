@@ -37,7 +37,7 @@ declare module Y {
 
         add(item: any, index: number): this;
         filter(validator: Function): this;
-        each(fn: Function, context: any): this;
+        each(fn: Function, context?: any): this;
         isEmpty(): boolean;
         indexOf(needle: any): number;
         item(i: number): any;

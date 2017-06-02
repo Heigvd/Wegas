@@ -30,12 +30,14 @@
     "react-color": "^2.12.0",
     "react-dom": "^15.5.4",
     "react-tinymce": "^0.5.1",
+    "react-widgets": "^3.4.8",
     "recast": "^0.12.4"
   },
   "devDependencies": {
     "@types/react": "^15.0.25",
     "@types/react-color": "^2.11.1",
     "@types/react-dom": "^15.5.0",
+    "@types/react-widgets": "^3.2.29",
     "awesome-typescript-loader": "^3.1.3",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
@@ -53,6 +55,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^3.0.2",
     "eslint-plugin-react": "^6.10.3",
+    "file-loader": "^0.11.1",
     "postcss-cssnext": "^2.10.0",
     "postcss-loader": "^2.0.5",
     "raw-loader": "^0.5.1",
@@ -61,6 +64,7 @@
     "tslint": "^5.4.2",
     "tslint-react": "^3.0.0",
     "typescript": "^2.3.4",
+    "url-loader": "^0.5.8",
     "webpack": "^2.6.1"
   }
 }

@@ -288,7 +288,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 value: true,
                 view: {
                     label: "Higlight Unanswered",
-                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    wrapperClassName: "wegas-advanced-feature"
                 }
             }
         }

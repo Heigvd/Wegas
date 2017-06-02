@@ -23,6 +23,8 @@ import WegasImageUrl from './Views/wegas-image-url';
 import WegasUrl from './Views/wegas-url';
 import ColorPicker from './Views/color-picker';
 import KeyChoice from './Views/keychoice';
+import PageLoaderSelect from './Views/Interacting/pageloaderselect';
+
 setDefaultWidgets({
     array: ArrayView,
     boolean: BooleanView,
@@ -35,6 +37,7 @@ setDefaultWidgets({
     keychoice: KeyChoice,
     number: StringView,
     object: ObjectView,
+    pageloaderselect: PageLoaderSelect,
     pageselect: PageSelect,
     plugin: PluginElement,
     script: MultiVariableMethod,
