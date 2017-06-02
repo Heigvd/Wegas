@@ -130,7 +130,22 @@ function genVarItems(
     return items.map(mapItem)
         .filter(i => !(i.value === undefined && (i.items === undefined || i.items.length === 0)));
 }
-
+/**
+ * @returns {Array} items generated from variable and additional
+ */
+function genItems(props: ITreeSelectProps) {
+    const add = Array.isArray(props.view.additional)
+        ? props.view.additional.map((i, index) => ({
+            ...i,
+            className: classnames(i.className, { [separatorCss.toString()]: index === 0 })
+        }))
+        : [];
+    return genVarItems(
+        variableFacade.data.concat(),
+        props.view.selectable,
+        normalizeClassFilter(props.view.classFilter)
+    ).concat(add);
+}
 class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: string, searching: boolean }> {
     public static defaultProps = {
         value: ''
@@ -144,7 +159,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
             searching: !props.value
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
-        this.items = this.genItems();
+        this.items = genItems(props);
     }
     handleOnSelect(v: string) {
         this.setState(
@@ -155,22 +170,10 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
             () => this.props.onChange(v)
         );
     }
-    /**
-     * @returns {Array} items generated from variable and additional
-     */
-    genItems() {
-        const add = Array.isArray(this.props.view.additional)
-            ? this.props.view.additional.map((i, index) => ({
-                ...i,
-                className: classnames(i.className, { [separatorCss.toString()]: index === 0 })
-            }))
-            : [];
-        return genVarItems(
-            variableFacade.data.concat(),
-            this.props.view.selectable,
-            normalizeClassFilter(this.props.view.classFilter)
-        ).concat(add);
+    componentWillReceiveProps(nextProps: ITreeSelectProps) {
+        this.items = genItems(nextProps);
     }
+
     labelForAdditional(value?: string) {
         if (!Array.isArray(this.props.view.additional)) {
             return '';
