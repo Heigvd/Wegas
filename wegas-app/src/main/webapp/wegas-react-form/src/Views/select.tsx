@@ -6,7 +6,7 @@ import commonView from '../HOC/commonView';
 import { css } from 'glamor';
 import { WidgetProps } from "jsoninput/typings/types";
 
-type choice = { value: string, label: string, disabled?: boolean, children?: choice[] };
+type choice = { value: string, label?: string, disabled?: boolean, children?: choice[] };
 
 interface ISelectViewProps {
     value?: string,
@@ -32,7 +32,7 @@ function genItems(o: (string | choice), i: number) {
     if (typeof o !== 'object') {
         return (
             <option
-                key={o}
+                key={`k-${o}`}
                 value={o}
             >
                 {o}
@@ -42,7 +42,7 @@ function genItems(o: (string | choice), i: number) {
     const { label = o.value, value, disabled } = o;
     return (
         <option
-            key={value}
+            key={`k-${value}`}
             value={value}
             disabled={disabled}
         >
@@ -51,21 +51,21 @@ function genItems(o: (string | choice), i: number) {
     );
 }
 
-const title: choice = {
+const title= {
     label: "- please select -",
-    value: "",
+    value: undefined,
     disabled: true
 };
 
 function SelectView(props: ISelectViewProps & WidgetProps.BaseProps) {
-    const onChange = function onChange(event: React.ChangeEvent<{value:string}>) {
+    const onChange = function onChange(event: React.ChangeEvent<{ value: string }>) {
         props.onChange(event.target.value);
     };
-    const choices:(choice | string)[] = props.view.choices || [];
-    const menuItems = ([title] as (choice | string)[]).concat(choices).map(genItems);
+    const choices: (choice | string)[] = props.view.choices || [];
+    const menuItems = ([title] as (choice | string | typeof title)[]).concat(choices).map(genItems);
     return (
         <select
-            className={classNames(props.view.className, `${selectStyle}` )}
+            className={classNames(props.view.className, `${selectStyle}`)}
             value={props.value || ''}
             onChange={onChange}
         >
