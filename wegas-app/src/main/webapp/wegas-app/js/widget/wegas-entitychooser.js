@@ -126,6 +126,7 @@ YUI.add("wegas-entitychooser", function(Y) {
         {
             ATTRS: {
                 variable: {
+                    type: 'object',
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: "variableselect",
@@ -319,6 +320,7 @@ YUI.add("wegas-entitychooser", function(Y) {
         {
             ATTRS: {
                 variable: {
+                    type: 'object',
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: "variableselect",

@@ -106,19 +106,19 @@ YUI.add('wegas-editable', function(Y) {
                     }
                 }
 
-                schemaMap = {
-                    Entity: {
-                        properties: attrCfgs
-                    }
-                };
+                // schemaMap = {
+                //     Entity: {
+                //         properties: attrCfgs
+                //     }
+                // };
 
-                builder = new Y.inputEx.JsonSchema.Builder({
-                    schemaIdentifierMap: schemaMap,
-                    defaultOptions: {
-                        showMsg: true
-                    }
-                });
-                form = builder.schemaToInputEx(schemaMap.Entity);
+                // builder = new Y.inputEx.JsonSchema.Builder({
+                //     schemaIdentifierMap: schemaMap,
+                //     defaultOptions: {
+                //         showMsg: true
+                //     }
+                // });
+                // form = builder.schemaToInputEx(schemaMap.Entity);
                 return {
                     type: 'object',
                     properties: attrCfgs

@@ -444,6 +444,7 @@ YUI.add('wegas-text-input', function(Y) {
              * and if absent by evaluating the expr attribute.
              */
                 variable: {
+                    type: 'object',
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     required: true,
                     view: {
@@ -918,6 +919,7 @@ YUI.add('wegas-text-input', function(Y) {
              * and if absent by evaluating the expr attribute.
              */
                 variable: {
+                    type: 'object',
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     required: true,
                     view: {

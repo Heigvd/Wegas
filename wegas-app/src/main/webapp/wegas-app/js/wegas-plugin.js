@@ -313,6 +313,7 @@ YUI.add('wegas-plugin', function(Y) {
             NS: 'PrintActionPlugin',
             ATTRS: {
                 root: {
+                    type: 'object',
                     /**
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
@@ -324,6 +325,7 @@ YUI.add('wegas-plugin', function(Y) {
                     }
                 },
                 title: {
+                    type: 'object',
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
@@ -483,8 +485,8 @@ YUI.add('wegas-plugin', function(Y) {
                     }
                 },
                 variable: {
+                    type: 'object',
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    optional: true,
                     view: {
                         type: 'variableselect',
                         className: 'wegas-advanced-feature'
@@ -688,6 +690,7 @@ YUI.add('wegas-plugin', function(Y) {
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
+                    type: 'object',
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',

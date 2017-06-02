@@ -274,9 +274,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                required: true,
+                view: {
+                    type: "variableselect",
                     label: "Question folder",
                     classFilter: ["ListDescriptor"]
                 }
@@ -284,7 +286,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             highlightUnanswered: {
                 type: "boolean",
                 value: true,
-                _inputex: {
+                view: {
                     label: "Higlight Unanswered",
                     wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }

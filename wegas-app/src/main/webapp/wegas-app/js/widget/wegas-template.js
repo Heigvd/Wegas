@@ -147,6 +147,7 @@ YUI.add('wegas-template', function(Y) {
                  * and if absent by evaluating the expr attribute.
                  */
                 variable: {
+                    type:"object",
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
@@ -270,6 +271,7 @@ YUI.add('wegas-template', function(Y) {
                  * and if absent by evaluating the expr attribute.
                  */
                 variable: {
+                    type: 'object',
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',

@@ -549,6 +549,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
                 view: {

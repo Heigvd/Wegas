@@ -216,6 +216,7 @@ YUI.add('wegas-inbox-list', function(Y) {
              * attribute, and if absent by evaluating the expr attribute.
              */
                 variable: {
+                    type: 'object',
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',

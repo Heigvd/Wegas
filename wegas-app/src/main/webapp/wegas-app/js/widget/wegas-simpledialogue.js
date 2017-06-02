@@ -82,6 +82,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
         EDITORNAME: "Simple Dialogue",
         ATTRS: {
             dialogueVariable: {
+                type: 'object',
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 view: {
                     type: "variableselect",

@@ -238,6 +238,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
     }, {
         ATTRS: {
             variable: {
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 required: true,
                 view: {
@@ -255,6 +256,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
                 }
             },
             userEditable: {
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 view: {
                     type: "variableselect",

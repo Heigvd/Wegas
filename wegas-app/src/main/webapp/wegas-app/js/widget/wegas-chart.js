@@ -282,6 +282,7 @@ YUI.add('wegas-chart', function(Y) {
                         label: 'Variables'
                     },
                     items: {
+                        type: 'object',
                         view: {
                             type: 'variableselect',
                             label: 'Variable',
@@ -316,6 +317,7 @@ YUI.add('wegas-chart', function(Y) {
                     view: { label: 'Height' }
                 },
                 xMinMax: {
+                    type: 'object',
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',

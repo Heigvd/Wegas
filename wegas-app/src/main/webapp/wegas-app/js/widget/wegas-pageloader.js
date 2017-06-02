@@ -279,8 +279,8 @@ YUI.add("wegas-pageloader", function(Y) {
              *
              */
             page: {
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                optional: true,
                 view: {
                     type: "variableselect",
                     label: "Variable",

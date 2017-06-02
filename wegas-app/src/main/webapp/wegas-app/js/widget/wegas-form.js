@@ -283,8 +283,7 @@ YUI.add('wegas-form', function(Y) {
                     },
                     index: 8,
                     view: {
-                        label: 'Fields',
-                        fields: inputEx.Group.groupOptions
+                        label: 'Fields'
                     }
                 },
                 buttons: {

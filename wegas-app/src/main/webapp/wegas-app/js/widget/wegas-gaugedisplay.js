@@ -243,6 +243,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
+                type: 'object',
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 view: {
                     type: "variableselect",
@@ -376,59 +377,6 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                         view:{
                             description:"126° [0° - 180°]",
                         }
-                    }
-                },
-                _inputex: {
-                    _type: "wegasobject",
-                    label: "Configuration",
-//                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                    elementType: {
-                        type: "wegaskeyvalue",
-                        availableFields: [{
-                                name: "pointer",
-                                type: "group",
-                                fields: [
-                                    {type: "number", name: 'pointerlength', typeInvite: "length 0.5 [0.1 - ...]", required: true},
-                                    {type: "number", name: 'strokeWidth', typeInvite: "width 0.035 [0.02 - 0.5]", required: true},
-                                    {type: "colorpicker", name: 'color', required: true}
-                                ]
-                            }, {
-                                label: "background colors",
-                                name: "backgroundPercentColors",
-                                type: "list",
-                                elementType: {
-                                    type: "combine",
-                                    fields: [
-                                        {type: "string", name: "value", typeInvite: "[0 - 1]"},
-                                        {type: "colorpicker", name: "color"}
-                                    ]
-                                },
-                                palette: 3
-                            }, {
-                                name: "percentColors",
-                                label: "percent colors",
-                                type: "list",
-                                elementType: {
-                                    type: "combine",
-                                    fields: [
-                                        {type: "string", name: "value", typeInvite: "[0 - 1]"},
-                                        {type: "colorpicker", name: "color"}
-                                    ]
-                                },
-                                palette: 3
-                            }, {
-                                name: "lineWidth",
-                                label: "arc width",
-                                type: "number",
-                                typeInvite: "0.44 [0 - 0.7]",
-                                required: true
-                            }, {
-                                name: "angle",
-                                label: "arc angle",
-                                type: "number",
-                                typeInvite: "126° [0° - 180°]",
-                                required: true
-                            }]
                     }
                 }
             }

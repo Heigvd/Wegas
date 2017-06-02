@@ -869,37 +869,33 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             title: {
                 type: STRING,
-                optional: true,
-                _inputex: {
+                view: {
                     label: "Label",
                     description: "Displayed to players",
+                },
                     index: -1
-                }
             },
             description: {
                 type: STRING,
                 format: HTML,
-                optional: true,
-                _inputex: {
-                    index: -1
-                }
+                index:-1
             },
             defaultInstance: {
                 properties: {
                     '@class': {
                         type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: 'BurndownInstance'
+                        value: 'BurndownInstance',
+                        view: {
+                            type: HIDDEN
                         }
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
                     iterations: {
                         type: ARRAY,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: []
+                        value: [],
+                        view: {
+                            type: HIDDEN
                         }
                     }
                 }

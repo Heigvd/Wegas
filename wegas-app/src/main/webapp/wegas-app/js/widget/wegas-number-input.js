@@ -211,6 +211,7 @@ YUI.add('wegas-number-input', function(Y) {
              * and if absent by evaluating the expr attribute.
              */
                 variable: {
+                    type: 'object',
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
