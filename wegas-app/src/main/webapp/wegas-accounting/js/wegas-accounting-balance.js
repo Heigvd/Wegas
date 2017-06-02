@@ -239,8 +239,9 @@ YUI.add("wegas-accounting-balance", function(Y) {
         ATTRS: {
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                required: true,
+                view: {
+                    type: "variableselect",
                     label: "balance sheet",
                     classFilter: ["ListDescriptor"]
                 }
@@ -248,15 +249,15 @@ YUI.add("wegas-accounting-balance", function(Y) {
             cDepth: {
                 type: "number",
                 value: 2,
-                _inputex: {
+                required: true,
+                view: {
                     label: "Depth"
                 }
             },
             userEditable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                optional: true,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Editable",
                     classFilter: ["BooleanDescriptor"]
                 }
