@@ -17,12 +17,10 @@ YUI.add('wegas-plugin', function(Y) {
         PREVIEW_PAGELOADER_ID = 'previewPageLoader',
         PAGELOADER_CONFIG = {
             FULL_PAGE: {
-                display: '<i>Entire page</i>',
                 label: 'Entire page',
                 value: 'Entire page'
             },
             CURRENT_PAGE_LOADER: {
-                display: '<i>Current page display</i>',
                 label: 'Current page display',
                 value: 'Current page display'
             }
