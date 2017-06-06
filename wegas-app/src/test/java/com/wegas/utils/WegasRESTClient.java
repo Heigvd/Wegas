@@ -146,7 +146,7 @@ public class WegasRESTClient {
 
         HttpResponse response = client.execute(get);
 
-        Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        Assert.assertTrue("Expected 2xx OK but got " + response.getStatusLine().getStatusCode(), response.getStatusLine().getStatusCode() < 300);
 
         return getEntityAsString(response.getEntity());
     }

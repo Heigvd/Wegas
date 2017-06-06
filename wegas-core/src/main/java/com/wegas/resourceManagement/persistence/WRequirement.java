@@ -339,6 +339,16 @@ public class WRequirement extends AbstractEntity {
     }
 
     @Override
+    public String getRequieredCreatePermission() {
+        return this.getTaskInstance().getRequieredCreatePermission();
+    }
+
+    @Override
+    public String getRequieredDeletePermission() {
+        return this.getTaskInstance().getRequieredDeletePermission();
+    }
+    
+    @Override
     public String getRequieredUpdatePermission() {
         return this.getTaskInstance().getRequieredUpdatePermission();
     }

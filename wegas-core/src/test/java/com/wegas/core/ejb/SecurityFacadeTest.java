@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
@@ -37,6 +38,13 @@ public class SecurityFacadeTest extends AbstractEJBTest {
         userFacade.addRole(guestLogin.getId(), roleFacade.findByName("Trainer").getId());
     }
 
+
+    @Test(expected = WegasScriptException.class)
+    public void testQuit() {
+        String script = "quit();";
+        scriptFacade.eval(player, new Script("JavaScript", script), null);
+    }
+
     @Test(expected = AuthenticationException.class)
     public void testJPAQuery() {
         String password = "SuperSecure";
@@ -44,7 +52,7 @@ public class SecurityFacadeTest extends AbstractEJBTest {
         WegasUser hacker = signup("hacker@local", password);
         login(hacker);
 
-        String script = "";
+        String script = "try{var help = Java.type(\"com.wegas.core.Helper\");";
 
         script += "currentUserId = RequestManager.getCurrentUser().getId();";
         script += "query = RequestManager.getEntityManager().createQuery('SELECT aa.salt, aa.passwordHex FROM JpaAccount aa where aa.user.id = ' + currentUserId);";
@@ -57,6 +65,7 @@ public class SecurityFacadeTest extends AbstractEJBTest {
         script += "query2 = RequestManager.getEntityManager().createQuery(sql2);";
         script += "print(salt);print(hex);print(query2);";
         script += "query2.executeUpdate();";
+        script += "} catch (e) {print(e);}";
 
         scriptFacade.eval(player, new Script("JavaScript", script), null);
 

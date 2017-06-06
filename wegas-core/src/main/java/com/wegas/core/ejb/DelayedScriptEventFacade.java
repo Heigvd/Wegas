@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.api.DelayedScriptEventFacadeI;
 import com.wegas.core.event.internal.DelayedEventPayload;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
@@ -26,7 +27,7 @@ import java.util.Map;
  */
 @Singleton
 @LocalBean
-public class DelayedScriptEventFacade {
+public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
 
     private static final Logger logger = LoggerFactory.getLogger(DelayedScriptEventFacade.class);
 
@@ -86,6 +87,7 @@ public class DelayedScriptEventFacade {
      * @param seconds   [s]
      * @param eventName event to fire
      */
+    @Override
     public void delayedFire(long minutes, long seconds, String eventName) {
         RequestManager.RequestEnvironment env = requestFacade.getRequestManager().getEnv();
         if (env == RequestManager.RequestEnvironment.STD) {

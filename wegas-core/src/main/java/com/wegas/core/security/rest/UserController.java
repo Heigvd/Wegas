@@ -20,7 +20,6 @@ import com.wegas.core.security.aai.*;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
@@ -28,7 +27,6 @@ import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -40,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -723,8 +720,7 @@ public class UserController {
      */
     @GET
     @Path("Current/Team")
-    public Response findTeamsByCurrentUser() {
-        Response r = Response.noContent().build();
+    public Collection<Team> findTeamsByCurrentUser() {
         Collection<Team> teamsToReturn = new ArrayList<>();
         User currentUser = userFacade.getCurrentUser();
         final List<Player> players = currentUser.getPlayers();
@@ -732,10 +728,10 @@ public class UserController {
             teamsToReturn.add(p.getTeam());
         }
         if (!teamsToReturn.isEmpty()) {
-            r = Response.ok().entity(teamsToReturn).build();
+            return teamsToReturn;
+        } else {
+            return null;
         }
-
-        return r;
     }
 
     /**
@@ -747,22 +743,18 @@ public class UserController {
      */
     @GET
     @Path("Current/Team/{teamId}")
-    public Response getTeamByCurrentUser(@PathParam("teamId") Long teamId) {
-        Response r = Response.noContent().build();
+    public Team getTeamByCurrentUser(@PathParam("teamId") Long teamId) {
         User currentUser = userFacade.getCurrentUser();
-        final Collection<Game> playedGames = gameFacade.findRegisteredGames(currentUser.getId());
-        for (Game g : playedGames) {
-            for (Team t : g.getTeams()) {
-                if (teamId.equals(t.getId())) {
-                    for (Player p : t.getPlayers()) {
-                        if (p.getUserId().equals(currentUser.getId())) {
-                            r = Response.ok().entity(t).build();
-                        }
-                    }
-                }
-            }
+        
+        Player thePlayer = playerFacade.checkExistingPlayerInTeam(teamId, currentUser.getId());
+
+        if (thePlayer != null){
+            return thePlayer.getTeam();
+        } else {
+            return null;
         }
-        return r;
+
+       
     }
 
     /**

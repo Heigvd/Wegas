@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 //import net.sourceforge.jwebunit.api.IElement;
 //import net.sourceforge.jwebunit.junit.JWebUnit;
 //import static net.sourceforge.jwebunit.junit.JWebUnit.*;
@@ -41,8 +42,6 @@ public class WegasTest {
 
     private static final Logger logger = LoggerFactory.getLogger(WegasTest.class);
 
-    private static String base;
-
     private static WegasRESTClient client;
 
     private static TestAuthenticationInformation root;
@@ -54,27 +53,34 @@ public class WegasTest {
 
     //private static Logger logger = LoggerFactory.getLogger(WegasTest.class);
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() {
 
-        runtime = Wegas.boot("wegas_test", "localhost", null, true, 8280);
-        //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
+        try {
+            runtime = Wegas.boot("wegas_test", "localhost", null, true, 8280);
+            //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
 
-        client = new WegasRESTClient(base);
+            client = new WegasRESTClient(runtime.getBaseUrl());
 
-        scenarist = client.signup("scenarist@local", "1234");
-        trainer = client.signup("trainer@local", "1234");
-        user = client.signup("user@local", "1234");
+            scenarist = client.signup("scenarist@local", "1234");
+            trainer = client.signup("trainer@local", "1234");
+            user = client.signup("user@local", "1234");
 
-        root = client.getAuthInfo("root@root.com", "1234");
-        root.setUserId(1l);
+            root = client.getAuthInfo("root@root.com", "1234");
+            root.setUserId(1l);
 
-        client.login(root);
-        grantRights();
-        logger.error("SETUP COMPLETED");
+            client.login(root);
+            grantRights();
+            logger.error("SETUP COMPLETED");
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(WegasTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (GlassFishException ex) {
+            java.util.logging.Logger.getLogger(WegasTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        logger.error("AfterCLASS");
         Wegas.shutdown(runtime);
     }
 
@@ -145,7 +151,18 @@ public class WegasTest {
 
         Game gameToJoin = client.get("/rest/GameModel/Game/FindByToken/" + token, Game.class);
 
-        Team newTeam = client.post("/rest/GameModel/Game/" + gameToJoin.getId() + "/Player", null, Team.class);
+        gameToJoin.setGameModel(artos); //Hack
+
+        Team teamToCreate = new Team();
+        teamToCreate.setDeclaredSize(1);
+        teamToCreate.setName("myTeam");
+        teamToCreate.setGame(gameToJoin);
+
+        Team newTeam = client.post("/rest/GameModel/Game/" + gameToJoin.getId() + "/Team", teamToCreate, Team.class);
+
+        Team joinedTeam = client.post("/rest/GameModel/Game/Team/" + newTeam.getId() + "/Player", null, Team.class);
+
+        client.login(user);
 
         List<Team> userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
         });
@@ -192,7 +209,7 @@ public class WegasTest {
     @Test
     public void hello() throws GlassFishException, IOException {
         WebClient webClient = new WebClient();
-        final HtmlPage page = webClient.getPage(base + "/login.html?debug=true");
+        final HtmlPage page = webClient.getPage(runtime.getBaseUrl() + "/login.html?debug=true");
 
         Assert.assertEquals(200, page.getWebResponse().getStatusCode());
 
@@ -204,13 +221,13 @@ public class WegasTest {
         //tester.submit();
     }
 
-    @Test
+    //@Test
     public void testJavascript() throws IOException {
         WebClient webClient = new WebClient();
         webClient.getOptions().setJavaScriptEnabled(true);
 
         //webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-        HtmlPage page = webClient.getPage(base + "/wegas-app/tests/wegas-alltests.htm");
+        HtmlPage page = webClient.getPage(runtime.getBaseUrl() + "/wegas-app/tests/wegas-alltests.htm");
         //webClient.waitForBackgroundJavaScriptStartingBefore(30000);
 
         Assert.assertEquals("Wegas Test Suite", page.getTitleText());

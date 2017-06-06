@@ -169,6 +169,17 @@ public class Occupation extends AbstractEntity {
         this.description = description;
     }
 
+ 
+    @Override
+    public String getRequieredCreatePermission() {
+        return this.getResourceInstance().getRequieredCreatePermission();
+    }
+
+    @Override
+    public String getRequieredDeletePermission() {
+        return this.getResourceInstance().getRequieredDeletePermission();
+    }
+    
     @Override
     public String getRequieredUpdatePermission() {
         return this.getResourceInstance().getRequieredUpdatePermission();

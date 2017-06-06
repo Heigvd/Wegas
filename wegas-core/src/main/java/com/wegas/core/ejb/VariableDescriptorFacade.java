@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.api.VariableDescriptorFacadeI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
@@ -49,14 +50,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
 @LocalBean
-public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
+public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> implements VariableDescriptorFacadeI {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacade.class);
 
@@ -284,6 +284,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @deprecated use {@link VariableDescriptor#getParent()}
      */
+    @Override
     public DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {
         return vd.getParent();
     }
@@ -296,6 +297,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @throws WegasNoResultException if the desciptor is at root-level
      * @deprecated use {@link VariableDescriptor#getParentList()}
      */
+    @Override
     public ListDescriptor findParentListDescriptor(final VariableDescriptor item) throws WegasNoResultException {
         if (item.getParentList() != null) {
             return item.getParentList();
@@ -304,6 +306,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         }
     }
 
+    @Override
     public boolean hasVariable(final GameModel gameModel, final String name) {
         try {
             this.find(gameModel, name);
@@ -322,6 +325,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @throws WegasNoResultException
      */
+    @Override
     public VariableDescriptor find(final GameModel gameModel, final String name) throws WegasNoResultException {
 //        for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
 //            if (name.equals(vd.getName())) {
@@ -392,6 +396,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      * @deprecated
      */
+    @Override
     public VariableDescriptor findByName(final GameModel gameModel, final String name) throws WegasNoResultException {
         return this.find(gameModel, name);
     }
@@ -404,6 +409,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
+    @Override
     public VariableDescriptor findByLabel(final GameModel gameModel, final String label) throws WegasNoResultException {
         // TODO update to handle label duplicata
         final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -426,6 +432,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return all gameModel descriptors with the given title
      */
+    @Override
     public List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title) {
 
         List<VariableDescriptor> result = new ArrayList<>();
@@ -444,6 +451,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return all gameModel descriptors
      */
+    @Override
     public List<VariableDescriptor> findAll(final Long gameModelId) {
         return gameModelFacade.find(gameModelId).getVariableDescriptors();
     }
@@ -453,6 +461,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return gameModel root-level descriptor
      */
+    @Override
     public List<VariableDescriptor> findByGameModelId(final Long gameModelId) {
         return gameModelFacade.find(gameModelId).getChildVariableDescriptors();
     }
@@ -464,6 +473,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return All specified classes and subclasses belonging to the game model.
      */
+    @Override
     public <T extends VariableDescriptor> List<T> findByClass(final GameModel gamemodel, final Class<T> variableDescriptorClass) {
         //Cannot be a namedQuery, find by TYPE() removes subclasses
         final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();

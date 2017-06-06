@@ -9,7 +9,6 @@ package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
-import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.InstanceRevivedEvent;

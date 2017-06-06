@@ -195,6 +195,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
             }
         }
 
+        /* FrontiedLand : TBR */
         Result theResult = this.getResult();
         if (theResult != null) {
             theResult = qF.findResult(theResult.getId());

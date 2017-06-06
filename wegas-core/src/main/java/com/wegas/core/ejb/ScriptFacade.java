@@ -7,7 +7,13 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.api.DelayedScriptEventFacadeI;
+import com.wegas.core.ejb.api.ScriptEventFacadeI;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.api.RequestManagerI;
+import com.wegas.core.ejb.api.VariableDescriptorFacadeI;
+import com.wegas.core.ejb.nashorn.JavaObjectInvocationHandler;
+import com.wegas.core.ejb.nashorn.NHClassLoader;
 import com.wegas.core.event.internal.EngineInvocationEvent;
 import com.wegas.core.exception.WegasErrorMessageManager;
 import com.wegas.core.exception.client.WegasRuntimeException;
@@ -35,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -53,7 +60,7 @@ public class ScriptFacade {
      * A single, thread safe, javascript engine (only language currently
      * supported)
      */
-    private static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    private static final ScriptEngine engine;
     /**
      * Pre-compiled script. nashorn specific __noSuchProperty__ hijacking : find
      * a variableDescriptor's scriptAlias. Must be included in each Bindings.
@@ -68,6 +75,11 @@ public class ScriptFacade {
     Initialize noSuchProperty
      */
     static {
+        //engine = new ScriptEngineManager().getEngineByName("JavaScript");
+        NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+        engine = factory.getScriptEngine(new NHClassLoader());
+        //engine = factory.getScriptEngine(new String[] {} , new NHClassLoader(), new NHClassFilter());
+
         CompiledScript compile = null;
         try {
             compile = ((Compilable) engine).compile("(function(global){"
@@ -143,25 +155,41 @@ public class ScriptFacade {
 
     }
 
+    private <T> void putBinding(Bindings bindings, String name, Class<T> klass, T object){
+        bindings.put(name, JavaObjectInvocationHandler.wrap(object, klass));
+    }
+
     private ScriptContext populate(Player player) {
         final Bindings bindings = engine.createBindings();
         bindings.put("self", player);                           // Inject current player
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
-        bindings.put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
-        bindings.put("Instance", variableInstanceFacade);
-        bindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
-        bindings.put("RequestManager", requestManager);                  // Inject the request manager
-        bindings.put("Event", event);                                    // Inject the Event manager
-        bindings.put("DelayedEvent", delayedEvent);
+
+        putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
+        putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
+        putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
+        putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
+        putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
+
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
+
+
+        //bindings.put("Variable", variableDescriptorFacade);// @backwardcompatibility
+        //bindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
+        //bindings.put("RequestManager", requestManager);                  // Inject the request manager
+
+        bindings.put("Instance", variableInstanceFacade);
+        
+        //bindings.put("Event", event);                                    // Inject the Event manager
+        //bindings.put("DelayedEvent", delayedEvent);
 
         bindings.remove("exit");
         bindings.remove("quit");
         bindings.remove("loadWithNewGlobal");
-        
+
         event.detachAll();
         ScriptContext ctx = new SimpleScriptContext();
         ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+
         try {
             noSuchProperty.eval(bindings);
         } catch (ScriptException e) {
@@ -243,6 +271,7 @@ public class ScriptFacade {
      *
      * @param script
      * @param arguments
+     *
      * @return
      */
     private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -278,6 +307,7 @@ public class ScriptFacade {
      *
      * @param root
      * @param files
+     *
      * @return
      */
     private Collection<File> getJavaScriptsRecursively(String root, String[] files) {
@@ -321,6 +351,7 @@ public class ScriptFacade {
      * check if the given file is a minified version of an existing one
      *
      * @param file
+     *
      * @return
      */
     private boolean isMinifedDuplicata(File file) {
@@ -338,6 +369,7 @@ public class ScriptFacade {
      *
      * @param scripts
      * @param arguments
+     *
      * @return
      */
     private Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -369,6 +401,7 @@ public class ScriptFacade {
      * @param p
      * @param s
      * @param context
+     *
      * @return
      */
     public Object eval(Player p, Script s, VariableDescriptor context) throws WegasScriptException {
@@ -381,6 +414,7 @@ public class ScriptFacade {
      * @param player
      * @param s
      * @param arguments
+     *
      * @return
      */
     private Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -392,7 +426,9 @@ public class ScriptFacade {
      * @param playerId
      * @param s
      * @param context
+     *
      * @return
+     *
      * @throws WegasScriptException
      */
     public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException { // ICI CONTEXT

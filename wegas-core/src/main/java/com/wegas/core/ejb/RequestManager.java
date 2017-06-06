@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.api.RequestManagerI;
 import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
@@ -53,7 +54,7 @@ import org.apache.shiro.subject.Subject;
  */
 @Named("RequestManager")
 @RequestScoped
-public class RequestManager {
+public class RequestManager implements RequestManagerI {
 
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -176,6 +177,7 @@ public class RequestManager {
         this.env = env;
     }
 
+    @Override
     public boolean isTestEnv() {
         return this.env == RequestEnvironment.TEST;
     }
@@ -220,6 +222,7 @@ public class RequestManager {
     /**
      * @return the currentPlayer
      */
+    @Override
     public Player getPlayer() {
         return currentPlayer;
     }
@@ -356,6 +359,7 @@ public class RequestManager {
      * @param type    event name
      * @param payload object associated with that event
      */
+    @Override
     public void sendCustomEvent(String type, Object payload) {
         // @hack check payload type against "jdk.nashorn.internal"
         if (payload.getClass().getName().startsWith("jdk.nashorn.internal")) {
@@ -399,6 +403,7 @@ public class RequestManager {
     /**
      * @return the local
      */
+    @Override
     public Locale getLocale() {
         return locale;
     }
@@ -406,6 +411,7 @@ public class RequestManager {
     /**
      * @param local the local to set
      */
+    @Override
     public void setLocale(Locale local) {
         this.locale = local;
     }
@@ -438,6 +444,7 @@ public class RequestManager {
      *
      * @return
      */
+    @Override
     public boolean tryLock(String token) {
         return tryLock(token, null);
     }
@@ -449,6 +456,7 @@ public class RequestManager {
      *
      * @return
      */
+    @Override
     public boolean tryLock(String token, BroadcastTarget target) {
         String audience = getAudienceToLock(target);
         //logger.error("TryLock " + token + " for " + audience);
@@ -469,6 +477,7 @@ public class RequestManager {
      *
      * @param token token to lock
      */
+    @Override
     public void lock(String token) {
         this.lock(token, null);
     }
@@ -484,6 +493,7 @@ public class RequestManager {
      * @param token  token to lock
      * @param target scope to inform about the lock
      */
+    @Override
     public void lock(String token, BroadcastTarget target) {
         String audience = getAudienceToLock(target);
         //logger.error("LOCK " + token + " for " + audience);
@@ -498,6 +508,7 @@ public class RequestManager {
      *
      * @param token token to release
      */
+    @Override
     public void unlock(String token) {
         this.unlock(token, null);
     }
@@ -507,6 +518,7 @@ public class RequestManager {
      * @param token  token to release
      * @param target scope to inform about the lock
      */
+    @Override
     public void unlock(String token, BroadcastTarget target) {
         String audience = getAudienceToLock(target);
         //logger.error("UNLOCK " + token + " for " + audience);
@@ -676,14 +688,17 @@ public class RequestManager {
         this.clear();
     }
 
+    @Override
     public void commit(Player player, boolean clear) {
         this.requestFacade.commit(player, clear);
     }
 
+    @Override
     public void commit(Player player) {
         this.requestFacade.commit(player, true);
     }
 
+    @Override
     public void commit() {
         this.requestFacade.commit(this.getPlayer(), true);
     }
@@ -691,6 +706,7 @@ public class RequestManager {
     /**
      * @param millis
      */
+    @Override
     public void pleaseWait(long millis) {
         if (millis > 0) {
             try {

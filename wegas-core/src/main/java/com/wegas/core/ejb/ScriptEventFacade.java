@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.api.ScriptEventFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -28,7 +29,7 @@ import javax.script.ScriptContext;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @RequestScoped
-public class ScriptEventFacade {
+public class ScriptEventFacade implements ScriptEventFacadeI {
 
     /**
      *
@@ -102,6 +103,7 @@ public class ScriptEventFacade {
      * @param param
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
+    @Override
     public void fire(String eventName, Object param) throws WegasScriptException {
         this.fire(requestManager.getPlayer(), eventName, param);
     }
@@ -110,6 +112,7 @@ public class ScriptEventFacade {
      * @param eventName
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
+    @Override
     public void fire(String eventName) throws WegasScriptException {
         this.fire(eventName, null);
     }
@@ -165,6 +168,7 @@ public class ScriptEventFacade {
      * @param eventName
      * @return
      */
+    @Override
     public boolean fired(String eventName) {
         ScriptContext scriptContext = requestManager.getCurrentScriptContext();
         if (requestManager.isTestEnv()) {
@@ -198,6 +202,7 @@ public class ScriptEventFacade {
      * @param func
      * @param scope
      */
+    @Override
     public void on(String eventName, Object func, Object scope) {
         this.registeredEvents.put(eventName, new Object[]{func, scope});
     }
@@ -206,6 +211,7 @@ public class ScriptEventFacade {
      * @param eventName
      * @param func
      */
+    @Override
     public void on(String eventName, Object func) {
         this.registeredEvents.put(eventName, new Object[]{func});
     }

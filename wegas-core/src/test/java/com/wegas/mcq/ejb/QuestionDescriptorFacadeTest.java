@@ -93,6 +93,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice2.addResult(r2);
         variableDescriptorFacade.createChild(question.getId(), choice2);
 
+        login(user);
         questionDescriptorFacade.selectChoice(choice1.getId(), player.getId());                       // Select reply and validate question
         QuestionInstance qif = question.getInstance(player);
         questionDescriptorFacade.validateQuestion(qif.getId(), player.getId());
@@ -102,6 +103,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         qif = (QuestionInstance) variableInstanceFacade.find(qif.getId());
         assertEquals(2, qif.getReplies().size());
 
+        login(trainer);
         variableDescriptorFacade.duplicate(question.getId());                                        // Test duplication of question
 
         variableDescriptorFacade.remove(question.getId());                                           // Clean up
