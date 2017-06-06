@@ -179,6 +179,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             var i, node,
                 page = -1,
                 twState, tmpPageId,
+                pageWidget,
+                isDefaultPage = true,
                 pageFound = false,
                 buildSub = function(node, widget) {
                     this.buildSubTree(node, widget);
@@ -197,6 +199,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 };
             if (this.get("pageLoader")) {
                 page = this.get("pageLoader")._pageId;
+                pageWidget = this.get("pageLoader").get("widget");
             }
             twState = this.treeView.saveState();
             Y.Object.each(twState, function(v) {
@@ -219,14 +222,19 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                         iconCSS: "wegas-icon-page"
                     });
                     this.treeView.add(node);
+                    // Is the requested page the default one and is its widget already available?
+                    if (pageWidget && isDefaultPage && page === "default") {
+                        tmpPageId = "default";
+                    }
                     if (tmpPageId === "" + page) { //current page
                         pageFound = true;
 
                         node.get(BOUNDING_BOX).addClass("current-page");
-                        buildSub.call(this, node, this.get("pageLoader").get("widget"));
+                        buildSub.call(this, node, pageWidget);
                     }
                     node.set("collapsed", (tmpPageId !== "" + page));
                 }
+                isDefaultPage = false;
             }
             if (!pageFound) { //no page is selected
                 this.hideOverlay();
