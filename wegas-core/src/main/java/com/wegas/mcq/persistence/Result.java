@@ -36,7 +36,8 @@ import java.util.List;
 @Table(
         name = "MCQResult",
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"})
+            ,
             @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
         indexes = {
             @Index(columnList = "choicedescriptor_id")
@@ -109,7 +110,8 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
-                = @Column(name = "ignoration_content")),
+                = @Column(name = "ignoration_content"))
+        ,
         @AttributeOverride(name = "lang", column
                 = @Column(name = "ignoration_language"))
     })
@@ -132,10 +134,10 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * This field is here so deletion will be propagated to replies.
      */
-    @OneToMany(mappedBy = "result", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL)
     //@XmlTransient
     @JsonIgnore
-    private List<Reply> replies;
+    private Replies replies;
 
     /**
      *
@@ -371,6 +373,10 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         return this.choiceInstances.remove(choiceInstance);
     }
 
+    public Replies getReplies(){
+        return replies;
+    }
+
     public void addReply(Reply reply) {
         this.replies.add(reply);
     }
@@ -388,6 +394,14 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
             if (cInstance != null) {
                 cInstance.setCurrentResult(null);
             }
+        }
+    }
+
+    @PrePersist
+    private void prePersist() {
+        if (replies == null) {
+            replies = new Replies();
+            replies.setResult(this);
         }
     }
 }

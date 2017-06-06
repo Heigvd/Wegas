@@ -29,7 +29,7 @@ import javax.persistence.*;
 @Table(name = "MCQReply", indexes = {
     @Index(columnList = "variableinstance_id")
     ,
-    @Index(columnList = "result_id")
+    @Index(columnList = "replies_id")
 })
 @NamedQueries({
     @NamedQuery(name = "Reply.countForInstance", query = "SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :instanceId")
@@ -64,7 +64,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
      *
      */
     @ManyToOne(optional = false)
-    private Result result;
+    private Replies replies;
     /**
      *
      */
@@ -169,18 +169,20 @@ public class Reply extends AbstractEntity implements DatedEntity {
         this.startTime = startTime;
     }
 
-    /**
-     * @return the result
-     */
     public Result getResult() {
-        return result;
+        return replies.getResult();
     }
 
-    /**
-     * @param result the result to set
-     */
-    public void setResult(Result result) {
-        this.result = result;
+    public void setResult(Result r) {
+        this.replies = r.getReplies();
+    }
+
+    public Replies getReplies() {
+        return replies;
+    }
+
+    public void setReplies(Replies replies) {
+        this.replies = replies;
     }
 
     @Override
