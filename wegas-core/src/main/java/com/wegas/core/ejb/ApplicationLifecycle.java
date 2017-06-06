@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleListener;
+import com.hazelcast.core.Member;
 import com.hazelcast.core.MemberAttributeEvent;
 import com.hazelcast.core.MembershipEvent;
 import com.hazelcast.core.MembershipListener;
@@ -86,9 +87,10 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      * @param memberUUID new instance uuid
      */
     public void instanceUp(@Observes @Inbound(eventName = LIFECYCLE_UP) String memberUUID) {
-        logger.error("REGISTER MEMBER " + memberUUID);
+        logger.info("REGISTER MEMBER " + memberUUID);
         this.addMember(memberUUID);
         //logger.error("EVENTRECEIVED: " + event.getMember() + " -> " + event.isUp());
+        logClusterInfo(null);
     }
 
     /**
@@ -97,9 +99,10 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      * @param memberUUID new instance uuid
      */
     public void instanceDown(@Observes @Inbound(eventName = LIFECYCLE_DOWN) String memberUUID) {
-        logger.error("REMOVING MEMBER " + memberUUID);
+        logger.info("REMOVE MEMBER " + memberUUID);
         this.removeMember(memberUUID);
         //logger.error("EVENTRECEIVED: " + event.getMember() + " -> " + event.isUp());
+        logClusterInfo(null);
     }
 
     /**
@@ -108,8 +111,9 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      * @param fromMemberUUID
      */
     public void announcemenetRequested(@Observes @Inbound(eventName = REQUEST_ALL) String fromMemberUUID) {
-        logger.error("MEMBER REQUEST ANNOUNCE" + fromMemberUUID);
+        logger.info("MEMBER " + fromMemberUUID + " REQUESTS ANNOUNCE");
         this.sendInstanceReadyEvent(hzInstance.getCluster().getLocalMember().getUuid());
+        logClusterInfo(null);
     }
 
     /**
@@ -143,14 +147,16 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
     public void memberAdded(MembershipEvent me) {
         // This event is throw way too early...
         // New membership are managed by ApplicationStartup servlet
-        logger.error("NEW MEMBER " + me.getMember().getUuid());
+        logger.info("NEW MEMBER (MembershipEvent) " + me.getMember().getUuid());
         // 
         reqAll.fire(hzInstance.getCluster().getLocalMember().getUuid());
+        logClusterInfo(null);
     }
 
     @Override
     public void memberAttributeChanged(MemberAttributeEvent mae) {
-        logger.error("MEMBER ATTR CHANGE: " + mae.getMember().getUuid());
+        logger.info("MEMBER ATTR CHANGE: " + mae.getMember().getUuid());
+        logClusterInfo(null);
         // no need
     }
 
@@ -161,8 +167,9 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      */
     @Override
     public void memberRemoved(MembershipEvent me) {
-        logger.error("MEMBER " + me.getMember().getUuid() + " REMOVED");
+        logger.info("MEMBER " + me.getMember().getUuid() + " REMOVED (membership event)");
         this.removeMember(me.getMember().getUuid());
+        logClusterInfo(null);
     }
 
     public Set<String> getMembers() {
@@ -180,15 +187,43 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
              */
             this.sendInstanceDownEvent(this.hzInstance.getCluster().getLocalMember().getUuid());
         }
+
+        logClusterInfo("LifecycleEvent: " + event.getState());
     }
 
     public void sendWegasReadyEvent() {
-        logger.error("WEGAS IS READY TO SERVE");
+        logger.info("WEGAS IS READY TO SERVE");
         websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.READY, null);
+        this.logClusterInfo(null);
     }
 
     public void sendWegasDownEvent() {
-        logger.error("WEGAS IS NOW COMPLETELY DOWN");
+        logger.info("WEGAS IS NOW COMPLETELY DOWN");
         websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.DOWN, null);
+        this.logClusterInfo(null);
+    }
+
+    private void logClusterInfo(String prefix) {
+        StringBuilder sb = new StringBuilder(prefix != null ? prefix : "");
+
+        sb.append("*** WegasCluster ***\n");
+
+        if (hzInstance != null) {
+            sb.append("** Hazelcast **\n");
+
+            for (Member m : hzInstance.getCluster().getMembers()) {
+                sb.append(" - ").append(m.toString()).append("\n");
+            }
+        } else {
+            sb.append("Hazelcast is down\n");
+        }
+
+        sb.append("** LocalList **\n");
+
+        for (String m : this.getMembers()) {
+            sb.append(" - ").append(m).append("\n");
+        }
+
+        logger.info(sb.toString());
     }
 }

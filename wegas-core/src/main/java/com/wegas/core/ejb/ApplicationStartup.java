@@ -43,7 +43,7 @@ public class ApplicationStartup extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        logger.error("Servlet Startup");
+        logger.info("Servlet Startup");
 
         /*
          * init member list
@@ -72,7 +72,7 @@ public class ApplicationStartup extends HttpServlet {
     public void destroy() {
         // hZinstance is not in cluster anymore here, no way to detect if this instance is the last one
         int count = applicationLifecycle.countMembers();
-        logger.error("Servlet Destroy: " + count);
+        logger.info("Servlet Destroy: " + count);
 
         /*
          * is the last instance ? 
