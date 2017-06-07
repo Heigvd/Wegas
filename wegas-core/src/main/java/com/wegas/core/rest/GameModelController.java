@@ -25,6 +25,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.ws.rs.core.Response;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -315,5 +316,12 @@ public class GameModelController {
             }
         }
         return games;
+    }
+
+    @DELETE
+    @Path("CleanDatabase")
+    @RequiresRoles("Administrator")
+    public void deleteForceAll() {
+        gameModelFacade.removeGameModels();
     }
 }
