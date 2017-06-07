@@ -15,11 +15,13 @@ const labelTextStyle = css({
     // Leave some space between label (if any) and following widget:
     paddingRight: '8px'
 });
+
 interface Props {
     view: {
         label?: string
     }
 }
+
 export default function labeled(Comp: React.ComponentClass<any> | React.SFC<any>, cssContainer = '', suffixed = false) {
     function Labeled(props: Props) {
         if (suffixed) {

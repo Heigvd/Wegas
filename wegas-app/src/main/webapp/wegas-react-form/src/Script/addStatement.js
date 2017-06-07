@@ -7,7 +7,7 @@ import {css} from 'glamor';
 
 const removeButtonStyle = css({
     opacity: 0,
-    marginTop: '1.6em',
+    marginTop: '1.1em',
     verticalAlign: 'top',
     paddingRight: '5px',
     display: 'inline-block',
@@ -17,6 +17,8 @@ const removeButtonStyle = css({
 const removeContainerStyle = css({
     // borderLeft: 'solid 1px lightsteelblue',
     // marginTop: '2em',
+    backgroundColor: '#f0f0ff',
+    marginBottom: '4px',
     ':hover *' : {
         opacity: 1
     }

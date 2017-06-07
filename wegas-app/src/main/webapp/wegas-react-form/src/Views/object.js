@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
 import { css } from 'glamor';
+import FormStyles from './form-styles';
 
 const rootStyle = css({
     clear: 'both'
@@ -20,7 +21,8 @@ const errorStyle = css({
 const legendStyle = css({
     color: '#282',
     textAlign: 'center',
-    padding: '0 5px'
+    padding: '0 5px',
+    fontSize: FormStyles.labelFontSize
 });
 
 

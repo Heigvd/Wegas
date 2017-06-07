@@ -1,17 +1,12 @@
 import React from 'react';
 import { css } from 'glamor';
-import labeled from '../HOC/labeled';
+import FormStyles from './form-styles';
 import commonView from '../HOC/commonView';
 import IconButton from '../Components/IconButton';
+import { AddOptionButton } from '../Script/Views/Button';
 import Menu from '../Components/Menu';
 import { WidgetProps } from "jsoninput/typings/types";
 import { Cover } from "../Components/Cover";
-
-const arrayContainerStyle = css({
-    '& label': {
-        display: 'inline-block',
-    }
-});
 
 const arrayStyle = css({
     display: 'inline'
@@ -24,6 +19,9 @@ const hiddenStyle = css({
 
 const listElementContainerStyle = css({
     clear: 'both',
+    ':first-of-type' : {
+        marginTop: '10px'
+    },
     ':hover *': {
         opacity: 1,
         transition: 'opacity 2s'
@@ -42,12 +40,23 @@ const inlinePlusStyle = css({
     verticalAlign: '-1px'
 });
 
+const optionLabelStyle = css(
+    FormStyles.labelStyle,
+    {
+        fontSize: FormStyles.labelBigFontSize,
+        paddingRight: '5px',
+        verticalAlign: '1px'
+    }
+);
+
 interface IArrayProps {
     view: {
         choices?: {}[],
         tooltip?: string,
     }
 }
+
+
 class Adder extends React.Component<WidgetProps.ArrayProps & IArrayProps, { open: boolean }> {
     constructor(props: WidgetProps.ArrayProps & IArrayProps) {
         super(props);
@@ -64,18 +73,24 @@ class Adder extends React.Component<WidgetProps.ArrayProps & IArrayProps, { open
                         menu={this.props.view.choices}
                         onChange={(value: {}) => this.setState({ open: false }, () => this.props.onChildAdd(value))} />
                 </Cover>
-                : <IconButton
+                :
+                <AddOptionButton
                     className={`${inlinePlusStyle}`}
                     icon="fa fa-plus-circle"
                     onClick={() => this.setState({ open: true })}
                     tooltip={tooltip}
-                />);
+                    label={this.props.view.label}
+                    labelClassName={`${optionLabelStyle}`}
+                />
+            );
         }
-        return <IconButton
+        return <AddOptionButton
             className={`${inlinePlusStyle}`}
             icon="fa fa-plus-circle"
             onClick={() => this.props.onChildAdd()}
             tooltip={tooltip}
+            label={this.props.view.label}
+            labelClassName={`${optionLabelStyle}`}
         />;
     }
 }
@@ -114,4 +129,4 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
     );
 }
 
-export default commonView(labeled(ArrayWidget, `${arrayContainerStyle}`));
+export default commonView(ArrayWidget);

@@ -3,6 +3,30 @@ import { asyncReactor } from 'async-reactor';
 import Form from 'jsoninput';
 import { getY } from '../../index';
 
+// Temporary solution until the friendly name is added as a standard widget attribute?
+function friendlyName(label: string) {
+    switch (label) {
+        case 'OpenPageAction': return 'Open page';
+        case 'OpenUrlAction': return 'Open URL';
+        case 'ExecuteScriptAction': return 'Impact variables';
+        case 'OpenPanelPageloader': return 'Open Popup page';
+        case 'PlaySoundAction': return 'Play sound';
+        case 'PrintActionPlugin': return 'Print Variables';
+        case 'Tooltip': return 'Tooltip';
+        case 'CSSBackground': return 'Background';
+        case 'CSSPosition': return 'Position';
+        case 'CSSSize': return 'Size';
+        case 'CSSText': return 'Text';
+        case 'CSSStyles': return 'Other styles';
+        case 'ShowAfter': return 'Show after';
+        case 'HideAfter': return 'Hide after';
+        case 'ConditionalDisable': return 'Conditional disable';
+        case 'UnreadCount': return 'Unread count';
+        case 'Lockable': return 'Lock';
+        default: return 'internal error'
+    };
+};
+
 const SCHEMA = {
     type: 'object',
     properties: {
@@ -10,7 +34,7 @@ const SCHEMA = {
             index: -1,
             type: 'string',
             view: {
-                type: 'uneditable',
+                type: 'hidden' // 'uneditable'
             },
         },
         cfg: {},
@@ -39,6 +63,7 @@ const AsyncForm = asyncReactor(({ value, onChange }:
                 w.plug(targetPlg);
                 const cfg = (w as any)[targetPlg.NS].getFormCfg();
                 cfg.name = targetPlg.NAME;
+                cfg.view = { label: friendlyName(targetPlg.NAME) };
                 schema = updateCfg(cfg);
                 resolve(<Form schema={schema} value={value} onChange={onChange} />);
             });

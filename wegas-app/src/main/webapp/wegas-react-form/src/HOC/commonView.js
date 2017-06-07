@@ -6,7 +6,7 @@ import FormStyles from '../Views/form-styles';
 
 const containerStyle = css({
     position: 'relative',
-    marginTop: '1.3em'
+    marginTop: '0.8em'
 });
 
 const extraShortStyle = css({

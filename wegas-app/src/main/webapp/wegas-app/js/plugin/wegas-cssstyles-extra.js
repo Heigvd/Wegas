@@ -101,7 +101,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
                         },
                         left: {
                             type: 'string',
-                            view: { label: 'left' }
+                            view: { label: 'Left' }
                         },
                         bottom: {
                             type: 'string',

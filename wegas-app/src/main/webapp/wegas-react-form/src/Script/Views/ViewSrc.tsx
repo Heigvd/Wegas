@@ -13,7 +13,7 @@ interface IProps {
 const iconStyle = css({
     'cursor': 'pointer',
     'verticalAlign': '1px',
-    'padding': '8px',
+    'padding': '4px',
     'borderRadius': '50%',
     ':hover': {
         background: 'lightgray',

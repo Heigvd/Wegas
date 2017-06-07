@@ -5,13 +5,22 @@ import Menu, { Item, SubMenu } from 'rc-menu';
 // eslint-disable-next-line
 import '!!style-loader!css-loader!rc-menu/assets/index.css';
 
-const MENU_STYLE = css({ display: 'inline-block', backgroundColor: 'white' });
+const MENU_STYLE = css({
+    display: 'inline-block',
+    backgroundColor: 'white',
+    userSelect: 'none',
+    cursor: 'default'
+});
+
 function genItems(o, i) {
     const hasSubMenu = Array.isArray(o.children);
     if (hasSubMenu) {
         const key = o.value || i;
+        const titleRight = (<span>{o.label}
+                                <i className="fa fa-caret-right pull-right" style={{marginLeft:'25px'}}></i>
+                            </span>);
         return (
-            <SubMenu key={JSON.stringify(key)} title={o.label}>
+            <SubMenu key={JSON.stringify(key)} title={titleRight}>
                 {o.children.map(genItems)}
             </SubMenu>
         );
@@ -28,6 +37,7 @@ function WMenu({ menu, onChange }) {
         <Menu
             className={MENU_STYLE.toString()}
             onClick={value => onChange(JSON.parse(value.key))}
+            defaultActiveFirst={false}
         >
             {menuItems}
         </Menu>

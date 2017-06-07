@@ -11,7 +11,7 @@ const separatorCss = css({ borderTop: "solid 1px" });
 const containerCss = css({
     color: '#6A95B6',
     display: 'inline-block',
-    marginTop: '1.5em'
+    marginTop: '1.0em'
 });
 
 const iconCss = css({

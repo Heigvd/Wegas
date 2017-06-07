@@ -8,6 +8,7 @@ export namespace FormStyles {
 
     export const labelColor: string = '#6A95B6';
     export const labelFontSize: string = '15px';
+    export const labelBigFontSize: string = '16px'; // = labelFontSize * 125%
 
     export const unselectable = css({
         userSelect: 'none',

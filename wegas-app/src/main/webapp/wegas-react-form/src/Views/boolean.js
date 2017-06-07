@@ -7,12 +7,12 @@ import FormStyles from './form-styles';
 
 const booleanContainerStyle = css({
     marginTop: '-5px',
-    '& label': {
+    '& span': {
         display: 'inline-block',
         fontSize: FormStyles.labelFontSize,
         verticalAlign: '1px'
     },
-    // Vertically align the following 'info' field on the label:
+    // Vertically align the following 'info' field on the label instead of the checkbox:
     '& + div': {
         marginLeft: '22px'
     }

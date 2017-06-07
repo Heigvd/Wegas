@@ -12,6 +12,8 @@ type Props = {
     iconColor?: string;
     tooltip?: string;
     className?: string;
+    prefixedLabel?: boolean;
+    labelClassName?: string;
 }
 const shapeStyle = css({
     width: 'auto',
@@ -50,12 +52,13 @@ const grayStyle = css({
     }
 });
 
-function renderLabel(label?: string) {
+function renderLabel(label?: string, labelClassName?: string) {
     if (label) {
-        return <span className={labelStyle.toString()}>{label}</span>;
+        return <span className={labelClassName ? labelClassName : labelStyle.toString()}>{label}</span>;
     }
     return null;
 }
+
 function IconButton({
     icon,
     onClick,
@@ -65,7 +68,9 @@ function IconButton({
     tooltip,
     opacity,
     className,
-    label
+    label,
+    prefixedLabel,
+    labelClassName
 }: Props) {
     return (
         <span
@@ -77,8 +82,9 @@ function IconButton({
             })}
             title={tooltip}
         >
+            {label && prefixedLabel==true ? renderLabel(label, labelClassName) : ''}
             <span className={classNames(icon)} />
-            {renderLabel(label)}
+            {label && !prefixedLabel ? renderLabel(label, labelClassName) : ''}
         </span>
     );
 }

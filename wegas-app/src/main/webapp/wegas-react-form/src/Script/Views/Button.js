@@ -37,3 +37,18 @@ export function AddStatementButton(props) {
         />
     );
 }
+
+export function AddOptionButton(props) {
+    return (
+        <IconButton
+            onClick={props.onClick}
+            iconColor="#9DC06F"
+            icon="fa fa-plus-circle"
+            tooltip="Add option"
+            label={props.label}
+            className={props.className}
+            prefixedLabel={true}
+            labelClassName={props.labelClassName}
+        />
+    );
+}

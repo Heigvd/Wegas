@@ -109,7 +109,12 @@ YUI.add('wegas-button', function(Y) {
                 labelHTML: {
                     transient: true
                 },
-                data: {},
+                data: {
+                    view: {
+                        //label: "Data",
+                        type: 'hidden'
+                    }
+                },
                 tooltip: {
                     type: 'string',
                     optional: true,
