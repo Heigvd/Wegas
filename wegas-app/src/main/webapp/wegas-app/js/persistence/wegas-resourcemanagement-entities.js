@@ -980,12 +980,19 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     });
 
     persistence.Iteration = Y.Base.create("Iteration", persistence.Entity, [], {
-        getTaskInstances: function() {
-            var ids = this.get("taskInstancesId"), i, taskDs = [];
-            for (i = 0; i < ids.length; i += 1) {
-                taskDs.push(Y.Wegas.Facade.Instance.cache.find("id", ids[i]));
+        getTaskDescriptors: function() {
+            var names = this.get("taskNames"), i, taskDs = [];
+            for (i = 0; i < names.length; i += 1) {
+                taskDs.push(Y.Wegas.Facade.Variable.cache.find("name", names[i]));
             }
             return taskDs;
+        },
+        getTaskInstances: function() {
+            var names = this.get("taskNames"), i, taskIs = [];
+            for (i = 0; i < names.length; i += 1) {
+                taskIs.push(Y.Wegas.Facade.Variable.cache.find("name", names[i]).getInstance());
+            }
+            return taskIs;
         },
         getRemainingWorkload: function() {
             var taskI, taskIs, i, workload = 0;
@@ -1066,7 +1073,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             workloads: {
                 type: ARRAY
             },
-            taskInstancesId: {
+            taskNames: {
                 type: ARRAY
             },
             createdTime: {
