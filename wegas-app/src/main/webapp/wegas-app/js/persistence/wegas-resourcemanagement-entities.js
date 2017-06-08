@@ -1023,11 +1023,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
         },
         getStatus: function() {
+            /*
             var tasks = this.getTaskInstances(),
-                i, taskI, started, completed = tasks.length > 0,
+                i, taskI, started = false, completed = tasks.length > 0,
                 completeness;
 
-            started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
+            //started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
 
             for (i = 0; i < tasks.length; i += 1) {
                 taskI = tasks[i];
@@ -1045,7 +1046,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 return "STARTED";
             } else {
                 return "NOT_STARTED";
-            }
+            }*/
+            return this.get("status");
         },
         hasBegun: function() {
             return this.getStatus() !== "NOT_STARTED";
@@ -1056,6 +1058,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 value: "Iteration"
             },
             name: {
+                type: STRING
+            },
+            status: {
                 type: STRING
             },
             beginAt: {
