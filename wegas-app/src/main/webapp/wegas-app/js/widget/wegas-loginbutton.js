@@ -285,10 +285,11 @@ YUI.add("wegas-loginbutton", function(Y) {
             var cUser = Wegas.Facade.User.get("currentUser"),
                 name = cUser.get("name") || "undefined",
                 mainAccount = cUser.getMainAccount();
-
+/*
             if (mainAccount) {
                 name = "<img src=\"//www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
             }
+*/
             this.set("label", name);
         },
         destructor: function() {

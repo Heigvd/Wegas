@@ -111,7 +111,6 @@ YUI.add('wegas-button', function(Y) {
                 },
                 data: {
                     view: {
-                        //label: "Data",
                         type: 'hidden'
                     }
                 },

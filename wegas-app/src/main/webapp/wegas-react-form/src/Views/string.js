@@ -12,6 +12,7 @@ const inputStyle = css({
     border: '1px solid lightgrey',
     fontSize: '13px',
     color: 'darkslategrey',
+    boxShadow: '2px 2px 8px #ccc',
     width: '100%',
     maxWidth: FormStyles.textInputWidth,
     padding: '0px'

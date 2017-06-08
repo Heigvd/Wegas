@@ -15,6 +15,7 @@ const marginStyle = css({
     fontSize: '13px',
     minHeight: '45px',
     color: 'darkslategrey',
+    boxShadow: '2px 2px 8px #ccc'
     // border: '1px solid lightgrey',
     // borderRadius: '3px',
 });

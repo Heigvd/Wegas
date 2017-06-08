@@ -6,9 +6,10 @@ export namespace FormStyles {
     export const textInputWidth: string = '30em';
     export const textareaWidth: string = '30em';
 
-    export const labelColor: string = '#6A95B6';
+    export const labelColor: string = '#888'; // was bluish '#6A95B6';
     export const labelFontSize: string = '15px';
-    export const labelBigFontSize: string = '16px'; // = labelFontSize * 125%
+    export const labelBigFontSize: string = '15px'; // = labelFontSize * 115%
+    export const labelFontFamily: string = 'Rockwell';
 
     export const unselectable = css({
         userSelect: 'none',
@@ -20,6 +21,7 @@ export namespace FormStyles {
         {
             fontSize: FormStyles.labelFontSize,
             color: FormStyles.labelColor,
+            fontFamily: FormStyles.labelFontFamily,
         }
     )
 }

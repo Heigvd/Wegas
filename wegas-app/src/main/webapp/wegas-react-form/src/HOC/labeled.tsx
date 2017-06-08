@@ -3,7 +3,7 @@ import { css } from 'glamor';
 import FormStyles from '../Views/form-styles';
 
 const labelStyle = css(FormStyles.labelStyle, {
-    fontSize: '125%',
+    fontSize: '115%',
     marginBottom: '3px'
 });
 

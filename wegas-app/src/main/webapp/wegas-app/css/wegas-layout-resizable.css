@@ -11,7 +11,9 @@
 
 /* Wegas Layout Widget Styles */
 .yui3-skin-sam .wegas-layout-resizable {
-    background-color: hsla(199,89%,12%,1);
+    /* background-color: hsla(199,89%,12%,1); */
+    /* background-color: #b7cb90; */ /* New green background */
+    /* background-color: rgba(183, 203, 144, 0.9); */ /* New green background with transparency */
     /*overflow: hidden;*/
 }
 .yui3-skin-sam .wegas-layout-hd > div {
@@ -52,6 +54,6 @@
     right: 0;
 }
 .yui3-skin-sam .wegas-layout-resizable .yui3-resize-handle {
-    background: #03283A;
+    background: #b7cb90; /* New green background, previous value: #03283A; */
     width: 4px;
 }

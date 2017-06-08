@@ -881,7 +881,11 @@ YUI().use(function (Y) {
             },
             "wegas-react-manifest": {
                 path: "dist/manifest.js"
-            }
+            },
+            "open-sans": { // Used in the react-based scenarist mode
+                type: CSS,
+                fullpath: "//fonts.googleapis.com/css?family=Open+Sans"
+            },
         }
     });
     /**

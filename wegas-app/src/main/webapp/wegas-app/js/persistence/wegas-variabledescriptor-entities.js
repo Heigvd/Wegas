@@ -241,7 +241,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     view: {
                         type: 'textarea',
                         className: 'wegas-comments',
-                        placeholder: 'Comment'
+                        placeholder: 'Optional comments'
                     }
                 },
                 label: {

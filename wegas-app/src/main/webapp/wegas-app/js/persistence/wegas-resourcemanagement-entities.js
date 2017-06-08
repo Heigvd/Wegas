@@ -501,162 +501,166 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 value: "TaskDescriptor"
             },
             title: {
-                    type: NULLSTRING,
+                type: NULLSTRING,
                 optional: true,
-                    index: -1,
-                    view: {
+                index: -1,
+                view: {
                     label: "Label",
                     description: "Displayed to players",
                 }
             },
-            description: {
-                type: STRING,
-                optional: true,
-                    index: -1,
-                    view: {
-                        type: HTML
-                }
-            },
             index: {
                 type: STRING,
-                    index: -1,
-                    view: {
-                    label: "Number",
+                index: -1,
+                view: {
+                    label: "Task number",
                 }
             },
             predecessors: {
                 type: ARRAY,
-                    items: {
-                        type: OBJECT
-                    },
+                items: {
+                    type: OBJECT
+                },
                 "transient": true,
                 getter: function() {
                     return Y.Array.map(this.get("predecessorNames"), function(name) {
                         return Wegas.Facade.Variable.cache.find("name", name);
                     });
+                },
+                view: {
+                    type: HIDDEN
                 }
             },
             predecessorNames: {
                 type: ARRAY,
                 value: [],
-                    items: {
-                        type: STRING,
-                        required: true,
-                        view: {
+                items: {
+                    type: STRING,
+                    required: true,
+                    view: {
                         type: "flatvariableselect",
                         classFilter: "TaskDescriptor"
                     }
-                    },
-                    index: -1,
-                    view: {
-                        label: "Predecessors"
+                },
+                index: -1,
+                view: {
+                    label: "Predecessors"
+                }
+            },
+            description: {
+                type: STRING,
+                optional: true,
+                index: 0,
+                view: {
+                    label: "Description",
+                    type: HTML
                 }
             },
             defaultInstance: {
                 properties: {
                     '@class': {
                         type: STRING,
-                            value: 'TaskInstance',
-                            view: {
-                                type: HIDDEN
+                        value: 'TaskInstance',
+                        view: {
+                            type: HIDDEN
                         }
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
-                        descriptorId: IDATTRDEF,
+                    descriptorId: IDATTRDEF,
                     requirements: {
                         type: ARRAY,
-                            items: {
-                                type: OBJECT,
-                                properties: {
-                                    "@class": {
-                                        type: STRING,
-                                        value: "WRequirement",
-                                        view: { type: HIDDEN }
-                                    },
-                                    id: IDATTRDEF,
-                                    name: { type: STRING, view: { type: HIDDEN } },
-                                    work: {
-                                        type: STRING,
-                                        view: {
+                        items: {
+                            type: OBJECT,
+                            properties: {
+                                "@class": {
+                                    type: STRING,
+                                    value: "WRequirement",
+                                    view: { type: HIDDEN }
+                                },
+                                id: IDATTRDEF,
+                                name: { type: STRING, view: { type: HIDDEN } },
+                                work: {
+                                    type: STRING,
+                                    view: {
                                         type: SELECT,
                                         choices: persistence.Resources.SKILLS
-                                        }
-                                    },
-                                    level: {
-                                        type: NUMBER,
-                                        view: {
-                                            type: SELECT,
-                                        choices: persistence.Resources.LEVELS
-                                        }
-                                    },
-                                    quantity: {
-                                        type: NUMBER,
-                                        required: true,
-                                        value: 1,
-                                        view: {
-                                            label: 'quantity'
-                                        }
-                                    },
-                                    limit: {
-                                        type: NUMBER,
-                                        required: true,
-                                        value: 100,
-                                        view: {
-                                            label: 'limit'
-                                        }
-                                    },
-                                    completeness: {
-                                        type: NUMBER,
-                                        value: 0,
-                                        view: { type: HIDDEN }
-                                    },
-                                    quality: {
-                                        type: NUMBER,
-                                        value: 100,
-                                        view: { type: HIDDEN }
                                     }
+                                },
+                                level: {
+                                    type: NUMBER,
+                                    view: {
+                                        type: SELECT,
+                                        choices: persistence.Resources.LEVELS
+                                    }
+                                },
+                                quantity: {
+                                    type: NUMBER,
+                                    required: true,
+                                    value: 1,
+                                    view: {
+                                        label: 'quantity'
+                                    }
+                                },
+                                limit: {
+                                    type: NUMBER,
+                                    required: true,
+                                    value: 100,
+                                    view: {
+                                        label: 'limit'
+                                    }
+                                },
+                                completeness: {
+                                    type: NUMBER,
+                                    value: 0,
+                                    view: { type: HIDDEN }
+                                },
+                                quality: {
+                                    type: NUMBER,
+                                    value: 100,
+                                    view: { type: HIDDEN }
+                                }
                             }
                         }
                     },
                     active: {
                         type: BOOLEAN,
-                            view: {
-                                label: 'Active from start',
+                        view: {
+                            label: 'Active from start',
                             value: true
                         }
                     },
                     plannification: {
                         type: ARRAY,
-                            value: [],
-                            view: {
-                                type: HIDDEN,
+                        value: [],
+                        view: {
+                            type: HIDDEN,
                         }
                     },
                     properties: {
-                            additionalProperties: {
-                                view: { label: VALUE }
-                            },
-                            view: {
+                        additionalProperties: {
+                            view: { label: VALUE }
+                        },
+                        view: {
                             label: "Instance properties",
-                                type: HASHLIST,
-                                keyLabel: NAME
+                            type: HASHLIST,
+                            keyLabel: NAME
                         }
                     }
                 }
             },
             properties: {
-                    type: OBJECT,
-                    index: 2,
-                    additionalProperties: {
-                        type: STRING,
-                        view: {
-                            label: VALUE
-                        }
-                    },
+                type: OBJECT,
+                index: 2,
+                additionalProperties: {
+                    type: STRING,
                     view: {
+                        label: VALUE
+                    }
+                },
+                view: {
                     label: "Properties",
-                        type: HASHLIST,
+                    type: HASHLIST,
                     keyField: NAME,
                 }
             }
@@ -667,7 +671,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     arguments: [SELFARG]
             },
             desactivate: {
-                label: "Desactivate",
+                label: "Deactivate",
                     arguments: [SELFARG]
             },
             separator1: {

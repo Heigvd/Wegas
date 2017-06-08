@@ -9,8 +9,8 @@
 .yui3-skin-sam .yui3-wegas-editorchat {
     z-index: 200;
     position: relative;
-    background-color: #03283A;
-    border: 1px solid #03283A;
+    /* background-color: #b7cb90; */ /* New green background, previous value was #03283A; */
+    /* border: 1px solid #b7cb90; */ /* New green background, previous value was #03283A; */
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .conversation {
@@ -20,7 +20,7 @@
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer {
-    color: white;
+    color: #4c4c4c;
     cursor: pointer;
     padding: 3px;
 }

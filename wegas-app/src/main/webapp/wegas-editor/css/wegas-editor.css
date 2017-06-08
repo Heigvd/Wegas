@@ -30,10 +30,18 @@
     color: #03283A;
 }
 
+.yui3-skin-sam .wegas-editview {
+    background: url(../../wegas-app/images/editor-polygons.png) no-repeat;
+    background-size: 100% 80%;
+}
 
 /* Set font in the editor*/
-body, button, .yui3-skin-sam .yui3-datatable-table {
-    font-family: Verdana, Geneva, sans-serif;
+body, button, .yui3-skin-sam .yui3-datatable-table,
+.yui3-skin-sam .wegas-layout-right,
+.yui3-skin-sam .wegas-layout-right select,
+.yui3-skin-sam .wegas-layout-right input,
+.yui3-skin-sam .wegas-layout-right textarea {
+    font-family: 'Open Sans', Verdana, Geneva, sans-serif !important;
 }
 
 .editor-preview, .editor-preview button {
@@ -48,9 +56,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 /** Comments */
 .wegas-comments {
     font-style: italic;
-    margin-top: 15px;
+    margin-top: 25px !important;
     /* font-size: 14px; */
-    border-top: solid 2px #4A8C9C;
+    border-top: solid 2px #b7cb90; /* New green theme, previous value: #4A8C9C; */
 }
 
 .wegas-comments textarea {
@@ -108,6 +116,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     bottom: 0px;
     width: 100%;
     overflow: auto;
+    border-top: 4px solid #b7cb90 !important;
 }
 
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel {
@@ -330,23 +339,25 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     font-weight: bold;
     font-size: 11px;
     line-height: 1.9em;
-    color: white;
+    color: #4c4c4c;
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     box-shadow: none;
     padding: 3px 20px 3px 10px;
     background: none;
-    margin-top: 12px;
+    margin-top: 10px;
 }
 
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-widgetmenu-hassubmenu:after {
-    background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 -40px;
-    top: 11px;
+    background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 1px; /* white version of toggle: -40px; */
+    top: 1.1em;
 }
 
 .yui3-skin-sam .wegas-layout-hd .wegas-login {
     float: right !important;
-    margin-right: 37px;
+    margin-right: 15px;
+    font-size: 17px;
+    font-family: Rockwell, Arial, serif;
 }
 
 .yui3-skin-sam .wegas-layout-hd .wegas-login img {
@@ -359,7 +370,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 .yui3-skin-sam .wegas-layout-resizable .wegas-layout-right .yui3-resize-handle {
-    background: #03283A;
+    background: #b7cb90; /* New green background, previous value: #03283A; */
 }
 
 .wegas-layout-right > .wegas-list,
@@ -372,7 +383,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     top: 38px;
     height: auto !important;
     bottom: 0px;
-}
+    border-top: 4px solid #b7cb90 !important}
 
 .yui3-skin-sam .wegas-layout-right .yui3-tabview-list {
     border-bottom: 1px solid #ededed;
@@ -406,12 +417,14 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 .yui3-skin-sam .wegas-layout-right .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
     top: 42px;
+    border-top: none !important;  /* temporary hack while simulating the new green design */
 }
 
 /* Wegas logo */
 .yui3-skin-sam .yui3-button.wegas-logo,
 .yui3-skin-sam .yui3-button.wegas-logo:hover {
     background: url(../../wegas-app/images/wegas-logoicon-35.png) 0 0 no-repeat;
+    filter: brightness(0.3); /* hack to make its color close to #4c4c4c */
     height: 35px;
     width: 35px;
     margin: 3px 5px;
@@ -420,13 +433,13 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 /* Wegas title */
 .yui3-skin-sam .wegas-title {
-    font-weight: bolder;
-    font-size: 22px;
-    line-height: 1.3em;
-    text-shadow: 1px 1px 1px black, 1px 1px 1px black;
-    color: white;
-    margin-right: 30px;
-    margin-top: 6px;
+    font-family: Rockwell;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 1.2em;
+    text-shadow: none; /* 1px 1px 1px black, 1px 1px 1px black; */
+    color: #4c4c4c;
+    margin: 6px 30px 0 5px;
 }
 
 /* Player link menu */
@@ -527,19 +540,19 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     float: right;
 }
 
-/** Uservoice widget */
+/** Uservoice widget
 .yui3-skin-sam .uv-icon {
     right: 0;
     top: 11px !important;
     width: 23px;
     opacity: 1;
-    /*z-index: 0;*/
 }
 
 .yui3-skin-sam .uv-icon svg {
     width: 24px;
     height: 27px;
 }
+*/
 
 /* Upload file widget */
 .wegas-uploadfile {
@@ -580,4 +593,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 .wegas-uploadfile input {
     display: none;
+}
+
+@font-face {
+    font-family: "Rockwell";
+    src: url("../fonts/Rockwell.ttf");
 }
