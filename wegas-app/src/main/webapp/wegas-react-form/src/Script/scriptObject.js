@@ -13,6 +13,7 @@ const labelStyle = css(
     {
         marginTop: '8px',
         marginRight: '2px',
+        verticalAlign: '2px',
     }
 );
 

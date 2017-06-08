@@ -65,7 +65,6 @@ class Adder extends React.Component<WidgetProps.ArrayProps & IArrayProps, { open
         }
     }
     render() {
-        const tooltip = this.props.view.tooltip ? this.props.view.tooltip : "Add element";
         if (Array.isArray(this.props.view.choices)) {
             return (this.state.open ?
                 <Cover onClick={() => this.setState({ open: false })} zIndex={100}>
@@ -78,7 +77,7 @@ class Adder extends React.Component<WidgetProps.ArrayProps & IArrayProps, { open
                     className={`${inlinePlusStyle}`}
                     icon="fa fa-plus-circle"
                     onClick={() => this.setState({ open: true })}
-                    tooltip={tooltip}
+                    tooltip={this.props.view.tooltip}
                     label={this.props.view.label}
                     labelClassName={`${optionLabelStyle}`}
                 />
@@ -88,7 +87,7 @@ class Adder extends React.Component<WidgetProps.ArrayProps & IArrayProps, { open
             className={`${inlinePlusStyle}`}
             icon="fa fa-plus-circle"
             onClick={() => this.props.onChildAdd()}
-            tooltip={tooltip}
+            tooltip={this.props.view.tooltip}
             label={this.props.view.label}
             labelClassName={`${optionLabelStyle}`}
         />;
@@ -107,7 +106,6 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
                     {minItems < valueLength
                         ? <IconButton
                             icon="fa fa-trash"
-                            tooltip="Remove"
                             onClick={() => props.onChildRemove(index)}
                             grey
                         />

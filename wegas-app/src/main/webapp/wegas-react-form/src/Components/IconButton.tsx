@@ -14,6 +14,8 @@ type Props = {
     className?: string;
     prefixedLabel?: boolean;
     labelClassName?: string;
+    stackedOnIcon?: string;         // For FontAwesome stacking feature, name/code of background icon
+    stackedOnClassName?: string;    // Idem, className of background icon
 }
 const shapeStyle = css({
     width: 'auto',
@@ -59,6 +61,23 @@ function renderLabel(label?: string, labelClassName?: string) {
     return null;
 }
 
+function renderIcon(icon: string, stackedOnIcon?: string) {
+    if (stackedOnIcon) {
+        return (
+            <span className="fa-stack">
+                <span className={classNames(stackedOnIcon, 'fa-stack-2x')} />
+                <span className={classNames(icon, 'fa-stack-1x')} />
+            </span>
+        );
+    } else {
+        return (
+            <span
+                className={classNames(icon)}
+            />
+        );
+    }
+}
+
 function IconButton({
     icon,
     onClick,
@@ -70,7 +89,9 @@ function IconButton({
     className,
     label,
     prefixedLabel,
-    labelClassName
+    labelClassName,
+    stackedOnIcon,
+    stackedOnClassName
 }: Props) {
     return (
         <span
@@ -83,7 +104,7 @@ function IconButton({
             title={tooltip}
         >
             {label && prefixedLabel==true ? renderLabel(label, labelClassName) : ''}
-            <span className={classNames(icon)} />
+            {renderIcon(icon, stackedOnIcon)}
             {label && !prefixedLabel ? renderLabel(label, labelClassName) : ''}
         </span>
     );

@@ -29,7 +29,7 @@ function KeyChoice(props: WidgetProps.ObjectProps & IProps) {
                 return (
                     <div key={c.props.editKey}>
                         <IconButton
-                            icon="fa fa-minus"
+                            icon="fa fa-trash"
                             onClick={() => props.removeKey(c.props.editKey)}
                         />
                         <Select

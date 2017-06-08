@@ -21,8 +21,9 @@ const errorStyle = css({
 const legendStyle = css({
     color: '#282',
     textAlign: 'center',
-    padding: '0 5px',
-    fontSize: FormStyles.labelFontSize
+    padding: '0 12px',
+    fontSize: FormStyles.labelFontSize,
+    fontFamily: FormStyles.labelFontFamily
 });
 
 

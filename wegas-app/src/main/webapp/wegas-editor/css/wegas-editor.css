@@ -357,7 +357,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     float: right !important;
     margin-right: 15px;
     font-size: 17px;
-    font-family: Rockwell, Arial, serif;
+    font-family: Rockwell, Arial, serif !important;
 }
 
 .yui3-skin-sam .wegas-layout-hd .wegas-login img {
@@ -597,5 +597,5 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 
 @font-face {
     font-family: "Rockwell";
-    src: url("../fonts/Rockwell.ttf");
+    src: url("../../wegas-app/fonts/Rockwell.ttf");
 }

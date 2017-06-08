@@ -2,9 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { css } from 'glamor';
 import IconButton from '../../Components/IconButton';
+import classNames from 'classnames';
 
 const removeStatement = css({
-    ':hover': { color: 'indianred' }
+    color: 'indianred',
+    ':hover': { color: 'red' }
+});
+const trashcan = css({
+    color: 'white'
 });
 const addStatement = css({
     textAlign: 'center',
@@ -16,10 +21,10 @@ export function RemoveStatementButton(props) {
     return (
         <span className={container.toString()}>
             <IconButton
-                icon="fa fa-minus-circle"
+                icon={"fa fa-trash " + trashcan.toString()}
                 onClick={props.onClick}
-                tooltip="Remove"
                 className={removeStatement.toString()}
+                stackedOnIcon="fa fa-circle"
             />
         </span>
     );
@@ -31,7 +36,6 @@ export function AddStatementButton(props) {
             onClick={props.onClick}
             iconColor="#9DC06F"
             icon="fa fa-plus-circle"
-            tooltip="Add"
             label={props.label}
             className={addStatement.toString()}
         />
@@ -44,7 +48,6 @@ export function AddOptionButton(props) {
             onClick={props.onClick}
             iconColor="#9DC06F"
             icon="fa fa-plus-circle"
-            tooltip="Add option"
             label={props.label}
             className={props.className}
             prefixedLabel={true}
