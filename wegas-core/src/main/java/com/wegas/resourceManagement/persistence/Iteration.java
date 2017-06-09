@@ -394,13 +394,13 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             Iteration other = (Iteration) a;
             this.setBeginAt(other.getBeginAt());
             this.setName(other.getName());
+            this.setStatus(other.getStatus());
+
             this.setTotalWorkload(other.getTotalWorkload());
 
-            this.setPlannedWorkloads(new HashMap<>());
-            this.getModifiablePlannedWorkloads().putAll(other.getPlannedWorkloads());
+            this.setPlannedWorkloads(other.getPlannedWorkloads());
 
-            this.setReplannedWorkloads(new HashMap<>());
-            this.getModifiableReplannedWorkloads().putAll(other.getReplannedWorkloads());
+            this.setReplannedWorkloads(other.getReplannedWorkloads());
 
             this.setWorkloads(ListUtils.mergeLists(this.getWorkloads(), other.getWorkloads()));
 
