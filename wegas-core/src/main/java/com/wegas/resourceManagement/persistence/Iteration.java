@@ -271,6 +271,9 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     public void setWorkloads(List<Workload> workloads) {
         this.workloads = workloads;
+        for (Workload wl : workloads){
+            wl.setIteration(this);
+        }
     }
 
     public void addWorkload(Long periodNumber, Double workload, Double spent) {

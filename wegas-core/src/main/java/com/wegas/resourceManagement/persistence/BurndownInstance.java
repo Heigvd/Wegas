@@ -73,7 +73,8 @@ public class BurndownInstance extends VariableInstance {
         if (a instanceof BurndownInstance) {
             BurndownInstance other = (BurndownInstance) a;
             super.merge(a);
-            this.setIterations(ListUtils.mergeReplace(this.getIterations(), other.getIterations()));
+            //this.setIterations(ListUtils.mergeReplace(this.getIterations(), other.getIterations()));
+            this.setIterations(ListUtils.mergeLists(this.getIterations(), other.getIterations()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

@@ -113,6 +113,7 @@ public class Workload extends AbstractEntity implements Serializable {
             this.setPeriodNumber(o.getPeriodNumber());
             this.setWorkload(o.getWorkload());
             this.setSpentWorkload(o.getSpentWorkload());
+            this.setLastWorkedStep(o.getLastWorkedStep());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
