@@ -970,7 +970,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 type: ARRAY,
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        return a.get("createdTime") - b.get("createdTime");
+                        // TODO natural sort
+                        return a.get("name").localeCompare(b.get("name"));
                     });
                     return v;
                 },
