@@ -45,6 +45,12 @@ public class UtilsController {
     }
 
     @GET
+    @Path("ReviveCluster")
+    public void revive() {
+        applicationLifecycle.requestClusterMemberNotification();
+    }
+
+    @GET
     @Path("version")
     @Produces(MediaType.TEXT_PLAIN)
     public String getVersion() {

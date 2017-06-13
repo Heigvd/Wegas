@@ -41,6 +41,12 @@ public class Iteration extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
+    public static enum IterationStatus {
+        NOT_STARTED,
+        STARTED,
+        COMPLETED
+    };
+
     @JsonIgnore
     @Transient
     private List<String> deserialisedNames;
@@ -60,6 +66,9 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      * Iteration Name
      */
     private String name;
+
+    @Enumerated(value = EnumType.STRING)
+    private IterationStatus status = IterationStatus.NOT_STARTED;
 
     /**
      * Period number the iteration shall start on
@@ -186,6 +195,18 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         this.beginAt = beginAt;
     }
 
+    public IterationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = IterationStatus.valueOf(status);
+    }
+
+    public void setStatus(IterationStatus status) {
+        this.status = status;
+    }
+
     /**
      * Get the total iteration workloads as it was on the beginning of the
      * iteration
@@ -250,6 +271,9 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     public void setWorkloads(List<Workload> workloads) {
         this.workloads = workloads;
+        for (Workload wl : workloads){
+            wl.setIteration(this);
+        }
     }
 
     public void addWorkload(Long periodNumber, Double workload, Double spent) {
@@ -273,7 +297,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     @JsonIgnore
     private Map<Long, Double> getModifiableReplannedWorkloads() {
-        return ListUtils.mapEntries(this.plannedWorkloads, new IterationPlanning.Extractor());
+        return ListUtils.mapEntries(this.replannedWorkloads, new IterationPlanning.Extractor());
     }
 
     @JsonProperty
@@ -373,13 +397,13 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             Iteration other = (Iteration) a;
             this.setBeginAt(other.getBeginAt());
             this.setName(other.getName());
+            this.setStatus(other.getStatus());
+
             this.setTotalWorkload(other.getTotalWorkload());
 
-            this.setPlannedWorkloads(new HashMap<>());
-            this.getModifiablePlannedWorkloads().putAll(other.getPlannedWorkloads());
+            this.setPlannedWorkloads(other.getPlannedWorkloads());
 
-            this.setReplannedWorkloads(new HashMap<>());
-            this.getModifiableReplannedWorkloads().putAll(other.getReplannedWorkloads());
+            this.setReplannedWorkloads(other.getReplannedWorkloads());
 
             this.setWorkloads(ListUtils.mergeLists(this.getWorkloads(), other.getWorkloads()));
 

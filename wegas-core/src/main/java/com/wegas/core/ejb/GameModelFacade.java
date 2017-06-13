@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
@@ -63,6 +64,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     @Inject
     private Event<EntityCreated<GameModel>> createdGameModelEvent;
+
+    @Inject
+    private Event<InstanceRevivedEvent> instanceRevivedEvent;
 
     /**
      *
@@ -164,12 +168,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             for (VariableDescriptor vd : toUpdate.getVariableDescriptors()) {
                 vd = variableDescriptorFacade.find(vd.getId());
 
-                VariableInstance find = variableDescriptorFacade.find(source, vd.getName()).getInstance(player);
+                VariableInstance srcVi = variableDescriptorFacade.find(source, vd.getName()).getInstance(player);
 
-                this.getEntityManager().detach(find);
-                find.setVersion(vd.getDefaultInstance().getVersion());
+                this.getEntityManager().detach(srcVi);
+                srcVi.setVersion(vd.getDefaultInstance().getVersion());
 
-                vd.getDefaultInstance().merge(find);
+                VariableInstance dest = vd.getDefaultInstance();
+                dest.merge(srcVi);
+                instanceRevivedEvent.fire(new InstanceRevivedEvent(dest));
             }
             return toUpdate;
         } catch (WegasNoResultException ex) {

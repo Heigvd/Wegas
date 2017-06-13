@@ -54,7 +54,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
     private Event<String> eventsUp;
 
     /**
-     * To inform other cluster member this instance id up
+     * To inform other cluster member this instance is up
      */
     @Inject
     @Outbound(eventName = LIFECYCLE_DOWN)
@@ -64,7 +64,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      * To inform other cluster member this instance id up
      */
     @Inject
-    @Outbound(eventName = REQUEST_ALL)
+    @Outbound(eventName = REQUEST_ALL, loopBack = true)
     private Event<String> reqAll;
 
     @Inject
@@ -143,13 +143,16 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
         eventsDown.fire(uuid);
     }
 
+    public void requestClusterMemberNotification(){
+        reqAll.fire(hzInstance.getCluster().getLocalMember().getUuid());
+    }
+
     @Override
     public void memberAdded(MembershipEvent me) {
         // This event is throw way too early...
         // New membership are managed by ApplicationStartup servlet
         logger.info("NEW MEMBER (MembershipEvent) " + me.getMember().getUuid());
-        // 
-        reqAll.fire(hzInstance.getCluster().getLocalMember().getUuid());
+        this.requestClusterMemberNotification();
         logClusterInfo(null);
     }
 

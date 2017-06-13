@@ -363,7 +363,9 @@ public class ResourceInstance extends VariableInstance implements Propertable {
 
     /**
      * @return the confidence
+     * @deprecated please use instance properties
      */
+    @Deprecated
     public int getConfidence() {
         return this.confidence;
     }
@@ -372,7 +374,9 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      * Set the confidence value
      *
      * @param confidence the confidence to set
+     * @deprecated please use instance properties
      */
+    @Deprecated
     public void setConfidence(int confidence) {
         this.confidence = confidence;
     }
