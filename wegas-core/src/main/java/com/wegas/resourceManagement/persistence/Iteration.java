@@ -21,7 +21,6 @@ import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -79,6 +78,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      * Total workload as computed at iteration beginning
      */
     private Double totalWorkload;
+
+    private Double spi;
+
+    private Double wpi;
 
     /**
      * planned workload from beginAt period
@@ -208,6 +211,37 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }
 
     /**
+     * Get the Workload Performance Index
+     *
+     * @return
+     */
+    public Double getWpi() {
+        return this.wpi;
+    }
+
+    public void setWpi(Double wpi) {
+        this.wpi = wpi;
+    }
+
+    /**
+     * Get the schedule Performance Index
+     *
+     * @return
+     */
+    public Double getSpi() {
+        return spi;
+    }
+
+    /**
+     * Set the schedule Performance Index
+     *
+     * @param spi
+     */
+    public void setSpi(Double spi) {
+        this.spi = spi;
+    }
+
+    /**
      * Get the total iteration workloads as it was on the beginning of the
      * iteration
      *
@@ -224,6 +258,31 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     public void setTotalWorkload(Double totalWorkload) {
         this.totalWorkload = totalWorkload;
+    }
+
+    @JsonIgnore
+    public Double getPlannedValue(int upToPeriod) {
+        Double pv = 0.0;
+        Map<Long, Double> pwl = getPlannedWorkloads();
+        for (long i = 0; i < upToPeriod - this.beginAt; i++) {
+            Double get = pwl.get(i);
+            if (get != null) {
+                pv += get;
+            }
+        }
+        return pv;
+    }
+
+    @JsonIgnore
+    public Double getActualWorkload(int upToPeriod) {
+        Double aw = 0.0;
+
+        for (Workload wl : this.workloads) {
+            if (wl.getPeriodNumber() <= upToPeriod) {
+                aw += wl.getSpentWorkload();
+            }
+        }
+        return aw;
     }
 
     /**
@@ -271,7 +330,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     public void setWorkloads(List<Workload> workloads) {
         this.workloads = workloads;
-        for (Workload wl : workloads){
+        for (Workload wl : workloads) {
             wl.setIteration(this);
         }
     }
@@ -398,6 +457,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             this.setBeginAt(other.getBeginAt());
             this.setName(other.getName());
             this.setStatus(other.getStatus());
+
+            this.setWpi(other.getWpi());
+
+            this.setSpi(other.getSpi());
 
             this.setTotalWorkload(other.getTotalWorkload());
 

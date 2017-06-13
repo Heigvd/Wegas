@@ -10,4 +10,14 @@
                       oldColumnName="period"
                       newColumnName="num_period" />
     </changeSet>
+
+    <changeSet author="maxence" id="1497377525067-1">
+        <addColumn tableName="iteration">
+            <column name="spi" type="float8(*, 17)"/>
+        </addColumn>
+        <addColumn tableName="iteration">
+            <column name="wpi" type="float8(*, 17)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

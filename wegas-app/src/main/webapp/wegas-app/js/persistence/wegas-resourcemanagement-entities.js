@@ -1099,6 +1099,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             beginAt: {
                 type: NUMBER
             },
+            wpi: {
+                type: NUMBER
+            },
+            spi: {
+                type: NUMBER
+            },
             totalWorkload: {
                 type: NUMBER
             },
