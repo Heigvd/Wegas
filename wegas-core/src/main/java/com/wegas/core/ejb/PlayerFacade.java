@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
@@ -16,9 +15,7 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
@@ -32,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
@@ -72,9 +68,6 @@ public class PlayerFacade extends BaseFacade<Player> {
 
     @Inject
     private RequestManager requestManager;
-
-    @Inject
-    private Event<ResetEvent> resetEvent;
 
     /**
      * @param teamId
@@ -420,14 +413,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @param player the player to reset
      */
     public void reset(final Player player) {
-        // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        // F*cking flush
-        //getEntityManager().flush();
-        player.getGameModel().propagateDefaultInstance(player, false);
-        // F*cking flush
-        //getEntityManager().flush();
-        // Send an reset event (for the state machine and other)
-        resetEvent.fire(new ResetEvent(player));
+        gameModelFacade.propagateAndReviveDefaultInstances(player.getGameModel(), player, false);
     }
 
     /**

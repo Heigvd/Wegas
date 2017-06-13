@@ -171,7 +171,7 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         state1.setTransitions(toList(t2));
         vdf.create(gameModel.getId(), sm);
         gmf.reset(gameModel.getId());
-        //Test for all players.
+//Test for all players.
         for (Game g : gameModel.getGames()) {
             for (Team t : g.getTeams()) {
                 for (Player p : t.getPlayers()) {

@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.scope;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -72,7 +73,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
      */
     @JsonIgnore
     @Override
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
+    public void propagateDefaultInstance(BroadcastTarget context, boolean create) {
         if (context instanceof Player) {
             // Since player's gamemodel already exists, nothing to propagate
         } else if (context instanceof Team) {

@@ -12,6 +12,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 
@@ -65,6 +66,7 @@ public class ChoiceInstance extends VariableInstance {
      * currentResult if defined, the first otherwise
      *
      * @return the currentResult or the first one
+     *
      * @throws WegasErrorMessage if not result are defined
      */
     @JsonIgnore
@@ -85,7 +87,9 @@ public class ChoiceInstance extends VariableInstance {
      * @return the currentResultName
      */
     public String getCurrentResultName() {
-        if (this.getCurrentResult() != null) {
+        if (!Helper.isNullOrEmpty(currentResultName)){
+            return currentResultName;
+        } else if (this.getCurrentResult() != null) {
             return getCurrentResult().getName();
         } else {
             return null;
@@ -93,7 +97,7 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     @JsonIgnore
-    public String getDeserializedCurrentResultName() {
+    public String _getDeserializedCurrentResultName() {
         return currentResultName;
     }
 
@@ -105,8 +109,8 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     /**
-     * @deprecated 
-     * @return 
+     * @deprecated
+     * @return
      */
     @JsonIgnore
     public Integer getCurrentResultIndex() {
@@ -114,7 +118,7 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      */
     @JsonProperty
     public void setCurrentResultIndex(Integer index) {
@@ -133,17 +137,30 @@ public class ChoiceInstance extends VariableInstance {
             ChoiceInstance other = (ChoiceInstance) a;
             this.setActive(other.getActive());
             this.setUnread(other.getUnread());
-            this.setCurrentResultName(other.getDeserializedCurrentResultName());
+
+            // Normal
+            this.setCurrentResultName(other.getCurrentResultName());
+
+            // Backward compat
             this.setCurrentResultIndex(other.getCurrentResultIndex());
-            if (other.getCurrentResult() != null) {
+
+            /*if (other.getCurrentResult() != null) {
+            // SEE reviveInstance ???
+                
                 Result previousResult = this.getCurrentResult();
-                Result newResult = other.getCurrentResult();
                 if (previousResult != null) {
                     previousResult.removeChoiceInstance(this);
                 }
-                this.setCurrentResult(newResult);
-                newResult.addChoiceInstance(this);
-            }
+
+                try {
+                    Result newResult = ((ChoiceDescriptor) this.findDescriptor()).getResultByName(other.getCurrentResultName());
+                    this.setCurrentResult(newResult);
+                    newResult.addChoiceInstance(this);
+                } catch (WegasNoResultException ex) {
+                    Logger.getLogger(ChoiceInstance.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }*/
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -206,5 +223,6 @@ public class ChoiceInstance extends VariableInstance {
      */
     public void setCurrentResult(Result currentResult) {
         this.currentResult = currentResult;
+        this.setCurrentResultName(null);
     }
 }

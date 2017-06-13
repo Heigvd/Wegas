@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.game.Game;
@@ -29,7 +28,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
@@ -403,12 +401,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      */
     public VariableInstanceFacade() {
         super(VariableInstance.class);
-    }
-
-    public void resetEventListener(@Observes ResetEvent resetEvent) {
-        for (VariableInstance variableInstance : resetEvent.getContext().getAllInstances()) {
-            instanceRevivedEvent.fire(new InstanceRevivedEvent(variableInstance));
-        }
     }
 
     /**

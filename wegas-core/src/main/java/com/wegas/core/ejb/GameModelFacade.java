@@ -17,6 +17,7 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -24,6 +25,7 @@ import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.rest.FileController;
 import com.wegas.core.rest.HistoryController;
 import com.wegas.core.security.ejb.UserFacade;
@@ -127,6 +129,47 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
+     * @param gameModel
+     * @param context
+     * @param create
+     */
+    public void propagateAndReviveDefaultInstances(GameModel gameModel, BroadcastTarget context, boolean create) {
+        this.propagateDefaultInstances(gameModel, context, create);
+        this.reviveInstances(gameModel, context);
+    }
+    
+    public void propagateDefaultInstances(GameModel gameModel, BroadcastTarget context, boolean create) {
+        // Propagate default instances 
+        for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
+            vd.propagateDefaultInstance(context, create);
+        }
+
+    }
+    
+    public void reviveInstances(GameModel gameModel, BroadcastTarget context) {
+        logger.error("REVIVE INSTANCES");
+        //Helper.printWegasStackTrace(new Exception());
+
+        // revive just propagated instances
+        for (VariableInstance vi : context.getAllInstances()) {
+            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+        }
+
+        // Send reset envent to run state machines
+        resetEvent.fire(new ResetEvent(context));
+    }
+
+
+    public void reviveScopeInstances(GameModel gameModel, AbstractScope aScope) {
+        // revive just propagated instances
+        for (VariableInstance vi : (Collection<VariableInstance>)aScope.getVariableInstances().values()) {
+            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+        }
+    }
+
+
+
+    /**
      * Add a DebugGame (and debug team) within the given game model unless it
      * already exists
      *
@@ -223,7 +266,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
         getEntityManager().persist(game);
-        gameModel.propagateDefaultInstance(game, true);
+        this.propagateAndReviveDefaultInstances(gameModel, game, true);
     }
 
     @Asynchronous
@@ -264,7 +307,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
             // Clone Pages
             // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
-
             //Clone files & history (?)
             for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
                 try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
@@ -402,10 +444,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
-        gameModel.propagateDefaultInstance(gameModel, false);
-        //getEntityManager().flush();
-        // Send an reset event (for the state machine and other)
-        resetEvent.fire(new ResetEvent(gameModel));
+        this.propagateAndReviveDefaultInstances(gameModel, gameModel, false);
     }
 
     public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {

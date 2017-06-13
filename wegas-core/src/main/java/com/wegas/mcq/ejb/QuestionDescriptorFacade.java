@@ -9,7 +9,7 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
-import com.wegas.core.event.internal.EntityRevivedEvent;
+import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -83,7 +83,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param choiceDescriptor
      * @param name
+     *
      * @return the given ChoiceDescriptor Result that matches the name
+     *
      * @throws WegasNoResultException if not found
      */
     public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
@@ -96,6 +98,22 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         }
 
         throw new WegasNoResultException("Result \"" + name + "\" not found");
+    }
+
+    public Result findResult(final QuestionDescriptor questionDescriptor, final String choiceName, final String resultName) throws WegasNoResultException {
+        if (!Helper.isNullOrEmpty(resultName) && !Helper.isNullOrEmpty(choiceName)) {
+            for (ChoiceDescriptor choiceDescriptor : questionDescriptor.getItems()) {
+                if (choiceName.equals(choiceDescriptor.getName())) {
+                    for (Result result : choiceDescriptor.getResults()) {
+                        if (resultName.equals(result.getName())) {
+                            return result;
+                        }
+                    }
+                }
+            }
+        }
+
+        throw new WegasNoResultException("Result \"" + choiceName + "/" + resultName + "\" not found");
     }
 
     public Result findResultTQ(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
@@ -116,28 +134,41 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      * @param event
      */
-    public void descriptorRevivedEvent(@Observes EntityRevivedEvent event) {
-        logger.debug("Received DescriptorRevivedEvent event");
+    public void instanceRevivedEvent(@Observes InstanceRevivedEvent event) {
 
-        if (event.getEntity() instanceof ChoiceDescriptor) {
-            ChoiceDescriptor choice = (ChoiceDescriptor) event.getEntity();
-            ChoiceInstance defaultInstance = choice.getDefaultInstance();
-            if (defaultInstance.getDeserializedCurrentResultName() != null && !defaultInstance.getDeserializedCurrentResultName().isEmpty()) {
+        if (event.getEntity() instanceof ChoiceInstance) {
+            logger.error("Received DescriptorRevivedEvent event");
+            ChoiceInstance choiceInstance = (ChoiceInstance) event.getEntity();
+            ChoiceDescriptor choice = (ChoiceDescriptor) choiceInstance.findDescriptor();
+
+            if (choiceInstance.getCurrentResultName() != null && !choiceInstance.getCurrentResultName().isEmpty()) {
                 try {
-                    Result cr = findResult(choice, defaultInstance.getDeserializedCurrentResultName());
-                    choice.changeCurrentResult(defaultInstance, cr);
+                    Result cr = findResult(choice, choiceInstance.getCurrentResultName());
+                    choice.changeCurrentResult(choiceInstance, cr);
                     //defaultInstance.setCurrentResult(cr);
                 } catch (WegasNoResultException ex) {
                     throw WegasErrorMessage.error("Error while setting current result");
                 }
-            } else if (defaultInstance.getCurrentResultIndex() != null
-                    && defaultInstance.getCurrentResultIndex() >= 0
-                    && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+            } else if (choiceInstance.getCurrentResultIndex() != null
+                    && choiceInstance.getCurrentResultIndex() >= 0
+                    && choiceInstance.getCurrentResultIndex() < choice.getResults().size()) {
                 // Backward compat
 
-                Result cr = choice.getResults().get(defaultInstance.getCurrentResultIndex());
+                Result cr = choice.getResults().get(choiceInstance.getCurrentResultIndex());
                 //defaultInstance.setCurrentResult(cr);
-                choice.changeCurrentResult(defaultInstance, cr);
+                choice.changeCurrentResult(choiceInstance, cr);
+            }
+        } else if (event.getEntity() instanceof QuestionInstance) {
+            QuestionInstance qInstance = (QuestionInstance) event.getEntity();
+            QuestionDescriptor qDescriptor = (QuestionDescriptor) qInstance.findDescriptor();
+            for (Reply r : qInstance.getReplies()) {
+                try {
+                    Result result = findResult(qDescriptor, r.getChoiceName(), r.getResultName());
+                    r.setResult(result);
+                    result.addReply(r);
+                } catch (WegasNoResultException ex) {
+                    logger.error("NO SUCH RESULT ! ");
+                }
             }
         }
     }
@@ -156,6 +187,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      * @param replyId
      * @param r
+     *
      * @return the updated reply
      */
     public Reply updateReply(Long replyId, Reply r) {
@@ -166,6 +198,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     /**
      * @param instanceId
+     *
      * @return count the number of reply for the given question
      */
     public int findReplyCount(Long instanceId) {
@@ -212,6 +245,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
+     *
      * @return reply being canceled
      */
     private Reply internalCancelReply(Long replyId) {
@@ -231,6 +265,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param choiceId
      * @param player
+     *
      * @return new reply
      */
     public Reply ignoreChoice(Long choiceId, Player player) {
@@ -257,6 +292,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param choiceId  selected choice
      * @param player    player who select the choice
      * @param startTime time the player select the choice
+     *
      * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Player player, Long startTime) {
@@ -301,6 +337,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param choiceId
      * @param playerId
+     *
      * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Long playerId) {
@@ -311,6 +348,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param choiceId  selected choice id
      * @param playerId  id of player who select the choice
      * @param startTime time the player select the choice
+     *
      * @return the new reply
      */
     public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
@@ -324,6 +362,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param choiceId selected choice id
      * @param playerId id of player who select the choice
+     *
      * @return the new validated reply
      */
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) {
@@ -345,6 +384,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param player player who wants to cancel the reply
      * @param reply  the reply to cancel
+     *
      * @return reply being canceled
      */
     public Reply cancelReplyTransactional(Player player, Reply reply) {
@@ -361,6 +401,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param player  player who wants to cancel the reply
      * @param replyId id of reply to cancel
+     *
      * @return reply being canceled
      */
     public Reply cancelReplyTransactional(Player player, Long replyId) {
@@ -377,6 +418,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
+     *
      * @return reply being canceled
      */
     public Reply cancelReplyTransactional(Long playerId, Long replyId) {
@@ -387,6 +429,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
+     *
      * @return reply being canceled
      */
     public Reply cancelReply(Long playerId, Long replyId) {
@@ -396,6 +439,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     /**
      * @param player
      * @param validateReply
+     *
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
     public void validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException {
@@ -444,6 +488,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param validateQuestion
      * @param player
+     *
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
     public void validateQuestion(final QuestionInstance validateQuestion, final Player player) throws WegasRuntimeException {

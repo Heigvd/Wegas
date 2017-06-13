@@ -135,6 +135,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     private static final Logger logger = LoggerFactory.getLogger(VariableInstance.class);
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {

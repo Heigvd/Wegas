@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -94,12 +93,6 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      *
      */
-    @Inject
-    private Event<ResetEvent> resetEvent;
-
-    /**
-     *
-     */
     public GameFacade() {
         super(Game.class);
     }
@@ -146,10 +139,12 @@ public class GameFacade extends BaseFacade<Game> {
             throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
         }
         getEntityManager().persist(game);
-        gameModel.propagateDefaultInstance(game, true);
 
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
+        
+        gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true);
+        
         this.addDebugTeam(game);
 
         //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
@@ -433,7 +428,9 @@ public class GameFacade extends BaseFacade<Game> {
     public void joinTeam(Team team, Player player) {
         team.addPlayer(player);
         this.getEntityManager().persist(player);
-        team.getGame().getGameModel().propagateDefaultInstance(player, true);
+        
+        gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), team, true);
+        
         this.getEntityManager().flush();
         requestFacade.firePlayerAction(player, true);
     }
@@ -534,12 +531,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param game the game to reset
      */
     public void reset(final Game game) {
-        // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        //getEntityManager().flush();
-        game.getGameModel().propagateDefaultInstance(game, false);
-        //getEntityManager().flush(); // DA FU    ()
-        // Send an reset event (for the state machine and other)
-        resetEvent.fire(new ResetEvent(game));
+        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), game, false);
     }
 
     /**

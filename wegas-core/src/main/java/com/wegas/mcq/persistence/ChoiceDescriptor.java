@@ -107,9 +107,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
             // Has currentResult been removed ?
             ChoiceInstance defaultInstance = this.getDefaultInstance();
-            if (!this.getResults().contains(defaultInstance.getCurrentResult())) {
-                defaultInstance.setCurrentResult(null);
-            }
 
             // Detect new results
             List<String> labels = new ArrayList<>();
@@ -148,6 +145,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     /**
      * @param player
      * @param resultName
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
@@ -171,7 +169,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * Select this choice result matching given name
      * <p>
      * @param name result-to-find's name
+     *
      * @return the specified result
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Result getResultByName(String name) throws WegasNoResultException {
@@ -255,6 +255,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * has the choice been explicitely ignored ?
      *
      * @param p
+     *
      * @return true only if the choice is not selectable any longer
      */
     public boolean hasBeenIgnored(Player p) {
@@ -369,6 +370,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * <p>
      * @return true if one or more question reply referencing the given result
      *         exist
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public boolean hasResultBeenApplied(Player p, String resultName) throws WegasNoResultException {

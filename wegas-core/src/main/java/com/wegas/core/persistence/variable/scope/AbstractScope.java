@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import com.wegas.core.persistence.AcceptInjection;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.variable.Beanjection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,7 +202,7 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *                instances to (null means propagate to everybody)
      * @param create
      */
-    abstract public void propagateDefaultInstance(AbstractEntity context, boolean create);
+    abstract public void propagateDefaultInstance(BroadcastTarget context, boolean create);
 
     /**
      * @return

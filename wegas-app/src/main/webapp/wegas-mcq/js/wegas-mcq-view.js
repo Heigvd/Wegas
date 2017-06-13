@@ -418,7 +418,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         choiceD = reply.getChoiceDescriptor();
                         ret.push('<div class="mcq-reply" data-choice-id="', choiceD.get("id"), '">');
                         ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
-                        ret.push('<div class="mcq-reply-content">', reply.get("result").get("answer"), '</div>');
+                        ret.push('<div class="mcq-reply-content">', reply.getResult().get("answer"), '</div>');
                         ret.push('</div>'); // end mcq-reply
                     }
                     ret.push('</div>'); // end mcq-replies
@@ -450,9 +450,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                             if (reply.getChoiceDescriptor().get("id") === choiceD.get("id")) {
                                 if (!reply.get("ignored")) {
                                     checked = true;
-                                    answer = reply.get("result").get("answer");
+                                    answer = reply.getResult().get("answer");
                                 } else {
-                                    ignorationAnswer = reply.get("result").get("ignorationAnswer");
+                                    ignorationAnswer = reply.getResult().get("ignorationAnswer");
                                 }
                                 break;
                             }

@@ -23,7 +23,6 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
@@ -71,8 +70,7 @@ public class QuestionInstance extends VariableInstance {
             this.setUnread(other.getUnread());
             Boolean v = other.getValidated();
             this.setValidated(v);
-            this.setReplies(new ArrayList<>()); //@TODO merge them
-            this.addReplies(other.getReplies());
+            this.setReplies(ListUtils.mergeLists(replies, other.getReplies()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -114,6 +112,9 @@ public class QuestionInstance extends VariableInstance {
     @JsonManagedReference
     public void setReplies(List<Reply> replies) {
         this.replies = replies;
+        for (Reply r: this.replies){
+            r.setQuestionInstance(this);
+        }
     }
 
     /**

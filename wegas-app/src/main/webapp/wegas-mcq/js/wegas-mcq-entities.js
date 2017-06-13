@@ -869,10 +869,18 @@ YUI.add('wegas-mcq-entities', function(Y) {
      */
     persistence.Reply = Y.Base.create("Reply", persistence.Entity, [], {
         getChoiceDescriptor: function() {
-            if (this.get("result")) {
-                return this.get("result").getChoiceDescriptor();
+            if (this.get("choiceName")) {
+                return Y.Wegas.Facade.Variable.cache.find("name", this.get("choiceName"));
             }
         },
+        getResult: function(){
+            var choice =this.getChoiceDescriptor();
+            if (choice){
+                return Y.Array.find(choice.get("results"), Y.bind(function(item) {
+                    return item.get("name") ===  this.get("resultName");
+                }, this));
+            }
+        }, 
         /**
          *  @return 0 if is finished, 1 if ongoing and 2 if planified
          */
@@ -917,11 +925,17 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     label: 'Is ignored'
                 }
             },
-            result: {
-                _inputex: {
+            resultName: {
+                type: STRING,
+                _inputed: {
                     _type: HIDDEN
-                },
-                "transient": true
+                }
+            },
+            choiceName: {
+                type: STRING,
+                _inputed: {
+                    _type: HIDDEN
+                }
             },
             createdTime: {
                 "transient": true

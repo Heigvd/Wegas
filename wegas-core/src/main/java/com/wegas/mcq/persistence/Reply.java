@@ -10,11 +10,14 @@ package com.wegas.mcq.persistence;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.rest.util.Views;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import java.util.Date;
 
@@ -42,6 +45,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
      */
     @Id
     @GeneratedValue
+    @JsonView(Views.IndexI.class)
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -55,16 +59,25 @@ public class Reply extends AbstractEntity implements DatedEntity {
     /**
      *
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean unread = false;
     /**
      *
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean ignored = false;
     /**
      *
      */
     @ManyToOne(optional = false)
     private Replies replies;
+
+    @Transient
+    private String resultName;
+
+    @Transient
+    private String choiceName;
+
     /**
      *
      */
@@ -81,9 +94,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
         if (a instanceof Reply) {
             Reply other = (Reply) a;
             this.setUnread(other.getUnread());
-            //this.setResult(other.getResult());
+            this.setResultName(other.getResultName());
+            this.setChoiceName(other.getChoiceName());
             this.setStartTime(other.getStartTime());
             this.setIgnored(other.getIgnored());
+            this.setCreatedTime(other.getCreatedTime());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -141,6 +156,36 @@ public class Reply extends AbstractEntity implements DatedEntity {
         this.questionInstance = questionInstance;
     }
 
+    public String getChoiceName() {
+        if (!Helper.isNullOrEmpty(choiceName)) {
+            return choiceName;
+        }
+        if (this.getResult() != null && this.getResult().getChoiceDescriptor() != null) {
+            return this.getResult().getChoiceDescriptor().getName();
+        } else {
+            return null;
+        }
+    }
+
+    public void setChoiceName(String choiceName) {
+        this.choiceName = choiceName;
+    }
+
+    public String getResultName() {
+        if (!Helper.isNullOrEmpty(resultName)) {
+            return resultName;
+        }
+        if (this.getResult() != null) {
+            return this.getResult().getName();
+        } else {
+            return null;
+        }
+    }
+
+    public void setResultName(String resultName) {
+        this.resultName = resultName;
+    }
+
     /**
      * @return true if the reply has not yet been read by a player
      */
@@ -169,12 +214,18 @@ public class Reply extends AbstractEntity implements DatedEntity {
         this.startTime = startTime;
     }
 
+    /**
+     * @return the result
+     */
+    @JsonIgnore
     public Result getResult() {
         return replies.getResult();
     }
 
     public void setResult(Result r) {
         this.replies = r.getReplies();
+        this.setResultName(null);
+        this.setChoiceName(null);
     }
 
     public Replies getReplies() {

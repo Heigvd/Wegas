@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -23,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import java.util.ArrayList;
@@ -59,11 +57,8 @@ public class TeamFacade extends BaseFacade<Team> {
     @EJB
     private AccountFacade accountFacade;
 
-    /**
-     *
-     */
     @Inject
-    private Event<ResetEvent> resetEvent;
+    private GameModelFacade gameModelFacade;
 
     /**
      * Get all account linked to team's players Account email addresses will be
@@ -101,7 +96,7 @@ public class TeamFacade extends BaseFacade<Team> {
         g = gameFacade.find(gameId);
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
         getEntityManager().persist(t);
-        g.getGameModel().propagateDefaultInstance(t, true);
+        gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), t, true);
     }
 
     @Override
@@ -111,7 +106,7 @@ public class TeamFacade extends BaseFacade<Team> {
         game.addTeam(entity);
 
         getEntityManager().persist(entity);
-        game.getGameModel().propagateDefaultInstance(entity, true);
+        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true);
     }
 
     /**
@@ -154,14 +149,7 @@ public class TeamFacade extends BaseFacade<Team> {
      * @param team the team to reset
      */
     public void reset(final Team team) {
-        // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        // F*cking flush
-        //getEntityManager().flush();
-        team.getGame().getGameModel().propagateDefaultInstance(team, false);
-        // F*cking flush
-        //getEntityManager().flush(); // DA FU    ()
-        // Send an reset event (for the state machine and other)
-        resetEvent.fire(new ResetEvent(team));
+        gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), team, false);
     }
 
     /**

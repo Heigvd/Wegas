@@ -169,20 +169,21 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         /*
          * This flush is required by several EntityRevivedEvent listener, 
          * which opperate some SQL queries (which didn't return anything before
-         * entites has been flushed to database
+         * entites have been flushed to database
          */
         this.getEntityManager().flush();
+
+        descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
+        instanceRevivedEvent.fire(new InstanceRevivedEvent(entity.getDefaultInstance()));
 
         // @TODO find a smarter way to decide to propagate or not to propatate...
         if (propagate) {
             AbstractScope scope = entity.getScope();
             scope.setBeanjection(new Beanjection(variableInstanceFacade));
             scope.propagateDefaultInstance(null, true);
+            gameModelFacade.reviveScopeInstances(gameModel, scope);
         }
-
-        descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
-        instanceRevivedEvent.fire(new InstanceRevivedEvent(entity.getDefaultInstance()));
-
+        
         gameModel.addToVariableDescriptors(entity);
         if (entity instanceof DescriptorListI) {
             this.reviveItems(gameModel, (DescriptorListI) entity, propagate); // also revive children
