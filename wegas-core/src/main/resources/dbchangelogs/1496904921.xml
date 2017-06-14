@@ -20,4 +20,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="maxence" id="1497377525067-2">
+        <addColumn tableName="iteration">
+            <column name="cpi" type="float8(*, 17)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="maxence" id="1497377525067-3">
+        <addColumn tableName="iteration">
+            <column name="wages" type="float8(*, 17)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

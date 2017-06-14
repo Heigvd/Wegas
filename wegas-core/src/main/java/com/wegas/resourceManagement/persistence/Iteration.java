@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * PMG Related !
@@ -82,6 +83,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     private Double spi;
 
     private Double wpi;
+
+    private Double cpi;
+
+    private Double wages;
 
     /**
      * planned workload from beginAt period
@@ -210,6 +215,27 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         this.status = status;
     }
 
+    public Double getWages() {
+        return wages;
+    }
+
+    public void setWages(Double wages) {
+        this.wages = wages;
+    }
+
+    /**
+     * Get the Cost Performance Index
+     *
+     * @return
+     */
+    public Double getCpi() {
+        return this.cpi;
+    }
+
+    public void setCpi(Double cpi) {
+        this.cpi = cpi;
+    }
+
     /**
      * Get the Workload Performance Index
      *
@@ -261,16 +287,45 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }
 
     @JsonIgnore
-    public Double getPlannedValue(int upToPeriod) {
-        Double pv = 0.0;
-        Map<Long, Double> pwl = getPlannedWorkloads();
-        for (long i = 0; i < upToPeriod - this.beginAt; i++) {
-            Double get = pwl.get(i);
-            if (get != null) {
-                pv += get;
+    private Long getLastPlannedPeriod() {
+        Long max = 0l;
+        Set<Long> periods = getPlannedWorkloads().keySet();
+        for (Long p : periods) {
+            if (p > max) {
+                max = p;
             }
         }
-        return pv;
+        return max + beginAt;
+    }
+
+    @JsonIgnore
+    public Double getPlannedValue(Double upTo) {
+        double upToPeriod = Math.floor(upTo);
+
+        if (Math.abs(upTo - upToPeriod) > 0.01) {
+            Double prevPv = this.getPlannedValue(upToPeriod);
+            Double nextPv =this.getPlannedValue(Math.ceil(upTo));
+            Double delta = upTo - upToPeriod;
+            return prevPv + delta * (nextPv - prevPv);
+        } else {
+            Double pv = 0.0;
+            Map<Long, Double> pwl = getPlannedWorkloads();
+            for (long i = 0; i < upToPeriod - this.beginAt; i++) {
+                Double get = pwl.get(i);
+                if (get != null) {
+                    pv += get;
+                }
+            }
+
+            if (pv >= this.getTotalWorkload()) {
+                pv = this.getTotalWorkload();
+                Long lastPlannedPeriod = getLastPlannedPeriod();
+                if (upToPeriod > lastPlannedPeriod + 1) {
+                    pv += (upToPeriod - lastPlannedPeriod - 1) * pv / (lastPlannedPeriod - beginAt + 1);
+                }
+            }
+            return pv;
+        }
     }
 
     @JsonIgnore
@@ -323,6 +378,15 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         return workloads;
     }
 
+    public Workload getWorkload(Long periodNumber) {
+        for (Workload wl : this.workloads) {
+            if (wl.getPeriodNumber().equals(periodNumber)) {
+                return wl;
+            }
+        }
+        return null;
+    }
+
     /**
      * set effective workloads
      *
@@ -337,6 +401,14 @@ public class Iteration extends AbstractEntity implements DatedEntity {
 
     public void addWorkload(Long periodNumber, Double workload, Double spent) {
         this.addWorkload(periodNumber, workload, spent, 10);
+    }
+
+    public void updateWorkload(Long periodNumber, Double spent, Integer lastWorkedStep) {
+        Workload workload = this.getWorkload(periodNumber);
+        if (workload != null) {
+            workload.setSpentWorkload(spent);
+            workload.setLastWorkedStep(lastWorkedStep);
+        }
     }
 
     public void addWorkload(Long periodNumber, Double workload, Double spent, Integer lastWorkedStep) {
