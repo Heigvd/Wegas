@@ -400,7 +400,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }
 
     public void addWorkload(Long periodNumber, Double workload, Double spent) {
-        this.addWorkload(periodNumber, workload, spent, 10);
+        this.addWorkload(periodNumber, workload, spent, 9);
     }
 
     public void updateWorkload(Long periodNumber, Double spent, Integer lastWorkedStep) {
