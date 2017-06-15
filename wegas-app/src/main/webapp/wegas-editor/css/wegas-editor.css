@@ -129,6 +129,23 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     overflow: auto;
 }
 
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab {
+    color: #888686;
+    background: none;
+    font-size: 20px;
+    padding: 0;
+    top: 10px;
+    margin-right: 10px;
+}
+
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab:hover {
+    color: #5A5858;
+}
+
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab:after {
+    display: none;
+}
+
 /* Toolbar styles */
 .wegas-hastoolbar {
     position: relative;
@@ -352,16 +369,41 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     top: 1.1em;
 }
 
+.yui3-skin-sam .wegas-layout-hd .editor-restart-button,
+.yui3-skin-sam .wegas-layout-hd .wegas-advanced-mode,
 .yui3-skin-sam .wegas-layout-hd .wegas-login {
+    color: #4c4c4c;
+    font-size: 21px;
+    line-height: 1em;
     float: right !important;
     margin-right: 15px;
-    font-size: 17px;
-    font-family: Rockwell, Arial, serif !important;
+    padding: 5px;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
 }
 
-.yui3-skin-sam .wegas-layout-hd .wegas-login img {
-    margin-top: -5px;
-    margin-right: 6px;
+.yui3-skin-sam .wegas-layout-hd .editor-restart-button,
+.yui3-skin-sam .wegas-layout-hd .wegas-advanced-mode {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.yui3-skin-sam .wegas-layout-hd .wegas-advanced-mode {
+    font-size: 17px;
+    position: relative;
+    top: 1px;
+}
+
+.yui3-skin-sam .wegas-layout-hd .wegas-login:after {
+    display: none;
+}
+
+.yui3-skin-sam .wegas-layout-hd .editor-restart-button:hover,
+.yui3-skin-sam .wegas-layout-hd .wegas-advanced-mode:hover,
+.yui3-skin-sam .wegas-layout-hd .wegas-login:hover {
+    background: rgba(221, 221, 221, 0.25);
+    color: red;
 }
 
 .yui3-skin-sam .wegas-layout-resizable .wegas-layout-pane .yui3-resize-handle {
@@ -504,7 +546,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 
 /** Editor chat widget */
 .yui3-skin-sam .wegas-layout-hd > div.yui3-wegas-editorchat {
-    margin-top: 12px;
+    margin-top: 5px;
     float: right;
 }
 

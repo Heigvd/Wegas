@@ -372,6 +372,10 @@ YUI().use(function (Y) {
                 path: "js/plugin/wegas-blockrightclick-min.js",
                 ws_provides: "BlockRightclick"
             },
+            "wegas-editormode": {
+                path: "js/plugin/wegas-editormode-min.js",
+                ws_provides: "EditorMode"
+            },
             "wegas-panel-pageloader": {
                 path: "js/plugin/wegas-panel-pageloader-min.js",
                 requires: ["wegas-plugin", "wegas-pageloader", "wegas-panel"],

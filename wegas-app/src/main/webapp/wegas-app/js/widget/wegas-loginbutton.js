@@ -282,15 +282,16 @@ YUI.add("wegas-loginbutton", function(Y) {
         syncUI: function() {
             Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
+            /*
             var cUser = Wegas.Facade.User.get("currentUser"),
                 name = cUser.get("name") || "undefined",
                 mainAccount = cUser.getMainAccount();
-/*
+
             if (mainAccount) {
                 name = "<img src=\"//www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
             }
-*/
-            this.set("label", name);
+            */
+            this.set("label", '<i class="fa fa-sign-out" title="Logout"></i>');
         },
         destructor: function() {
             for (var k in this.handlers) {

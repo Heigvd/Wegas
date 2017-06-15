@@ -174,18 +174,18 @@
 
 /** Close  all tabs */
 .yui3-skin-sam .wegas-removeTabview {
-    float:right;
-    margin-top: 0.9em;
-}
-.yui3-skin-sam .wegas-removeTabview  a {
-    font: bold 85% Verdana;
-    padding: 1px 4px 3px 5px;
-    border: 1px solid transparent;
+    position: absolute;
+    z-index: 24; /* Must be above editing panes */
+    right: 0;
+    top: 40px;
+    background: #b7cb90;
+    color: white;
     cursor: pointer;
+    padding: 4px 5px;
+    font-size: 12px;
 }
-.yui3-skin-sam .wegas-removeTabview  a:hover {
-    border: 1px solid black;
-    text-decoration: none;
+.yui3-skin-sam .wegas-removeTabview:hover {
+    color: red;
 }
 
 /** Close all tabs */

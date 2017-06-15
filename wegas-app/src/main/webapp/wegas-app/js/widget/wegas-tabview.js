@@ -592,7 +592,7 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<div class="wegas-removeTabview" title="Close tab group"><a>x</a></div>',
+        ADD_TEMPLATE: '<div class="wegas-removeTabview fa fa-chevron-left" title="Close tab group"></div>',
         /**
          * @function
          * @private
@@ -602,7 +602,7 @@ YUI.add('wegas-tabview', function(Y) {
         initializer: function() {
             var tabview = this.get('host');
             tabview.after('render', this.afterRender, this);
-            tabview.get(CONTENTBOX).delegate('click', this.onClick, '.wegas-removeTabview a', this);
+            tabview.get(CONTENTBOX).delegate('click', this.onClick, '.wegas-removeTabview', this);
         },
         afterRender: function(e) {
             var tabview = this.get('host');
