@@ -175,6 +175,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @Id
     @Column(name = "variabledescriptor_id")
+    @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
 
