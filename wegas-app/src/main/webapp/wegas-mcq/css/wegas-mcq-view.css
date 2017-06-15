@@ -218,7 +218,7 @@
     text-align:center;
     line-height:24px;
     font-size:11px;
-    top:0;
+    top: 2px;
     left:0;
 }
 .wegas-mcqview .mcq-question button:disabled {

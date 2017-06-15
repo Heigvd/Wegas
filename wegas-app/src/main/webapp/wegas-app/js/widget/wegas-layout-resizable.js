@@ -30,11 +30,12 @@ YUI.add('wegas-layout-resizable', function(Y) {
                               '<div class="wegas-layout-hd"></div>' +
                               '<div class="wegas-layout-bd"><div>' +
                               '<div class="wegas-layout-left"></div>' +
-                              '<div class="wegas-layout-center"></div>' +
-                              '<div class="wegas-layout-right"></div>' +
+                              '<div class="wegas-layout-center wegas-layout-pane"></div>' +
+                              '<div class="wegas-layout-right wegas-layout-pane"></div>' +
                               '</div></div>' +
                               '<div class="wegas-layout-ft"></div>' +
                               '</div>',
+            HANDLEBAR_WIDTH: 4,
             /** @lends Y.Wegas.ResizableLayout# */
 
             // *** Private fields *** //
@@ -247,15 +248,24 @@ YUI.add('wegas-layout-resizable', function(Y) {
              * @description refresh the style of the center node
              */
             syncCenterNode: function() {
-                var rightNode = this.getPosition("right"), left = this.getPosition("left").getComputedStyle("width"), right = rightNode.getComputedStyle("width");
-
-                this.getPosition("center").setStyles({
-                    left: left,
-                    right: right
-                });
-                rightNode.setStyles({//                                             // Reset left position that may have been set by resize plugin
-                    left: "auto"
-                });
+                var centerNode = this.getPosition("center"),
+                    rightNode = this.getPosition("right"),
+                    center = centerNode.getStyle('width'),
+                    left = this.getPosition("left").getComputedStyle("width");
+                // If center width is set to zero, it shall remain hidden:
+                if (center !== '0px') {
+                    centerNode.setStyles({
+                        left: left,
+                        right: rightNode.getComputedStyle("width")
+                    });
+                    rightNode.setStyles({
+                        left: 'auto'
+                    });
+                } else {
+                    rightNode.setStyles({
+                        left: parseInt(left, 10) - this.HANDLEBAR_WIDTH
+                    });
+                }
                 Y.Wegas.app.fire("layout:resize");
             }
         },

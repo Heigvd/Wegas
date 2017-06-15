@@ -11,7 +11,7 @@ const removeButtonStyle = css({
     verticalAlign: 'top',
     paddingRight: '5px',
     display: 'inline-block',
-    transition: 'opacity 500ms 200ms'
+    transition: 'opacity 500ms 500ms'
 });
 
 const removeContainerStyle = css({
@@ -69,10 +69,10 @@ export const removeStatement = Comp => {
     function RemoveStatement(props) {
         return (
             <div className={removeContainerStyle}>
+                <Statement><Comp {...props} /></Statement>
                 <div className={removeButtonStyle}>
                     <RemoveStatementButton onClick={props.onRemove} />
                 </div>
-                <Statement><Comp {...props} /></Statement>
             </div>
         );
     }

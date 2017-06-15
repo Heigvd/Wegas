@@ -22,7 +22,7 @@ const listElementContainerStyle = css({
     ':first-of-type' : {
         marginTop: '10px'
     },
-    ':hover *': {
+    ':hover span': {
         opacity: 1,
         transition: 'opacity 2s'
     }
@@ -107,6 +107,7 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
                         ? <IconButton
                             icon="fa fa-trash"
                             onClick={() => props.onChildRemove(index)}
+                            tooltip="Delete this group"
                             grey
                         />
                         : null}

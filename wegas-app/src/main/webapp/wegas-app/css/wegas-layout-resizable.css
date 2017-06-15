@@ -33,7 +33,7 @@
     overflow: hidden;
 }
 .yui3-skin-sam .wegas-layout-right > .yui3-widget{
-     margin-left:8px;
+     /* margin-left:8px; */
 }
 .yui3-skin-sam .wegas-layout-left > .yui3-widget,
 .yui3-skin-sam .wegas-layout-center > .yui3-widget,
@@ -55,5 +55,6 @@
 }
 .yui3-skin-sam .wegas-layout-resizable .yui3-resize-handle {
     background: #b7cb90; /* New green background, previous value: #03283A; */
+    margin-top: 38px; /* Hide vertical bar in the tab bar */
     width: 4px;
 }

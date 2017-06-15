@@ -37,10 +37,10 @@
 
 /* Set font in the editor*/
 body, button, .yui3-skin-sam .yui3-datatable-table,
-.yui3-skin-sam .wegas-layout-right,
-.yui3-skin-sam .wegas-layout-right select,
-.yui3-skin-sam .wegas-layout-right input,
-.yui3-skin-sam .wegas-layout-right textarea {
+.yui3-skin-sam .wegas-layout-pane,
+.yui3-skin-sam .wegas-layout-pane select,
+.yui3-skin-sam .wegas-layout-pane input,
+.yui3-skin-sam .wegas-layout-pane textarea {
     font-family: 'Open Sans', Verdana, Geneva, sans-serif !important;
 }
 
@@ -57,7 +57,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 .wegas-comments {
     font-style: italic;
     margin-top: 25px !important;
-    /* font-size: 14px; */
     border-top: solid 2px #b7cb90; /* New green theme, previous value: #4A8C9C; */
 }
 
@@ -112,7 +111,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
     position: absolute;
-    top: 38px;
+    top: 36px;
     bottom: 0px;
     width: 100%;
     overflow: auto;
@@ -365,59 +364,28 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     margin-right: 6px;
 }
 
-#centerTabView > div > ul > .yui3-tab {
-    max-width: 160px;
-}
-
-.yui3-skin-sam .wegas-layout-resizable .wegas-layout-right .yui3-resize-handle {
+.yui3-skin-sam .wegas-layout-resizable .wegas-layout-pane .yui3-resize-handle {
     background: #b7cb90; /* New green background, previous value: #03283A; */
 }
 
-.wegas-layout-right > .wegas-list,
-.wegas-layout-right > .wegas-list > .wegas-list-content {
+.wegas-layout-pane > .wegas-list,
+.wegas-layout-pane > .wegas-list > .wegas-list-content {
     height: 100%;
 }
 
-.yui3-skin-sam .wegas-layout-right {
-    background: white;
-    top: 38px;
+.yui3-skin-sam .wegas-layout-pane {
+    top: 0;
     height: auto !important;
-    bottom: 0px;
-    border-top: 4px solid #b7cb90 !important}
+    bottom: 0;
+    /* border-top: 4px solid #b7cb90 !important; */
+}
 
-.yui3-skin-sam .wegas-layout-right .yui3-tabview-list {
-    border-bottom: 1px solid #ededed;
+.yui3-skin-sam .wegas-layout-pane .yui3-tabview-list {
     margin: 0 .5em;
 }
 
-.yui3-skin-sam .wegas-layout-right .yui3-tabview-list:empty {
+.yui3-skin-sam .wegas-layout-pane .yui3-tabview-list:empty {
     border: none;
-}
-
-.yui3-skin-sam .wegas-layout-right .yui3-tab-label {
-    border-bottom: 2px solid transparent;
-    background: none;
-    padding: 14px 0 9px;
-    color: gray;
-}
-
-.yui3-skin-sam .wegas-layout-right .yui3-tab-label:focus,
-.yui3-skin-sam .wegas-layout-right .yui3-tab-label:hover {
-    border-bottom: 2px solid gray;
-    padding: 14px 0 9px;
-    background: none;
-}
-
-.yui3-skin-sam .wegas-layout-right .yui3-tab-selected .yui3-tab-label,
-.yui3-skin-sam .wegas-layout-right .yui3-tab-selected .yui3-tab-label:focus,
-.yui3-skin-sam .wegas-layout-right .yui3-tab-selected .yui3-tab-label:hover {
-    border-bottom: 2px solid black;
-    color: black;
-}
-
-.yui3-skin-sam .wegas-layout-right .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
-    top: 42px;
-    border-top: none !important;  /* temporary hack while simulating the new green design */
 }
 
 /* Wegas logo */

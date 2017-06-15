@@ -32,16 +32,25 @@
     border: none;
     font-size: 13px;
     text-align:center;
-    margin-right: .5em;
+    /* margin-right: .5em; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background: lightgray;
+    background: #888686;
     color: black;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab:hover .yui3-tab-label,
+.yui3-skin-sam .yui3-tab-label:hover,
+.yui3-skin-sam .yui3-tab-label:focus {
+    background: #5A5858;
 }
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab {
-    width: 100%; 
-    max-width: 120px; 
+    width: 100%;
+    max-width: 120px;
 }
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-label {
     width: 98%;
@@ -61,7 +70,15 @@
     border-bottom: none;
 }
 
-/* Tab's Removeable plugin */
+/* This should only apply to the editor's tabs, not to inboxes and questions: */
+.yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label,
+.yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label:focus,
+.yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label:hover {
+    background: #b7cb90;
+    padding: 10px 0;
+    color: white;
+}
+
 .yui3-skin-sam .yui3-tabview-removeable .yui3-tab-label,
 .yui3-skin-sam .yui3-tabview-removeable .yui3-tab-label:focus,
 .yui3-skin-sam .yui3-tabview-removeable .yui3-tab-label:hover,
@@ -69,27 +86,38 @@
     padding-right: 2em;  /*make room for close link */
 }
 
-.yui3-skin-sam .wegas-tabview-resizetabs > ul  .yui3-tabview-removeable .yui3-tab-label,
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label:focus,
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label:hover,
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label {
     padding-right: 0px;
 }
-.yui3-tab-remove {
-    font:bold 85% Verdana;
-    position: absolute;
-    right: .8em;
-    top: 10px;
-    padding: 1px 3px 3px 3px;
-    border:1px solid transparent;
-    line-height: 1em;
-    color: black;
-    right: 1em;
-    top: 11px;
+
+.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-label,
+.yui3-skin-sam .wegas-layout-pane .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label {
+    border-radius: 10px 10px 0 0;
+    color: white;
+    font-family: Rockwell;
 }
+
+.yui3-tab-remove {
+    font-size: 11px;
+    position: absolute;
+    right: 3px;
+    top: -3px;
+    padding: 5px;
+    color: transparent;
+}
+
+.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tabview-removeable:hover .yui3-tab-remove {
+    color: #ccc;
+}
+
+.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-selected.yui3-tabview-removeable:hover .yui3-tab-remove {
+    color: #eee;
+}
+
 .yui3-tab-remove:hover {
-    text-decoration: none;
-    border-color: black;
+    color: red !important;
 }
 
 /* Icons are not displayed in tab labels */

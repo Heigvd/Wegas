@@ -177,13 +177,15 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 name = "New " + name.toLowerCase();
             }
             tab.setAttrs({
-                label: name,
+                label: "Attributes",
                 selected: 2
             });                                                                 // Update tab attrs
             tab.form.setAttrs({
                 values: entity.toObject(),
                 cfg: formCfg || entity.getFormCfg()
             });                                                                 // Update form attrs
+            var statusNode = new Y.Node.create('<span class="wegas-form-title">' + name + '</span>');
+            tab.form.toolbar.get("header").prepend(statusNode);
             tab.form.toolbar.setStatusMessage("");
 
             tab.form.detach("submit");
@@ -224,7 +226,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 var tab = Wegas.TabView.createTab("Edit", "#rightTabView", {}, 0), // Create a tab,
                     form = new Wegas.RForm();                                    // and a form
 
-                //tab.plug(Plugin.Removeable);                                  // make it closeable
+                tab.plug(Plugin.Removeable);                                  // make it closeable
                 tab.add(form);
 
                 tab.form = EditEntityAction.form = form;                        // Set up global references for
@@ -660,7 +662,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 /*if (EditEntityAction.currentEntity) {
                                  if (EditEntityAction.currentEntity.get(ID) === entity.get(ID)) {
                                  EditEntityAction.hideRightTabs();
-                                 
+
                                  } else if (entity.get("@class") === "ListDescriptor") {
                                  for (i = 0; i < entity.get("items").length; i += 1) {
                                  // Who cares about deeper levels ? TODO...

@@ -174,7 +174,7 @@
                 ]
             }, {
                 "type": "OpenTabButton",
-                "label": "Help",
+                "label": "Help (partly obsolete)",
                 "cssClass": "editor-scenarist-button wegas-advanced-feature",
                 "wchildren": [
                     {
@@ -196,7 +196,7 @@
                 "children": [
                     {
                         "type": "Tab",
-                        "label": "Variables",
+                        "label": "Content",
                         "cssClass": "editor-variables",
                         "children": [
                             {
@@ -223,7 +223,7 @@
                         ]
                     }, {
                         "type": "Tab",
-                        "label": "Pages",
+                        "label": "Layout",
                         "cssClass": "editor-pages",
                         "plugins": [{
                                 "fn": "UneditablePageDisabler"
@@ -300,6 +300,9 @@
                         "cfg": {
                             "dock": true
                         }
+                    },
+                    {
+                        "fn": "RemoveCenterTab"
                     }
                 ]
             }

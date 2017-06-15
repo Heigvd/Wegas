@@ -65,8 +65,9 @@ YUI.add('wegas-editor-action', function(Y) {
                 Y.Widget.getByNode("#rightTabView").destroyAll();
             }
 
-            var label = this.get("label") || this.get("host").get("label"),
-                tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"),
+            var label = this.get("label") || this.get("host").get("label");
+            //label = label.replace("Client", "Clt").replace("Server", "Srv");  // Shorten some tab labels
+            var tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"),
                     this.get("tabCfg"), this.get("wchildren"));                 // Forward plugin data to the target widget
 
             tab.set("selected", this.get("selected"));

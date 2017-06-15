@@ -20,9 +20,12 @@
     color: #D3D3D3;
     float: right;
     position: absolute;
-    right: 0px;
+    right: 4px;
 }
 
+.wegas-editor-treeview .yui3-treenode-selected .yui3-treenode-content-extra .add-child-shortcut {
+    color: white;
+}
 
 /* Editor treeview styles */
 .wegas-editor-treeview .yui3-treenode-content-header,

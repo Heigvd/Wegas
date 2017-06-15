@@ -103,6 +103,15 @@
     background-color:rgba(255, 255, 255, 0.4);
 }
 
+.wegas-form-title {
+    float: left;
+    display: inline-block;
+    border-bottom: 2px solid #b7cb90;
+    font-size: 18px;
+    margin: 1px 12px 0 6px;
+    font-family: Rockwell;
+}
+
 /** Status message */
 .wegas-status-message {
     color: gray;

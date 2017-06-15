@@ -9,7 +9,7 @@
 .yui3-skin-sam .yui3-wegas-editorchat {
     z-index: 200;
     position: relative;
-    /* background-color: #b7cb90; */ /* New green background, previous value was #03283A; */
+    /* background-color: #b7cb90;  */ /* New green background, previous value was #03283A; */
     /* border: 1px solid #b7cb90; */ /* New green background, previous value was #03283A; */
 }
 
@@ -20,12 +20,22 @@
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer {
-    color: #4c4c4c;
+    color: white;
     cursor: pointer;
-    padding: 3px;
+    padding: 0 10px 3px;
+    float: right;
+    background-color: #27576E;
+    user-select: none;
+}
+
+.yui3-skin-sam .yui3-wegas-editorchat .closed + .editorchat-footer {
+    color: #4c4c4c;
+    background: transparent;
+    margin-top: 9px;
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .msgs .notification {
+    color: white;
     text-align: center;
     font-style: italic;
     font-size: 90%;

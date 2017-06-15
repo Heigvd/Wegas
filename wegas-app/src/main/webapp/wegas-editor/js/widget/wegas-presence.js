@@ -138,9 +138,14 @@ YUI.add('wegas-presence', function(Y) {
             }
         },
         updateCount: function() {
-            this.get(CONTENTBOX).one('.count').setHTML("viewer" +
-                (pagePresence.members.count > 2 ? "s: " : ": ") +
-                (pagePresence.members.count - 1)); //minus self
+            var count = pagePresence.members.count - 1; // minus self
+            if (count > 0) {
+                this.get(CONTENTBOX).one('.editorchat-footer').show();
+                this.get(CONTENTBOX).one('.count').setHTML("viewer" +
+                    (count > 1 ? "s: " : ": ") + count);
+            } else {
+                this.get(CONTENTBOX).one('.editorchat-footer').hide();
+            }
         },
         addToChat: function(html) {
             var msgBox = this.get(CONTENTBOX).one('.msgs'),

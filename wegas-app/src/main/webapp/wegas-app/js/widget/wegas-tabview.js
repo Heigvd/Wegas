@@ -12,7 +12,7 @@
 YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
-    var RemoveRightTab, TabDocker,
+    var RemoveRightTab, RemoveCenterTab, TabDocker,
         Plugin = Y.Plugin, Wegas = Y.Wegas,
         CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
         TabView, Tab, RemoveTab;
@@ -384,7 +384,7 @@ YUI.add('wegas-tabview', function(Y) {
         /**
          * Html template added in host's contentbox
          */
-        REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
+        REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="Close tab"><i class="fa fa-times"></i></a>',
         /**
          * @function
          * @private
@@ -592,7 +592,7 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<div class="wegas-removeTabview" title="Close tab"><a>x</a></div>',
+        ADD_TEMPLATE: '<div class="wegas-removeTabview" title="Close tab group"><a>x</a></div>',
         /**
          * @function
          * @private
@@ -617,6 +617,54 @@ YUI.add('wegas-tabview', function(Y) {
         NAME: "removetab"
     });
     Plugin.RemoveTab = RemoveTab;
+
+    /**
+     * Center tab management, NB: this is a copy-paste of RemoveRightTab !
+     * @name Y.Plugin.RemoveCenterTab
+     * @extends Y.Plugin.RemoveTab
+     * @constructor
+     */
+    RemoveCenterTab = function() {
+        RemoveCenterTab.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.extend(RemoveCenterTab, RemoveTab, {
+        /** @lends Y.Wegas.RemoveCenterTab# */
+        /**
+         * @function
+         * @private
+         * @description Create a tab for remove tabview.
+         * If this tab is clicked, remove host tabview.
+         */
+        initializer: function() {
+            Wegas.app.after("render", function() {
+                if (this.get("host").isEmpty()) {
+                    Wegas.app.widget.hidePosition("center");
+                }
+            }, this);
+            this.onHostEvent("addChild", function() {
+                if (Wegas.app.widget) {
+                    Wegas.app.widget.showPosition("center");
+                }
+            });
+        },
+        onClick: function(e) {
+            e.stopPropagation();
+            this.get('host').destroyAll();
+            Y.later(100, this, function() {
+                if (this.get("host").isEmpty()) {
+                    // @TODO JH Add double arrow on top of separation between left and right panels !!!
+                    // or left arrow if left panel is visible and right arrow if right panel is visible
+                    Wegas.app.widget.hidePosition("center");
+                }
+            });
+        }
+    }, {
+        NS: "removetab",
+        NAME: "removetab"
+    });
+    Plugin.RemoveCenterTab = RemoveCenterTab;
+
     /**
      * Right tab management
      * @name Y.Plugin.RemoveRightTab
@@ -662,6 +710,8 @@ YUI.add('wegas-tabview', function(Y) {
     });
     Plugin.RemoveRightTab = RemoveRightTab;
 
+
+
     /**
      * Plugin that resizes the tabview's button if required
      *
@@ -689,6 +739,8 @@ YUI.add('wegas-tabview', function(Y) {
             Y.once("domready", function() {
                 tabView.get(CONTENTBOX).addClass("wegas-tabview-resizetabs");
                 tabView.get(CONTENTBOX).all("> ul > li").setStyle("width", (100 / tabView.size()) + "%");
+                //var plusMenu = new Y.Node.create('<span class="wegas-plus-menu">+</span>');
+                //tabView.get(CONTENTBOX).append(plusMenu);
             });
         }
     }, {

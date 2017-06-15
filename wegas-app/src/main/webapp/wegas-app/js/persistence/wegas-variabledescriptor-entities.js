@@ -1245,7 +1245,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                         type: 'AddEntityChildButton',
                                         label: 'Boolean',
                                         targetClass: 'BooleanDescriptor',
-                                        cssClass: 'wegas-advanced-feature'
+                                        //cssClass: 'wegas-advanced-feature'
                                     },
                                     {
                                         type: 'AddEntityChildButton',

@@ -23,6 +23,7 @@ export function RemoveStatementButton(props) {
             <IconButton
                 icon={"fa fa-trash " + trashcan.toString()}
                 onClick={props.onClick}
+                tooltip="Delete this item"
                 className={removeStatement.toString()}
                 stackedOnIcon="fa fa-circle"
             />
