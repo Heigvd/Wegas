@@ -276,6 +276,7 @@ public class SerializationTest {
         Reply reply = new Reply();
         questionI.addReply(reply);
         reply.setQuestionInstance(questionI);
+        result11.addReply(reply);
         reply.setResult(result11);
 
         assertPropertyEquals(mapper.writeValueAsString(questionD), "@class", "QuestionDescriptor");
