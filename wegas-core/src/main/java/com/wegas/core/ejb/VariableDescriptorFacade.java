@@ -49,7 +49,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -170,6 +169,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
          * This flush is required by several EntityRevivedEvent listener, 
          * which opperate some SQL queries (which didn't return anything before
          * entites have been flushed to database
+         *
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, 
+         * it will not return any result if this flush not occurs
          */
         this.getEntityManager().flush();
 
@@ -180,10 +182,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         if (propagate) {
             AbstractScope scope = entity.getScope();
             scope.setBeanjection(new Beanjection(variableInstanceFacade));
-            scope.propagateDefaultInstance(null, true);
             gameModelFacade.reviveScopeInstances(gameModel, scope);
         }
-        
+
         gameModel.addToVariableDescriptors(entity);
         if (entity instanceof DescriptorListI) {
             this.reviveItems(gameModel, (DescriptorListI) entity, propagate); // also revive children
@@ -555,7 +556,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         }
         vd.setScope(newScope);
         this.getEntityManager().persist(vd);
-        vd.propagateDefaultInstance(null, true);
+        vd = this.find(vd.getId());
+        gameModelFacade.reviveScopeInstances(vd.getGameModel(), vd.getScope());
     }
 
     /**

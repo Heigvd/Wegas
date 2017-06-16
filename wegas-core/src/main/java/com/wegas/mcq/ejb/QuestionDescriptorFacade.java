@@ -137,23 +137,26 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     public void instanceRevivedEvent(@Observes InstanceRevivedEvent event) {
 
         if (event.getEntity() instanceof ChoiceInstance) {
-            logger.error("Received DescriptorRevivedEvent event");
+            logger.info("Received DescriptorRevivedEvent event");
             ChoiceInstance choiceInstance = (ChoiceInstance) event.getEntity();
             ChoiceDescriptor choice = (ChoiceDescriptor) choiceInstance.findDescriptor();
 
             if (choiceInstance.getCurrentResultName() != null && !choiceInstance.getCurrentResultName().isEmpty()) {
+                logger.info("ReviveResultByName");
                 try {
                     Result cr = findResult(choice, choiceInstance.getCurrentResultName());
                     choice.changeCurrentResult(choiceInstance, cr);
                     //defaultInstance.setCurrentResult(cr);
                 } catch (WegasNoResultException ex) {
-                    throw WegasErrorMessage.error("Error while setting current result");
+                    choice.changeCurrentResult(choiceInstance, null);
+                    logger.error("No Such Result !!!");
                 }
             } else if (choiceInstance.getCurrentResultIndex() != null
                     && choiceInstance.getCurrentResultIndex() >= 0
                     && choiceInstance.getCurrentResultIndex() < choice.getResults().size()) {
                 // Backward compat
 
+                logger.error(" !!!!  REVIVE RESULT BY INDEX !!!! (so 2013...)");
                 Result cr = choice.getResults().get(choiceInstance.getCurrentResultIndex());
                 //defaultInstance.setCurrentResult(cr);
                 choice.changeCurrentResult(choiceInstance, cr);
@@ -164,8 +167,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             for (Reply r : qInstance.getReplies()) {
                 try {
                     Result result = findResult(qDescriptor, r.getChoiceName(), r.getResultName());
-                    r.setResult(result);
                     result.addReply(r);
+                    r.setResult(result);
                 } catch (WegasNoResultException ex) {
                     logger.error("NO SUCH RESULT ! ");
                 }
@@ -234,8 +237,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             reply.setStartTime(startTime);
         }
         Result result = choice.getInstance(player).getResult();
-        reply.setResult(result);
         result.addReply(reply);
+        reply.setResult(result);
         questionInstance.addReply(reply);
         this.getEntityManager().persist(reply);
 //        em.flush();

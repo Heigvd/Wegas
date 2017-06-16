@@ -563,7 +563,6 @@ public class ReviewingFacade {
      * @param event
      */
     public void descriptorRevivedEvent(@Observes EntityRevivedEvent event) {
-        logger.error("REVIVE EVENT FOR " + event.getEntity());
         if (event.getEntity() instanceof PeerReviewDescriptor) {
             logger.debug("Received DescriptorRevivedEvent event");
             PeerReviewDescriptor reviewD = (PeerReviewDescriptor) event.getEntity();

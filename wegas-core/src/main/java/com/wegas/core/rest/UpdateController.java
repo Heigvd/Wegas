@@ -538,6 +538,7 @@ public class UpdateController {
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
             gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true);
+            gameModelFacade.sendResetEvent(dt);
             this.getEntityManager().flush();
             if (++counter == 25) {
                 break;

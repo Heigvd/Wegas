@@ -414,6 +414,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public void reset(final Player player) {
         gameModelFacade.propagateAndReviveDefaultInstances(player.getGameModel(), player, false);
+        gameModelFacade.sendResetEvent(player);
     }
 
     /**

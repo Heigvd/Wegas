@@ -13,8 +13,13 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.variable.Beanjection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -87,18 +92,13 @@ public class ChoiceInstance extends VariableInstance {
      * @return the currentResultName
      */
     public String getCurrentResultName() {
-        if (!Helper.isNullOrEmpty(currentResultName)){
+        if (!Helper.isNullOrEmpty(currentResultName)) {
             return currentResultName;
         } else if (this.getCurrentResult() != null) {
             return getCurrentResult().getName();
         } else {
             return null;
         }
-    }
-
-    @JsonIgnore
-    public String _getDeserializedCurrentResultName() {
-        return currentResultName;
     }
 
     /**
@@ -144,23 +144,25 @@ public class ChoiceInstance extends VariableInstance {
             // Backward compat
             this.setCurrentResultIndex(other.getCurrentResultIndex());
 
-            /*if (other.getCurrentResult() != null) {
-            // SEE reviveInstance ???
-                
-                Result previousResult = this.getCurrentResult();
-                if (previousResult != null) {
-                    previousResult.removeChoiceInstance(this);
+            if (!Helper.isNullOrEmpty(this.currentResultName)) {
+                ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
+                if (choiceDesc != null) {
+                    // if choiceDesc is null, the following will eventually be
+                    // done by with the help of an InstanceReviveEvent
+                    Result previousResult = this.getCurrentResult();
+                    if (previousResult != null) {
+                        previousResult.removeChoiceInstance(this);
+                    }
+                    try {
+                        Result newResult = choiceDesc.getResultByName(this.currentResultName);
+                        this.setCurrentResult(newResult);
+                        newResult.addChoiceInstance(this);
+                    } catch (WegasNoResultException ex) {
+                        this.setCurrentResult(null);
+                    }
                 }
 
-                try {
-                    Result newResult = ((ChoiceDescriptor) this.findDescriptor()).getResultByName(other.getCurrentResultName());
-                    this.setCurrentResult(newResult);
-                    newResult.addChoiceInstance(this);
-                } catch (WegasNoResultException ex) {
-                    Logger.getLogger(ChoiceInstance.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            }*/
+            }
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -224,5 +226,27 @@ public class ChoiceInstance extends VariableInstance {
     public void setCurrentResult(Result currentResult) {
         this.currentResult = currentResult;
         this.setCurrentResultName(null);
+    }
+
+    @Override
+    public void updateCacheOnDelete(Beanjection beans) {
+        Result cr = this.getCurrentResult();
+        if (cr != null) {
+            ChoiceDescriptor cd = cr.getChoiceDescriptor();
+            if (cd != null) {
+                VariableDescriptorFacade vdf = beans.getVariableDescriptorFacade();
+                cd = (ChoiceDescriptor) vdf.find(cd.getId());
+                if (cd != null){
+                    try {
+                        cr = cd.getResultByName(cr.getName());
+                        cr.removeChoiceInstance(this);
+                    } catch (WegasNoResultException ex) {
+                    }
+                    
+                }
+            }
+        }
+
+        super.updateCacheOnDelete(beans);
     }
 }

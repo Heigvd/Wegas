@@ -150,6 +150,7 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     public void reset(final Team team) {
         gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), team, false);
+        gameModelFacade.sendResetEvent(team);
     }
 
     /**

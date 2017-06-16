@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.ListUtils.Updater;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.Scripted;
@@ -103,11 +104,32 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             this.setDuration(other.getDuration());
             this.setCost(other.getCost());
 
-            this.setResults(ListUtils.mergeReplace(this.getResults(), other.getResults()));
+            this.setResults(ListUtils.mergeLists(this.getResults(), other.getResults(), new Updater() {
+                @Override
+                public void addEntity(AbstractEntity entity) {
+                    //Result newResult = (Result) entity;
+                }
 
-            // Has currentResult been removed ?
-            ChoiceInstance defaultInstance = this.getDefaultInstance();
+                @Override
+                public void removeEntity(AbstractEntity entity) {
+                    /*
+                     * Since orphanRemoval does not trigger preRemove event,
+                     * one should update bidirectional relation here in adition to Result.updateCacheOnDelete
+                     */
+                    Result resultToRemove = (Result) entity;
+                    for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
+                        ci.setCurrentResult(null);
+                    }
+                }
+            }));
 
+            // Default instance has already been merged,
+            // has its currentResult been removed ?
+            /*ChoiceInstance defaultInstance = this.getDefaultInstance();
+            
+            if (defaultInstance.getCurrentResult() != null && !this.getResults().contains(defaultInstance.getCurrentResult())) {
+                defaultInstance.setCurrentResult(null);
+            }*/
             // Detect new results
             List<String> labels = new ArrayList<>();
             List<String> names = new ArrayList<>();
@@ -160,7 +182,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             previousResult.removeChoiceInstance(choiceInstance);
         }
 
-        newCurrentResult.addChoiceInstance(choiceInstance);
+        if (newCurrentResult != null) {
+            newCurrentResult.addChoiceInstance(choiceInstance);
+        }
 
         choiceInstance.setCurrentResult(newCurrentResult);
     }

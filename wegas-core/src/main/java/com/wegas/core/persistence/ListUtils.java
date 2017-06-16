@@ -120,17 +120,18 @@ public class ListUtils {
      * This function takes two lists and merge them. This does not preserve any
      * order.
      * <br/> Assumptions:<br/>
-     * - An element from the new list is new if it has no <code>ID</code> or if
+     * - An element from the new list is new if it has no <code>KEY</code> or if
      * it's <code>ID</code> is missing in the old list<br/>
-     * - 2 Abstract entities with the same <code>ID</code> have to be
+     * - 2 Abstract entities with the same <code>KEY</code> have to be
      * merged<br/>
-     * - An element from the old list has to be removed if its <code>ID</code>
+     * - An element from the old list has to be removed if its <code>KEY</code>
      * is missing in the new list
      *
      * @param <E>      extends (@see AbstractEntity) the element type
      * @param oldList  The list containing old elements
      * @param newList  The list containing new elements
-     * @param callback
+     * @param callback to maintain cache integrity
+     * @param converter allow to use a peronalised element identifier (if null, elemenet.id will be used)
      *
      * @return A merged list
      */
@@ -150,51 +151,61 @@ public class ListUtils {
             };
         }
 
-        List<E> newElements = new ArrayList<>();
-        //do NOT modify newList
-        newList = clone(newList);
-        for (Iterator<E> it = newList.iterator(); it.hasNext();) {                 //remove AbstractEntities without id and store them
+        List<E> brandNewElements = new ArrayList<>(); // will store not yet persisted elements (ie no key)
+        newList = clone(newList); // do NOT modify newList
+
+        // go through newList to move branch new (not-yet-persisted) elements to brandNewElements List
+        for (Iterator<E> it = newList.iterator(); it.hasNext();) {
             E element = it.next();
             if (converter.getKey(element) == null) {
-                newElements.add(element);
+                brandNewElements.add(element);
                 it.remove();
             }
         }
 
-        Map<Object, E> elementMap = ListUtils.listAsMap(newList, converter);      //Create a map with newList based on Ids
+        /**
+         * newElement now contains all brand new element (without a key)
+         * newList contains all others (which already have a key)
+         */
+        /**
+         * Go through oldList and find witch elements from new List should be merge (those who exists in both list)
+         * and which one should be removed (those who only exists in the old list)
+         */
+        Map<Object, E> elementsToMerge = ListUtils.listAsMap(newList, converter); // maps elements to process
         for (Iterator<E> it = oldList.iterator(); it.hasNext();) {
             E element = it.next();
             Object key = converter.getKey(element);
-            if (elementMap.containsKey(key)) {                      //old element still exists
-                element.merge(elementMap.get(key));                 //Then merge them
-                elementMap.remove(key);                             //remove element from map
+            if (elementsToMerge.containsKey(key)) {
+                // element exists in both old and new list -> merge 
+                element.merge(elementsToMerge.get(key));
+                elementsToMerge.remove(key); // remove element from the toProcess list
             } else {
+                // element does not exists in the newList: shoudl be removed from the old one
                 if (callback != null) {
                     callback.removeEntity(element);
                 }
-                it.remove();                                                    //else remove that old element
+                it.remove();
             }
         }
-        for (Iterator<E> it = elementMap.values().iterator(); it.hasNext();) {  //Process remaining elements
-            try {
-                E element = it.next();
-                E newElement = (E) element.getClass().newInstance();
-                newElement.merge(element);
-                newElements.add(newElement);
 
-            } catch (InstantiationException | IllegalAccessException ex) {
-            }
+        /**
+         * elements still in elementToMerge are elements coming from another entity, they should be treated as brandNewElement to avoid 
+         */
+        for (Iterator<E> it = elementsToMerge.values().iterator(); it.hasNext();) {  //Process remaining elements
+            // cloning element avoids mixing elements from different entities (remember the so-called occupations multiplication issue)
+            brandNewElements.add((E) it.next().clone());
         }
-        //Add all new elements
-        for (E newEntity : newElements) {
-            // cloning newElement avoids mixing elements from different entities (remember the so-called occupations multiplication issue)
-            E clone = (E) newEntity.clone();
-            oldList.add(clone);
+
+        //Add all new elements by cloning 
+        for (E newEntity : brandNewElements) {
+            // E clone = (E) newEntity.clone();
+            //oldList.add(clone);
+            oldList.add(newEntity); //only elements coming from another entity should be clone and it has already been done
             if (callback != null) {
-                callback.addEntity(clone);
+                callback.addEntity(newEntity);
             }
         }
-        //oldList.addAll(newElements);
+        //oldList.addAll(brandNewElements);
         final List<E> ret = new ArrayList<>();
         ret.addAll(oldList);
         return ret;
@@ -223,6 +234,8 @@ public class ListUtils {
      * @param newList The list containing new elements
      *
      * @return A merged list
+     * 
+     * @deprecated ??? which asset against mergeLists ?
      */
     public static <E extends AbstractEntity> List<E> mergeReplace(List<E> oldList, List<E> newList) {
         final List<E> updatedList = new ArrayList<>();

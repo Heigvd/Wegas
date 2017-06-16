@@ -134,7 +134,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * This field is here so deletion will be propagated to replies.
      */
-    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
     //@XmlTransient
     @JsonIgnore
     private Replies replies;
@@ -201,17 +201,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         }
     }
 
-    //    @PreRemove
-//    private void preRemove() {                                                  // When a response is destroyed
-//
-//        for (ChoiceInstance c : this.getChoiceInstances()) {                    // remove it from all the instance it is the current result
-//            c.setCurrentResult(null);
-//            c.setCurrentResultId(null);
-//        }
-//        while (!this.getChoiceInstances().isEmpty()) {
-//            this.getChoiceInstances().remove(0);
-//        }
-//    }
     @Override
     public Long getId() {
         return this.id;
@@ -373,11 +362,15 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         return this.choiceInstances.remove(choiceInstance);
     }
 
-    public Replies getReplies(){
+    public Replies getReplies() {
         return replies;
     }
 
     public void addReply(Reply reply) {
+        if (replies == null) {
+            replies = new Replies();
+            replies.setResult(this);
+        }
         this.replies.add(reply);
     }
 
@@ -390,9 +383,11 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         VariableInstanceFacade vif = beans.getVariableInstanceFacade();
 
         for (ChoiceInstance cInstance : this.getChoiceInstances()) {
-            cInstance = (ChoiceInstance) vif.find(cInstance.getId());
             if (cInstance != null) {
-                cInstance.setCurrentResult(null);
+                cInstance = (ChoiceInstance) vif.find(cInstance.getId());
+                if (cInstance != null) {
+                    cInstance.setCurrentResult(null);
+                }
             }
         }
     }

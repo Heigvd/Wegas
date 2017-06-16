@@ -135,6 +135,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void propagateAndReviveDefaultInstances(GameModel gameModel, BroadcastTarget context, boolean create) {
         this.propagateDefaultInstances(gameModel, context, create);
+        this.getEntityManager().flush();
         this.reviveInstances(gameModel, context);
     }
     
@@ -147,20 +148,24 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
     
     public void reviveInstances(GameModel gameModel, BroadcastTarget context) {
-        logger.error("REVIVE INSTANCES");
+        //logger.error("REVIVE INSTANCES");
         //Helper.printWegasStackTrace(new Exception());
 
         // revive just propagated instances
         for (VariableInstance vi : context.getAllInstances()) {
             instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
         }
+    }
 
+    public void sendResetEvent(BroadcastTarget context){
         // Send reset envent to run state machines
         resetEvent.fire(new ResetEvent(context));
     }
 
 
     public void reviveScopeInstances(GameModel gameModel, AbstractScope aScope) {
+        aScope.propagateDefaultInstance(null, true);
+        this.getEntityManager().flush();
         // revive just propagated instances
         for (VariableInstance vi : (Collection<VariableInstance>)aScope.getVariableInstances().values()) {
             instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
@@ -445,6 +450,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false);
+        this.sendResetEvent(gameModel);
     }
 
     public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {

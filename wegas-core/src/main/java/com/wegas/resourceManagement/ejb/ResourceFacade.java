@@ -455,8 +455,9 @@ public class ResourceFacade {
             }
 
             for (Assignment assignment : resourceInstance.getAssignments()) {
-                if (!Helper.isNullOrEmpty(assignment.getDeserialisedTaskDescriptorName())) {
-                    TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, assignment.getDeserialisedTaskDescriptorName());
+                String taskDescriptorName = assignment.getTaskDescriptorName();
+                if (!Helper.isNullOrEmpty(taskDescriptorName)) {
+                    TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
                     TaskInstance newTaskInstance;
                     if (isDefault) {
                         newTaskInstance = newTaskDescriptor.getDefaultInstance();
@@ -474,8 +475,9 @@ public class ResourceFacade {
             }
 
             for (Activity activity : resourceInstance.getActivities()) {
-                if (!Helper.isNullOrEmpty(activity.getDeserialisedTaskDescriptorName())) {
-                    TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, activity.getDeserialisedTaskDescriptorName());
+                String taskDescriptorName = activity.getTaskDescriptorName();
+                if (!Helper.isNullOrEmpty(taskDescriptorName)) {
+                    TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
                     TaskInstance newTaskInstance;
                     if (isDefault) {
                         newTaskInstance = newTaskDescriptor.getDefaultInstance();
@@ -492,10 +494,10 @@ public class ResourceFacade {
                 }
 
                 // Process req after the taskInstance
-                if (!Helper.isNullOrEmpty(activity.getDeserialisedRequirementName())) {
-                    String deserialisedRequirementName = activity.getDeserialisedRequirementName();
+                if (!Helper.isNullOrEmpty(activity.getRequirementName())) {
+                    String reqName = activity.getRequirementName();
                     if (activity.getTaskInstance() != null) {
-                        WRequirement req = activity.getTaskInstance().getRequirementByName(deserialisedRequirementName);
+                        WRequirement req = activity.getTaskInstance().getRequirementByName(reqName);
                         if (req != null) {
                             activity.setRequirement(req);
                         }
