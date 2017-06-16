@@ -61,7 +61,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 //    @OrderBy("id")
     @OrderColumn
     @JsonManagedReference
-    @JsonView(Views.EditorI.class)
+    //@JsonView(Views.EditorI.class)
     private List<Result> results = new ArrayList<>();
     /**
      *
