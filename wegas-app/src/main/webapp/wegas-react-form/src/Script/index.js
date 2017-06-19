@@ -15,9 +15,11 @@ import commonView from '../HOC/commonView';
 const VariableStatement = commonView(
     scriptObject(parsed(singleStatement(Variable)))
 );
-const MultiVariableMethod = scriptObject(parsed(multipleStatement(Impact)));
-const MultiVariableCondition = scriptObject(
-    parsed(condition(multipleStatement(Condition)))
+const MultiVariableMethod = commonView(
+    scriptObject(parsed(multipleStatement(Impact)))
+);
+const MultiVariableCondition = commonView(
+    scriptObject(parsed(condition(multipleStatement(Condition))))
 );
 // Using Script edition outside form.
 function scriptRenderer(Component) {
