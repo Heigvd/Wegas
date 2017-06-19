@@ -18,8 +18,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.variable.Beanjection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -47,9 +45,7 @@ public class ChoiceInstance extends VariableInstance {
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id")
-    @JsonIgnore
-    private Result currentResult;
+    private CurrentResult currentResult;
 
     /**
      *
@@ -217,14 +213,22 @@ public class ChoiceInstance extends VariableInstance {
     //@XmlTransient
     @JsonIgnore
     public Result getCurrentResult() {
-        return this.currentResult;
+        if (this.currentResult != null) {
+            return this.currentResult.getResult();
+        } else {
+            return null;
+        }
     }
 
     /**
      * @param currentResult the currentResult to set
      */
     public void setCurrentResult(Result currentResult) {
-        this.currentResult = currentResult;
+        if (currentResult != null) {
+            this.currentResult = currentResult.getCurrentResult();
+        } else {
+            this.currentResult = null;
+        }
         this.setCurrentResultName(null);
     }
 
@@ -236,13 +240,13 @@ public class ChoiceInstance extends VariableInstance {
             if (cd != null) {
                 VariableDescriptorFacade vdf = beans.getVariableDescriptorFacade();
                 cd = (ChoiceDescriptor) vdf.find(cd.getId());
-                if (cd != null){
+                if (cd != null) {
                     try {
                         cr = cd.getResultByName(cr.getName());
                         cr.removeChoiceInstance(this);
                     } catch (WegasNoResultException ex) {
                     }
-                    
+
                 }
             }
         }

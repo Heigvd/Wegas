@@ -127,10 +127,10 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * This link is here so the reference is updated on remove.
      */
-    @OneToMany(mappedBy = "currentResult", cascade = CascadeType.MERGE)
-    //@XmlTransient
+    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<ChoiceInstance> choiceInstances = new ArrayList<>();
+    private CurrentResult currentResult;
+
     /**
      * This field is here so deletion will be propagated to replies.
      */
@@ -342,24 +342,26 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     //@XmlTransient
     @JsonIgnore
     public List<ChoiceInstance> getChoiceInstances() {
-        return choiceInstances;
-    }
-
-    /**
-     * @param choiceInstances the choiceInstances to set
-     */
-    public void setChoiceInstances(List<ChoiceInstance> choiceInstances) {
-        this.choiceInstances = choiceInstances;
+        return currentResult.getChoiceInstances();
     }
 
     public void addChoiceInstance(ChoiceInstance choiceInstance) {
-        if (!this.choiceInstances.contains(choiceInstance)) {
-            this.choiceInstances.add(choiceInstance);
+        if (this.currentResult == null) {
+            this.currentResult = new CurrentResult();
+            this.currentResult.setResult(this);
+        }
+
+        if (!this.currentResult.getChoiceInstances().contains(choiceInstance)) {
+            this.currentResult.getChoiceInstances().add(choiceInstance);
         }
     }
 
     public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
-        return this.choiceInstances.remove(choiceInstance);
+        return this.currentResult.remove(choiceInstance);
+    }
+
+    public CurrentResult getCurrentResult(){
+        return currentResult;
     }
 
     public Replies getReplies() {
@@ -397,6 +399,10 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         if (replies == null) {
             replies = new Replies();
             replies.setResult(this);
+        }
+        if (currentResult == null) {
+            currentResult = new CurrentResult();
+            currentResult.setResult(this);
         }
     }
 }
