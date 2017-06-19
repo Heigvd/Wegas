@@ -44,7 +44,8 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private CurrentResult currentResult;
 
     /**
