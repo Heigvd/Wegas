@@ -770,8 +770,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 value: {
                     type: STRING,
-                    format: HTML,
-                    optional: true
+                    view: {
+                        type: HTML
+                    }
                 }
             }
         }
@@ -1244,7 +1245,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     {
                                         type: 'AddEntityChildButton',
                                         label: 'Boolean',
-                                        targetClass: 'BooleanDescriptor',
+                                        targetClass: 'BooleanDescriptor'
                                         //cssClass: 'wegas-advanced-feature'
                                     },
                                     {
