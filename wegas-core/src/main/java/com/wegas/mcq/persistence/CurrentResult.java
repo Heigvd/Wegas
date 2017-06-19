@@ -33,7 +33,7 @@ public class CurrentResult extends AbstractEntity  {
     @OneToOne(optional = false)
     private Result result;
 
-    @OneToMany
+    @OneToMany(mappedBy = "currentResult", cascade = CascadeType.MERGE)
     private List<ChoiceInstance> choiceInstances = new ArrayList<>();
 
     public List<ChoiceInstance> getChoiceInstances() {

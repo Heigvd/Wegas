@@ -27,7 +27,7 @@ import com.wegas.core.persistence.variable.Beanjection;
 //@XmlType(name = "ChoiceInstance")
 @Table(name = "MCQChoiceInstance",
         indexes = {
-            @Index(columnList = "result_id")
+            @Index(columnList = "currentresult_id")
         }
 )
 public class ChoiceInstance extends VariableInstance {
@@ -44,7 +44,7 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private CurrentResult currentResult;
 
     /**
