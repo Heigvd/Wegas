@@ -30,19 +30,27 @@ function onFileBrowserClick(fieldName, url, type, win) {
         e.preventDefault();
 
         const window = filePanel.win;
-        const targetInput = window.document.getElementById(filePanel.field_name);
+        const targetInput = window.document.getElementById(
+            filePanel.field_name
+        );
         targetInput.value = Wegas.Facade.File.getPath() + path; // update the input field
 
-        if (typeof (window.ImageDialog) !== 'undefined') { // are we an image browser
-            if (window.ImageDialog.getImageData) { // we are, so update image dimensions...
+        if (typeof window.ImageDialog !== 'undefined') {
+            // are we an image browser
+            if (window.ImageDialog.getImageData) {
+                // we are, so update image dimensions...
                 window.ImageDialog.getImageData();
             }
 
-            if (window.ImageDialog.showPreviewImage) { // ... and preview if necessary
-                window.ImageDialog.showPreviewImage(Wegas.Facade.File.getPath() + path);
+            if (window.ImageDialog.showPreviewImage) {
+                // ... and preview if necessary
+                window.ImageDialog.showPreviewImage(
+                    Wegas.Facade.File.getPath() + path
+                );
             }
         }
-        if (window.Media) { // If in an editor window
+        if (window.Media) {
+            // If in an editor window
             window.Media.formToData('src'); // update the data
         }
         filePanel.destroy();
@@ -83,26 +91,32 @@ const TINYCONFIG = {
         `${Wegas.app.get('base')}wegas-editor/css/wegas-inputex-rte.css`
     ],
     style_formats: [
-        { // Style formats
+        {
+            // Style formats
             title: 'Title 1',
             block: 'h1'
-        }, {
+        },
+        {
             title: 'Title 2',
             block: 'h2'
             // styles : {
             //    color : '#ff0000'
             // }
-        }, {
+        },
+        {
             title: 'Title 3',
             block: 'h3'
-        }, {
+        },
+        {
             title: 'Normal',
             inline: 'span'
-        }, {
+        },
+        {
             title: 'Code',
             // icon: 'code',
             block: 'code'
-        }],
+        }
+    ]
     // setup: function setup(editor) {
     //     let tbs;
     //     editor.on('init', () => {
@@ -114,21 +128,61 @@ const TINYCONFIG = {
     //     editor.on('blur', () => tbs.forEach(e => { e.style.maxHeight = 0; }));
     // }
 };
+/**
+ * Replace data-file attribute with complete href and src
+ * @param {string} content 
+ */
+function toTinyMCE(content) {
+    let updated = content;
+    if (updated && Wegas.Facade.File) {
+        updated = updated.replace(
+            new RegExp('data-file="([^"]*)"', 'gi'),
+            'src="' +
+                Wegas.Facade.File.getPath() +
+                '$1"' +
+                ' href="' +
+                Wegas.Facade.File.getPath() +
+                '$1"'
+        ); // @hack Place both href and src so it
+        // will work for both <a> and <img>
+        // elements
+    }
+    return updated;
+}
+/**
+ * Replace href/src with injector style data-file attribute
+ * @param {string} content 
+ */
+function toInjectorStyle(content) {
+    return content
+        .replace(
+            new RegExp(
+                '((src|href)="[^"]*/rest/File/GameModelId/[^"]*/read([^"]*)")',
+                'gi'
+            ),
+            'data-file="$3"'
+        ) // Replace absolute path with injector style path (old version)
+        .replace(
+            new RegExp(
+                '((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")',
+                'gi'
+            ),
+            'data-file="$3"'
+        ); // Replace absolute path with injector style path
+}
 function HTMLView(props) {
     const { onChange } = props;
     const onValueChange = event => {
         try {
-            onChange(event.target.getContent());
+            onChange(toInjectorStyle(event.target.getContent()));
         } catch (e) {
             // Has been destroyed ....
         }
     };
     return (
-        <div
-            className={marginStyle}
-        >
+        <div className={marginStyle}>
             <TinyMCE
-                content={props.value}
+                content={toTinyMCE(props.value)}
                 config={TINYCONFIG}
                 onChange={onValueChange}
             />
