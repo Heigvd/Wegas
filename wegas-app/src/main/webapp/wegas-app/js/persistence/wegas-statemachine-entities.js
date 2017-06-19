@@ -500,6 +500,11 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     properties: {
                         "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
                         content: {
+                            errored: function(val){
+                                if(!val){
+                                    return "Required";
+                                }
+                            },
                             type: STRING
                         }
                     },
