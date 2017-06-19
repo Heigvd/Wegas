@@ -8,12 +8,14 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.page.Pages;
@@ -85,12 +87,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     /**
      *
      */
-    @Inject
-    private Event<ResetEvent> resetEvent;
-
-    /**
-     *
-     */
     @EJB
     private FileController fileController;
 
@@ -105,6 +101,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     /**
      *
@@ -157,9 +156,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
     }
 
-    public void sendResetEvent(BroadcastTarget context){
+    public void runStateMachines(BroadcastTarget context){
+        this.runStateMachines(context, false);
+    }
+
+    public void runStateMachines(BroadcastTarget context, boolean clear) {
         // Send reset envent to run state machines
-        resetEvent.fire(new ResetEvent(context));
+        //resetEvent.fire(new ResetEvent(context, clear));
+        stateMachineFacade.runStateMachines(context, clear);
     }
 
 
@@ -450,7 +454,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false);
-        this.sendResetEvent(gameModel);
+        this.runStateMachines(gameModel);
     }
 
     public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {

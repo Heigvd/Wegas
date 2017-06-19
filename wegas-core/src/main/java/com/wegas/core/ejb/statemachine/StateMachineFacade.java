@@ -8,13 +8,12 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.*;
-import com.wegas.core.event.internal.PlayerAction;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -27,13 +26,14 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Run state machines.
@@ -85,17 +85,22 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     }
 
     /**
-     * @param playerAction
-     * @throws com.wegas.core.exception.internal.NoPlayerException
+     * @param target
+     * @param clear
      */
-    public void playerActionListener(@Observes PlayerAction playerAction) throws NoPlayerException, WegasScriptException {
-        logger.debug("Received PlayerAction event");
-        Player player = playerAction.getPlayer();
-        if (player == null) {
+    public void runStateMachines(BroadcastTarget target, boolean clear) throws WegasScriptException {
+
+        List<Player> players;
+        if (target == null || target.getPlayers() == null) {
+            logger.error("No Player Provided...");
+            Player player = null;
             for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
                 for (AbstractEntity entity : entry.getValue()) {
                     if (entity instanceof VariableInstance) {
-                        player = variableInstanceFacade.findAPlayer((VariableInstance) entity);
+                        try {
+                            player = variableInstanceFacade.findAPlayer((VariableInstance) entity);
+                        } catch (NoPlayerException ex) {
+                        }
                         break;
                     }
                 }
@@ -104,29 +109,19 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
                 }
             }
             if (player == null) {
-                throw new NoPlayerException("StateMachine Facade: NO PLAYER");
+                throw WegasErrorMessage.error("StateMachine Facade: NO PLAYER");
             }
+            players = new ArrayList<>();
+            players.add(player);
+        } else {
+            players = target.getPlayers();
         }
-        this.runForPlayer(player);
-        /*
-        Force resources release
-         */
-        getEntityManager().flush();
-        if (playerAction.getClear()) {
-            requestManager.clear();
-        }
-    }
 
-    /**
-     * @param resetEvent
-     */
-    public void resetEventListener(@Observes ResetEvent resetEvent) throws WegasScriptException {
         logger.debug("Received Reset event");
         getEntityManager().flush();
-        for (Player player : resetEvent.getConcernedPlayers()) {
-            this.runForPlayer(player);
+        for (Player player : players) {
+            this.runForPlayer(player, clear);
         }
-        getEntityManager().flush();
     }
 
     private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {
@@ -140,13 +135,20 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         return stateMachineDescriptors;
     }
 
-    private void runForPlayer(Player player) throws WegasScriptException {
+    private void runForPlayer(Player player, boolean clear) throws WegasScriptException {
         List<StateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
         List<Transition> passed = new ArrayList<>();
         //stateMachineEventsCounter = new InternalStateMachineEventCounter();
         Integer steps = this.doSteps(player, passed, statemachines, 0);
         logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
         //stateMachineEventsCounter = null;
+        /*
+        Force resources release
+         */
+        getEntityManager().flush();
+        if (clear) {
+            requestManager.clear();
+        }
     }
 
     private Integer doSteps(Player player, List<Transition> passedTransitions, List<StateMachineDescriptor> stateMachineDescriptors, Integer steps) throws WegasScriptException {
@@ -269,6 +271,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
      * Test if a script is not defined, ie empty or null
      *
      * @param script to test
+     *
      * @return
      */
     private Boolean isNotDefined(Script script) {

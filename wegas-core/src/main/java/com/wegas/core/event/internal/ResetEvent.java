@@ -31,6 +31,7 @@ import java.util.List;
 public class ResetEvent implements Serializable {
 
     private static final long serialVersionUID = -837744356172473317L;
+    private boolean clear;
 
     private BroadcastTarget context;
 
@@ -40,9 +41,11 @@ public class ResetEvent implements Serializable {
     /**
      *
      * @param context
+     * @param clear
      */
-    public ResetEvent(BroadcastTarget context) {
+    public ResetEvent(BroadcastTarget context, boolean clear) {
         this.context = context;
+        this.clear = clear;
     }
 
     /**
@@ -63,5 +66,13 @@ public class ResetEvent implements Serializable {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    public boolean isClear() {
+        return clear;
+    }
+
+    public void setClear(boolean clear) {
+        this.clear = clear;
     }
 }

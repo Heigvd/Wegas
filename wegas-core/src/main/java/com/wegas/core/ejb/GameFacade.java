@@ -146,7 +146,7 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true);
         
         this.addDebugTeam(game);
-        gameModelFacade.sendResetEvent(gameModel);
+        gameModelFacade.runStateMachines(gameModel);
 
         //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
         userFacade.addTrainerToGame(currentUser.getId(), game.getId());
@@ -434,7 +434,7 @@ public class GameFacade extends BaseFacade<Game> {
         
         this.getEntityManager().flush();
         //requestFacade.firePlayerAction(player, true);
-        gameModelFacade.sendResetEvent(player);
+        gameModelFacade.runStateMachines(player);
     }
 
     /**
@@ -534,7 +534,7 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void reset(final Game game) {
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), game, false);
-        gameModelFacade.sendResetEvent(game);
+        gameModelFacade.runStateMachines(game);
     }
 
     /**
