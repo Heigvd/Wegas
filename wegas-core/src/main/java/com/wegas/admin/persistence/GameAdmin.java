@@ -53,6 +53,7 @@ public class GameAdmin extends AbstractEntity {
     private String creator;
 
     @Temporal(value = TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime;
 
     @Enumerated(value = EnumType.STRING)

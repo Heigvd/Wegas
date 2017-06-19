@@ -26,6 +26,7 @@ public class AaiAccount extends AbstractAccount {
 
     private static final long serialVersionUID = 1L;
 
+    @Column(columnDefinition = "text")
     private String persistentId;
     private String homeOrg;
 

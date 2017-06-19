@@ -52,7 +52,7 @@ public class Message extends NamedEntity implements DatedEntity {
     /**
      *
      */
-    @Column(length = 64)
+    @Column(length = 64, columnDefinition = "character varying(64) default ''::character varying")
     private String token;
 
     @Lob
@@ -63,6 +63,7 @@ public class Message extends NamedEntity implements DatedEntity {
      * real world time for sorting purpose
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date sentTime = new Date();
 
     /**

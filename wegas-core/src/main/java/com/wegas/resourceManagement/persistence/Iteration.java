@@ -60,6 +60,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
 
     /**

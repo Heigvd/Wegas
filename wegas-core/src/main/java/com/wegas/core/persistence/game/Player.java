@@ -71,13 +71,14 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date joinTime = new Date();
     /**
      * The game model this belongs to
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JsonBackReference(value = "player-team")
-    @JoinColumn(name = "parentteam_id")
+    @JoinColumn(name = "parentteam_id", nullable = false)
     //@XmlInverseReference(mappedBy = "players")
     private Team team;
 
