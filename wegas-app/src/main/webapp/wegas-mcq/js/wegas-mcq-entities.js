@@ -927,13 +927,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             resultName: {
                 type: STRING,
-                _inputed: {
+                _inputex: {
                     _type: HIDDEN
                 }
             },
             choiceName: {
                 type: STRING,
-                _inputed: {
+                _inputex: {
                     _type: HIDDEN
                 }
             },
