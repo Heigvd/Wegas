@@ -112,6 +112,7 @@ public class UserFacade extends BaseFacade<User> {
      * Login as guest
      *
      * @return the just logged user
+     *
      * @throws WegasErrorMessage when guest not allowed
      */
     public User guestLogin() {
@@ -131,7 +132,12 @@ public class UserFacade extends BaseFacade<User> {
      * logout current user
      */
     public void logout() {
-        SecurityUtils.getSubject().logout();
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isRunAs()) {
+            subject.releaseRunAs();
+        } else {
+            subject.logout();
+        }
     }
 
     /**
@@ -151,6 +157,7 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @param username String representing the username
+     *
      * @return a User entity, based on the username
      */
     public User getUserByUsername(String username) {
@@ -164,6 +171,7 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @param persistentId String representing the user
+     *
      * @return a User entity, based on the persistentId
      */
     public User getUserByPersistentId(String persistentId) {
@@ -221,7 +229,9 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @param user
+     *
      * @return try to
+     *
      * @deprecated
      */
     public User findOrCreate(User user) {
@@ -245,7 +255,9 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @param accounts
+     *
      * @return list of user
+     *
      * @deprecated
      */
     public List<User> findOrCreate(List<AbstractAccount> accounts) {
@@ -261,11 +273,12 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * Get all roles which have some permissions on the given instance..
-     *
+     * <p>
      * Map is { id : role id, name: role name, permissions: list of permissions
      * related to instance}
      *
      * @param instance
+     *
      * @return list of "Role"
      */
     public List<Map> findRolePermissionByInstance(String instance) {
@@ -302,6 +315,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @param roleId     id of the role to add permission too
      * @param permission permission to add
+     *
      * @return true if the permission has successfully been added
      */
     public boolean addRolePermission(final Long roleId, final String permission) {
@@ -313,6 +327,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @param userId     id of the user
      * @param permission permission to add
+     *
      * @return true if the permission has successfully been added
      */
     public boolean addUserPermission(final Long userId, final String permission) {
@@ -322,6 +337,7 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * @param userId id of the user
      * @param p      permission to add
+     *
      * @return true if the permission has successfully been added
      */
     public boolean addUserPermission(final Long userId, final Permission p) {
@@ -333,6 +349,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @param user
      * @param permission
+     *
      * @return true if the permission has successfully been added
      */
     public boolean addUserPermission(final User user, final String permission) {
@@ -344,6 +361,7 @@ public class UserFacade extends BaseFacade<User> {
      * @param user
      * @param permission
      * @param inducedPermission
+     *
      * @return true if the permission has successfully been added
      */
     public boolean addUserPermission(final User user, final String permission, final String inducedPermission) {
@@ -355,6 +373,7 @@ public class UserFacade extends BaseFacade<User> {
      * Generate a Permission based on its string representation
      *
      * @param permissionStr string representation of the permission
+     *
      * @return the generated permission
      */
     private Permission generatePermisssion(final String permissionStr) {
@@ -371,6 +390,7 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @param instance
+     *
      * @return all user which have a permission related to the given instance
      */
     public List<User> findUserByPermissionInstance(String instance) {
@@ -381,6 +401,7 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @param instance
+     *
      * @return all user which have a permission related to the given instance
      */
     public List<User> findEditors(String instance) {
@@ -400,6 +421,7 @@ public class UserFacade extends BaseFacade<User> {
      * Get all users is
      *
      * @param role_id
+     *
      * @return all role members
      */
     public List<User> findUsersWithRole(Long role_id) {
@@ -601,6 +623,7 @@ public class UserFacade extends BaseFacade<User> {
      * ?
      *
      * @param playerId
+     *
      * @return true if the player is owned by the current user
      */
     public boolean matchCurrentUser(Long playerId) {
@@ -610,6 +633,7 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * @param accountRoles
      * @param compareRoles
+     *
      * @return true if at least a value exists in both lists
      */
     public boolean hasRoles(ArrayList<String> accountRoles, ArrayList<Role> compareRoles) {
@@ -676,6 +700,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @param type
      * @param id
+     *
      * @return true if current user has access to
      */
     private boolean hasPermission(String type, Long id) {
@@ -708,6 +733,7 @@ public class UserFacade extends BaseFacade<User> {
      * can current user subscribe to given channel ?
      *
      * @param channel
+     *
      * @return true if access granted
      */
     public boolean hasPermission(String channel) {

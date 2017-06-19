@@ -19,6 +19,7 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.Column;
 
 ////import javax.xml.bind.annotation.XmlRootElement;
 ////import javax.xml.bind.annotation.XmlTransient;
@@ -42,6 +43,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      *
      */
     @JsonView(Views.EditorI.class)
+    @Column(columnDefinition = "boolean default false")
     private Boolean disableSelf = true;
     /**
      *

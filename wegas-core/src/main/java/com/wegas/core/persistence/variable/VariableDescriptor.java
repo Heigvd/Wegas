@@ -224,6 +224,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     protected String name;
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {

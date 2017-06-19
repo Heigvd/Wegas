@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
+import javax.persistence.Column;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -56,6 +57,7 @@ public class QuestionInstance extends VariableInstance {
      * False until the user has clicked on the global question-wide "submit"
      * button.
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean validated = FALSE;
 
     /**

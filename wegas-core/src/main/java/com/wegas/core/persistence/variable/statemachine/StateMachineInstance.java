@@ -52,6 +52,7 @@ public class StateMachineInstance extends VariableInstance {
     /**
      *
      */
+    @Column(columnDefinition = "boolean default true")
     private Boolean enabled = true;
     /**
      *

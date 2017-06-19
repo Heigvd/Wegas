@@ -54,6 +54,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     private StateMachineDescriptor stateMachine;
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {

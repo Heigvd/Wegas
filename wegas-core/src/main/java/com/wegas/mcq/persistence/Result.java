@@ -51,6 +51,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     private static final long serialVersionUID = 1L;
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {

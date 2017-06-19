@@ -62,6 +62,7 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
 
     /**
@@ -91,7 +92,7 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      * The game model this belongs to
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "parentgame_id")
+    @JoinColumn(name = "parentgame_id", nullable = false)
     //@XmlTransient
     @JsonIgnore
     //@XmlInverseReference(mappedBy = "teams")
@@ -100,9 +101,10 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
 
     /**
      *
-     */
     @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
     private Long gameId;
+     */
+
 
     /**
      *

@@ -80,12 +80,14 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
 
     /**
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date updatedTime = new Date();
 
     /**
@@ -137,7 +139,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
      *
      */
     @Enumerated(value = EnumType.STRING)
-    @Column(length = 24)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
     /**
