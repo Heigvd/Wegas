@@ -47,7 +47,7 @@ public class ListUtils {
      * Extract Id from an abstractEntity
      *
      */
-    public static class IdExtractorA implements KeyExtractorI<Object, AbstractEntity> {
+    public static class IdExtractor implements KeyExtractorI<Object, AbstractEntity> {
 
         @Override
         public Object getKey(AbstractEntity item) {
@@ -159,7 +159,7 @@ public class ListUtils {
             /**
              * No converter provided: use id as default key
              */
-            converter = (KeyExtractorI<Object, E>) new IdExtractorA();
+            converter = (KeyExtractorI<Object, E>) new IdExtractor();
         }
 
         /* map otherElements by their key */
