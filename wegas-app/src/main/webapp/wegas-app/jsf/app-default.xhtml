@@ -107,6 +107,14 @@
                         ix.root = "/lib/inputex/src/";
                         ix.comboBase = YUI_config.Wegas.comboBase;
                         ix.combine = #{!requestController.debugMode()};
+
+                        YUI_config.groups.gallery = {
+                            base: 'https://cdn.rawgit.com/yui/yui3-gallery/gallery-2014.07.31-18-26/build/',
+                            patterns: {
+                                "gallery-": {},
+                                "gallerycss-": {type: "css"}
+                            
+                        };
                 </script>
 
                 <!-- Page body, overridden in sub templates -->
