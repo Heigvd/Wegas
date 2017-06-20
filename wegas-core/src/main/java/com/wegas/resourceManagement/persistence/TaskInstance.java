@@ -298,7 +298,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
             this.setActive(other.getActive());
             //this.setDuration(other.getDuration());
             this.setProperties(other.getProperties());
-            ListUtils.ListKeyToMap<Object, WRequirement> converter;
+            ListUtils.KeyExtractorI<Object, WRequirement> converter;
             converter = new WRequirementToNameConverter();
 
             this.setRequirements(ListUtils.mergeLists(this.getRequirements(), other.getRequirements(), converter));
@@ -326,7 +326,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
         }
     }
 
-    private static class WRequirementToNameConverter implements ListUtils.ListKeyToMap<Object, WRequirement> {
+    private static class WRequirementToNameConverter implements ListUtils.KeyExtractorI<Object, WRequirement> {
 
         @Override
         public String getKey(WRequirement item) {
