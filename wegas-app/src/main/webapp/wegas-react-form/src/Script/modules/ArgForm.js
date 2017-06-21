@@ -27,7 +27,7 @@ export default class ArgFrom extends React.Component {
                             ? typeToValue(val, schema)
                             : undefined
                     }
-                    onChange={v => onChange(valueToType(v, schema))}
+                    onChange={v => onChange(valueToType(v, this.props.schema))}
                 />
             </div>
         );
