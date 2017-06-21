@@ -18,7 +18,7 @@ module.exports = {
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
-        // new webpack.optimize.ModuleConcatenationPlugin(), // webpack 3
+        // new webpack.optimize.ModuleConcatenationPlugin(), // webpack 3: Doesn't trigger watch mode.
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
             // children: true,
