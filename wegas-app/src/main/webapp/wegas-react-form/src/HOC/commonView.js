@@ -68,7 +68,7 @@ export default function commonView(Comp) {
                 </span>
 
             ));
-        const layout = props.view.layout || 'long';
+        const layout = props.view.layout;
         return (
             <div
                 className={classNames(
