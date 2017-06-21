@@ -16,15 +16,6 @@
                 "type": "UserLoginButton"
             }, {
                 "type": "Button",
-                "label": "<span class=\"fa fa-superpowers\" title=\"Advanced mode\"></span>",
-                "cssClass": "wegas-advanced-mode",
-                "plugins": [
-                    {
-                        "fn": "EditorMode"
-                    }
-                ]
-            }, {
-                "type": "Button",
                 "label": "<span class=\"fa fa-repeat fa-rotate-180\" title=\"Restart game\"></span>",
                 "cssClass": "editor-restart-button",
                 "plugins": [
