@@ -173,7 +173,8 @@ public class Reply extends AbstractEntity implements DatedEntity {
     }
 
     public String getResultName() {
-        if (!Helper.isNullOrEmpty(resultName)) {
+        if (resultName != null) {
+            // for backward compat, empty string is a valid result name
             return resultName;
         }
         if (this.getResult() != null) {
@@ -229,6 +230,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
         this.setChoiceName(null);
     }
 
+    @JsonIgnore
     public Replies getReplies() {
         return replies;
     }
