@@ -19,7 +19,9 @@ import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -229,6 +231,48 @@ public class Reply extends AbstractEntity implements DatedEntity {
         this.setResultName(null);
         this.setChoiceName(null);
     }
+
+    public String getAnswer() {
+        Result result = this.getResult();
+        if (result != null) {
+            return result.getAnswer();
+        } else {
+            return "";
+        }
+    }
+
+    public void setAnswer(String answer) {
+        // Make Jackson happy
+    }
+
+    public String getIgnorationAnswer() {
+        Result result = this.getResult();
+        if (result != null) {
+            return result.getIgnorationAnswer();
+        } else {
+            return "";
+        }
+    }
+
+    public void setIgnorationAnswer(String answer) {
+        // Make Jackson happy
+    }
+
+ 
+    public List<String> getFiles() {
+        Result result = this.getResult();
+        if (result != null) {
+            return result.getFiles();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    public void setFiles(List<String> files) {
+        // Make Jackson happy
+    }
+
+   
 
     @JsonIgnore
     public Replies getReplies() {

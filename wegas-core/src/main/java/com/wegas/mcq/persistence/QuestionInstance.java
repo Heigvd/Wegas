@@ -97,7 +97,7 @@ public class QuestionInstance extends VariableInstance {
      */
     @JsonIgnore
     public List<Reply> getSortedReplies() {
-        return Helper.copyAndSort(this.replies, new EntityComparators.CreateTimeComparator<>());
+        return Helper.copyAndSort(this.getReplies(), new EntityComparators.CreateTimeComparator<>());
     }
 
     /**
