@@ -36,7 +36,7 @@ module.exports = {
                 NODE_ENV: JSON.stringify('production')
             }
         }),
-        new webpack.optimize.ModuleConcatenationPlugin(),
+        // new webpack.optimize.ModuleConcatenationPlugin(), // webpack 3
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
             // children: true,
