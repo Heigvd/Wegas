@@ -18,6 +18,7 @@ module.exports = {
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
     plugins: [
+        new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
             // children: true,
