@@ -506,7 +506,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             UIHelper.endDiv(writer); // end COLUMN
             UIHelper.endDiv(writer); // end COLUMNS
 
-            if (question.getAllowMultipleReplies() || instance.getReplies().isEmpty()) {
+            if (question.getAllowMultipleReplies() || instance.getSortedReplies().isEmpty()) {
                 for (ChoiceDescriptor choice : question.getItems()) {
                     encode(context, writer, choice);
                 }
