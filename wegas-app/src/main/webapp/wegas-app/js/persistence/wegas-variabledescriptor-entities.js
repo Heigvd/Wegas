@@ -1296,7 +1296,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 {
                     type: BUTTON,
-                    label: '<span class="wegas-icon wegas-icon-sort"></span>Sort',
+                    label: 'Sort',
                     plugins: [
                         {
                             fn: 'SortEntityAction'

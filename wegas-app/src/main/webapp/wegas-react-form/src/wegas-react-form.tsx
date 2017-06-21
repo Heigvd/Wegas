@@ -12,11 +12,39 @@ import {
     IndependantVariableStatement,
     register,
 } from './Script/index';
+import { css } from 'glamor';
 
 const Y = getY(); // Current YUI instance
 const Wegas: { [key: string]: any } = Y.Wegas;
 // const inputEx = Y.inputEx;
 const FORM = 'form';
+
+const wegasSimpleButtonStyle = css({
+    background: 'none !important',
+    fontSize: '26px',
+    padding: '2px 6px 1px'
+});
+const saveBtnStyle = css({
+    background: 'none',
+    transition: '1s',
+});
+const activeSaveBtnStyle = css(
+    saveBtnStyle, {
+        color: 'black',
+        ':hover': {
+            color: 'green'
+        }
+});
+const inactiveSaveBtnStyle = css(
+    saveBtnStyle, {
+        color: 'gray'
+    }
+);
+const setSavingBtnStyle = css(
+    saveBtnStyle, {
+        color: '#4cb050'
+    }
+);
 
 const Form = Y.Base.create(
     'wegas-react-form',
@@ -110,6 +138,7 @@ const Form = Y.Base.create(
             // if (val.valueselector) {
             //     val = val.valueselector;
             // }
+            this.animateSaveBtn();
             this.fire('submit', {
                 value: JSON.parse(JSON.stringify(val)), // Immutability ...
             });
@@ -117,6 +146,27 @@ const Form = Y.Base.create(
         validate() {
             return this.get('form').validate();
         },
+        // Set visual feedback for when the "save" button should be clicked
+        activateSaveBtn() {
+            const btn = this.get('contentBox').get("parentNode").one('.wegas-save-form-button');
+            btn.removeClass(setSavingBtnStyle.toLocaleString()).removeClass(inactiveSaveBtnStyle.toString()).addClass(activeSaveBtnStyle.toString());
+            btn.setAttribute('title', 'Save your changes');
+        },
+        // Set visual feedback for when the "save" button is clicked and switches between saving and not saving
+        animateSaveBtn(setSaving: boolean = true, milliSeconds: number = 2000) {
+            const btn = this.get('contentBox').get("parentNode").one('.wegas-save-form-button');
+            if (setSaving) {
+                btn.removeClass(inactiveSaveBtnStyle.toString()).removeClass(activeSaveBtnStyle.toString()).addClass(setSavingBtnStyle.toLocaleString());
+                btn.setAttribute('title', 'Saving ...');
+            }
+            if (!setSaving || milliSeconds >= 0){
+                setTimeout(function(){
+                    if (!btn) alert('no btn');
+                    btn.removeClass(setSavingBtnStyle.toLocaleString()).removeClass(activeSaveBtnStyle.toString()).addClass(inactiveSaveBtnStyle.toString());
+                    btn.setAttribute('title', 'Nothing to save');
+                }, milliSeconds);
+            }
+        }
     },
     {
         /** @lends Y.Wegas.Form */
@@ -228,7 +278,8 @@ const Form = Y.Base.create(
                     {
                         type: 'Button',
                         action: 'submit',
-                        label: '<span class="wegas-icon wegas-icon-save" ></span>Save',
+                        cssClass: wegasSimpleButtonStyle.toString(),
+                        label: '<span class="wegas-save-form-button fa fa-check-circle ' + inactiveSaveBtnStyle.toString() + '" title="No changes to save"></span>',
                     },
                 ],
                 view: { type: 'hidden' },

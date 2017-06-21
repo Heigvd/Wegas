@@ -75,6 +75,28 @@ YUI.add("wegas-editor-entityaction", function(Y) {
          * @returns {undefined}
          */
         showUpdateForm: function(entity, dataSource) {
+
+            /*
+             * Adds icon, styling and tooltip to a button being created. Uses Font Awesome icons.
+             *
+             * @param menuItem the button being created
+             * @param faName the icon name in Font Awesome
+             * @param tooltip optional: the text to be displayed on mouse hover
+             * @param bgStyle optional: the CSS class of the background circle
+             * @return the modified menuItem
+             */
+            function stackedIcon(menuItem, faName, tooltip, bgStyle) {
+                bgStyle = bgStyle || '';
+                tooltip = tooltip ? ' title="' + tooltip + '"' : '';
+                menuItem.label =
+                    '<span class="fa-stack fa-lg"' + tooltip + '">' +
+                    '<i class="fa fa-circle fa-stack-2x ' + bgStyle + '"></i>' +
+                    '<i class="fa ' + faName + ' fa-stack-1x"></i>' +
+                    '</span>';
+                menuItem.cssClass = (menuItem.cssClass ? menuItem.cssClass + ' ' : '') + 'wegas-stacked-button';
+                return menuItem;
+            }
+
             return new Promise(function(resolve) {
                 var doShow = function(entity, dataSource) {
                     EditEntityAction.hideRightTabs();
@@ -84,7 +106,9 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             on: {
                                 success: function(res) {
                                     EditEntityAction.showUpdateForm(res.response.entity, dataSource).then(function() {
-                                        EditEntityAction.showFormMessage("success", "Item updated");
+                                        //EditEntityAction.showFormMessage("success", "Item updated");
+                                        var form = EditEntityAction.getEditionTab().form;
+                                        form.animateSaveBtn();
                                         EditEntityAction.hideEditFormOverlay();
                                     });
                                 },
@@ -100,34 +124,51 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
 
                     Y.Array.each(menuItems, function(i) {                       // @hack add icons to some buttons
-                        switch (i.label) {
-                            case "Add":
-                                allowedChildren = entity.get("allowedTypes");
-                                // is children type restricted ?
-                                if (allowedChildren && allowedChildren.length > 0) {
-                                    Y.Array.each(i.plugins[0].cfg.children, function(child) {
-                                        if (allowedChildren && allowedChildren.length > 0 && !Y.Array.find(allowedChildren, function(allowedType) {
-                                            return child.targetClass === allowedType;
-                                        })) {
-                                            child.cssClass = "wegas-forbidden-feature";
-                                        }
-                                    }, this);
-                                }
-                            case "Delete":
-                            case "New":
-                            case "Copy":
-                            case "View":
-                            case "Open in editor":
-                            case "Open":
-                            case "Edit":
-                                i.label = '<span class="wegas-icon wegas-icon-' +
-                                    i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                        if (! i.label) {                                        // @Overhack to centralize more icon definitions here
+                            switch (i.type) {
+                                case "DeleteEntityButton":
+                                    i = stackedIcon(i, 'fa-trash', 'Delete');
+                                    break;
+                            }
+                        } else {
+                            switch (i.label) {
+                                case "New":
+                                case "View":
+                                case "Open in editor":
+                                case "Open":
+                                case "Edit":
+                                    i.label = '<span class="wegas-icon wegas-icon-' +
+                                        i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                                    break;
+                                case "Add":
+                                    allowedChildren = entity.get("allowedTypes");
+                                    // is children type restricted ?
+                                    if (allowedChildren && allowedChildren.length > 0) {
+                                        Y.Array.each(i.plugins[0].cfg.children, function (child) {
+                                            if (allowedChildren && allowedChildren.length > 0 && !Y.Array.find(allowedChildren, function (allowedType) {
+                                                    return child.targetClass === allowedType;
+                                                })) {
+                                                child.cssClass = "wegas-forbidden-feature";
+                                            }
+                                        }, this);
+                                    }
+                                    i = stackedIcon(i, 'fa-plus-circle', 'Add element');
+                                    break;
+                                case "Sort":
+                                    i = stackedIcon(i, 'fa-sort-alpha-asc', 'Sort contents alphabetically');
+                                    break;
+                                case "Copy":
+                                    i = stackedIcon(i, 'fa-files-o', 'Duplicate');
+                                    break;
+                                case "Export":
+                                    i = stackedIcon(i, 'fa-download',  'Export');
+                                    break;
+
+                            }
                         }
                     });
                     form.toolbar.add(menuItems);
-                    if (form.toolbar.item(0)) {
-                        form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px");
-                    }
+                    //if (form.toolbar.item(0)) { form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px"); }
                     resolve(form);
                 };
                 EditEntityAction.hideRightTabs();                                   // Hide all active tabs
@@ -209,7 +250,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             });
             tab.form.detach("updated");
             tab.form.on("updated", function(e) {
-                EditEntityAction.showFormMessage("success", "Changes not saved");
+                //EditEntityAction.showFormMessage("success", "Changes not saved");
+                tab.form.activateSaveBtn();
             });
             Y.fire("edit-entity:edit", {entity: entity});
             //tab.form.detach("cancel");
@@ -748,9 +790,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         }
     }, {
         ATTRS: {
-            label: {
-                value: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete"
-            }
+//            label: {
+                //value: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete"
+//                value: "XXX" // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete"
+//            }
         }
     });
 

@@ -370,9 +370,8 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 }
 
 .yui3-skin-sam .wegas-layout-hd .editor-restart-button,
-.yui3-skin-sam .wegas-layout-hd .wegas-advanced-mode,
 .yui3-skin-sam .wegas-layout-hd .wegas-login {
-    color: #4c4c4c;
+    color: #666;
     font-size: 21px;
     line-height: 1em;
     float: right !important;
@@ -383,16 +382,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     border-radius: 50%;
 }
 
-.yui3-skin-sam .wegas-layout-hd .editor-restart-button,
-.yui3-skin-sam .wegas-layout-hd .wegas-advanced-mode {
+.yui3-skin-sam .wegas-layout-hd .editor-restart-button {
     font-size: 18px;
     margin-right: 10px;
-}
-
-.yui3-skin-sam .wegas-layout-hd .wegas-advanced-mode {
-    font-size: 17px;
-    position: relative;
-    top: 1px;
 }
 
 .yui3-skin-sam .wegas-layout-hd .wegas-login:after {
@@ -400,7 +392,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 }
 
 .yui3-skin-sam .wegas-layout-hd .editor-restart-button:hover,
-.yui3-skin-sam .wegas-layout-hd .wegas-advanced-mode:hover,
 .yui3-skin-sam .wegas-layout-hd .wegas-login:hover {
     background: rgba(221, 221, 221, 0.25);
     color: red;
@@ -450,6 +441,32 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     text-shadow: none; /* 1px 1px 1px black, 1px 1px 1px black; */
     color: #4c4c4c;
     margin: 6px 30px 0 5px;
+}
+
+/* New form buttons */
+.yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-simple-button {
+    background: none;
+    font-size: 20px;
+    color: white;
+}
+.yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-simple-button:hover {
+
+}
+.yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-stacked-button {
+    background: none;
+    font-size: 13px;
+    color: gray;
+    padding: 0;
+    margin-top: -2px;
+}
+.yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-stacked-button.wegas-widgetmenu-hassubmenu::after {
+    display: none;
+}
+.yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-stacked-button .fa-circle {
+    color: white;
+}
+.yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-stacked-button:hover .fa-circle {
+    color: #eee;
 }
 
 /* Player link menu */

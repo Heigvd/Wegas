@@ -90,8 +90,7 @@ function IconButton({
     label,
     prefixedLabel,
     labelClassName,
-    stackedOnIcon,
-    stackedOnClassName
+    stackedOnIcon
 }: Props) {
     return (
         <span
