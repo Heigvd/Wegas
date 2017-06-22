@@ -54,6 +54,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     SELFARG = {
         type: 'identifier',
         value: SELF,
+        const: SELF,
         view: { type: HIDDEN }
     };
 

@@ -12,13 +12,21 @@ export default class ArgFrom extends React.Component {
         };
     }
     shouldComponentUpdate(nextProps) {
-        return !!(
-            nextProps.value &&
-            this.props.value &&
-            (nextProps.value.type !== this.props.value.type ||
-                nextProps.value.value !== this.props.value.value ||
-                nextProps.value.name !== this.props.value.name)
+        return (
+            this.props.schema !== nextProps.schema ||
+            !!(
+                nextProps.value &&
+                this.props.value &&
+                (nextProps.value.type !== this.props.value.type ||
+                    nextProps.value.value !== this.props.value.value ||
+                    nextProps.value.name !== this.props.value.name)
+            )
         );
+    }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.schema !== this.props.schema) {
+            this.setState({ schema: argSchema(nextProps.schema) });
+        }
     }
     render() {
         const { value, onChange } = this.props;
