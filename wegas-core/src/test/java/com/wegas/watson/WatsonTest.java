@@ -2,8 +2,8 @@ package com.wegas.watson;
 
 import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
 import com.ibm.watson.developer_cloud.conversation.v1.model.CreateExample;
+import com.ibm.watson.developer_cloud.conversation.v1.model.CreateIntent;
 import com.ibm.watson.developer_cloud.conversation.v1.model.CreateWorkspace;
-import com.ibm.watson.developer_cloud.conversation.v1.model.Intent;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.conversation.v1.model.WorkspaceResponse;
@@ -28,12 +28,14 @@ public class WatsonTest {
                 .build();
         WorkspaceResponse r = service.createWorkspace(w).execute();
         
+        CreateExample e = new CreateExample.Builder().text("coucou").build();
+        CreateIntent i = new CreateIntent.Builder().examples(e).build();
+        System.out.println(i.examples().get(0));
+        
         MessageRequest newMessage = new MessageRequest.Builder().inputText("Fumes-tu?").alternateIntents(Boolean.TRUE)
         // Replace with the context obtained from the initial request
         //.context(...)
         .build();
-        
-        CreateExample e = new CreateExample.Builder().text("Fumes-tu").build();
 
         String workspaceId = r.getWorkspaceId();
         
