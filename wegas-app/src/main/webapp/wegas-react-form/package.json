@@ -5,13 +5,13 @@
   "main": "src/index.js",
   "private": true,
   "scripts": {
-    "start": "webpack --config webpack.config.dev.js --watch",
+    "start": "webpack --watch",
     "clean": "rimraf dist",
-    "build:webpack": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
+    "build:webpack": "cross-env NODE_ENV=production webpack",
     "build": "npm run clean && npm run lint && npm run build:webpack",
     "lint": "tslint src/**/*.ts src/**/*.tsx",
     "eslint": "eslint src/**/*.js src/**/*.jsx",
-    "dev:build": "webpack --config webpack.config.dev.js"
+    "dev:build": "webpack"
   },
   "author": "CiGit",
   "license": "MIT",
