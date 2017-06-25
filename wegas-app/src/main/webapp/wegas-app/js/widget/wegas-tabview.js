@@ -138,8 +138,8 @@ YUI.add('wegas-tabview', function(Y) {
          *  tabview reference and the configuration of the new tab.
          */
         createTab: function(id, tabViewSelector, tabCfg, tabIndex) {
-            var existingTab = TabView.tabs[id];
             tabCfg = tabCfg || {};
+            var existingTab = TabView.tabs[id];
             if (!existingTab) {                                                         // If the tab does not exist,
                 var tabs, tabView = Y.Widget.getByNode(tabViewSelector);        // Look for the parent
                 Y.mix(tabCfg, {
@@ -153,70 +153,34 @@ YUI.add('wegas-tabview', function(Y) {
             } else {                                                            // If the tab exists ...
                 var prevSelector = existingTab.get("tabSelector");
                 if (prevSelector !== tabViewSelector) {                         // ... and is on another tabview,
-
-                    /*
-  var code_type = 2;
-  if (code_type === 1) {
-
                     var tabs,
-                        newTabView = Y.Widget.getByNode(tabViewSelector),
-                        oldTabView = Y.Widget.getByNode(prevSelector);
-                    existingTab.set("selected", 0);
+                        newTabView = Y.Widget.getByNode(tabViewSelector);
                     Y.mix(tabCfg, {
                         label: tabCfg.label || id,
                         id: id,
                         tabSelector: tabViewSelector,
+                        panelNode: existingTab.get("panelNode")
                     });
-                    tabs = newTabView.add(tabCfg, tabIndex);                    // Instantiate a new tab
+                    tabs = newTabView.add(tabCfg, tabIndex);                    // Instantiate new tab with old panel
                     var newTab = tabs.item(0),
-                        newPanelNode = newTab.get("panelNode"),
-                        oldPanelNode = existingTab.get("panelNode");
+                        newPanelNode = newTab.get("panelNode");
                     if (existingTab.hasPlugin("hideable")) {
                         newTab.plug(Hideable);
                     }
-                    newTabView.get("panelNode").replaceChild(oldPanelNode, newPanelNode);
                     newTabView.deselectAll();
                     newTab.set("selected", 1);
-                    // The new panel must also be selected
-                    oldPanelNode.addClass("yui3-tab-panel-selected");
-
+                    newPanelNode.addClass("yui3-tab-panel-selected");
+                    // @HACK Special treatment for the Preview panel, it needs reloading to become fully usable:
+                    if (existingTab.hasPlugin("hideable")) {
+                        Y.Wegas.PageLoader.find("previewPageLoader").reload();
+                    }
+                    // Make the old tab coherent to enable its deletion:
                     existingTab.set("panelNode", Y.Node.create('<div class="yui3-tab-panel">To delete</div>'));
-                    existingTab.remove(); //.destroy();                                               // and delete the old one
-
+                    existingTab.set("selected", 0);
+                    existingTab.remove(); //.destroy();
                     return newTab;
-  } else {
-// Fonctionne, mais le nouveau panneau est dupliqué, peut-être un problème de (pré)sélection de panneau:
-
-      // set("panelNode") mal défini, englobant plusieurs panneaux ???
-
-                        var tabs,
-                            newTabView = Y.Widget.getByNode(tabViewSelector),
-                            oldTabView = Y.Widget.getByNode(prevSelector);
-                        Y.mix(tabCfg, {
-                            label: tabCfg.label || id,
-                            id: id,
-                            tabSelector: tabViewSelector,
-                            panelNode: existingTab.get("panelNode")
-                        });
-                        tabs = newTabView.add(tabCfg, tabIndex);                    // Instantiate a new tab
-                        var newTab = tabs.item(0),
-                            newPanelNode = newTab.get("panelNode"),
-                            oldPanelNode = existingTab.get("panelNode");
-                        newTabView.deselectAll();
-                        newTab.set("selected", 1);
-                        oldPanelNode.addClass("yui3-tab-panel-selected");
-
-                        existingTab.set("panelNode", Y.Node.create('<div class="yui3-tab-panel">To delete</div>'));
-                        existingTab.set("selected", 0);
-                        existingTab.remove(); //.destroy();                                               // and delete the old one
-
-                        return newTab;
-}
-*/
-
-
-                } else {                                                        // The tab exists in the correct tab:
-                    existingTab.setAttrs(tabCfg);                                       // just update the tab config
+                } else {                                                        // The tab exists in the correct tabView:
+                    existingTab.setAttrs(tabCfg);                               // just update the tab config
                 }
             }
             return existingTab;
@@ -235,11 +199,13 @@ YUI.add('wegas-tabview', function(Y) {
          * @description Load a tab corresponding with the given parameters.
          */
         findTabAndLoadWidget: function(id, tabViewSelector, tabCfg, widgetCfg, fn) {
+            var isNew = !(TabView.getTab(id));
             var nTab = TabView.createTab(id, tabViewSelector, tabCfg);          // create a new one
 
-            nTab.destroyAll();                                                  // Empty it
-            nTab.load(widgetCfg, fn);                                           // Load target widget
-
+            if (isNew) {
+                nTab.destroyAll();                                                  // Empty it
+                nTab.load(widgetCfg, fn);                                           // Load target widget
+            }
             return nTab;
         }
     });
@@ -531,12 +497,12 @@ YUI.add('wegas-tabview', function(Y) {
             this.close();
             e.stopPropagation();
         },
-        close() {
+        close: function() {
             var tab = this.get("host");
             tab.hide();
             tab.get("panelNode").hide();
         },
-        expand() {
+        expand: function() {
             var tab = this.get("host");
             tab.show();
             tab.get("panelNode").show()

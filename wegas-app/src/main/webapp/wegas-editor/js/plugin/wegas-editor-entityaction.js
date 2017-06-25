@@ -99,7 +99,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
             return new Promise(function(resolve) {
                 var doShow = function(entity, dataSource) {
-                    EditEntityAction.hideRightTabs();
+                    //EditEntityAction.hideRightTabs();
                     var form = EditEntityAction.showEditForm(entity, function(data) { // Display the edit form
                         // entity.setAttrs(cfg);
                         dataSource.cache.put(data, {
@@ -116,7 +116,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             }
                         });
                     }),
-                        // Retrieve menu and remove the first item
+                        // Rrieve menu and remove the first item
                         menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
                             return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
                         }),
@@ -171,7 +171,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     //if (form.toolbar.item(0)) { form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px"); }
                     resolve(form);
                 };
-                EditEntityAction.hideRightTabs();                                   // Hide all active tabs
+                //EditEntityAction.hideRightTabs();                                   // Hide all active tabs
                 EditEntityAction.getEditionTab();                                   // Create the edition tab
                 // (and the left panel won't pop in and out)
 
@@ -265,7 +265,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         },
         getEditionTab: function() {
             if (!EditEntityAction.tab || EditEntityAction.tab.get("destroyed")) {// First make sure the edit tab does not exist
-                var tab = Wegas.TabView.createTab("Edit", "#rightTabView", {}, 0), // Create a tab,
+                var tab = Wegas.TabView.createTab("Edit", "#centerTabView"),     // Create a tab,
                     form = new Wegas.RForm();                                    // and a form
 
                 tab.plug(Plugin.Removeable);                                  // make it closeable

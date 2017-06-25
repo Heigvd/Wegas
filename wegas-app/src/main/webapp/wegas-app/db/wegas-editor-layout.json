@@ -164,6 +164,7 @@
         ]
     },
     "center": {
+        "width": "455px",
         "children": [
             {
                 "id": "centerTabView",
@@ -303,7 +304,7 @@
         ]
     },
     "right": {
-        "width": "455px",
+        "width": "calc( 100% - 300px - 455px )",
         "children": [
             {
                 "type": "TabView",
