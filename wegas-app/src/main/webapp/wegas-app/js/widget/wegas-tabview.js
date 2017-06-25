@@ -138,19 +138,88 @@ YUI.add('wegas-tabview', function(Y) {
          *  tabview reference and the configuration of the new tab.
          */
         createTab: function(id, tabViewSelector, tabCfg, tabIndex) {
-            if (!TabView.tabs[id]) {                                            // If the tab does not exist,
+            var existingTab = TabView.tabs[id];
+            tabCfg = tabCfg || {};
+            if (!existingTab) {                                                         // If the tab does not exist,
                 var tabs, tabView = Y.Widget.getByNode(tabViewSelector);        // Look for the parent
-                tabCfg = tabCfg || {};
                 Y.mix(tabCfg, {
                     label: tabCfg.label || id,
-                    id: id
+                    id: id,
+                    tabSelector: tabViewSelector
                 });
+                tabView.deselectAll();
                 tabs = tabView.add(tabCfg, tabIndex);                           // Instantiate a new tab
                 return tabs.item(0);
-            } else {                                                            // Otherwise,
-                TabView.tabs[id].setAttrs(tabCfg);                            // update the tab config
+            } else {                                                            // If the tab exists ...
+                var prevSelector = existingTab.get("tabSelector");
+                if (prevSelector !== tabViewSelector) {                         // ... and is on another tabview,
+
+                    /*
+  var code_type = 2;
+  if (code_type === 1) {
+
+                    var tabs,
+                        newTabView = Y.Widget.getByNode(tabViewSelector),
+                        oldTabView = Y.Widget.getByNode(prevSelector);
+                    existingTab.set("selected", 0);
+                    Y.mix(tabCfg, {
+                        label: tabCfg.label || id,
+                        id: id,
+                        tabSelector: tabViewSelector,
+                    });
+                    tabs = newTabView.add(tabCfg, tabIndex);                    // Instantiate a new tab
+                    var newTab = tabs.item(0),
+                        newPanelNode = newTab.get("panelNode"),
+                        oldPanelNode = existingTab.get("panelNode");
+                    if (existingTab.hasPlugin("hideable")) {
+                        newTab.plug(Hideable);
+                    }
+                    newTabView.get("panelNode").replaceChild(oldPanelNode, newPanelNode);
+                    newTabView.deselectAll();
+                    newTab.set("selected", 1);
+                    // The new panel must also be selected
+                    oldPanelNode.addClass("yui3-tab-panel-selected");
+
+                    existingTab.set("panelNode", Y.Node.create('<div class="yui3-tab-panel">To delete</div>'));
+                    existingTab.remove(); //.destroy();                                               // and delete the old one
+
+                    return newTab;
+  } else {
+// Fonctionne, mais le nouveau panneau est dupliqué, peut-être un problème de (pré)sélection de panneau:
+
+      // set("panelNode") mal défini, englobant plusieurs panneaux ???
+
+                        var tabs,
+                            newTabView = Y.Widget.getByNode(tabViewSelector),
+                            oldTabView = Y.Widget.getByNode(prevSelector);
+                        Y.mix(tabCfg, {
+                            label: tabCfg.label || id,
+                            id: id,
+                            tabSelector: tabViewSelector,
+                            panelNode: existingTab.get("panelNode")
+                        });
+                        tabs = newTabView.add(tabCfg, tabIndex);                    // Instantiate a new tab
+                        var newTab = tabs.item(0),
+                            newPanelNode = newTab.get("panelNode"),
+                            oldPanelNode = existingTab.get("panelNode");
+                        newTabView.deselectAll();
+                        newTab.set("selected", 1);
+                        oldPanelNode.addClass("yui3-tab-panel-selected");
+
+                        existingTab.set("panelNode", Y.Node.create('<div class="yui3-tab-panel">To delete</div>'));
+                        existingTab.set("selected", 0);
+                        existingTab.remove(); //.destroy();                                               // and delete the old one
+
+                        return newTab;
+}
+*/
+
+
+                } else {                                                        // The tab exists in the correct tab:
+                    existingTab.setAttrs(tabCfg);                                       // just update the tab config
+                }
             }
-            return TabView.tabs[id];
+            return existingTab;
         },
         findTab: function(id) {
             return TabView.tabs[id];
@@ -265,6 +334,14 @@ YUI.add('wegas-tabview', function(Y) {
                     alignAttr: "panelNode",
                     filter: ["success"]
                 });
+            }
+
+            if (cfg.selected === true) {
+                this.set("selected", 1);     // Make this tab selected by default
+            }
+
+            if (cfg.tabSelector) {
+                this.set("tabSelector", cfg.tabSelector);   // Remember where the tab is placed
             }
         },
         /**
@@ -441,9 +518,41 @@ YUI.add('wegas-tabview', function(Y) {
         }
     });
     Plugin.Removeable = Removeable;
+
+    /**
+     * Hide the tab (and its corresponding panel) instead of deleting it when the user closes it.
+     * @constructor
+     */
+    var Hideable = function() {
+        Hideable.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(Hideable, Removeable, {
+        onRemoveClick: function(e) {
+            this.close();
+            e.stopPropagation();
+        },
+        close() {
+            var tab = this.get("host");
+            tab.hide();
+            tab.get("panelNode").hide();
+        },
+        expand() {
+            var tab = this.get("host");
+            tab.show();
+            tab.get("panelNode").show()
+        }
+    }, {
+        NS: "hideable",
+        NAME: "HideableTabs",
+        ATTRS: {
+        }
+    });
+    Plugin.Hideable = Hideable;
+
+
     /**
      * Remove host tab and creates a button to restore it.
-     * @constructor
+     * @deprecated
      */
     TabDocker = function() {
         TabDocker.superclass.constructor.apply(this, arguments);

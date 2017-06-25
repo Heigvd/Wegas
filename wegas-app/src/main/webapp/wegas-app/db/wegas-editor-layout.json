@@ -181,149 +181,36 @@
                                     "children": [
                                         {
                                             "type": "OpenTabButton",
-                                            "label": "Files",
+                                            "label": "Preview",
                                             "wchildren": [
                                                 {
-                                                    "type": "FileExplorer",
+                                                    "type": "PageLoader",
+                                                    "pageLoaderId": "previewPageLoader",
+                                                    "defaultPageId": "default",
+                                                    "cssClass": "editor-preview wegas-playerview",
                                                     "plugins": [
                                                         {
-                                                            "fn": "WidgetToolbar"
+                                                            "fn": "PreviewFullScreen"
+                                                        }, {
+                                                            "fn": "WidgetToolbar",
+                                                            "cfg": {
+                                                                "children": []
+                                                            }
+                                                        }, {
+                                                            "fn": "PageEditor"
+                                                        }, {
+                                                            "fn": "Injector"
+                                                        }, {
+                                                            "fn": "PopupListener"
+                                                        }, {
+                                                            "fn": "ServerPopupListener"
+                                                        }, {
+                                                            "fn": "GetPageIdFromQueryString"
                                                         }
                                                     ]
                                                 }
                                             ]
-                                        }, {
-                                            "type": "OpenTabButton",
-                                            "label": "Styles",
-                                            "wchildren": [
-                                                {
-                                                    "type": "ScriptLibrary",
-                                                    "library": "CSS",
-                                                    "cssClass": "wegas-csseditor"
-                                                }
-                                            ]
-                                        }, {
-                                            "type": "OpenTabButton",
-                                            "label": "Server scripts",
-                                            "wchildren": [
-                                                {
-                                                    "type": "ScriptLibrary"
-                                                }
-                                            ]
-                                        }, {
-                                            "type": "OpenTabButton",
-                                            "label": "Client scripts",
-                                            "wchildren": [
-                                                {
-                                                    "type": "ScriptLibrary",
-                                                    "library": "ClientScript"
-                                                }
-                                            ]
-                                        }, {
-                                            "type": "OpenTabButton",
-                                            "label": "Impact",
-                                            "wchildren": [
-                                                {
-                                                    "type": "WysiwygConsole",
-                                                    "cssClass": "wegas-console wegas-editor-console"
-                                                }
-                                            ]
-                                        }, {
-                                            "type": "Button",
-                                            "label": "Scenario properties",
-                                            "plugins": [
-                                                {
-                                                    "fn": "EditEntityAction",
-                                                    "cfg": {
-                                                        "entity": "currentGameModel",
-                                                        "dataSource": "GameModel"
-                                                    }
-                                                }
-                                            ]
-                                        }, {
-                                            "type": "OpenTabButton",
-                                            "cssClass": "wegas-advanced-feature",
-                                            "label": "Log",
-                                            "wchildren": [
-                                                {
-                                                    "type": "Log"
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Tab",
-                        "label": "Preview",
-                        "plugins": [
-                            {
-                                "fn": "TabDocker"
-                            }
-                        ],
-                        "children": [
-                            {
-                                "type": "PageLoader",
-                                "pageLoaderId": "previewPageLoader",
-                                "defaultPageId": "default",
-                                "cssClass": "editor-preview wegas-playerview",
-                                "plugins": [
-                                    {
-                                        "fn": "PreviewFullScreen"
-                                    }, {
-                                        "fn": "WidgetToolbar",
-                                        "cfg": {
-                                            "children": []
-                                        }
-                                    }, {
-                                        "fn": "PageEditor"
-                                    }, {
-                                        "fn": "Injector"
-                                    }, {
-                                        "fn": "PopupListener"
-                                    }, {
-                                        "fn": "ServerPopupListener"
-                                    }, {
-                                        "fn": "GetPageIdFromQueryString"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "plugins": [
-                    {
-                        "fn": "ExtraTabs",
-                        "cfg": {
-                            "dock": true
-                        }
-                    },
-                    {
-                        "fn": "RemoveCenterTab"
-                    }
-                ]
-            }
-        ]
-    },
-    "right": {
-        "width": "455px",
-        "children": [
-            {
-                "type": "TabView",
-                "id": "rightTabView",
-                "cssClass": "wegas-tabview-fullheight",
-                "children": [
-                    {
-                        "type": "Button",
-                        "label": "<span class=\"fa fa-plus-circle\" title=\"Add a tab\"></span>",
-                        "cssClass": "editor-scenarist-button wegas-plus-tab",
-                        "plugins": [
-                            {
-                                "fn": "WidgetMenu",
-                                "cfg": {
-                                    "children": [
+                                        },
                                         {
                                             "type": "OpenTabButton",
                                             "label": "Files",
@@ -397,6 +284,193 @@
                                         }
                                     ]
                                 }
+                            }
+                        ]
+                    }
+                ],
+                "plugins": [
+                    {
+                        "fn": "ExtraTabs",
+                        "cfg": {
+                            "dock": true
+                        }
+                    },
+                    {
+                        "fn": "RemoveCenterTab"
+                    }
+                ]
+            }
+        ]
+    },
+    "right": {
+        "width": "455px",
+        "children": [
+            {
+                "type": "TabView",
+                "id": "rightTabView",
+                "cssClass": "wegas-tabview-fullheight",
+                "children": [
+                    {
+                        "type": "Button",
+                        "label": "<span class=\"fa fa-plus-circle\" title=\"Add a tab\"></span>",
+                        "cssClass": "editor-scenarist-button wegas-plus-tab",
+                        "plugins": [
+                            {
+                                "fn": "WidgetMenu",
+                                "cfg": {
+                                    "children": [
+                                        {
+                                            "type": "OpenTabButton",
+                                            "label": "Preview",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "type": "PageLoader",
+                                                    "pageLoaderId": "previewPageLoader",
+                                                    "defaultPageId": "default",
+                                                    "cssClass": "editor-preview wegas-playerview",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "PreviewFullScreen"
+                                                        }, {
+                                                            "fn": "WidgetToolbar",
+                                                            "cfg": {
+                                                                "children": []
+                                                            }
+                                                        }, {
+                                                            "fn": "PageEditor"
+                                                        }, {
+                                                            "fn": "Injector"
+                                                        }, {
+                                                            "fn": "PopupListener"
+                                                        }, {
+                                                            "fn": "ServerPopupListener"
+                                                        }, {
+                                                            "fn": "GetPageIdFromQueryString"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "OpenTabButton",
+                                            "label": "Files",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "type": "FileExplorer",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "WidgetToolbar"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Styles",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "type": "ScriptLibrary",
+                                                    "library": "CSS",
+                                                    "cssClass": "wegas-csseditor"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Server scripts",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "type": "ScriptLibrary"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Client scripts",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "type": "ScriptLibrary",
+                                                    "library": "ClientScript"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Impact",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "type": "WysiwygConsole",
+                                                    "cssClass": "wegas-console wegas-editor-console"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "Button",
+                                            "label": "Scenario properties",
+                                            "tabSelector": "#rightTabView",
+                                            "plugins": [
+                                                {
+                                                    "fn": "EditEntityAction",
+                                                    "cfg": {
+                                                        "entity": "currentGameModel",
+                                                        "dataSource": "GameModel"
+                                                    }
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "cssClass": "wegas-advanced-feature",
+                                            "label": "Log",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "type": "Log"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Tab",
+                        "label": "Preview",
+                        "tabSelector": "#rightTabView",
+                        "selected": true,
+                        "plugins": [
+                            {
+                                "fn": "Hideable"
+                            }
+                        ],
+                        "children": [
+                            {
+                                "type": "PageLoader",
+                                "pageLoaderId": "previewPageLoader",
+                                "defaultPageId": "default",
+                                "cssClass": "editor-preview wegas-playerview",
+                                "plugins": [
+                                    {
+                                        "fn": "PreviewFullScreen"
+                                    }, {
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": []
+                                        }
+                                    }, {
+                                        "fn": "PageEditor"
+                                    }, {
+                                        "fn": "Injector"
+                                    }, {
+                                        "fn": "PopupListener"
+                                    }, {
+                                        "fn": "ServerPopupListener"
+                                    }, {
+                                        "fn": "GetPageIdFromQueryString"
+                                    }
+                                ]
                             }
                         ]
                     }

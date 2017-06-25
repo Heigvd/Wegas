@@ -681,6 +681,7 @@ YUI.add('wegas-widget', function(Y) {
     Y.WidgetParent.prototype.o_createChild =
         Y.WidgetParent.prototype._createChild;
     Y.WidgetParent.prototype._createChild = function(config) {
+        config = config || {};
         var altType = config.childType || config.type;
         if (altType) {
             config.childType = Y.Lang.isString(altType)
