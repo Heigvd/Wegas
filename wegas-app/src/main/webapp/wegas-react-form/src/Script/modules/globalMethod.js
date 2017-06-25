@@ -13,6 +13,7 @@ const IMPACT = {
                 {
                     type: 'string',
                     value: 'popupEvent',
+                    const: 'popupEvent',
                     view: {
                         type: 'hidden'
                     }

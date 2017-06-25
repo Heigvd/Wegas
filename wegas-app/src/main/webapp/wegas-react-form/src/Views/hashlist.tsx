@@ -3,14 +3,17 @@ import TextField from './string';
 import commonView from '../HOC/commonView';
 import ObjectView from './object';
 import IconButton from '../Components/IconButton';
-import { WidgetProps } from "jsoninput/typings/types";
+import { WidgetProps } from 'jsoninput/typings/types';
 
 const halfWidth: CSSProperties = {
     display: 'inline-block',
     position: 'relative',
     width: '50%'
 };
-class HashlistView extends React.Component<WidgetProps.ObjectProps, { newInputValue: string }> {
+class HashlistView extends React.Component<
+    WidgetProps.ObjectProps,
+    { newInputValue: string }
+> {
     child: { [key: string]: HTMLElement };
     constructor(props: WidgetProps.ObjectProps) {
         super(props);
@@ -41,43 +44,48 @@ class HashlistView extends React.Component<WidgetProps.ObjectProps, { newInputVa
     }
     render() {
         const { removeKey, alterKey, children, ...restProps } = this.props;
-        const newChildren = React.Children.map(children, (child: React.ReactElement<any>) => {
-            function remove() {
-                removeKey(child.props.editKey);
-            }
+        const newChildren = React.Children.map(
+            children,
+            (child: React.ReactElement<any>) => {
+                function remove() {
+                    removeKey(child.props.editKey);
+                }
 
-            function onKeyChange(value: string) {
-                alterKey(child.props.editKey, value);
-            }
+                function onKeyChange(value: string) {
+                    alterKey(child.props.editKey, value);
+                }
 
-            return (
-                <div key={child.props.editKey}>
-                    <IconButton
-                        icon="fa fa-trash"
-                        tooltip="Remove property"
-                        onClick={remove}
-                    />
-                    <div style={{ position: 'relative' }}>
-                        <TextField
-                            value={child.props.editKey}
-                            onChange={onKeyChange}
-                            view={{
-                                label: this.props.view.keyLabel || 'Key',
-                                style: halfWidth
-                            }}
+                return (
+                    <div key={child.props.editKey}>
+                        <IconButton
+                            icon="fa fa-trash"
+                            tooltip="Remove property"
+                            onClick={remove}
                         />
-                        <div
-                            style={halfWidth}
-                            ref={node => {
-                                this.child[child.props.editKey] = node;
-                            }}
-                        >
-                            {child}
+                        <div style={{ position: 'relative' }}>
+                            <TextField
+                                value={child.props.editKey}
+                                onChange={onKeyChange}
+                                view={{
+                                    label: this.props.view.keyLabel || 'Key',
+                                    style: halfWidth
+                                }}
+                            />
+                            <div
+                                style={halfWidth}
+                                ref={node => {
+                                    if (node !== null) {
+                                        this.child[child.props.editKey] = node;
+                                    }
+                                }}
+                            >
+                                {child}
+                            </div>
                         </div>
                     </div>
-                </div>
-            );
-        });
+                );
+            }
+        );
 
         return (
             <ObjectView {...restProps}>

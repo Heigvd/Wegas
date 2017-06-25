@@ -4,18 +4,27 @@ import labeled from '../HOC/labeled';
 import asyncComp from '../HOC/async';
 import commonView from '../HOC/commonView';
 import { css } from 'glamor';
-import { WidgetProps } from "jsoninput/typings/types";
+import { WidgetProps } from 'jsoninput/typings/types';
 
-type choice = { value: {}, label?: string, disabled?: boolean, children?: choice[] };
-
+type choice = {
+    value: {};
+    label?: string;
+    disabled?: boolean;
+    children?: choice[];
+};
+type choices = (string | choice)[];
 interface ISelectViewProps {
-    value?: {},
+    value?: {};
     view: {
-        className?: string,
-        choices: (string | choice)[]
-    }
+        className?: string;
+        choices: (string | choice)[];
+    };
 }
-
+interface IAsyncSelectProps {
+    view: {
+        choices: () => Promise<choices>;
+    };
+}
 const selectStyle = css({
     padding: '2px',
     borderRadius: '3px',
@@ -31,10 +40,7 @@ const selectContainerStyle = css({
 function genItems(o: (string | choice), i: number) {
     if (typeof o !== 'object') {
         return (
-            <option
-                key={`k-${o}`}
-                value={o}
-            >
+            <option key={`k-${o}`} value={o}>
                 {o}
             </option>
         );
@@ -51,18 +57,22 @@ function genItems(o: (string | choice), i: number) {
     );
 }
 
-const title= {
-    label: "- please select -",
+const title = {
+    label: '- please select -',
     value: undefined,
     disabled: true
 };
 
 function SelectView(props: ISelectViewProps & WidgetProps.BaseProps) {
-    const onChange = function onChange(event: React.ChangeEvent<{ value: string }>) {
+    const onChange = function onChange(
+        event: React.ChangeEvent<{ value: string }>
+    ) {
         props.onChange(JSON.parse(event.target.value));
     };
     const choices: (choice | string)[] = props.view.choices || [];
-    const menuItems = ([title] as (choice | string | typeof title)[]).concat(choices).map(genItems);
+    const menuItems = ([title] as (choice | string | typeof title)[])
+        .concat(choices)
+        .map(genItems);
     return (
         <select
             className={classNames(props.view.className, `${selectStyle}`)}
@@ -73,18 +83,16 @@ function SelectView(props: ISelectViewProps & WidgetProps.BaseProps) {
         </select>
     );
 }
-/*
-SelectView.defaultProps = {
-    errorMessage: []
-};
-*/
 
-export default commonView(asyncComp(labeled(SelectView, `${selectContainerStyle}`))(({ view }: any) => {       // @TODO any what ?
+function Sel({ view }: IAsyncSelectProps) {
     const { choices } = view;
     if (typeof choices === 'function') {
-        return Promise.resolve(choices()).then(ch => ({ view: { ...view, choices: ch } }));
+        return Promise.resolve(choices()).then(ch => ({
+            view: { ...view, choices: ch }
+        }));
     }
     return {};
-})
+}
+export default commonView(
+    asyncComp(labeled(SelectView, `${selectContainerStyle}`))(Sel)
 );
-

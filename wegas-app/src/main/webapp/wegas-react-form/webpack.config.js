@@ -14,9 +14,46 @@ const webpack = require('webpack');
 // 'react-tinymce',
 // 'recast'
 // ];
-
+const PROD = process.env.NODE_ENV === 'production';
+const plugins = [
+    new webpack.DefinePlugin({
+        'process.env': {
+            NODE_ENV: PROD
+                ? JSON.stringify('production')
+                : JSON.stringify('dev')
+        }
+    }),
+    // new webpack.optimize.ModuleConcatenationPlugin(), // webpack 3
+    new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendor',
+        // children: true,
+        // async: true,
+        minChunks: function minChunks(module) {
+            return (
+                module.context && module.context.indexOf('node_modules') > -1
+            );
+        }
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+        name: 'manifest',
+        minChunks: Infinity
+    })
+];
+if (PROD) {
+    plugins.push(
+        new webpack.optimize.UglifyJsPlugin({
+            compressor: {
+                warnings: false
+            },
+            sourceMap: true,
+            comments: false
+        })
+    );
+    // Concat plugin doesn't trigger watch mode. (webpack 3 plugin)
+    plugins.push(new webpack.optimize.ModuleConcatenationPlugin());
+}
 module.exports = {
-    devtool: 'source-map',
+    devtool: PROD ? 'source-map' : 'inline-source-map',
     entry: {
         bundle: './src/index.ts'
     },
@@ -30,35 +67,7 @@ module.exports = {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
-    plugins: [
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'vendor',
-            // children: true,
-            // async: true,
-            minChunks: function minChunks(module) {
-                return (
-                    module.context &&
-                    module.context.indexOf('node_modules') > -1
-                );
-            }
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'manifest',
-            minChunks: Infinity
-        }),
-        new webpack.optimize.UglifyJsPlugin({
-            compressor: {
-                warnings: false
-            },
-            sourceMap: true,
-            comments: false
-        })
-    ],
+    plugins: plugins,
     module: {
         rules: [
             {
@@ -110,5 +119,9 @@ module.exports = {
                 }
             }
         ]
+    },
+    devServer: {
+        reload: false,
+        inline: true
     }
 };

@@ -16,14 +16,18 @@ const labelTextStyle = css({
     paddingRight: '8px'
 });
 
-interface Props {
+interface ILabelProps {
     view: {
-        label?: string
-    }
+        label?: string;
+    };
 }
 
-export default function labeled(Comp: React.ComponentClass<any> | React.SFC<any>, cssContainer = '', suffixed = false) {
-    function Labeled(props: Props) {
+export default function labeled<P>(
+    Comp: React.ComponentClass<P> | React.SFC<P>,
+    cssContainer = '',
+    suffixed = false
+) {
+    function Labeled(props: ILabelProps & P) {
         if (suffixed) {
             return (
                 <div className={cssContainer}>

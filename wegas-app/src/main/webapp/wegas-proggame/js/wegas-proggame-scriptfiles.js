@@ -106,9 +106,10 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
     }, {
         ATTRS: {
             variable: {
+                type: "object",
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "variable",
                     classFilter: ["InboxDescriptor"]
                 }

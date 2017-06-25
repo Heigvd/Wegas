@@ -17,7 +17,7 @@ function filterChildren(properties: string[], children?: (React.ComponentClass<{
 }
 interface IProps {
     view: {
-        addKeyLabel: string
+        addKeyLabel?: string
     }
 }
 function KeyChoice(props: WidgetProps.ObjectProps & IProps) {
