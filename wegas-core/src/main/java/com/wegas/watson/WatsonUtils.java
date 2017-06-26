@@ -57,44 +57,87 @@ public class WatsonUtils {
         WATSON_SERVICE.deleteWorkspace(workspaceId).execute();
     }
     
-    
-    public static IntentCollectionResponse getIntents(GameModel gm){
-        String workspaceId = gm.getProperties().getWatsonWorkspaceId();
+    /**
+     *
+     * @param gameModel
+     * @return the intents of the workspace
+     */
+    public static IntentCollectionResponse getIntents(GameModel gameModel){
+        String workspaceId = gameModel.getProperties().getWatsonWorkspaceId();
         IntentCollectionResponse intents = WatsonUtils.WATSON_SERVICE.listIntents(workspaceId, true, null, true, null, null).execute();
         return intents;
     }
     /**
      *
-     * @return the intent (the unique name of the intent also called intent) of the created intent
+     * @param gameModel
+     * @param name
+     * @param description
+     * @param examples
+     * @return the name of the created intent
      */
-    public static String createIntent(GameModel gm, String name, String description, List<CreateExample> examples){
-        if(Helper.isNullOrEmpty(gm.getProperties().getWatsonWorkspaceId())){
-            gm.getProperties().setWatsonWorkspaceId(createWorkspace(gm.getName()));
+    public static String createIntent(GameModel gameModel, String name, String description, List<CreateExample> examples){
+        if(Helper.isNullOrEmpty(gameModel.getProperties().getWatsonWorkspaceId())){
+            gameModel.getProperties().setWatsonWorkspaceId(createWorkspace(gameModel.getName()));
         }
-        IntentResponse r = WATSON_SERVICE.createIntent(gm.getProperties().getWatsonWorkspaceId(), name, description, examples).execute();
+        IntentResponse r = WATSON_SERVICE.createIntent(gameModel.getProperties().getWatsonWorkspaceId(), name, description, examples).execute();
         return r.getIntent();
     }
     
-    public static String updateIntent(GameModel gm, String name, String newName, String description, List<CreateExample> examples){
-        IntentResponse r = WATSON_SERVICE.updateIntent(gm.getProperties().getWatsonWorkspaceId(), name, newName, description, examples).execute();
+    /**
+     *
+     * @param gameModel
+     * @param name
+     * @param newName
+     * @param description
+     * @param examples
+     * @return the the name of the updated intent
+     */
+    public static String updateIntent(GameModel gameModel, String name, String newName, String description, List<CreateExample> examples){
+        IntentResponse r = WATSON_SERVICE.updateIntent(gameModel.getProperties().getWatsonWorkspaceId(), name, newName, description, examples).execute();
         return r.getIntent();
     }
     
-    public static void deleteIntent(GameModel gm, String name){
-        WATSON_SERVICE.deleteIntent(gm.getProperties().getWatsonWorkspaceId(), name).execute();
+    /**
+     *
+     * @param gameModel
+     * @param name
+     */
+    public static void deleteIntent(GameModel gameModel, String name){
+        WATSON_SERVICE.deleteIntent(gameModel.getProperties().getWatsonWorkspaceId(), name).execute();
     }
     
-    public static String createExample(GameModel gm, String intent, String text){
-        ExampleResponse r = WATSON_SERVICE.createExample(gm.getProperties().getWatsonWorkspaceId(), intent, text).execute();
+    /**
+     *
+     * @param gameModel
+     * @param intent
+     * @param text
+     * @return the text of the created example
+     */
+    public static String createExample(GameModel gameModel, String intent, String text){
+        ExampleResponse r = WATSON_SERVICE.createExample(gameModel.getProperties().getWatsonWorkspaceId(), intent, text).execute();
         return r.getText();
     }
     
-    public static String updateExample(GameModel gm, String intent, String text, String newText){
-        ExampleResponse r = WATSON_SERVICE.updateExample(gm.getProperties().getWatsonWorkspaceId(), intent, text, newText).execute();
+    /**
+     *
+     * @param gameModel
+     * @param intent
+     * @param text
+     * @param newText
+     * @return the text of the updated example
+     */
+    public static String updateExample(GameModel gameModel, String intent, String text, String newText){
+        ExampleResponse r = WATSON_SERVICE.updateExample(gameModel.getProperties().getWatsonWorkspaceId(), intent, text, newText).execute();
         return r.getText();
     }
     
-    public static void deleteExample(GameModel gm, String intent, String text){
-        WATSON_SERVICE.deleteExample(gm.getProperties().getWatsonWorkspaceId(), intent, text).execute();
+    /**
+     *
+     * @param gameModel
+     * @param intent
+     * @param text
+     */
+    public static void deleteExample(GameModel gameModel, String intent, String text){
+        WATSON_SERVICE.deleteExample(gameModel.getProperties().getWatsonWorkspaceId(), intent, text).execute();
     }
 }
