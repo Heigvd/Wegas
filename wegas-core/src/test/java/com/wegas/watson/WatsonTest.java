@@ -19,30 +19,10 @@ public class WatsonTest {
     
     @Test
     public void test(){
-        
-        ConversationService service = WatsonProperties.WATSON_SERVICE;
-        
-        CreateWorkspace w = new CreateWorkspace.Builder().name("test_workspace")
-                .description("ceci est un test de création de workpasce via l'API à l'aide du java jdk")
-                .language("fr")
-                .build();
-        WorkspaceResponse r = service.createWorkspace(w).execute();
-        
-        CreateExample e = new CreateExample.Builder().text("coucou").build();
-        CreateIntent i = new CreateIntent.Builder().examples(e).build();
-        System.out.println(i.examples().get(0));
-        
-        MessageRequest newMessage = new MessageRequest.Builder().inputText("Fumes-tu?").alternateIntents(Boolean.TRUE)
-        // Replace with the context obtained from the initial request
-        //.context(...)
-        .build();
-
-        String workspaceId = r.getWorkspaceId();
-        
-        MessageResponse response = service
-        .message(workspaceId, newMessage)
-        .execute();
-        System.out.println("reponse : ");
-        System.out.println(response);
+        System.out.println("debut du test");
+        String id = WatsonUtils.createWorkspace("test");
+        System.out.println("workspace : " + id + " créé");
+        WatsonUtils.deleteWorkspace(id);
+        System.out.println("workspace : " + id + " supprimé");
     }
 }

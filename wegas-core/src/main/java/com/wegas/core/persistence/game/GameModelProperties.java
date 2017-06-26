@@ -68,6 +68,11 @@ public class GameModelProperties implements Serializable {
      *
      */
     private String iconUri = "";
+    
+    /**
+     *
+     */
+    private String watsonWorkspaceId = "";
 
     /**
      *
@@ -89,6 +94,7 @@ public class GameModelProperties implements Serializable {
         this.setCssUri(other.getCssUri());
         this.setScriptUri(other.getScriptUri());
         this.setClientScriptUri(other.getClientScriptUri());
+        //Le watsonWorkspaceId n'est pas mis à jour par l'interface
     }
 
     /**
@@ -221,4 +227,17 @@ public class GameModelProperties implements Serializable {
         this.clientScriptUri = clientScriptUri;
     }
 
+    /**
+     * @return the watsonWorkspaceId
+     */
+    public String getWatsonWorkspaceId() {
+        return watsonWorkspaceId;
+    }
+
+    /**
+     * @param watsonWorkspaceId the watsonWorkspaceId to set
+     */
+    public void setWatsonWorkspaceId(String watsonWorkspaceId) {
+        this.watsonWorkspaceId = watsonWorkspaceId;
+    }
 }

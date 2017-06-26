@@ -25,8 +25,6 @@ public class DialogueDescriptor extends StateMachineDescriptor {
      */
     @Lob
     private String content;
-    
-    private boolean openDialogue;
 
     @Override
     public Boolean containsAll(final List<String> criterias) {
@@ -46,19 +44,5 @@ public class DialogueDescriptor extends StateMachineDescriptor {
      */
     public void setContent(String content) {
         this.content = content;
-    }
-
-    /**
-     * @return the openDialogue
-     */
-    public boolean isOpenDialogue() {
-        return openDialogue;
-    }
-
-    /**
-     * @param openDialogue the openDialogue to set
-     */
-    public void setOpenDialogue(boolean openDialogue) {
-        this.openDialogue = openDialogue;
     }
 }

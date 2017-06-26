@@ -24,6 +24,8 @@ public class DialogueTransition extends Transition {
     private static final long serialVersionUID = 1L;
     @Lob
     private String actionText;
+    
+    private String intent;
 
     @Override
     public Boolean containsAll(List<String> criterias) {
