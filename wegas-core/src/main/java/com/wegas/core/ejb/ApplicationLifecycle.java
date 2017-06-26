@@ -16,6 +16,7 @@ import com.hazelcast.core.MembershipEvent;
 import com.hazelcast.core.MembershipListener;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
+import io.prometheus.client.Gauge;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ejb.LocalBean;
@@ -34,6 +35,10 @@ import org.slf4j.LoggerFactory;
 @Singleton
 @LocalBean
 public class ApplicationLifecycle implements MembershipListener, LifecycleListener {
+
+    
+    private static final Gauge hazelCastSize = Gauge.build().name("cluster_size").help("Number of hazelcast members").register();
+    private static final Gauge internalSize = Gauge.build().name("internalcluster_size").help("Number of hazelcast members in locallist").register();
 
     public static final String LIFECYCLE_UP = "InstanceUp";
     public static final String LIFECYCLE_DOWN = "InstanceDown";
@@ -74,10 +79,12 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
     private WebsocketFacade websocketFacade;
 
     public void addMember(String member) {
+        internalSize.inc();
         this.clusterMembers.add(member);
     }
 
     public void removeMember(String member) {
+        internalSize.dec();
         this.clusterMembers.remove(member);
     }
 
@@ -154,6 +161,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
         logger.info("NEW MEMBER (MembershipEvent) " + me.getMember().getUuid());
         this.requestClusterMemberNotification();
         logClusterInfo(null);
+        hazelCastSize.inc();
     }
 
     @Override
@@ -173,6 +181,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
         logger.info("MEMBER " + me.getMember().getUuid() + " REMOVED (membership event)");
         this.removeMember(me.getMember().getUuid());
         logClusterInfo(null);
+        hazelCastSize.dec();
     }
 
     public Set<String> getMembers() {
@@ -196,6 +205,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
 
     public void sendWegasReadyEvent() {
         logger.info("WEGAS IS READY TO SERVE");
+        hazelCastSize.inc();
         websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.READY, null);
         this.logClusterInfo(null);
     }

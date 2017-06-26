@@ -500,6 +500,18 @@
                 <version>1.0.6</version>
             </dependency>
 
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>0.0.23</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_servlet</artifactId>
+            <version>0.0.23</version>
+        </dependency>
+
         </dependencies>
     </dependencyManagement>
 
