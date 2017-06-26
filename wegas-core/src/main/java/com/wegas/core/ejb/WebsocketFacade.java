@@ -509,7 +509,7 @@ public class WebsocketFacade {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
-                    onlineUsersGauge.dec();
+                    onlineUsersGauge.set(this.getOnlineUsers().size());
                 }
             }
 
@@ -555,7 +555,7 @@ public class WebsocketFacade {
     private void registerUser(User user) {
         if (user != null && !onlineUsers.containsKey(user.getId())) {
             onlineUsers.put(user.getId(), new OnlineUser(user));
-            onlineUsersGauge.inc();
+            onlineUsersGauge.set(this.getOnlineUsers().size());
         }
     }
 

@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class ApplicationLifecycle implements MembershipListener, LifecycleListener {
 
-    
     private static final Gauge hazelCastSize = Gauge.build().name("cluster_size").help("Number of hazelcast members").register();
     private static final Gauge internalSize = Gauge.build().name("internalcluster_size").help("Number of hazelcast members in locallist").register();
 
@@ -79,13 +78,16 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
     private WebsocketFacade websocketFacade;
 
     public void addMember(String member) {
-        internalSize.inc();
-        this.clusterMembers.add(member);
+        if (!this.clusterMembers.contains(member)) {
+            internalSize.inc();
+            this.clusterMembers.add(member);
+        }
     }
 
     public void removeMember(String member) {
-        internalSize.dec();
-        this.clusterMembers.remove(member);
+        if (this.clusterMembers.remove(member)) {
+            internalSize.dec();
+        }
     }
 
     /**
@@ -150,7 +152,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
         eventsDown.fire(uuid);
     }
 
-    public void requestClusterMemberNotification(){
+    public void requestClusterMemberNotification() {
         reqAll.fire(hzInstance.getCluster().getLocalMember().getUuid());
     }
 
@@ -161,7 +163,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
         logger.info("NEW MEMBER (MembershipEvent) " + me.getMember().getUuid());
         this.requestClusterMemberNotification();
         logClusterInfo(null);
-        hazelCastSize.inc();
+        hazelCastSize.set(me.getMembers().size());
     }
 
     @Override
@@ -181,7 +183,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
         logger.info("MEMBER " + me.getMember().getUuid() + " REMOVED (membership event)");
         this.removeMember(me.getMember().getUuid());
         logClusterInfo(null);
-        hazelCastSize.dec();
+        hazelCastSize.set(me.getMembers().size());
     }
 
     public Set<String> getMembers() {
@@ -205,7 +207,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
 
     public void sendWegasReadyEvent() {
         logger.info("WEGAS IS READY TO SERVE");
-        hazelCastSize.inc();
+        hazelCastSize.set(hzInstance.getCluster().getMembers().size());
         websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.READY, null);
         this.logClusterInfo(null);
     }
