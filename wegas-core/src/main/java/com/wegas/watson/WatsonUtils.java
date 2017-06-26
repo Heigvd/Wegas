@@ -36,7 +36,7 @@ public class WatsonUtils {
     
     private static final String WATSON_PASSWORD = Helper.getWegasProperty("watson.password", "");
     
-    private static final ConversationService WATSON_SERVICE;
+    public static final ConversationService WATSON_SERVICE;
     
     static{
         WATSON_SERVICE = new ConversationService(WATSON_VERSION);
@@ -75,11 +75,11 @@ public class WatsonUtils {
      * @param examples
      * @return the name of the created intent
      */
-    public static String createIntent(GameModel gameModel, String name, String description, List<CreateExample> examples){
+    public static String createIntent(GameModel gameModel, String name, String description){
         if(Helper.isNullOrEmpty(gameModel.getProperties().getWatsonWorkspaceId())){
             gameModel.getProperties().setWatsonWorkspaceId(createWorkspace(gameModel.getName()));
         }
-        IntentResponse r = WATSON_SERVICE.createIntent(gameModel.getProperties().getWatsonWorkspaceId(), name, description, examples).execute();
+        IntentResponse r = WATSON_SERVICE.createIntent(gameModel.getProperties().getWatsonWorkspaceId(), name, description, null).execute();
         return r.getIntent();
     }
     
@@ -92,8 +92,8 @@ public class WatsonUtils {
      * @param examples
      * @return the the name of the updated intent
      */
-    public static String updateIntent(GameModel gameModel, String name, String newName, String description, List<CreateExample> examples){
-        IntentResponse r = WATSON_SERVICE.updateIntent(gameModel.getProperties().getWatsonWorkspaceId(), name, newName, description, examples).execute();
+    public static String updateIntent(GameModel gameModel, String name, String newName, String description){
+        IntentResponse r = WATSON_SERVICE.updateIntent(gameModel.getProperties().getWatsonWorkspaceId(), name, newName, description, null).execute();
         return r.getIntent();
     }
     
