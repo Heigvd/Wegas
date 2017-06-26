@@ -11,13 +11,19 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
+import java.util.ArrayList;
+import java.util.List;
+import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.BatchFetchType;
 
 /**
  *
@@ -47,6 +53,15 @@ public class ChoiceInstance extends VariableInstance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private CurrentResult currentResult;
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "choiceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @BatchFetch(BatchFetchType.JOIN)
+    @JsonManagedReference
+    //@JoinFetch
+    private List<Reply> replies = new ArrayList<>();
 
     /**
      *
@@ -135,6 +150,8 @@ public class ChoiceInstance extends VariableInstance {
             this.setActive(other.getActive());
             this.setUnread(other.getUnread());
 
+            this.setReplies(ListUtils.mergeLists(replies, other.getReplies()));
+
             // Normal
             this.setCurrentResultName(other.getCurrentResultName());
 
@@ -191,6 +208,46 @@ public class ChoiceInstance extends VariableInstance {
      */
     public void setUnread(Boolean unread) {
         this.unread = unread;
+    }
+
+    /**
+     * @return the replies
+     */
+    @JsonManagedReference
+    public List<Reply> getReplies() {
+        return replies;
+    }
+
+    /**
+     * @param replies the replies to set
+     */
+    @JsonManagedReference
+    public void setReplies(List<Reply> replies) {
+        this.replies = replies;
+        for (Reply r : this.replies) {
+            r.setChoiceInstance(this);
+        }
+    }
+
+    /**
+     * @param reply
+     */
+    public void addReply(Reply reply) {
+        reply.setChoiceInstance(this);
+        this.setReplies(ListUtils.cloneAdd(this.getReplies(), reply));
+    }
+
+    void removeReply(Reply reply) {
+        this.replies.remove(reply);
+    }
+
+    /**
+     * @param replies
+     */
+    public void addReplies(List<Reply> replies) {
+        for (Reply r : replies) {
+            this.addReply(r);
+        }
     }
 
     // *** Sugar *** //

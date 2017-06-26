@@ -10,14 +10,12 @@
  */
 YUI.add('wegas-mcq-entities', function(Y) {
     "use strict";
-
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
         IDATTRDEF;
-
     VERSION_ATTR_DEF = {
         type: NUMBER,
         optional: true,
@@ -25,8 +23,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             _type: HIDDEN
         }
     };
-
-
     IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
@@ -34,7 +30,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             _type: HIDDEN
         }
     };
-
     /**
      * QuestionDescriptor mapper
      */
@@ -257,11 +252,18 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             replies: {
                 value: [],
-                setter: function(v) {
-                    v.sort(function(a, b) {
+                "transient": true,
+                getter: function() {
+                    var replies = [], choices, i, qDesc;
+                    qDesc = this.getDescriptor();
+                    choices = qDesc.get("items");
+                    for (i in choices) {
+                        replies = replies.concat(choices[i].getInstance().get("replies"));
+                    }
+                    replies.sort(function(a, b) {
                         return a.get("createdTime") - b.get("createdTime");
                     });
-                    return v;
+                    return replies;
                 },
                 type: ARRAY,
                 _inputex: {
@@ -320,6 +322,17 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             _inputex: {
                                 label: 'Active from start',
                                 value: true
+                            }
+                        },
+                        unread: {
+                            value: true,
+                            type: BOOLEAN
+                        },
+                        replies: {
+                            type: ARRAY,
+                            _inputex: {
+                                _type: HIDDEN,
+                                value: []
                             }
                         },
                         currentResultName: {
@@ -498,6 +511,17 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             _inputex: {
                                 label: 'Active from start',
                                 value: true
+                            }
+                        },
+                        unread: {
+                            value: true,
+                            type: BOOLEAN
+                        },
+                        replies: {
+                            type: ARRAY,
+                            _inputex: {
+                                _type: HIDDEN,
+                                value: []
                             }
                         },
                         currentResultName: {
@@ -855,6 +879,19 @@ YUI.add('wegas-mcq-entities', function(Y) {
             unread: {
                 value: true,
                 type: BOOLEAN
+            },
+            replies: {
+                value: [],
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("createdTime") - b.get("createdTime");
+                    });
+                    return v;
+                },
+                type: ARRAY,
+                _inputex: {
+                    _type: HIDDEN
+                }
             },
             currentResultName: {
                 type: STRING,

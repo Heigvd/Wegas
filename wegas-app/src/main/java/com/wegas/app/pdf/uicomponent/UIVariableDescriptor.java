@@ -506,7 +506,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             UIHelper.endDiv(writer); // end COLUMN
             UIHelper.endDiv(writer); // end COLUMNS
 
-            if (question.getAllowMultipleReplies() || instance.getSortedReplies().isEmpty()) {
+            if (question.getAllowMultipleReplies() || instance.getSortedReplies(player).isEmpty()) {
                 for (ChoiceDescriptor choice : question.getItems()) {
                     encode(context, writer, choice);
                 }
@@ -515,7 +515,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             /*
              * Replies
              */
-            List<Reply> replies = instance.getSortedReplies();
+            List<Reply> replies = instance.getSortedReplies(player);
 
             if (!replies.isEmpty()) {
                 //UIHelper.printText(context, writer, "Results:", UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);

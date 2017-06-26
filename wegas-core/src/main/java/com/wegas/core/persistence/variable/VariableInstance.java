@@ -370,11 +370,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
-        if (this.isDefaultInstance()) {
-            return -1L;
-        } else {
-            return this.getDescriptor().getId();
-        }
+        return this.findDescriptor().getId();
     }
 
     /**

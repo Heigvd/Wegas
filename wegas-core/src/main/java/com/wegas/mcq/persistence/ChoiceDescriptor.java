@@ -290,24 +290,20 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 //Check box not yet validated -> no choices have been submited, nor ignorated
                 return false;
             } else {
-                for (Reply r : qi.getReplies()) {
-                    if (r.getResult().getChoiceDescriptor().equals(this)) {
-                        // reply for this choice found
-                        return r.getIgnored();
-                    }
+                for (Reply r : this.getInstance(p).getReplies()) {
+                    // reply for this choice found
+                    return r.getIgnored();
                 }
                 return false;
             }
         } else {
-            for (Reply r : qi.getReplies()) {
-                if (r.getResult().getChoiceDescriptor().equals(this)) {
-                    // Choice is linked to a reply => not ignored
-                    return false;
-                }
+            // Choice is linked to at least a reply => not ignored
+            if (!this.getInstance(p).getReplies().isEmpty()) {
+                return false;
             }
-            // this choice has not been selected and no choices are selectable any longer
-            return !(this.getQuestion().getAllowMultipleReplies() || qi.getReplies().isEmpty());
         }
+        // this choice has not been selected and no choices are selectable any longer
+        return !(this.getQuestion().getAllowMultipleReplies() || qi.getReplies(p).isEmpty());
     }
 
     /**
@@ -330,20 +326,16 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 //Check box not yet validated -> no chocie have been selected 
                 return true;
             } else {
-                for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
-                    if (r.getResult().getChoiceDescriptor().equals(this)) {
-                        // reply for this choice found
-                        return r.getIgnored();
-                    }
+                for (Reply r : this.getInstance(p).getReplies()) {
+                    // reply for this choice found
+                    return r.getIgnored();
                 }
                 return false;
             }
         } else {
-            for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
-                if (r.getResult().getChoiceDescriptor().equals(this)) {
-                    // Choice is linked to a reply => not ignored
-                    return false;
-                }
+            if (!this.getInstance(p).getReplies().isEmpty()) {
+                // Choice is linked to a reply => not ignored
+                return false;
             }
             return true;
         }
@@ -361,8 +353,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         if (this.getQuestion().getCbx() && !this.getQuestion().getInstance(p).getValidated()) {
             return false;
         }
-        for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
-            if (!r.getIgnored() && r.getResult().getChoiceDescriptor().equals(this)) {
+        for (Reply r : this.getInstance(p).getReplies()) {
+            if (!r.getIgnored()) {
                 return true;
             }
         }
@@ -378,7 +370,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      *         exist
      */
     public boolean hasResultBeenApplied(Player p, Result result) {
-        for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
+        for (Reply r : this.getInstance(p).getReplies()) {
             if (r.getResult().equals(result)) {
                 return true;
             }

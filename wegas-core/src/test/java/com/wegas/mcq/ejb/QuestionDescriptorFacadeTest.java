@@ -8,7 +8,6 @@
 package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractEJBTest;
-import com.wegas.core.ejb.HelperBean;
 import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -109,13 +108,13 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         vdf.createChild(question.getId(), choice2);
 
         qdf.selectChoice(choice1.getId(), player.getId());                       // Select reply and validate question
-        QuestionInstance qif = question.getInstance(player);
-        qdf.validateQuestion(qif.getId(), player.getId());
+        QuestionInstance qi = question.getInstance(player);
+        qdf.validateQuestion(qi.getId(), player.getId());
         assertEquals(10.0, ((NumberInstance) vif.find(myNumber1.getId(), player.getId())).getValue(), 0.1);
         assertEquals(50.0, ((NumberInstance) vif.find(myNumber2.getId(), player.getId())).getValue(), 0.1);
 
-        qif = (QuestionInstance) vif.find(qif.getId());
-        assertEquals(2, qif.getReplies().size());
+        qi = (QuestionInstance) vif.find(qi.getId());
+        assertEquals(2, qi.getReplies().size());
 
         vdf.duplicate(question.getId());                                        // Test duplication of question
 
@@ -143,13 +142,15 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10"));
         choice.addResult(r);
         vdf.createChild(question.getId(), choice);
+        
         TestHelper.wipeEmCache();
+
         final Reply reply = qdf.selectChoice(choice.getId(), player.getId());
         assertEquals(((NumberInstance) vif.find(myNumber.getId(), player.getId())).getValue(), 0, 0.0); // Nothing happened
-        assertEquals(((QuestionInstance) vif.find(question.getId(), player.getId())).getReplies().size(), 1);
+        assertEquals(((ChoiceInstance) vif.find(choice.getId(), player.getId())).getReplies().size(), 1);
         final Reply reply1 = qdf.cancelReply(player.getId(), reply.getId());
-        assertEquals(0, reply1.getQuestionInstance().getReplies().size());
-        assertEquals(((QuestionInstance) vif.find(question.getId(), player.getId())).getReplies().size(), 0);
+        assertEquals(0, reply1.getChoiceInstance().getReplies().size());
+        assertEquals(((ChoiceInstance) vif.find(choice.getId(), player.getId())).getReplies().size(), 0);
         vdf.remove(question.getId());
     }
 

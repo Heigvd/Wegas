@@ -32,12 +32,9 @@ import javax.persistence.*;
 //@XmlType(name = "Reply")
 @JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
-    @Index(columnList = "variableinstance_id")
+    @Index(columnList = "choiceinstance_id")
     ,
     @Index(columnList = "replies_id")
-})
-@NamedQueries({
-    @NamedQuery(name = "Reply.countForInstance", query = "SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :instanceId")
 })
 public class Reply extends AbstractEntity implements DatedEntity {
 
@@ -85,9 +82,9 @@ public class Reply extends AbstractEntity implements DatedEntity {
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "variableinstance_id", nullable = false)
+    @JoinColumn(name = "choiceinstance_id", nullable = false)
     @JsonBackReference
-    private QuestionInstance questionInstance;
+    private ChoiceInstance choiceInstance;
 
     /**
      * @param a
@@ -147,16 +144,16 @@ public class Reply extends AbstractEntity implements DatedEntity {
     //@XmlTransient
     @JsonIgnore
     @JsonBackReference
-    public QuestionInstance getQuestionInstance() {
-        return questionInstance;
+    public ChoiceInstance getChoiceInstance() {
+        return choiceInstance;
     }
 
     /**
      * @param questionInstance
      */
     @JsonBackReference
-    public void setQuestionInstance(QuestionInstance questionInstance) {
-        this.questionInstance = questionInstance;
+    public void setChoiceInstance(ChoiceInstance choiceInstance) {
+        this.choiceInstance = choiceInstance;
     }
 
     public String getChoiceName() {
@@ -287,11 +284,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
     public void updateCacheOnDelete(Beanjection beans) {
         QuestionDescriptorFacade qF = beans.getQuestionDescriptorFacade();
         VariableInstanceFacade vif = beans.getVariableInstanceFacade();
-        QuestionInstance qInst = this.getQuestionInstance();
-        if (qInst != null) {
-            qInst = (QuestionInstance) vif.find(qInst.getId());
-            if (qInst != null) {
-                qInst.removeReply(this);
+        ChoiceInstance cInst = this.getChoiceInstance();
+        if (cInst != null) {
+            cInst = (ChoiceInstance) vif.find(cInst.getId());
+            if (cInst != null) {
+                cInst.removeReply(this);
             }
         }
 

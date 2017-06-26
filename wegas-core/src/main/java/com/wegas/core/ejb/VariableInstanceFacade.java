@@ -266,6 +266,14 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         return this.findGame(this.find(instanceId));
     }
 
+    public VariableInstance findInstance(VariableDescriptor descriptor, VariableInstance variableInstance) throws NoPlayerException {
+        Player player = requestFacade.getPlayer();
+        if (player == null) {
+            player = this.findAPlayer(variableInstance);
+        }
+        return descriptor.getInstance(player);
+    }
+
     /**
      * from the given instance, return any player who own it (eg.
      * Descriptor.getInstance(player) = instance)

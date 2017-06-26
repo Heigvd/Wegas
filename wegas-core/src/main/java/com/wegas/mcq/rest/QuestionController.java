@@ -9,13 +9,17 @@ package com.wegas.mcq.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -114,7 +118,11 @@ public class QuestionController {
 
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
         requestFacade.commit(true);
-        return reply.getQuestionInstance();
+        try {
+            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+        } catch (NoPlayerException ex) {
+            throw WegasErrorMessage.error("No Such Question Instance");
+        }
     }
 
     /**
@@ -137,7 +145,11 @@ public class QuestionController {
 
         requestFacade.commit(true);
 
-        return reply.getQuestionInstance();
+        try {
+            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+        } catch (NoPlayerException ex) {
+            throw WegasErrorMessage.error("No Such Question Instance");
+        }
     }
 
     /**

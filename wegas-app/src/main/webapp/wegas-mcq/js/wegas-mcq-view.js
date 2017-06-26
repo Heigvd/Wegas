@@ -104,8 +104,15 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }
             }, this));
             this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", function(e) {
-                var question = this.get("variable.evaluated");
-                if (question && question.getInstance().get("id") === e.entity.get("id")) {
+                var question = this.get("variable.evaluated"), updatedInstance;
+
+                if (e.entity instanceof Y.Wegas.persistence.ChoiceInstance){
+                    updatedInstance = Y.Wegas.Facade.Variable.cache.findParentDescriptor(e.entity.getDescriptor()).getInstance();
+                } else {
+                    updatedInstance = e.entity;
+                }
+
+                if (updatedInstance instanceof Y.Wegas.persistence.QuestionInstance && question && question.getInstance().get("id") === updatedInstance.get("id")) {
                     this.syncUI();
                 }
             }, this));

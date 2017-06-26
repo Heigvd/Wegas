@@ -20,9 +20,6 @@ import javax.persistence.*;
 @Table(name = "MCQReplies", indexes = {
     @Index(columnList = "result_id")
 })
-@NamedQueries({
-    @NamedQuery(name = "Reply.countForInstance", query = "SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :instanceId")
-})
 public class Replies extends AbstractEntity  {
 
     private static final long serialVersionUID = 1L;

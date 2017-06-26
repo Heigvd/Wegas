@@ -13,8 +13,10 @@ import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,15 +106,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         if (!Helper.isNullOrEmpty(resultName) && !Helper.isNullOrEmpty(choiceName)) {
             for (ChoiceDescriptor choiceDescriptor : questionDescriptor.getItems()) {
                 if (choiceName.equals(choiceDescriptor.getName())) {
-                    for (Result result : choiceDescriptor.getResults()) {
-                        if (resultName.equals(result.getName())) {
-                            return result;
-                        }
-                    }
+                    return this.findResult(choiceDescriptor, resultName);
                 }
             }
         }
-
         throw new WegasNoResultException("Result \"" + choiceName + "/" + resultName + "\" not found");
     }
 
@@ -161,12 +158,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                 //defaultInstance.setCurrentResult(cr);
                 choice.changeCurrentResult(choiceInstance, cr);
             }
-        } else if (event.getEntity() instanceof QuestionInstance) {
-            QuestionInstance qInstance = (QuestionInstance) event.getEntity();
-            QuestionDescriptor qDescriptor = (QuestionDescriptor) qInstance.findDescriptor();
-            for (Reply r : qInstance.getReplies()) {
+        } else if (event.getEntity() instanceof ChoiceInstance) {
+            ChoiceInstance cInstance = (ChoiceInstance) event.getEntity();
+            ChoiceDescriptor cDescriptor = (ChoiceDescriptor) cInstance.findDescriptor();
+            for (Reply r : cInstance.getReplies()) {
                 try {
-                    Result result = findResult(qDescriptor, r.getChoiceName(), r.getResultName());
+                    Result result = findResult(cDescriptor, r.getResultName());
                     result.addReply(r);
                     r.setResult(result);
                 } catch (WegasNoResultException ex) {
@@ -199,23 +196,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         return oldEntity;
     }
 
-    /**
-     * @param instanceId
-     *
-     * @return count the number of reply for the given question
-     */
-    public int findReplyCount(Long instanceId) {
-        final TypedQuery<Long> query = this.getEntityManager().createNamedQuery("Reply.countForInstance", Long.class);
-        query.setParameter("instanceId", instanceId);
-        try {
-            return query.getSingleResult().intValue();
-        } catch (NoResultException ex) {
-            return 0;
-        }
-    }
-
     private Reply createReply(Long choiceId, Player player, Long startTime) {
         ChoiceDescriptor choice = (ChoiceDescriptor) VariableDescriptorFacade.lookup().find(choiceId);
+        ChoiceInstance choiceInstance = choice.getInstance(player);
 
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
@@ -223,7 +206,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         Boolean isCbx = questionDescriptor.getCbx();
         if (!isCbx
                 && !questionDescriptor.getAllowMultipleReplies()
-                && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
+                && !questionInstance.getReplies(player).isEmpty()) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
+            //&& this.findReplyCount(questionInstance) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
             //if (!questionDescriptor.getAllowMultipleReplies()
             //&& !questionInstance.getReplies().isEmpty()) {                    // Does not work when sending 2 requests at once
             throw WegasErrorMessage.error("You have already answered this question");
@@ -239,10 +223,15 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         Result result = choice.getInstance(player).getResult();
         result.addReply(reply);
         reply.setResult(result);
-        questionInstance.addReply(reply);
+        choiceInstance.addReply(reply);
         this.getEntityManager().persist(reply);
 //        em.flush();
         return reply;
+    }
+
+    public QuestionInstance getQuestionInstanceFromReply(Reply reply) throws NoPlayerException {
+        QuestionDescriptor findDescriptor = ((ChoiceDescriptor) reply.getChoiceInstance().findDescriptor()).getQuestion();
+        return (QuestionInstance) variableInstanceFacade.findInstance(findDescriptor, reply.getChoiceInstance());
     }
 
     /**
@@ -252,10 +241,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return reply being canceled
      */
     private Reply internalCancelReply(Long replyId) {
-        final Reply reply = this.getEntityManager().find(Reply.class, replyId);
-        QuestionInstance questionInstance = reply.getQuestionInstance();
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
-        return this.internalCancelReply(reply);
+        try {
+            final Reply reply = this.getEntityManager().find(Reply.class, replyId);
+            QuestionInstance questionInstance = this.getQuestionInstanceFromReply(reply);
+            requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
+            return this.internalCancelReply(reply);
+        } catch (NoPlayerException ex) {
+            throw WegasErrorMessage.error("NO PLAYER");
+        }
     }
 
     private Reply internalCancelReply(Reply reply) {
@@ -306,14 +299,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
         //getEntityManager().refresh(questionInstance);
         //requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
-        // Verify if mutually exclusive replies must be cancelled:
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
+            // mutually exclusive replies must be cancelled:
             List<Reply> toCancel = new ArrayList<>();
-            for (Reply r : questionDescriptor.getInstance(player).getReplies()) {
-                if (!r.getResult().getChoiceDescriptor().equals(choice)
-                        && !r.getIgnored()) {
-                    toCancel.add(r);
-                }
+            for (Reply r : questionDescriptor.getInstance(player).getReplies(player)) {
+                toCancel.add(r);
             }
             /*
              * Two steps deletion avoids concurrent modification exception 
@@ -454,7 +444,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         } else {
             scriptManager.eval(player, validateReply.getResult().getImpact(), choiceDescriptor);
         }
-        final ReplyValidate replyValidate = new ReplyValidate(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance(), player);
+        final ReplyValidate replyValidate = new ReplyValidate(validateReply,
+                choiceDescriptor.getInstance(player),
+                (QuestionInstance) ((ChoiceDescriptor) validateReply.getChoiceInstance().findDescriptor()).getQuestion().getInstance(player),
+                player);
         try {
             if (validateReply.getIgnored()) {
                 scriptEvent.fire(player, "replyIgnore", replyValidate);
@@ -503,7 +496,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         }
 
         // Don't validate questions with no replies
-        if (validateQuestion.getReplies().isEmpty()) {
+        if (validateQuestion.getReplies(player).isEmpty()) {
             throw new WegasErrorMessage(WegasErrorMessage.ERROR, "Please select a reply");
         }
 
@@ -511,18 +504,17 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         // NB: there should be only one reply per choice for each player.
         for (ChoiceDescriptor choice : questionDescriptor.getItems()) {
             // Test if the current choice has been selected, i.e. there is a reply for it.
+            ChoiceInstance choiceInstance = choice.getInstance(player);
             boolean found = false;
-            for (Reply r : validateQuestion.getReplies()) {
-                if (r.getResult().getChoiceDescriptor().equals(choice)) {
-                    if (!r.getIgnored()) {
-                        // It's been selected: validate the reply (which executes the impact)
-                        this.validateReply(player, r);
-                    } else {
-                        logger.error("validateQuestion() invoked on a Question where ignored replies are already persisted");
-                    }
-                    found = true;
-                    break;
+            for (Reply r : choiceInstance.getReplies()) {
+                if (!r.getIgnored()) {
+                    // It's been selected: validate the reply (which executes the impact)
+                    this.validateReply(player, r);
+                } else {
+                    logger.error("validateQuestion() invoked on a Question where ignored replies are already persisted");
                 }
+                found = true;
+                break;
             }
             if (!found) {
                 Reply ignoredReply = ignoreChoice(choice.getId(), player);

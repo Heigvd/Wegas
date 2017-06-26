@@ -8,19 +8,13 @@
 package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
-import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
-import org.eclipse.persistence.annotations.BatchFetch;
-import org.eclipse.persistence.annotations.BatchFetchType;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +31,7 @@ public class QuestionInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @BatchFetch(BatchFetchType.JOIN)
-    @JsonManagedReference
-    //@JoinFetch
-    private List<Reply> replies = new ArrayList<>();
+
     /**
      *
      */
@@ -72,7 +59,6 @@ public class QuestionInstance extends VariableInstance {
             this.setUnread(other.getUnread());
             Boolean v = other.getValidated();
             this.setValidated(v);
-            this.setReplies(ListUtils.mergeLists(replies, other.getReplies()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -100,44 +86,43 @@ public class QuestionInstance extends VariableInstance {
         return Helper.copyAndSort(this.getReplies(), new EntityComparators.CreateTimeComparator<>());
     }
 
-    /**
-     * @return the replies
-     */
-    @JsonManagedReference
-    public List<Reply> getReplies() {
+    @JsonIgnore
+    public List<Reply> getSortedReplies(Player p) {
+        return Helper.copyAndSort(this.getReplies(p), new EntityComparators.CreateTimeComparator<>());
+    }
+
+    public List<Reply> getReplies(Player p) {
+        List<Reply> replies = new ArrayList<>();
+        QuestionDescriptor qD = (QuestionDescriptor) this.findDescriptor();
+
+        for (ChoiceDescriptor cd : qD.getItems()) {
+            if (this.isDefaultInstance()) {
+                replies.addAll(cd.getDefaultInstance().getReplies());
+            } else {
+                replies.addAll(cd.getInstance(p).getReplies());
+            }
+        }
+
         return replies;
     }
 
-    /**
-     * @param replies the replies to set
-     */
-    @JsonManagedReference
+    @JsonIgnore
+    public List<Reply> getReplies() {
+        List<Reply> replies = new ArrayList<>();
+        QuestionDescriptor qD = (QuestionDescriptor) this.findDescriptor();
+
+        for (ChoiceDescriptor cd : qD.getItems()) {
+            if (this.isDefaultInstance()) {
+                replies.addAll(cd.getDefaultInstance().getReplies());
+            } else {
+                replies.addAll(cd.getInstance().getReplies());
+            }
+        }
+
+        return replies;
+    }
+
     public void setReplies(List<Reply> replies) {
-        this.replies = replies;
-        for (Reply r: this.replies){
-            r.setQuestionInstance(this);
-        }
-    }
-
-    /**
-     * @param reply
-     */
-    public void addReply(Reply reply) {
-        reply.setQuestionInstance(this);
-        this.setReplies(ListUtils.cloneAdd(this.getReplies(), reply));
-    }
-
-    void removeReply(Reply reply) {
-        this.replies.remove(reply);
-    }
-
-    /**
-     * @param replies
-     */
-    public void addReplies(List<Reply> replies) {
-        for (Reply r : replies) {
-            this.addReply(r);
-        }
     }
 
     /**

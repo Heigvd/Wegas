@@ -274,8 +274,8 @@ public class SerializationTest {
         singleResult.addResult(result21);
 
         Reply reply = new Reply();
-        questionI.addReply(reply);
-        reply.setQuestionInstance(questionI);
+        choiceI.addReply(reply);
+        reply.setChoiceInstance(choiceI);
         result11.addReply(reply);
         reply.setResult(result11);
 
