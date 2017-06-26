@@ -41,4 +41,4 @@ Thumbs.db
 typings/
 .vscode
 
-*.properties
+wegas-core/src/test/resources/wegas.properties
