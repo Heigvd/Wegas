@@ -419,7 +419,11 @@ public class SerializationTest {
         exceptions.add(new WegasScriptException("var a = truc;", 123, "OUPS"));
 
         List<AbstractEntity> instances = new ArrayList<>();
-        instances.add(new NumberInstance(1));
+        NumberDescriptor numberDescriptor = new NumberDescriptor("y");
+        NumberInstance numberInstance = new NumberInstance(0.0);
+        numberDescriptor.setDefaultInstance(numberInstance);
+        numberInstance.setDefaultDescriptor(numberDescriptor);
+        instances.add(numberInstance);
 
         EntityUpdatedEvent update = new EntityUpdatedEvent(instances);
 
