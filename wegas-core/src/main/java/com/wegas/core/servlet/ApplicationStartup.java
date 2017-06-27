@@ -5,10 +5,12 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb;
+package com.wegas.core.servlet;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
+import com.wegas.core.ejb.ApplicationLifecycle;
+import com.wegas.core.ejb.WebsocketFacade;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
