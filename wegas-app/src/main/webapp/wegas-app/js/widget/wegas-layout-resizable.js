@@ -84,6 +84,13 @@ YUI.add('wegas-layout-resizable', function(Y) {
              */
             syncUI: function() {
                 this.syncCenterNode();
+                if (!this.initialLeft) {
+                    this.initialLeft = {
+                        left : '0px',
+                        center : this.getPosition('center').getComputedStyle('left'),
+                        right : this.getPosition('right').getComputedStyle('left')
+                    }
+                }
             },
             /**
              * @function
@@ -138,8 +145,11 @@ YUI.add('wegas-layout-resizable', function(Y) {
             hidePosition: function(position) {
                 var node = this.getPosition(position);
                 //if (!!this.get(position + ".animate")) {                          // False by default
-                this.oldWidth[position] = node.getComputedStyle("width");
-                node.setStyle("left", "initial");                                   // Reset left value
+                var currWidth = node.getComputedStyle("width");
+                if (currWidth !== '0px') {
+                    this.oldWidth[position] = node.getComputedStyle("width");
+                }
+                node.setStyle("left", this.initialLeft[position]);                                   // Reset left value
 
                 node.setStyle("width", "0");
                 this.syncCenterNode();
@@ -165,16 +175,21 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 //if (!!this.get(position + ".animate")) {                          // False by default
                 //if (parseInt(target.getStyle("width"), 10) < cfg.width) {         // Only display if hidde
                 if (parseInt(target.getStyle("width"), 10) < 70) {                  // If is hidden
-                    target.setStyle("left", "initial");                             // Reset left value since it may
-                                                                                    // have been changed during resize
-                    target.setStyle("width",
-                        this.oldWidth[position] || ((this.get(position + ".width") || 430) + "px"));
+                    target.setStyle("left", this.initialLeft[position]);            // Reset left value
+                    var width = parseInt(this.oldWidth[position]) || this.get(position + ".width") || 430;
+                        target.setStyle("width", width + "px");
+                    if (position === "center") {
+                        var rightNode = this.getPosition("right"),
+                            rightWidth = parseInt(rightNode.getComputedStyle("width"));
+                        rightNode.setStyle('width', (rightWidth - width) + 'px');
+                    }
                     this.syncCenterNode();
                 }
                 //} else {
                 //this.getAnim(position).set("reverse", false).run();
                 //}
             },
+            /*
             getAnim: function(position) {
                 if (!this.anims[position]) {
                     var anim = new Y.Anim({
@@ -194,6 +209,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 }
                 return this.anims[position];
             },
+            */
             /**
              * @function
              * @private
@@ -256,14 +272,16 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 if (center !== '0px') {
                     centerNode.setStyles({
                         left: left,
-                        right: rightNode.getComputedStyle("width")
+                        right: rightNode.getComputedStyle("width"),
+                        width: 'auto'
                     });
                     rightNode.setStyles({
                         left: 'auto'
                     });
                 } else {
                     rightNode.setStyles({
-                        left: parseInt(left, 10) - this.HANDLEBAR_WIDTH
+                        left: parseInt(left, 10) - this.HANDLEBAR_WIDTH,
+                        width: 'auto'
                     });
                 }
                 Y.Wegas.app.fire("layout:resize");
