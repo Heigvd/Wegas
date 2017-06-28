@@ -880,11 +880,14 @@ YUI().use(function (Y) {
         modules: {
             "wegas-react-form": {
                 path: "dist/bundle.js",
-                requires: ["wegas-react-manifest", "roboto-font", "tinymce", "wegas-panel-fileselect"],
+                requires: ["wegas-react-vendor","roboto-font", "tinymce", "wegas-panel-fileselect"],
                 ws_provides: "RForm"
             },
-            "wegas-react-manifest": {
-                path: "dist/manifest.js"
+            // "wegas-react-manifest": {
+            //     path: "dist/manifest.js"
+            // },
+            "wegas-react-vendor":{
+                path: "dist/vendor.js"
             },
             "open-sans": { // Used in the react-based scenarist mode
                 type: CSS,

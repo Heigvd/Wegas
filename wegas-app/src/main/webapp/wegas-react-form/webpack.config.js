@@ -34,10 +34,11 @@ const plugins = [
             );
         }
     }),
-    new webpack.optimize.CommonsChunkPlugin({
-        name: 'manifest',
-        minChunks: Infinity
-    })
+    // Causes trouble with YUI loader.
+    // new webpack.optimize.CommonsChunkPlugin({
+    //     name: 'manifest',
+    //     minChunks: Infinity
+    // })
 ];
 if (PROD) {
     plugins.push(

@@ -3,7 +3,7 @@
         "target": "esnext",
         "jsx": "preserve",
         "allowJs": true,
-        "module": "es2015",
+        "module": "esnext",
         "outDir": "dist",
         "strict": true,
         "noUnusedLocals": true,

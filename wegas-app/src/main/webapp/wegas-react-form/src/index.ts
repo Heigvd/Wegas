@@ -8,10 +8,13 @@
 
 let Z: Y.YUI;
 /* global YUI */
-YUI.add('wegas-react-form', (Y) => {
+YUI.add('wegas-react-form', Y => {
     Z = Y;
-    _import(/* webpackChunkName: "react-form" */'./wegas-react-form');
+    import(
+        /* webpackChunkName: "react-form" */ './wegas-react-form'
+    )
 });
+
 export function getY() {
     return Z;
 }

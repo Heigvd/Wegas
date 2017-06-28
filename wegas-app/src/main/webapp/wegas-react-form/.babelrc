@@ -18,7 +18,6 @@
         ]
     ],
     "plugins": [
-        "./transform-import.js",
         "transform-object-rest-spread",
         "syntax-dynamic-import"
     ],
