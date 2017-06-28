@@ -13,6 +13,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 
@@ -39,8 +40,17 @@ import java.util.Map;
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")})
+    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")
+    ,
+    @NamedQuery(name = "Team.findNotYetLive", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING'")
+})
 public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity {
+
+    public static enum Status {
+        WAITING,
+        PROCESSING,
+        LIVE
+    };
 
     private static final long serialVersionUID = 1L;
 
@@ -64,6 +74,13 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
+
+    /**
+     *
+     */
+    @Enumerated(value = EnumType.STRING)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
+    private Status status = Status.WAITING;
 
     /**
      *
@@ -101,11 +118,9 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
 
     /**
      *
-    @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
-    private Long gameId;
+     * @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
+     * private Long gameId;
      */
-
-
     /**
      *
      */
@@ -246,6 +261,14 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Integer getDeclaredSize() {

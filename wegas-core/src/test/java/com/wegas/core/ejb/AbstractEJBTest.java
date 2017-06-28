@@ -108,6 +108,7 @@ public class AbstractEJBTest {
         User user21 = new User();
         userFacade.create(user21);
         player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
+
     }
 
     @After

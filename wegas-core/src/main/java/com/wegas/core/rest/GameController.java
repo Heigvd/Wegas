@@ -73,7 +73,9 @@ public class GameController {
 
     /**
      * @param entityId
+     *
      * @return game matching entityId
+     *
      * @throws AuthorizationException current user doesn't have access to the
      *                                requested game
      */
@@ -88,6 +90,7 @@ public class GameController {
 
     /**
      * @param gameModelId
+     *
      * @return all gameModel games
      */
     @GET
@@ -110,7 +113,9 @@ public class GameController {
      *
      * @param gameModelId
      * @param game
+     *
      * @return the new game with its debug team filtered out
+     *
      * @throws IOException
      */
     @POST
@@ -132,7 +137,9 @@ public class GameController {
      *
      * @param gameModelId
      * @param entity
+     *
      * @return the new game with its debug team filtered out
+     *
      * @throws IOException
      */
     @POST
@@ -150,7 +157,9 @@ public class GameController {
      *
      * @param gameModelId
      * @param entity
+     *
      * @return the new game with its debug team
+     *
      * @throws IOException
      */
     @POST
@@ -162,6 +171,7 @@ public class GameController {
     /**
      * @param entityId
      * @param entity
+     *
      * @return up to date game
      */
     @PUT
@@ -179,6 +189,7 @@ public class GameController {
      * correct rights and create them if it's not the case
      *
      * @param gameId id of the game one want to recover players rights
+     *
      * @return the game
      */
     @PUT
@@ -195,6 +206,7 @@ public class GameController {
      *
      * @param entityId
      * @param status
+     *
      * @return the game with up to date status
      */
     @PUT
@@ -220,6 +232,7 @@ public class GameController {
      * Get all game with given status
      *
      * @param status
+     *
      * @return all game having the given status
      */
     @GET
@@ -245,6 +258,7 @@ public class GameController {
      * Count games by status
      *
      * @param status
+     *
      * @return number of game having the given status
      */
     @GET
@@ -291,6 +305,7 @@ public class GameController {
      * player linked on the current user for the game found.
      *
      * @param gameId
+     *
      * @return Response
      */
     @POST
@@ -310,8 +325,9 @@ public class GameController {
                             if (game.getGameModel().getProperties().getFreeForAll()) {
                                 Team team = new Team("Ind-" + Helper.genToken(12), 1);
                                 teamFacade.create(game.getId(), team); // return managed team
-                                playerFacade.create(team, currentUser);
-                                //Team find = teamFacade.find(team.getId());
+                                team = teamFacade.find(team.getId());
+                                gameFacade.joinTeam(team.getId(), currentUser.getId());
+                                team = teamFacade.find(team.getId());
                                 r = Response.status(Response.Status.CREATED).entity(team).build();
                             }
                         }
@@ -324,6 +340,7 @@ public class GameController {
 
     /**
      * @param token
+     *
      * @return game which matches the token, without its debug team
      */
     @GET
@@ -337,6 +354,7 @@ public class GameController {
      * Resets all the variables of a given game
      *
      * @param gameId gameId id of game to reset
+     *
      * @return HTTP 200 Ok
      */
     @GET

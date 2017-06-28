@@ -34,13 +34,17 @@ import org.slf4j.LoggerFactory;
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
  * @param <T> scope context
+ *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity                                                                         // Database serialization
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
-    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
-    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
+    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class)
+    ,
+    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class)
+    ,
+    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class)
+    ,
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
@@ -54,16 +58,16 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
 
     /**
      * HACK
-     *
+     * <p>
      * Links from VariableDescriptor to Instances has been cut to avoid using
      * time-consuming HashMap. Thereby, a new way to getInstances(player) is
      * required. It's done by using specific named-queries through
      * VariableInstanceFacade.
-     *
+     * <p>
      * Injecting VariableInstanceFacade here don't bring business logic within
      * data because the very only functionality that is being used here aims to
      * replace JPA OneToMany relationship management
-     *
+     * <p>
      */
     @JsonIgnore
     @Transient
@@ -101,6 +105,7 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
 
     /**
      * @param player
+     *
      * @return
      */
     abstract public VariableInstance getVariableInstance(Player player);
@@ -168,7 +173,11 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      */
     protected void propagate(Team t, boolean create) {
         for (Player p : t.getPlayers()) {
-            propagate(p, create);
+            if (!p.getStatus().equals(Player.Status.WAITING)) {
+                propagate(p, create);
+            } else {
+                logger.error("SKIP PLAYER: " + p + " -> " + p.getStatus());
+            }
         }
     }
 
@@ -179,7 +188,9 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      */
     protected void propagate(Game g, boolean create) {
         for (Team t : g.getTeams()) {
-            propagate(t, create);
+            if (!t.getStatus().equals(Team.Status.WAITING)) {
+                propagate(t, create);
+            }
         }
     }
 

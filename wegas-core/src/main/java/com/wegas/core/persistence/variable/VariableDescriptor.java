@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @param <T>
+ *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
@@ -130,11 +131,11 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * HACK
-     *
+     * <p>
      * Injecting VariableDescriptorFacade here don't bring business logic within
      * data because the very only functionality that is being used here aims to
      * replace some slow JPA mechanisms
-     *
+     * <p>
      */
     @JsonIgnore
     @Transient
@@ -386,6 +387,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * Fetch variable instance for the given player
      *
      * @param player
+     *
      * @return variableInstance belonging to the player
      */
     public T getInstance(Player player) {
@@ -404,6 +406,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @param defaultInstance indicate whether one wants the default instance r
      *                        the one belonging to player
      * @param player          the player
+     *
      * @return either the default instance of the one belonging to player
      */
     @JsonIgnore
@@ -458,6 +461,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param scope the scope to set
+     *
      * @fixme here we cannot use managed references since this.class is
      * abstract.
      */
@@ -550,6 +554,15 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
     }
 
+    public void createInstances(AbstractEntity instanceOwner) {
+        if ((scope instanceof GameModelScope && instanceOwner instanceof GameModel)
+                || (scope instanceof GameScope && instanceOwner instanceof Game)
+                || (scope instanceof TeamScope && instanceOwner instanceof Team)
+                || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
+            scope.propagateDefaultInstance(instanceOwner, true);
+        }
+    }
+
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Map<String, List<AbstractEntity>> map = new HashMap<>();
@@ -565,6 +578,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * all the given criterias
      *
      * @param criterias
+     *
      * @return return true if there is a match
      */
     @Override

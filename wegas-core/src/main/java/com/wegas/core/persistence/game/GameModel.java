@@ -227,10 +227,17 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     /**
      * @param context
+     * @param create
      */
     public void propagateDefaultInstance(AbstractEntity context, boolean create) {
         for (VariableDescriptor vd : this.getVariableDescriptors()) {
             vd.propagateDefaultInstance(context, create);
+        }
+    }
+
+    public void createInstances(AbstractEntity owner) {
+        for (VariableDescriptor vd : this.getVariableDescriptors()) {
+            vd.createInstances(owner);
         }
     }
 
