@@ -32,7 +32,7 @@
 
 .yui3-skin-sam .wegas-editview {
     background: url(../../wegas-app/images/editor-polygons.png) no-repeat;
-    background-size: 100% 80%;
+    background-size: 100% 10%;
 }
 
 /* Set font in the editor*/
@@ -93,12 +93,25 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     display: none;
 }
 
-#centerTabView .yui3-tabview-panel:empty:before {
+#centerTabView .yui3-tabview-panel:empty:before,
+#rightTabView .yui3-tabview-panel:empty:before,
+#centerTabView .yui3-tabview-panel .empty-edit-panel:before,
+#rightTabView .yui3-tabview-panel .empty-edit-panel:before {
     content: "Nothing selected";
     text-align: center;
     margin-top: 2em;
     font-style: italic;
     color: #a0a0a0;
+    display: block;
+}
+
+#centerTabView .yui3-tabview-panel .panel-inner .empty-edit-panel,
+#rightTabView .yui3-tabview-panel .panel-inner .empty-edit-panel {
+    display: none;
+}
+
+#centerTabView .yui3-tabview-panel .panel-inner > div:only-child .empty-edit-panel,
+#rightTabView .yui3-tabview-panel .panel-inner > div:only-child .empty-edit-panel {
     display: block;
 }
 
@@ -127,6 +140,27 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner {
     height: inherit;
     overflow: auto;
+}
+
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-open-center-tabview {
+    color: #888686;
+    font-size: 12px;
+    padding: 3px;
+    height: 19px;
+    min-height: 0;
+    border: 1px solid #777;
+    margin-right: 15px;
+    line-height: 12px;
+    position: relative;
+    top: 10px;
+    left: -4px;
+}
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-open-center-tabview.hidden {
+    display: none;
+}
+
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wwegas-open-center-tabview:hover {
+    color: black;
 }
 
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab {

@@ -12,7 +12,9 @@
 YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
-    var RemoveRightTab, RemoveCenterTab, TabDocker,
+    var RemoveTabView,
+        RestoreCenterTab,
+        TabDocker,
         Plugin = Y.Plugin, Wegas = Y.Wegas,
         CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
         TabView, Tab, RemoveTab;
@@ -170,7 +172,8 @@ YUI.add('wegas-tabview', function(Y) {
                     newTabView.deselectAll();
                     newTab.set("selected", 1);
                     newPanelNode.addClass("yui3-tab-panel-selected");
-                    // @HACK Special treatment for the Preview panel, it needs reloading to become fully usable:
+                    // @HACK Special treatment for the Preview panel, it needs reloading to become fully usable,
+                    // especially TinyMce's iframes:
                     if (existingTab.hasPlugin("hideable")) {
                         Y.Wegas.PageLoader.find("previewPageLoader").reload();
                     }
@@ -667,7 +670,7 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<div class="wegas-removeTabview fa fa-chevron-left" title="Close tab group"></div>',
+        ADD_TEMPLATE: '<div class="wegas-removeTabview fa fa-chevron-left" title="Hide tab group"></div>',
         /**
          * @function
          * @private
@@ -694,98 +697,102 @@ YUI.add('wegas-tabview', function(Y) {
     Plugin.RemoveTab = RemoveTab;
 
     /**
-     * Center tab management, NB: this is a copy-paste of RemoveRightTab !
-     * @name Y.Plugin.RemoveCenterTab
+     * Tabview (tab group) management.
+     * @name Y.Plugin.RemoveTabView
      * @extends Y.Plugin.RemoveTab
      * @constructor
      */
-    RemoveCenterTab = function() {
-        RemoveCenterTab.superclass.constructor.apply(this, arguments);
+    RemoveTabView = function() {
+        RemoveTabView.superclass.constructor.apply(this, arguments);
     };
 
-    Y.extend(RemoveCenterTab, RemoveTab, {
-        /** @lends Y.Wegas.RemoveCenterTab# */
+    Y.extend(RemoveTabView, RemoveTab, {
+        /** @lends Y.Wegas.RemoveTabView# */
         /**
          * @function
          * @private
-         * @description Create a tab for remove tabview.
+         * @description Create a button for removing this tabview.
          * If this tab is clicked, remove host tabview.
          */
         initializer: function() {
             Wegas.app.after("render", function() {
                 if (this.get("host").isEmpty()) {
-                    Wegas.app.widget.hidePosition("center");
+                    Wegas.app.widget.hidePosition(this.get("tabViewName"));
                 }
             }, this);
             this.onHostEvent("addChild", function() {
                 if (Wegas.app.widget) {
-                    Wegas.app.widget.showPosition("center");
+                    Wegas.app.widget.showPosition(this.get("tabViewName"));
                 }
             });
         },
         onClick: function(e) {
             e.stopPropagation();
-            this.get('host').destroyAll();
+            Wegas.app.widget.hidePosition(this.get("tabViewName"));
+            //this.get('host').destroyAll();
+            if (this.get("tabViewName") === "center") {
+                Y.Widget.getByNode('#rightTabView').get("contentBox").one('.wegas-open-center-tabview').removeClass('hidden')
+            }
+            /*
             Y.later(100, this, function() {
                 if (this.get("host").isEmpty()) {
-                    // @TODO JH Add double arrow on top of separation between left and right panels !!!
-                    // or left arrow if left panel is visible and right arrow if right panel is visible
-                    Wegas.app.widget.hidePosition("center");
+                    Wegas.app.widget.hidePosition(this.get("tabViewName"));
                 }
             });
+            */
         }
     }, {
         NS: "removetab",
-        NAME: "removetab"
+        NAME: "removetab",
+        ATTRS: {
+            tabViewName: ''
+        }
     });
-    Plugin.RemoveCenterTab = RemoveCenterTab;
+    Plugin.RemoveTabView = RemoveTabView;
 
     /**
-     * Right tab management
-     * @name Y.Plugin.RemoveRightTab
+     * Center tab management
+     * @name Y.Plugin.RestoreCenterTab
      * @extends Y.Plugin.RemoveTab
      * @constructor
      */
-    RemoveRightTab = function() {
-        RemoveRightTab.superclass.constructor.apply(this, arguments);
+    RestoreCenterTab = function() {
+        RestoreCenterTab.superclass.constructor.apply(this, arguments);
     };
 
-    Y.extend(RemoveRightTab, RemoveTab, {
-        /** @lends Y.Wegas.RemoveRightTab# */
+    Y.extend(RestoreCenterTab, Plugin.Base, {
+        /** @lends Y.Wegas.RestoreCenterTab# */
+        ADD_TEMPLATE: '<button class="yui3-button wegas-open-center-tabview hidden" title="Open center tab"><i class=\"fa fa-chevron-right\"></i></button>',
         /**
          * @function
          * @private
-         * @description Create a tab for remove tabview.
-         * If this tab is clicked, remove host tabview.
+         * @description Uses a tab for restoring tabview.
+         * If this tab is clicked, show host tabview.
          */
         initializer: function() {
-            Wegas.app.after("render", function() {
-                if (this.get("host").isEmpty()) {
-                    Wegas.app.widget.hidePosition("right");
-                }
-            }, this);
-            this.onHostEvent("addChild", function() {
-                if (Wegas.app.widget) {
-                    Wegas.app.widget.showPosition("right");
-                }
-            });
+            var tabview = this.get('host');
+            tabview.after('render', this.afterRender, this);
+            tabview.get(CONTENTBOX).delegate('click', this.onClick, '.wegas-open-center-tabview', this);
+
+        },
+        afterRender: function(e) {
+            var tabview = this.get('host');
+            tabview.get(CONTENTBOX).one('> ul').prepend(this.ADD_TEMPLATE);
         },
         onClick: function(e) {
             e.stopPropagation();
-            this.get('host').destroyAll();
             Y.later(100, this, function() {
-                if (this.get("host").isEmpty()) {
-                    Wegas.app.widget.hidePosition("right");
-                }
+                Wegas.app.widget.showPosition("center");
+                // Hide arrows for restoring this tabview
+                var tabview = this.get('host');
+                tabview.get(CONTENTBOX).one('.wegas-open-center-tabview').addClass("hidden");
             });
         }
     }, {
-        NS: "removetab",
-        NAME: "removetab"
+        NS: "restoretab",
+        NAME: "restoretab"
     });
-    Plugin.RemoveRightTab = RemoveRightTab;
-
-
+    Plugin.RestoreCenterTab = RestoreCenterTab;
 
     /**
      * Plugin that resizes the tabview's button if required

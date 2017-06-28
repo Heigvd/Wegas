@@ -14,6 +14,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
     var ENTITY = "entity", LABEL = "label", HOST = "host", CONTENTBOX = "contentBox",
         ID = "id", DATASOURCE = "dataSource", BUTTON = "button",
+        EDIT_TAB_LABEL = "Attributes",
         Plugin = Y.Plugin, Lang = Y.Lang, Action = Plugin.Action,
         Promise = Y.Promise,
         Wegas = Y.Wegas, persistence = Wegas.persistence,
@@ -116,7 +117,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             }
                         });
                     }),
-                        // Rrieve menu and remove the first item
+                        // Retrieve menu and remove the first item (the "Save" button)
                         menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
                             return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
                         }),
@@ -167,6 +168,14 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             }
                         }
                     });
+                    var tb = form.toolbar,
+                        sz = tb.size();
+                    if (sz > 1){
+                        // Remove any pre-existing buttons, except the "Save" button at position 0:
+                        for (var i = sz-1; i > 0; i--){
+                            tb.remove(i);
+                        }
+                    }
                     form.toolbar.add(menuItems);
                     //if (form.toolbar.item(0)) { form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px"); }
                     resolve(form);
@@ -218,15 +227,21 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 name = "New " + name.toLowerCase();
             }
             tab.setAttrs({
-                label: "Attributes",
+                label: EDIT_TAB_LABEL,
                 selected: 2
             });                                                                 // Update tab attrs
             tab.form.setAttrs({
                 values: entity.toObject(),
                 cfg: formCfg || entity.getFormCfg()
             });                                                                 // Update form attrs
-            var statusNode = new Y.Node.create('<span class="wegas-form-title">' + name + '</span>');
-            tab.form.toolbar.get("header").prepend(statusNode);
+            var statusNode = new Y.Node.create('<span class="wegas-form-title">' + name + '</span>'),
+                header = tab.form.toolbar.get("header"),
+                currTitle = header.one('.wegas-form-title');
+            if (currTitle) {
+                header.replaceChild(statusNode, currTitle);
+            } else {
+                header.prepend(statusNode);
+            }
             tab.form.toolbar.setStatusMessage("");
 
             tab.form.detach("submit");
@@ -265,7 +280,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         },
         getEditionTab: function() {
             if (!EditEntityAction.tab || EditEntityAction.tab.get("destroyed")) {// First make sure the edit tab does not exist
-                var tab = Wegas.TabView.createTab("Edit", "#centerTabView"),     // Create a tab,
+                var currTab = Wegas.TabView.getTab(EDIT_TAB_LABEL),
+                    // Check if the edition tab has been created somewhere but still is empty:
+                    tabViewSelector = currTab ? currTab.get("tabSelector") : "#centerTabView";
+                var tab = Wegas.TabView.createTab(EDIT_TAB_LABEL, tabViewSelector),     // Create a tab,
                     form = new Wegas.RForm();                                    // and a form
 
                 tab.plug(Plugin.Removeable);                                  // make it closeable
@@ -761,7 +779,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
     }, {
         ATTRS: {
             label: {
-                value: "Edit"
+                value: EDIT_TAB_LABEL
             }
         }
     });
