@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.persistence.game.Game;
@@ -37,29 +38,17 @@ public class TeamFacade extends BaseFacade<Team> {
 
     private static final Logger logger = LoggerFactory.getLogger(TeamFacade.class);
 
+    @Inject
+    private PopulatorScheduler populatorScheduler;
+    
     /**
      *
      */
     @EJB
     private GameFacade gameFacade;
 
-    /**
-     *
-     */
-    @EJB
-    private PlayerFacade playerFacade;
-
-    /**
-     *
-     */
-    @EJB
-    private UserFacade userFacade;
-
     @EJB
     private AccountFacade accountFacade;
-
-    @Inject
-    private PopulatorScheduler asyngleton;
 
     /**
      *
@@ -103,7 +92,7 @@ public class TeamFacade extends BaseFacade<Team> {
         /**
          * the new thread must be able to retrieve the team to populate from database
          */
-        asyngleton.scheduleCreation();
+        populatorScheduler.scheduleCreation();
     }
 
     /**
@@ -120,19 +109,6 @@ public class TeamFacade extends BaseFacade<Team> {
         getEntityManager().persist(entity);
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
         entity.setStatus(Team.Status.LIVE);
-    }
-
-    /**
-     * Two-step team creation: second step
-     *
-     * @param teamId
-     */
-    public void populateTeam(Long teamId) {
-        Team team = this.find(teamId);
-        Game game = gameFacade.find(team.getGameId());
-        gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
-
-        team.setStatus(Team.Status.LIVE);
     }
 
     public List<Team> findNotLive() {

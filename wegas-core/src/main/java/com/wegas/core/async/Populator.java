@@ -1,12 +1,10 @@
 package com.wegas.core.async;
 
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import java.util.concurrent.Callable;
-import javax.inject.Inject;
+import javax.ejb.EJB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,26 +16,20 @@ public class Populator implements Callable<Integer> {
 
     private static final Logger logger = LoggerFactory.getLogger(Populator.class);
 
-    @Inject
-    private PopulatorScheduler scheduler;
-
-    @Inject
-    private PlayerFacade playerFacade;
-
-    @Inject
-    private TeamFacade teamFacade;
+    @EJB
+    private PopulatorFacade populatorFacade;
 
     @Override
     public Integer call() {
         AbstractEntity owner;
         int count = 0;
 
-        while ((owner = scheduler.getNextOwner(this)) != null) {
+        while ((owner = populatorFacade.getNextOwner(this)) != null) {
             logger.error("POPULATE " + owner + " instances");
             if (owner instanceof Team) {
-                teamFacade.populateTeam(owner.getId());
+                populatorFacade.populateTeam(owner.getId());
             } else if (owner instanceof Player) {
-                playerFacade.populatePlayer(owner.getId());
+                populatorFacade.populatePlayer(owner.getId());
             }
             logger.error("  * " + owner + " completed");
             count++;

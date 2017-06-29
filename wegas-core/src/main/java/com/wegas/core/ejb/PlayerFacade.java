@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -99,18 +98,6 @@ public class PlayerFacade extends BaseFacade<Player> {
         return this.find(player.getId());
     }
     
-    public void populatePlayer(Long playerId) {
-        Player player = this.find(playerId);
-        Team team = teamFacade.find(player.getTeamId());
-        
-
-        gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
-        
-        player.setStatus(Player.Status.LIVE);
-
-        this.getEntityManager().flush();
-        gameModelFacade.runStateMachines(player);
-    }
 
     /**
      * Look for a user player withing game
