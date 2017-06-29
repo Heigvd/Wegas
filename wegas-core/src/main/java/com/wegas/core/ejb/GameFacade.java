@@ -151,13 +151,11 @@ public class GameFacade extends BaseFacade<Game> {
         }
         getEntityManager().persist(game);
 
-        gameModel.propagateDefaultInstance(game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
-
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
-        
-        gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true);
-        
+
+        gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
+
         this.addDebugTeam(game);
         gameModelFacade.runStateMachines(gameModel);
 

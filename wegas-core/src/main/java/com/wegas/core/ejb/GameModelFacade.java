@@ -137,7 +137,24 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         this.getEntityManager().flush();
         this.reviveInstances(gameModel, context);
     }
-    
+
+    /**
+     * @param gameModel
+     * @param context
+     * @param create
+     */
+    public void createAndRevivePrivateInstance(GameModel gameModel, BroadcastTarget context) {
+        this.createInstances(gameModel, context);
+        this.getEntityManager().flush();
+        this.reviveInstances(gameModel, context);
+    }
+
+    public void createInstances(GameModel gameModel, BroadcastTarget owner) {
+        for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
+            vd.createInstances(owner);
+        }
+    }
+
     public void propagateDefaultInstances(GameModel gameModel, BroadcastTarget context, boolean create) {
         // Propagate default instances 
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
@@ -145,7 +162,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
 
     }
-    
+
+
     public void reviveInstances(GameModel gameModel, BroadcastTarget context) {
         //logger.error("REVIVE INSTANCES");
         //Helper.printWegasStackTrace(new Exception());
@@ -156,8 +174,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
     }
 
-    public void runStateMachines(BroadcastTarget context){
-        this.runStateMachines(context, false);
+    public void runStateMachines(BroadcastTarget context) {
+        this.runStateMachines(context, true);
     }
 
     public void runStateMachines(BroadcastTarget context, boolean clear) {
@@ -166,17 +184,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         stateMachineFacade.runStateMachines(context, clear);
     }
 
-
     public void reviveScopeInstances(GameModel gameModel, AbstractScope aScope) {
         aScope.propagateDefaultInstance(null, true);
         this.getEntityManager().flush();
         // revive just propagated instances
-        for (VariableInstance vi : (Collection<VariableInstance>)aScope.getVariableInstances().values()) {
+        for (VariableInstance vi : (Collection<VariableInstance>) aScope.getVariableInstances().values()) {
             instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
         }
     }
-
-
 
     /**
      * Add a DebugGame (and debug team) within the given game model unless it
@@ -269,7 +284,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     * Only used by GameModelFacade.addDebugGame 
+     * Only used by GameModelFacade.addDebugGame
+     *
      * @param gameModel
      * @param game
      */

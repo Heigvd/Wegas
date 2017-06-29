@@ -104,8 +104,7 @@ public class PlayerFacade extends BaseFacade<Player> {
         Team team = teamFacade.find(player.getTeamId());
         
 
-        gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), player, true);
-        team.getGame().getGameModel().createInstances(player);
+        gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
         
         player.setStatus(Player.Status.LIVE);
 

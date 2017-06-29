@@ -9,9 +9,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -132,8 +130,7 @@ public class TeamFacade extends BaseFacade<Team> {
     public void populateTeam(Long teamId) {
         Team team = this.find(teamId);
         Game game = gameFacade.find(team.getGameId());
-        game.getGameModel().createInstances(team);
-        gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), t, true);
+        gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
 
         team.setStatus(Team.Status.LIVE);
     }

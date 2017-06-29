@@ -555,7 +555,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
     }
 
-    public void createInstances(AbstractEntity instanceOwner) {
+    public void createInstances(BroadcastTarget instanceOwner) {
         if ((scope instanceof GameModelScope && instanceOwner instanceof GameModel)
                 || (scope instanceof GameScope && instanceOwner instanceof Game)
                 || (scope instanceof TeamScope && instanceOwner instanceof Team)
