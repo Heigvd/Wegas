@@ -327,6 +327,10 @@ public class GameController {
                                 teamFacade.create(game.getId(), team); // return managed team
                                 team = teamFacade.find(team.getId());
                                 gameFacade.joinTeam(team.getId(), currentUser.getId());
+                                /**
+                                 * Detach and re-find to fetch the new player
+                                 */
+                                teamFacade.detach(team);
                                 team = teamFacade.find(team.getId());
                                 r = Response.status(Response.Status.CREATED).entity(team).build();
                             }
