@@ -463,7 +463,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 value: "ResourceInstance"
             },
             active: {
-                type: BOOLEAN
+                type: BOOLEAN,
+                view:{ label: 'Active' }
             },
             properties: {
                 type: OBJECT,
@@ -482,7 +483,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             assignments: {
                 type: ARRAY,
-                items: { type: OBJECT, view: { type: "uneditable" } }
+                items: { type: OBJECT, view: { type: "uneditable" } },
+                view: { label: "Assignments", type: HIDDEN }
             },
             occupations: {
                 type: ARRAY,
@@ -499,7 +501,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             activities: {
                 type: ARRAY,
-                items: { type: OBJECT, view: { type: "uneditable" } }
+                items: { type: OBJECT, view: { type: "uneditable" } },
+                view: { label: "Activities", type: HIDDEN }
             }
         }
     });
