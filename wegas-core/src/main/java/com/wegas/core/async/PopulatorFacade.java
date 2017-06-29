@@ -136,7 +136,6 @@ public class PopulatorFacade {
         try {
             try {
                 utx.begin();
-                logger.error(currentCreator + " requests some work");
 
                 List<DatedEntity> queue = new ArrayList<>();
                 queue.addAll(teamFacade.findNotLive());
@@ -145,19 +144,12 @@ public class PopulatorFacade {
                 // sort by creationTime
                 Collections.sort(queue, new EntityComparators.CreateTimeComparator());
 
-                logger.error("Candidates: ");
-                for (DatedEntity de : queue) {
-                    AbstractEntity ae = (AbstractEntity) de;
-                    logger.error(" - " + ae + " (" + ae.getId() + ")");
-                }
-
                 // return oldest but skip player | player.team.status != 'LIVE'
                 for (DatedEntity pop : queue) {
                     if (pop instanceof Team) {
                         Team t = (Team) pop;
                         //t = teamFacade.find(t.getId());
                         t.setStatus(Team.Status.PROCESSING);
-                        logger.error("set status to PROCESSING");
                         owner = t;
                         break;
                     } else if (pop instanceof Player
@@ -165,7 +157,6 @@ public class PopulatorFacade {
                         Player p = (Player) pop;
                         //p = em.find(Player.class, p.getId());
                         p.setStatus(Player.Status.PROCESSING);
-                        logger.error("set status to PROCESSING");
                         owner = p;
                         break;
                     }
@@ -177,7 +168,6 @@ public class PopulatorFacade {
                     utx.rollback();
                 } else {
                     utx.commit();
-                    logger.error("Owner to create instances for: " + owner + " (" + owner.getId() + ")");
                 }
             } catch (Exception ex) {
                 logger.error("Find Next: Failure");
