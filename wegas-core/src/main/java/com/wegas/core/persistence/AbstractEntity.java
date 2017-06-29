@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.persistence.variable.Beanjection;
+import javax.persistence.MappedSuperclass;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.slf4j.LoggerFactory;
@@ -45,14 +46,14 @@ import org.slf4j.LoggerFactory;
 })
 
 /**
- * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for new object with @ElementCollection annotated fields.
- * SEND_NEW_OBJECTS_WITH_CHANGES does not fix the issue.
+ * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg ChoiceDescriptor and result).
  * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
- * 
  */
-//@Cache(coordinationType = CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES)
-//@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
+@MappedSuperclass
+@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
 public abstract class AbstractEntity implements Serializable, Cloneable {
+
+    private static final long serialVersionUID = -2538440276749623728L;
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
 
