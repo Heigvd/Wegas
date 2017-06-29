@@ -537,7 +537,7 @@ public class UpdateController {
             DebugTeam dt = new DebugTeam();
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
-            gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true);
+            gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true); // restart missing debugTeam
             gameModelFacade.runStateMachines(dt);
             this.getEntityManager().flush();
             if (++counter == 25) {

@@ -225,6 +225,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.setPages(map);
     }
 
+    public void createInstances(AbstractEntity owner) {
+        for (VariableDescriptor vd : this.getVariableDescriptors()) {
+            vd.createInstances(owner);
+        }
+    }
+
     /**
      *
      */

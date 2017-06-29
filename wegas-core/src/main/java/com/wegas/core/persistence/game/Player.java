@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
@@ -33,16 +34,27 @@ import java.util.Map;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId")
+    ,
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId")
+    ,
     @NamedQuery(name = "DEPRECATED_Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
+    ,
+    @NamedQuery(name = "Player.findNotYetLive", query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING'")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
-    @Index(columnList = "user_id"),
+    @Index(columnList = "user_id")
+    ,
     @Index(columnList = "parentteam_id")
 })
-public class Player extends AbstractEntity implements Broadcastable, BroadcastTarget {
+public class Player extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity {
+
+    public static enum Status {
+        WAITING,
+        PROCESSING,
+        LIVE
+    };
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -82,12 +94,18 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     //@XmlInverseReference(mappedBy = "players")
     private Team team;
 
-
     @Transient
     private Boolean verifiedId = null;
 
     @Transient
     private String homeOrg = null;
+
+    /**
+     *
+     */
+    @Enumerated(value = EnumType.STRING)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
+    private Status status = Status.WAITING;
 
     /**
      *
@@ -243,6 +261,11 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
         this.name = name;
     }
 
+    @Override
+    public Date getCreatedTime() {
+        return this.getJoinTime();
+    }
+
     /**
      * @return the joinTime
      */
@@ -257,12 +280,20 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
         this.joinTime = joinTime != null ? new Date(joinTime.getTime()) : null;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     /*
      * @return true if the user's main account is an AaiAccount or equivalent
      */
     @Transient
-    public boolean isVerifiedId(){
-        if (verifiedId != null){
+    public boolean isVerifiedId() {
+        if (verifiedId != null) {
             return verifiedId.booleanValue();
         } else {
             if (this.user != null) {
@@ -276,17 +307,17 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     }
 
 
-   /*
+    /*
     * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the empty string
-    */
+     */
     @Transient
-    public String getHomeOrg(){
-        if (homeOrg != null){
+    public String getHomeOrg() {
+        if (homeOrg != null) {
             return homeOrg;
         } else {
             if (this.user != null) {
                 AbstractAccount acct = user.getMainAccount();
-                if (acct instanceof AaiAccount){
+                if (acct instanceof AaiAccount) {
                     homeOrg = ((AaiAccount) acct).getHomeOrg();
                 } else {
                     homeOrg = "";
@@ -297,7 +328,6 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
             }
         }
     }
-
 
     /**
      * Retrieve all variableInstances that belongs to this player only (ie.

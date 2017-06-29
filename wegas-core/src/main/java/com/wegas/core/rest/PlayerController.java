@@ -106,7 +106,7 @@ public class PlayerController {
                     Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
 
                     if (existingPlayer == null) {
-                        playerFacade.create(teamToJoin, currentUser);
+                        gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId());
 
                         return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
                     }

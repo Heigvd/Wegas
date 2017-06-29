@@ -269,13 +269,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
+     * Only used by GameModelFacade.addDebugGame 
      * @param gameModel
      * @param game
      */
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
         getEntityManager().persist(game);
-        this.propagateAndReviveDefaultInstances(gameModel, game, true);
+        this.propagateAndReviveDefaultInstances(gameModel, game, true); // init debug game
     }
 
     @Asynchronous
@@ -453,7 +454,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
-        this.propagateAndReviveDefaultInstances(gameModel, gameModel, false);
+        this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
         this.runStateMachines(gameModel);
     }
 

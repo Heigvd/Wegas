@@ -18,6 +18,7 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.jparealm.GameAccount;

@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -35,6 +36,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -42,7 +45,7 @@ import java.util.List;
 @Stateless
 @LocalBean
 public class PlayerFacade extends BaseFacade<Player> {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(PlayerFacade.class);
 
     /**
@@ -50,7 +53,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @EJB
     private GameFacade gameFacade;
-
+    
     @EJB
     private TeamFacade teamFacade;
 
@@ -65,25 +68,49 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @EJB
     private UserFacade userFacade;
-
+    
     @Inject
     private RequestManager requestManager;
+    
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public Player joinTeamAndCommit(Long teamId, Long userId, String playerName) {
+        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
+        
+        Player player = new Player();
+        Team team = teamFacade.find(teamId);
+        
+        if (userId != null) {
+            User user = userFacade.find(userId);
+            user.getPlayers().add(player);
+            player.setUser(user);
+            player.setName(user.getName());
+            gameFacade.addRights(user, team.getGame());
+        } else {
+            if (playerName != null) {
+                player.setName(playerName);
+            } else {
+                player.setName("Some anonymous user");
+            }
+        }
+        
+        team.addPlayer(player);
+        this.getEntityManager().persist(player);
 
-    /**
-     * @param teamId
-     * @param player
-     */
-    public void create(final Long teamId, final Player player) {
-        gameFacade.joinTeam(teamId, player);
+        return this.find(player.getId());
     }
+    
+    public void populatePlayer(Long playerId) {
+        Player player = this.find(playerId);
+        Team team = teamFacade.find(player.getTeamId());
+        
 
-    /**
-     * @param team
-     * @param user
-     */
-    public void create(final Team team, final User user) {
-        //gameFacade.joinTeam(getEntityManager().find(Team.class, team.getId()), user);
-        gameFacade.joinTeam(team, user);
+        gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), player, true);
+        team.getGame().getGameModel().createInstances(player);
+        
+        player.setStatus(Player.Status.LIVE);
+
+        this.getEntityManager().flush();
+        gameModelFacade.runStateMachines(player);
     }
 
     /**
@@ -91,7 +118,9 @@ public class PlayerFacade extends BaseFacade<Player> {
      *
      * @param gameId game id
      * @param userId user id
+     *
      * @return the player owned by user linked to the game
+     *
      * @throws WegasNoResultException if not player was found
      */
     public Player findByGameIdAndUserId(final Long gameId, final Long userId) throws WegasNoResultException {
@@ -102,10 +131,16 @@ public class PlayerFacade extends BaseFacade<Player> {
             throw new WegasNoResultException("No player found");
         }
     }
+    
+    public List<Player> findNotLive() {
+        TypedQuery<Player> query = this.getEntityManager().createNamedQuery("Player.findNotYetLive", Player.class);
+        return query.getResultList();
+    }
 
     /**
      * @param gameId
      * @param userId
+     *
      * @return the player owned by user linked to the game or null if not found
      */
     public Player checkExistingPlayer(final Long gameId, final Long userId) {
@@ -124,6 +159,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     /**
      * @param teamId
      * @param userId
+     *
      * @return the player owned by user who is member of the game
      */
     public Player checkExistingPlayerInTeam(final Long teamId, final Long userId) {
@@ -140,7 +176,9 @@ public class PlayerFacade extends BaseFacade<Player> {
 
     /**
      * @param player
+     *
      * @return all player instances
+     *
      * @deprecated please use {@link Player#getPrivateInstances() }
      */
     public List<VariableInstance> getAssociatedInstances(final Player player) {
@@ -148,13 +186,13 @@ public class PlayerFacade extends BaseFacade<Player> {
         //final Query findPlayerInstance = getEntityManager().createNamedQuery("findPlayerInstances");
         //return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
     }
-
+    
     private List<VariableInstance> getPlayerInstances(Player player) {
         List<VariableInstance> result = new ArrayList<>();
-
+        
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
                 "VariableInstance.findPlayerInstance", VariableInstance.class);
-
+        
         for (VariableInstance instance : player.getPrivateInstances()) {
             PlayerScope scope = instance.getPlayerScope();
             query.setParameter("scopeId", scope.getId());
@@ -181,13 +219,13 @@ public class PlayerFacade extends BaseFacade<Player> {
         }
         return result;
     }
-
+    
     private List<VariableInstance> getTeamInstances(Team team) {
         List<VariableInstance> result = new ArrayList<>();
-
+        
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
                 "VariableInstance.findTeamInstance", VariableInstance.class);
-
+        
         for (VariableInstance instance : team.getPrivateInstances()) {
             TeamScope scope = instance.getTeamScope();
             query.setParameter("scopeId", scope.getId());
@@ -201,21 +239,21 @@ public class PlayerFacade extends BaseFacade<Player> {
             } else {
                 //TeamScope and PlayerScope -> only current team instance !
                 result.add(instance);
-
+                
             }
         }
         return result;
     }
-
+    
     private List<VariableInstance> getGameInstances(Game game) {
         List<VariableInstance> result = new ArrayList<>();
-
+        
         for (VariableInstance instance : game.getPrivateInstances()) {
             result.add(instance);
         }
         return result;
     }
-
+    
     private List<VariableInstance> getGameModelInstances(GameModel gameModel) {
         List<VariableInstance> result = new ArrayList<>();
         /**
@@ -224,11 +262,11 @@ public class PlayerFacade extends BaseFacade<Player> {
          * (vd.getScope() instanceof GameModelScope) {
          * result.add(vd.getScope().getInstance()); } }
          */
-
+        
         for (VariableInstance instance : gameModel.getPrivateInstances()) {
             result.add(instance);
         }
-
+        
         return result;
     }
 
@@ -236,6 +274,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * Get all instances a player as access to
      *
      * @param playerId the player to get instances for
+     *
      * @return List of instances
      */
     public List<VariableInstance> getInstances(final Long playerId) {
@@ -243,15 +282,15 @@ public class PlayerFacade extends BaseFacade<Player> {
         Team team = player.getTeam();
         Game game = team.getGame();
         GameModel gameModel = game.getGameModel();
-
+        
         List<VariableInstance> instances = this.getPlayerInstances(player);
         instances.addAll(this.getTeamInstances(team));
         instances.addAll(this.getGameInstances(game));
         instances.addAll(this.getGameModelInstances(gameModel));
-
+        
         return instances;
     }
-
+    
     @Override
     public void create(Player entity) {
         getEntityManager().persist(entity);
@@ -271,7 +310,7 @@ public class PlayerFacade extends BaseFacade<Player> {
         if (player.getUser() != null) {
             player.getUser().getPlayers().remove(player);
         }
-
+        
         this.getEntityManager().remove(player);
 
         //for (VariableInstance i : instances) {
@@ -281,6 +320,7 @@ public class PlayerFacade extends BaseFacade<Player> {
 
     /**
      * @param gameId
+     *
      * @return all players in the game
      */
     public List<Player> getByGameId(Long gameId) {
@@ -299,7 +339,9 @@ public class PlayerFacade extends BaseFacade<Player> {
      * Returns the first available player in the target game.
      *
      * @param gameId
+     *
      * @return a player from the game
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findByGameId(Long gameId) throws WegasNoResultException {
@@ -316,7 +358,9 @@ public class PlayerFacade extends BaseFacade<Player> {
      * Returns the first available player in the target game.
      *
      * @param gameId
+     *
      * @return a player from the game
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findDebugPlayerByGameId(Long gameId) throws WegasNoResultException {
@@ -333,6 +377,7 @@ public class PlayerFacade extends BaseFacade<Player> {
 
     /**
      * @param gameModelId
+     *
      * @return all players from all teams and all games from gameModel
      */
     public List<Player> getByGameModelId(Long gameModelId) {
@@ -350,7 +395,9 @@ public class PlayerFacade extends BaseFacade<Player> {
      * Returns the first available player in the target game model.
      *
      * @param gameModelId
+     *
      * @return any player in the game model
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findByGameModelId(Long gameModelId) throws WegasNoResultException {
@@ -367,6 +414,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * Find a player for a live game
      *
      * @param id player's id
+     *
      * @return Player if found and game is live or null
      */
     public Player findLive(Long id) {
@@ -381,6 +429,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * Find a player test player
      *
      * @param id player's id
+     *
      * @return Player if found and game is a debug one, null otherwise
      */
     public Player findTestPlayer(Long id) {
@@ -393,7 +442,9 @@ public class PlayerFacade extends BaseFacade<Player> {
 
     /**
      * @param g
+     *
      * @return currentUser player for given game
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findCurrentPlayer(Game g) throws WegasNoResultException {
@@ -413,7 +464,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @param player the player to reset
      */
     public void reset(final Player player) {
-        gameModelFacade.propagateAndReviveDefaultInstances(player.getGameModel(), player, false);
+        gameModelFacade.propagateAndReviveDefaultInstances(player.getGameModel(), player, false); // reset only this player instances
         gameModelFacade.runStateMachines(player);
     }
 
@@ -437,19 +488,19 @@ public class PlayerFacade extends BaseFacade<Player> {
             return null;
         }
     }
-
+    
     public Collection<String> getLocks(Long playerId) {
         Player player = this.find(playerId);
         Team team = player.getTeam();
         Game game = player.getGame();
         GameModel gameModel = game.getGameModel();
-
+        
         List<String> audiences = new ArrayList<>();
         audiences.add(player.getChannel());
         audiences.add(team.getChannel());
         audiences.add(game.getChannel());
         audiences.add(gameModel.getChannel());
-
+        
         return requestManager.getTokensByAudiences(audiences);
     }
 }

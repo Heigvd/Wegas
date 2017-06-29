@@ -15,7 +15,10 @@ import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
@@ -245,6 +248,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
         GameModel find = this.gameModelFacade.find(gameModelId);
+         /*
+        for (Game g : find.getGames()) {
+            logger.error("Game " + g);
+            for (Team t : g.getTeams()) {
+                logger.error("  Team " + t + " ->  " + t.getStatus());
+                for (Player p : t.getPlayers()) {
+                    logger.error("    Player " + p + " -> " + p.getStatus());
+                }
+            }
+        } // */
         this.createChild(find, find, variableDescriptor);
     }
 
