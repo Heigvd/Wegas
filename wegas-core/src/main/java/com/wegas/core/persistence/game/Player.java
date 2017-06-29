@@ -71,13 +71,14 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date joinTime = new Date();
     /**
      * The game model this belongs to
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JsonBackReference(value = "player-team")
-    @JoinColumn(name = "parentteam_id")
+    @JoinColumn(name = "parentteam_id", nullable = false)
     //@XmlInverseReference(mappedBy = "players")
     private Team team;
 
@@ -181,14 +182,6 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     public Long getTeamId() {
         return (this.team != null ? team.getId() : null);
     }
-
-    /**
-     *
-     * @param teamId
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
-    }
-     */
 
     /**
      * @return the userId
@@ -312,8 +305,22 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
      *
      * @return all player playerScoped instances
      */
+    @Override
     public List<VariableInstance> getPrivateInstances() {
         return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        return getPrivateInstances();
+    }
+
+    @Override
+    @JsonIgnore
+    public List<Player> getPlayers() {
+        ArrayList<Player> pl = new ArrayList<>();
+        pl.add(this);
+        return pl;
     }
 
     /**

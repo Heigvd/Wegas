@@ -37,14 +37,13 @@ public class InboxInstance extends VariableInstance {
     /**
      *
      */
-    protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(InboxInstance.class);
+    protected static final org.slf4j.Logger loggerbeans  = LoggerFactory.getLogger(InboxInstance.class);
 
     private static final long serialVersionUID = 1L;
 
     /**
      *
      */
-    @JsonView(Views.ExtendedI.class)
     @OneToMany(mappedBy = "inboxInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
 //    @OrderBy("sentTime DESC, id")
     /*
@@ -84,8 +83,8 @@ public class InboxInstance extends VariableInstance {
      */
     public void setMessages(List<Message> messages) {
         this.messages = messages;
-        for (Message r : this.messages) {
-            r.setInboxInstance(this);
+        for (Message m : this.messages) {
+            m.setInboxInstance(this);
         }
     }
 

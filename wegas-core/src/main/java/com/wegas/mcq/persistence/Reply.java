@@ -45,6 +45,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
     /**
      * /
@@ -59,6 +60,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
     /**
      *
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean ignored = false;
     /**
      *

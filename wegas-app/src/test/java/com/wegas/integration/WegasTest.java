@@ -1,6 +1,5 @@
 package com.wegas.integration;
 
-import com.wegas.core.persistence.game.GameModel;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -11,20 +10,25 @@ import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,17 +48,12 @@ public class WegasTest {
 
     private Long artosId;
 
-    //private static Logger logger = LoggerFactory.getLogger(WegasTest.class);
+    private static Logger logger = LoggerFactory.getLogger(WegasTest.class);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         runtime = Wegas.boot("wegas_test", "localhost", null, true, 8280);
-         //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        Wegas.shutdown(runtime);
+        //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
     }
 
     @Before
@@ -66,6 +65,30 @@ public class WegasTest {
 
         login();
         loadArtos();
+    }
+
+    @After
+    public void saveMemory() throws IOException {
+        HttpDelete wipeEmCache = new HttpDelete(baseURL + "/rest/Utils/EmCache");
+        HttpDelete binScen = new HttpDelete(baseURL + "/rest/GameModel/" + artosId);
+        HttpDelete deleteScen = new HttpDelete(baseURL + "/rest/GameModel/" + artosId);
+        HttpDelete clean = new HttpDelete(baseURL + "/rest/GameModel/CleanDatabase");
+
+        HttpResponse response = client.execute(binScen); // Move to trash
+        getEntityAsString(response.getEntity());
+        response = client.execute(deleteScen); // Delete from trash
+        getEntityAsString(response.getEntity());
+        response = client.execute(clean); // remove from database
+
+        EntityUtils.consume(response.getEntity());
+        
+        client.execute(wipeEmCache);
+        System.gc();
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        Wegas.shutdown(runtime);
     }
 
     public void login() throws IOException {

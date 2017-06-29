@@ -41,7 +41,7 @@ import javax.persistence.*;
     ,
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
-public abstract class EvaluationInstance extends AbstractEntity implements DatedEntity {
+public abstract class EvaluationInstance extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -65,9 +65,6 @@ public abstract class EvaluationInstance extends AbstractEntity implements Dated
     @ManyToOne
     @JsonIgnore
     private Review commentsReview;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdTime = new Date();
 
     /**
      * Corresponding evaluation descriptor
@@ -144,18 +141,17 @@ public abstract class EvaluationInstance extends AbstractEntity implements Dated
     }
 
     /**
-     * @return the createdTime
-     */
     @Override
-    public Date getCreatedTime() {
-        return createdTime != null ? new Date(createdTime.getTime()) : null;
+     * @return index
+     */
+    public int getIndex() {
+        return this.getDescriptor() != null ? this.getDescriptor().getIndex() : 0;
     }
 
     /**
-     * @param createdTime the createdTime to set
+     * @param index the index number to set
      */
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
+    public void setIndex(int index) {
     }
 
     /**

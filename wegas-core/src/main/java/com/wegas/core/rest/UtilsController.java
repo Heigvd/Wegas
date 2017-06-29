@@ -45,25 +45,35 @@ public class UtilsController {
     }
 
     @GET
+    @Path("ReviveCluster")
+    public void revive() {
+        applicationLifecycle.requestClusterMemberNotification();
+    }
+
+    @GET
     @Path("version")
+    @Produces(MediaType.TEXT_PLAIN)
     public String getVersion() {
         return Helper.getWegasProperty("wegas.build.version", "unknown");
     }
 
     @GET
     @Path("build_number")
+    @Produces(MediaType.TEXT_PLAIN)
     public String getBuildNumber() {
         return Helper.getWegasProperty("wegas.build.number", "unknown");
     }
 
     @GET
     @Path("full_version")
+    @Produces(MediaType.TEXT_PLAIN)
     public String getFullVersion() {
         return "Wegas-" + this.getVersion();
     }
 
     @GET
     @Path("build_details")
+    @Produces(MediaType.TEXT_PLAIN)
     public String getBuildDetails() {
         StringBuilder sb = new StringBuilder(this.getFullVersion());
 
@@ -73,7 +83,7 @@ public class UtilsController {
             String prBranch = Helper.getWegasProperty("wegas.build.pr_branch", null);
             String prNumber = Helper.getWegasProperty("wegas.build.pr_number", null);
             sb.append(", ");
-            if (!Helper.isNullOrEmpty(prNumber)) {
+            if (!Helper.isNullOrEmpty(prNumber) && !"false".equals(prNumber)) {
                 sb.append("pull request ").append(prNumber).append("/").append(prBranch).append(" into ").append(branch);
             } else {
                 sb.append(branch).append(" branch");

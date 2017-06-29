@@ -18,6 +18,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
@@ -90,6 +91,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     /**
      * Allow evicted users to receive something to review
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean includeEvicted;
 
     /**
@@ -279,7 +281,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     }
 
     public Boolean getIncludeEvicted() {
-        return includeEvicted;
+        return includeEvicted != null && includeEvicted;
     }
 
     public void setIncludeEvicted(Boolean includeEvicted) {

@@ -9,8 +9,11 @@ package com.wegas.unit;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.HelperBean;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.rest.ScriptController;
+import com.wegas.core.rest.UtilsController;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.utils.AbstractTest;
 import org.apache.shiro.SecurityUtils;
@@ -72,6 +75,7 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
 
     @AfterClass
     public static void tearDown() throws GlassFishException, NamingException {
+        HelperBean.lookup().wipeCache();
 //        if (container != null) {
 //            logger.error("CLOSE CONTAINER");
 //            container.getContext().close();
@@ -80,7 +84,7 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
 //        }
     }
 
-    protected <T> T lookup(Class<T> className) {
+    protected static <T> T lookup(Class<T> className) {
         try {
             return Helper.lookupBy(container.getContext(), className, className);
         } catch (NamingException ex) {

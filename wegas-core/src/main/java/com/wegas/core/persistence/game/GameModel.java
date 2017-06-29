@@ -19,6 +19,7 @@ import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 
@@ -26,7 +27,6 @@ import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.annotation.PreDestroy;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
 
@@ -86,7 +86,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Enumerated(value = EnumType.STRING)
-    @Column(length = 24)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
     /**
@@ -101,6 +101,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
 
     /**
@@ -136,6 +137,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonView(Views.Export.class)
     //@JsonManagedReference
     private List<VariableDescriptor> childVariableDescriptors = new ArrayList<>();
+
+    /**
+     * All gameModelScoped instances
+     */
+    @JsonIgnore
+    @OneToMany(mappedBy = "gameModel", cascade = CascadeType.ALL)
+    private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
      *
@@ -402,6 +410,25 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         for (VariableDescriptor vd : variableDescriptors) {
             this.addToVariableDescriptors(vd);
         }
+    }
+
+    @Override
+    public List<VariableInstance> getPrivateInstances() {
+        return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        List<VariableInstance> instances = new ArrayList<>();
+        instances.addAll(getPrivateInstances());
+        for (Game g : getGames()) {
+            instances.addAll(g.getAllInstances());
+        }
+        return instances;
+    }
+
+    public void setPrivateInstances(List<VariableInstance> privateInstances) {
+        this.privateInstances = privateInstances;
     }
 
     /**

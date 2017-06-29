@@ -40,13 +40,17 @@ angular.module('private.scenarist.directives', [
             // Computes the number of elements to display.
             initMaxItemsDisplayed = function() {
                 checkWindowSize();
-                var len = isFiltering ? filtered.length : rawScenarios.length;
-                if (len ===0 || len > ITEMS_IN_FIRST_BATCH) {
+                var len = currentList().length;
+                if (len === 0 || len > ITEMS_IN_FIRST_BATCH) {
                     maxItemsDisplayed = ITEMS_IN_FIRST_BATCH;
                 } else {
                     // The number of items is low enough to display them entirely:
                     maxItemsDisplayed = len;
                 }
+            },
+            // Returns the session list to be displayed now.
+            currentList = function() {
+                return isFiltering ? filtered : rawScenarios;
             },
             updateDisplay = function(source) {
                 if (prevSource !== source || maxItemsDisplayed !== ctrl.scenarios.length) {
@@ -55,7 +59,7 @@ angular.module('private.scenarist.directives', [
                 }
             },
             extendDisplayedItems = function() {
-                var list = isFiltering ? filtered : rawScenarios;
+                var list = currentList();
                 if (maxItemsDisplayed === null) {
                     initMaxItemsDisplayed();
                 } else {
@@ -215,7 +219,7 @@ angular.module('private.scenarist.directives', [
         $(window).on("resize.doResize", _.debounce(function (){
             $scope.$apply(function(){
                 initMaxItemsDisplayed();
-                updateDisplay(rawScenarios);
+                updateDisplay(currentList());
             });
         },100));
 

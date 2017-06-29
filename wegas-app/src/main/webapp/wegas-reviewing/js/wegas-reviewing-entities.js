@@ -102,8 +102,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     "@class": {
                         type: STRING,
                         value: "EvaluationDescriptorContainer"
-                    }
-                },
+                }
+            },
                 index: 1,
                 view: { type: HIDDEN }
             },
@@ -116,8 +116,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     "@class": {
                         type: STRING,
                         value: "EvaluationDescriptorContainer"
-                    }
-                },
+                }
+            },
                 index: 1,
                 view: { type: HIDDEN }
             },
@@ -148,7 +148,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                         type: STRING,
                         value: "NOT_STARTED",
                         view: { type: HIDDEN }
-                    },
+                },
                     reviewed: {
                         type: ARRAY,
                         value: [],
@@ -161,8 +161,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     },
 
                 },
-                index: 3
-            }
+                    index: 3
+                }
         },
         EDITMENU: [{
                 type: "EditEntityButton"
@@ -264,26 +264,26 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             "feedback": {
                 type: ARRAY,
+                value: [],
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        return a.get("createdTime") - b.get("createdTime");
+                        return a.get("index") - b.get("index");
                     });
                     return v;
                 },
-                value: [],
                 view: {
                     type: HIDDEN
                 }
             },
             "comments": {
                 type: ARRAY,
+                value: [],
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        return a.get("createdTime") - b.get("createdTime");
+                        return a.get("index") - b.get("index");
                     });
                     return v;
                 },
-                value: [],
                 view: {
                     type: HIDDEN
                 }
@@ -303,9 +303,15 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             evaluations: {
                 type: ARRAY,
                 value: [],
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("index") - b.get("index");
+                    });
+                    return v;
+                },
                 index: 1,
                 view: {
-                    type: HIDDEN,
+                    type: HIDDEN
                 }
             }
         },
@@ -365,14 +371,17 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     label: "Name"
                 }
             },
+            index: {
+                type: NUMBER
+            },
             description: {
                 type: NULLSTRING,
                 optional: true,
                 view: {
                     type: HTML,
                     label: "Description",
-                    height: '50px'
-                }
+                        height: '50px'
+                    }
             }/*,
              container: {
              type: "evaluationdescriptorcontainer",
@@ -468,15 +477,15 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             categories: {
                 type: ARRAY,
                 items: {
-                    required: true,
-                    type: STRING
+                        required: true,
+                        type: STRING
                 },
                 view: {
                     label: "Categories",
                     type: ARRAY
+                    }
                 }
             }
-        }
     });
     /**
      * EvaluationDescriptor
@@ -490,8 +499,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             descriptor: {
                 type: "EvaluationDescriptor"
             },
-            createdTime: {
-                "transient": true
+            index: {
+                type: NUMBER
             }
         }
     });

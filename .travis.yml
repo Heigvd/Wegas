@@ -26,6 +26,7 @@ env:
 install:
   - mvn -B -P release-profile generate-resources
 before_install:
+  - echo "MAVEN_OPTS='-Xms800m -Xmx800m'" > ~/.mavenrc
   - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
   - git submodule update --init --recursive
   - nvm install $NODE_VERSION

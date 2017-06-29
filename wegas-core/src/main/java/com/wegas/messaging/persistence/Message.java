@@ -52,7 +52,7 @@ public class Message extends NamedEntity implements DatedEntity {
     /**
      *
      */
-    @Column(length = 64)
+    @Column(length = 64, columnDefinition = "character varying(64) default ''::character varying")
     private String token;
 
     @Lob
@@ -63,6 +63,7 @@ public class Message extends NamedEntity implements DatedEntity {
      * real world time for sorting purpose
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date sentTime = new Date();
 
     /**
@@ -212,32 +213,6 @@ public class Message extends NamedEntity implements DatedEntity {
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getInboxInstance().getEntities();
     }*/
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof Message) {
-            Message vd = (Message) o;
-
-            if (vd.getId() == null || this.getId() == null) {
-                return false;
-            } else {
-                return this.getId().equals(vd.getId());
-            }
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.id);
-        /*hash = 53 * hash + Objects.hashCode(this.subject);
-        hash = 53 * hash + Objects.hashCode(this.sentTime);
-        hash = 53 * hash + Objects.hashCode(this.unread);
-        hash = 53 * hash + Objects.hashCode(this.from);*/
-        return hash;
-    }
 
     /**
      * Get the message subject

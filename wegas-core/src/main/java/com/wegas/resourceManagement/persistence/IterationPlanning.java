@@ -24,7 +24,7 @@ public class IterationPlanning implements Serializable {
     @Column(name = "workload")
     private Double workload;
 
-    @Column(name = "period")
+    @Column(name = "num_period")
     private Long period;
 
     public IterationPlanning() {

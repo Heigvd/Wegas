@@ -29,6 +29,7 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
 import com.wegas.core.security.util.SecurityHelper;
+import io.prometheus.client.Gauge;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,8 @@ import java.util.zip.GZIPOutputStream;
 @Stateless
 @LocalBean
 public class WebsocketFacade {
+
+    private static final Gauge onlineUsersGauge = Gauge.build().name("online_users").help("Number of onlineusers").register();
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
 
@@ -506,6 +509,7 @@ public class WebsocketFacade {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
+                    onlineUsersGauge.set(this.getOnlineUsers().size());
                 }
             }
 
@@ -551,6 +555,7 @@ public class WebsocketFacade {
     private void registerUser(User user) {
         if (user != null && !onlineUsers.containsKey(user.getId())) {
             onlineUsers.put(user.getId(), new OnlineUser(user));
+            onlineUsersGauge.set(this.getOnlineUsers().size());
         }
     }
 
@@ -609,7 +614,7 @@ public class WebsocketFacade {
             while (it.hasNext()) {
                 Cache.Entry<Long, OnlineUser> next = it.next();
                 if (next.getKey() != null) {
-                    if (!channels.containsKey(getChannelFromUserId(next.getKey()))){
+                    if (!channels.containsKey(getChannelFromUserId(next.getKey()))) {
                         it.remove();
                     }
                 }
