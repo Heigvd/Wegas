@@ -69,8 +69,9 @@ class StringView extends React.Component<
     handleChange(
         event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
     ) {
-        this.setState({ value: event.target.value }, () =>
-            this.props.onChange(event.target.value)
+        const v = event.target.value;
+        this.setState({ value: v }, () =>
+            this.props.onChange(v)
         );
     }
     render() {
