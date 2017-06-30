@@ -4,7 +4,7 @@ import React from 'react';
 import debounced from '../../HOC/callbackDebounce';
 import JSEditor from './asyncJSEditor';
 
-interface IProps {
+interface IViewSrcProps {
     value: string;
     error: string;
     onChange: (value: string) => void;
@@ -26,8 +26,8 @@ const hideSourceTooltip = 'Hide source code';
 /**
  * Toggle view between parsed and code
  */
-class ViewSrc extends React.Component<IProps, { src: boolean }> {
-    constructor(props: IProps) {
+class ViewSrc extends React.Component<IViewSrcProps, { src: boolean }> {
+    constructor(props: IViewSrcProps) {
         super(props);
         this.state = { src: false };
         this.toggleState = this.toggleState.bind(this);

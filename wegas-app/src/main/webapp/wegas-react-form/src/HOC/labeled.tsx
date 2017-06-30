@@ -19,6 +19,7 @@ const labelTextStyle = css({
 interface ILabelProps {
     view: {
         label?: string;
+        [propName: string]: undefined | {};
     };
 }
 
@@ -27,13 +28,15 @@ export default function labeled<P>(
     cssContainer = '',
     suffixed = false
 ) {
-    function Labeled(props: ILabelProps & P) {
+    function Labeled(props: P & ILabelProps) {
         if (suffixed) {
             return (
                 <div className={cssContainer}>
                     <label>
                         <Comp {...props} />
-                        <span {...labelStyle}>{props.view.label}</span>
+                        <span {...labelStyle}>
+                            {props.view.label}
+                        </span>
                     </label>
                 </div>
             );

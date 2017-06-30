@@ -1,10 +1,8 @@
 import React from 'react';
-import classNames from 'classnames';
 import labeled from '../HOC/labeled';
 import asyncComp from '../HOC/async';
 import commonView from '../HOC/commonView';
 import { css } from 'glamor';
-import { WidgetProps } from 'jsoninput/typings/types';
 
 type choice = {
     value: {};
@@ -13,16 +11,19 @@ type choice = {
     children?: choice[];
 };
 type choices = (string | choice)[];
-interface ISelectViewProps {
+interface ISelectProps {
     value?: {};
+    onChange: (value: string) => void;
     view: {
-        className?: string;
         choices: (string | choice)[];
     };
 }
 interface IAsyncSelectProps {
+    value?: {};
+    onChange: (value: string) => void;
     view: {
-        choices: () => Promise<choices>;
+        choices: (() => Promise<choices>) | choices;
+        [propName: string]: {};
     };
 }
 const selectStyle = css({
@@ -37,7 +38,7 @@ const selectContainerStyle = css({
     }
 });
 
-function genItems(o: (string | choice), i: number) {
+function genItems(o: string | choice, i: number) {
     if (typeof o !== 'object') {
         return (
             <option key={`k-${o}`} value={o}>
@@ -63,7 +64,7 @@ const title = {
     disabled: true
 };
 
-function SelectView(props: ISelectViewProps & WidgetProps.BaseProps) {
+function SelectView(props: ISelectProps) {
     const onChange = function onChange(
         event: React.ChangeEvent<{ value: string }>
     ) {
@@ -75,7 +76,7 @@ function SelectView(props: ISelectViewProps & WidgetProps.BaseProps) {
         .map(genItems);
     return (
         <select
-            className={classNames(props.view.className, `${selectStyle}`)}
+            className={`${selectStyle}`}
             value={JSON.stringify(props.value)}
             onChange={onChange}
         >
@@ -84,15 +85,19 @@ function SelectView(props: ISelectViewProps & WidgetProps.BaseProps) {
     );
 }
 
-function Sel({ view }: IAsyncSelectProps) {
+function Sel({
+    view
+}: IAsyncSelectProps) {
     const { choices } = view;
     if (typeof choices === 'function') {
         return Promise.resolve(choices()).then(ch => ({
             view: { ...view, choices: ch }
         }));
     }
-    return {};
+    return arguments[0];
 }
 export default commonView(
-    asyncComp(labeled(SelectView, `${selectContainerStyle}`))(Sel)
+    asyncComp<IAsyncSelectProps, ISelectProps>(
+        labeled(SelectView, `${selectContainerStyle}`)
+    )(Sel)
 );

@@ -1,16 +1,21 @@
 import React from 'react';
 
-const STATUS = {
-    STOP: 0,
-    RUN: 1,
-    END: 2
-};
+enum STATUS {
+    STOP = 'stop',
+    RUN = 'run',
+    END = 'end'
+}
 
-function promised(Comp) {
-    return promising => {
-        class Async extends React.Component {
-            constructor() {
-                super();
+type PromiseProps<I, O> = (props: I) => Promise<O> | O;
+function promised<P, O>(Comp: React.ComponentClass<{}> | React.SFC<{}>) {
+    return (promising: PromiseProps<P, O>) => {
+        interface IAsyncState {
+            result?: O;
+            status: STATUS;
+        }
+        class Async extends React.Component<P, IAsyncState> {
+            constructor(props: P) {
+                super(props);
                 this.state = {
                     status: STATUS.STOP
                 };
@@ -24,7 +29,7 @@ function promised(Comp) {
                     });
                 });
             }
-            componentWillReceiveProps(nextProps) {
+            componentWillReceiveProps(nextProps: P) {
                 this.setState({ status: STATUS.RUN });
                 Promise.resolve(promising(nextProps)).then(result => {
                     this.setState({
@@ -33,7 +38,7 @@ function promised(Comp) {
                     });
                 });
             }
-            shouldComponentUpdate(nextProps, nextState) {
+            shouldComponentUpdate(nextProps: P, nextState: IAsyncState) {
                 return nextState.status === STATUS.END;
             }
             render() {

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import debounce from '../HOC/callbackDebounce';
 import labeled from '../HOC/labeled';
@@ -37,25 +36,40 @@ const textareaStyle = css(
     textareaFocus
 );
 
-
 const debounceOnChange = debounce('onChange');
-function fromNotToEmpty(value) {
+function fromNotToEmpty(value?: void | string | number) {
     if (value === null || value === undefined) {
         return '';
     }
     return value;
 }
-class StringView extends React.Component {
-    constructor(props) {
+
+interface IStringProps {
+    value?: string | number;
+    view: {
+        rows?: number;
+        disabled?: boolean;
+        placeholder?: string;
+        [propName: string]: undefined | {};
+    };
+    onChange: (value: string) => void;
+}
+type StringProps = IStringProps;
+class StringView extends React.Component<
+    StringProps,
+    { value: string | number }
+> {
+    constructor(props: StringProps) {
         super(props);
         this.state = { value: fromNotToEmpty(props.value) };
     }
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: StringProps) {
         this.setState({ value: fromNotToEmpty(nextProps.value) });
     }
-    handleChange(event) {
-        this.setState(
-            { value: event.target.value },
+    handleChange(
+        event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    ) {
+        this.setState({ value: event.target.value }, () =>
             this.props.onChange(event.target.value)
         );
     }
@@ -63,7 +77,7 @@ class StringView extends React.Component {
         if (typeof this.props.view.rows === 'number') {
             return (
                 <textarea
-                    className={textareaStyle}
+                    className={textareaStyle.toString()}
                     rows={this.props.view.rows}
                     onChange={ev => this.handleChange(ev)}
                     placeholder={this.props.view.placeholder}
@@ -74,7 +88,7 @@ class StringView extends React.Component {
         }
         return (
             <input
-                className={inputStyle}
+                className={inputStyle.toString()}
                 type="text"
                 placeholder={this.props.view.placeholder}
                 value={this.state.value}
@@ -85,15 +99,4 @@ class StringView extends React.Component {
     }
 }
 
-StringView.propTypes = {
-    onChange: PropTypes.func.isRequired,
-    // eslint-disable-next-line react/require-default-props
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    view: PropTypes.shape({
-        rows: PropTypes.number,
-        disabled: PropTypes.bool,
-        placeholder: PropTypes.string
-    }).isRequired
-};
-
-export default commonView(labeled(debounceOnChange(StringView)));
+export default commonView(labeled(debounceOnChange<StringProps>(StringView)));

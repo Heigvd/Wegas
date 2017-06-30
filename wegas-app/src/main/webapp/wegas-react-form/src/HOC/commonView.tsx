@@ -53,29 +53,21 @@ const indentStyle = css({
     marginLeft: '22px !important'
 });
 
-// errorMessage: PropTypes.arrayOf(PropTypes.string),
-//         view: PropTypes.shape({
-//             label: PropTypes.string,
-//             description: PropTypes.string,
-//             className: PropTypes.string,
-//             style: PropTypes.object,
-//             layout: PropTypes.string
-//         })
 interface ICommonViewProps {
     errorMessage?: string[];
     view: {
-        label?: string;
         description?: string;
         className?: string;
         style?: CSSProperties;
         layout?: string;
         borderTop?: boolean;
         indent?: boolean;
+        [propName: string]: undefined | {};
     };
 }
 export default function commonView<E>(
     Comp: React.SFC<E> | React.ComponentClass<E>
-) {
+): React.SFC<E & ICommonViewProps> {
     function CommonView(props: E & ICommonViewProps) {
         const { errorMessage = [], view = {} } = props;
         const errors = errorMessage.map(v =>

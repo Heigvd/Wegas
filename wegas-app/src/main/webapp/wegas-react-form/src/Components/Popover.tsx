@@ -1,8 +1,17 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 
-class Popover extends React.Component {
-    constructor(props) {
+interface IPopoverprops {
+    onClickOutside: () => void;
+    show: boolean;
+}
+class Popover extends React.Component<IPopoverprops> {
+    static defaultProps: IPopoverprops = {
+        onClickOutside: function noop() {},
+        show: false
+    };
+
+    container: HTMLDivElement | null;
+    constructor(props: IPopoverprops) {
         super(props);
         this.checkClickOutside = this.checkClickOutside.bind(this);
     }
@@ -14,8 +23,8 @@ class Popover extends React.Component {
         document.removeEventListener('mousedown', this.checkClickOutside);
         document.removeEventListener('touchstart', this.checkClickOutside);
     }
-    checkClickOutside(event) {
-        if (this.container && !this.container.contains(event.target)) {
+    checkClickOutside(event: MouseEvent) {
+        if (this.container && !this.container.contains(event.target as Node)) {
             this.props.onClickOutside();
         }
     }
@@ -23,10 +32,12 @@ class Popover extends React.Component {
         if (this.props.show) {
             return (
                 <div
-                    ref={node => { this.container = node; }}
+                    ref={node => {
+                        this.container = node;
+                    }}
                     style={{ position: 'relative' }}
                 >
-                    <div style={{ position: 'absolute', zIndex: 1000 }} >
+                    <div style={{ position: 'absolute', zIndex: 1000 }}>
                         {this.props.children}
                     </div>
                 </div>
@@ -36,12 +47,7 @@ class Popover extends React.Component {
     }
 }
 Popover.defaultProps = {
-    onClickOutside: function noop() { },
+    onClickOutside: function noop() {},
     show: false
-};
-Popover.propTypes = {
-    onClickOutside: PropTypes.func,
-    show: PropTypes.bool,
-    children: PropTypes.node.isRequired
 };
 export default Popover;
