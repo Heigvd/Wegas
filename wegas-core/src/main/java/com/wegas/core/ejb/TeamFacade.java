@@ -7,14 +7,13 @@
  */
 package com.wegas.core.ejb;
 
-import com.hazelcast.core.HazelcastInstance;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ public class TeamFacade extends BaseFacade<Team> {
 
     @Inject
     private PopulatorScheduler populatorScheduler;
-    
+
     /**
      *
      */
@@ -108,11 +107,11 @@ public class TeamFacade extends BaseFacade<Team> {
 
         getEntityManager().persist(entity);
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
-        entity.setStatus(Team.Status.LIVE);
+        entity.setStatus(Status.LIVE);
     }
 
-    public List<Team> findNotLive() {
-        TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findNotYetLive", Team.class);
+    public List<Team> findTeamsToPopulate() {
+        TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findToPopulate", Team.class);
         return query.getResultList();
     }
 

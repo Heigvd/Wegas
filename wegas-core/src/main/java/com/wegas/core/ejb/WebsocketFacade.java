@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IAtomicLong;
 import com.hazelcast.core.ILock;
@@ -25,6 +26,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.PusherChannelExistenceWebhook;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
@@ -427,6 +429,20 @@ public class WebsocketFacade {
             //}
         } catch (IOException ex) {
             logger.error("     IOEX <----------------------", ex);
+        }
+    }
+
+    public final String toJson(Object o) throws IOException {
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        //ObjectWriter writerWithView = mapper.writerWithView(Views.class);
+        ObjectWriter writer = mapper.writer();
+        return writer.writeValueAsString(o);
+    }
+
+    public void propagateNewPlayer(Player newPlayer) throws IOException {
+        User user = newPlayer.getUser();
+        if (user != null) {
+            pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
         }
     }
 

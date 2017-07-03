@@ -34,6 +34,7 @@ public class Populator implements Callable<Integer> {
             logger.error("  * " + owner + " completed");
             count++;
         }
+        logger.error("Populator ends with count :  " + count);
         return count;
     }
 

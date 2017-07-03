@@ -40,7 +40,7 @@ import java.util.Map;
     ,
     @NamedQuery(name = "DEPRECATED_Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
     ,
-    @NamedQuery(name = "Player.findNotYetLive", query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING'")
+    @NamedQuery(name = "Player.findToPopulate", query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
@@ -48,13 +48,7 @@ import java.util.Map;
     ,
     @Index(columnList = "parentteam_id")
 })
-public class Player extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity {
-
-    public static enum Status {
-        WAITING,
-        PROCESSING,
-        LIVE
-    };
+public class Player extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity, Populatable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -280,10 +274,12 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
         this.joinTime = joinTime != null ? new Date(joinTime.getTime()) : null;
     }
 
+    @Override
     public Status getStatus() {
         return status;
     }
 
+    @Override
     public void setStatus(Status status) {
         this.status = status;
     }
@@ -291,10 +287,9 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     /*
      * @return true if the user's main account is an AaiAccount or equivalent
      */
-    @Transient
     public boolean isVerifiedId() {
         if (verifiedId != null) {
-            return verifiedId.booleanValue();
+            return verifiedId;
         } else {
             if (this.user != null) {
                 boolean verif = user.getMainAccount() instanceof AaiAccount;
@@ -310,7 +305,6 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     /*
     * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the empty string
      */
-    @Transient
     public String getHomeOrg() {
         if (homeOrg != null) {
             return homeOrg;

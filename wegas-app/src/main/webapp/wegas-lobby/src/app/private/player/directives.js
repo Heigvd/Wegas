@@ -6,14 +6,13 @@ angular.module('private.player.directives', [])
             controller: 'PlayerController as playerCtrl'
         };
     }).controller("PlayerController",
-    function PlayerController($q, $rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash, $timeout) {
+    function PlayerController($q, $rootScope, $scope, $state, $translate, TeamsModel, SessionsModel, Flash, $timeout, Auth) {
         /* Assure access to ctrl. */
         "use strict";
         var ctrl = this,
-
             // Method used to update sessions:
             updateTeams = function() {
-            var hideScrollbarDuringInitialRender = (ctrl.teams.length===0);
+                var hideScrollbarDuringInitialRender = (ctrl.teams.length === 0);
                 if (hideScrollbarDuringInitialRender) {
                     $('#player-teams-list').css('overflow-y', 'hidden');
                 }
@@ -22,14 +21,16 @@ angular.module('private.player.directives', [])
                     ctrl.loading = false;
                     if (!response.isErroneous()) {
                         ctrl.teams = response.data || [];
-                    if (ctrl.teams.length<1) {
+                        if (ctrl.teams.length < 1) {
                             $scope.$emit('expand');
                         }
                     } else {
                         ctrl.teams = [];
                     }
                     if (hideScrollbarDuringInitialRender) {
-                    $timeout(function () { $('#player-teams-list').css('overflow-y', 'auto'); }, 1000);
+                        $timeout(function() {
+                            $('#player-teams-list').css('overflow-y', 'auto');
+                        }, 1000);
                     }
                 });
             };
@@ -89,12 +90,13 @@ angular.module('private.player.directives', [])
             });
             return deferred.promise;
         };
+
         /* Leave the team */
         ctrl.leaveTeam = function(teamId) {
-            $('#leave-'+teamId).removeClass('button--trash').addClass('busy-button');
+            $('#leave-' + teamId).removeClass('button--trash').addClass('busy-button');
             TeamsModel.leaveTeam(teamId).then(function(response) {
-                $timeout(function(){
-                    $('#leave-'+teamId).removeClass('busy-button').addClass('button--trash');
+                $timeout(function() {
+                    $('#leave-' + teamId).removeClass('busy-button').addClass('button--trash');
                 }, 500);
                 if (!response.isErroneous()) {
                     updateTeams();
@@ -104,10 +106,40 @@ angular.module('private.player.directives', [])
             });
         };
 
+        ctrl.getPlayer = function(team) {
+            var i, p, user = Auth.getLocalAuthenticatedUser();
+            for (i in team.players) {
+                p = team.players[i];
+                if (p.userId === user.id) {
+                    return p;
+                }
+            }
+            return {status: "not found"};
+        };
+
         /* Listen for new session */
         $rootScope.$on('newTeam', function(e, hasNewData) {
             if (hasNewData) {
                 updateTeams();
+            }
+        });
+
+        $rootScope.$on('wegaspusher:team-update', function(e, team) {
+            var i, t;
+            for (i in ctrl.teams) {
+                t = ctrl.teams[i];
+                if (t.id === team.id) {
+                    break;
+                }
+            }
+            if (i < ctrl.teams.length) {
+                ctrl.teams.splice(i, 1, team);
+            } else {
+                ctrl.teams.add(team);
+            }
+
+            if (!$rootScope.$$phase) {
+                $scope.$apply();
             }
         });
 
@@ -156,6 +188,7 @@ angular.module('private.player.directives', [])
             scope: {
                 teams: "=",
                 leave: "=",
+                player: "=",
                 loading: "="
             }
         };
@@ -166,6 +199,7 @@ angular.module('private.player.directives', [])
             templateUrl: 'app/private/player/directives.tmpl/card.html',
             scope: {
                 team: "=",
+                player: "=",
                 leave: "="
             },
             link: function(scope, element, attrs) {

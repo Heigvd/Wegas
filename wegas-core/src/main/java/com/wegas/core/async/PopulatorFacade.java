@@ -15,6 +15,8 @@ import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,9 @@ public class PopulatorFacade {
     @Inject
     private PopulatorScheduler populatorScheduler;
 
+    @Inject
+    private WebsocketFacade websocketFacade;
+
     /**
      *
      */
@@ -84,7 +89,7 @@ public class PopulatorFacade {
             Game game = gameFacade.find(team.getGameId());
             gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
 
-            team.setStatus(Team.Status.LIVE);
+            team.setStatus(Status.LIVE);
 
             utx.commit();
         } catch (Exception ex) {
@@ -94,6 +99,14 @@ public class PopulatorFacade {
                     utx.rollback();
                 } catch (Exception ex1) {
                     logger.error("Populate Team: Fails to rollback");
+                }
+                try {
+                    utx.begin();
+                    Team team = teamFacade.find(teamId);
+                    this.postpone(team);
+                    utx.commit();
+                } catch (Exception ex1) {
+                    logger.error("Fails to revert Team status");
                 }
             }
         }
@@ -107,11 +120,13 @@ public class PopulatorFacade {
 
             gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
 
-            player.setStatus(Player.Status.LIVE);
+            player.setStatus(Status.LIVE);
 
             this.em.flush();
             gameModelFacade.runStateMachines(player);
             utx.commit();
+            websocketFacade.propagateNewPlayer(player);
+
         } catch (Exception ex) {
             logger.error("Populate Player: Failure");
             if (utx != null) {
@@ -120,12 +135,50 @@ public class PopulatorFacade {
                 } catch (Exception ex1) {
                     logger.error("Populate Player: Fails to rollback");
                 }
+
+                try {
+                    utx.begin();
+                    Player player = playerFacade.find(playerId);
+                    this.postpone(player);
+                    utx.commit();
+                } catch (Exception ex1) {
+                    logger.error("Fails to revert Team status");
+                }
             }
         }
     }
 
     private ILock getLock() {
         return hzInstance.getLock("PopulatorSchedulerLock");
+    }
+
+    /**
+     * Something went wring during the populate process
+     * If it was the first attempt, another tentative will be scheduled.
+     * The target will be makes as failed whether it was the second attempt.
+     *
+     * @param p
+     */
+    private void postpone(Populatable p) {
+        if (p.getStatus().equals(Status.SEC_PROCESSING)) {
+            p.setStatus(Status.FAILED);
+        } else {
+            p.setStatus(Status.RESCHEDULED);
+        }
+    }
+
+    /**
+     * Set the target status to processing.
+     * For the first shop : processing, for the second tentative sec_processing
+     *
+     * @param p
+     */
+    private void markAsProcessing(Populatable p) {
+        if (p.getStatus().equals(Status.RESCHEDULED)) {
+            p.setStatus(Status.SEC_PROCESSING);
+        } else {
+            p.setStatus(Status.PROCESSING);
+        }
     }
 
     public AbstractEntity getNextOwner(Populator currentCreator) {
@@ -138,8 +191,8 @@ public class PopulatorFacade {
                 utx.begin();
 
                 List<DatedEntity> queue = new ArrayList<>();
-                queue.addAll(teamFacade.findNotLive());
-                queue.addAll(playerFacade.findNotLive());
+                queue.addAll(teamFacade.findTeamsToPopulate());
+                queue.addAll(playerFacade.findPlayersToPopulate());
 
                 // sort by creationTime
                 Collections.sort(queue, new EntityComparators.CreateTimeComparator());
@@ -148,15 +201,13 @@ public class PopulatorFacade {
                 for (DatedEntity pop : queue) {
                     if (pop instanceof Team) {
                         Team t = (Team) pop;
-                        //t = teamFacade.find(t.getId());
-                        t.setStatus(Team.Status.PROCESSING);
+                        this.markAsProcessing(t);
                         owner = t;
                         break;
                     } else if (pop instanceof Player
-                            && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Team.Status.LIVE)) {
+                            && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Status.LIVE)) {
                         Player p = (Player) pop;
-                        //p = em.find(Player.class, p.getId());
-                        p.setStatus(Player.Status.PROCESSING);
+                        markAsProcessing(p);
                         owner = p;
                         break;
                     }

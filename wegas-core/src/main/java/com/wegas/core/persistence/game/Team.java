@@ -13,7 +13,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 
@@ -42,15 +41,9 @@ import java.util.Map;
 @NamedQueries({
     @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")
     ,
-    @NamedQuery(name = "Team.findNotYetLive", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING'")
+    @NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
-public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity {
-
-    public static enum Status {
-        WAITING,
-        PROCESSING,
-        LIVE
-    };
+public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity, Populatable {
 
     private static final long serialVersionUID = 1L;
 
@@ -263,10 +256,12 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
+    @Override
     public Status getStatus() {
         return status;
     }
 
+    @Override
     public void setStatus(Status status) {
         this.status = status;
     }

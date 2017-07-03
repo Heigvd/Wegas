@@ -45,8 +45,8 @@ angular.module('wegas.service.pusher', [])
                             userChannel = channels["user"] = pusher.subscribe('private-User-' + user.id);
                             if (user.isAdmin) {
                                 adminChannel = channels["admin"] = pusher.subscribe('private-Admin');
-                                initListening();
                             }
+                            initListening();
                         }
                     });
                 }
@@ -79,8 +79,17 @@ angular.module('wegas.service.pusher', [])
         };
 
         function initListening() {
-            adminChannel.bind('online-users', function() {
-                $rootScope.$emit('wegaspusher:update-members');
-            });
+            if (adminChannel) {
+                adminChannel.bind('online-users', function() {
+                    $rootScope.$emit('wegaspusher:update-members');
+                });
+            }
+            if (userChannel) {
+                userChannel.bind('team-update', function(strTeam) {
+                    var team;
+                    eval("team = " + strTeam); // Note for myself: I pucked
+                    $rootScope.$emit('wegaspusher:team-update', team);
+                });
+            }
         }
     });

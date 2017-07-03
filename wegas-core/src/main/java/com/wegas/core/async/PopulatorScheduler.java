@@ -31,18 +31,17 @@ import org.slf4j.LoggerFactory;
 @Named
 @LocalBean
 public class PopulatorScheduler {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(PopulatorScheduler.class);
-
+    
     private static final int MAX_CREATORS;
-
+    
     protected static final String EVENT_NAME = "Wegas_StartPopulator";
-
+    
     static {
-        MAX_CREATORS = Integer.parseInt(Helper.getWegasProperty("CONCURRENT_CREATORS", "1"));
+        MAX_CREATORS = Integer.parseInt(Helper.getWegasProperty("wegas.nb_populators", "1"));
     }
-
-
+    
     @Inject
     @Outbound(eventName = EVENT_NAME, loopBack = true)
     Event<String> events;
@@ -52,23 +51,23 @@ public class PopulatorScheduler {
 
     @Inject
     private Instance<Populator> myCreators;
-
-    private static List<Populator> creators = new ArrayList<>();
-
+    
+    private static final List<Populator> creators = new ArrayList<>();
+    
     public void removePopulator(Populator currentCreator) {
-        this.creators.remove(currentCreator);
+        PopulatorScheduler.creators.remove(currentCreator);
     }
-
+    
     public void scheduleCreation() {
         logger.error("SEND EVENT");
         events.fire("START");
     }
-
+    
     public void onScheduleCreation(@Observes @Inbound(eventName = EVENT_NAME) String event) {
         logger.error("EVENT RECEIVED: " + event);
         this.internalScheduleCreation();
     }
-
+    
     protected Future<Integer> internalScheduleCreation() {
         Future<Integer> future = null;
         // allowed to create more creators ?
@@ -76,8 +75,10 @@ public class PopulatorScheduler {
             Populator newCreator = myCreators.get();
             creators.add(newCreator);
             future = managedExecutorService.submit(newCreator);
+        } else {
+            logger.error("Maximum number of creators reached (" + MAX_CREATORS + ")");
         }
         return future;
     }
-
+    
 }

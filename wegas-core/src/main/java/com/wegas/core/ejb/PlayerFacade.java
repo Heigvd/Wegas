@@ -118,8 +118,8 @@ public class PlayerFacade extends BaseFacade<Player> {
         }
     }
     
-    public List<Player> findNotLive() {
-        TypedQuery<Player> query = this.getEntityManager().createNamedQuery("Player.findNotYetLive", Player.class);
+    public List<Player> findPlayersToPopulate() {
+        TypedQuery<Player> query = this.getEntityManager().createNamedQuery("Player.findToPopulate", Player.class);
         return query.getResultList();
     }
 

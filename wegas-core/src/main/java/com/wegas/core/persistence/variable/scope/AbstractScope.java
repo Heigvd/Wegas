@@ -174,7 +174,7 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      */
     protected void propagate(Team t, boolean create) {
         for (Player p : t.getPlayers()) {
-            if (!p.getStatus().equals(Player.Status.WAITING)) {
+            if (!p.isWaiting()){
                 propagate(p, create);
             } else {
                 logger.error("SKIP PLAYER: " + p + " -> " + p.getStatus());
@@ -189,7 +189,7 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      */
     protected void propagate(Game g, boolean create) {
         for (Team t : g.getTeams()) {
-            if (!t.getStatus().equals(Team.Status.WAITING)) {
+            if (!t.isWaiting()){
                 propagate(t, create);
             }
         }

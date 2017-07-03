@@ -14,7 +14,7 @@ import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
-import com.wegas.core.persistence.game.Game.Status;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -182,7 +182,7 @@ public class GameFacade extends BaseFacade<Game> {
             DebugTeam debugTeam = new DebugTeam();
             debugTeam.setGame(game);
             teamFacade.create(debugTeam);
-            debugTeam.getPlayers().get(0).setStatus(Player.Status.LIVE);
+            debugTeam.getPlayers().get(0).setStatus(Status.LIVE);
             //Player get = debugTeam.getPlayers().get(0);
             //requestFacade.commit(get, false);
             //game.addTeam(new DebugTeam());

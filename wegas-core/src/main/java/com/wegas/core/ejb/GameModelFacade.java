@@ -10,12 +10,10 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.page.Pages;
@@ -163,6 +161,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     }
 
+    public void revivePrivateInstances(GameModel gameModel, BroadcastTarget target) {
+        for (VariableInstance vi : target.getPrivateInstances()){
+            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+        }
+    }
 
     public void reviveInstances(GameModel gameModel, BroadcastTarget context) {
         //logger.error("REVIVE INSTANCES");

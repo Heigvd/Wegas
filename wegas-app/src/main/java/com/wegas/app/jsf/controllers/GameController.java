@@ -13,6 +13,7 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -106,7 +107,7 @@ public class GameController extends AbstractGameController {
 
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.dispatch("The game you are looking for could not be found.");
-        } else if (!currentPlayer.getStatus().equals(Player.Status.LIVE)) {
+        } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
             try {
                 externalContext.dispatch("/wegas-app/jsf/error/waiting.xhtml");
             } catch (IOException ex) {
