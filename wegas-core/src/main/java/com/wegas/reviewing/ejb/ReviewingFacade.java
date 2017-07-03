@@ -259,8 +259,7 @@ public class ReviewingFacade {
             for (Iterator<PeerReviewInstance> it = pris.iterator(); it.hasNext();) {
                 PeerReviewInstance pri = it.next();
                 try {
-                    Player findAPlayer = variableInstanceFacade.findAPlayer(pri);
-                    VariableInstance toReviewInstance = toReview.getInstance(findAPlayer);
+                    VariableInstance toReviewInstance = variableInstanceFacade.findInstance(toReview, pri);
                     boolean reject = false;
 
                     if (pri.getReviewState() == PeerReviewDescriptor.ReviewingState.COMPLETED

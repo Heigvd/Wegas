@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.persistence.*;
 
 import com.wegas.core.persistence.BroadcastTarget;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,12 @@ public class GameScope extends AbstractScope<Game> {
         return this.getVariableInstance(player.getGame());
     }
 
+    @Override
+    public VariableInstance getVariableInstance(Team team) {
+        return this.getVariableInstance(team.getGame());
+    }
+
+    @Override
     public VariableInstance getVariableInstance(Game game) {
         return getVariableInstanceFacade().getGameInstance(this, game);
     }

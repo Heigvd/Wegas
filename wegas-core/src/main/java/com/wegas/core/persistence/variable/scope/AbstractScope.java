@@ -35,13 +35,17 @@ import org.slf4j.LoggerFactory;
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
  * @param <T> scope context
+ *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity                                                                         // Database serialization
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
-    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
-    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
+    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class)
+    ,
+    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class)
+    ,
+    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class)
+    ,
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
@@ -55,16 +59,16 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
 
     /**
      * HACK
-     *
+     * <p>
      * Links from VariableDescriptor to Instances has been cut to avoid using
      * time-consuming HashMap. Thereby, a new way to getInstances(player) is
      * required. It's done by using specific named-queries through
      * VariableInstanceFacade.
-     *
+     * <p>
      * Injecting VariableInstanceFacade here don't bring business logic within
      * data because the very only functionality that is being used here aims to
      * replace JPA OneToMany relationship management
-     *
+     * <p>
      */
     @JsonIgnore
     @Transient
@@ -102,9 +106,31 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
 
     /**
      * @param player
+     *
      * @return
      */
     abstract public VariableInstance getVariableInstance(Player player);
+
+    public VariableInstance getVariableInstance(Team team) {
+        for (Player p :team.getPlayers()){
+            return this.getVariableInstance(p);
+        }
+        return null;
+    }
+
+    public VariableInstance getVariableInstance(Game game) {
+        for (Team t : game.getTeams()) {
+            return this.getVariableInstance(t);
+        }
+        return null;
+    }
+
+    public VariableInstance getVariableInstance(GameModel gm) {
+        for (Game g : gm.getGames()) {
+            return this.getVariableInstance(g);
+        }
+        return null;
+    }
 
     /**
      * @return

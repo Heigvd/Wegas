@@ -60,6 +60,7 @@ public class TeamScope extends AbstractScope<Team> {
     /**
      *
      * @param player
+     *
      * @return
      */
     @Override
@@ -67,7 +68,8 @@ public class TeamScope extends AbstractScope<Team> {
         return this.getVariableInstance(player.getTeam());
     }
 
-    private VariableInstance getVariableInstance(Team t) {
+    @Override
+    public VariableInstance getVariableInstance(Team t) {
         return this.getVariableInstanceFacade().getTeamInstance(this, t);
     }
 

@@ -16,6 +16,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
@@ -267,11 +268,26 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     }
 
     public VariableInstance findInstance(VariableDescriptor descriptor, VariableInstance variableInstance) throws NoPlayerException {
-        Player player = requestFacade.getPlayer();
-        if (player == null) {
-            player = this.findAPlayer(variableInstance);
+
+        if (variableInstance.isDefaultInstance()) {
+            return descriptor.getDefaultInstance();
         }
-        return descriptor.getInstance(player);
+
+        AbstractScope scope = variableInstance.getScope();
+
+        AbstractScope descScope = descriptor.getScope();
+
+        if (scope instanceof PlayerScope) {
+            return descScope.getVariableInstance(variableInstance.getPlayer());
+        } else if (scope instanceof TeamScope) {
+            return descScope.getVariableInstance(variableInstance.getTeam());
+        } else if (scope instanceof GameScope) {
+            return descScope.getVariableInstance(variableInstance.getGame());
+        } else if (scope instanceof GameModelScope) {
+            return descScope.getVariableInstance(variableInstance.getGameModel());
+        }
+
+        return null;
     }
 
     /**

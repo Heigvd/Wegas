@@ -115,6 +115,21 @@ public class GameModelScope extends AbstractScope<GameModel> {
         return this.variableInstance;
     }
 
+    @Override
+    public VariableInstance getVariableInstance(Team team) {
+        return this.variableInstance;
+    }
+
+    @Override
+    public VariableInstance getVariableInstance(Game game) {
+        return this.variableInstance;
+    }
+
+    @Override
+    public VariableInstance getVariableInstance(GameModel gameModel) {
+        return this.variableInstance;
+    }
+
     /**
      *
      * @param key
