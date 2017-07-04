@@ -10,7 +10,6 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import com.wegas.core.persistence.InstanceOwner;
 ////import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -39,11 +39,10 @@ import java.util.Map;
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")
-    ,
+    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId"),
     @NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
-public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity, Populatable {
+public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
 
     private static final long serialVersionUID = 1L;
 

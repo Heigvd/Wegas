@@ -13,7 +13,6 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -32,8 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * Run state machines.
@@ -88,7 +86,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
      * @param target
      * @param clear
      */
-    public void runStateMachines(BroadcastTarget target, boolean clear) throws WegasScriptException {
+    public void runStateMachines(InstanceOwner target, boolean clear) throws WegasScriptException {
 
         List<Player> players;
         if (target == null || target.getPlayers() == null) {

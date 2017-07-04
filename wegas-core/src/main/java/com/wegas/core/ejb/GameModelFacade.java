@@ -17,7 +17,6 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -45,6 +44,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.util.*;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -130,7 +130,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @param context
      * @param create
      */
-    public void propagateAndReviveDefaultInstances(GameModel gameModel, BroadcastTarget context, boolean create) {
+    public void propagateAndReviveDefaultInstances(GameModel gameModel, InstanceOwner context, boolean create) {
         this.propagateDefaultInstances(gameModel, context, create);
         this.getEntityManager().flush();
         this.reviveInstances(gameModel, context);
@@ -141,19 +141,19 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @param context
      * @param create
      */
-    public void createAndRevivePrivateInstance(GameModel gameModel, BroadcastTarget context) {
+    public void createAndRevivePrivateInstance(GameModel gameModel, InstanceOwner context) {
         this.createInstances(gameModel, context);
         this.getEntityManager().flush();
         this.reviveInstances(gameModel, context);
     }
 
-    public void createInstances(GameModel gameModel, BroadcastTarget owner) {
+    public void createInstances(GameModel gameModel, InstanceOwner owner) {
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
             vd.createInstances(owner);
         }
     }
 
-    public void propagateDefaultInstances(GameModel gameModel, BroadcastTarget context, boolean create) {
+    public void propagateDefaultInstances(GameModel gameModel, InstanceOwner context, boolean create) {
         // Propagate default instances 
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
             vd.propagateDefaultInstance(context, create);
@@ -161,13 +161,13 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     }
 
-    public void revivePrivateInstances(GameModel gameModel, BroadcastTarget target) {
+    public void revivePrivateInstances(GameModel gameModel, InstanceOwner target) {
         for (VariableInstance vi : target.getPrivateInstances()){
             instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
         }
     }
 
-    public void reviveInstances(GameModel gameModel, BroadcastTarget context) {
+    public void reviveInstances(GameModel gameModel, InstanceOwner context) {
         //logger.error("REVIVE INSTANCES");
         //Helper.printWegasStackTrace(new Exception());
 
@@ -177,11 +177,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
     }
 
-    public void runStateMachines(BroadcastTarget context) {
+    public void runStateMachines(InstanceOwner context){
         this.runStateMachines(context, true);
     }
 
-    public void runStateMachines(BroadcastTarget context, boolean clear) {
+    public void runStateMachines(InstanceOwner context, boolean clear) {
         // Send reset envent to run state machines
         //resetEvent.fire(new ResetEvent(context, clear));
         stateMachineFacade.runStateMachines(context, clear);

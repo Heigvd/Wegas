@@ -7,11 +7,11 @@
  */
 package com.wegas.core.event.internal;
 
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.Player;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -33,7 +33,7 @@ public class ResetEvent implements Serializable {
     private static final long serialVersionUID = -837744356172473317L;
     private boolean clear;
 
-    private BroadcastTarget context;
+    private InstanceOwner context;
 
     public ResetEvent() {
     }
@@ -43,7 +43,7 @@ public class ResetEvent implements Serializable {
      * @param context
      * @param clear
      */
-    public ResetEvent(BroadcastTarget context, boolean clear) {
+    public ResetEvent(InstanceOwner context, boolean clear) {
         this.context = context;
         this.clear = clear;
     }
@@ -52,7 +52,7 @@ public class ResetEvent implements Serializable {
      *
      * @return this reset event context
      */
-    public BroadcastTarget getContext() {
+    public InstanceOwner getContext() {
         return context;
     }
 

@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import com.wegas.core.persistence.AcceptInjection;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.variable.Beanjection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.InstanceOwner;
 
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 @Table(indexes = {
     @Index(columnList = "variableinstance_variableinstance_id")
 })
-abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEntity implements AcceptInjection {
+abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEntity implements AcceptInjection {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractScope.class);
 
@@ -112,7 +112,60 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     abstract public VariableInstance getVariableInstance(Player player);
 
     /**
+     * return the first variableInstance which is accessible by the team.
+     * <p>
+     * here stands the behaviour for playeScoped instance,
+     * see overridden methods for other scope behaviour
+     *
+     * @param team
+     *
      * @return
+     */
+    public VariableInstance getVariableInstance(Team team) {
+        for (Player p : team.getPlayers()) {
+            return this.getVariableInstance(p);
+        }
+        return null;
+    }
+
+    /**
+     * return the first variableInstance which is accessible by the game
+     * <p>
+     * here stands the behaviour for playeScoped instance,
+     * see overridden methods for other scope behaviour
+     *
+     * @param game
+     *
+     * @return
+     */
+    public VariableInstance getVariableInstance(Game game) {
+        for (Team t : game.getTeams()) {
+            return this.getVariableInstance(t);
+        }
+        return null;
+    }
+
+    /**
+     * return the first variableInstance which is accessible by the gameModel
+     * <p>
+     * here stands the behaviour for playeScoped instance,
+     * see overridden methods for other scope behaviour
+     *
+     * @param gm
+     *
+     * @return
+     */
+    public VariableInstance getVariableInstance(GameModel gm) {
+        for (Game g : gm.getGames()) {
+            return this.getVariableInstance(g);
+        }
+        return null;
+    }
+
+    /**
+     * Fetch all instances, mapped by owner
+     *
+     * @return a map which map InstanceOwner with their variableInstance
      */
     @JsonIgnore
     abstract public Map<T, VariableInstance> getVariableInstances();
@@ -127,7 +180,10 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     }
 
     /**
-     * @return
+     *
+     * Fetch all instances, mapped by owner id
+     *
+     * @return a map which map InstanceOwner'is with their variableInstance
      */
     @JsonProperty("variableInstances")
     @JsonView(Views.InstanceI.class)
@@ -162,7 +218,8 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     /**
      * Propagate instances for the given player
      *
-     * @param p instance owner
+     * @param p      instance owner
+     * @param create create new instance or update existing one ?
      */
     protected void propagate(Player p, boolean create) {
     }
@@ -170,7 +227,8 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     /**
      * Propagate instances for the given team
      *
-     * @param t the team
+     * @param t      the team
+     * @param create create new instance or update existing one ?
      */
     protected void propagate(Team t, boolean create) {
         for (Player p : t.getPlayers()) {
@@ -185,7 +243,8 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     /**
      * Propagate instances for the given Game
      *
-     * @param g the game
+     * @param g      the game
+     * @param create create new instance or update existing one ?
      */
     protected void propagate(Game g, boolean create) {
         for (Team t : g.getTeams()) {
@@ -198,7 +257,8 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     /**
      * Propagate instances for the given GameModel
      *
-     * @param gm the gameModel
+     * @param gm     the gameModel
+     * @param create create new instance or update existing one ?
      */
     protected void propagate(GameModel gm, boolean create) {
         for (Game g : gm.getGames()) {
@@ -213,7 +273,7 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *                instances to (null means propagate to everybody)
      * @param create
      */
-    abstract public void propagateDefaultInstance(BroadcastTarget context, boolean create);
+    abstract public void propagateDefaultInstance(InstanceOwner context, boolean create);
 
     /**
      * @return
@@ -263,10 +323,20 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
         this.beans = beanjection;
     }
 
+    /**
+     * Since the @ManyToMany HashMap from scope to instances is not efficient,
+     * it has been cut and replace by JPA queries. Those queries stands within
+     * VariableInstanceFacade so we need something to fetch it...
+     * It's not so nice...
+     *
+     * @return
+     */
     protected VariableInstanceFacade getVariableInstanceFacade() {
+        // beans should have been injected by EntityListener
         if (this.beans != null && this.beans.getVariableInstanceFacade() != null) {
             return this.beans.getVariableInstanceFacade();
         } else if (this.variableInstanceFacade == null) {
+            // but it may not... so here is a lookup fallback
             logger.error("LOOKUP OCCURS : " + this);
             new Exception().printStackTrace();
             this.variableInstanceFacade = VariableInstanceFacade.lookup();

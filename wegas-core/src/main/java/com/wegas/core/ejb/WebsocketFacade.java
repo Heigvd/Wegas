@@ -525,7 +525,7 @@ public class WebsocketFacade {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
-                    onlineUsersGauge.set(this.getOnlineUsers().size());
+                    onlineUsersGauge.set(this.getLocalOnlineUsers().size());
                 }
             }
 
@@ -571,7 +571,11 @@ public class WebsocketFacade {
     private void registerUser(User user) {
         if (user != null && !onlineUsers.containsKey(user.getId())) {
             onlineUsers.put(user.getId(), new OnlineUser(user));
-            onlineUsersGauge.set(this.getOnlineUsers().size());
+
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+            if (onlineUsersUpToDate.get() == 1) {
+                onlineUsersGauge.set(this.getLocalOnlineUsers().size());
+            }
         }
     }
 
@@ -598,6 +602,8 @@ public class WebsocketFacade {
                 onlineUsersUpToDate.set(1);
             }
 
+            onlineUsersGauge.set(getLocalOnlineUsers().size());
+            
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -110,13 +110,9 @@ public class PeerReviewController {
             assertReviewReadRight(review, player);
 
             PeerReviewDescriptor prd = (PeerReviewDescriptor) authorInstance.getDescriptor();
-
             VariableDescriptor toReview = prd.getToReview();
-            // Find a player owning the author instance
-            Player author = instanceFacade.findAPlayer(authorInstance);
 
-            // And return this author istance
-            return toReview.getInstance(author);
+            return instanceFacade.findInstance(toReview, authorInstance);
         } catch (NoPlayerException ex) {
             throw WegasErrorMessage.error("Unable to find a player");
         }

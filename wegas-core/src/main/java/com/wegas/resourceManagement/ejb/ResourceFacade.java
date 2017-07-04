@@ -448,24 +448,14 @@ public class ResourceFacade {
             ResourceDescriptor rd = (ResourceDescriptor) resourceInstance.findDescriptor();
             GameModel gm = rd.getGameModel();
 
-            Player currentPlayer = null;
-            boolean isDefault = resourceInstance.isDefaultInstance();
-            if (!isDefault) {
-                currentPlayer = variableInstanceFacade.findAPlayer(resourceInstance);
-            }
-
             for (Assignment assignment : resourceInstance.getAssignments()) {
                 String taskDescriptorName = assignment.getTaskDescriptorName();
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
                     TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                    TaskInstance newTaskInstance;
-                    if (isDefault) {
-                        newTaskInstance = newTaskDescriptor.getDefaultInstance();
-                    } else {
-                        newTaskInstance = newTaskDescriptor.getInstance(currentPlayer);
-                    }
-
+                    
+                    TaskInstance newTaskInstance = (TaskInstance) variableInstanceFacade.findInstance(newTaskDescriptor, resourceInstance);
                     TaskInstance oldTaskInstance = assignment.getTaskInstance();
+
                     if (oldTaskInstance != null) {
                         oldTaskInstance.removeAssignment(assignment);
                     }
@@ -478,12 +468,8 @@ public class ResourceFacade {
                 String taskDescriptorName = activity.getTaskDescriptorName();
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
                     TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                    TaskInstance newTaskInstance;
-                    if (isDefault) {
-                        newTaskInstance = newTaskDescriptor.getDefaultInstance();
-                    } else {
-                        newTaskInstance = newTaskDescriptor.getInstance(currentPlayer);
-                    }
+                    
+                    TaskInstance newTaskInstance = (TaskInstance) variableInstanceFacade.findInstance(newTaskDescriptor, resourceInstance);
 
                     TaskInstance oldTaskInstance = activity.getTaskInstance();
                     if (oldTaskInstance != null) {

@@ -149,7 +149,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
     }
 
     /**
-     * @param questionInstance
+     * @param choiceInstance
      */
     @JsonBackReference
     public void setChoiceInstance(ChoiceInstance choiceInstance) {

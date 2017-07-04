@@ -10,7 +10,6 @@ package com.wegas.core.persistence.variable.scope;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -21,6 +20,7 @@ import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -53,9 +53,11 @@ public class PlayerScope extends AbstractScope<Player> {
     }
 
     /**
+     * Get the instances which belongs to the player
      *
-     * @param player
-     * @return
+     * @param player instance owner
+     *
+     * @return the player's instance
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
@@ -103,7 +105,7 @@ public class PlayerScope extends AbstractScope<Player> {
     }
 
     @Override
-    public void propagateDefaultInstance(BroadcastTarget context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         if (context instanceof Player) {
             propagate((Player) context, create);
         } else if (context instanceof Team) {

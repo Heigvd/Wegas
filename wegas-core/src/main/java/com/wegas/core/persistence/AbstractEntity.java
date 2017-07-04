@@ -197,6 +197,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Overriding this method may helps to maintain cache integrity after
      * cascaded entity deletion
      *
+     * @param beans facade wrapper
      */
     public void updateCacheOnDelete(Beanjection beans) {
     }

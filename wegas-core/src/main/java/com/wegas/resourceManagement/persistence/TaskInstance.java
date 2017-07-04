@@ -68,7 +68,8 @@ public class TaskInstance extends VariableInstance implements Propertable {
     private List<Assignment> assignments = new ArrayList<>();
 
     @ManyToMany(mappedBy = "tasks")
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
+    @JsonIgnore
     private List<Iteration> iterations;
 
     /**

@@ -60,6 +60,8 @@ public class Replies extends AbstractEntity  {
 
     @Override
     public void merge(AbstractEntity other) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // this method is never called
+        // everything is done within Reply and Result classes
+        throw new UnsupportedOperationException("Unreachable statement."); 
     }
 }
