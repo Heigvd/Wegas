@@ -364,9 +364,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor's id through its scope
+     * Get instance descriptor's id through its scope for regular instance or 
+     * the default descriptor's id for default instances
      *
-     * @return descriptor id of -1 if this is a default instance
+     * @return descriptor id 
      */
     @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
