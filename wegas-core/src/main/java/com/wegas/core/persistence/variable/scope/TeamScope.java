@@ -54,20 +54,25 @@ public class TeamScope extends AbstractScope<Team> {
         return this.getVariableInstanceFacade().getAllTeamInstances(this);
     }
 
-    /*public void setVariableInstances(Map<Team, VariableInstance> teamVariableInstances) {
-        this.teamVariableInstances = teamVariableInstances;
-    }*/
     /**
+     * Return a instace which is accessible by the player
      *
-     * @param player
+     * @param player the player who request the instance
      *
-     * @return
+     * @return the instance which belongs to the player's team
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
         return this.getVariableInstance(player.getTeam());
     }
 
+    /**
+     * Get the team's instance
+     *
+     * @param t instance owner
+     *
+     * @return the team's instance
+     */
     @Override
     public VariableInstance getVariableInstance(Team t) {
         return this.getVariableInstanceFacade().getTeamInstance(this, t);

@@ -53,9 +53,11 @@ public class PlayerScope extends AbstractScope<Player> {
     }
 
     /**
+     * Get the instances which belongs to the player
      *
-     * @param player
-     * @return
+     * @param player instance owner
+     *
+     * @return the player's instance
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {

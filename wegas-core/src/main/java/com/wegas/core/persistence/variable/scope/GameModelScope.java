@@ -105,26 +105,48 @@ public class GameModelScope extends AbstractScope<GameModel> {
     }
 
     /**
+     * Return the instance which is accessible by the player
      *
-     * @param player
+     * @param player the player who request the instance
      *
-     * @return
+     * @return the gameModel's instance
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
-        return this.variableInstance;
+        return this.getVariableInstance((GameModel) null);
     }
 
+    /**
+     * Return the instance which is accessible by team
+     *
+     * @param team the team who request the instance
+     *
+     * @return the gameModel's instance
+     */
     @Override
     public VariableInstance getVariableInstance(Team team) {
-        return this.variableInstance;
+        return this.getVariableInstance((GameModel) null);
     }
 
+    /**
+     * Return the instance which is accessible by game
+     *
+     * @param game the game who request the instance
+     *
+     * @return the gameModel's instance
+     */
     @Override
     public VariableInstance getVariableInstance(Game game) {
-        return this.variableInstance;
+        return this.getVariableInstance((GameModel) null);
     }
 
+    /**
+     * Return the instance which is linked to gameModel
+     *
+     * @param gameModel the gameModel for which instance is required
+     *
+     * @return the gameModel's instance
+     */
     @Override
     public VariableInstance getVariableInstance(GameModel gameModel) {
         return this.variableInstance;

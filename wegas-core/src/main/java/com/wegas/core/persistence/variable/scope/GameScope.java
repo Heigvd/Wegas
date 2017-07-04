@@ -55,16 +55,37 @@ public class GameScope extends AbstractScope<Game> {
         v.setGameScope(this);
     }
 
+    /**
+     * Return the variableInstance which is accessible by player
+     *
+     * @param player the player who requests the instance
+     *
+     * @return instance which belongs to player's team's game
+     */
     @Override
     public VariableInstance getVariableInstance(Player player) {
         return this.getVariableInstance(player.getGame());
     }
 
+    /**
+     * Return the variableInstance which is accessible by team
+     *
+     * @param team the team who requests the instance
+     *
+     * @return instance which belongs to team's game
+     */
     @Override
     public VariableInstance getVariableInstance(Team team) {
         return this.getVariableInstance(team.getGame());
     }
 
+    /**
+     * Return the game variableInstance
+     *
+     * @param game
+     *
+     * @return instance which belongs to game
+     */
     @Override
     public VariableInstance getVariableInstance(Game game) {
         return getVariableInstanceFacade().getGameInstance(this, game);
