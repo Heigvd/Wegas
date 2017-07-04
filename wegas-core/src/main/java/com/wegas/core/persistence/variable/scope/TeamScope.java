@@ -9,7 +9,6 @@ package com.wegas.core.persistence.variable.scope;
 
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -20,6 +19,7 @@ import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -130,7 +130,7 @@ public class TeamScope extends AbstractScope<Team> {
     }
 
     @Override
-    public void propagateDefaultInstance(BroadcastTarget context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         //logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
         if (context instanceof Player) {
             // No need to propagate since the team already exists

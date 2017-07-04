@@ -17,11 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
 
-import com.wegas.core.persistence.BroadcastTarget;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @todo Needs to be implemented
@@ -92,7 +91,7 @@ public class GameScope extends AbstractScope<Game> {
     }
 
     @Override
-    public void propagateDefaultInstance(BroadcastTarget context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         if (context instanceof Player) {
             // Since player's game already exists, nothing to propagate
         } else if (context instanceof Team) {

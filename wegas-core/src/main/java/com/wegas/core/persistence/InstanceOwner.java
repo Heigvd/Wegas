@@ -17,7 +17,7 @@ import java.util.List;
  * 
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public interface BroadcastTarget {
+public interface InstanceOwner {
 
     public String getChannel();
 

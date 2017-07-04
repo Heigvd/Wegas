@@ -10,7 +10,6 @@ package com.wegas.core;
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -709,17 +708,6 @@ public class Helper {
      */
     public static void setWegasRootDirectory(String wegasRootDirectory) {
         Helper.WEGAS_ROOT_DIRECTORY = wegasRootDirectory;
-    }
-
-    /**
-     * Generation Pusher token for a target
-     *
-     * @param target
-     *
-     * @return channel name
-     */
-    public static String getAudienceToken(BroadcastTarget target) {
-        return target.getChannel();
     }
 
     /**

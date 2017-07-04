@@ -10,7 +10,6 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import com.wegas.core.persistence.InstanceOwner;
 ////import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -40,7 +40,7 @@ import java.util.Map;
 })
 @NamedQueries({
     @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")})
-public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity {
+public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
