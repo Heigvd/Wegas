@@ -207,7 +207,7 @@ public class PopulatorFacade {
                     } else if (pop instanceof Player
                             && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Status.LIVE)) {
                         Player p = (Player) pop;
-                        markAsProcessing(p);
+                        this.markAsProcessing(p);
                         owner = p;
                         break;
                     }

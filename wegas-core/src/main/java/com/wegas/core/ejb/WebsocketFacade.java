@@ -440,9 +440,11 @@ public class WebsocketFacade {
     }
 
     public void propagateNewPlayer(Player newPlayer) throws IOException {
-        User user = newPlayer.getUser();
-        if (user != null) {
-            pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
+        if (pusher != null) {
+            User user = newPlayer.getUser();
+            if (user != null) {
+                pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
+            }
         }
     }
 
@@ -603,7 +605,7 @@ public class WebsocketFacade {
             }
 
             onlineUsersGauge.set(getLocalOnlineUsers().size());
-            
+
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
         }
