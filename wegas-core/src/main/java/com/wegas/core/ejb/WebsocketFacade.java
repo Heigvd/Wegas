@@ -29,6 +29,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
 import com.wegas.core.security.util.SecurityHelper;
+import fish.payara.micro.cdi.Inbound;
+import fish.payara.micro.cdi.Outbound;
 import io.prometheus.client.Gauge;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -53,6 +55,8 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -79,6 +83,13 @@ public class WebsocketFacade {
 
     @Inject
     private HazelcastInstance hazelcastInstance;
+
+    private static final String COMMANDS_EVENT = "WF_UPDATE_OU_METRIC";
+    private static final String UPDATE_OU_METRIC_CMD = "WF_UPDATE_OU_METRIC";
+
+    @Inject
+    @Outbound(eventName = COMMANDS_EVENT, loopBack = true)
+    private Event<String> commands;
 
     private static final String UPTODATE_KEY = "onlineUsersUpTpDate";
     private static final String LOCKNAME = "WebsocketFacade.onlineUsersLock";
@@ -509,7 +520,7 @@ public class WebsocketFacade {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
-                    onlineUsersGauge.set(this.getLocalOnlineUsers().size());
+                    updateOnlineUserMetric();
                 }
             }
 
@@ -558,7 +569,7 @@ public class WebsocketFacade {
 
             IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
             if (onlineUsersUpToDate.get() == 1) {
-                onlineUsersGauge.set(this.getLocalOnlineUsers().size());
+                updateOnlineUserMetric();
             }
         }
     }
@@ -586,8 +597,8 @@ public class WebsocketFacade {
                 onlineUsersUpToDate.set(1);
             }
 
-            onlineUsersGauge.set(getLocalOnlineUsers().size());
-            
+            updateOnlineUserMetric();
+
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -625,6 +636,8 @@ public class WebsocketFacade {
                     }
                 }
             }
+
+            updateOnlineUserMetric();
 
             if (maintainLocalListUpToDate) {
                 IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
@@ -691,4 +704,15 @@ public class WebsocketFacade {
         }
     }
 
+    public void updateOnlineUserMetric() {
+        logger.error("FIRE COMMAND");
+        commands.fire(UPDATE_OU_METRIC_CMD);
+    }
+
+    public void onOnlineUserMetric(@Inbound(eventName = COMMANDS_EVENT) @Observes String command) {
+        logger.error("RECEIVE COMMAND");
+        if (UPDATE_OU_METRIC_CMD.equals(command)) {
+            onlineUsersGauge.set(this.getLocalOnlineUsers().size());
+        }
+    }
 }

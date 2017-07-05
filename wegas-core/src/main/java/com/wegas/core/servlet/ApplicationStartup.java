@@ -48,6 +48,9 @@ public class ApplicationStartup extends HttpServlet {
         super.init(config);
         logger.info("Servlet Startup");
 
+        websocketFacade.getOnlineUsers();
+        websocketFacade.updateOnlineUserMetric();
+
         DefaultExports.initialize();
 
         /*
