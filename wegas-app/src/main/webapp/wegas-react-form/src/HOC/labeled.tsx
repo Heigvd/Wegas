@@ -22,38 +22,48 @@ interface ILabelProps {
         [propName: string]: undefined | {};
     };
 }
-
-export default function labeled<P>(
+let id = 0;
+function idGenerator() {
+    const gid = ++id;
+    return 'generated-label-id--' + gid;
+}
+export default function labeled<P extends { id: string }>(
     Comp: React.ComponentClass<P> | React.SFC<P>,
     cssContainer = '',
     suffixed = false
 ) {
-    function Labeled(props: P & ILabelProps) {
-        if (suffixed) {
+    class Labeled extends React.Component<P & ILabelProps> {
+        id: string;
+        constructor(props: P & ILabelProps) {
+            super(props);
+            this.id = idGenerator();
+        }
+        render() {
+            const props = this.props;
+
+            if (suffixed) {
+                return (
+                    <div className={cssContainer}>
+                        <Comp id={this.id} {...props} />
+                        <label htmlFor={this.id} {...labelStyle}>
+                            {props.view.label}
+                        </label>
+                    </div>
+                );
+            }
             return (
                 <div className={cssContainer}>
-                    <label>
-                        <Comp {...props} />
-                        <span {...labelStyle}>
-                            {props.view.label}
-                        </span>
-                    </label>
-                </div>
-            );
-        }
-        return (
-            <div className={cssContainer}>
-                <label>
-                    <span
+                    <label
+                        htmlFor={this.id}
                         {...prefixedLabelStyle}
                         className={props.view.label ? `${labelTextStyle}` : ''}
                     >
                         {props.view.label}
-                    </span>
-                    <Comp {...props} />
-                </label>
-            </div>
-        );
+                    </label>
+                    <Comp id={this.id} {...props} />
+                </div>
+            );
+        }
     }
     return Labeled;
 }

@@ -10,12 +10,13 @@ const halfWidth: CSSProperties = {
     position: 'relative',
     width: '50%'
 };
+type HashListProps = WidgetProps.ObjectProps & { id: string };
 class HashlistView extends React.Component<
-    WidgetProps.ObjectProps,
+    HashListProps,
     { newInputValue: string }
 > {
     child: { [key: string]: HTMLElement };
-    constructor(props: WidgetProps.ObjectProps) {
+    constructor(props: HashListProps) {
         super(props);
         this.state = {
             newInputValue: ''
@@ -43,7 +44,7 @@ class HashlistView extends React.Component<
         }, 20);
     }
     render() {
-        const { removeKey, alterKey, children, ...restProps } = this.props;
+        const { id, removeKey, alterKey, children, ...restProps } = this.props;
         const newChildren = React.Children.map(
             children,
             (child: React.ReactElement<any>) => {
@@ -64,6 +65,7 @@ class HashlistView extends React.Component<
                         />
                         <div style={{ position: 'relative' }}>
                             <TextField
+                                id={id}
                                 value={child.props.editKey}
                                 onChange={onKeyChange}
                                 view={{
@@ -91,6 +93,7 @@ class HashlistView extends React.Component<
             <ObjectView {...restProps}>
                 {newChildren}
                 <TextField
+                    id={id}
                     key="newkeyinput"
                     value={this.state.newInputValue}
                     onChange={this.onAdderChange}

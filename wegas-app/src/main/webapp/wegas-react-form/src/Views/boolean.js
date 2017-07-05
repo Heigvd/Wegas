@@ -28,20 +28,18 @@ const checkboxStyle = css({
     fontSize: '14px'
 });
 
-
 function BooleanView(props) {
     const onChange = function onChange(event) {
         props.onChange(event.target.checked);
     };
-    const id = props.path.join('-');
     return (
-            <input
-                id={id}
-                checked={props.value}
-                type="checkbox"
-                className={checkboxStyle}
-                onChange={onChange}
-            />
+        <input
+            id={props.id}
+            checked={props.value}
+            type="checkbox"
+            className={checkboxStyle}
+            onChange={onChange}
+        />
     );
 }
 
@@ -52,10 +50,12 @@ BooleanView.defaultProps = {
 BooleanView.propTypes = {
     onChange: PropTypes.func.isRequired,
     view: PropTypes.shape({
-        label: PropTypes.string,
+        label: PropTypes.string
     }).isRequired,
     value: PropTypes.bool,
     path: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
-export default commonView(labeled(BooleanView, `${booleanContainerStyle}`, true));
+export default commonView(
+    labeled(BooleanView, `${booleanContainerStyle}`, true)
+);
