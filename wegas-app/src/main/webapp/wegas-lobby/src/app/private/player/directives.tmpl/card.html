@@ -1,26 +1,37 @@
 <div class="card__illustration illustration illustration--icon" illustration="{{team.gameIcon}}"></div>
 <div
-	class="card__description"
+    class="card__description"
 	ng-class="{true:'card__description--one-line', false:'card__description--two-lines'}[team.gameFreeForAll]" >
     <div class="line line--primary">{{team.gameName}}</div>
     <div ng-if="!team.gameFreeForAll" class="line line--secondary">{{'PLAYER-CARD-TEAM-TITLE' | translate}} "{{team.name}}"</div>
     <div>salut {{player(team).status}}</div>
 </div>
 <div class="card__actions">
-    <!-- view team details buttons -->
-    <a ng-if="!team.gameFreeForAll" class="button button--small button--round button--default-reverse button--label-off button--team" title="{{'PLAYER-CARD-TEAM-BTN' | translate}}" ui-sref="wegas.private.player.team({id: team.id})">
-      <span class="button__label">{{'PLAYER-CARD-TEAM-BTN' | translate}}</span>
+    <!-- view team details button -->
+    <a ng-if="!team.gameFreeForAll" 
+       class="button button--small button--round button--default-reverse button--label-off button--team" 
+       title="{{'PLAYER-CARD-TEAM-BTN'| translate}}" ui-sref="wegas.private.player.team({id: team.id})">
+        <span class="button__label">{{'PLAYER-CARD-TEAM-BTN'| translate}}</span>
     </a>
-    <!-- leave team button -->
+    <!-- leave button -->
     <a id="leave-{{team.id}}"
-      class="button button--small button--round button--default-reverse button--label-off button--trash"
-      title="{{'PLAYER-CARD-LEAVE-BTN' | translate}}"
-      confirmed-click="leave(team.id)"
-      ng-confirm-click="{{'PLAYER-CARD-LEAVE-CONFIRM' | translate}}">
-      <span class="button__label">{{'PLAYER-CARD-LEAVE-BTN' | translate}}</span>
+       class="button button--small button--round button--default-reverse button--label-off button--trash"
+       title="{{'PLAYER-CARD-LEAVE-BTN' | translate}}"
+       confirmed-click="leave(team.id)"
+       ng-disabled="player(team).status !== 'LIVE' && player(team).status !== 'FAILED'"
+       ng-confirm-click="{{'PLAYER-CARD-LEAVE-CONFIRM'| translate}}">
+        <span class="button__label">{{'PLAYER-CARD-LEAVE-BTN'| translate}}</span>
     </a>
     <!-- Play button -->
-    <a class="button button--small button--round button--default button--label-off button--play action--button" title="{{'PLAYER-CARD-PLAY-BTN' | translate}}" href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" target="_blank">
-      <span class="button__label">{{'PLAYER-CARD-PLAY-BTN' | translate}}</span>
+    <a class="button button--small button--round button--default button--label-off button--play action--button" 
+       ng-disabled="player(team).status !== 'LIVE'"
+       title="{{'PLAYER-CARD-PLAY-BTN'| translate}}" 
+       href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" 
+       target="_blank">
+        <span class="button__label">{{'PLAYER-CARD-PLAY-BTN'| translate}}</span>
     </a>
+</div>
+
+<div class="card__actions" ng-if="player(team).status === 'FAILED'">
+    <p>FAILED -> retry </p>
 </div>
