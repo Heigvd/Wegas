@@ -189,7 +189,12 @@ public class PdfRenderer implements Filter {
                     InputStream iStream = new StringInputStream(content);
                     tidy.parse(iStream, os);
 
-                    String toString = os.toString();
+
+                    /**
+                     * Since injecting correct url within print.xhtml.h:doctype.system leads to nothing good, let's hack 
+                     */
+                    String urlDTD = req.getRequestURL().toString().replace(req.getServletPath(), "/wegas-app/DTD/xhtml1-transitional.dtd");
+                    String toString = os.toString().replaceFirst("__DTD_URL__", urlDTD);
 
                     StringReader contentReader = new StringReader(toString);
 

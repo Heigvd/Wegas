@@ -111,10 +111,6 @@ public class PrintController {
         return getCurrentPlayer().getGameModel();
     }
 
-    public String getXHTML1TransitionalDTDUrl(HttpServletRequest request){
-        return request.getRequestURL().toString().replace(request.getServletPath(), "/wegas-app/DTD/xhtml1-transitional.dtd");
-    }
-
     /**
      *
      */
