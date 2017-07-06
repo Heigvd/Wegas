@@ -176,13 +176,6 @@
             <groupId>com.ibm.watson.developer_cloud</groupId>
             <artifactId>java-sdk</artifactId>
             <version>3.8.0</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.watson.developer_cloud</groupId>
-            <artifactId>conversation</artifactId>
-            <version>3.8.0</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 

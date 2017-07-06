@@ -9,16 +9,18 @@
 package com.wegas.watson;
 
 import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
-import com.ibm.watson.developer_cloud.conversation.v1.model.CreateExample;
-import com.ibm.watson.developer_cloud.conversation.v1.model.CreateIntent;
+import com.ibm.watson.developer_cloud.conversation.v1.model.CreateDialogNode;
 import com.ibm.watson.developer_cloud.conversation.v1.model.CreateWorkspace;
 import com.ibm.watson.developer_cloud.conversation.v1.model.ExampleResponse;
 import com.ibm.watson.developer_cloud.conversation.v1.model.IntentCollectionResponse;
 import com.ibm.watson.developer_cloud.conversation.v1.model.IntentResponse;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
+import com.ibm.watson.developer_cloud.conversation.v1.model.UpdateWorkspace;
+import com.ibm.watson.developer_cloud.conversation.v1.model.WorkspaceExportResponse;
 import com.ibm.watson.developer_cloud.conversation.v1.model.WorkspaceResponse;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.GameModel;
-import java.util.List;
 
 /**
  * This class contains the methods used to access Watson Conversation services. It uses
@@ -30,27 +32,29 @@ import java.util.List;
 
 public class WatsonUtils {
     
-    public static final String WATSON_VERSION = Helper.getWegasProperty("watson.version", "");
+    private static final String WATSON_VERSION = Helper.getWegasProperty("watson.version", "");
     
     private static final String WATSON_USERNAME = Helper.getWegasProperty("watson.username", "");
     
     private static final String WATSON_PASSWORD = Helper.getWegasProperty("watson.password", "");
     
-    public static final ConversationService WATSON_SERVICE;
+    private static final ConversationService WATSON_SERVICE;
     
     static{
+        System.out.println("-1");
         WATSON_SERVICE = new ConversationService(WATSON_VERSION);
         WATSON_SERVICE.setUsernameAndPassword(WATSON_USERNAME, WATSON_PASSWORD);
+        System.out.println("0");
     }
     
     /**
      *
      * @return the Id of the created workpsace
      */
-    public static String createWorkspace(String name){
-        CreateWorkspace w = new CreateWorkspace.Builder().language("fr").build();
+    private static WorkspaceResponse createWorkspace(String name, String description, String language){
+        CreateWorkspace w = new CreateWorkspace.Builder().name(name).description(description).language(language).build();
         WorkspaceResponse r = WATSON_SERVICE.createWorkspace(w).execute();
-        return r.getWorkspaceId();
+        return r;
     }
     
     public static void deleteWorkspace(String workspaceId){
@@ -77,9 +81,13 @@ public class WatsonUtils {
      */
     public static String createIntent(GameModel gameModel, String name, String description){
         if(Helper.isNullOrEmpty(gameModel.getProperties().getWatsonWorkspaceId())){
-            gameModel.getProperties().setWatsonWorkspaceId(createWorkspace(gameModel.getName()));
+            WorkspaceResponse workspace = createWorkspace(gameModel.getName(),gameModel.getDescription(),gameModel.getProperties().getWatsonLanguage());
+            gameModel.getProperties().setWatsonWorkspaceId(workspace.getWorkspaceId());
         }
-        IntentResponse r = WATSON_SERVICE.createIntent(gameModel.getProperties().getWatsonWorkspaceId(), name, description, null).execute();
+        
+        UpdateWorkspace w = new UpdateWorkspace.Builder().dialogNodes(new CreateDialogNode.Builder().dialogNode(name).build()).build();
+        WATSON_SERVICE.updateWorkspace(gameModel.getProperties().getWatsonWorkspaceId(), w);
+        IntentResponse r = WATSON_SERVICE.createIntent(gameModel.getProperties().getWatsonWorkspaceId(), name, description, null).execute(); 
         return r.getIntent();
     }
     
@@ -89,7 +97,6 @@ public class WatsonUtils {
      * @param name
      * @param newName
      * @param description
-     * @param examples
      * @return the the name of the updated intent
      */
     public static String updateIntent(GameModel gameModel, String name, String newName, String description){
@@ -139,5 +146,10 @@ public class WatsonUtils {
      */
     public static void deleteExample(GameModel gameModel, String intent, String text){
         WATSON_SERVICE.deleteExample(gameModel.getProperties().getWatsonWorkspaceId(), intent, text).execute();
+    }
+    
+    public static MessageResponse sendMessage(GameModel gameModel,String text){
+        MessageRequest message = new MessageRequest.Builder().inputText(text).alternateIntents(Boolean.TRUE).build();
+        return WATSON_SERVICE.message(gameModel.getProperties().getWatsonWorkspaceId(), message).execute();
     }
 }

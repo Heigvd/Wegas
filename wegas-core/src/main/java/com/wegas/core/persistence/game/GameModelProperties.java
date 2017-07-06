@@ -73,6 +73,11 @@ public class GameModelProperties implements Serializable {
      *
      */
     private String watsonWorkspaceId = "";
+    
+    /**
+     *
+     */
+    private String watsonLanguage = "fr";
 
     /**
      *
@@ -239,5 +244,19 @@ public class GameModelProperties implements Serializable {
      */
     public void setWatsonWorkspaceId(String watsonWorkspaceId) {
         this.watsonWorkspaceId = watsonWorkspaceId;
+    }
+
+    /**
+     * @return the watsonLanguage
+     */
+    public String getWatsonLanguage() {
+        return watsonLanguage;
+    }
+
+    /**
+     * @param watsonLanguage the watsonLanguage to set
+     */
+    public void setWatsonLanguage(String watsonLanguage) {
+        this.watsonLanguage = watsonLanguage;
     }
 }
