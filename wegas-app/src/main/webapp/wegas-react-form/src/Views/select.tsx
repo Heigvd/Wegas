@@ -12,6 +12,7 @@ type choice = {
 };
 type choices = (string | choice)[];
 interface ISelectProps {
+    id: string;
     value?: {};
     onChange: (value: string) => void;
     view: {
@@ -19,6 +20,7 @@ interface ISelectProps {
     };
 }
 interface IAsyncSelectProps {
+    id: string;
     value?: {};
     onChange: (value: string) => void;
     view: {
@@ -76,6 +78,7 @@ function SelectView(props: ISelectProps) {
         .map(genItems);
     return (
         <select
+            id={props.id}
             className={`${selectStyle}`}
             value={JSON.stringify(props.value)}
             onChange={onChange}
@@ -85,9 +88,7 @@ function SelectView(props: ISelectProps) {
     );
 }
 
-function Sel({
-    view
-}: IAsyncSelectProps) {
+function Sel({ view }: IAsyncSelectProps) {
     const { choices } = view;
     if (typeof choices === 'function') {
         return Promise.resolve(choices()).then(ch => ({

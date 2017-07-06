@@ -26,7 +26,7 @@
     "prop-types": "^15.5.8",
     "rc-menu": "^5.0.10",
     "react": "^15.6.1",
-    "react-ace": "^5.0.1",
+    "react-ace": "^5.1.0",
     "react-color": "^2.13.0",
     "react-dom": "^15.6.1",
     "react-tinymce": "^0.5.1",
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.14.5",
-    "@types/react": "^15.0.33",
+    "@types/react": "^15.0.34",
     "@types/react-color": "^2.11.4",
     "@types/react-dom": "^15.5.1",
     "@types/react-widgets": "^3.2.30",

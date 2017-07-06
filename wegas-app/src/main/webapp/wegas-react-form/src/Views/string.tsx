@@ -45,6 +45,7 @@ function fromNotToEmpty(value?: void | string | number) {
 }
 
 interface IStringProps {
+    id: string;
     value?: string | number;
     view: {
         rows?: number;
@@ -70,14 +71,13 @@ class StringView extends React.Component<
         event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
     ) {
         const v = event.target.value;
-        this.setState({ value: v }, () =>
-            this.props.onChange(v)
-        );
+        this.setState({ value: v }, () => this.props.onChange(v));
     }
     render() {
         if (typeof this.props.view.rows === 'number') {
             return (
                 <textarea
+                    id={this.props.id}
                     className={textareaStyle.toString()}
                     rows={this.props.view.rows}
                     onChange={ev => this.handleChange(ev)}
@@ -89,6 +89,7 @@ class StringView extends React.Component<
         }
         return (
             <input
+                id={this.props.id}
                 className={inputStyle.toString()}
                 type="text"
                 placeholder={this.props.view.placeholder}
