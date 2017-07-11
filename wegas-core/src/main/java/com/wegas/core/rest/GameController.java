@@ -8,6 +8,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.Helper;
+import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -70,6 +71,9 @@ public class GameController {
      */
     @EJB
     private PlayerFacade playerFacade;
+
+    @Inject
+    private PopulatorFacade populatorFacade;
 
     /**
      * @param entityId
@@ -332,6 +336,9 @@ public class GameController {
                                  */
                                 teamFacade.detach(team);
                                 team = teamFacade.find(team.getId());
+                                Player p = team.getPlayers().get(0);
+                                p.setQueueSize(populatorFacade.getQueue().indexOf(p) + 1);
+
                                 r = Response.status(Response.Status.CREATED).entity(team).build();
                             }
                         }

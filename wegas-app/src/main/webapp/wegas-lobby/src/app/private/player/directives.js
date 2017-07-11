@@ -124,19 +124,46 @@ angular.module('private.player.directives', [])
             }
         });
 
-        $rootScope.$on('wegaspusher:team-update', function(e, team) {
-            var i, t;
+        $rootScope.$on('wegaspusher:populateQueue-dec', function(e, size) {
+            var i, t, j, p,
+                updated = false;
+
+            console.log("DEC");
             for (i in ctrl.teams) {
-                t = ctrl.teams[i];
-                if (t.id === team.id) {
-                    break;
+                if (ctrl.teams.hasOwnProperty(i)) {
+                    t = ctrl.teams[i];
+                    for (j in ctrl.teams[i].players) {
+                        if (ctrl.teams[i].players.hasOwnProperty(j)) {
+                            p = ctrl.teams[i].players[j];
+                            if (p.queueSize > 0) {
+                                if (!p.initialQueueSize) {
+                                    p.initialQueueSize = p.queueSize;
+                                    p.initialQueueSizeTime = p.queueSizeTime || (new Date()).getTime();
+                                }
+                                p.queueSize--;
+                                p.queueSizeTime = (new Date()).getTime();
+
+                                p.alreadyWaited = 100 - (100 * p.queueSize / p.initialQueueSize);
+                                p.alreadyWaited = p.alreadyWaited.toFixed(2);
+                                
+                                p.timeToWait = (p.queueSize * (p.queueSizeTime - p.initialQueueSizeTime) / (p.initialQueueSize - p.queueSize)) / 1000;
+                                p.timeToWait = Math.floor(p.timeToWait);
+                                updated = true;
+                            }
+                        }
+                    }
                 }
             }
-            if (i < ctrl.teams.length) {
-                ctrl.teams.splice(i, 1, team);
-            } else {
-                ctrl.teams.add(team);
+
+            if (updated && !$rootScope.$$phase) {
+                $scope.$apply();
             }
+
+        });
+
+        $rootScope.$on('wegaspusher:team-update', function(e, team) {
+            console.log("RECEIVE TEAM UPDATE");
+            TeamsModel.cacheTeam(team);
 
             if (!$rootScope.$$phase) {
                 $scope.$apply();

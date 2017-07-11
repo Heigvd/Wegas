@@ -35,30 +35,59 @@ angular.module('wegas.models.teams', [])
                     return deferred.promise;
                 }
             },
-        /* Cache all teams in a list */
-        cacheTeams = function() {
-            var deferred = $q.defer();
-            if (teams.cache !== null) {
-                $http.get(ServiceURL + "rest/Extended/User/Current/Team").success(function(data) {
-                    teams.cache.data = data || [];
-                    deferred.resolve(teams.cache.data);
-                }).error(function(data) {
+            /* Cache all teams in a list */
+            cacheTeams = function() {
+                var deferred = $q.defer();
+                if (teams.cache !== null) {
+                    $http.get(ServiceURL + "rest/Extended/User/Current/Team").success(function(data) {
+                        teams.cache.data = data || [];
+                        deferred.resolve(teams.cache.data);
+                    }).error(function(data) {
+                        teams.cache.data = [];
+                        deferred.resolve(teams.cache.data);
+                    });
+                } else {
                     teams.cache.data = [];
                     deferred.resolve(teams.cache.data);
-                });
-            } else {
-                teams.cache.data = [];
-                deferred.resolve(teams.cache.data);
-            }
-            return deferred.promise;
-        },
+                }
+                return deferred.promise;
+            },
             /* Cache a team in the cached teams */
             cacheTeam = function(teamToCache) {
+                var i, j, k, localTeam, localPlayer, remotePlayer;
                 if (teamToCache) {
                     if (teams.cache) {
-                        teams.cache.data.push(teamToCache);
+                        localTeam = teams.cache.data.find(function(item) {
+                            return item.id === teamToCache.id;
+                        });
+                        if (localTeam) {
+                            for (j in teamToCache.players) {
+                                if (teamToCache.players.hasOwnProperty(j)) {
+                                    remotePlayer = teamToCache.players[j];
+                                    k = localTeam.players.findIndex(function(item) {
+                                        return item.id === remotePlayer.id;
+                                    });
+                                    if (k >= 0) {
+                                        localPlayer = localTeam.players[k];
+                                        if (localPlayer.version < remotePlayer.version) {
+                                            localTeam.players.splice(k, 1, remotePlayer);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            teams.cache.data.push(teamToCache);
+                        }
                     } else {
                         teams.cache = {data: [teamToCache]};
+                    }
+
+
+                    for (j in teamToCache.players) {
+                        if (teamToCache.players.hasOwnProperty(j)) {
+                            remotePlayer = teamToCache.players[j];
+                            remotePlayer.queueSizeTime = (new Date()).getTime();
+                        }
                     }
                 }
             },
@@ -76,16 +105,18 @@ angular.module('wegas.models.teams', [])
             teams.cache = null;
         };
 
+        model.cacheTeam = cacheTeam;
+
         /* Initialize an empty cache for a new player (right after signup) */
         /* NB: does not work with upgraded Guest accounts !!
-        model.initCacheForNewPlayer = function() {
-            teams.cache = {
-                data: null,
-                loading: false
-            };
-            teams.cache.data = [];
-        }
-        */
+         model.initCacheForNewPlayer = function() {
+         teams.cache = {
+         data: null,
+         loading: false
+         };
+         teams.cache.data = [];
+         }
+         */
 
         /* Ask for all teams for current user. */
         model.getTeams = function() {

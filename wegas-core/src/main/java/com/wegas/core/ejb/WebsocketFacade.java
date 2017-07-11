@@ -439,6 +439,12 @@ public class WebsocketFacade {
         return writer.writeValueAsString(o);
     }
 
+    public void populateQueueDec() throws IOException {
+        if (pusher != null) {
+            pusher.trigger(GLOBAL_CHANNEL, "populateQueue-dec", 1);
+        }
+    }
+
     public void propagateNewPlayer(Player newPlayer) throws IOException {
         if (pusher != null) {
             User user = newPlayer.getUser();

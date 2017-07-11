@@ -64,6 +64,9 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
     private List<VariableInstance> privateInstances = new ArrayList<>();
 
+    @Transient
+    private Integer queueSize = 0;
+
     /**
      *
      * @Column(name = "user_id", nullable = true, insertable = false, updatable
@@ -101,6 +104,18 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
     private Status status = Status.WAITING;
 
+    @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     /**
      *
      * @Column(name = "parentteam_id", nullable = false, insertable = false,
@@ -131,6 +146,14 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         //this.userId = user.getId();
         this.team = team;
         //this.teamId = team.getId();
+    }
+
+    public Integer getQueueSize() {
+        return queueSize;
+    }
+
+    public void setQueueSize(Integer queueSize) {
+        this.queueSize = queueSize;
     }
 
     /**
@@ -277,6 +300,10 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @Override
     public Status getStatus() {
         return status;
+    }
+
+    public void setStatus(int i) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

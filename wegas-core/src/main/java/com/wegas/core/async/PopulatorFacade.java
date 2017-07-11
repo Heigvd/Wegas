@@ -181,6 +181,18 @@ public class PopulatorFacade {
         }
     }
 
+    public List<DatedEntity> getQueue() {
+        List<DatedEntity> queue = new ArrayList<>();
+        queue.addAll(teamFacade.findTeamsToPopulate());
+        queue.addAll(playerFacade.findPlayersToPopulate());
+        Collections.sort(queue, new EntityComparators.CreateTimeComparator());
+        return queue;
+    }
+
+    public int getQueueSize() {
+        return this.getQueue().size();
+    }
+
     public AbstractEntity getNextOwner(Populator currentCreator) {
         AbstractEntity owner = null;
 
@@ -218,6 +230,7 @@ public class PopulatorFacade {
                     populatorScheduler.removePopulator(currentCreator);
                     utx.rollback();
                 } else {
+                    websocketFacade.populateQueueDec();
                     utx.commit();
                 }
             } catch (Exception ex) {

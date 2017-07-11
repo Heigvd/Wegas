@@ -184,7 +184,7 @@
 
     &.card--coscenarist-permission {
         &.ng-leave {
-          animation: bounceOut 1s;
+            animation: bounceOut 1s;
         }
         .card__description {
             width:calc(100% - 464px);
@@ -216,13 +216,45 @@
                 border-top:solid 1px $border;
                 box-sizing:border-box;
             }
-	    }
+        }
     }
 
     &.card--player-session{
         .card__description{
             width:calc(100% - 276px); /* was 262px */
             box-sizing:border-box;
+        }
+
+        .card__actions {
+            .wait {
+                padding: 2px;
+                i {
+                    color: #666;
+                }
+            }
+        }
+
+        .card__actions.progressbar{
+            padding: 32px 16px;
+
+            .progressbar_full {
+                height:15px;
+                width:150px;
+                font-size: 10px;
+                border:1px solid #c3c3c3;
+                text-align: center;
+
+                .progressbar_progress {
+                    background-color:#7cddee;
+                    height: 100%; 
+                }
+
+                .progressbar_counter {
+                    height: 100%;
+                    width: 100%;
+                    margin-top :-12px;
+                }
+            }
         }
 
         @media screen and (max-width: 600px) { /* was 579px */
@@ -238,7 +270,7 @@
                     float:right;
                 }
             }
-	}
+        }
     }
 
     &.card--player-mini {

@@ -4,9 +4,28 @@
 	ng-class="{true:'card__description--one-line', false:'card__description--two-lines'}[team.gameFreeForAll]" >
     <div class="line line--primary">{{team.gameName}}</div>
     <div ng-if="!team.gameFreeForAll" class="line line--secondary">{{'PLAYER-CARD-TEAM-TITLE' | translate}} "{{team.name}}"</div>
-    <div>salut {{player(team).status}}</div>
 </div>
-<div class="card__actions">
+
+
+<div class="card__actions progressbar"
+    ng-if="player(team).queueSize > 1 && (player(team).status === 'WAITING' || player(team).status === 'RESCHEDULED')">
+    <div class="progressbar_full" >
+        <div class="progressbar_progress" style="width: {{player(team).alreadyWaited || 0}}%"></div>
+        <div class="progressbar_counter">
+            <span ng-if="player(team).timeToWait > 0">{{player(team).timeToWait}}s to go</span>
+        </div>
+    </div>
+</div>
+
+
+<div class="card__actions"
+    ng-if="(player(team).queueSize < 2 && player(team).status === 'WAITING' || player(team).status === 'RESCHEDULED') || player(team).status === 'PROCESSING' || player(team).status === 'SEC_PROCESSING' || player(team).status === 'DELETED' ">
+    <span class="wait"><i class="fa fa-3x fa-pulse fa-spinner"></i></span>
+</div>
+
+
+<div class="card__actions"
+    ng-if="player(team).status === 'LIVE' || player(team).status === 'FAILED'" >
     <!-- view team details button -->
     <a ng-if="!team.gameFreeForAll" 
        class="button button--small button--round button--default-reverse button--label-off button--team" 
@@ -18,20 +37,15 @@
        class="button button--small button--round button--default-reverse button--label-off button--trash"
        title="{{'PLAYER-CARD-LEAVE-BTN' | translate}}"
        confirmed-click="leave(team.id)"
-       ng-disabled="player(team).status !== 'LIVE' && player(team).status !== 'FAILED'"
        ng-confirm-click="{{'PLAYER-CARD-LEAVE-CONFIRM'| translate}}">
         <span class="button__label">{{'PLAYER-CARD-LEAVE-BTN'| translate}}</span>
     </a>
     <!-- Play button -->
     <a class="button button--small button--round button--default button--label-off button--play action--button" 
-       ng-disabled="player(team).status !== 'LIVE'"
+       ng-if="player(team).status === 'LIVE'"
        title="{{'PLAYER-CARD-PLAY-BTN'| translate}}" 
        href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" 
        target="_blank">
         <span class="button__label">{{'PLAYER-CARD-PLAY-BTN'| translate}}</span>
     </a>
-</div>
-
-<div class="card__actions" ng-if="player(team).status === 'FAILED'">
-    <p>FAILED -> retry </p>
 </div>

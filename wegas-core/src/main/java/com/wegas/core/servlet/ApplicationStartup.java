@@ -9,6 +9,7 @@ package com.wegas.core.servlet;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
+import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.WebsocketFacade;
 import javax.ejb.EJB;
@@ -40,6 +41,9 @@ public class ApplicationStartup extends HttpServlet {
     private ApplicationLifecycle applicationLifecycle;
 
     @Inject
+    private PopulatorScheduler populatorScheduler;
+
+    @Inject
     private HazelcastInstance hzInstance;
 
     @Override
@@ -68,6 +72,8 @@ public class ApplicationStartup extends HttpServlet {
          * Inform client webapp is running
          */
         applicationLifecycle.sendWegasReadyEvent();
+
+        populatorScheduler.startAllLocalPopulators();
     }
 
     @Override

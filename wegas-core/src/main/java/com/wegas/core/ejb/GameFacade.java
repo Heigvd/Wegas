@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
@@ -100,6 +101,9 @@ public class GameFacade extends BaseFacade<Game> {
     @Inject
     private PopulatorScheduler populatorScheduler;
 
+    @Inject
+    private PopulatorFacade populatorFacade;
+
     /**
      *
      */
@@ -181,8 +185,8 @@ public class GameFacade extends BaseFacade<Game> {
         if (!game.hasDebugTeam()) {
             DebugTeam debugTeam = new DebugTeam();
             debugTeam.setGame(game);
-            teamFacade.create(debugTeam);
             debugTeam.getPlayers().get(0).setStatus(Status.LIVE);
+            teamFacade.create(debugTeam);
             //Player get = debugTeam.getPlayers().get(0);
             //requestFacade.commit(get, false);
             //game.addTeam(new DebugTeam());
@@ -460,6 +464,8 @@ public class GameFacade extends BaseFacade<Game> {
 
         player = this.getEntityManager().merge(player);
         populatorScheduler.scheduleCreation();
+        int indexOf = populatorFacade.getQueue().indexOf(player);
+        player.setQueueSize(indexOf+1);
         return player;
     }
 
