@@ -25,15 +25,13 @@ const plugins = [
     }),
     // new webpack.optimize.ModuleConcatenationPlugin(), // webpack 3
     new webpack.optimize.CommonsChunkPlugin({
-        name: 'vendor',
-        // children: true,
-        // async: true,
+        name: 'bundle',
+        async: 'vendors',
         minChunks: function minChunks(module) {
-            return (
-                module.context && module.context.indexOf('node_modules') > -1
-            );
+            const context = module.context;
+            return context && context.indexOf('node_modules') > -1;
         }
-    }),
+    })
     // Causes trouble with YUI loader.
     // new webpack.optimize.CommonsChunkPlugin({
     //     name: 'manifest',
