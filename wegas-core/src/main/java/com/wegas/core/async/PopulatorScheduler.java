@@ -10,8 +10,8 @@ package com.wegas.core.async;
 import com.wegas.core.Helper;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -52,7 +52,7 @@ public class PopulatorScheduler {
     @Inject
     private Instance<Populator> myCreators;
 
-    private static final List<Populator> creators = new ArrayList<>();
+    private static final Map<Populator, Future<Integer>> creators = new HashMap<>();
 
     public void removePopulator(Populator currentCreator) {
         PopulatorScheduler.creators.remove(currentCreator);
@@ -71,8 +71,8 @@ public class PopulatorScheduler {
         // allowed to create more creators ?
         if (creators.size() < MAX_CREATORS) {
             Populator newCreator = myCreators.get();
-            creators.add(newCreator);
             future = managedExecutorService.submit(newCreator);
+            creators.put(newCreator, future);
         } else {
             logger.error("Maximum number of creators reached (" + MAX_CREATORS + ")");
         }
@@ -85,6 +85,12 @@ public class PopulatorScheduler {
             internalScheduleCreation();
             nbToCreate--;
         }
-        
+    }
+
+    public void waitForPopulators(){
+        for (Future<Integer> future : creators.values()){
+            //future.get();
+            future.cancel(true);
+        }
     }
 }

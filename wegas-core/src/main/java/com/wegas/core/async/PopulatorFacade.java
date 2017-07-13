@@ -77,6 +77,8 @@ public class PopulatorFacade {
     @Resource
     private UserTransaction utx;
 
+    private Boolean forceQuit = false;
+
     /**
      * Two-step team creation: second step
      *
@@ -93,7 +95,7 @@ public class PopulatorFacade {
 
             utx.commit();
         } catch (Exception ex) {
-            logger.error("Populate Team: Failure");
+            logger.error("Populate Team: Failure", ex);
             if (utx != null) {
                 try {
                     utx.rollback();
@@ -116,6 +118,9 @@ public class PopulatorFacade {
         try {
             utx.begin();
             Player player = playerFacade.find(playerId);
+            // Inform player's user its player is porocessing
+            
+            websocketFacade.propagateNewPlayer(player);
             Team team = teamFacade.find(player.getTeamId());
 
             gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
@@ -128,7 +133,7 @@ public class PopulatorFacade {
             websocketFacade.propagateNewPlayer(player);
 
         } catch (Exception ex) {
-            logger.error("Populate Player: Failure");
+            logger.error("Populate Player: Failure", ex);
             if (utx != null) {
                 try {
                     utx.rollback();
@@ -162,6 +167,10 @@ public class PopulatorFacade {
     private void postpone(Populatable p) {
         if (p.getStatus().equals(Status.SEC_PROCESSING)) {
             p.setStatus(Status.FAILED);
+            if (p instanceof Player) {
+                // Inform Lobby about failure
+                websocketFacade.propagateNewPlayer((Player) p);
+            }
         } else {
             p.setStatus(Status.RESCHEDULED);
         }
@@ -193,8 +202,15 @@ public class PopulatorFacade {
         return this.getQueue().size();
     }
 
+    public void forceQuit(){
+        this.forceQuit = true;
+    }
+
     public AbstractEntity getNextOwner(Populator currentCreator) {
         AbstractEntity owner = null;
+        if (forceQuit) {
+            return null;
+        }
 
         ILock lock = this.getLock();
         lock.lock();
