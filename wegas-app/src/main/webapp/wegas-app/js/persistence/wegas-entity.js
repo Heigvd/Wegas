@@ -402,7 +402,25 @@ YUI.add("wegas-entity", function(Y) {
     /**
      * Team mapper
      */
-    persistence.Team = Base.create("Team", persistence.Entity, [], {}, {
+    persistence.Team = Base.create("Team", persistence.Entity, [], {
+        getLivePlayer: function() {
+            var i, player;
+            for (i in this.get("players")) {
+                player = this.get("players")[i];
+                if (player.get("status") === "LIVE") {
+                    return player;
+                }
+            }
+            return null;
+        },
+        /**
+         * is the team live? ie does it contains at least one live player ?
+         * @returns {Boolean}
+         */
+        isLive: function() {
+            return this.getLivePlayer() !== null;
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "Team"
@@ -417,6 +435,9 @@ YUI.add("wegas-entity", function(Y) {
                 }
             },
             declaredSize: {
+                "transient": true
+            },
+            status: {
                 "transient": true
             },
             players: {
@@ -456,6 +477,9 @@ YUI.add("wegas-entity", function(Y) {
                 "transient": true
             },
             homeOrg: {
+                "transient": true
+            },
+            status: {
                 "transient": true
             }
         },
