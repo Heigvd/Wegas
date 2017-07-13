@@ -445,11 +445,15 @@ public class WebsocketFacade {
         }
     }
 
-    public void propagateNewPlayer(Player newPlayer) throws IOException {
+    public void propagateNewPlayer(Player newPlayer) {
         if (pusher != null) {
             User user = newPlayer.getUser();
             if (user != null) {
-                pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
+                try {
+                    pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
+                } catch (IOException ex) {
+                    logger.error("Error while propagating player");
+                }
             }
         }
     }
