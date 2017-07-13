@@ -311,7 +311,7 @@ YUI.add('wegas-dashboard', function(Y) {
                             do: bloc.do, //eval("(" + bloc.do + ")"),
                             kind: bloc.kind,
                             userCfg: bloc.userCfg,
-                            aPlayerId : data.aPlayerId,
+                            aPlayerId: data.aPlayerId,
                             ctx: ctx // context of onclick callback, i.e. the wegas-dashboard-teams-overview singleton
                         };
                         newBlocs.items.push(newBloc);
@@ -353,13 +353,26 @@ YUI.add('wegas-dashboard', function(Y) {
         // Centers button/titles if possible, otherwise hides them or reduces them inside their columns.
         _adjustTitles: function() {
             var cb = this.get(CONTENTBOX),
-                card = cb.one(".card"); // We pick just any card
+                toolbar = cb.get("parentNode").one(".wegas-toolbar"),
+                monitorTitle = toolbar.one(".monitoredDataTitle"),
+                monitoringBloc,
+                cards = cb.all(".card"),
+                i, card;
+            // We pick the first card which contains a monitor bloc
+
+            for (i = 0; i < cards.size(); i++) {
+                card = cards.item(i);
+                monitoringBloc = card.one(".card__blocs--monitoring");
+                if (monitoringBloc) {
+                    break;
+                } else {
+                    card = null;
+                }
+            }
             if (!card) {
                 return;
             }
-            var monitoringBloc = card.one(".card__blocs--monitoring"),
-                toolbar = cb.get("parentNode").one(".wegas-toolbar"),
-                monitorTitle = toolbar.one(".monitoredDataTitle");
+
             if (monitoringBloc) {
                 if (monitoringBloc.getY() === card.one(".card__blocs--action").getY()) {
                     // Horizontal space is sufficient:
