@@ -44,107 +44,107 @@ angular.module('wegas.service.wegasTranslations', [])
             },
             $get: function() {
                 var keywords = {
-                        'user': {
-                            singular: {
-                                en: "user",
-                                fr: "utilisateur"
-                            },
-                            plural: {
-                                en: "users",
-                                fr: "utilisateurs"
-                            }
+                    'user': {
+                        singular: {
+                            en: "user",
+                            fr: "utilisateur"
                         },
-                        'player': {
-                            singular: {
-                                en: "player",
-                                fr: "joueur"
-                            },
-                            plural: {
-                                en: "players",
-                                fr: "joueurs"
-                            }
-                        },
-                        'trainer': {
-                            singular: {
-                                en: "trainer",
-                                fr: "animateur"
-                            },
-                            plural: {
-                                en: "trainers",
-                                fr: "animateurs"
-                            }
-                        },
-                        'scenarist': {
-                            singular: {
-                                en: "scenarist",
-                                fr: "scénariste"
-                            },
-                            plural: {
-                                en: "scenarists",
-                                fr: "scénaristes"
-                            }
-                        },
-                        'admin': {
-                            singular: {
-                                en: "administrator",
-                                fr: "administrateur"
-                            },
-                            plural: {
-                                en: "administrators",
-                                fr: "administrateurs"
-                            }
-                        },
-                        'team': {
-                            singular: {
-                                en: "team",
-                                fr: "équipe"
-                            },
-                            plural: {
-                                en: "teams",
-                                fr: "équipes"
-                            }
-                        },
-                        'session': {
-                            singular: {
-                                en: "session",
-                                fr: "partie"
-                            },
-                            plural: {
-                                en: "sessions",
-                                fr: "parties"
-                            }
-                        },
-                        'scenario': {
-                            singular: {
-                                en: "scenario",
-                                fr: "scénario"
-                            },
-                            plural: {
-                                en: "scenarios",
-                                fr: "scénarios"
-                            }
-                        },
-                        'token': {
-                            singular: {
-                                en: "access key",
-                                fr: "clé d'accès"
-                            },
-                            plural: {
-                                en: "access keys",
-                                fr: "clés d'accès"
-                            }
-                        },
-                        'workspace': {
-                            singular: {
-                                en: "workspace",
-                                fr: "espace de travail"
-                            },
-                            plural: {
-                                en: "workspaces",
-                                fr: "espaces de travail"
-                            }
+                        plural: {
+                            en: "users",
+                            fr: "utilisateurs"
                         }
                     },
+                    'player': {
+                        singular: {
+                            en: "player",
+                            fr: "joueur"
+                        },
+                        plural: {
+                            en: "players",
+                            fr: "joueurs"
+                        }
+                    },
+                    'trainer': {
+                        singular: {
+                            en: "trainer",
+                            fr: "animateur"
+                        },
+                        plural: {
+                            en: "trainers",
+                            fr: "animateurs"
+                        }
+                    },
+                    'scenarist': {
+                        singular: {
+                            en: "scenarist",
+                            fr: "scénariste"
+                        },
+                        plural: {
+                            en: "scenarists",
+                            fr: "scénaristes"
+                        }
+                    },
+                    'admin': {
+                        singular: {
+                            en: "administrator",
+                            fr: "administrateur"
+                        },
+                        plural: {
+                            en: "administrators",
+                            fr: "administrateurs"
+                        }
+                    },
+                    'team': {
+                        singular: {
+                            en: "team",
+                            fr: "équipe"
+                        },
+                        plural: {
+                            en: "teams",
+                            fr: "équipes"
+                        }
+                    },
+                    'session': {
+                        singular: {
+                            en: "session",
+                            fr: "partie"
+                        },
+                        plural: {
+                            en: "sessions",
+                            fr: "parties"
+                        }
+                    },
+                    'scenario': {
+                        singular: {
+                            en: "scenario",
+                            fr: "scénario"
+                        },
+                        plural: {
+                            en: "scenarios",
+                            fr: "scénarios"
+                        }
+                    },
+                    'token': {
+                        singular: {
+                            en: "access key",
+                            fr: "clé d'accès"
+                        },
+                        plural: {
+                            en: "access keys",
+                            fr: "clés d'accès"
+                        }
+                    },
+                    'workspace': {
+                        singular: {
+                            en: "workspace",
+                            fr: "espace de travail"
+                        },
+                        plural: {
+                            en: "workspaces",
+                            fr: "espaces de travail"
+                        }
+                    }
+                },
                     startSentence = function(word) {
                         return word.charAt(0).toUpperCase() + word.slice(1);
                     };
@@ -212,11 +212,11 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Veuillez renseigner l'email et le mot de passe"
                         },
                         /*
-                        'CREATE-ACCOUNT-LABEL': {
-                            'en': "New user?",
-                            'fr': "Nouvel utilisateur ?"
-                        },
-                        */
+                         'CREATE-ACCOUNT-LABEL': {
+                         'en': "New user?",
+                         'fr': "Nouvel utilisateur ?"
+                         },
+                         */
                         'LOGIN-AAI-ACCOUNT-BTN': {
                             'en': "Recommended to AAI users:",
                             'fr': "Recommandé aux utilisateurs AAI:"
@@ -417,6 +417,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Error while joining " + keywords.session.singular.en,
                             'fr': "Erreur durant la tentative de rejoindre la " + keywords.session.singular.fr
                         },
+                        'COMMONS-TEAMS-JOIN-QUEUED': {
+                            'en': "Scheduled for initialization",
+                            'fr': "En attente de création"
+                        },
+                        'COMMONS-TEAMS-JOIN-PROCESSING': {
+                            'en': "In progress",
+                            'fr': "En cours de création"
+                        },
                         'COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO': {
                             'en': "You have already joined this " + keywords.session.singular.en,
                             'fr': "Vous avez déjà rejoint cette " + keywords.session.singular.fr
@@ -506,7 +514,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         // Referenced server side:
                         'COMMONS-SESSIONS-TAKEN-TOKEN-ERROR': {
-                            'en': "This access key is already used for another "  + keywords.session.singular.en,
+                            'en': "This access key is already used for another " + keywords.session.singular.en,
                             'fr': "Cette clé d'accès est déjà utilisée pour une autre " + keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR': {
@@ -1749,13 +1757,13 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Expression de la permission"
                         },
                         /*
-                        'UPGRADE-ACCOUNT': {
-                            'en': "You can start the game now. But if you want to keep this " + keywords.session.singular.en +
-                                  ", you should first login or create a user account.",
-                            'fr': "Vous pouvez commencer le jeu. Mais si vous voulez conserver cette " +
-                                  keywords.session.singular.fr + ", il faut d'abord vous connecter ou créer un compte."
-                        },
-                        */
+                         'UPGRADE-ACCOUNT': {
+                         'en': "You can start the game now. But if you want to keep this " + keywords.session.singular.en +
+                         ", you should first login or create a user account.",
+                         'fr': "Vous pouvez commencer le jeu. Mais si vous voulez conserver cette " +
+                         keywords.session.singular.fr + ", il faut d'abord vous connecter ou créer un compte."
+                         },
+                         */
                         // So Long, and Thanks for All the Fish
                         'END': {
                             'en': "This is the end",
@@ -1804,4 +1812,4 @@ angular.module('wegas.service.wegasTranslations', [])
             }
         };
     })
-;
+    ;
