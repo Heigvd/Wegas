@@ -169,6 +169,16 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         return players;
     }
 
+    @JsonIgnore
+    public Player getAnyLivePlayer(){
+        for (Player p : this.getPlayers()){
+            if (p.getStatus().equals(Populatable.Status.LIVE)){
+                return p;
+            }
+        }
+        return null;
+    }
+
     /**
      * @param p
      */
