@@ -632,13 +632,11 @@ public class RequestManager {
 
     /**
      * @param millis
+     * @throws java.lang.InterruptedException
      */
-    public void pleaseWait(long millis) {
+    public void pleaseWait(long millis) throws InterruptedException {
         if (millis > 0) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(millis);
-            } catch (InterruptedException ex) {
-            }
+            TimeUnit.MILLISECONDS.sleep(millis);
         }
     }
 
