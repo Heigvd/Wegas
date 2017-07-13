@@ -44,7 +44,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             return blocs;
         },
         _addActionsBlocs: function(blocs, team) {
-            var bloc;
+            var bloc, status;
             if (team.isLive()) {
                 bloc = {
                     "title": "Actions",
@@ -79,15 +79,38 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                         }]
                 };
             } else {
-                bloc = {
-                    "title": "Status",
-                    "cardBlocType": "monitoring",
-                    "items": [
-                        {
-                            "label": "Initialization in progress"
-                        }
-                    ]
-                };
+                status = team.getStatus();
+                if (status === "FAILED") {
+                    bloc = {
+                        "title": "Status",
+                        "cardBlocType": "monitoring",
+                        "items": [
+                            {
+                                "label": "Initialization failed"
+                            }
+                        ]
+                    };
+                } else if (status === "PROCESSING"){
+                    bloc = {
+                        "title": "Status",
+                        "cardBlocType": "monitoring",
+                        "items": [
+                            {
+                                "label": "Initialization in progress"
+                            }
+                        ]
+                    };
+                } else {
+                    bloc = {
+                        "title": "Status",
+                        "cardBlocType": "monitoring",
+                        "items": [
+                            {
+                                "label": "Queued"
+                            }
+                        ]
+                    };
+                }
             }
 
             blocs.push(bloc);

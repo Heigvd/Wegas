@@ -356,6 +356,7 @@ YUI.add('wegas-dashboard', function(Y) {
                 toolbar = cb.get("parentNode").one(".wegas-toolbar"),
                 monitorTitle = toolbar.one(".monitoredDataTitle"),
                 monitoringBloc,
+                actionBloc,
                 cards = cb.all(".card"),
                 i, card;
             // We pick the first card which contains a monitor bloc
@@ -363,9 +364,13 @@ YUI.add('wegas-dashboard', function(Y) {
             for (i = 0; i < cards.size(); i++) {
                 card = cards.item(i);
                 monitoringBloc = card.one(".card__blocs--monitoring");
-                if (monitoringBloc) {
+                actionBloc = card.one(".card__blocs--action");
+
+                if (monitoringBloc && actionBloc) {
                     break;
                 } else {
+                    monitoringBloc = null;
+                    actionBloc = null;
                     card = null;
                 }
             }
@@ -374,7 +379,7 @@ YUI.add('wegas-dashboard', function(Y) {
             }
 
             if (monitoringBloc) {
-                if (monitoringBloc.getY() === card.one(".card__blocs--action").getY()) {
+                if (monitoringBloc.getY() === actionBloc.getY()) {
                     // Horizontal space is sufficient:
                     monitorTitle.set("offsetWidth", monitoringBloc.get("offsetWidth") - 2); // Subtract a few pixels for vertical alignment despite borders etc.
                 } else {
