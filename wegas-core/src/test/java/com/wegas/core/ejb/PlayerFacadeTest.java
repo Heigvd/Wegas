@@ -76,14 +76,33 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         Game ng = gameFacade.find(g.getId());
         currentUser = userFacade.find(currentUser.getId());
         Assert.assertEquals(2, ng.getTeams().size());
-        Assert.assertEquals(2, ng.getTeams().get(1).getPlayers().size());
+
+        Team theTeam = null;
+        for (Team tIt : ng.getTeams()) {
+            if (!(tIt instanceof DebugTeam)) {
+                theTeam = tIt;
+                break;
+            }
+        }
+        Assert.assertNotNull(theTeam);
+        Assert.assertEquals(2, theTeam.getPlayers().size());
+
         Assert.assertEquals(2, currentUser.getPlayers().size());
 
         playerFacade.remove(p1.getId());
 
         ng = gameFacade.find(g.getId());
         Assert.assertEquals(2, ng.getTeams().size());
-        Assert.assertEquals(1, ng.getTeams().get(1).getPlayers().size());
+        theTeam = null;
+        for (Team tIt : ng.getTeams()) {
+            if (!(tIt instanceof DebugTeam)) {
+                theTeam = tIt;
+                break;
+            }
+        }
+        Assert.assertNotNull(theTeam);
+
+        Assert.assertEquals(1, theTeam.getPlayers().size());
 
         teamFacade.remove(t.getId());
 
