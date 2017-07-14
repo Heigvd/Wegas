@@ -8,21 +8,22 @@
 <div class="card__actions progressbar"
      ng-if="player(team).queueSize > 2 && (player(team).status === 'WAITING' || player(team).status === 'RESCHEDULED')">
     <div class="progressbar_full" 
-         title="{{'COMMONS-TEAMS-JOIN-QUEUED' | translate}} ({{player(team).queueSize}})">
+         title="{{'COMMONS-TEAMS-JOIN-QUEUED'| translate}} ({{player(team).queueSize}})">
         <div class="progressbar_progress" style="width: {{player(team).alreadyWaited || 0}}%"></div>
         <div class="progressbar_counter">
-            <span ng-if="player(team).timeToWait > 0">{{player(team).timeToWait}}s to go</span>
+            <span ng-if="player(team).timeToWait > 0">{{'COMMONS-TEAMS-JOIN-TIME-TO-GO'| translate:'{t: ' + (player(team).timeToWait || 0)+ '}'}}</span>
         </div>
     </div>
 </div>
 
 
+
 <div class="card__actions"
      ng-if="(player(team).queueSize <= 2 && player(team).status === 'WAITING' || player(team).status === 'RESCHEDULED') || player(team).status === 'PROCESSING' || player(team).status === 'SEC_PROCESSING' || player(team).status === 'DELETED'">
     <button class="button button--small button--round button--default-reverse button--label-off button--spinner fa-pulse"
-            title="{{'COMMONS-TEAMS-JOIN-PROCESSING' | translate}}"
-        ng-disabled="true">
-        <span class="button__label">{{'COMMONS-TEAMS-JOIN-PROCESSING' | translate}}</span>
+            title="{{'COMMONS-TEAMS-JOIN-PROCESSING'| translate}}"
+            ng-disabled="true">
+        <span class="button__label">{{'COMMONS-TEAMS-JOIN-PROCESSING'| translate}}</span>
     </button>
 </div>
 
@@ -30,9 +31,9 @@
      ng-if="player(team).status === 'FAILED'" >
 
     <button class="button button--small button--round button--danger-reverse button--label-off button--exclamation"
-            title="{{'COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR' | translate}}"
-        ng-disabled="true">
-        <span class="button__label">{{'COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR' | translate}}</span>
+            title="{{'COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR'| translate}}"
+            ng-disabled="true">
+        <span class="button__label">{{'COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR'| translate}}</span>
     </button>
     <!-- leave button -->
     <a id="leave-{{team.id}}"

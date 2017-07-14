@@ -421,6 +421,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Scheduled for initialization",
                             'fr': "En attente de création"
                         },
+                        'COMMONS-TEAMS-JOIN-TIME-TO-GO': {
+                            'en': "Still {{t}}s to go",
+                            'fr': "Encore {{t}}s"
+                        },
                         'COMMONS-TEAMS-JOIN-PROCESSING': {
                             'en': "In progress",
                             'fr': "En cours de création"
