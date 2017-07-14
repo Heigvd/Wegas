@@ -59,7 +59,7 @@ public class DelayedScriptEventFacade {
             // fire Script (ie base mechanism and static server script eval)
             scriptEventFacade.fire(p, payload.getEventName());
             // force FSM evaluation and make sur EntityManager has flush
-            requestFacade.commit(p, true);
+            requestFacade.commit(p);
 
             rm.markManagermentStartTime();
             /*

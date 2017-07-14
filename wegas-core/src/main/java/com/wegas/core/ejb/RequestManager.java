@@ -618,16 +618,12 @@ public class RequestManager {
         this.clear();
     }
 
-    public void commit(Player player, boolean clear) {
-        this.requestFacade.commit(player, clear);
-    }
-
     public void commit(Player player) {
-        this.requestFacade.commit(player, true);
+        this.requestFacade.commit(player);
     }
 
     public void commit() {
-        this.requestFacade.commit(this.getPlayer(), true);
+        this.requestFacade.commit(this.getPlayer());
     }
 
     /**

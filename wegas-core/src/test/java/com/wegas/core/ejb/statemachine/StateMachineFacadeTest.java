@@ -271,12 +271,12 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         /* player fire event twice */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
         RequestFacade rf = RequestFacade.lookup();
-        rf.commit(true);
+        rf.commit();
         assertEquals(INITIALVALUE + 5 + 10, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         /* player21 fire event only once */
         sf.eval(player21, new Script("JavaScript", "Event.fire('event');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(INITIALVALUE + 5, ((NumberInstance) vif.find(number.getId(), player21)).getValue(), .1);
         // Clean up
         vdf.remove(number.getId());
@@ -338,21 +338,21 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         /* player fire event  -> NO MOVE */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event twice and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         // Clean up
@@ -425,28 +425,28 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         /* player fire event  -> NO MOVE */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event twice and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event2');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 twice*/
         sf.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event2'); Event.fire('event2');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(101, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         // Clean up
@@ -517,28 +517,28 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         /* player fire event  -> NO MOVE */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event2');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(1, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(11, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         gmf.reset(gameModel.getId());
         rf.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         sf.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
-        rf.commit(true);
+        rf.commit();
         assertEquals(101, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         // Clean up

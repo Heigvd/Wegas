@@ -204,7 +204,7 @@ public class StateMachineITest extends AbstractEJBTest {
         scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value = 10"), null);
         rf.getRequestManager().setPlayer(null);
         rf.getRequestManager().setPlayer(player);
-        rf.commit(true);
+        rf.commit();
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
     }
@@ -228,7 +228,7 @@ public class StateMachineITest extends AbstractEJBTest {
         descriptorFacade.create(gameModel.getId(), trigger);
 
         sf.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
-        lookupBy(RequestFacade.class).commit(true);
+        lookupBy(RequestFacade.class).commit();
         Assert.assertEquals(ENDVAL, ((NumberInstance) instanceFacade.find(number.getId(), player.getId())).getValue(), 0);
     }
 

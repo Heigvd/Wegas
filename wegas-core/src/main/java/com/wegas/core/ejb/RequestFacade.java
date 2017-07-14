@@ -121,19 +121,15 @@ public class RequestFacade {
         }
     }
 
-//    public void reset() {
-//        this.getUpdatedInstances().clear();
-//    }
-    public void runStateMachines(Player player, boolean clear) {
-        gameModelFacade.runStateMachines(player, clear);
+    public void runStateMachines(Player player) {
+        gameModelFacade.runStateMachines(player);
     }
 
     /**
      *
      * @param player
-     * @param clear
      */
-    public void commit(Player player, boolean clear) {
+    public void commit(Player player) {
         /*
          * Flush is required to triggered EntityListener's lifecycles events which populate
          * requestManager touched (deleted, updated and so on) entities
@@ -143,7 +139,7 @@ public class RequestFacade {
         requestManager.getEntityManager().flush();
 
         if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
-            this.runStateMachines(player, clear);
+            this.runStateMachines(player);
             em.flush();
         }
     }
@@ -151,8 +147,8 @@ public class RequestFacade {
     /**
      *
      */
-    public void commit(boolean clear) {
-        this.commit(this.getPlayer(), clear);
+    public void commit() {
+        this.commit(this.getPlayer());
     }
 
     /**

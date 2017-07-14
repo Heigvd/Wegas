@@ -84,7 +84,7 @@ public class StateMachineController {
 
         checkPermissions(player.getGame().getId(), playerId);
         final StateMachineInstance stateMachineInstance = stateMachineFacade.doTransition(gameModelId, playerId, stateMachineDescriptorId, transitionId);
-        requestFacade.commit(player, true);
+        requestFacade.commit(player);
         return stateMachineInstance;
     }
 

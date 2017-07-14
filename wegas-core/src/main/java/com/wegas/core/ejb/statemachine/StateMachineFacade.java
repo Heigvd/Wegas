@@ -84,9 +84,8 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
 
     /**
      * @param target
-     * @param clear
      */
-    public void runStateMachines(InstanceOwner target, boolean clear) throws WegasScriptException {
+    public void runStateMachines(InstanceOwner target) throws WegasScriptException {
 
         List<Player> players;
         if (target == null || target.getPlayers() == null) {
@@ -118,7 +117,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         logger.debug("Received Reset event");
         getEntityManager().flush();
         for (Player player : players) {
-            this.runForPlayer(player, clear);
+            this.runForPlayer(player);
         }
     }
 
@@ -133,7 +132,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         return stateMachineDescriptors;
     }
 
-    private void runForPlayer(Player player, boolean clear) throws WegasScriptException {
+    private void runForPlayer(Player player) throws WegasScriptException {
         List<StateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
         List<Transition> passed = new ArrayList<>();
         //stateMachineEventsCounter = new InternalStateMachineEventCounter();
@@ -144,15 +143,10 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         Force resources release
          */
         getEntityManager().flush();
-        if (clear) {
-            requestManager.clear();
-        }
     }
 
     private Integer doSteps(Player player, List<Transition> passedTransitions, List<StateMachineDescriptor> stateMachineDescriptors, Integer steps) throws WegasScriptException {
 
-        //List<Script> impacts = new ArrayList<>();
-        //List<Script> preImpacts = new ArrayList<>();
         Map<StateMachineInstance, Transition> selectedTransitions = new HashMap<>();
 
         StateMachineInstance smi;
@@ -177,24 +171,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
                     continue;
                 } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;
-                    //} else if (transition.getTriggerCondition().getContent().contains("Event.fired")) { //TODO: better way to find out which are event transition.
-                    //if (passedTransitions.contains(transition)) {
-                    ///*
-                    //* Loop prevention : that player already passed through
-                    //* this transiton
-                    //*/
-                    //logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
-                    //} else {
-                    //try {
-                    //if (this.eventTransition(player, transition, sm, smi)) {
-                    //validTransition = true;
-                    //}
-                    //} catch (WegasScriptException ex) {
-                    //ex.setScript("Variable " + sm.getLabel());
-                    //requestManager.addException(ex);
-                    ////validTransition still false
-                    //}
-                    //}
                 } else {
                     try {
                         validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);

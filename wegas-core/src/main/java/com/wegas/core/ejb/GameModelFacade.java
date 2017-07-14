@@ -177,14 +177,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
     }
 
-    public void runStateMachines(InstanceOwner context){
-        this.runStateMachines(context, true);
-    }
-
-    public void runStateMachines(InstanceOwner context, boolean clear) {
+    public void runStateMachines(InstanceOwner context) {
         // Send reset envent to run state machines
-        //resetEvent.fire(new ResetEvent(context, clear));
-        stateMachineFacade.runStateMachines(context, clear);
+        stateMachineFacade.runStateMachines(context);
     }
 
     public void reviveScopeInstances(GameModel gameModel, AbstractScope aScope) {
