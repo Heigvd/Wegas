@@ -153,7 +153,7 @@ public class PopulatorFacade {
         }
     }
 
-    private ILock getLock() {
+    public ILock getLock() {
         return hzInstance.getLock("PopulatorSchedulerLock");
     }
 

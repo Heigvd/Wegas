@@ -7,10 +7,10 @@
  */
 package com.wegas.core.async;
 
+import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -53,6 +53,9 @@ public class PopulatorScheduler {
     @Inject
     private Instance<Populator> myCreators;
 
+    @Inject
+    private PopulatorFacade populatorFacade;
+
     private static final Map<Populator, Future<Integer>> creators = new HashMap<>();
 
     public void removePopulator(Populator currentCreator) {
@@ -69,17 +72,23 @@ public class PopulatorScheduler {
 
     protected Future<Integer> internalScheduleCreation() {
 
-        //Helper.printWegasStackTrace(new Exception());
-
         Future<Integer> future;
-        // allowed to create more creators ?
-        if (creators.size() < MAX_CREATORS) {
-            Populator newCreator = myCreators.get();
-            future = managedExecutorService.submit(newCreator);
-            creators.put(newCreator, future);
-        } else {
-            logger.error("Maximum number of creators reached (" + MAX_CREATORS + ")");
-            return creators.values().iterator().next();
+        ILock lock = populatorFacade.getLock();
+        lock.lock();
+        try {
+            //Helper.printWegasStackTrace(new Exception());
+
+            // allowed to create more creators ?
+            if (creators.size() < MAX_CREATORS) {
+                Populator newCreator = myCreators.get();
+                future = managedExecutorService.submit(newCreator);
+                creators.put(newCreator, future);
+            } else {
+                logger.error("Maximum number of creators reached (" + MAX_CREATORS + ")");
+                future = creators.values().iterator().next();
+            }
+        } finally {
+            lock.unlock();
         }
         return future;
     }
