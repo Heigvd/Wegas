@@ -12,6 +12,7 @@ import com.hazelcast.core.Member;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.WebsocketFacade;
+import io.prometheus.client.hotspot.DefaultExports;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -50,6 +51,11 @@ public class ApplicationStartup extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         logger.info("Servlet Startup");
+
+        websocketFacade.getOnlineUsers();
+        websocketFacade.updateOnlineUserMetric();
+
+        DefaultExports.initialize();
 
         /*
          * init member list
