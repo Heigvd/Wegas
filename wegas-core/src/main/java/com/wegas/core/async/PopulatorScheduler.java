@@ -56,7 +56,6 @@ public class PopulatorScheduler {
 
     public void removePopulator(Populator currentCreator) {
         PopulatorScheduler.creators.remove(currentCreator);
-        logger.error("remove populator: new size: " + creators.size());
     }
 
     public void scheduleCreation() {
