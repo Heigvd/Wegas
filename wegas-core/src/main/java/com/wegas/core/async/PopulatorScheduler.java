@@ -56,6 +56,7 @@ public class PopulatorScheduler {
 
     public void removePopulator(Populator currentCreator) {
         PopulatorScheduler.creators.remove(currentCreator);
+        logger.error("remove populator: new size: " + creators.size());
     }
 
     public void scheduleCreation() {
@@ -81,14 +82,14 @@ public class PopulatorScheduler {
 
     public void startAllLocalPopulators() {
         int nbToCreate = MAX_CREATORS - creators.size();
-        while (nbToCreate>0){
+        while (nbToCreate > 0) {
             internalScheduleCreation();
             nbToCreate--;
         }
     }
 
-    public void waitForPopulators(){
-        for (Future<Integer> future : creators.values()){
+    public void waitForPopulators() {
+        for (Future<Integer> future : creators.values()) {
             //future.get();
             future.cancel(true);
         }
