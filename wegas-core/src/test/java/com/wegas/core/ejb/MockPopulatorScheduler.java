@@ -36,4 +36,10 @@ public class MockPopulatorScheduler extends PopulatorScheduler {
             logger.error("EX: ", ex);
         }
     }
+
+    /**
+     * Do not start any populator at start
+     */
+    public void startAllLocalPopulators() {
+    }
 }
