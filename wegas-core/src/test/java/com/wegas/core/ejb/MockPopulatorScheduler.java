@@ -31,9 +31,7 @@ public class MockPopulatorScheduler extends PopulatorScheduler {
     public void scheduleCreation() {
         Future<Integer> scheduleCreation = super.internalScheduleCreation();
         try {
-            logger.error("WAIT");
             Integer get = scheduleCreation.get();
-            logger.error(" -> OK " + get);
         } catch (Exception ex) {
             logger.error("EX: ", ex);
         }

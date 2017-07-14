@@ -25,16 +25,13 @@ public class Populator implements Callable<Integer> {
         int count = 0;
 
         while ((owner = populatorFacade.getNextOwner(this)) != null) {
-            logger.error("POPULATE " + owner + " instances");
             if (owner instanceof Team) {
                 populatorFacade.populateTeam(owner.getId());
             } else if (owner instanceof Player) {
                 populatorFacade.populatePlayer(owner.getId());
             }
-            logger.error("  * " + owner + " completed");
             count++;
         }
-        logger.error("Populator ends with count :  " + count);
         return count;
     }
 
