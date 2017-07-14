@@ -115,7 +115,9 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         }
 
         logger.debug("Received Reset event");
-        getEntityManager().flush();
+        
+        //getEntityManager().flush();
+        
         for (Player player : players) {
             this.runForPlayer(player);
         }
@@ -142,7 +144,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         /*
         Force resources release
          */
-        getEntityManager().flush();
+        //getEntityManager().flush();
     }
 
     private Integer doSteps(Player player, List<Transition> passedTransitions, List<StateMachineDescriptor> stateMachineDescriptors, Integer steps) throws WegasScriptException {
