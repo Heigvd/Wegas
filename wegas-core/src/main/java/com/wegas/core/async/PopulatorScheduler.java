@@ -10,6 +10,7 @@ package com.wegas.core.async;
 import com.wegas.core.Helper;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -67,7 +68,10 @@ public class PopulatorScheduler {
     }
 
     protected Future<Integer> internalScheduleCreation() {
-        Future<Integer> future = null;
+
+        //Helper.printWegasStackTrace(new Exception());
+
+        Future<Integer> future;
         // allowed to create more creators ?
         if (creators.size() < MAX_CREATORS) {
             Populator newCreator = myCreators.get();
@@ -75,6 +79,7 @@ public class PopulatorScheduler {
             creators.put(newCreator, future);
         } else {
             logger.error("Maximum number of creators reached (" + MAX_CREATORS + ")");
+            return creators.values().iterator().next();
         }
         return future;
     }
