@@ -120,14 +120,6 @@
                 <!-- Page body, overridden in sub templates -->
                 <ui:insert name="body" />
 
-                <!-- Google Analytics -->
-                <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
-                    <ui:include src="template/googleanalytics.xhtml" />
-                </ui:fragment>
-
-                <!-- Uservoice -->
-                <!--<ui:include src="template/uservoice.xhtml" />-->
-
             </h:body>
         </ui:define>
     </ui:composition>

@@ -15,14 +15,13 @@ import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.UserFacade;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 
 /**
