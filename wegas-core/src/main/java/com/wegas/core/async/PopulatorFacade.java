@@ -77,7 +77,7 @@ public class PopulatorFacade {
     @Resource
     private UserTransaction utx;
 
-    private Boolean forceQuit = false;
+    static private Boolean forceQuit = false;
 
     /**
      * Two-step team creation: second step
@@ -119,7 +119,7 @@ public class PopulatorFacade {
             utx.begin();
             Player player = playerFacade.find(playerId);
             // Inform player's user its player is porocessing
-            
+
             websocketFacade.propagateNewPlayer(player);
             Team team = teamFacade.find(player.getTeamId());
 
@@ -202,15 +202,12 @@ public class PopulatorFacade {
         return this.getQueue().size();
     }
 
-    public void forceQuit(){
-        this.forceQuit = true;
+    public void setForceQuit(boolean forceQuit) {
+        this.forceQuit = forceQuit;
     }
 
     public AbstractEntity getNextOwner(Populator currentCreator) {
         AbstractEntity owner = null;
-        if (forceQuit) {
-            return null;
-        }
 
         ILock lock = this.getLock();
         lock.lock();
@@ -218,26 +215,32 @@ public class PopulatorFacade {
             try {
                 utx.begin();
 
-                List<DatedEntity> queue = new ArrayList<>();
-                queue.addAll(teamFacade.findTeamsToPopulate());
-                queue.addAll(playerFacade.findPlayersToPopulate());
+                if (forceQuit) {
+                    logger.info("Force Populator to quit");
+                    owner = null;
+                } else {
 
-                // sort by creationTime
-                Collections.sort(queue, new EntityComparators.CreateTimeComparator());
+                    List<DatedEntity> queue = new ArrayList<>();
+                    queue.addAll(teamFacade.findTeamsToPopulate());
+                    queue.addAll(playerFacade.findPlayersToPopulate());
 
-                // return oldest but skip player | player.team.status != 'LIVE'
-                for (DatedEntity pop : queue) {
-                    if (pop instanceof Team) {
-                        Team t = (Team) pop;
-                        this.markAsProcessing(t);
-                        owner = t;
-                        break;
-                    } else if (pop instanceof Player
-                            && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Status.LIVE)) {
-                        Player p = (Player) pop;
-                        this.markAsProcessing(p);
-                        owner = p;
-                        break;
+                    // sort by creationTime
+                    Collections.sort(queue, new EntityComparators.CreateTimeComparator());
+
+                    // return oldest but skip player | player.team.status != 'LIVE'
+                    for (DatedEntity pop : queue) {
+                        if (pop instanceof Team) {
+                            Team t = (Team) pop;
+                            this.markAsProcessing(t);
+                            owner = t;
+                            break;
+                        } else if (pop instanceof Player
+                                && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Status.LIVE)) {
+                            Player p = (Player) pop;
+                            this.markAsProcessing(p);
+                            owner = p;
+                            break;
+                        }
                     }
                 }
 

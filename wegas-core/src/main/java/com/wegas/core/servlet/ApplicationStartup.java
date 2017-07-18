@@ -85,7 +85,7 @@ public class ApplicationStartup extends HttpServlet {
     @Override
     public void destroy() {
 
-        populatorScheduler.waitForPopulators();
+        populatorScheduler.cancelLocalPopulating();
         
         // hZinstance is not in cluster anymore here, no way to detect if this instance is the last one
         int count = applicationLifecycle.countMembers();
