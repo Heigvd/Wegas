@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import static java.lang.Boolean.FALSE;
+import javax.persistence.Column;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
@@ -62,10 +63,12 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * Set this to true when the choice is to be selected with an HTML
      * radio/checkbox
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean cbx = FALSE;
     /**
      * Determines if choices are presented horizontally in a tabular fashion
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean tabular = FALSE;
     /**
      *
@@ -227,7 +230,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.getCbx()) {
             return instance.getValidated();
         } else {
-            return !instance.getReplies().isEmpty();
+            return !instance.getReplies(p).isEmpty();
         }
     }
 
@@ -316,7 +319,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.getCbx()) {
             return instance.getActive() && !instance.getValidated() ? 1 : 0;
         } else {
-            return instance.getActive() && instance.getReplies().isEmpty() ? 1 : 0;
+            return instance.getActive() && instance.getReplies(player).isEmpty() ? 1 : 0;
         }
     }
 }

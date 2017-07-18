@@ -12,12 +12,14 @@ import com.wegas.test.TestHelper;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.mcq.persistence.*;
 import org.junit.Test;
 
 import javax.naming.NamingException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -95,13 +97,13 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
         login(user);
         questionDescriptorFacade.selectChoice(choice1.getId(), player.getId());                       // Select reply and validate question
-        QuestionInstance qif = question.getInstance(player);
-        questionDescriptorFacade.validateQuestion(qif.getId(), player.getId());
+        QuestionInstance qi = question.getInstance(player);
+        questionDescriptorFacade.validateQuestion(qi.getId(), player.getId());
         assertEquals(10.0, ((NumberInstance) variableInstanceFacade.find(myNumber1.getId(), player.getId())).getValue(), 0.1);
         assertEquals(50.0, ((NumberInstance) variableInstanceFacade.find(myNumber2.getId(), player.getId())).getValue(), 0.1);
 
-        qif = (QuestionInstance) variableInstanceFacade.find(qif.getId());
-        assertEquals(2, qif.getReplies().size());
+        qi = (QuestionInstance) variableInstanceFacade.find(qi.getId());
+        assertEquals(2, qi.getReplies().size());
 
         login(trainer);
         variableDescriptorFacade.duplicate(question.getId());                                        // Test duplication of question
@@ -125,13 +127,14 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         Result r = new Result("result");
         r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10"));
         choice.addResult(r);
+        
         variableDescriptorFacade.createChild(question.getId(), choice);
         TestHelper.wipeEmCache();
         final Reply reply = questionDescriptorFacade.selectChoice(choice.getId(), player.getId());
         assertEquals(((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0, 0.0); // Nothing happened
         assertEquals(((QuestionInstance) variableInstanceFacade.find(question.getId(), player.getId())).getReplies().size(), 1);
         final Reply reply1 = questionDescriptorFacade.cancelReply(player.getId(), reply.getId());
-        assertEquals(0, reply1.getQuestionInstance().getReplies().size());
+        assertEquals(0, reply1.getChoiceInstance().getReplies().size());
         assertEquals(((QuestionInstance) variableInstanceFacade.find(question.getId(), player.getId())).getReplies().size(), 0);
         variableDescriptorFacade.remove(question.getId());
     }
@@ -231,7 +234,8 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testRemoveResponse2() throws NamingException {
+    public void testRemoveCurrentResult() throws NamingException {
+
         // Create a question descriptor
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
@@ -252,6 +256,60 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         // Set the second as default
         choice.changeCurrentResult(choice.getDefaultInstance(), r2);
         choice = (ChoiceDescriptor) variableDescriptorFacade.update(choice.getId(), choice);
+        
+        choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
+        
+        // and remove it
+        choice.getResults().remove(1);
+        variableDescriptorFacade.update(choice.getId(), choice);
+
+        assertEquals("result", ((ChoiceDescriptor) variableDescriptorFacade.find(choice.getId())).getResults().get(0).getName());
+        variableDescriptorFacade.remove(question.getId());
+    }
+
+
+    @Test
+    public void testChangeResultAndScope() throws NamingException {
+
+        // Create a question descriptor
+        QuestionDescriptor question = new QuestionDescriptor();
+        question.setDefaultInstance(new QuestionInstance());
+        variableDescriptorFacade.create(gameModel.getId(), question);
+
+        // Add a choice descriptor and 3 replies
+        ChoiceDescriptor choice = new ChoiceDescriptor();
+        choice.setDefaultInstance(new ChoiceInstance());
+        Result r = new Result("result");
+        choice.addResult(r);
+        Result r2 = new Result("result");
+        choice.addResult(r2);
+        Result r3 = new Result("result");
+        choice.addResult(r3);
+        choice.getDefaultInstance().setCurrentResultName("result");
+
+        variableDescriptorFacade.createChild(question.getId(), choice);
+
+        choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
+        ChoiceInstance instance20 = choice.getInstance(player2);
+        ChoiceInstance instance21 = choice.getInstance(player21);
+
+        assertEquals("TeamScoped instance is no the same !", instance20, instance21);
+        assertEquals("Current result does not match", "result", instance20.getCurrentResult().getName());
+ 
+        // Set the second result as default
+        // Change from teamScope to playerscope
+        choice.changeCurrentResult(choice.getDefaultInstance(), r2);
+        choice.setScope(new PlayerScope());
+        choice = (ChoiceDescriptor) variableDescriptorFacade.update(choice.getId(), choice);
+        
+        choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
+        instance20 = choice.getInstance(player2);
+        instance21 = choice.getInstance(player21);
+
+        assertFalse("PlayerScoped instances are the same !", instance20.equals(instance21));
+       
+        assertEquals("Current result does not match", "result_2", instance20.getCurrentResult().getName());
+        assertEquals("Current result does not match", "result_2", instance21.getCurrentResult().getName());
 
         // and remove it
         choice.getResults().remove(1);

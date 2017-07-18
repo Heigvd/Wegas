@@ -7,8 +7,6 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;

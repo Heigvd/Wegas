@@ -10,7 +10,6 @@ package com.wegas.core;
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -714,17 +713,6 @@ public class Helper {
     }
 
     /**
-     * Generation Pusher token for a target
-     *
-     * @param target
-     *
-     * @return channel name
-     */
-    public static String getAudienceToken(BroadcastTarget target) {
-        return target.getChannel();
-    }
-
-    /**
      * Generate random lowercase letters (a-z) of given length
      *
      * @param length number of letters to return (max 50)
@@ -802,5 +790,18 @@ public class Helper {
         } else {
             logger.error("No cluster (null)");
         }
+    }
+
+
+    public static void printWegasStackTrace(Throwable t) {
+        StringBuilder sb = new StringBuilder(t.getClass().getName());
+        sb.append(" - ").append(t.getMessage());
+        for (StackTraceElement elem : t.getStackTrace()) {
+            if (elem.getClassName().startsWith("com.wegas")) {
+                sb.append("\n\tat ");
+                sb.append(elem);
+            }
+        }
+        logger.error(sb.toString());
     }
 }

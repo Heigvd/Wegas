@@ -12,6 +12,7 @@ import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 ////import javax.xml.bind.annotation.XmlTransient;
@@ -39,6 +40,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     /**
      *
      */
+    @Column(columnDefinition = "integer default 20")
     private Integer historySize;
 
     /**

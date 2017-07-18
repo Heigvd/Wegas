@@ -25,12 +25,16 @@ import com.wegas.core.security.persistence.User;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class PlayerFacadeTest extends AbstractEJBTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlayerFacadeTest.class);
 
     /**
      * Test registeredGames
@@ -56,21 +60,49 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         Team t = new Team("team");
         t.setGame(g);
         teamFacade.create(t);
+
         Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().size()); // debugTeam and team
 
         Player p1 = gameFacade.joinTeam(t.getId(), user.getId());
+        
         Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1
 
         login(user2);
         Player p2 = gameFacade.joinTeam(t.getId(), user2.getId());
-        Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1 and p2
-        Assert.assertEquals(2, userFacade.getCurrentUser().getPlayers().size()); //user plays to game as player2 and to g as p2
+
+
+        Game ng = gameFacade.find(g.getId());
+
+        User currentUser = userFacade.find(user2.getId());
+        Assert.assertEquals(2, ng.getTeams().size());
+
+        Team theTeam = null;
+        for (Team tIt : ng.getTeams()) {
+            if (!(tIt instanceof DebugTeam)) {
+                theTeam = tIt;
+                break;
+            }
+        }
+        Assert.assertNotNull(theTeam);
+        Assert.assertEquals(2, theTeam.getPlayers().size());
+
+        Assert.assertEquals(2, currentUser.getPlayers().size());
 
         login(user);
         playerFacade.remove(p1.getId());
 
-        Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().size()); // debugTeam and team
-        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p2 only
+        ng = gameFacade.find(g.getId());
+        Assert.assertEquals(2, ng.getTeams().size());
+        theTeam = null;
+        for (Team tIt : ng.getTeams()) {
+            if (!(tIt instanceof DebugTeam)) {
+                theTeam = tIt;
+                break;
+            }
+        }
+        Assert.assertNotNull(theTeam);
+
+        Assert.assertEquals(1, theTeam.getPlayers().size());
 
         login(user2);
         playerFacade.remove(p2.getId()); //removing the last player in team leads to team deletion
@@ -85,6 +117,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
     //@Test
     public void getInstances() {
+        logger.error("Da TEST");
         TextDescriptor gmScoped = new TextDescriptor();
         gmScoped.setName("gmScoped");
         gmScoped.setScope(new GameModelScope());
@@ -105,6 +138,8 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         pScoped.setScope(new PlayerScope());
         pScoped.setDefaultInstance(new TextInstance());
 
+        logger.error("CREATE NEW DESCRIPTORS");
+
         variableDescriptorFacade.create(gameModel.getId(), gmScoped);
         variableDescriptorFacade.create(gameModel.getId(), gScoped);
         variableDescriptorFacade.create(gameModel.getId(), tScoped);
@@ -112,10 +147,20 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
         List<VariableInstance> instances = playerFacade.getInstances(player.getId());
 
+        /* One global instance */
         Assert.assertEquals(1, gameModelFacade.find(gameModel.getId()).getPrivateInstances().size());
+
+        /* One quite-global instance */
         Assert.assertEquals(1, gameFacade.find(game.getId()).getPrivateInstances().size());
+
+        /* each team own one instance */
         Assert.assertEquals(1, teamFacade.find(team.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, teamFacade.find(team2.getId()).getPrivateInstances().size());
+
+        /* each player owns one instance */
         Assert.assertEquals(1, playerFacade.find(player.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, playerFacade.find(player2.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, playerFacade.find(player21.getId()).getPrivateInstances().size());
 
         Assert.assertEquals(4, instances.size());
     }

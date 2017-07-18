@@ -19,6 +19,7 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.Column;
 
 ////import javax.xml.bind.annotation.XmlRootElement;
 ////import javax.xml.bind.annotation.XmlTransient;
@@ -42,6 +43,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      *
      */
     @JsonView(Views.EditorI.class)
+    @Column(columnDefinition = "boolean default false")
     private Boolean disableSelf = true;
     /**
      *
@@ -156,20 +158,21 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         if (a instanceof TriggerDescriptor) {
             TriggerDescriptor entity = (TriggerDescriptor) a;
 
-            entity.buildStateMachine();
             this.setOneShot(entity.oneShot);
             this.setDisableSelf(entity.disableSelf);
             this.setPostTriggerEvent(entity.postTriggerEvent);
             this.setTriggerEvent(entity.triggerEvent);
 
             // HACK Restore Version Number
-            Long initialStateVersion = this.getStates().get(1L).getVersion();
-            Long finalStateVersion = this.getStates().get(2L).getVersion();
+            //Long initialStateVersion = this.getStates().get(1L).getVersion();
+            //Long finalStateVersion = this.getStates().get(2L).getVersion();
 
+            entity.setStates(this.getStates());
             super.merge(entity);
 
-            this.getStates().get(1L).setVersion(initialStateVersion);
-            this.getStates().get(2L).setVersion(finalStateVersion);
+            entity.buildStateMachine();
+            //this.getStates().get(1L).setVersion(initialStateVersion);
+            //this.getStates().get(2L).setVersion(finalStateVersion);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IAtomicLong;
 import com.hazelcast.core.ILock;
@@ -25,10 +26,14 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.PusherChannelExistenceWebhook;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
 import com.wegas.core.security.util.SecurityHelper;
+import fish.payara.micro.cdi.Inbound;
+import fish.payara.micro.cdi.Outbound;
+import io.prometheus.client.Gauge;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +57,8 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -59,6 +66,8 @@ import java.util.zip.GZIPOutputStream;
 @Stateless
 @LocalBean
 public class WebsocketFacade {
+
+    private static final Gauge onlineUsersGauge = Gauge.build().name("online_users").help("Number of onlineusers").register();
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
 
@@ -76,6 +85,13 @@ public class WebsocketFacade {
 
     @Inject
     private HazelcastInstance hazelcastInstance;
+
+    private static final String COMMANDS_EVENT = "WF_UPDATE_OU_METRIC";
+    private static final String UPDATE_OU_METRIC_CMD = "WF_UPDATE_OU_METRIC";
+
+    @Inject
+    @Outbound(eventName = COMMANDS_EVENT, loopBack = true)
+    private Event<String> commands;
 
     private static final String UPTODATE_KEY = "onlineUsersUpTpDate";
     private static final String LOCKNAME = "WebsocketFacade.onlineUsersLock";
@@ -424,6 +440,32 @@ public class WebsocketFacade {
         }
     }
 
+    public final String toJson(Object o) throws IOException {
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        //ObjectWriter writerWithView = mapper.writerWithView(Views.class);
+        ObjectWriter writer = mapper.writer();
+        return writer.writeValueAsString(o);
+    }
+
+    public void populateQueueDec() throws IOException {
+        if (pusher != null) {
+            pusher.trigger(GLOBAL_CHANNEL, "populateQueue-dec", 1);
+        }
+    }
+
+    public void propagateNewPlayer(Player newPlayer) {
+        if (pusher != null) {
+            User user = newPlayer.getUser();
+            if (user != null) {
+                try {
+                    pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
+                } catch (IOException ex) {
+                    logger.error("Error while propagating player");
+                }
+            }
+        }
+    }
+
     private void fallback(ClientEvent clientEvent, String audience, final String socketId) {
         if (clientEvent instanceof EntityUpdatedEvent) {
             this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
@@ -503,6 +545,7 @@ public class WebsocketFacade {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
+                    updateOnlineUserMetric();
                 }
             }
 
@@ -548,6 +591,11 @@ public class WebsocketFacade {
     private void registerUser(User user) {
         if (user != null && !onlineUsers.containsKey(user.getId())) {
             onlineUsers.put(user.getId(), new OnlineUser(user));
+
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+            if (onlineUsersUpToDate.get() == 1) {
+                updateOnlineUserMetric();
+            }
         }
     }
 
@@ -555,27 +603,31 @@ public class WebsocketFacade {
      * Build initial onlineUser list from pusher channels list
      */
     private void initOnlineUsers() {
-        try {
-            this.clearOnlineUsers();
+        if (pusher != null) {
+            try {
+                this.clearOnlineUsers();
 
-            Result get = pusher.get("/channels");
-            String message = get.getMessage();
+                Result get = pusher.get("/channels");
+                String message = get.getMessage();
 
-            ObjectMapper mapper = JacksonMapperProvider.getMapper();
-            HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
-            HashMap<String, Object> channels = readValue.get("channels");
+                ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
+                HashMap<String, Object> channels = readValue.get("channels");
 
-            for (String channel : channels.keySet()) {
-                this.registerUser(this.getUserFromChannel(channel));
+                for (String channel : channels.keySet()) {
+                    this.registerUser(this.getUserFromChannel(channel));
+                }
+
+                if (maintainLocalListUpToDate) {
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    onlineUsersUpToDate.set(1);
+                }
+
+                updateOnlineUserMetric();
+
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            if (maintainLocalListUpToDate) {
-                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-                onlineUsersUpToDate.set(1);
-            }
-
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -583,42 +635,46 @@ public class WebsocketFacade {
      * Build initial onlineUser list from pusher channels list
      */
     public void syncOnlineUsers() {
-        try {
-            Result get = pusher.get("/channels");
-            String message = get.getMessage();
+        if (pusher != null) {
+            try {
+                Result get = pusher.get("/channels");
+                String message = get.getMessage();
 
-            ObjectMapper mapper = JacksonMapperProvider.getMapper();
-            HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
-            HashMap<String, Object> channels = readValue.get("channels");
+                ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
+                HashMap<String, Object> channels = readValue.get("channels");
 
-            /*
+                /*
              * Assert all online users are in the local list
-             */
-            for (String channel : channels.keySet()) {
-                this.registerUser(this.getUserFromChannel(channel));
-            }
+                 */
+                for (String channel : channels.keySet()) {
+                    this.registerUser(this.getUserFromChannel(channel));
+                }
 
-            /*
+                /*
              * Detect no longer online user still in the local list
              * and remove them
-             */
-            Iterator<Cache.Entry<Long, OnlineUser>> it = onlineUsers.iterator();
-            while (it.hasNext()) {
-                Cache.Entry<Long, OnlineUser> next = it.next();
-                if (next.getKey() != null) {
-                    if (!channels.containsKey(getChannelFromUserId(next.getKey()))){
-                        it.remove();
+                 */
+                Iterator<Cache.Entry<Long, OnlineUser>> it = onlineUsers.iterator();
+                while (it.hasNext()) {
+                    Cache.Entry<Long, OnlineUser> next = it.next();
+                    if (next.getKey() != null) {
+                        if (!channels.containsKey(getChannelFromUserId(next.getKey()))) {
+                            it.remove();
+                        }
                     }
                 }
-            }
 
-            if (maintainLocalListUpToDate) {
-                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-                onlineUsersUpToDate.set(1);
-            }
+                updateOnlineUserMetric();
 
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+                if (maintainLocalListUpToDate) {
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    onlineUsersUpToDate.set(1);
+                }
+
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -677,4 +733,15 @@ public class WebsocketFacade {
         }
     }
 
+    public void updateOnlineUserMetric() {
+        logger.error("FIRE COMMAND");
+        commands.fire(UPDATE_OU_METRIC_CMD);
+    }
+
+    public void onOnlineUserMetric(@Inbound(eventName = COMMANDS_EVENT) @Observes String command) {
+        logger.error("RECEIVE COMMAND");
+        if (UPDATE_OU_METRIC_CMD.equals(command)) {
+            onlineUsersGauge.set(this.getLocalOnlineUsers().size());
+        }
+    }
 }

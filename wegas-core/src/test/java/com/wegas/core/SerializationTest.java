@@ -275,8 +275,9 @@ public class SerializationTest {
         singleResult.addResult(result21);
 
         Reply reply = new Reply();
-        questionI.addReply(reply);
-        reply.setQuestionInstance(questionI);
+        choiceI.addReply(reply);
+        reply.setChoiceInstance(choiceI);
+        result11.addReply(reply);
         reply.setResult(result11);
 
         assertPropertyEquals(mapper.writeValueAsString(questionD), "@class", "QuestionDescriptor");
@@ -419,7 +420,11 @@ public class SerializationTest {
         exceptions.add(new WegasScriptException("var a = truc;", 123, "OUPS"));
 
         List<AbstractEntity> instances = new ArrayList<>();
-        instances.add(new NumberInstance(1));
+        NumberDescriptor numberDescriptor = new NumberDescriptor("y");
+        NumberInstance numberInstance = new NumberInstance(0.0);
+        numberDescriptor.setDefaultInstance(numberInstance);
+        numberInstance.setDefaultDescriptor(numberDescriptor);
+        instances.add(numberInstance);
 
         EntityUpdatedEvent update = new EntityUpdatedEvent(instances);
 

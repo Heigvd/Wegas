@@ -14,7 +14,6 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -30,6 +29,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -46,7 +46,7 @@ import org.apache.shiro.SecurityUtils;
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")
     ,
     @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")})
-public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, BroadcastTarget {
+public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner {
 
     private static final long serialVersionUID = 1L;
 
@@ -87,7 +87,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Enumerated(value = EnumType.STRING)
-    @Column(length = 24)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
     /**
@@ -102,6 +102,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
 
     /**
@@ -225,14 +226,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.setPages(map);
     }
 
-    /**
-     * @param context
-     */
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
-        for (VariableDescriptor vd : this.getVariableDescriptors()) {
-            vd.propagateDefaultInstance(context, create);
-        }
-    }
 
     /**
      *

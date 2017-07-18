@@ -52,6 +52,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @param <T>
@@ -225,6 +226,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     protected String name;
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {
@@ -524,7 +526,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *                context. It may be an instance of GameModel, Game, Team,
      *                or Player
      */
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         int sFlag = 0;
         if (scope instanceof GameModelScope) { // gms
             sFlag = 4;
@@ -545,13 +547,22 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
     }
 
+    public void createInstances(InstanceOwner instanceOwner) {
+        if ((scope instanceof GameModelScope && instanceOwner instanceof GameModel)
+                || (scope instanceof GameScope && instanceOwner instanceof Game)
+                || (scope instanceof TeamScope && instanceOwner instanceof Team)
+                || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
+            scope.propagateDefaultInstance(instanceOwner, true);
+        }
+    }
+
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        //logger.error("CHANNEL TOKEN: " + Helper.getAudienceToken(this.getGameModel()));
-        map.put(Helper.getAudienceToken(this.getGameModel()), entities);
+        //logger.error("CHANNEL TOKEN: " + this.getGameModel().getChannel());
+        map.put(this.getGameModel().getChannel(), entities);
         return map;
     }
 

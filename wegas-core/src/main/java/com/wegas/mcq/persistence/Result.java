@@ -51,6 +51,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     private static final long serialVersionUID = 1L;
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {
@@ -127,17 +128,17 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * This link is here so the reference is updated on remove.
      */
-    @OneToMany(mappedBy = "currentResult", cascade = CascadeType.MERGE)
-    //@XmlTransient
+    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<ChoiceInstance> choiceInstances = new ArrayList<>();
+    private CurrentResult currentResult;
+
     /**
      * This field is here so deletion will be propagated to replies.
      */
-    @OneToMany(mappedBy = "result", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
     //@XmlTransient
     @JsonIgnore
-    private List<Reply> replies;
+    private Replies replies;
 
     /**
      *
@@ -201,17 +202,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         }
     }
 
-    //    @PreRemove
-//    private void preRemove() {                                                  // When a response is destroyed
-//
-//        for (ChoiceInstance c : this.getChoiceInstances()) {                    // remove it from all the instance it is the current result
-//            c.setCurrentResult(null);
-//            c.setCurrentResultId(null);
-//        }
-//        while (!this.getChoiceInstances().isEmpty()) {
-//            this.getChoiceInstances().remove(0);
-//        }
-//    }
     @Override
     public Long getId() {
         return this.id;
@@ -353,27 +343,37 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     //@XmlTransient
     @JsonIgnore
     public List<ChoiceInstance> getChoiceInstances() {
-        return choiceInstances;
-    }
-
-    /**
-     * @param choiceInstances the choiceInstances to set
-     */
-    public void setChoiceInstances(List<ChoiceInstance> choiceInstances) {
-        this.choiceInstances = choiceInstances;
+        return currentResult.getChoiceInstances();
     }
 
     public void addChoiceInstance(ChoiceInstance choiceInstance) {
-        if (!this.choiceInstances.contains(choiceInstance)) {
-            this.choiceInstances.add(choiceInstance);
+        if (this.currentResult == null) {
+            this.currentResult = new CurrentResult();
+            this.currentResult.setResult(this);
+        }
+
+        if (!this.currentResult.getChoiceInstances().contains(choiceInstance)) {
+            this.currentResult.getChoiceInstances().add(choiceInstance);
         }
     }
 
     public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
-        return this.choiceInstances.remove(choiceInstance);
+        return this.currentResult.remove(choiceInstance);
+    }
+
+    public CurrentResult getCurrentResult() {
+        return currentResult;
+    }
+
+    public Replies getReplies() {
+        return replies;
     }
 
     public void addReply(Reply reply) {
+        if (replies == null) {
+            replies = new Replies();
+            replies.setResult(this);
+        }
         this.replies.add(reply);
     }
 
@@ -386,9 +386,11 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         VariableInstanceFacade vif = beans.getVariableInstanceFacade();
 
         for (ChoiceInstance cInstance : this.getChoiceInstances()) {
-            cInstance = (ChoiceInstance) vif.find(cInstance.getId());
             if (cInstance != null) {
-                cInstance.setCurrentResult(null);
+                cInstance = (ChoiceInstance) vif.find(cInstance.getId());
+                if (cInstance != null) {
+                    cInstance.setCurrentResult(null);
+                }
             }
         }
     }
@@ -399,7 +401,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
          * frontier-land entity... Modifing fields requires return
          * this.getChoiceDescriptor().getRequieredUpdatePermission(); but
          * updating replied or choiceInstance should be allow for player too...
-         *
+         * <p>
          */
         return null;
     }
@@ -407,5 +409,17 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Override
     public String getRequieredReadPermission() {
         return this.getChoiceDescriptor().getRequieredReadPermission();
+    }
+
+    @PrePersist
+    private void prePersist() {
+        if (replies == null) {
+            replies = new Replies();
+            replies.setResult(this);
+        }
+        if (currentResult == null) {
+            currentResult = new CurrentResult();
+            currentResult.setResult(this);
+        }
     }
 }

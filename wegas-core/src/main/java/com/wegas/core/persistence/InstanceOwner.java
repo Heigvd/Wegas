@@ -13,18 +13,35 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
 
 /**
- * Kind of instances owner
- * 
+ * Defined some method related to instances owners
+ *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public interface BroadcastTarget {
+public interface InstanceOwner {
 
+    /**
+     * 
+     * @return instance owner must have an id
+     */
+    public Long getId();
+
+    /**
+     *
+     * Pusher channel to use for this owner
+     *
+     * @return
+     */
     public String getChannel();
 
+    /**
+     * Fetch all players involved
+     *
+     * @return all players who have access to the owner instances
+     */
     public List<Player> getPlayers();
 
     /**
-     * Return instances that belongs to this target
+     * Return instances that belongs to this target only
      *
      * @return
      */

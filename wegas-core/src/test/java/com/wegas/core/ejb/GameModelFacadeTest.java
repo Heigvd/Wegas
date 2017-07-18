@@ -85,9 +85,8 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         teamFacade.create(g.getId(), t);
         Assert.assertNotNull(t.getId());
 
-        Player p = new Player();
+        Player p = gameFacade.joinTeam(t.getId(), "John A. Player");
 
-        playerFacade.create(t.getId(), p);
         Assert.assertNotNull(p.getId());
 
         gameModelFacade.remove(gameModel.getId());

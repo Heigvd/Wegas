@@ -337,7 +337,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     'treeleaf:click',
                     function(e) {
                         if (e.node.path) {
-                            this.fire('fileSelected', { node: e.node });
+                            this.fire('fileSelected', { node: e.node }, e.node.path);
                         }
                     },
                     this

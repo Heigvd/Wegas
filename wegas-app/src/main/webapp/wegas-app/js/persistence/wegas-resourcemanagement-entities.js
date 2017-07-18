@@ -192,16 +192,48 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             value: true
                         }
                     },
-                    confidence: {
-                        name: NUMBER,
-                        optional: false,
-                        type: STRING,
+                    /*
+                     confidence: {
+                     name: NUMBER,
+                     optional: false,
+                     type: STRING,
+                     _inputex: {
+                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                     label: "Initial confidence",
+                     value: 100
+                     }
+                     },
+                     */
+                    assignments: {
+                        type: ARRAY,
                         _inputex: {
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                            label: "Initial confidence",
-                            value: 100
+                            _type: HIDDEN,
+                            value: []
                         }
                     },
+                    activities: {
+                        type: ARRAY,
+                        _inputex: {
+                            _type: HIDDEN,
+                            value: []
+                        }
+                    },
+                    /* FORM2 : 
+                     activities: {
+                     type: ARRAY,
+                     value: [],
+                     view: {
+                     type: HIDDEN,
+                     }
+                     },
+                     assignments: {
+                     type: ARRAY,
+                     value: [],
+                     view: {
+                     type: HIDDEN,
+                     }
+                     }
+                     */
                     occupations: {
                         type: ARRAY,
                         _inputex: {
@@ -970,7 +1002,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 type: ARRAY,
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        return a.get("createdTime") - b.get("createdTime");
+                        // TODO natural sort
+                        return a.get("name").localeCompare(b.get("name"));
                     });
                     return v;
                 },
@@ -980,12 +1013,19 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     });
 
     persistence.Iteration = Y.Base.create("Iteration", persistence.Entity, [], {
-        getTaskInstances: function() {
-            var ids = this.get("taskInstancesId"), i, taskDs = [];
-            for (i = 0; i < ids.length; i += 1) {
-                taskDs.push(Y.Wegas.Facade.Instance.cache.find("id", ids[i]));
+        getTaskDescriptors: function() {
+            var names = this.get("taskNames"), i, taskDs = [];
+            for (i = 0; i < names.length; i += 1) {
+                taskDs.push(Y.Wegas.Facade.Variable.cache.find("name", names[i]));
             }
             return taskDs;
+        },
+        getTaskInstances: function() {
+            var names = this.get("taskNames"), i, taskIs = [];
+            for (i = 0; i < names.length; i += 1) {
+                taskIs.push(Y.Wegas.Facade.Variable.cache.find("name", names[i]).getInstance());
+            }
+            return taskIs;
         },
         getRemainingWorkload: function() {
             var taskI, taskIs, i, workload = 0;
@@ -1016,29 +1056,31 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
         },
         getStatus: function() {
-            var tasks = this.getTaskInstances(),
-                i, taskI, started, completed = tasks.length > 0,
-                completeness;
-
-            started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
-
-            for (i = 0; i < tasks.length; i += 1) {
-                taskI = tasks[i];
-                completeness = taskI.get("properties.completeness");
-                if (completeness < 100) {
-                    completed = false;
-                }
-                if (completeness > 0) {
-                    started = true;
-                }
-            }
-            if (completed) {
-                return "COMPLETED";
-            } else if (started) {
-                return "STARTED";
-            } else {
-                return "NOT_STARTED";
-            }
+            /*
+             var tasks = this.getTaskInstances(),
+             i, taskI, started = false, completed = tasks.length > 0,
+             completeness;
+             
+             //started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
+             
+             for (i = 0; i < tasks.length; i += 1) {
+             taskI = tasks[i];
+             completeness = taskI.get("properties.completeness");
+             if (completeness < 100) {
+             completed = false;
+             }
+             if (completeness > 0) {
+             started = true;
+             }
+             }
+             if (completed) {
+             return "COMPLETED";
+             } else if (started) {
+             return "STARTED";
+             } else {
+             return "NOT_STARTED";
+             }*/
+            return this.get("status");
         },
         hasBegun: function() {
             return this.getStatus() !== "NOT_STARTED";
@@ -1051,7 +1093,22 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             name: {
                 type: STRING
             },
+            status: {
+                type: STRING
+            },
             beginAt: {
+                type: NUMBER
+            },
+            wages: {
+                type: NUMBER
+            },
+            cpi: {
+                type: NUMBER
+            },
+            wpi: {
+                type: NUMBER
+            },
+            spi: {
                 type: NUMBER
             },
             totalWorkload: {
@@ -1066,7 +1123,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             workloads: {
                 type: ARRAY
             },
-            taskInstancesId: {
+            taskNames: {
                 type: ARRAY
             },
             createdTime: {

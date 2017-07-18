@@ -5,10 +5,14 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb;
+package com.wegas.core.servlet;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
+import com.wegas.core.async.PopulatorScheduler;
+import com.wegas.core.ejb.ApplicationLifecycle;
+import com.wegas.core.ejb.WebsocketFacade;
+import io.prometheus.client.hotspot.DefaultExports;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -38,12 +42,20 @@ public class ApplicationStartup extends HttpServlet {
     private ApplicationLifecycle applicationLifecycle;
 
     @Inject
+    private PopulatorScheduler populatorScheduler;
+
+    @Inject
     private HazelcastInstance hzInstance;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        logger.error("Servlet Startup");
+        logger.info("Servlet Startup");
+
+        websocketFacade.getOnlineUsers();
+        websocketFacade.updateOnlineUserMetric();
+
+        DefaultExports.initialize();
 
         /*
          * init member list
@@ -66,13 +78,18 @@ public class ApplicationStartup extends HttpServlet {
          * Inform client webapp is running
          */
         applicationLifecycle.sendWegasReadyEvent();
+
+        populatorScheduler.startAllLocalPopulators();
     }
 
     @Override
     public void destroy() {
+
+        populatorScheduler.cancelLocalPopulating();
+        
         // hZinstance is not in cluster anymore here, no way to detect if this instance is the last one
         int count = applicationLifecycle.countMembers();
-        logger.error("Servlet Destroy: " + count);
+        logger.info("Servlet Destroy: " + count);
 
         /*
          * is the last instance ? 

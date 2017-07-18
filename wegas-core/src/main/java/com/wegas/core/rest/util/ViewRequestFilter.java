@@ -17,6 +17,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import io.prometheus.client.Counter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -53,6 +54,9 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     @EJB
     RequestFacade requestFacade;
 
+    private static final Counter requests = Counter.build()
+            .name("requests_total").help("Total requests.").register();
+
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
     /**
@@ -67,6 +71,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
         requestManager.setSocketId(cr.getHeaderString("managed-mode"));
 
+        requests.inc();
         requestManager.setRequestId(idGenerator.getUniqueIdentifier());
         requestManager.setMethod(cr.getMethod());
         requestManager.setPath(cr.getUriInfo().getPath());
@@ -127,6 +132,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     /**
      *
      * @param str
+     *
      * @return Views.Class matching str or public
      */
     public Class stringToView(String str) {

@@ -17,7 +17,6 @@ import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -47,6 +46,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import com.wegas.core.persistence.InstanceOwner;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -416,7 +416,7 @@ public class RequestManager implements RequestManagerI {
         this.locale = local;
     }
 
-    private String getAudienceToLock(BroadcastTarget target) {
+    private String getAudience(InstanceOwner target) {
         if (target != null) {
             String channel = target.getChannel();
             if (this.hasPermission(channel)) {
@@ -456,9 +456,8 @@ public class RequestManager implements RequestManagerI {
      *
      * @return
      */
-    @Override
-    public boolean tryLock(String token, BroadcastTarget target) {
-        String audience = getAudienceToLock(target);
+    public boolean tryLock(String token, InstanceOwner target) {
+        String audience = getAudience(target);
         //logger.error("TryLock " + token + " for " + audience);
         boolean tryLock = concurrentHelper.tryLock(token, audience);
         if (tryLock) {
@@ -493,9 +492,8 @@ public class RequestManager implements RequestManagerI {
      * @param token  token to lock
      * @param target scope to inform about the lock
      */
-    @Override
-    public void lock(String token, BroadcastTarget target) {
-        String audience = getAudienceToLock(target);
+    public void lock(String token, InstanceOwner target) {
+        String audience = getAudience(target);
         //logger.error("LOCK " + token + " for " + audience);
         concurrentHelper.lock(token, audience);
         if (!lockedToken.containsKey(token)) {
@@ -518,9 +516,8 @@ public class RequestManager implements RequestManagerI {
      * @param token  token to release
      * @param target scope to inform about the lock
      */
-    @Override
-    public void unlock(String token, BroadcastTarget target) {
-        String audience = getAudienceToLock(target);
+    public void unlock(String token, InstanceOwner target) {
+        String audience = getAudience(target);
         //logger.error("UNLOCK " + token + " for " + audience);
         concurrentHelper.unlock(token, audience);
         if (lockedToken.containsKey(token)) {
@@ -689,30 +686,23 @@ public class RequestManager implements RequestManagerI {
     }
 
     @Override
-    public void commit(Player player, boolean clear) {
-        this.requestFacade.commit(player, clear);
-    }
-
-    @Override
     public void commit(Player player) {
-        this.requestFacade.commit(player, true);
+        this.requestFacade.commit(player);
     }
 
     @Override
     public void commit() {
-        this.requestFacade.commit(this.getPlayer(), true);
+        this.requestFacade.commit(this.getPlayer());
     }
 
     /**
      * @param millis
+     * @throws java.lang.InterruptedException
      */
     @Override
     public void pleaseWait(long millis) {
         if (millis > 0) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(millis);
-            } catch (InterruptedException ex) {
-            }
+            TimeUnit.MILLISECONDS.sleep(millis);
         }
     }
 

@@ -8,12 +8,14 @@
 package com.wegas.core.security.rest;
 
 import com.wegas.core.Helper;
+import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.aai.*;
@@ -47,7 +49,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
+import javax.inject.Inject;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -95,6 +97,9 @@ public class UserController {
      */
     @EJB
     private TeamFacade teamFacade;
+
+    @Inject
+    private PopulatorFacade populatorFacade;
 
     /**
      * @return list of all users, sorted by names
@@ -396,7 +401,6 @@ public class UserController {
 
     /**
      * Logout
-     * A
      *
      * @return 200 OK
      */
@@ -724,7 +728,14 @@ public class UserController {
         Collection<Team> teamsToReturn = new ArrayList<>();
         User currentUser = userFacade.getCurrentUser();
         final List<Player> players = currentUser.getPlayers();
+
+        List<DatedEntity> queue = populatorFacade.getQueue();
+
         for (Player p : players) {
+            if (p.getStatus().equals(Populatable.Status.WAITING)
+                    || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
+                p.setQueueSize(queue.indexOf(p) + 1);
+            }
             teamsToReturn.add(p.getTeam());
         }
         if (!teamsToReturn.isEmpty()) {
@@ -877,6 +888,40 @@ public class UserController {
         } else {
             SecurityUtils.getSubject().checkPermission(gPermission + entityId);
         }
+    }
+
+    /**
+     * Check if email is valid. (Only a string test)
+     *
+     * @param email
+     *
+     * @return true if given address is valid
+     */
+    private boolean checkEmailString(String email) {
+        boolean validEmail = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            validEmail = false;
+        }
+        return validEmail;
+    }
+
+    /**
+     * Check if username is already in use
+     *
+     * @param username username to check
+     *
+     * @return true is username is already in use
+     */
+    private boolean checkExistingUsername(String username) {
+        boolean existingUsername = false;
+        User user = userFacade.getUserByUsername(username);
+        if (user != null) {
+            existingUsername = true;
+        }
+        return existingUsername;
     }
 
     /**

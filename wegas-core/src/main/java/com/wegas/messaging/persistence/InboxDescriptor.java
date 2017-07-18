@@ -14,6 +14,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import static java.lang.Boolean.FALSE;
+import javax.persistence.Column;
 //import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -34,6 +35,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     /**
      * Tells if the inbox has a capacity of just one message.
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean capped = FALSE;
 
     /**

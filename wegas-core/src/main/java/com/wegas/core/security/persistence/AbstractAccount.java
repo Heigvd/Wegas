@@ -100,6 +100,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     @JsonIgnore
     private Date createdTime = new Date();
 
@@ -107,6 +108,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      * When the terms of use have been agreed to by the user (usually at signup, except for guests and long time users)
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date agreedTime = null;
 
     /**

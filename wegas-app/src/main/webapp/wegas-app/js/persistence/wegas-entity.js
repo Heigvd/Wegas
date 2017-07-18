@@ -402,7 +402,47 @@ YUI.add("wegas-entity", function(Y) {
     /**
      * Team mapper
      */
-    persistence.Team = Base.create("Team", persistence.Entity, [], {}, {
+    persistence.Team = Base.create("Team", persistence.Entity, [], {
+        getPlayerByStatus: function(statuses) {
+            var i, player;
+
+            if (!Array.isArray(statuses)) {
+                statuses = [statuses];
+            }
+
+            for (i in this.get("players")) {
+                player = this.get("players")[i];
+                if (statuses.indexOf(player.get("status")) >= 0) {
+                    return player;
+                }
+            }
+
+            return null;
+
+        },
+        getLivePlayer: function() {
+            return this.getPlayerByStatus("LIVE");
+        },
+        getStatus: function() {
+            if (this.isLive()) {
+                return "LIVE";
+            } else if (this.getPlayerByStatus(["PROCESSING", "SEC_PROCESSING"])) {
+                return "PROCESSING";
+            } else if (this.getPlayerByStatus(["WAITING", "RESCHEDULED"])) {
+                return "WAITING";
+            } else {
+                return "FAILED";
+            }
+
+        },
+        /**
+         * is the team live? ie does it contains at least one live player ?
+         * @returns {Boolean}
+         */
+        isLive: function() {
+            return this.getLivePlayer() !== null;
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "Team"
@@ -417,6 +457,9 @@ YUI.add("wegas-entity", function(Y) {
                 }
             },
             declaredSize: {
+                "transient": true
+            },
+            status: {
                 "transient": true
             },
             players: {
@@ -456,6 +499,9 @@ YUI.add("wegas-entity", function(Y) {
                 "transient": true
             },
             homeOrg: {
+                "transient": true
+            },
+            status: {
                 "transient": true
             }
         },

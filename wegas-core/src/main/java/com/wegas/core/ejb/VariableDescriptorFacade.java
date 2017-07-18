@@ -169,19 +169,22 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         /*
          * This flush is required by several EntityRevivedEvent listener, 
          * which opperate some SQL queries (which didn't return anything before
-         * entites has been flushed to database
+         * entites have been flushed to database
+         *
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, 
+         * it will not return any result if this flush not occurs
          */
         this.getEntityManager().flush();
+
+        descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
+        instanceRevivedEvent.fire(new InstanceRevivedEvent(entity.getDefaultInstance()));
 
         // @TODO find a smarter way to decide to propagate or not to propatate...
         if (propagate) {
             AbstractScope scope = entity.getScope();
             scope.setBeanjection(new Beanjection(variableInstanceFacade));
-            scope.propagateDefaultInstance(null, true);
+            gameModelFacade.reviveScopeInstances(gameModel, scope);
         }
-
-        descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
-        instanceRevivedEvent.fire(new InstanceRevivedEvent(entity.getDefaultInstance()));
 
         gameModel.addToVariableDescriptors(entity);
         if (entity instanceof DescriptorListI) {
@@ -243,6 +246,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
         GameModel find = this.gameModelFacade.find(gameModelId);
+         /*
+        for (Game g : find.getGames()) {
+            logger.error("Game " + g);
+            for (Team t : g.getTeams()) {
+                logger.error("  Team " + t + " ->  " + t.getStatus());
+                for (Player p : t.getPlayers()) {
+                    logger.error("    Player " + p + " -> " + p.getStatus());
+                }
+            }
+        } // */
         this.createChild(find, find, variableDescriptor);
     }
 
@@ -564,7 +577,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
         vd.setScope(newScope);
         this.getEntityManager().persist(vd);
-        vd.propagateDefaultInstance(null, true);
+        vd = this.find(vd.getId());
+        gameModelFacade.reviveScopeInstances(vd.getGameModel(), vd.getScope());
     }
 
     /**

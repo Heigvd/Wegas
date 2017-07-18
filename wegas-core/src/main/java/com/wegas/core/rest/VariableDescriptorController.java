@@ -78,7 +78,7 @@ public class VariableDescriptorController {
         Collection<VariableDescriptor> descriptors = new ArrayList<>();
         for (Long id : ids) {
             VariableDescriptor desc = variableDescriptorFacade.find(id);
-            if (requestManager.hasPermission(Helper.getAudienceToken(desc.getGameModel()))) {
+            if (requestManager.hasPermission(desc.getGameModel().getChannel())) {
                 descriptors.add(desc);
             }
         }

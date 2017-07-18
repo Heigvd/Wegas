@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -42,6 +41,7 @@ import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
+import com.wegas.core.persistence.InstanceOwner;
 
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
@@ -161,6 +161,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     private static final Logger logger = LoggerFactory.getLogger(VariableInstance.class);
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {
@@ -266,16 +267,15 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @JsonIgnore
-    public BroadcastTarget getBroadcastTarget() {
+    public InstanceOwner getBroadcastTarget() {
         if (this.getTeam() != null) {
             return this.getTeam();
-        }
-        if (this.getPlayer() != null) {
+        } else if (this.getPlayer() != null) {
             return this.getPlayer();
-        }
-        if (this.getGame() != null) {
+        } else if (this.getGame() != null) {
             return this.getGame();
         } else {
+            //return this.getGameModel();
             return this.findDescriptor().getGameModel();
         }
     }
@@ -300,6 +300,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         } else if (this.getGame() != null) {
             return this.getGame().getChannel();
         } else if (this.gameModelScope != null) {
+            // this.getGameModel().getChannel();
             return this.getGameModelScope().getVariableDescriptor().getGameModel().getChannel();
         } else {
             // Default instance
@@ -389,17 +390,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor's id through its scope
+     * Get instance descriptor's id through its scope for regular instance or 
+     * the default descriptor's id for default instances
      *
-     * @return descriptor id of -1 if this is a default instance
+     * @return descriptor id 
      */
     @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
-        if (this.isDefaultInstance()) {
-            return -1L;
-        } else {
-            return this.getDescriptor().getId();
-        }
+        return this.findDescriptor().getId();
     }
 
     /**
