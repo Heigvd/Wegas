@@ -104,8 +104,15 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }
             }, this));
             this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", function(e) {
-                var question = this.get("variable.evaluated");
-                if (question && question.getInstance().get("id") === e.entity.get("id")) {
+                var question = this.get("variable.evaluated"), updatedInstance;
+
+                if (e.entity instanceof Y.Wegas.persistence.ChoiceInstance){
+                    updatedInstance = Y.Wegas.Facade.Variable.cache.findParentDescriptor(e.entity.getDescriptor()).getInstance();
+                } else {
+                    updatedInstance = e.entity;
+                }
+
+                if (updatedInstance instanceof Y.Wegas.persistence.QuestionInstance && question && question.getInstance().get("id") === updatedInstance.get("id")) {
                     this.syncUI();
                 }
             }, this));
@@ -418,7 +425,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         choiceD = reply.getChoiceDescriptor();
                         ret.push('<div class="mcq-reply" data-choice-id="', choiceD.get("id"), '">');
                         ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
-                        ret.push('<div class="mcq-reply-content">', reply.get("result").get("answer"), '</div>');
+                        ret.push('<div class="mcq-reply-content">', reply.get("answer"), '</div>');
                         ret.push('</div>'); // end mcq-reply
                     }
                     ret.push('</div>'); // end mcq-replies
@@ -450,9 +457,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                             if (reply.getChoiceDescriptor().get("id") === choiceD.get("id")) {
                                 if (!reply.get("ignored")) {
                                     checked = true;
-                                    answer = reply.get("result").get("answer");
+                                    answer = reply.get("answer");
                                 } else {
-                                    ignorationAnswer = reply.get("result").get("ignorationAnswer");
+                                    ignorationAnswer = reply.get("ignorationAnswer");
                                 }
                                 break;
                             }

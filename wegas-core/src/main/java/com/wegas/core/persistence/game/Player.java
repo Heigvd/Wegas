@@ -19,13 +19,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -33,16 +34,21 @@ import java.util.Map;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId")
+    ,
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId")
+    ,
     @NamedQuery(name = "DEPRECATED_Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
+    ,
+    @NamedQuery(name = "Player.findToPopulate", query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
-    @Index(columnList = "user_id"),
+    @Index(columnList = "user_id")
+    ,
     @Index(columnList = "parentteam_id")
 })
-public class Player extends AbstractEntity implements Broadcastable, BroadcastTarget {
+public class Player extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -57,6 +63,9 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
     private List<VariableInstance> privateInstances = new ArrayList<>();
+
+    @Transient
+    private Integer queueSize = 0;
 
     /**
      *
@@ -82,12 +91,30 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     //@XmlInverseReference(mappedBy = "players")
     private Team team;
 
-
     @Transient
     private Boolean verifiedId = null;
 
     @Transient
     private String homeOrg = null;
+
+    /**
+     *
+     */
+    @Enumerated(value = EnumType.STRING)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
+    private Status status = Status.WAITING;
+
+    @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     /**
      *
@@ -119,6 +146,14 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
         //this.userId = user.getId();
         this.team = team;
         //this.teamId = team.getId();
+    }
+
+    public Integer getQueueSize() {
+        return queueSize;
+    }
+
+    public void setQueueSize(Integer queueSize) {
+        this.queueSize = queueSize;
     }
 
     /**
@@ -243,6 +278,11 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
         this.name = name;
     }
 
+    @Override
+    public Date getCreatedTime() {
+        return this.getJoinTime();
+    }
+
     /**
      * @return the joinTime
      */
@@ -257,13 +297,26 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
         this.joinTime = joinTime != null ? new Date(joinTime.getTime()) : null;
     }
 
+    @Override
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(int i) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     /*
      * @return true if the user's main account is an AaiAccount or equivalent
      */
-    @Transient
-    public boolean isVerifiedId(){
-        if (verifiedId != null){
-            return verifiedId.booleanValue();
+    public boolean isVerifiedId() {
+        if (verifiedId != null) {
+            return verifiedId;
         } else {
             if (this.user != null) {
                 boolean verif = user.getMainAccount() instanceof AaiAccount;
@@ -276,17 +329,16 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
     }
 
 
-   /*
+    /*
     * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the empty string
-    */
-    @Transient
-    public String getHomeOrg(){
-        if (homeOrg != null){
+     */
+    public String getHomeOrg() {
+        if (homeOrg != null) {
             return homeOrg;
         } else {
             if (this.user != null) {
                 AbstractAccount acct = user.getMainAccount();
-                if (acct instanceof AaiAccount){
+                if (acct instanceof AaiAccount) {
                     homeOrg = ((AaiAccount) acct).getHomeOrg();
                 } else {
                     homeOrg = "";
@@ -297,7 +349,6 @@ public class Player extends AbstractEntity implements Broadcastable, BroadcastTa
             }
         }
     }
-
 
     /**
      * Retrieve all variableInstances that belongs to this player only (ie.

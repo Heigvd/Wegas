@@ -199,12 +199,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      */
     @JsonIgnore
     public List<Transition> getSortedTransitions() {
-        Collections.sort(this.transitions, new Comparator<Transition>() {
-            @Override
-            public int compare(Transition t1, Transition t2) {
-                return t1.getIndex() - t2.getIndex();
-            }
-        });
+        Collections.sort(this.transitions, new ComparatorImpl());
         return this.transitions;
     }
 
@@ -240,7 +235,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
             this.setVersion(newState.getVersion());
             this.setOnEnterEvent(newState.getOnEnterEvent());
             this.setEditorPosition(newState.getEditorPosition());
-            this.setTransitions(ListUtils.mergeReplace(this.getTransitions(), newState.getTransitions()));
+            this.setTransitions(ListUtils.mergeLists(this.getTransitions(), newState.getTransitions()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
@@ -249,5 +244,19 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     @Override
     public String toString() {
         return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
+    }
+
+    /**
+     * Compare transition by index
+     */
+    private static class ComparatorImpl implements Comparator<Transition> {
+
+        public ComparatorImpl() {
+        }
+
+        @Override
+        public int compare(Transition t1, Transition t2) {
+            return t1.getIndex() - t2.getIndex();
+        }
     }
 }

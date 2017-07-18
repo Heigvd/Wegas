@@ -84,7 +84,7 @@ public class UIResult extends UIComponentBase {
 
         boolean hasBeenSelected = false;
 
-        for (Reply r : result.getChoiceDescriptor().getQuestion().getInstance(defaultValues, player).getReplies()) {
+        for (Reply r : result.getChoiceDescriptor().getQuestion().getInstance(defaultValues, player).getReplies(player)) {
             if (r.getResult().getChoiceDescriptor().equals(result.getChoiceDescriptor())) {
                 hasBeenSelected = true;
             }

@@ -44,6 +44,7 @@ public class Message extends NamedEntity implements DatedEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvarinstrep_seq")
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *

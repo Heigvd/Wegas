@@ -9,14 +9,15 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
@@ -29,7 +30,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
@@ -268,9 +268,32 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         return this.findGame(this.find(instanceId));
     }
 
+    public VariableInstance findInstance(VariableDescriptor descriptor, VariableInstance variableInstance) throws NoPlayerException {
+
+        if (variableInstance.isDefaultInstance()) {
+            return descriptor.getDefaultInstance();
+        }
+
+        AbstractScope scope = variableInstance.getScope();
+
+        AbstractScope descScope = descriptor.getScope();
+
+        if (scope instanceof PlayerScope) {
+            return descScope.getVariableInstance(variableInstance.getPlayer());
+        } else if (scope instanceof TeamScope) {
+            return descScope.getVariableInstance(variableInstance.getTeam());
+        } else if (scope instanceof GameScope) {
+            return descScope.getVariableInstance(variableInstance.getGame());
+        } else if (scope instanceof GameModelScope) {
+            return descScope.getVariableInstance(variableInstance.getGameModel());
+        }
+
+        return null;
+    }
+
     /**
      * from the given instance, return any player who own it (eg.
-     * Descriptor.getInstance(player) = instance)
+     * Descriptor.getInstance(player) = instance). The returned player must be alive
      *
      * @param instance
      *
@@ -283,10 +306,11 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             throws NoPlayerException {
         // make sure to have a managed instance to have the scope !
         instance = this.find(instance.getId());
+        List<Player> players;
 
         if (instance.getScope() instanceof PlayerScope) {
             Player p = playerFacade.find(instance.getPlayer().getId());
-            if (p == null) {
+            if (p == null || !p.getStatus().equals(Populatable.Status.LIVE)) {
                 throw new NoPlayerException();
             }
             return p;
@@ -295,7 +319,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             if (t.getPlayers().isEmpty()) {
                 throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
             } else {
-                return teamFacade.find(instance.getTeam().getId()).getPlayers().get(0);
+                players = teamFacade.find(instance.getTeam().getId()).getPlayers();
             }
         } else if (instance.getScope() instanceof GameScope) {
 
@@ -303,7 +327,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             if (g.getPlayers().isEmpty()) {
                 throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
             } else {
-                return gameFacade.find(instance.getGame().getId()).getPlayers().get(0);
+                players = gameFacade.find(instance.getGame().getId()).getPlayers();
             }
         } else if (instance.getScope() instanceof GameModelScope) {
             Game g;
@@ -319,7 +343,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
                     if (t.getPlayers().isEmpty()) {
                         throw new NoPlayerException("Team [" + t.getName() + "] has no player");
                     } else {
-                        return t.getPlayers().get(0);
+                        players = t.getPlayers();
                     }
                 }
             }
@@ -327,6 +351,12 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             // default instance case
             throw new UnsupportedOperationException();  // Should never occur
         }
+        for (Player p : players) {
+            if (p.getStatus().equals(Populatable.Status.LIVE)) {
+                return p;
+            }
+        }
+        throw new NoPlayerException("No Live player");
     }
 
     /**
@@ -376,7 +406,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         }
 
         VariableInstance ret = super.update(entityId, entity);
-        requestFacade.commit(true);
+        requestFacade.commit();
         return ret;
     }
 
@@ -403,12 +433,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      */
     public VariableInstanceFacade() {
         super(VariableInstance.class);
-    }
-
-    public void resetEventListener(@Observes ResetEvent resetEvent) {
-        for (VariableInstance variableInstance : resetEvent.getContext().getAllInstances()) {
-            instanceRevivedEvent.fire(new InstanceRevivedEvent(variableInstance));
-        }
     }
 
     /**

@@ -68,6 +68,10 @@ angular.module('wegas.service.auth', [
                 return deferred.promise;
             };
 
+        service.getLocalAuthenticatedUser = function() {
+            return authenticatedUser;
+        };
+        
         service.getAuthenticatedUser = function() {
             var deferred = $q.defer();
             if (authenticatedUser !== null) {
