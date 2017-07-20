@@ -1,13 +1,18 @@
-package com.wegas.core.ejb.api;
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+package com.wegas.core.api;
 
-import com.wegas.core.persistence.BroadcastTarget;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.persistence.User;
 import java.util.Locale;
 
 public interface RequestManagerI {
-
-    void commit(Player player, boolean clear);
 
     void commit(Player player);
 
@@ -41,12 +46,13 @@ public interface RequestManagerI {
      * @param token  token to lock
      * @param target scope to inform about the lock
      */
-    void lock(String token, BroadcastTarget target);
+    void lock(String token, InstanceOwner target);
 
     /**
      * @param millis
+     * @throws java.lang.InterruptedException
      */
-    void pleaseWait(long millis);
+    void pleaseWait(long millis) throws InterruptedException;
 
     /**
      * Method used to send custom events
@@ -73,7 +79,7 @@ public interface RequestManagerI {
      *
      * @return
      */
-    boolean tryLock(String token, BroadcastTarget target);
+    boolean tryLock(String token, InstanceOwner target);
 
     /**
      *
@@ -86,7 +92,7 @@ public interface RequestManagerI {
      * @param token  token to release
      * @param target scope to inform about the lock
      */
-    void unlock(String token, BroadcastTarget target);
+    void unlock(String token, InstanceOwner target);
 
     boolean isTestEnv();
 

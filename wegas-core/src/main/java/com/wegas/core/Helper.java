@@ -791,17 +791,4 @@ public class Helper {
             logger.error("No cluster (null)");
         }
     }
-
-
-    public static void printWegasStackTrace(Throwable t) {
-        StringBuilder sb = new StringBuilder(t.getClass().getName());
-        sb.append(" - ").append(t.getMessage());
-        for (StackTraceElement elem : t.getStackTrace()) {
-            if (elem.getClassName().startsWith("com.wegas")) {
-                sb.append("\n\tat ");
-                sb.append(elem);
-            }
-        }
-        logger.error(sb.toString());
-    }
 }

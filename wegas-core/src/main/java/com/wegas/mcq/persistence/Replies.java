@@ -46,6 +46,11 @@ public class Replies extends AbstractEntity  {
         replies.add(reply);
     }
 
+    @Override
+    public String getRequieredUpdatePermission() {
+        return null;
+    }
+
     public Result getResult() {
         return result;
     }

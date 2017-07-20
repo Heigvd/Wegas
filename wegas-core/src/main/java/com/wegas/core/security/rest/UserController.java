@@ -891,40 +891,6 @@ public class UserController {
     }
 
     /**
-     * Check if email is valid. (Only a string test)
-     *
-     * @param email
-     *
-     * @return true if given address is valid
-     */
-    private boolean checkEmailString(String email) {
-        boolean validEmail = true;
-        try {
-            InternetAddress emailAddr = new InternetAddress(email);
-            emailAddr.validate();
-        } catch (AddressException ex) {
-            validEmail = false;
-        }
-        return validEmail;
-    }
-
-    /**
-     * Check if username is already in use
-     *
-     * @param username username to check
-     *
-     * @return true is username is already in use
-     */
-    private boolean checkExistingUsername(String username) {
-        boolean existingUsername = false;
-        User user = userFacade.getUserByUsername(username);
-        if (user != null) {
-            existingUsername = true;
-        }
-        return existingUsername;
-    }
-
-    /**
      * Check if persistent ID is already in use
      *
      * @param persistentId to check

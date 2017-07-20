@@ -53,6 +53,11 @@ public class CurrentResult extends AbstractEntity  {
         choiceInstances.add(choiceInstance);
     }
 
+    @Override
+    public String getRequieredUpdatePermission() {
+        return null;
+    }
+
     public Result getResult() {
         return result;
     }

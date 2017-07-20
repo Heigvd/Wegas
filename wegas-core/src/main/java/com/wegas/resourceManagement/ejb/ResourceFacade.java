@@ -8,6 +8,7 @@
 package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.api.ResourceFacadeI;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptEventFacade;
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class ResourceFacade {
+public class ResourceFacade implements ResourceFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
 
@@ -452,7 +453,7 @@ public class ResourceFacade {
                 String taskDescriptorName = assignment.getTaskDescriptorName();
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
                     TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                    
+
                     TaskInstance newTaskInstance = (TaskInstance) variableInstanceFacade.findInstance(newTaskDescriptor, resourceInstance);
                     TaskInstance oldTaskInstance = assignment.getTaskInstance();
 
@@ -468,7 +469,7 @@ public class ResourceFacade {
                 String taskDescriptorName = activity.getTaskDescriptorName();
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
                     TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                    
+
                     TaskInstance newTaskInstance = (TaskInstance) variableInstanceFacade.findInstance(newTaskDescriptor, resourceInstance);
 
                     TaskInstance oldTaskInstance = activity.getTaskInstance();

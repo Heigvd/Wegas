@@ -7,11 +7,12 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.api.DelayedScriptEventFacadeI;
-import com.wegas.core.ejb.api.ScriptEventFacadeI;
+import com.wegas.core.api.DelayedScriptEventFacadeI;
+import com.wegas.core.api.ScriptEventFacadeI;
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.api.RequestManagerI;
-import com.wegas.core.ejb.api.VariableDescriptorFacadeI;
+import com.wegas.core.api.RequestManagerI;
+import com.wegas.core.api.ResourceFacadeI;
+import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.ejb.nashorn.JavaObjectInvocationHandler;
 import com.wegas.core.ejb.nashorn.NHClassLoader;
 import com.wegas.core.event.internal.EngineInvocationEvent;
@@ -24,6 +25,7 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,6 +122,9 @@ public class ScriptFacade {
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
 
+    @Inject
+    private ResourceFacade resourceFacade;
+
     /**
      *
      */
@@ -166,6 +171,7 @@ public class ScriptFacade {
 
         putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
         putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
+        putBinding(bindings, "ResourceFacade", ResourceFacadeI.class, resourceFacade);
         putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
         putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
         putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);

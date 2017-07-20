@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.api.ScriptEventFacadeI;
+import com.wegas.core.api.ScriptEventFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;

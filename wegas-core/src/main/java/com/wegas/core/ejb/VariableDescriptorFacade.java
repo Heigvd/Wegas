@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.api.VariableDescriptorFacadeI;
+import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;

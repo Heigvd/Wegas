@@ -306,11 +306,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
 
     @Override
     public String getRequieredUpdatePermission() {
-        return this.getQuestionInstance().getRequieredUpdatePermission();
+        return this.getChoiceInstance().getRequieredUpdatePermission();
     }
 
     @Override
     public String getRequieredReadPermission() {
-        return this.getQuestionInstance().getRequieredReadPermission();
+        return this.getChoiceInstance().getRequieredReadPermission();
     }
 }

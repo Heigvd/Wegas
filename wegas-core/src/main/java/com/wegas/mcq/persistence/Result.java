@@ -397,13 +397,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
 
     @Override
     public String getRequieredUpdatePermission() {
-        /**
-         * frontier-land entity... Modifing fields requires return
-         * this.getChoiceDescriptor().getRequieredUpdatePermission(); but
-         * updating replied or choiceInstance should be allow for player too...
-         * <p>
-         */
-        return null;
+        return this.getChoiceDescriptor().getRequieredUpdatePermission();
     }
 
     @Override

@@ -582,21 +582,19 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         task.setName("task");
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
-        String script = "var rF = new javax.naming.InitialContext().lookup('java:module/ResourceFacade');\n"
-                + "var paul = Variable.find(gameModel, \"paul\");\n"
+        String script = "var paul = Variable.find(gameModel, \"paul\");\n"
                 + "var paulI = paul.getInstance(self);\n"
                 + "var task = Variable.find(gameModel, \"task\");\n"
                 + "var taskI = task.getInstance(self);\n"
-                + "rF.assign(paulI.getId(), taskI.getId());\n";
+                + "ResourceFacade.assign(paulI.getId(), taskI.getId());\n";
 
-        scriptFacade.eval(player, new Script("javascript", script), null);
+        scriptFacade.eval(player, new Script("javascript", script), null); //
 
-        String script2 = "var rF = new javax.naming.InitialContext().lookup('java:module/ResourceFacade');\n"
-                + "var paul = Variable.find(gameModel, \"paul\");\n"
+        String script2 = "var paul = Variable.find(gameModel, \"paul\");\n"
                 + "var paulI = paul.getInstance(self);\n"
                 + "var task = Variable.find(gameModel, \"task\");\n"
                 + "var taskI = task.getInstance(self);\n"
-                + "rF.removeAssignment(rF.findAssignment(paulI.getId(), taskI.getId()).getId());\n";
+                + "ResourceFacade.removeAssignment(ResourceFacade.findAssignment(paulI.getId(), taskI.getId()).getId());\n";
 
         scriptFacade.eval(player, new Script("javascript", script2), null);
 

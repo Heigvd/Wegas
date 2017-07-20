@@ -8,7 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.api.RequestManagerI;
+import com.wegas.core.api.RequestManagerI;
 import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
@@ -700,7 +700,7 @@ public class RequestManager implements RequestManagerI {
      * @throws java.lang.InterruptedException
      */
     @Override
-    public void pleaseWait(long millis) {
+    public void pleaseWait(long millis) throws InterruptedException {
         if (millis > 0) {
             TimeUnit.MILLISECONDS.sleep(millis);
         }

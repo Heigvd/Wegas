@@ -482,10 +482,12 @@ public class GameFacade extends BaseFacade<Game> {
      * @param game
      */
     public void addRights(User user, Game game) {
+        /*
         userFacade.addUserPermission(
                 user,
                 "Game:View:g" + game.getId(), // Add "View" right on game,
                 "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
+        */
     }
 
     public void recoverRights(Game game) {

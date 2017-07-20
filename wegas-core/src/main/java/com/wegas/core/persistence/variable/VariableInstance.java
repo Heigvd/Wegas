@@ -631,10 +631,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             //Default instance
             return this.getDefaultDescriptor().getRequieredCreatePermission();
         } else {
-            BroadcastTarget broadcastTarget = this.getBroadcastTarget();
-            if (broadcastTarget instanceof AbstractEntity) {
-                if (((AbstractEntity) broadcastTarget).isPersisted()) {
-                    return broadcastTarget.getChannel();
+            InstanceOwner owner =this.getBroadcastTarget();
+            if (owner instanceof AbstractEntity) {
+                if (((AbstractEntity) owner).isPersisted()) {
+                    return owner.getChannel();
                 } else {
                     // owner not yet in database, no need to check permission
                     return null;

@@ -20,7 +20,7 @@ import org.junit.Test;
  *
  * @author maxence
  */
-public class SecurityFacadeTest extends AbstractEJBTest {
+public class SecurityTest extends AbstractEJBTest {
 
     @Test(expected = EJBException.class)
     public void testPrivilegeEscalation_autoGrantAdmin() throws WegasNoResultException {
@@ -71,6 +71,15 @@ public class SecurityFacadeTest extends AbstractEJBTest {
 
         login("root", password);
         User currentUser = userFacade.getCurrentUser();
+    }
+
+    @Test
+    public void grantGameRightToPlayer(){
+        login(user);
+        
+        userFacade.addTrainerToGame(user.getId(), game.getId());
+        
+
     }
 
 }

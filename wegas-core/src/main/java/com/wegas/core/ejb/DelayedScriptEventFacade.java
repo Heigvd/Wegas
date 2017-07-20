@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.api.DelayedScriptEventFacadeI;
+import com.wegas.core.api.DelayedScriptEventFacadeI;
 import com.wegas.core.event.internal.DelayedEventPayload;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
