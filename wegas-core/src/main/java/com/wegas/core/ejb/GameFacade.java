@@ -155,19 +155,16 @@ public class GameFacade extends BaseFacade<Game> {
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
 
+        /*
+         * Be sure to grant rights on the game to the trainer before entityManager.flush();
+         */
+        userFacade.addTrainerToGame(currentUser.getId(), game.getId());
+
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
 
         this.addDebugTeam(game);
         gameModelFacade.runStateMachines(gameModel);
 
-        //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
-        userFacade.addTrainerToGame(currentUser.getId(), game.getId());
-
-        /*try {
-            roleFacade.findByName("Public").addPermission("Game:Token:g" + game.getId());
-        } catch (WegasNoResultException ex) {
-            logger.error("Unable to find Role: Public");
-        }*/
         gameCreatedEvent.fire(new EntityCreated<>(game));
     }
 
@@ -462,13 +459,14 @@ public class GameFacade extends BaseFacade<Game> {
         player = this.getEntityManager().merge(player);
         populatorScheduler.scheduleCreation();
         int indexOf = populatorFacade.getQueue().indexOf(player);
-        player.setQueueSize(indexOf+1);
+        player.setQueueSize(indexOf + 1);
         return player;
     }
 
     /**
      * @param teamId
      * @param playerName
+     *
      * @return a new player, linked to user, who just joined the team
      */
     public Player joinTeam(Long teamId, String playerName) {
