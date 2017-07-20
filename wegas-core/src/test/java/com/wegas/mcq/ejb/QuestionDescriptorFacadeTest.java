@@ -274,7 +274,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         // Create a question descriptor
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(gameModel.getId(), question);
+        variableDescriptorFacade.create(scenario.getId(), question);
 
         // Add a choice descriptor and 3 replies
         ChoiceDescriptor choice = new ChoiceDescriptor();
