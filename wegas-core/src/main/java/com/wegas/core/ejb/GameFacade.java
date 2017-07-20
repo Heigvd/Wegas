@@ -287,8 +287,8 @@ public class GameFacade extends BaseFacade<Game> {
      *         but DebugGames, ordered by creation time
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
-        return getEntityManager().createQuery("SELECT game FROM Game game "
-                + "WHERE TYPE(game) != DebugGame AND game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC", Game.class)
+        return getEntityManager().createQuery("SELECT g FROM Game g "
+                + "WHERE TYPE(g) != DebugGame AND g.gameModel.id = :gameModelId ORDER BY g.createdTime DESC", Game.class)
                 .setParameter("gameModelId", gameModelId)
                 .getResultList();
     }
@@ -308,11 +308,11 @@ public class GameFacade extends BaseFacade<Game> {
      * @return all non deleted games the given user plays in
      */
     public List<Game> findRegisteredGames(final Long userId) {
-        final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
-                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
-                + "WHERE t.game.id = game.id AND p.team.id = t.id "
+        final Query getByGameId = getEntityManager().createQuery("SELECT g, p FROM Game g "
+                + "LEFT JOIN g.teams t LEFT JOIN  t.players p "
+                + "WHERE t.game.id = g.id AND p.team.id = t.id "
                 + "AND p.user.id = :userId AND "
-                + "(game.status = com.wegas.core.persistence.game.Game.Status.LIVE OR game.status = com.wegas.core.persistence.game.Game.Status.BIN) "
+                + "(g.status = com.wegas.core.persistence.game.Game.Status.LIVE OR g.status = com.wegas.core.persistence.game.Game.Status.BIN) "
                 + "ORDER BY p.joinTime ASC", Game.class)
                 .setParameter("userId", userId);
 
@@ -326,10 +326,10 @@ public class GameFacade extends BaseFacade<Game> {
      * @return all LIVE games of the given GameModel the given user plays in
      */
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
-        final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
-                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
-                + "WHERE t.game.id = game.id AND p.team.id = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
-                + "AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
+        final Query getByGameId = getEntityManager().createQuery("SELECT g, p FROM Game g "
+                + "LEFT JOIN g.teams t LEFT JOIN  t.players p "
+                + "WHERE t.game.id = g.id AND p.team.id = t.id AND p.user.id = :userId AND g.gameModel.id = :gameModelId "
+                + "AND g.status = com.wegas.core.persistence.game.Game.Status.LIVE "
                 + "ORDER BY p.joinTime ASC", Game.class)
                 .setParameter("userId", userId)
                 .setParameter("gameModelId", gameModelId);
