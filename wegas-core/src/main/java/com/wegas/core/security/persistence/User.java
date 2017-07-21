@@ -10,6 +10,7 @@ package com.wegas.core.security.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.Views;
@@ -232,7 +233,8 @@ public class User extends AbstractEntity implements Comparable<User> {
 
     @Override
     public String getRequieredUpdatePermission() {
-        return "User-" + this.getId() + "," + Role.TRAINER_PERM;
+        return Helper.USER_CHANNEL_PREFIX + this.getId() + "," 
+                + Role.TRAINER_PERM; // why ? maybe to share game/gameModel
     }
 
     @Override

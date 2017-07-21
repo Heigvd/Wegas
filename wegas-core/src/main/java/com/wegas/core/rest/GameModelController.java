@@ -12,7 +12,6 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -24,6 +23,8 @@ import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.ejb.RequestManager;
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
@@ -44,6 +45,9 @@ public class GameModelController {
      */
     @EJB
     private GameModelFacade gameModelFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -227,22 +231,19 @@ public class GameModelController {
     public GameModel changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final GameModel.Status status) {
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + entityId);
         GameModel gm = gameModelFacade.find(entityId);
-        Subject s = SecurityUtils.getSubject();
         switch (status) {
             case LIVE:
-                if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                        || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                        || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                if (requestManager.canRestoreGameModel(gm)){
                     gameModelFacade.live(gm);
                 }
                 break;
             case BIN:
-                if (s.isPermitted("GameModel:Delete:gm" + entityId)) {
+                if (requestManager.canDeleteGameModel(gm)){
                     gameModelFacade.bin(gm);
                 }
                 break;
             case DELETE:
-                if (s.isPermitted("GameModel:Delete:gm" + entityId)) {
+                if (requestManager.canDeleteGameModel(gm)){
                     gameModelFacade.delete(gm);
                 }
                 break;
@@ -308,9 +309,8 @@ public class GameModelController {
     @DELETE
     public Collection<GameModel> deleteAll() {
         Collection<GameModel> games = new ArrayList<>();
-        Subject s = SecurityUtils.getSubject();
         for (GameModel gm : gameModelFacade.findByStatus(GameModel.Status.BIN)) {
-            if (s.isPermitted("GameModel:Delete:gm" + gm.getId())) {
+            if (requestManager.canDeleteGameModel(gm)){
                 gameModelFacade.delete(gm);
                 games.add(gm);
             }

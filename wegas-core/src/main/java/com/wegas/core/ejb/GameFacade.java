@@ -121,7 +121,7 @@ public class GameFacade extends BaseFacade<Game> {
         GameModel gm = gameModelFacade.createGameGameModel(gameModelId);
         this.create(gm, game);
 
-        // Since Permission on gameModel is provided through game induced permission, revice initial permission on gamemodel:
+        // Since Permission on gameModel is provided through game induced permission, revoke initial permission on gamemodel:
         userFacade.deletePermissions(userFacade.getCurrentUser(), "GameModel:%:gm" + gm.getId());
     }
 
@@ -355,31 +355,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * @param roleName
-     *
-     * @return all game the give role has access to
-     */
-    public Collection<Game> findPublicGamesByRole(String roleName) {
-        Collection<Game> games = new ArrayList<>();
-        try {
-            Role role;
-            role = roleFacade.findByName(roleName);
-            for (Permission permission : role.getPermissions()) {
-                if (permission.getValue().startsWith("Game:View")) {
-                    Long gameId = Long.parseLong(permission.getValue().split(":g")[1]);
-                    Game game = this.find(gameId);
-                    if (game.getStatus() == Game.Status.LIVE) {
-                        games.add(game);
-                    }
-                }
-            }
-        } catch (WegasNoResultException ex) {
-            logger.error("FindPublicGamesByRole: " + roleName + " role not found");
-        }
-        return games;
-    }
-
-    /**
      * Filter out the debug team
      *
      * @param game
@@ -481,6 +456,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param user
      * @param game
      */
+    @Deprecated
     public void addRights(User user, Game game) {
         /*
         userFacade.addUserPermission(
@@ -490,6 +466,7 @@ public class GameFacade extends BaseFacade<Game> {
         */
     }
 
+    @Deprecated
     public void recoverRights(Game game) {
         for (Team team : game.getTeams()) {
             for (Player player : team.getPlayers()) {

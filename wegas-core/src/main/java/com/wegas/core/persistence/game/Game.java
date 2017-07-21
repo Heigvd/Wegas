@@ -42,8 +42,10 @@ import com.wegas.core.persistence.InstanceOwner;
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
-    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
+    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC")
+    ,
+    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
+    ,
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -229,6 +231,17 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
             players.addAll(t.getPlayers());
         }
         return players;
+    }
+
+    @JsonIgnore
+    public Player getAnyLivePlayer() {
+        for (Team t : this.getTeams()) {
+            Player p = t.getAnyLivePlayer();
+            if (p != null) {
+                return p;
+            }
+        }
+        return null;
     }
 
     /**

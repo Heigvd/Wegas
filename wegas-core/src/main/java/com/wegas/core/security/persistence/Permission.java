@@ -10,8 +10,14 @@ package com.wegas.core.security.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -55,7 +61,7 @@ public class Permission extends AbstractEntity {
      *
      */
     @Basic
-    private String inducedPermission;
+    //private String inducedPermission;
     /**
      *
      */
@@ -95,18 +101,20 @@ public class Permission extends AbstractEntity {
      *
      * @param value
      * @param inducedPermission
+     *
      */
+    /*
     public Permission(String value, String inducedPermission) {
         this.value = value;
         this.inducedPermission = inducedPermission;
     }
-
+     */
     @Override
     public void merge(AbstractEntity other) {
         if (other instanceof Permission) {
             Permission o = (Permission) other;
             this.setValue(o.getValue());
-            this.setInducedPermission(o.getInducedPermission());
+            //this.setInducedPermission(o.getInducedPermission());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
@@ -133,18 +141,18 @@ public class Permission extends AbstractEntity {
 
     /**
      * @return the inducedPermission
+     *         public String getInducedPermission() {
+     *         return inducedPermission;
+     *         }
      */
-    public String getInducedPermission() {
-        return inducedPermission;
-    }
-
     /**
      * @param inducedPermission the inducedPermission to set
      */
+    /*
     public void setInducedPermission(String inducedPermission) {
         this.inducedPermission = inducedPermission;
     }
-
+     */
     /**
      * @return the value
      */
@@ -209,13 +217,38 @@ public class Permission extends AbstractEntity {
         this.role = role;
     }
 
+    private boolean isPermId(String id) {
+        return id.matches("(g|gm)\\d+");
+    }
+
     @Override
     public String getRequieredUpdatePermission() {
-        // ->process permission: 
-        // gm1234 -> w-GameModel-1234
-        // g1234 -> w-Game-1234
-        // * -> Role-Administrator
-        return null;
+        String[] split = this.getValue().split(":");
+
+        if (split.length == 3) {
+            String perm = split[2];
+            switch (split[0]) {
+                case "GameModel":
+                    if (isPermId(perm)) {
+                        GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
+                        if (gameModel != null) {
+                            return gameModel.getRequieredUpdatePermission();
+                        }
+                    }
+                case "Game":
+                    if (isPermId(perm)) {
+                        Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
+                        if (game != null) {
+                            if (game.isPersisted()) {
+                                return "W-" + game.getChannel();
+                            } else {
+                                return null;
+                            }
+                        }
+                    }
+            }
+        }
+        return Role.ADMIN_PERM;
     }
 
     @Override

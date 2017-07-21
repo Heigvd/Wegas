@@ -159,6 +159,11 @@ public class AbstractEJBTestBase {
 
     }
 
+    @BeforeClass
+    public static void setUpClass() throws NamingException {
+        AbstractEJBTestBase.setUpFacades(".");
+    }
+
     /**
      * Initial db content as defined by Liquibase Changelogs
      */
@@ -293,6 +298,10 @@ public class AbstractEJBTestBase {
 
         public String getUsername() {
             return username;
+        }
+
+        public void setUser(User user) {
+            this.user = user;
         }
     }
 }

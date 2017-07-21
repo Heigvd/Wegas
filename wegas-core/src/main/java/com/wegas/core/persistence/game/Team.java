@@ -375,4 +375,9 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     public String getRequieredCreatePermission() {
         return null;
     }
+
+    @Override
+    public String getRequieredDeletePermission() {
+        return this.getChannel();
+    }
 }

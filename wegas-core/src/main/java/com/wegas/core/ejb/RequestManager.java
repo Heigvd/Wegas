@@ -26,7 +26,6 @@ import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.security.util.SecurityHelper;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import org.slf4j.Logger;
@@ -47,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.game.DebugGame;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -75,6 +75,9 @@ public class RequestManager implements RequestManagerI {
      */
     @Inject
     ConcurrentHelper concurrentHelper;
+
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     @Inject
     private GameFacade gameFacade;
@@ -230,6 +233,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * @return a User entity, based on the shiro login state
      */
+    @Override
     public User getCurrentUser() {
         final Subject subject = SecurityUtils.getSubject();
         Long principal = (Long) subject.getPrincipal();
@@ -697,6 +701,7 @@ public class RequestManager implements RequestManagerI {
 
     /**
      * @param millis
+     *
      * @throws java.lang.InterruptedException
      */
     @Override
@@ -719,12 +724,54 @@ public class RequestManager implements RequestManagerI {
         this.grantedPermissions.clear();
     }
 
+    private boolean hasGamePermission(Subject subject, Game game, boolean superPermission) {
+
+        if (game instanceof DebugGame) {
+            // when checked against a DebugGame, must have scenarist rights
+            return this.hasGameModelPermission(subject, game.getGameModel(), superPermission);
+        } else {
+            return subject.isPermitted("Game:Edit:g" + game.getId()) // Is trainer 
+                    || (!superPermission && playerFacade.isInGame(game.getId(), this.getCurrentUser().getId())); // or is player if no superPerm is req.
+        }
+    }
+
+    private boolean hasGameModelPermission(Subject subject, GameModel gameModel, boolean superPermission) {
+        if (gameModel.getStatus().equals(GameModel.Status.PLAY)) {
+            /**
+             * GameModel permission against a "PLAY" gameModel.
+             */
+            for (Game game : gameModel.getGames()) {
+                // has permission to at least on game of the game model ?
+                if (this.hasGamePermission(subject, game, superPermission)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            /**
+             * GameModel permission against a true gameModel.
+             */
+
+            long id = gameModel.getId();
+            if (superPermission) {
+                return subject.isPermitted("GameModel:Edit:gm" + id);
+            } else {
+                if (subject.hasRole("Trainer") && subject.isPermitted("GameModel:Instantiate:gm" + id)) {
+                    //For trainer, instantiate means read
+                    return true;
+                }
+                return subject.isPermitted("GameModel:View:gm" + id);
+            }
+        }
+    }
+
     /**
      * Check if current user has access to type/id entity
      *
      * @param type
      * @param id
      * @param currentPlayer
+     *
      * @return true if current user has access to
      */
     private boolean hasPermission(String type, String arg, boolean superPermission) {
@@ -738,35 +785,27 @@ public class RequestManager implements RequestManagerI {
             return subject.hasRole(arg);
         } else {
             Long id = Long.parseLong(arg);
+
             if ("GameModel".equals(type)) {
 
-                if (superPermission) {
-                    return subject.isPermitted("GameModel:Edit:gm" + id);
-                } else {
-                    if (subject.hasRole("Trainer") && subject.isPermitted("GameModel:Instantiate:gm" + id)) {
-                        //For trainer, instantiate means read
-                        return true;
-                    }
-                    return subject.isPermitted("GameModel:View:gm" + id);
-                }
+                GameModel gameModel = gameModelFacade.find(id);
+                return this.hasGameModelPermission(subject, gameModel, superPermission);
             } else if ("Game".equals(type)) {
                 Game game = gameFacade.find(id);
-                if (superPermission) {
-                    return game != null && SecurityHelper.isPermitted(game, "Edit");
-                } else {
-                    return game != null && SecurityHelper.isPermitted(game, "View");
-                }
+                return this.hasGamePermission(subject, game, superPermission);
             } else if ("Team".equals(type)) {
 
                 Team team = teamFacade.find(id);
 
                 // Current logged User is linked to a player who's member of the team or current user has edit right one the game
-                return currentUser != null && team != null && (playerFacade.checkExistingPlayerInTeam(team.getId(), currentUser.getId()) != null || SecurityHelper.isPermitted(team.getGame(), "Edit"));
+                return currentUser != null && team != null
+                        && (playerFacade.isInTeam(team.getId(), currentUser.getId())
+                        || this.hasGamePermission(subject, team.getGame(), true));
             } else if ("Player".equals(type)) {
                 Player player = playerFacade.find(id);
 
                 // Current player belongs to current user || current user is the teacher or scenarist (test user)
-                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || SecurityHelper.isPermitted(player.getGame(), "Edit"));
+                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || this.hasGamePermission(subject, player.getGame(), true));
             } else if ("User".equals(type)) {
                 User find = userFacade.find(id);
                 return currentUser != null && currentUser.equals(find);
@@ -779,6 +818,7 @@ public class RequestManager implements RequestManagerI {
      * can current user subscribe to given channel ?
      *
      * @param channel
+     *
      * @return true if access granted
      */
     public boolean hasPermission(String channel) {
@@ -793,12 +833,13 @@ public class RequestManager implements RequestManagerI {
 
                 boolean superPermission = false;
 
-                if (channel.startsWith("W-")) {
-                    channel = channel.replaceFirst("W-", "");
+                String effectiveChannel= channel;
+                if (effectiveChannel.startsWith("W-")) {
+                    effectiveChannel = effectiveChannel.replaceFirst("W-", "");
                     superPermission = true;
                 }
 
-                String[] split = channel.split("-");
+                String[] split = effectiveChannel.split("-");
 
                 if (split.length == 2) {
                     if (hasPermission(split[0], split[1], superPermission)) {
@@ -854,6 +895,69 @@ public class RequestManager implements RequestManagerI {
 
     public void assertDeleteRight(AbstractEntity entity) {
         this.assertUserHasPermission(entity.getRequieredDeletePermission(), "Delete", entity);
+    }
+
+
+    /*
+     * Security Sugars
+     */
+    public boolean isAdmin() {
+        return SecurityUtils.getSubject().hasRole("Administrator");
+    }
+
+    public boolean hasGameReadRight(final Game game) {
+        return this.hasPermission(game.getChannel());
+    }
+
+    public boolean hasGameWriteRight(final Game game) {
+        return this.hasPermission("W-" + game.getChannel());
+    }
+
+    public boolean hasGameModelReadRight(final GameModel gameModel) {
+        return this.hasPermission(gameModel.getChannel());
+    }
+
+    public boolean hasGameModelWriteRight(final GameModel gameModel) {
+        return this.hasPermission("W-" + gameModel.getChannel());
+    }
+
+    public boolean hasTeamRight(final Team team) {
+        return this.hasPermission(team.getChannel());
+    }
+
+    public boolean hasPlayerRight(final Player player) {
+        return this.hasPermission(player.getChannel());
+    }
+    
+    public boolean canRestoreGameModel(final GameModel gameModel) {
+        Subject s = SecurityUtils.getSubject();
+        String id = "gm" + gameModel.getId();
+        return s.isPermitted("GameModel:View:" + id)
+                || s.isPermitted("GameModel:Edit" + id)
+                || s.isPermitted("GameModel:Instantiate:" + id)
+                || s.isPermitted("GameModel:Duplicate:" + id);
+    }
+
+    public boolean canDeleteGameModel(final GameModel gameModel) {
+        Subject s = SecurityUtils.getSubject();
+        String id = "gm" + gameModel.getId();
+        return s.isPermitted("GameModel:Delete:" + id);
+    }
+
+
+    /*
+     * Security Assertions
+     */
+    public void assertGameTrainer(final Game game) {
+        if (!hasGameWriteRight(game)) {
+            throw new WegasAccessDenied(game, "Trainer", "W-" + game.getChannel(), this.getCurrentUser());
+        }
+    }
+
+    public void assertCanReadGameModel(final GameModel gameModel) {
+        if (!hasGameModelReadRight(gameModel)) {
+            throw new WegasAccessDenied(gameModel, "Read", gameModel.getChannel(), this.getCurrentUser());
+        }
     }
 
 }

@@ -105,34 +105,17 @@ public class ScriptController {
             @PathParam("variableDescriptorId") Long variableDescritptorId,
             Script script) {
 
-        Player thePlayer = playerFacade.find(playerId);
-        Team theTeam;
-        Game theGame;
-        GameModel theGameModel;
-
-        if ((thePlayer != null)
-                && ((theTeam = thePlayer.getTeam()) != null)
-                && ((theGame = theTeam.getGame()) != null)
-                && ((theGameModel = theGame.getGameModel()) != null)
-                && (Objects.equals(theGameModel.getId(), gameModelId))
-                && (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
-                || SecurityUtils.getSubject().isPermitted("Game:Edit:g" + theGame.getId())
-                || userFacade.matchCurrentUser(playerId))) {
-
-            VariableDescriptor context;
-            if (variableDescritptorId != null && variableDescritptorId > 0) {
-                context = variableDescriptorFacade.find(variableDescritptorId);
-            } else {
-                context = null;
-            }
-            logger.info("script for player " + playerId + ": " + script.getContent());
-
-            Object r = scriptManager.eval(playerId, script, context);
-            requestFacade.commit();
-            return r;
+        VariableDescriptor context;
+        if (variableDescritptorId != null && variableDescritptorId > 0) {
+            context = variableDescriptorFacade.find(variableDescritptorId);
         } else {
-            throw new UnauthorizedException();
+            context = null;
         }
+        logger.info("script for player " + playerId + ": " + script.getContent());
+
+        Object r = scriptManager.eval(playerId, script, context);
+        requestFacade.commit();
+        return r;
     }
 
     /**

@@ -14,7 +14,6 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -504,12 +503,23 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return all players from all teams and all games
      */
     @JsonIgnore
+    @Override
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>();
         for (Game g : this.getGames()) {
             players.addAll(g.getPlayers());
         }
         return players;
+    }
+
+    public Player getAnyLivePlayer(){
+        for (Game game : this.getGames()){
+            Player p = game.getAnyLivePlayer();
+            if (p != null){
+                return p;
+            }
+        }
+        return null;
     }
 
     /**

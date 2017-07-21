@@ -245,6 +245,10 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         return persisted;
     }
 
+    /**
+     * MUST BE PACKAGE PROTECTED !!! 
+     * @param persisted 
+     */
     void setPersisted(boolean persisted) {
         this.persisted = persisted;
     }

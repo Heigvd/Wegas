@@ -424,7 +424,7 @@ public class UserFacade extends BaseFacade<User> {
      */
     public boolean addRolePermission(final Long roleId, final String permission) {
         final Role r = roleFacade.find(roleId);
-        return r.addPermission(this.generatePermisssion(permission));
+        return r.addPermission(new Permission(permission));
     }
 
     /**
@@ -435,7 +435,7 @@ public class UserFacade extends BaseFacade<User> {
      * @return true if the permission has successfully been added
      */
     public boolean addUserPermission(final Long userId, final String permission) {
-        return this.addUserPermission(userId, this.generatePermisssion(permission));
+        return this.addUserPermission(userId, new Permission(permission));
     }
 
     /**
@@ -457,7 +457,8 @@ public class UserFacade extends BaseFacade<User> {
      * @return true if the permission has successfully been added
      */
     public boolean addUserPermission(final User user, final String permission) {
-        return user.addPermission(this.generatePermisssion(permission));
+        return user.addPermission(new Permission(permission));
+        //return user.addPermission(this.generatePermisssion(permission));
     }
 
     /**
@@ -468,10 +469,10 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @return true if the permission has successfully been added
      */
-    public boolean addUserPermission(final User user, final String permission, final String inducedPermission) {
+    /*public boolean addUserPermission(final User user, final String permission, final String inducedPermission) {
         Permission p = new Permission(permission, inducedPermission);
         return user.addPermission(p);
-    }
+    }*/
 
     /**
      * Generate a Permission based on its string representation
@@ -480,7 +481,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @return the generated permission
      */
-    private Permission generatePermisssion(final String permissionStr) {
+    /*private Permission generatePermisssion(final String permissionStr) {
         final Permission p = new Permission(permissionStr);
         final String splitedPermission[] = permissionStr.split(":");
 
@@ -490,7 +491,7 @@ public class UserFacade extends BaseFacade<User> {
             p.setInducedPermission("GameModel:View:gm" + g.getGameModelId());   // grant view access on its parent game model
         }
         return p;
-    }
+    }*/
 
     /**
      * @param instance
@@ -607,7 +608,7 @@ public class UserFacade extends BaseFacade<User> {
     public void addTrainerToGame(Long trainerId, Long gameId) {
         Game game = gameFacade.find(gameId);
         User user = this.find(trainerId);
-        this.addUserPermission(user, "Game:View,Edit:g" + gameId, "GameModel:View,Edit:gm" + game.getGameModelId());
+        this.addUserPermission(user, "Game:View,Edit:g" + gameId);
     }
 
     public void removeTrainer(Long gameId, User trainer) {

@@ -1,7 +1,6 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.test.AbstractEJBTestBase;
-import com.wegas.test.TestHelper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -95,8 +94,27 @@ public class UserFacadeTest extends AbstractEJBTestBase {
         Assert.assertTrue(a.getPermissions().isEmpty());
     }
 
+    @Test(expected = Exception.class)
+    public void testRoleUpdate_forbidden() throws Exception {
+        login(u);
+        final String PERM = "Game:*:*";
+
+        role2.addPermission(PERM);
+        roleFacade.update(role2.getId(), role2);
+        Role r = roleFacade.find(role2.getId());
+        Assert.assertEquals(PERM, r.getPermissions().get(0).getValue());
+
+        r.removePermission(PERM);
+        roleFacade.update(r.getId(), r);
+        r = roleFacade.find(r.getId());
+        Assert.assertTrue(r.getPermissions().isEmpty());
+    }
+
+
+
     @Test
     public void testRoleUpdate() throws Exception {
+        login(admin);
         final String PERM = "Game:*:*";
 
         role2.addPermission(PERM);

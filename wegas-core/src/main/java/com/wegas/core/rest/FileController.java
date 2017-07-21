@@ -9,6 +9,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
@@ -16,6 +17,7 @@ import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.FileDescriptor;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import org.apache.shiro.SecurityUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -63,6 +65,12 @@ public class FileController {
     @Inject
     private JCRFacade jcrFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
+    @Inject
+    private GameModelFacade gameModelFacade;
+    
     private ContentConnector getContentConnector(long gameModelId) throws RepositoryException {
         return ContentConnector.getFilesConnector(gameModelId);
     }
@@ -151,9 +159,10 @@ public class FileController {
         try (final ContentConnector connector = this.getContentConnector(gameModelId)) {
 
             fileDescriptor = DescriptorFactory.getDescriptor(name, connector);
-            if (!SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + gameModelId)) {
-                return response.status(403).build();
-            }
+            
+            GameModel gameModel = gameModelFacade.find(gameModelId);
+            requestManager.assertCanReadGameModel(gameModel);
+
             if (fileDescriptor instanceof FileDescriptor) {
                 FileDescriptor fileD = (FileDescriptor) fileDescriptor;
                 Date lastModified = fileD.getDataLastModified().getTime();

@@ -18,7 +18,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.security.util.SecurityHelper;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -69,22 +68,7 @@ public class PlayerController {
     @Path("{playerId : [1-9][0-9]*}")
     public Player get(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
-        SecurityHelper.checkPermission(p.getGame(), "View");
         return playerFacade.find(playerId);
-    }
-
-    /**
-     * Returns ALL players in the server ....
-     *
-     * @param gameId
-     *
-     * @return all players
-     */
-    @GET
-    public Collection<Player> index(@PathParam("gameId") Long gameId) {
-        // @fixme, @todo : seems the security permission is stupid...
-        SecurityHelper.checkPermission(gameFacade.find(gameId), "View");
-        return playerFacade.findAll();
     }
 
     /**
@@ -135,7 +119,6 @@ public class PlayerController {
     @PUT
     @Path("{playerId: [1-9][0-9]*}")
     public Player update(@PathParam("playerId") Long playerId, Player entity) {
-        SecurityHelper.checkPermission(playerFacade.find(playerId).getGame(), "Edit");
         return playerFacade.update(playerId, entity);
     }
 
@@ -148,9 +131,6 @@ public class PlayerController {
     @Path("{playerId: [1-9][0-9]*}")
     public Player delete(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
-        if (!userFacade.getCurrentUser().equals(p.getUser())) {
-            SecurityHelper.checkPermission(p.getGame(), "Edit");
-        }
         playerFacade.remove(p);
         return p;
     }
@@ -167,9 +147,6 @@ public class PlayerController {
     public Response reset(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
 
-        if (!userFacade.getCurrentUser().equals(p.getUser())) {
-            SecurityHelper.checkPermission(p.getGame(), "Edit");
-        }
         playerFacade.reset(p);
         return Response.ok().build();
     }

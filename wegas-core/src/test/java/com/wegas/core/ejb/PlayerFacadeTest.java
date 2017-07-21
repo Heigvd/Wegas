@@ -19,9 +19,9 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -64,12 +64,11 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().size()); // debugTeam and team
 
         Player p1 = gameFacade.joinTeam(t.getId(), user.getId());
-        
+
         Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1
 
         login(user2);
         Player p2 = gameFacade.joinTeam(t.getId(), user2.getId());
-
 
         Game ng = gameFacade.find(g.getId());
 
@@ -172,10 +171,13 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         return t;
     }
 
-    private Player createPlayer(Team t, int i, int j) {
+    private WegasUser createPlayer(Team t, int i, int j) {
         WegasUser u = PlayerFacadeTest.signup("massive_player_" + i + "_" + j + "@local");
 
-        return gameFacade.joinTeam(t.getId(), u.getId());
+        gameFacade.joinTeam(t.getId(), u.getId());
+        u.setUser(userFacade.find(u.getId()));
+
+        return u;
     }
 
     /**
@@ -183,18 +185,20 @@ public class PlayerFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testMassiveJoin() throws Exception {
-        int nbTeam = 100;
+        int nbTeam = 50;
         int nbPlayer = 10;
 
         login(trainer);
         Game g = new Game("game");
+        g.setAccess(Game.GameAccess.OPEN);
         g.setGameModel(gameModel);
         gameFacade.publishAndCreate(gameModel.getId(), g);
+        List<WegasUser> users = new ArrayList<>();
 
         for (int i = 0; i < nbTeam; i++) {
             Team t = createTeam(g, "T" + i);
             for (int j = 0; j < nbPlayer; j++) {
-                createPlayer(t, i, j);
+                users.add(createPlayer(t, i, j));
             }
         }
 
@@ -205,13 +209,19 @@ public class PlayerFacadeTest extends AbstractEJBTest {
             t = teamFacade.find(t.getId());
             if (t instanceof DebugTeam == false) {
                 Assert.assertEquals(nbPlayer, t.getPlayers().size());
-                for (Player p : t.getPlayers()) {
-                    Assert.assertEquals(1, p.getUser().getPermissions().size());
-                    Permission perm = p.getUser().getPermissions().get(0);
-                    Assert.assertEquals("Game:View:g" + g.getId(), perm.getValue());
-                    Assert.assertEquals("GameModel:View:gm" + g.getGameModel().getId(), perm.getInducedPermission());
-                }
             }
+        }
+
+        for (WegasUser wu : users){
+            login(wu);
+            Player p = wu.getUser().getPlayers().get(0);
+            Assert.assertTrue(requestManager.hasPlayerRight(p));
+            Assert.assertTrue(requestManager.hasTeamRight(p.getTeam()));
+            Assert.assertTrue(requestManager.hasGameReadRight(p.getGame()));
+            Assert.assertTrue(requestManager.hasGameModelReadRight(p.getGameModel()));
+
+            Assert.assertFalse(requestManager.hasGameWriteRight(p.getGame()));
+            Assert.assertFalse(requestManager.hasGameModelWriteRight(p.getGameModel()));
         }
 
     }

@@ -13,8 +13,6 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.util.SecurityHelper;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,18 +80,8 @@ public class StateMachineController {
 
         Player player = playerFacade.find(playerId);
 
-        checkPermissions(player.getGame().getId(), playerId);
         final StateMachineInstance stateMachineInstance = stateMachineFacade.doTransition(gameModelId, playerId, stateMachineDescriptorId, transitionId);
         requestFacade.commit(player);
         return stateMachineInstance;
     }
-
-    private void checkPermissions(Long gameId, Long playerId) throws UnauthorizedException {
-        if (!SecurityHelper.isPermitted(gameFacade.find(gameId), "Edit") && !userFacade.matchCurrentUser(playerId)) {
-            throw new UnauthorizedException();
-
-        }
-    }
-
-
 }

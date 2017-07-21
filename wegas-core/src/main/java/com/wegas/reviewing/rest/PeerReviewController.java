@@ -14,12 +14,10 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
@@ -30,7 +28,6 @@ import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  *
@@ -55,34 +52,16 @@ public class PeerReviewController {
     private ReviewingFacade reviewFacade;
 
     /**
-     * EJB User Facade
-     */
-    @EJB
-    private UserFacade userFacade;
-
-    /**
      * EJB Player Facade
      */
     @EJB
     private PlayerFacade playerFacade;
 
     /**
-     * EJB Variable Descriptor Facade
-     */
-    @EJB
-    private VariableDescriptorFacade descriptorFacade;
-
-    /**
      * EJB Variable Instance Facade
      */
     @EJB
     private VariableInstanceFacade instanceFacade;
-
-    /**
-     * EJB Game Facade
-     */
-    @EJB
-    private GameFacade gameFacade;
 
     /**
      * Return the VariableInstance to review, according to given peer review
@@ -106,8 +85,6 @@ public class PeerReviewController {
             Player player = playerFacade.find(playerId);
             Review review = reviewFacade.findReview(rId);
             PeerReviewInstance authorInstance = review.getAuthor();
-            // Make sure the currentPlayer can read the Author variable
-            assertReviewReadRight(review, player);
 
             PeerReviewDescriptor prd = (PeerReviewDescriptor) authorInstance.getDescriptor();
             VariableDescriptor toReview = prd.getToReview();
@@ -133,9 +110,6 @@ public class PeerReviewController {
             @PathParam("playerId") Long playerId,
             @PathParam("reviewDescriptorId") Long prdId) {
 
-        // Assert currentUser can edit the specified prd
-        checkPermissions(playerFacade.find(playerId).getGame(), playerId);
-
         reviewFacade.submit(prdId, playerId);
         requestFacade.commit(); // Player scoped
 
@@ -157,27 +131,9 @@ public class PeerReviewController {
             @PathParam("reviewDescriptorId") Long prdId,
             @PathParam("gameId") Long gameId
     ) {
-        assertTeacherRight(prdId, gameId);
         List<PeerReviewInstance> touched = reviewFacade.dispatch(prdId);
         this.commit(touched);
         return Response.ok().build();
-    }
-
-    /**
-     * Make sure the current user has teacher right
-     *
-     * @param prdId  the peer review descriptor
-     * @param gameId the current game
-     */
-    private void assertTeacherRight(Long prdId, Long gameId) {
-        List<Game> games = descriptorFacade.find(prdId).getGameModel().getGames();
-        Game game = gameFacade.find(gameId);
-
-        // Assert the game correspong to one of the prd gameModel games
-        if (!(games.contains(game)
-                && SecurityHelper.isPermitted(game, "Edit"))) {
-            throw new UnauthorizedException();
-        }
     }
 
     /**
@@ -192,7 +148,6 @@ public class PeerReviewController {
         Review review = reviewFacade.findReview(other.getId());
         Player player = playerFacade.find(playerId);
         PeerReviewInstance instance = reviewFacade.getPeerReviewInstanceFromReview(review, player);
-        assertReviewWriteRight(review, player);
         reviewFacade.saveReview(instance, other);
         return instance;
     }
@@ -211,7 +166,6 @@ public class PeerReviewController {
     @Path("/SubmitReview/{playerId: [1-9][0-9]*}")
     public PeerReviewInstance submitReview(Review review, @PathParam("playerId") Long playerId) {
         Player player = playerFacade.find(playerId);
-        assertReviewWriteRight(reviewFacade.findReview(review.getId()), player);
         Review submitedReview = reviewFacade.submitReview(review, player);
         requestFacade.commit(); // Player scoped
         return reviewFacade.getPeerReviewInstanceFromReview(submitedReview, player);
@@ -232,7 +186,6 @@ public class PeerReviewController {
             @PathParam("reviewDescriptorId") Long prdId,
             @PathParam("gameId") Long gameId
     ) {
-        assertTeacherRight(prdId, gameId);
         List<PeerReviewInstance> touched = reviewFacade.notify(prdId);
         this.commit(touched);
         return Response.ok().build();
@@ -253,60 +206,9 @@ public class PeerReviewController {
             @PathParam("reviewDescriptorId") Long prdId,
             @PathParam("gameId") Long gameId
     ) {
-        assertTeacherRight(prdId, gameId);
         List<PeerReviewInstance> touched = reviewFacade.close(prdId);
         this.commit(touched);
         return Response.ok().build();
-    }
-
-    /* ************************
-     *  Security
-     * ************************/
-    /**
-     * Make sure the current user can read the given review
-     *
-     * @param r the review to read
-     */
-    private void assertReviewReadRight(Review r, Player player) {
-        PeerReviewInstance pri = reviewFacade.getPeerReviewInstanceFromReview(r, player);
-        Game game = instanceFacade.findGame(pri);
-
-        if (!((SecurityHelper.isPermitted(game, "Edit"))
-                || // Teacher/Scenarist
-                (pri.getToReview().contains(r))
-                || (pri.getReviewed().contains(r)))) { // Author when review the feedback
-            throw new UnauthorizedException(); // Not one of this case ? NOT AUTHORIZED
-        }
-    }
-
-    /**
-     * Make sure current user can edit the given review
-     *
-     * @param r the review to edit
-     */
-    private void assertReviewWriteRight(Review r, Player player) {
-        PeerReviewInstance pri = reviewFacade.getPeerReviewInstanceFromReview(r, player);
-        Game game = instanceFacade.findGame(pri);
-
-        if (!((SecurityHelper.isPermitted(game, "Edit"))
-                || // Teacher/Scenarist
-                (r.getReviewState() == Review.ReviewState.DISPATCHED && pri.getToReview().contains(r)) // Reviewer when reviewing
-                || (r.getReviewState() == Review.ReviewState.NOTIFIED && pri.getReviewed().contains(r)))) { // Author when review the feedback
-            throw new UnauthorizedException(); // Not one of this case ? NOT AUTHORIZED
-        }
-    }
-
-    /**
-     * Assert the current user can act as given player
-     *
-     * @param game     current game
-     * @param playerId player context
-     * @throws UnauthorizedException
-     */
-    private void checkPermissions(Game game, Long playerId) throws UnauthorizedException {
-        if (!SecurityHelper.isPermitted(game, "Edit") && !userFacade.matchCurrentUser(playerId)) {
-            throw new UnauthorizedException();
-        }
     }
 
     private void commit(List<PeerReviewInstance> instances) {

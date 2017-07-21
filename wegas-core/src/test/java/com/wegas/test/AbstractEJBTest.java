@@ -64,11 +64,6 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
 
-    @BeforeClass
-    public static void setUpClass() throws NamingException {
-        AbstractEJBTestBase.setUpFacades(".");
-    }
-
     @Before
     public final void setUp() throws NamingException, WegasNoResultException, SQLException, IOException {
         login(admin);

@@ -532,7 +532,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         for (Permission p : resultList) {
             processPermission(p.getValue(), gmMatrix, gMatrix, gmStatus, gStatus);
-            processPermission(p.getInducedPermission(), gmMatrix, gMatrix, gmStatus, gStatus);
+            //processPermission(p.getInducedPermission(), gmMatrix, gMatrix, gmStatus, gStatus);
         }
     }
 

@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -26,7 +27,6 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
-import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
@@ -101,6 +101,9 @@ public class UserController {
     @Inject
     private PopulatorFacade populatorFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
     /**
      * @return list of all users, sorted by names
      *
@@ -159,7 +162,7 @@ public class UserController {
         if (g instanceof DebugGame) {
             return null;
         }
-        SecurityHelper.checkPermission(g, "Edit");
+        requestManager.assertGameTrainer(g);
 
         List<String> emails = new ArrayList<String>();
         for (Team t : g.getTeams()) {
@@ -175,6 +178,7 @@ public class UserController {
      * the same game.
      *
      * @param gameId
+     * @param teamId
      *
      * @return
      */
@@ -190,7 +194,7 @@ public class UserController {
             return null;
         }
         // Caller must be trainer for the given game:
-        SecurityHelper.checkPermission(g, "Edit");
+        requestManager.assertGameTrainer(g);
         return collectEmails(t);
     }
 
@@ -201,14 +205,10 @@ public class UserController {
      */
     protected List<String> collectEmails(Team team) {
         List<String> emails = new ArrayList<>();
-        if (team instanceof DebugTeam) {
+        if (team instanceof DebugTeam || team.getPlayers().isEmpty()) {
             return emails;
         }
-        List<Player> players = team.getPlayers();
-        if (players.size() == 0) {
-            return emails;
-        }
-        for (Player p : players) {
+        for (Player p : team.getPlayers()) {
             if (p.getName().equals("Guest")) {
                 emails.add("Guest");
             } else {
@@ -756,16 +756,15 @@ public class UserController {
     @Path("Current/Team/{teamId}")
     public Team getTeamByCurrentUser(@PathParam("teamId") Long teamId) {
         User currentUser = userFacade.getCurrentUser();
-        
-        Player thePlayer = playerFacade.checkExistingPlayerInTeam(teamId, currentUser.getId());
 
-        if (thePlayer != null){
+        Player thePlayer = playerFacade.findPlayerInTeam(teamId, currentUser.getId());
+
+        if (thePlayer != null) {
             return thePlayer.getTeam();
         } else {
             return null;
         }
 
-       
     }
 
     /**

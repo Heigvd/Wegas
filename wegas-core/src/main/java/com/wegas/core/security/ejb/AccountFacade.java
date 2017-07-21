@@ -96,18 +96,16 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
         AbstractAccount oAccount = super.update(entityId, account);
 
-        if (SecurityUtils.getSubject().isPermitted("User:Edit:" + entityId)) {
-            Set<Role> revivedRoles = new HashSet<>();
-            for (Role r : account.getDeserialisedRoles()) {
-                try {
-                    revivedRoles.add(roleFacade.find(r.getId()));
-                } catch (EJBException e) {
-                    // not able to revive this role
-                }
+        Set<Role> revivedRoles = new HashSet<>();
+        for (Role r : account.getDeserialisedRoles()) {
+            try {
+                revivedRoles.add(roleFacade.find(r.getId()));
+            } catch (EJBException e) {
+                // not able to revive this role
             }
-            oAccount.getUser().setRoles(revivedRoles);
-            //oAccount.setRoles(revivedRoles);
         }
+        oAccount.getUser().setRoles(revivedRoles);
+        //oAccount.setRoles(revivedRoles);
 
         return oAccount;
     }

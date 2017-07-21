@@ -38,7 +38,6 @@ public class SecurityTest extends AbstractEJBTest {
         userFacade.addRole(guestLogin.getId(), roleFacade.findByName("Trainer").getId());
     }
 
-
     @Test(expected = WegasScriptException.class)
     public void testQuit() {
         String script = "quit();";
@@ -73,13 +72,10 @@ public class SecurityTest extends AbstractEJBTest {
         User currentUser = userFacade.getCurrentUser();
     }
 
-    @Test
-    public void grantGameRightToPlayer(){
+    @Test(expected = EJBException.class)
+    public void grantGameRightToPlayer() {
         login(user);
-        
         userFacade.addTrainerToGame(user.getId(), game.getId());
-        
-
     }
 
 }

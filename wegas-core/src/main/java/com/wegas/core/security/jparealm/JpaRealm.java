@@ -83,7 +83,10 @@ public class JpaRealm extends AuthorizingRealm {
                 }
 
                 for (Permission p : userFacade.findAllUserPermissions(user)) {
-                    addPermissions(info, p);
+                    // not yet persisted permission should be ignored
+                    if (p.isPersisted()) {
+                        addPermissions(info, p);
+                    }
                 }
             }
             return info;
@@ -110,8 +113,8 @@ public class JpaRealm extends AuthorizingRealm {
      */
     public static void addPermissions(SimpleAuthorizationInfo info, Permission p) {
         info.addStringPermission(p.getValue());
-        if (p.getInducedPermission() != null && !p.getInducedPermission().isEmpty()) {
+        /*if (p.getInducedPermission() != null && !p.getInducedPermission().isEmpty()) {
             info.addStringPermission(p.getInducedPermission());
-        }
+        }*/
     }
 }

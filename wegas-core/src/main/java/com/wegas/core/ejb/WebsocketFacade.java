@@ -26,22 +26,18 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.PusherChannelExistenceWebhook;
-import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
-import com.wegas.core.security.util.SecurityHelper;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import io.prometheus.client.Gauge;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.cache.Cache;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -134,7 +130,7 @@ public class WebsocketFacade {
     }
 
     /**
-     * Get all channels based on entites
+     * Get all channels based on entities
      *
      * @param entities
      *
@@ -146,25 +142,23 @@ public class WebsocketFacade {
 
         for (AbstractEntity entity : entities) {
             if (entity instanceof GameModel) {
-                if (SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + entity.getId())) {
+                if (requestManager.hasGameModelReadRight((GameModel) entity)){
                     channel = ((GameModel) entity).getChannel();
                 }
             } else if (entity instanceof Game) {
-                if (SecurityHelper.isPermitted((Game) entity, "View")) {
+                if (requestManager.hasGameReadRight((Game) entity)) {
                     channel = ((Game) entity).getChannel();
                 }
             } else if (entity instanceof Team) {
                 Team team = (Team) entity;
                 User user = userFacade.getCurrentUser();
-                if (SecurityHelper.isPermitted(team.getGame(), "Edit") // Trainer and scenarist 
-                        || playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null) { // or member of team
+
+                if (requestManager.hasTeamRight(team)){
                     channel = ((Team) entity).getChannel();
                 }
             } else if (entity instanceof Player) {
                 Player player = (Player) entity;
-                User user = userFacade.getCurrentUser();
-                if (SecurityHelper.isPermitted(player.getGame(), "Edit") // Trainer and scenarist 
-                        || player.getUser() == user) { // is the player
+                if (requestManager.hasPlayerRight(player)){
                     channel = ((Player) entity).getChannel();
                 }
             }
