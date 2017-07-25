@@ -158,12 +158,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                 //defaultInstance.setCurrentResult(cr);
                 choice.changeCurrentResult(choiceInstance, cr);
             }
-        } else if (event.getEntity() instanceof ChoiceInstance) {
-            ChoiceInstance cInstance = (ChoiceInstance) event.getEntity();
-            ChoiceDescriptor cDescriptor = (ChoiceDescriptor) cInstance.findDescriptor();
-            for (Reply r : cInstance.getReplies()) {
+            for (Reply r : choiceInstance.getReplies()) {
                 try {
-                    Result result = findResult(cDescriptor, r.getResultName());
+                    Result result = findResult(choice, r.getResultName());
                     result.addReply(r);
                     r.setResult(result);
                 } catch (WegasNoResultException ex) {
