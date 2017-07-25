@@ -390,10 +390,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor's id through its scope for regular instance or 
+     * Get instance descriptor's id through its scope for regular instance or
      * the default descriptor's id for default instances
      *
-     * @return descriptor id 
+     * @return descriptor id
      */
     @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
@@ -466,6 +466,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * Id of the team owning the instance
      *
      * @return team's id or null if instance is not a team instance
+     *
      * @JsonIgnore public Long getTeamScopeKey() { return teamScopeKey; }
      */
     /**
@@ -476,6 +477,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * Id of player owning the instance
      *
      * @return player's id or null if this is not a player instance
+     *
      * @JsonIgnore public Long getPlayerScopeKey() { return playerScopeKey; }
      */
     /**
@@ -538,6 +540,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     /**
      * @return the gameScopeKey
+     *
      * @JsonIgnore public Long getGameScopeKey() { return gameScopeKey; }
      */
     /**
@@ -545,6 +548,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * one
      *
      * @return instance descriptor
+     *
      * @deprecated {@link #findDescriptor()}
      */
     @JsonIgnore
@@ -631,17 +635,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             //Default instance
             return this.getDefaultDescriptor().getRequieredCreatePermission();
         } else {
-            InstanceOwner owner =this.getBroadcastTarget();
-            if (owner instanceof AbstractEntity) {
-                if (((AbstractEntity) owner).isPersisted()) {
-                    return owner.getChannel();
-                } else {
-                    // owner not yet in database, no need to check permission
-                    return null;
-                }
-            } else {
-                throw WegasErrorMessage.error("Unreachable statement");
-            }
+            InstanceOwner owner = this.getBroadcastTarget();
+            return owner.getChannel();
         }
     }
 

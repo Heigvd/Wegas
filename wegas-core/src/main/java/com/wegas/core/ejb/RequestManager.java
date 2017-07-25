@@ -47,6 +47,13 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.security.aai.AaiRealm;
+import com.wegas.core.security.guest.GuestRealm;
+import com.wegas.core.security.jparealm.JpaRealm;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.realm.Realm;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.util.ThreadContext;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -662,6 +669,7 @@ public class RequestManager implements RequestManagerI {
      */
     @PostConstruct
     public void postConstruct() {
+        logger.error("NEW REQUEST SCOPE");
         this.markProcessingStartTime();
     }
 
@@ -671,6 +679,7 @@ public class RequestManager implements RequestManagerI {
 
     @PreDestroy
     public void preDestroy() {
+        logger.error("END OF REQUEST SCOPE");
         for (Entry<String, List<String>> entry : lockedToken.entrySet()) {
             //logger.error("PreDestroy Unlock: key: " + entry.getKey());
             for (String audience : entry.getValue()) {
@@ -724,19 +733,30 @@ public class RequestManager implements RequestManagerI {
         this.grantedPermissions.clear();
     }
 
+    private boolean hasDirectGameModelEditPermission(Subject subject, GameModel gameModel) {
+        return subject.isPermitted("GameModel:Edit:gm" + gameModel.getId());
+    }
+
+    private boolean hasDirectGameEditPermission(Subject subject, Game game) {
+        return subject.isPermitted("Game:Edit:gm" + game.getId());
+    }
+
     private boolean hasGamePermission(Subject subject, Game game, boolean superPermission) {
 
         if (game instanceof DebugGame) {
             // when checked against a DebugGame, must have scenarist rights
             return this.hasGameModelPermission(subject, game.getGameModel(), superPermission);
         } else {
-            return subject.isPermitted("Game:Edit:g" + game.getId()) // Is trainer 
+            return this.hasDirectGameEditPermission(subject, game) //has edit right on  the game
+                    || this.hasDirectGameModelEditPermission(subject, game.getGameModel()) // or on the game model
                     || (!superPermission && playerFacade.isInGame(game.getId(), this.getCurrentUser().getId())); // or is player if no superPerm is req.
         }
     }
 
     private boolean hasGameModelPermission(Subject subject, GameModel gameModel, boolean superPermission) {
-        if (gameModel.getStatus().equals(GameModel.Status.PLAY)) {
+        if (hasDirectGameModelEditPermission(subject, gameModel)) {
+            return true;
+        } else if (gameModel.getStatus().equals(GameModel.Status.PLAY)) {
             /**
              * GameModel permission against a "PLAY" gameModel.
              */
@@ -754,7 +774,7 @@ public class RequestManager implements RequestManagerI {
 
             long id = gameModel.getId();
             if (superPermission) {
-                return subject.isPermitted("GameModel:Edit:gm" + id);
+                return hasDirectGameModelEditPermission(subject, gameModel);
             } else {
                 if (subject.hasRole("Trainer") && subject.isPermitted("GameModel:Instantiate:gm" + id)) {
                     //For trainer, instantiate means read
@@ -797,10 +817,10 @@ public class RequestManager implements RequestManagerI {
 
                 Team team = teamFacade.find(id);
 
-                // Current logged User is linked to a player who's member of the team or current user has edit right one the game
                 return currentUser != null && team != null
-                        && (playerFacade.isInTeam(team.getId(), currentUser.getId())
-                        || this.hasGamePermission(subject, team.getGame(), true));
+                        && (playerFacade.isInTeam(team.getId(), currentUser.getId()) // Current logged User is linked to a player who's member of the team 
+                        || currentUser.equals(team.getCreatedBy()) // or current user is the team creator
+                        || this.hasGamePermission(subject, team.getGame(), true)); // or current user has edit right one the game
             } else if ("Player".equals(type)) {
                 Player player = playerFacade.find(id);
 
@@ -833,7 +853,7 @@ public class RequestManager implements RequestManagerI {
 
                 boolean superPermission = false;
 
-                String effectiveChannel= channel;
+                String effectiveChannel = channel;
                 if (effectiveChannel.startsWith("W-")) {
                     effectiveChannel = effectiveChannel.replaceFirst("W-", "");
                     superPermission = true;
@@ -928,7 +948,7 @@ public class RequestManager implements RequestManagerI {
     public boolean hasPlayerRight(final Player player) {
         return this.hasPermission(player.getChannel());
     }
-    
+
     public boolean canRestoreGameModel(final GameModel gameModel) {
         Subject s = SecurityUtils.getSubject();
         String id = "gm" + gameModel.getId();
@@ -960,4 +980,52 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    public void su() {
+        this.su(1l);
+    }
+
+    public void su(Long accountId) {
+        try {
+            Subject subject = SecurityUtils.getSubject();
+
+            logger.error("SU: User " + subject.getPrincipal() + " : SU to " + accountId);
+            // The subject exists
+            SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
+            subject.runAs(newSubject);
+        } catch (Exception ex) {
+            // The subject does not exists -> create from strach and bind
+            Collection<Realm> realms = new ArrayList<>();
+            realms.add(new JpaRealm());
+            realms.add(new AaiRealm());
+            realms.add(new GuestRealm());
+
+            SecurityUtils.setSecurityManager(new DefaultSecurityManager(realms));
+
+            Subject.Builder b = new Subject.Builder();
+            SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
+            b.authenticated(true).principals(newSubject);
+
+            Subject buildSubject = b.buildSubject();
+            ThreadContext.bind(buildSubject);
+
+            logger.error("SU: No-User SU to " + buildSubject.getPrincipal());
+        }
+        this.getCurrentUser();
+    }
+
+    public void releaseSu() {
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            if (subject.isRunAs()) {
+                logger.error("Su-Exit: User " + subject.getPreviousPrincipals().toString() + " release " + subject.getPrincipal());
+                subject.releaseRunAs();
+            } else {
+                logger.error("Su-Exit LOGOUT");
+                subject.logout();
+            }
+            this.getCurrentUser();
+        } catch (Exception ex) {
+            logger.error("EX: " + ex);
+        }
+    }
 }

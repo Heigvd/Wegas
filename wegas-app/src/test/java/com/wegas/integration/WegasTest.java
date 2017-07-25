@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.persistence.Role;
@@ -88,6 +89,7 @@ public class WegasTest {
     public void setUp() throws IOException, JSONException {
         logger.error("LOGIN as root");
         client.login(root);
+        client.get("/rest/Utils/SetPopulatingSynchronous");
         loadArtos();
     }
 
@@ -160,7 +162,11 @@ public class WegasTest {
 
         Team newTeam = client.post("/rest/GameModel/Game/" + gameToJoin.getId() + "/Team", teamToCreate, Team.class);
 
+        Assert.assertEquals(Populatable.Status.LIVE, newTeam.getStatus());
+
         Team joinedTeam = client.post("/rest/GameModel/Game/Team/" + newTeam.getId() + "/Player", null, Team.class);
+        Assert.assertEquals(1, joinedTeam.getPlayers().size());
+        Assert.assertEquals(Populatable.Status.LIVE, joinedTeam.getPlayers().get(0).getStatus());
 
         client.login(user);
 
@@ -182,6 +188,7 @@ public class WegasTest {
         Game myGame = client.postJSON_asString("/rest/GameModel/" + this.artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}", Game.class);
 
         Game myGameFromGet = client.get("/rest/GameModel/Game/" + myGame.getId(), Game.class);
+
 
         /* Is the debug team present */
         Assert.assertEquals(1, myGameFromGet.getTeams().size());

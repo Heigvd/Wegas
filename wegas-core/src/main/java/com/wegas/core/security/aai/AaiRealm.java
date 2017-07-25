@@ -3,10 +3,6 @@ package com.wegas.core.security.aai;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.Permission;
-import com.wegas.core.security.persistence.Role;
-import com.wegas.core.security.persistence.User;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -14,10 +10,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.LoggerFactory;
 import org.apache.shiro.realm.AuthorizingRealm;
 
-import javax.ejb.EJBException;
 import javax.naming.NamingException;
 
-import static com.wegas.core.security.jparealm.JpaRealm.addPermissions;
 
 /**
  * Wegas

@@ -19,17 +19,6 @@ var ReviewHelper = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");
 
-    /**
-     * 
-     * @param {type} name bean name
-     * @returns {unresolved}
-     */
-    function lookupBean(name) {
-        "use strict";
-        var ctx = new javax.naming.InitialContext();
-        return ctx.lookup('java:module/' + name);
-    }
-
 
     /*
      * { 
@@ -206,7 +195,6 @@ var ReviewHelper = (function() {
             evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
             evDescriptors = {}, tmp, key, expectedStatus = null, workDone,
             maxNumberOfValue = 0,
-            instanceFacade = lookupBean("VariableInstanceFacade"),
             maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
             aPlayer,
             monitoring = {
@@ -265,7 +253,7 @@ var ReviewHelper = (function() {
             pri = pris[team];
 
             if (team.getPlayers().size() > 0) {
-                aPlayer = instanceFacade.findAPlayer(pri);
+                aPlayer = Instance.findAPlayer(pri);
             } else {
                 aPlayer = null;
             }

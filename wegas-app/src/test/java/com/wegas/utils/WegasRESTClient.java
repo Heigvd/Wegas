@@ -140,7 +140,7 @@ public class WegasRESTClient {
         return getObjectMapper().readValue(this.get(url), valueType);
     }
 
-    private String get(String url) throws IOException {
+    public String get(String url) throws IOException {
         HttpUriRequest get = new HttpGet(baseURL + url);
         setHeaders(get);
 

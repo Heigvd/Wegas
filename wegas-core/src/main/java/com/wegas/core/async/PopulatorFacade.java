@@ -74,6 +74,9 @@ public class PopulatorFacade {
     @Inject
     private GameModelFacade gameModelFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
     @Resource
     private UserTransaction utx;
 
@@ -85,9 +88,10 @@ public class PopulatorFacade {
      * @param teamId
      */
     public void populateTeam(Long teamId) {
+        Team team = teamFacade.find(teamId);
+        requestManager.su(team.getCreatedBy().getMainAccount().getId());
         try {
             utx.begin();
-            Team team = teamFacade.find(teamId);
             Game game = gameFacade.find(team.getGameId());
             gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
 
@@ -104,20 +108,24 @@ public class PopulatorFacade {
                 }
                 try {
                     utx.begin();
-                    Team team = teamFacade.find(teamId);
+                    team = teamFacade.find(teamId);
                     this.postpone(team);
                     utx.commit();
                 } catch (Exception ex1) {
                     logger.error("Fails to revert Team status");
                 }
             }
+        } finally {
+            requestManager.releaseSu();
         }
     }
 
     public void populatePlayer(Long playerId) {
+        Player player = playerFacade.find(playerId);
+        requestManager.su(player.getUser().getMainAccount().getId());
+
         try {
             utx.begin();
-            Player player = playerFacade.find(playerId);
             // Inform player's user its player is porocessing
 
             websocketFacade.propagateNewPlayer(player);
@@ -143,13 +151,15 @@ public class PopulatorFacade {
 
                 try {
                     utx.begin();
-                    Player player = playerFacade.find(playerId);
+                    player = playerFacade.find(playerId);
                     this.postpone(player);
                     utx.commit();
                 } catch (Exception ex1) {
                     logger.error("Fails to revert Team status");
                 }
             }
+        } finally {
+            requestManager.releaseSu();
         }
     }
 
@@ -203,10 +213,12 @@ public class PopulatorFacade {
     }
 
     public void setForceQuit(boolean forceQuit) {
-        this.forceQuit = forceQuit;
+        PopulatorFacade.forceQuit = forceQuit;
     }
 
     public AbstractEntity getNextOwner(Populator currentCreator) {
+        requestManager.su();
+
         AbstractEntity owner = null;
 
         ILock lock = this.getLock();
@@ -264,7 +276,12 @@ public class PopulatorFacade {
             }
         } finally {
             lock.unlock();
+            requestManager.releaseSu();
         }
         return owner;
+    }
+
+    public PopulatorScheduler getPopulatorScheduler() {
+        return populatorScheduler;
     }
 }

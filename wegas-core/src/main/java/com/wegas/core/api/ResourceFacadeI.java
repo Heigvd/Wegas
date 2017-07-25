@@ -9,6 +9,7 @@
 package com.wegas.core.api;
 
 import com.wegas.core.persistence.game.Player;
+import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
 import com.wegas.resourceManagement.persistence.Occupation;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
@@ -16,6 +17,17 @@ import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 
 public interface ResourceFacadeI {
+
+    /**
+     * Add an occupation for a resource at the given time
+     *
+     * @param resourceInstanceId
+     * @param editable
+     * @param time
+     *
+     * @return the new resource occupation
+     */
+    Occupation addOccupation(Long resourceInstanceId, Boolean editable, double time);
 
     /**
      * Assign a resource to a task
@@ -26,6 +38,35 @@ public interface ResourceFacadeI {
      * @return the new assignment
      */
     Assignment assign(Long resourceInstanceId, Long taskInstanceId);
+
+    /**
+     * Change activity sub requirements. If a resource continue to work on the
+     * same task, but on a different requirements,
+     * <p>
+     * THIS BEHAVIOUR SHOULD NOT EXIST. IMO, different req means different
+     * activity
+     *
+     * @param activity
+     * @param newReq
+     */
+    void changeActivityReq(Activity activity, WRequirement newReq);
+
+    /**
+     * @param activityId
+     * @param newReqId
+     */
+    void changeActivityReq(Long activityId, Long newReqId);
+
+    /**
+     * Create an Activity (ie. a resourceInstance worked on a specific
+     * taskInstance)
+     *
+     * @param resourceInstanceId
+     * @param taskInstanceId
+     *
+     * @return the new activity
+     */
+    Activity createActivity(Long resourceInstanceId, Long taskInstanceId);
 
     /**
      *

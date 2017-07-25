@@ -286,6 +286,7 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @return the new resource occupation
      */
+    @Override
     public Occupation addOccupation(Long resourceInstanceId,
             Boolean editable,
             double time) {

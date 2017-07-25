@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.security.persistence.User;
 ////import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -39,7 +40,8 @@ import com.wegas.core.persistence.InstanceOwner;
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId"),
+    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")
+    ,
     @NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
 public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
@@ -108,6 +110,11 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     @JsonBackReference(value = "game-team")
     private Game game;
 
+    private User createdBy;
+
+    @Transient
+    private User createdBy_transient;
+
     /**
      *
      * @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
@@ -132,7 +139,22 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     public Team(String name, int declaredSize) {
         this.name = name;
-        this.setDeclaredSize(declaredSize);
+        this.declaredSize = declaredSize;
+    }
+
+    @JsonIgnore
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy_transient) {
+        this.createdBy_transient = createdBy_transient;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        // setting createdBy is only allowed before team is actually presisted
+        this.createdBy = createdBy_transient;
     }
 
     /**
@@ -170,9 +192,9 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @JsonIgnore
-    public Player getAnyLivePlayer(){
-        for (Player p : this.getPlayers()){
-            if (p.getStatus().equals(Populatable.Status.LIVE)){
+    public Player getAnyLivePlayer() {
+        for (Player p : this.getPlayers()) {
+            if (p.getStatus().equals(Populatable.Status.LIVE)) {
                 return p;
             }
         }

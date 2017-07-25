@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
@@ -51,7 +52,7 @@ import com.wegas.core.persistence.InstanceOwner;
  */
 @Stateless
 @LocalBean
-public class GameModelFacade extends BaseFacade<GameModel> {
+public class GameModelFacade extends BaseFacade<GameModel> implements GameModelFacadeI {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelFacade.class);
 
@@ -118,9 +119,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
+        userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
+
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));
-        userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
     }
 
     /**

@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.api.VariableInstanceFacadeI;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoPlayerException;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
+public class VariableInstanceFacade extends BaseFacade<VariableInstance> implements VariableInstanceFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(VariableInstanceFacade.class);
     /**

@@ -8,6 +8,7 @@
 package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.api.IterationFacadeI;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -16,7 +17,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownInstance;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class IterationFacade extends BaseFacade<Iteration> {
+public class IterationFacade extends BaseFacade<Iteration> implements IterationFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(IterationFacade.class);
 
@@ -65,35 +65,42 @@ public class IterationFacade extends BaseFacade<Iteration> {
         return (BurndownInstance) variableInstanceFacade.find(burndownInstanceId);
     }
 
+    @Override
     public Iteration addIteration(BurndownInstance burndownInstance, Iteration iteration) {
         // Check iteration integrity
         burndownInstance.addIteration(iteration);
         return iteration;
     }
 
+    @Override
     public Iteration addIteration(Long burndownInstanceId, Iteration iteration) {
         return this.addIteration(this.findBurndownInstance(burndownInstanceId), iteration);
     }
 
+    @Override
     public void removeIteration(Long iterationId) {
         Iteration findIteration = this.find(iterationId);
         getEntityManager().remove(findIteration);
     }
 
+    @Override
     public void addTaskToIteration(TaskInstance task, Iteration iteration) {
         iteration.addTask(task);
         task.getIterations().add(iteration);
     }
 
+    @Override
     public void addTaskToIteration(Long taskInstanceId, Long iterationId) {
         this.addTaskToIteration((TaskInstance) variableInstanceFacade.find(taskInstanceId), this.find(iterationId));
     }
 
+    @Override
     public void removeTaskFromIteration(TaskInstance task, Iteration iteration) {
         iteration.removeTask(task);
         task.getIterations().remove(iteration);
     }
 
+    @Override
     public void removeTaskFromIteration(Long taskInstanceId, Long iterationId) {
         this.removeTaskFromIteration((TaskInstance) variableInstanceFacade.find(taskInstanceId), this.find(iterationId));
     }

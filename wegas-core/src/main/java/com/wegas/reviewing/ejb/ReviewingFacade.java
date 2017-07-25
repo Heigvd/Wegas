@@ -46,6 +46,7 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.api.ReviewingFacadeI;
 
 /**
  *
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class ReviewingFacade {
+public class ReviewingFacade implements ReviewingFacadeI{
 
     static final private Logger logger = LoggerFactory.getLogger(ReviewingFacade.class);
 
@@ -133,6 +134,7 @@ public class ReviewingFacade {
      * @param prd the PeerReview Descriptor
      * @param p   the player submitting
      */
+    @Override
     public void submit(PeerReviewDescriptor prd, Player p) {
         PeerReviewInstance instance = prd.getInstance(p);
         if (instance.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED || instance.getReviewState() == PeerReviewDescriptor.ReviewingState.SUBMITTED) {

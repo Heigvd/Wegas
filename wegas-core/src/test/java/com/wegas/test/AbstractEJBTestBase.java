@@ -9,6 +9,8 @@ package com.wegas.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
+import com.wegas.core.async.PopulatorFacade;
+import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -45,7 +47,6 @@ import com.wegas.resourceManagement.ejb.ResourceFacade;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
@@ -69,6 +70,9 @@ public class AbstractEJBTestBase {
     // *** Static *** //
     protected static final Logger logger = LoggerFactory.getLogger(AbstractEJBTestBase.class);
     protected static EJBContainer ejbContainer = null;
+
+    protected static PopulatorFacade populatorFacade;
+    protected static PopulatorScheduler populatorScheduler;
 
     protected static GameModelController gameModelController;
     protected static GameController gameController;
@@ -121,6 +125,9 @@ public class AbstractEJBTestBase {
 
         if (ejbContainer == null) {
             ejbContainer = TestHelper.getEJBContainer(rootPath);
+
+            populatorFacade = lookupBy(PopulatorFacade.class);
+            populatorScheduler = populatorFacade.getPopulatorScheduler();
 
             gameModelController = lookupBy(GameModelController.class);
             gameController = lookupBy(GameController.class);

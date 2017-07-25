@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.async.PopulatorScheduler;
-import java.util.concurrent.Future;
 import javax.inject.Singleton;
 import javax.enterprise.inject.Specializes;
 import org.slf4j.Logger;
@@ -24,22 +23,16 @@ public class MockPopulatorScheduler extends PopulatorScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(MockPopulatorScheduler.class);
 
-    /**
-     * Just a hack to make the scheduleCreation process synchronous again
-     */
-    @Override
-    public void scheduleCreation() {
-        Future<Integer> scheduleCreation = super.internalScheduleCreation();
-        try {
-            Integer get = scheduleCreation.get();
-        } catch (Exception ex) {
-            logger.error("EX: ", ex);
-        }
+    public MockPopulatorScheduler(){
+        super();
+        this.broadcast = false;
+        this.async = false;
     }
 
     /**
      * Do not start any populator at start
      */
+    @Override
     public void startAllLocalPopulators() {
     }
 }

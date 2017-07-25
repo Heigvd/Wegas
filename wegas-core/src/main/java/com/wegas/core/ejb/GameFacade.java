@@ -553,7 +553,8 @@ public class GameFacade extends BaseFacade<Game> {
         }
         g.addTeam(t);
         g = this.find(gameId);
-        this.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
+        t.setCreatedBy(userFacade.getCurrentUser());
+        //this.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
         getEntityManager().persist(t);
 
         return t;

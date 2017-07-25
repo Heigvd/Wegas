@@ -10,11 +10,18 @@ package com.wegas.core.ejb;
 import com.wegas.core.api.DelayedScriptEventFacadeI;
 import com.wegas.core.api.ScriptEventFacadeI;
 import com.wegas.core.Helper;
+import com.wegas.core.api.GameModelFacadeI;
+import com.wegas.core.api.IterationFacadeI;
+import com.wegas.core.api.QuestionDescriptorFacadeI;
 import com.wegas.core.api.RequestManagerI;
 import com.wegas.core.api.ResourceFacadeI;
+import com.wegas.core.api.ReviewingFacadeI;
+import com.wegas.core.api.StateMachineFacadeI;
 import com.wegas.core.api.VariableDescriptorFacadeI;
+import com.wegas.core.api.VariableInstanceFacadeI;
 import com.wegas.core.ejb.nashorn.JavaObjectInvocationHandler;
 import com.wegas.core.ejb.nashorn.NHClassLoader;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.EngineInvocationEvent;
 import com.wegas.core.exception.WegasErrorMessageManager;
 import com.wegas.core.exception.client.WegasRuntimeException;
@@ -25,7 +32,10 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.reviewing.ejb.ReviewingFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,23 +117,39 @@ public class ScriptFacade {
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
+
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
 
     @Inject
     private ResourceFacade resourceFacade;
+
+    @Inject
+    private IterationFacade iterationFacade;
+
+
+    @Inject
+    private QuestionDescriptorFacade questionDescriptorFacade;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
+
+    @Inject
+    private ReviewingFacade reviewingFacade;
 
     /**
      *
@@ -160,7 +186,7 @@ public class ScriptFacade {
 
     }
 
-    private <T> void putBinding(Bindings bindings, String name, Class<T> klass, T object){
+    private <T> void putBinding(Bindings bindings, String name, Class<T> klass, T object) {
         bindings.put(name, JavaObjectInvocationHandler.wrap(object, klass));
     }
 
@@ -169,25 +195,28 @@ public class ScriptFacade {
         bindings.put("self", player);                           // Inject current player
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
 
+        putBinding(bindings, "GameModelFacade", GameModelFacadeI.class, gameModelFacade);
+        
         putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
         putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
+        putBinding(bindings, "Instance", VariableInstanceFacadeI.class, variableInstanceFacade);
+        
         putBinding(bindings, "ResourceFacade", ResourceFacadeI.class, resourceFacade);
+        putBinding(bindings, "IterationFacade", IterationFacadeI.class, iterationFacade);
+        
+        putBinding(bindings, "QuestionDescriptorFacade", QuestionDescriptorFacadeI.class, questionDescriptorFacade);
+        putBinding(bindings, "StateMachineFacade", StateMachineFacadeI.class, stateMachineFacade);
+        putBinding(bindings, "ReviewingFacade", ReviewingFacadeI.class, reviewingFacade);
+        
+        
         putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
         putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
         putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
 
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
 
-
-        //bindings.put("Variable", variableDescriptorFacade);// @backwardcompatibility
-        //bindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
-        //bindings.put("RequestManager", requestManager);                  // Inject the request manager
-
-        bindings.put("Instance", variableInstanceFacade);
-        
         //bindings.put("Event", event);                                    // Inject the Event manager
         //bindings.put("DelayedEvent", delayedEvent);
-
         bindings.remove("exit");
         bindings.remove("quit");
         bindings.remove("loadWithNewGlobal");

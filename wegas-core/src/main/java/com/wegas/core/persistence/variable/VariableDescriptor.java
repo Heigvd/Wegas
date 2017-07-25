@@ -623,12 +623,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     @Override
     public String getRequieredUpdatePermission() {
-        if (gameModel.isPersisted()) {
-            return "W-" + this.getGameModel().getChannel();
-        } else {
-            //Means the gameModel is created during the same request
-            //no permission to check since permissions for the gamemodel have not been persisted yet
-            return null;
-        }
+        return "W-" + this.getGameModel().getChannel();
     }
 }

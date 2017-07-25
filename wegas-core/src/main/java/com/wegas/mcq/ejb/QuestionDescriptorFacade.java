@@ -8,6 +8,7 @@
 package com.wegas.mcq.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.api.QuestionDescriptorFacadeI;
 import com.wegas.core.ejb.*;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -16,7 +17,6 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ import javax.persistence.TypedQuery;
  */
 @Stateless
 @LocalBean
-public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
+public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> implements QuestionDescriptorFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);
 

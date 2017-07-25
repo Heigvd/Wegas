@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb.statemachine;
 
+import com.wegas.core.api.StateMachineFacadeI;
 import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
@@ -40,7 +41,7 @@ import com.wegas.core.persistence.InstanceOwner;
  */
 @Stateless
 @LocalBean
-public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
+public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> implements  StateMachineFacadeI {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
 
@@ -323,6 +324,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         }
     }
 
+    @Override
     public long countValidTransition(DialogueDescriptor dialogueDescriptor, Player currentPlayer) {
         long count = 0;
         DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();

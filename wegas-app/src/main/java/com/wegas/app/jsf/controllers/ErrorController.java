@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 public class ErrorController implements Serializable {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(RequestFacade.class);
+    private static final long serialVersionUID = 5105141712902571973L;
 
     public String getErrorMessage() {
         return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("errorMessage");

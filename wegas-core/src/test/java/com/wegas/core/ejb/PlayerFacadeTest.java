@@ -7,6 +7,8 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
+import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -19,7 +21,6 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -195,6 +196,8 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         gameFacade.publishAndCreate(gameModel.getId(), g);
         List<WegasUser> users = new ArrayList<>();
 
+        //populatorScheduler.setAsync(true);
+
         for (int i = 0; i < nbTeam; i++) {
             Team t = createTeam(g, "T" + i);
             for (int j = 0; j < nbPlayer; j++) {
@@ -212,7 +215,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
             }
         }
 
-        for (WegasUser wu : users){
+        for (WegasUser wu : users) {
             login(wu);
             Player p = wu.getUser().getPlayers().get(0);
             Assert.assertTrue(requestManager.hasPlayerRight(p));

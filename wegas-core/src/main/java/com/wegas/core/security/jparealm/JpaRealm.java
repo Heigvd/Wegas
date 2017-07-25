@@ -8,7 +8,11 @@
 package com.wegas.core.security.jparealm;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -84,8 +88,11 @@ public class JpaRealm extends AuthorizingRealm {
 
                 for (Permission p : userFacade.findAllUserPermissions(user)) {
                     // not yet persisted permission should be ignored
-                    if (p.isPersisted()) {
+                    if (this.isLive(p)) {
+                        //logger.error("accept permission: " + p.getValue());
                         addPermissions(info, p);
+                    //} else {
+                        //logger.error("reject permission: " + p.getValue());
                     }
                 }
             }
@@ -96,6 +103,47 @@ public class JpaRealm extends AuthorizingRealm {
             logger.error("Unable to find AocountFacade EJB", ex);
             return null;
         }
+    }
+
+    private boolean isPermId(String id) {
+        return id.matches("(g|gm)\\d+");
+    }
+
+    /**
+     * Checl if the permission is valid.
+     * A valid permission is a persisted one or a not-yet perstisted linked to a not-yet persisted game/gameModel
+     *
+     * @param p
+     *
+     * @return
+     */
+    private boolean isLive(Permission p) {
+        if (p.isPersisted()) {
+            return true;
+        }
+
+        String[] split = p.getValue().split(":");
+
+        if (split.length == 3) {
+            String perm = split[2];
+            switch (split[0]) {
+                case "GameModel":
+                    if (isPermId(perm)) {
+                        GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
+                        if (gameModel != null) {
+                            return !gameModel.isPersisted();
+                        }
+                    }
+                case "Game":
+                    if (isPermId(perm)) {
+                        Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
+                        if (game != null) {
+                            return !game.isPersisted();
+                        }
+                    }
+            }
+        }
+        return false;
     }
 
     /**

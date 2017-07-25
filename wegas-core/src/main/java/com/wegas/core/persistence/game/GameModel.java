@@ -225,7 +225,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.setPages(map);
     }
 
-
     /**
      *
      */
@@ -512,10 +511,10 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return players;
     }
 
-    public Player getAnyLivePlayer(){
-        for (Game game : this.getGames()){
+    public Player getAnyLivePlayer() {
+        for (Game game : this.getGames()) {
             Player p = game.getAnyLivePlayer();
-            if (p != null){
+            if (p != null) {
                 return p;
             }
         }
@@ -735,11 +734,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public String getRequieredUpdatePermission() {
-        if (this.isPersisted()) {
-            return "W-" + this.getChannel();
-        } else {
-            return null;
-        }
+        return "W-" + this.getChannel();
     }
 
     @Override

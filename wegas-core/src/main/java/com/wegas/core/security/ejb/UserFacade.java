@@ -141,6 +141,7 @@ public class UserFacade extends BaseFacade<User> {
      * Check is username is already in use
      *
      * @param username username to check
+     *
      * @return true is username is already in use
      */
     public boolean checkExistingUsername(String username) {
@@ -473,7 +474,6 @@ public class UserFacade extends BaseFacade<User> {
         Permission p = new Permission(permission, inducedPermission);
         return user.addPermission(p);
     }*/
-
     /**
      * Generate a Permission based on its string representation
      *
@@ -492,7 +492,6 @@ public class UserFacade extends BaseFacade<User> {
         }
         return p;
     }*/
-
     /**
      * @param instance
      *
@@ -554,6 +553,17 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     public List<Permission> findAllUserPermissions(User user) {
+        List<Permission> perms = new ArrayList<>();
+
+        for (Role role : this.findRoles(user)) {
+            perms.addAll(role.getPermissions());
+        }
+        perms.addAll(user.getPermissions());
+
+        return perms;
+    }
+
+    public List<Permission> findAllUserPermissions_JPA(User user) {
         List<Permission> perms = new ArrayList<>();
 
         for (Role role : this.findRoles(user)) {
