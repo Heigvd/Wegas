@@ -26,7 +26,7 @@ public class NHClassLoader extends ClassLoader {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        logger.error("Try to load " + name);
+        logger.error("Try to load {}", name);
         for (String s : blacklist) {
             if (s.equals(name)) {
                 logger.error("Blacklisted !");

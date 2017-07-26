@@ -110,8 +110,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
                 break;
         }
 
-        logger.info("Start Request [" + requestManager.getRequestId()
-                + "] " + cr.getMethod() + " " + cr.getUriInfo().getPath());
+        logger.info("Start Request [{}] {} {}", requestManager.getRequestId(), cr.getMethod(), cr.getUriInfo().getPath());
 
         try {
             cr.setRequestUri(new URI(newUri));

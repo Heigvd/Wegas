@@ -44,7 +44,6 @@ public class AuthenticationFilter extends PassThruAuthenticationFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         // @todo It should not be authorized to do sensitive operations like pwd
         Subject subject = getSubject(request, response);
-        logger.error("SUBJECT:  " + subject);
         if (subject.isAuthenticated() || subject.isRemembered()) {
 
             //AccountFacade accountFacade;

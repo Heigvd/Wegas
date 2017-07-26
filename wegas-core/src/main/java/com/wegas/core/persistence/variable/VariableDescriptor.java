@@ -561,7 +561,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        //logger.error("CHANNEL TOKEN: " + this.getGameModel().getChannel());
         map.put(this.getGameModel().getChannel(), entities);
         return map;
     }
@@ -603,7 +602,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         if (this.beans != null && this.beans.getVariableDescriptorFacade() != null) {
             return this.beans.getVariableDescriptorFacade();
         } else if (this.variableDescriptorFacade == null) {
-            logger.error("LOOKUP OCCURS : " + this);
+            logger.error("LOOKUP OCCURS : {}", this);
             new Exception().printStackTrace();
             this.variableDescriptorFacade = VariableDescriptorFacade.lookup();
         }

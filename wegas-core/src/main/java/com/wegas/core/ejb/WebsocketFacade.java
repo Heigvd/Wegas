@@ -172,7 +172,7 @@ public class WebsocketFacade {
 
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send lock " + token + " to " + channel);
+            logger.error("send lock  \"{}\" to \"\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}", null);
         }
@@ -180,7 +180,7 @@ public class WebsocketFacade {
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send unlock " + token + " to " + channel);
+            logger.error("send unlock  \"{}\" to \"\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
         }
@@ -229,7 +229,7 @@ public class WebsocketFacade {
         try {
             return Helper.getWegasProperty(property);
         } catch (MissingResourceException ex) {
-            logger.warn("Pusher init failed: missing " + property + " property");
+            logger.warn("Pusher init failed: missing {} property", property);
             return null;
         }
     }
@@ -391,7 +391,7 @@ public class WebsocketFacade {
             ObjectMapper mapper = JacksonMapperProvider.getMapper();
             String writeValueAsString = mapper.writeValueAsString(gzip);
             logger.error(writeValueAsString);
-            logger.error("LENGTH SHOULD BE: " + writeValueAsString.length());
+            logger.error("LENGTH SHOULD BE: {}", writeValueAsString.length());
 
             return writeValueAsString.length();
         } catch (JsonProcessingException ex) {

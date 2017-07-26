@@ -783,9 +783,9 @@ public class Helper {
 
     public static void printClusterState(Cluster cluster) {
         if (cluster != null) {
-            logger.error("Cluster up: " + cluster.getClusterState());
+            logger.error("Cluster up: {}", cluster.getClusterState());
             for (Member member : cluster.getMembers()) {
-                logger.error(" * " + member + (member == cluster.getLocalMember() ? " <-- it's me !" : ""));
+                logger.error(" * {}{}", member, (member == cluster.getLocalMember() ? "<-- it's me !" : ""));
             }
         } else {
             logger.error("No cluster (null)");

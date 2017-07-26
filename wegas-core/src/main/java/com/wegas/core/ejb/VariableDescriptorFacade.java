@@ -246,13 +246,13 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
         GameModel find = this.gameModelFacade.find(gameModelId);
-         /*
+        /*
         for (Game g : find.getGames()) {
-            logger.error("Game " + g);
+            logger.error("Game {}",  g);
             for (Team t : g.getTeams()) {
-                logger.error("  Team " + t + " ->  " + t.getStatus());
+                logger.error("  Team {} -> {}",  t, t.getStatus());
                 for (Player p : t.getPlayers()) {
-                    logger.error("    Player " + p + " -> " + p.getStatus());
+                    logger.error("    Player {} -> {}",  p, p.getStatus());
                 }
             }
         } // */

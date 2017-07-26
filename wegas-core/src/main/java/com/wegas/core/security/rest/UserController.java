@@ -579,13 +579,13 @@ public class UserController {
         String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
         if (server.length() != 0 && !getRequestingIP(request).equals(server)
                 || secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
-            logger.error("Real secret: " + userDetails.getSecret() + ", expected: " + secret);
-            logger.error("Real remote host: " + getRequestingIP(request) + ", expected: " + server);
+            logger.error("Real secret: {}, expected:{}", userDetails.getSecret(), secret);
+            logger.error("Real remote host : {}, expected: {}",getRequestingIP(request), server);
             Enumeration<String> headerNames = request.getHeaderNames();
             if (headerNames != null) {
                 while (headerNames.hasMoreElements()) {
                     String hdr = headerNames.nextElement();
-                    logger.error("    HTTP header: " + hdr + ":" + request.getHeader(hdr));
+                    logger.error("    HTTP header: {} = {}", hdr, request.getHeader(hdr));
                 }
             }
             return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);

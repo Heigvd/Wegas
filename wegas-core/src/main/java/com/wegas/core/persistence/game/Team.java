@@ -110,6 +110,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     @JsonBackReference(value = "game-team")
     private Game game;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     private User createdBy;
 
     @Transient
@@ -148,6 +149,9 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     public void setCreatedBy(User createdBy_transient) {
+        if (createdBy_transient == null) {
+            this.createdBy = null;
+        }
         this.createdBy_transient = createdBy_transient;
     }
 
@@ -155,6 +159,9 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     public void prePersist() {
         // setting createdBy is only allowed before team is actually presisted
         this.createdBy = createdBy_transient;
+        if (createdBy != null) {
+            createdBy.getTeams().add(this);
+        }
     }
 
     /**

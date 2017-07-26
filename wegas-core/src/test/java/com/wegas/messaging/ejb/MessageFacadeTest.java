@@ -147,11 +147,11 @@ public class MessageFacadeTest extends AbstractEJBTest {
 
         // Send a message to each player
         messageFacade.send(player, new Message("from", "subject", "body"));
-        messageFacade.send(player2, new Message("from", "subject", "body"));
+        messageFacade.send(player21, new Message("from", "subject", "body"));
 
         // Test
         assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
-        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player2)).getMessages().size());
+        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         assertEquals(1, ((InboxInstance) requestFacade.getUpdatedEntities().get(team.getChannel()).get(0)).getMessages().size());
         assertEquals(1, ((InboxInstance) requestFacade.getUpdatedEntities().get(team.getChannel()).get(0)).getMessages().size());
         assertEquals(2, messageFacade.count()); // 2 messages in DB.
@@ -189,7 +189,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
         assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
-        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player2)).getMessages().size());
+        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         assertTrue(ii.getMessages().get(0).getBody().equals("test"));
 
         // Clean up
@@ -298,7 +298,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         variableDescriptorFacade.flush();
         // Test
         assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
-        //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player2)).getMessages().size());
+        //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         Message get = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
         assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
@@ -343,7 +343,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         //InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
         assertEquals(3, ii.getMessages().size());
-        //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player2)).getMessages().size());
+        //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         Message get = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
         assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
@@ -377,7 +377,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
 
         // Test
         assertEquals(4, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
-        //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player2)).getMessages().size());
+        //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         Message get = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
         assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));

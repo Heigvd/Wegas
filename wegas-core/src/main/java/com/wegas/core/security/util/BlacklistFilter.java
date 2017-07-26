@@ -84,7 +84,7 @@ public class BlacklistFilter implements Filter {
 
             if (isBlacklisted(url)){
                 // Blacklist URL -> forbidden
-                logger.error("Trying to access blacklisted content (" + url + ") ! ");
+                logger.error("Trying to access blacklisted content ( {} ) ! ", url);
                 resp.setStatus(403);
                 resp.getOutputStream().print("<h1>forbidden</h1>This content has been blacklisted");
             } else {

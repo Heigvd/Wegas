@@ -81,8 +81,9 @@ public class TeamFacade extends BaseFacade<Team> {
      *
      * @param gameId
      * @param t
+     * @return 
      */
-    public void create(Long gameId, Team t) {
+    public Team create(Long gameId, Team t) {
         /**
          * Be sure the new team exists in database before populate it
          */
@@ -92,6 +93,9 @@ public class TeamFacade extends BaseFacade<Team> {
          * the new thread must be able to retrieve the team to populate from database
          */
         populatorScheduler.scheduleCreation();
+        this.detach(t);
+        t = this.find(t.getId());
+        return t;
     }
 
     /**

@@ -89,7 +89,7 @@ public class ApplicationStartup extends HttpServlet {
         
         // hZinstance is not in cluster anymore here, no way to detect if this instance is the last one
         int count = applicationLifecycle.countMembers();
-        logger.info("Servlet Destroy: " + count);
+        logger.info("Servlet Destroy: {}", count);
 
         /*
          * is the last instance ? 

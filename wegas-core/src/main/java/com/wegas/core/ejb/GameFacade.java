@@ -13,15 +13,12 @@ import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.GameAccount;
-import com.wegas.core.security.persistence.Permission;
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import org.slf4j.LoggerFactory;
 
@@ -433,6 +430,8 @@ public class GameFacade extends BaseFacade<Game> {
 
         player = this.getEntityManager().merge(player);
         populatorScheduler.scheduleCreation();
+        playerFacade.detach(player);
+        player = playerFacade.find(player.getId());
         int indexOf = populatorFacade.getQueue().indexOf(player);
         player.setQueueSize(indexOf + 1);
         return player;
@@ -445,8 +444,9 @@ public class GameFacade extends BaseFacade<Game> {
      * @return a new player, linked to user, who just joined the team
      */
     public Player joinTeam(Long teamId, String playerName) {
-        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        return this.joinTeam(teamId, null, playerName);
+        Long id = requestManager.getCurrentUser().getId();
+        logger.info("Adding user {} to team {}", id, teamId);
+        return this.joinTeam(teamId, id, playerName);
     }
 
     /**

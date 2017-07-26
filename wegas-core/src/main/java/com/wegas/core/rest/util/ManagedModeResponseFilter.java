@@ -66,7 +66,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         requestManager.setStatus(response.getStatusInfo());
 
         if (response.getStatusInfo().getStatusCode() >= 400) {
-            logger.warn("Problem : " + response.getEntity());
+            logger.warn("Problem : {}", response.getEntity());
         }
 
         if (managedMode != null && !managedMode.toLowerCase().equals("false")) {

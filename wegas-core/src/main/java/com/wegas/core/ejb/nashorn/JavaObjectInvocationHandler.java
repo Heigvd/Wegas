@@ -26,9 +26,9 @@ public class JavaObjectInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        logger.info("INVOKE: " + method.getName());
+        logger.info("INVOKE: {}", method.getName());
         if (method.getAnnotation(Deprecated.class) != null) {
-            logger.error("DEPRECATED CALL: " + method.getName());
+            logger.error("DEPRECATED CALL: {}", method.getName());
         }
         return method.invoke(wrapped, args);
     }

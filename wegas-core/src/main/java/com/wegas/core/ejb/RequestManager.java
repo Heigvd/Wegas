@@ -469,13 +469,13 @@ public class RequestManager implements RequestManagerI {
      */
     public boolean tryLock(String token, InstanceOwner target) {
         String audience = getAudience(target);
-        //logger.error("TryLock " + token + " for " + audience);
+        logger.debug("TryLock \"{}\" for \"{}\"", token, audience);
         boolean tryLock = concurrentHelper.tryLock(token, audience);
         if (tryLock) {
-            //logger.error(" -> LOCKED");
+            logger.debug(" -> LOCKED");
             // Only register token if successfully locked
             if (!lockedToken.containsKey(token)) {
-                //logger.error("   -> NEW LOCK");
+                logger.debug("   -> NEW LOCK");
                 lockedToken.put(token, new ArrayList());
             }
             this.registerLocalLock(token, audience);
@@ -494,7 +494,7 @@ public class RequestManager implements RequestManagerI {
 
     private void registerLocalLock(String token, String audience) {
         String effectiveAudience = getEffectiveAudience(audience);
-        //logger.error("Register Local Lock: " + token + " -> " + effectiveAudience);
+        logger.debug("Register Local Lock: {} -> {}", token, effectiveAudience);
         lockedToken.get(token).add(effectiveAudience);
     }
 
@@ -503,9 +503,10 @@ public class RequestManager implements RequestManagerI {
      * @param token  token to lock
      * @param target scope to inform about the lock
      */
+    @Override
     public void lock(String token, InstanceOwner target) {
         String audience = getAudience(target);
-        //logger.error("LOCK " + token + " for " + audience);
+        logger.debug("LOCK \"{}\" for \"{}\"", token, audience);
         concurrentHelper.lock(token, audience);
         if (!lockedToken.containsKey(token)) {
             lockedToken.put(token, new ArrayList());
@@ -527,18 +528,19 @@ public class RequestManager implements RequestManagerI {
      * @param token  token to release
      * @param target scope to inform about the lock
      */
+    @Override
     public void unlock(String token, InstanceOwner target) {
         String audience = getAudience(target);
-        //logger.error("UNLOCK " + token + " for " + audience);
+        logger.debug("UNLOCK \"{}\" for \"{}\"", token, audience);
         concurrentHelper.unlock(token, audience);
         if (lockedToken.containsKey(token)) {
             List<String> audiences = lockedToken.get(token);
 
             String effectiveAudience = getEffectiveAudience(audience);
-            //logger.error("Remove Local Lock: " + token + " -> " + effectiveAudience);
+            logger.debug("Remove Local Lock: \"{}\" -> \"{}\"", token, effectiveAudience);
             audiences.remove(effectiveAudience);
             if (audiences.isEmpty()) {
-                //logger.error("Remove Local Lock COMPLETELY: " + token);
+                logger.debug("Remove Local Lock COMPLETELY: \"{}\"", token);
                 lockedToken.remove(token);
             }
         }
@@ -654,14 +656,8 @@ public class RequestManager implements RequestManagerI {
                 + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
                 + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
 
-        RequestManager.logger.info("Request [" + this.requestId + "] \""
-                + this.getMethod() + " " + this.getPath() + "\"" + " for " + info
-                + " processed in " + totalDuration + " ms ("
-                + " processing: " + processingDuration + "; "
-                + " management: " + managementDuration + "; "
-                + " propagation: " + propagationDuration + "; "
-                + " serialisation: " + serialisationDuration
-                + ") => " + this.status);
+        RequestManager.logger.info("Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
+                this.requestId, this.getMethod(), this.getPath(), info, totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration, this.status);
     }
 
     /**
@@ -669,7 +665,6 @@ public class RequestManager implements RequestManagerI {
      */
     @PostConstruct
     public void postConstruct() {
-        logger.error("NEW REQUEST SCOPE");
         this.markProcessingStartTime();
     }
 
@@ -679,11 +674,10 @@ public class RequestManager implements RequestManagerI {
 
     @PreDestroy
     public void preDestroy() {
-        logger.error("END OF REQUEST SCOPE");
         for (Entry<String, List<String>> entry : lockedToken.entrySet()) {
-            //logger.error("PreDestroy Unlock: key: " + entry.getKey());
+            logger.debug("PreDestroy Unlock: key: {}", entry.getKey());
             for (String audience : entry.getValue()) {
-                //logger.error("->ConcurrentHelper unlockFull for " + audience);
+                logger.debug("->ConcurrentHelper unlockFull for {}", audience);
                 concurrentHelper.unlockFull(entry.getKey(), audience);
             }
         }
@@ -738,7 +732,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     private boolean hasDirectGameEditPermission(Subject subject, Game game) {
-        return subject.isPermitted("Game:Edit:gm" + game.getId());
+        return subject.isPermitted("Game:Edit:g" + game.getId());
     }
 
     private boolean hasGamePermission(Subject subject, Game game, boolean superPermission) {
@@ -988,7 +982,7 @@ public class RequestManager implements RequestManagerI {
         try {
             Subject subject = SecurityUtils.getSubject();
 
-            logger.error("SU: User " + subject.getPrincipal() + " : SU to " + accountId);
+            logger.debug("SU: User {} SU to {}", subject.getPrincipal(), accountId);
             // The subject exists
             SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
             subject.runAs(newSubject);
@@ -1008,7 +1002,7 @@ public class RequestManager implements RequestManagerI {
             Subject buildSubject = b.buildSubject();
             ThreadContext.bind(buildSubject);
 
-            logger.error("SU: No-User SU to " + buildSubject.getPrincipal());
+            logger.debug("SU: No-User SU to {}", buildSubject.getPrincipal());
         }
         this.getCurrentUser();
     }
@@ -1017,15 +1011,15 @@ public class RequestManager implements RequestManagerI {
         try {
             Subject subject = SecurityUtils.getSubject();
             if (subject.isRunAs()) {
-                logger.error("Su-Exit: User " + subject.getPreviousPrincipals().toString() + " release " + subject.getPrincipal());
+                logger.debug("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
                 subject.releaseRunAs();
             } else {
-                logger.error("Su-Exit LOGOUT");
+                logger.debug("Su-Exit LOGOUT");
                 subject.logout();
             }
             this.getCurrentUser();
         } catch (Exception ex) {
-            logger.error("EX: " + ex);
+            logger.error("EX: ", ex);
         }
     }
 }

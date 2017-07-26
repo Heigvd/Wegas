@@ -290,8 +290,8 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         variableDescriptorFacade.createChild(question.getId(), choice);
 
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
-        ChoiceInstance instance20 = choice.getInstance(player2);
-        ChoiceInstance instance21 = choice.getInstance(player21);
+        ChoiceInstance instance20 = choice.getInstance(player21);
+        ChoiceInstance instance21 = choice.getInstance(player22);
 
         assertEquals("TeamScoped instance is no the same !", instance20, instance21);
         assertEquals("Current result does not match", "result", instance20.getCurrentResult().getName());
@@ -303,8 +303,8 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice = (ChoiceDescriptor) variableDescriptorFacade.update(choice.getId(), choice);
         
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
-        instance20 = choice.getInstance(player2);
-        instance21 = choice.getInstance(player21);
+        instance20 = choice.getInstance(player21);
+        instance21 = choice.getInstance(player22);
 
         assertFalse("PlayerScoped instances are the same !", instance20.equals(instance21));
        

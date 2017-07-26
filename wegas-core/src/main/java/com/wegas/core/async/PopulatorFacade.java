@@ -90,8 +90,10 @@ public class PopulatorFacade {
     public void populateTeam(Long teamId) {
         Team team = teamFacade.find(teamId);
         requestManager.su(team.getCreatedBy().getMainAccount().getId());
+        teamFacade.detach(team);
         try {
             utx.begin();
+            team = teamFacade.find(teamId);
             Game game = gameFacade.find(team.getGameId());
             gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
 
@@ -123,9 +125,11 @@ public class PopulatorFacade {
     public void populatePlayer(Long playerId) {
         Player player = playerFacade.find(playerId);
         requestManager.su(player.getUser().getMainAccount().getId());
+        playerFacade.detach(player);
 
         try {
             utx.begin();
+            player = playerFacade.find(playerId);
             // Inform player's user its player is porocessing
 
             websocketFacade.propagateNewPlayer(player);

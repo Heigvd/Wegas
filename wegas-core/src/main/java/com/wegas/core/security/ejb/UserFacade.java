@@ -23,6 +23,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -327,6 +328,10 @@ public class UserFacade extends BaseFacade<User> {
 
         for (Player player : entity.getPlayers()) {
             player.setUser(null);
+        }
+
+        for (Team team : entity.getTeams()){
+            team.setCreatedBy(null);
         }
 
         getEntityManager().remove(entity);
@@ -684,7 +689,7 @@ public class UserFacade extends BaseFacade<User> {
                 emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain", true);
             }
         } catch (WegasNoResultException | MessagingException ex) {
-            logger.error("Error while sending new password for email: " + email, ex);
+            logger.error("Error while sending new password for email: {}", email);
         }
     }
 
@@ -746,7 +751,7 @@ public class UserFacade extends BaseFacade<User> {
                 //Force flush before closing RequestManager !
                 getEntityManager().flush();
 
-                logger.info("removeIdleGuests(): " + resultList.size() + " unused guest accounts removed (idle since: " + calendar.getTime() + ")");
+                logger.info("removeIdleGuests(): {} unused guest accounts removed (idle since: {})", resultList.size(), calendar.getTime());
 
             } finally {
                 lock.unlock();

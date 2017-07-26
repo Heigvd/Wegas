@@ -10,7 +10,6 @@ package com.wegas.core.rest.exception;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasUniqueConstraintException;
-import java.util.Set;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
 import javax.persistence.OptimisticLockException;
@@ -42,11 +41,11 @@ public abstract class AbstractExceptionMapper {
      * @return HTTP BadRequest
      */
     public static Response processException(Throwable exception) {
-        logger.warn("ProcessException: " + exception);
+        logger.warn("ProcessException: {}", exception);
 
         if (exception instanceof OptimisticLockException) {
             OptimisticLockException ex = (OptimisticLockException) exception;
-            logger.error("Try to update outated: " + ex.getEntity());
+            logger.error("Try to update outated: {}",  ex.getEntity());
 
             return Response.status(Response.Status.CONFLICT).entity(new WegasConflictException(exception)).build();
         } else if (exception instanceof RollbackException

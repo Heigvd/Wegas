@@ -10,16 +10,12 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.UserFacade;
@@ -27,14 +23,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +105,7 @@ public class ScriptController {
         } else {
             context = null;
         }
-        logger.info("script for player " + playerId + ": " + script.getContent());
+        logger.info("script for player {} : {}", playerId, script.getContent());
 
         Object r = scriptManager.eval(playerId, script, context);
         requestFacade.commit();

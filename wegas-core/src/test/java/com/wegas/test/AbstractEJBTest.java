@@ -12,7 +12,6 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.sql.SQLException;
 import org.junit.Before;
@@ -20,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.NamingException;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -49,16 +47,26 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     protected static Team team;
     protected static Player player;
     protected static Team team2;
-    protected static Player player2;
     protected static Player player21;
+    protected static Player player22;
 
     protected static WegasUser scenarist;
     protected static WegasUser trainer;
     protected static WegasUser user;
     protected static WegasUser guest;
 
-    protected WegasUser user2;
+    protected WegasUser user11;
     protected WegasUser user21;
+    protected WegasUser user22;
+
+    protected WegasUser user31;
+    protected WegasUser user32;
+    protected WegasUser user33;
+    protected WegasUser user34;
+
+    protected WegasUser user41;
+    protected WegasUser user42;
+    protected WegasUser user43;
 
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
@@ -66,7 +74,6 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
 
     @Before
     public final void setUp() throws NamingException, WegasNoResultException, SQLException, IOException {
-        login(admin);
 
         //rm.getEntityManager().getEntityManagerFactory().getCache().evictAll();
         //requestManager.clearPermissions();
@@ -74,6 +81,21 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         trainer = AbstractEJBTest.signup("trainer@local");
         user = AbstractEJBTest.signup("user@local");
 
+        user11 = AbstractEJBTest.signup("user11@local");
+        
+        user21 = AbstractEJBTest.signup("user21@local");
+        user22 = AbstractEJBTest.signup("user22@local");
+        
+        user31 = AbstractEJBTest.signup("user31@local");
+        user32 = AbstractEJBTest.signup("user32@local");
+        user33 = AbstractEJBTest.signup("user33@local");
+        user34 = AbstractEJBTest.signup("user34@local");
+
+        user41 = AbstractEJBTest.signup("user41@local");
+        user43 = AbstractEJBTest.signup("user43@local");
+        user42 = AbstractEJBTest.signup("user42@local");
+
+        login(admin);
         scenarist = addRoles(scenarist, scenarists);
         trainer = addRoles(trainer, trainers);
 
@@ -112,15 +134,11 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         teamFacade.create(game.getId(), team2);
 
         login(admin);
-        user2 = AbstractEJBTest.signup("user2@local");
-        login(user2);
-        player2 = gameFacade.joinTeam(team2.getId(), user2.getId());
-
-        logout();
-        user21 = AbstractEJBTest.signup("user21@local");
         login(user21);
         player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
 
+        login(user22);
+        player22 = gameFacade.joinTeam(team2.getId(), user22.getId());
         login(admin);
         requestManager.setPlayer(player);
     }

@@ -267,7 +267,7 @@ public class ScriptFacade {
             // smells like such an integration test
             root = Helper.getWegasRootDirectory();
             if (root == null) {
-                logger.error("Wegas Lost In The Sky... [Static Script Injection Not Available] ->  " + currentPath);
+                logger.error("Wegas Lost In The Sky... [Static Script Injection Not Available] ->  {}", currentPath);
                 return;
             }
         } else {
@@ -283,7 +283,7 @@ public class ScriptFacade {
                         java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
                     staticCache.putIfAbsent(cacheFileName, ((Compilable) engine).compile(isr));
                 } catch (IOException e) {
-                    logger.warn("File " + f.getPath() + " was not found");
+                    logger.warn("File {} was not found", f.getPath());
                 } catch (ScriptException ex) {
                     throw new WegasScriptException(f.getPath(), ex.getLineNumber(), ex.getMessage());
                 }
@@ -291,7 +291,7 @@ public class ScriptFacade {
             try {
                 ctx.setAttribute(ScriptEngine.FILENAME, "Static Scripts " + f.getPath(), ScriptContext.ENGINE_SCOPE);
                 staticCache.get(cacheFileName).eval(ctx);
-                logger.info("File " + f + " successfully injected");
+                logger.info("File {} successfully injected", f);
             } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
                 throw new WegasScriptException(scriptURI, ex.getLineNumber(), ex.getMessage());
             } catch (RuntimeException ex) { // Unwrapped Java exception (Java -> JS -> Java -> throw)

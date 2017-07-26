@@ -78,18 +78,18 @@ public class PopulatorScheduler {
     public void scheduleCreation() {
         if (broadcast) {
             // async process:broadcast start event
-            logger.error("Send START_ONE");
+            logger.info("Send START_ONE");
             events.fire(PopulatingCommand.START_ONE);
         } else {
             //synchronous process : start one populator locally and wait for completion
-            logger.error("Start local process");
+            logger.info("Start local process");
             Future<Integer> scheduleCreation = this.internalScheduleCreation();
             if (!async) {
                 try {
-                    logger.error("Wait to re-sycn call");
+                    logger.info("Wait to re-sycn call");
                     Integer get = scheduleCreation.get();
                 } catch (Exception ex) {
-                    logger.error("EX: ", ex);
+                    logger.info("EX: ", ex);
                 }
             }
         }
@@ -111,7 +111,7 @@ public class PopulatorScheduler {
     }
 
     public void onScheduleCreation(@Observes @Inbound(eventName = EVENT_NAME) PopulatingCommand command) {
-        logger.info("Command: " + command);
+        logger.info("Command: {}", command);
         switch (command) {
             case START_ALL:
                 this.startAllLocalPopulators();
@@ -142,7 +142,7 @@ public class PopulatorScheduler {
                 future = managedExecutorService.submit(newCreator);
                 creators.put(newCreator, future);
             } else {
-                logger.error("Maximum number of creators reached (" + MAX_CREATORS + ")");
+                logger.info("Maximum number of creators reached ({})", MAX_CREATORS);
                 future = creators.values().iterator().next();
             }
         } finally {
@@ -164,7 +164,7 @@ public class PopulatorScheduler {
             try {
                 logger.info("Wait");
                 Integer get = future.get();
-                logger.info(" * Got " + get);
+                logger.info(" * Got {}", get);
             } catch (Exception ex) {
                 java.util.logging.Logger.getLogger(PopulatorScheduler.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -183,7 +183,7 @@ public class PopulatorScheduler {
             try {
                 logger.info("Wait");
                 Integer get = future.get();
-                logger.info(" * Got " + get);
+                logger.info(" * Got {}", get);
             } catch (Exception ex) {
                 java.util.logging.Logger.getLogger(PopulatorScheduler.class.getName()).log(Level.SEVERE, null, ex);
             }

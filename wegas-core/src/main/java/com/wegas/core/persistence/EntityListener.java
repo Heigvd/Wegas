@@ -96,7 +96,7 @@ public class EntityListener {
             if (b instanceof Team || b instanceof Player || b instanceof VariableInstance) {
                 requestManager.addUpdatedEntities(entities);
             } else {
-                logger.debug("Unhandled new broadcastable entity: " + b);
+                logger.info("Unhandled new broadcastable entity: {}", b);
             }
         }
     }
@@ -121,7 +121,7 @@ public class EntityListener {
                 // GameModel is not broadcastable ...
                 /// requestManager.addOutofdateEntities(b.getEntities());
             } else if (b instanceof AbstractEntity) {
-                logger.debug("Propagate: " + b.getClass().getSimpleName() + "::" + ((AbstractEntity) b).getId());
+                logger.debug("Propagate: {}::{}",  b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
                 Map<String, List<AbstractEntity>> entities = b.getEntities();
                 requestManager.addUpdatedEntities(entities);
             }
@@ -145,13 +145,13 @@ public class EntityListener {
             Map<String, List<AbstractEntity>> entities = b.getEntities();
             if (entities != null) {
                 if (b instanceof VariableDescriptor || b instanceof VariableInstance || b instanceof Game) {
-                    logger.debug(("#Entities: " + entities.size()));
+                    logger.debug("#Entities: {}", entities.size());
                     requestManager.addDestroyedEntities(entities);
                 } else if (b instanceof Team || b instanceof Player) {
-                    logger.debug(("#Entities: " + entities.size()));
+                    logger.debug("#Entities: {}", entities.size());
                     requestManager.addUpdatedEntities(entities);
                 } else {
-                    logger.debug("Unhandled destroyed broadcastable entity: " + b);
+                    logger.debug("Unhandled destroyed broadcastable entity: {}", b);
                 }
             }
         }

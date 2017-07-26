@@ -235,7 +235,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
             if (!p.isWaiting()){
                 propagate(p, create);
             } else {
-                logger.error("SKIP PLAYER: " + p + " -> " + p.getStatus());
+                logger.error("SKIP PLAYER: {} -> {}", p, p.getStatus());
             }
         }
     }
@@ -337,7 +337,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
             return this.beans.getVariableInstanceFacade();
         } else if (this.variableInstanceFacade == null) {
             // but it may not... so here is a lookup fallback
-            logger.error("LOOKUP OCCURS : " + this);
+            logger.error("LOOKUP OCCURS : {}", this);
             new Exception().printStackTrace();
             this.variableInstanceFacade = VariableInstanceFacade.lookup();
         }

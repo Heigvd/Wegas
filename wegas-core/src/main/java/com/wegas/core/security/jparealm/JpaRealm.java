@@ -89,10 +89,10 @@ public class JpaRealm extends AuthorizingRealm {
                 for (Permission p : userFacade.findAllUserPermissions(user)) {
                     // not yet persisted permission should be ignored
                     if (this.isLive(p)) {
-                        //logger.error("accept permission: " + p.getValue());
+                        //logger.error("accept permission: {}", p.getValue());
                         addPermissions(info, p);
                     //} else {
-                        //logger.error("reject permission: " + p.getValue());
+                        //logger.error("reject permission: {}", p.getValue());
                     }
                 }
             }

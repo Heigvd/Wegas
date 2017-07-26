@@ -7,8 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
-import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -68,12 +66,12 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
         Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1
 
-        login(user2);
-        Player p2 = gameFacade.joinTeam(t.getId(), user2.getId());
+        login(user21);
+        Player p2 = gameFacade.joinTeam(t.getId(), user21.getId());
 
         Game ng = gameFacade.find(g.getId());
 
-        User currentUser = userFacade.find(user2.getId());
+        User currentUser = userFacade.find(user21.getId());
         Assert.assertEquals(2, ng.getTeams().size());
 
         Team theTeam = null;
@@ -104,7 +102,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
         Assert.assertEquals(1, theTeam.getPlayers().size());
 
-        login(user2);
+        login(user21);
         playerFacade.remove(p2.getId()); //removing the last player in team leads to team deletion
 
         Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam
@@ -159,8 +157,8 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
         /* each player owns one instance */
         Assert.assertEquals(1, playerFacade.find(player.getId()).getPrivateInstances().size());
-        Assert.assertEquals(1, playerFacade.find(player2.getId()).getPrivateInstances().size());
         Assert.assertEquals(1, playerFacade.find(player21.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, playerFacade.find(player22.getId()).getPrivateInstances().size());
 
         Assert.assertEquals(4, instances.size());
     }
@@ -174,8 +172,8 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
     private WegasUser createPlayer(Team t, int i, int j) {
         WegasUser u = PlayerFacadeTest.signup("massive_player_" + i + "_" + j + "@local");
-
-        gameFacade.joinTeam(t.getId(), u.getId());
+        login(u);
+        gameFacade.joinTeam(t.getId(), u.getUsername());
         u.setUser(userFacade.find(u.getId()));
 
         return u;

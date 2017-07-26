@@ -99,7 +99,7 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
                 throw WegasErrorMessage.error("Timer duration is not valid");
             }
         } else {
-            logger.warn("DelayedEvent skipped due to execution environnement (" + env + ")");
+            logger.warn("DelayedEvent skipped due to execution environnement ({})", env);
         }
     }
 }

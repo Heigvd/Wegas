@@ -151,6 +151,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
             vd.createInstances(owner);
         }
+        //this.getEntityManager().merge(owner);
     }
 
     public void propagateDefaultInstances(GameModel gameModel, InstanceOwner context, boolean create) {

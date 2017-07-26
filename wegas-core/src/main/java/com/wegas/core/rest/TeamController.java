@@ -81,7 +81,7 @@ public class TeamController {
         Response r = Response.status(Response.Status.CONFLICT).build();
         Game g = gameFacade.find(gameId);
         if (g.getAccess() == Game.GameAccess.OPEN) {
-            this.teamFacade.create(gameId, entity);
+            entity = this.teamFacade.create(gameId, entity);
             teamFacade.detach(entity);
             entity = teamFacade.find(entity.getId());
             r = Response.status(Response.Status.CREATED).entity(entity).build();

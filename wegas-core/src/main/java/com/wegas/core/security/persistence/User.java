@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
 
 import javax.persistence.*;
@@ -26,10 +27,8 @@ import java.util.*;
 @Table(name = "users")
 
 @NamedQueries({
-    @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance")
-    ,
-    @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id")
-    ,
+    @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance"),
+    @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id"),
     @NamedQuery(name = "User.findUserWithPermission", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :permission AND p.user.id =:userId")
 })
 public class User extends AbstractEntity implements Comparable<User> {
@@ -49,6 +48,10 @@ public class User extends AbstractEntity implements Comparable<User> {
     @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH} /*, orphanRemoval = true */)
     @JsonManagedReference(value = "player-user")
     private List<Player> players = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "createdBy", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH} /*, orphanRemoval = true */)
+    private List<Team> teams = new ArrayList<>();
 
     /**
      *
@@ -109,6 +112,14 @@ public class User extends AbstractEntity implements Comparable<User> {
     @JsonManagedReference(value = "player-user")
     public void setPlayers(List<Player> players) {
         this.players = players;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
     }
 
     /**

@@ -45,7 +45,7 @@ public class RequestListener implements ServletRequestListener {
          * InvalidContent("WebSocket Session is missing!"); } else {
          * logger.log(Level.INFO, "OK"); // TODO Check that the provided WS
          * SESSION ID exists and belongs to the correct HTTP SESSION } } else {
-         * logger.info("Effective Session Type is " +
+         * logger.info("Effective Session Type is {}",
          * servletRequest.getClass().getSimpleName()); }
          */
     }

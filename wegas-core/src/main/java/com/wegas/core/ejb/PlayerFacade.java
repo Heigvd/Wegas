@@ -73,7 +73,7 @@ public class PlayerFacade extends BaseFacade<Player> {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Player joinTeamAndCommit(Long teamId, Long userId, String playerName) {
-        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
+        logger.info("Adding user {} to team {}", userId, teamId);
 
         Player player = new Player();
         Team team = teamFacade.find(teamId);

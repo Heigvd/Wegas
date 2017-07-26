@@ -239,6 +239,7 @@ public class AbstractEJBTestBase {
     }
 
     public static WegasUser signup(String email, String password) {
+        logout();
         JpaAccount ja = new JpaAccount();
         ja.setEmail(email);
         ja.setPassword(password);

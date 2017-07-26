@@ -162,7 +162,7 @@ public class Page {
      */
     public void patch(JsonNode patch) throws IOException, JsonPatchException {
         final JsonNode target = JsonPatch.fromJson(patch).apply(this.getContent());
-        logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + target.asText());
+        logger.info("INPUT\n{}\nPATCH\n{}\nRESULT\n{}\n", this.content.toString(), patch, target.asText());
         this.setContent(target);
     }
 

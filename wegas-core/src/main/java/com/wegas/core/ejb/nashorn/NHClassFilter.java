@@ -23,7 +23,6 @@ public class NHClassFilter implements ClassFilter {
 
     @Override
     public boolean exposeToScripts(String string) {
-        logger.error("LOADCLASS: " + string);
         return true;
     }
 }

@@ -140,7 +140,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> imple
         List<Transition> passed = new ArrayList<>();
         //stateMachineEventsCounter = new InternalStateMachineEventCounter();
         Integer steps = this.doSteps(player, passed, statemachines, 0);
-        logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
+        logger.info("#steps[{}] - Player {} triggered transition(s):{}", steps, player.getName(), passed);
         //stateMachineEventsCounter = null;
         /*
         Force resources release
@@ -178,7 +178,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> imple
                     try {
                         validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
                     } catch (EJBException ex) {
-                        logger.error("Transition eval exception: FSM " + sm.getName() + ":" + sm.getId() + ":" + transition.getTriggerCondition().getContent());
+                        logger.error("Transition eval exception: FSM {}:{}:{}",  sm.getName(), sm.getId(), transition.getTriggerCondition().getContent());
                         throw ex;
                     } catch (WegasScriptException ex) {
                         ex.setScript("Variable " + sm.getLabel());
