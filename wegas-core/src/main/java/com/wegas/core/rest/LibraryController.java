@@ -104,7 +104,13 @@ public class LibraryController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        libraryFacade.findLibrary(gameModelId, library).put(key, script);
+        Map<String, GameModelContent> lib = libraryFacade.findLibrary(gameModelId, library);
+        
+        if (lib.containsKey(key)) {
+            lib.put(key, script);
+        } else {
+            throw WegasErrorMessage.error("Library does not exists");
+        }
         // return Response.ok().build();
         return gameModelFacade.find(gameModelId);
     }
