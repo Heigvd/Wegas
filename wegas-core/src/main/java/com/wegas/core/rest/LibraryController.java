@@ -105,7 +105,7 @@ public class LibraryController {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         Map<String, GameModelContent> lib = libraryFacade.findLibrary(gameModelId, library);
-        
+
         if (lib.containsKey(key)) {
             lib.put(key, script);
         } else {

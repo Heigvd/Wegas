@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence" id="1501095600-1">
+        <createIndex indexName="index_gamemodelcontent_csslibrary" tableName="gamemodelcontent" unique="true">
+            <column name="csslibrary_key"/>
+            <column name="csslibrary_gamemodelid"/>
+        </createIndex>
+        <modifySql>
+            <append value=" WHERE csslibrary_key IS NOT NULL" />
+        </modifySql>
+    </changeSet>
+
+
+    <changeSet author="maxence" id="1501095600-2">
+        <createIndex indexName="index_gamemodelcontent_scriptlibrary" tableName="gamemodelcontent" unique="true">
+            <column name="scriptlibrary_key"/>
+            <column name="scriptlibrary_gamemodelid"/>
+        </createIndex>
+        <modifySql>
+            <append value=" WHERE scriptlibrary_key IS NOT NULL" />
+        </modifySql>
+    </changeSet>
+    <changeSet author="maxence" id="1501095600-3">
+        <createIndex indexName="index_gamemodelcontent_clientscriptlibrary" tableName="gamemodelcontent" unique="true">
+            <column name="clientscriptlibrary_key"/>
+            <column name="clientscriptlibrary_gamemodelid"/>
+        </createIndex>
+        <modifySql>
+            <append value=" WHERE clientscriptlibrary_key IS NOT NULL" />
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>
