@@ -24,7 +24,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             }, this);
 
             var ctx = this;
-            Y.on('refresh', function () {
+            Y.on('refresh', function() {
                 ctx.syncUI();
             });
         },
@@ -44,38 +44,75 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
             return blocs;
         },
         _addActionsBlocs: function(blocs, team) {
-            var bloc = {
-                "title": "Actions",
-                "cardBlocType": "action",
-                "items": [{
-                    "icon": "action-impacts",
-                    "label": "Impacts",
-                    "do": function() {
-                        new Y.Wegas.ImpactsTeamModal({
-                            "team": team
-                        }).render();
-                    }
-                }, {
-                    "icon": "action-email",
-                    "label": "Send real E-Mail",
-                    "do": function() {
-                        new Y.Wegas.EmailTeamModal({
-                            "team": team,
-                            "on": {
-                                "email:sent": function() {
-                                    this.close();
-                                }
+            var bloc, status;
+            if (team.isLive()) {
+                bloc = {
+                    "title": "Actions",
+                    "cardBlocType": "action",
+                    "items": [{
+                            "icon": "action-impacts",
+                            "label": "Impacts",
+                            "do": function() {
+                                new Y.Wegas.ImpactsTeamModal({
+                                    "team": team
+                                }).render();
                             }
-                        }).render();
-                    }
-                }, {
-                    "icon": "info-view",
-                    "label": "View playing session",
-                    "do": function() {
-                        window.open("game-lock.html?id=" + team.get("players")[0].get("id"), "_blank");
-                    }
-                }]
-            };
+                        }, {
+                            "icon": "action-email",
+                            "label": "Send real E-Mail",
+                            "do": function() {
+                                new Y.Wegas.EmailTeamModal({
+                                    "team": team,
+                                    "on": {
+                                        "email:sent": function() {
+                                            this.close();
+                                        }
+                                    }
+                                }).render();
+                            }
+                        }, {
+                            "icon": "info-view",
+                            "label": "View playing session",
+                            "do": function() {
+                                window.open("game-lock.html?id=" + team.get("players")[0].get("id"), "_blank");
+                            }
+                        }]
+                };
+            } else {
+                status = team.getStatus();
+                if (status === "FAILED") {
+                    bloc = {
+                        "title": "Status",
+                        "cardBlocType": "monitoring",
+                        "items": [
+                            {
+                                "label": "Initialization failed"
+                            }
+                        ]
+                    };
+                } else if (status === "PROCESSING"){
+                    bloc = {
+                        "title": "Status",
+                        "cardBlocType": "monitoring",
+                        "items": [
+                            {
+                                "label": "Initialization in progress"
+                            }
+                        ]
+                    };
+                } else {
+                    bloc = {
+                        "title": "Status",
+                        "cardBlocType": "monitoring",
+                        "items": [
+                            {
+                                "label": "Queued"
+                            }
+                        ]
+                    };
+                }
+            }
+
             blocs.push(bloc);
             this._addOriginalBloc(team.get("id"), bloc);
         }
@@ -114,8 +151,8 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     base.addClass("bloc-details--team");
                     this.get("host").get(CONTENTBOX).addClass("card--team");
                     teamList = Y.Node.create(this.TEAM_LIST_TEMPLATE);
-                    if (declSize>0) {
-                        teamList.one("h3").setContent("Players "+realSize+"&nbsp;of&nbsp;"+declSize);
+                    if (declSize > 0) {
+                        teamList.one("h3").setContent("Players " + realSize + "&nbsp;of&nbsp;" + declSize);
                     }
                     Y.Array.each(this.get("team").get("players"), function(player) {
                         var playerNode;
@@ -167,7 +204,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                         base.toggleClass("bloc-details--open");
                         base.toggleClass("bloc-details--close");
                     }, this)
-                );
+                    );
             });
         },
         destructor: function() {
@@ -194,49 +231,54 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                 gameLevel = team.get("@class") === "Game",
                 actions;
 
-            // Return the first player of each team (in Team mode, impacted variables are shared among team members)
-            function allFirstPlayers(game){
-                var gamePlayers = [];
-                var arr = game.get("teams"),
-                    len = arr.length;
-                for (var i = 0; i < len; i++) {
-                    var t = arr[i];
+            // Return one live player for each team which have such a live player
+            // (in Team mode, we assume impacted variables are shared among team members)
+            function getOnePlayerPerTeam(game) {
+                var gamePlayers = [], player,
+                    i, t, teams = game.get("teams"),
+                    nbTeams = teams.length;
+                for (i = 0; i < nbTeams; i++) {
+                    t = teams[i];
                     if (t.get("@class") !== "DebugTeam" && t.get("players").length) {
-                        gamePlayers = gamePlayers.concat(t.get("players")[0]);
+                        player = t.getLivePlayer();
+                        if (player !== null) {
+                            gamePlayers.push(player);
+                        }
                     }
-                };
+                }
+                ;
                 return gamePlayers;
             }
 
             if (game && team) {
                 actions = [{
-                    "types": ["primary"],
-                    "label": "Apply impact",
-                    "do": function() {
-                        this.item(0).run(this);
-                        Y.later(1500, this, function() { // Wait at least 1000+200 ms for the modale to close (see wegas-console-custom.js)
-                            Y.fire("refresh");
-                        });
-                    }
-                }, {
-                    "label": "Cancel",
-                    "do": function() {
-                        this.close();
-                    }
-                }, {
-                    "label": "View src",
-                    "types": ["secondary", "advanced"],
-                    "do": function() {
-                        this.item(0).viewSrc();
-                    }
-                }];
+                        "types": ["primary"],
+                        "label": "Apply impact",
+                        "do": function() {
+                            this.item(0).run(this);
+                            Y.later(1500, this, function() { // Wait at least 1000+200 ms for the modale to close (see wegas-console-custom.js)
+                                Y.fire("refresh");
+                            });
+                        }
+                    }, {
+                        "label": "Cancel",
+                        "do": function() {
+                            this.close();
+                        }
+                    }, {
+                        "label": "View src",
+                        "types": ["secondary", "advanced"],
+                        "do": function() {
+                            this.item(0).viewSrc();
+                        }
+                    }];
                 this.set("title", gameLevel ?
                     "Global impact on game \"" + game.get("name") + "\"" :
                     game.get("properties.freeForAll") ?
-                        "Impact player \"" + team.get("players")[0].get("name") + "\"" :
-                        "Impact team \"" + team.get("name") + "\"");
+                    "Impact player \"" + team.get("players")[0].get("name") + "\"" :
+                    "Impact team \"" + team.get("name") + "\"");
                 this.add(new Y.Wegas.CustomConsole({
-                    player: gameLevel ? allFirstPlayers(game) : team.get("players")[0],
+                    player: gameLevel ? getOnePlayerPerTeam(game) : team.get("players")[0],
                     statusNode: Y.Node.create("<span></span>")
                 }));
                 this.set("actions", actions);
@@ -255,9 +297,9 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                 gameLevel = team.get("@class") === "Game",
                 actions;
 
-            function allPlayers(game){
+            function allPlayers(game) {
                 var gamePlayers = [];
-                Y.Array.each(game.get("teams"), function(t){
+                Y.Array.each(game.get("teams"), function(t) {
                     if (t.get("@class") !== "DebugTeam" && t.get("players").length)
                         gamePlayers = gamePlayers.concat(t.get("players"));
                 });
@@ -270,19 +312,19 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     cb = ctx.get(CONTENTBOX);
 
                 actions = [{
-                    "types": ["primary"],
-                    "label": "Send",
-                    "do": function () {
-                        this.item(0).send();
-                    }
-                }, {
-                    "label": 'Cancel',
-                    "do": function () {
-                        this.close();
-                    }
-                }];
+                        "types": ["primary"],
+                        "label": "Send",
+                        "do": function() {
+                            this.item(0).send();
+                        }
+                    }, {
+                        "label": 'Cancel',
+                        "do": function() {
+                            this.close();
+                        }
+                    }];
                 ctx.set("title", gameLevel ?
-                "Send real E-Mail to all players of game \"" + game.get("name") + "\"" :
+                    "Send real E-Mail to all players of game \"" + game.get("name") + "\"" :
                     game.get("properties.freeForAll") ?
                     "Send real E-Mail to player \"" + team.get("players")[0].get("name") + "\"" :
                     "Send real E-Mail to players of team \"" + team.get("name") + "\"");
@@ -293,16 +335,16 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                 cb.one(".wegas-status-bar").removeClass("wegas-status-bar-hidden");
                 cb.one(".status").addClass("status--running");
 
-                this._getEmails(gameLevel ? null : team).then(function(emailsArray){
+                this._getEmails(gameLevel ? null : team).then(function(emailsArray) {
                     var modal = cb.get("parentNode");
 
                     modal.one(".wegas-status-bar").addClass("wegas-status-bar-hidden");
                     modal.one(".status").removeClass("status--running");
 
                     var emailsString = ctx.formatEmails(emailsArray),
-                        hasGuests = emailsArray.indexOf(GUEST)!==-1;
+                        hasGuests = emailsArray.indexOf(GUEST) !== -1;
 
-                    if (emailsString.length===0){
+                    if (emailsString.length === 0) {
                         cb.prepend('<div class="wegas-warning">There are only anonymous players (without e-mail)</div>');
                         // Hide the "Send" button in the footer of the modal:
                         modal.one(".modal__footer").one(".button--primary").hide();
@@ -318,7 +360,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                         label: '<i class="fa fa-envelope-o" style="font-size:120%">&nbsp;</i> Download e-mail addresses',
                         cssClass: "wegas-emailsbutton",
                         on: {
-                            click: Y.bind(function (e) {
+                            click: Y.bind(function(e) {
                                 ctx.displayEmails(emailsArray);
                             }, ctx)
                         }
@@ -326,14 +368,14 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
 
                     if (hasGuests) {
                         var nbGuests = 0;
-                        emailsArray.forEach(function (email) {
+                        emailsArray.forEach(function(email) {
                             if (email === GUEST) {
                                 nbGuests++;
                             }
                         });
                         var guestsOfPlayers = nbGuests + ' of ' + emailsArray.length,
-                            verb = emailsArray.length===1 ? ' is anonymous ' : ' are anonymous ',
-                            players = nbGuests===1 ? ' player ' : ' players ';
+                            verb = emailsArray.length === 1 ? ' is anonymous ' : ' are anonymous ',
+                            players = nbGuests === 1 ? ' player ' : ' players ';
                         cb.prepend('<div class="wegas-warning">NB: ' + guestsOfPlayers + players + verb + ' (no e-mail)</div>');
                     }
                 });
@@ -341,9 +383,9 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         },
 
         // Returns the promise of an array of emails as strings
-        _getEmails: function (team) {
+        _getEmails: function(team) {
             var ctx = this;
-            return new Y.Promise(function (resolve, reject) {
+            return new Y.Promise(function(resolve, reject) {
                 var gameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
                     requestURL;
                 if (team) {
@@ -360,10 +402,10 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                         }
                     },
                     on: {
-                        success: Y.bind(function (rId, xmlHttpRequest) {
+                        success: Y.bind(function(rId, xmlHttpRequest) {
                             resolve(JSON.parse(xmlHttpRequest.response));
                         }, this),
-                        failure: Y.bind(function (rId, xmlHttpRequest) {
+                        failure: Y.bind(function(rId, xmlHttpRequest) {
                             resolve("PERMISSION-ERROR");
                         }, this)
                     }
@@ -372,7 +414,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         },
 
         // @param emailsArray: emails as an array of strings (with guests denoted by "Guest").
-        displayEmails: function(emailsArray){
+        displayEmails: function(emailsArray) {
             var newTab = window.open("", "_blank");
 
             var nbValidEmails = 0,
@@ -380,8 +422,8 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                 mailtoHref = "mailto:",
                 mailtoText = "";
 
-            emailsArray.forEach(function (email) {
-                if (email===GUEST){
+            emailsArray.forEach(function(email) {
+                if (email === GUEST) {
                     nbGuests++;
                     return;
                 }
@@ -411,18 +453,18 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                 newTab.document.write('No registered user<br/>&nbsp;');
             }
             if (nbGuests > 0) {
-                newTab.document.write('<br/><span style="color:red">Attention:</span> ' + nbGuests + ' anonymous player'+(nbGuests>1 ? 's' : '')+', i.e. without e-mail.');
+                newTab.document.write('<br/><span style="color:red">Attention:</span> ' + nbGuests + ' anonymous player' + (nbGuests > 1 ? 's' : '') + ', i.e. without e-mail.');
             }
             newTab.document.close();
         },
 
         // @param emailsArray: emails as an array of strings (with guests denoted by "Guest").
-        formatEmails: function(emailsArray){
+        formatEmails: function(emailsArray) {
             var nbValidEmails = 0,
                 mailtoText = "";
 
-            emailsArray.forEach(function (email) {
-                if (email===GUEST){
+            emailsArray.forEach(function(email) {
+                if (email === GUEST) {
                     return;
                 }
                 if (++nbValidEmails === 1) {

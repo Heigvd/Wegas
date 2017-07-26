@@ -60,11 +60,6 @@ public abstract class AbstractAssignement extends AbstractEntity {
         }
     }
 
-    @JsonIgnore
-    public String getDeserialisedTaskDescriptorName() {
-        return this.deserialisedTaskName;
-    }
-
     public abstract TaskInstance getTaskInstance();
 
     public abstract ResourceInstance getResourceInstance();

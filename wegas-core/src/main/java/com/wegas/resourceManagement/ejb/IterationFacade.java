@@ -9,7 +9,6 @@ package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
-import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
@@ -116,12 +115,6 @@ public class IterationFacade extends BaseFacade<Iteration> {
 
             GameModel gameModel = burndownDescriptor.getGameModel();
 
-            Player currentPlayer = null;
-            boolean isDefault = burndownInstance.isDefaultInstance();
-            if (!isDefault) {
-                currentPlayer = variableInstanceFacade.findAPlayer(burndownInstance);
-            }
-
             for (Iteration iteration : burndownInstance.getIterations()) {
                 if (iteration.getDeserialisedNames() != null) {
 
@@ -137,13 +130,8 @@ public class IterationFacade extends BaseFacade<Iteration> {
                         VariableDescriptor find = variableDescriptorFacade.find(gameModel, taskName);
                         if (find instanceof TaskDescriptor) {
                             TaskDescriptor theTask = (TaskDescriptor) find;
-                            TaskInstance taskInstance;
+                            TaskInstance taskInstance = (TaskInstance) variableInstanceFacade.findInstance(theTask, burndownInstance);
 
-                            if (isDefault) {
-                                taskInstance = theTask.getDefaultInstance();
-                            } else {
-                                taskInstance = theTask.getInstance(currentPlayer);
-                            }
                             tasks.add(taskInstance);
 
                         } else {

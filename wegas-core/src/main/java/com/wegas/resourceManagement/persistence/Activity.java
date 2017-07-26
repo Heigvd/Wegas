@@ -219,11 +219,6 @@ public class Activity extends AbstractAssignement {
         }
     }
 
-    @JsonIgnore
-    public String getDeserialisedRequirementName() {
-        return deserialisedRequirementName;
-    }
-
     /**
      * Set requirement name
      *

@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -52,9 +53,11 @@ public class PlayerScope extends AbstractScope<Player> {
     }
 
     /**
+     * Get the instances which belongs to the player
      *
-     * @param player
-     * @return
+     * @param player instance owner
+     *
+     * @return the player's instance
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
@@ -102,7 +105,7 @@ public class PlayerScope extends AbstractScope<Player> {
     }
 
     @Override
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         if (context instanceof Player) {
             propagate((Player) context, create);
         } else if (context instanceof Team) {

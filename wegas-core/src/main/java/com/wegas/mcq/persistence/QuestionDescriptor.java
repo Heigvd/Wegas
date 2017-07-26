@@ -230,7 +230,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.getCbx()) {
             return instance.getValidated();
         } else {
-            return !instance.getReplies().isEmpty();
+            return !instance.getReplies(p).isEmpty();
         }
     }
 
@@ -319,7 +319,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.getCbx()) {
             return instance.getActive() && !instance.getValidated() ? 1 : 0;
         } else {
-            return instance.getActive() && instance.getReplies().isEmpty() ? 1 : 0;
+            return instance.getActive() && instance.getReplies(player).isEmpty() ? 1 : 0;
         }
     }
 }

@@ -17,9 +17,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +84,7 @@ public class VariableDescriptorController {
         Collection<VariableDescriptor> descriptors = new ArrayList<>();
         for (Long id : ids) {
             VariableDescriptor desc = variableDescriptorFacade.find(id);
-            if (userFacade.hasPermission(Helper.getAudienceToken(desc.getGameModel()))) {
+            if (userFacade.hasPermission(desc.getGameModel().getChannel())){
                 descriptors.add(desc);
             }
         }

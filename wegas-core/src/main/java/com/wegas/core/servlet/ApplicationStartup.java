@@ -9,6 +9,7 @@ package com.wegas.core.servlet;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
+import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.WebsocketFacade;
 import io.prometheus.client.hotspot.DefaultExports;
@@ -39,6 +40,9 @@ public class ApplicationStartup extends HttpServlet {
 
     @Inject
     private ApplicationLifecycle applicationLifecycle;
+
+    @Inject
+    private PopulatorScheduler populatorScheduler;
 
     @Inject
     private HazelcastInstance hzInstance;
@@ -74,10 +78,15 @@ public class ApplicationStartup extends HttpServlet {
          * Inform client webapp is running
          */
         applicationLifecycle.sendWegasReadyEvent();
+
+        populatorScheduler.startAllLocalPopulators();
     }
 
     @Override
     public void destroy() {
+
+        populatorScheduler.cancelLocalPopulating();
+        
         // hZinstance is not in cluster anymore here, no way to detect if this instance is the last one
         int count = applicationLifecycle.countMembers();
         logger.info("Servlet Destroy: " + count);

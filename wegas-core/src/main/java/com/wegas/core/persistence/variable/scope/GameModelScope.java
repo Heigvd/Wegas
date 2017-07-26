@@ -24,6 +24,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -72,7 +73,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
      */
     @JsonIgnore
     @Override
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         if (context instanceof Player) {
             // Since player's gamemodel already exists, nothing to propagate
         } else if (context instanceof Team) {
@@ -104,13 +105,50 @@ public class GameModelScope extends AbstractScope<GameModel> {
     }
 
     /**
+     * Return the instance which is accessible by the player
      *
-     * @param player
+     * @param player the player who request the instance
      *
-     * @return
+     * @return the gameModel's instance
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
+        return this.getVariableInstance((GameModel) null);
+    }
+
+    /**
+     * Return the instance which is accessible by team
+     *
+     * @param team the team who request the instance
+     *
+     * @return the gameModel's instance
+     */
+    @Override
+    public VariableInstance getVariableInstance(Team team) {
+        return this.getVariableInstance((GameModel) null);
+    }
+
+    /**
+     * Return the instance which is accessible by game
+     *
+     * @param game the game who request the instance
+     *
+     * @return the gameModel's instance
+     */
+    @Override
+    public VariableInstance getVariableInstance(Game game) {
+        return this.getVariableInstance((GameModel) null);
+    }
+
+    /**
+     * Return the instance which is linked to gameModel
+     *
+     * @param gameModel the gameModel for which instance is required
+     *
+     * @return the gameModel's instance
+     */
+    @Override
+    public VariableInstance getVariableInstance(GameModel gameModel) {
         return this.variableInstance;
     }
 

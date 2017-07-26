@@ -15,6 +15,10 @@ public class WegasConflictException extends WegasRuntimeException {
 
     private static final long serialVersionUID = -1552844893055754079L;
 
+    public WegasConflictException() {
+        super();
+    }
+    
     public WegasConflictException(Throwable t) {
         super(t);
     }
