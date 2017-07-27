@@ -160,7 +160,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "scriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
-    private Map<String, GameModelContent> scriptLibrary = new HashMap<>();
+    private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
      *
@@ -168,7 +168,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "csslibrary_gamemodelid")
     @JsonView({Views.Export.class})
-    private Map<String, GameModelContent> cssLibrary = new HashMap<>();
+    private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
      *
@@ -176,7 +176,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "clientscriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
-    private Map<String, GameModelContent> clientScriptLibrary = new HashMap<>();
+    private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
      *
@@ -224,7 +224,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         }
         this.setPages(map);
     }
-
 
     /**
      *
@@ -488,14 +487,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the scriptLibrary
      */
-    public Map<String, GameModelContent> getScriptLibrary() {
+    public List<GameModelContent> getScriptLibrary() {
         return scriptLibrary;
     }
 
     /**
      * @param scriptLibrary the scriptLibrary to set
      */
-    public void setScriptLibrary(Map<String, GameModelContent> scriptLibrary) {
+    public void setScriptLibrary(List<GameModelContent> scriptLibrary) {
         this.scriptLibrary = scriptLibrary;
     }
 
@@ -542,28 +541,64 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the cssLibrary
      */
-    public Map<String, GameModelContent> getCssLibrary() {
+    public List<GameModelContent> getCssLibrary() {
         return cssLibrary;
     }
 
     /**
      * @param cssLibrary the cssLibrary to set
      */
-    public void setCssLibrary(Map<String, GameModelContent> cssLibrary) {
+    public void setCssLibrary(List<GameModelContent> cssLibrary) {
         this.cssLibrary = cssLibrary;
     }
 
     /**
      * @return the clientScriptLibrary
      */
-    public Map<String, GameModelContent> getClientScriptLibrary() {
+    public List<GameModelContent> getClientScriptLibrary() {
         return clientScriptLibrary;
+    }
+
+    /**
+     * @param key
+     *
+     * @return the clientScript matching the key or null
+     */
+    public GameModelContent getClientScript(String key) {
+        return this.getGameModelContent(clientScriptLibrary, key);
+    }
+
+    /**
+     * @param key
+     *
+     * @return the clientScript matching the key or null
+     */
+    public GameModelContent getScript(String key) {
+        return this.getGameModelContent(scriptLibrary, key);
+    }
+
+    /**
+     * @param key
+     *
+     * @return the clientScript matching the key or null
+     */
+    public GameModelContent getCss(String key) {
+        return this.getGameModelContent(cssLibrary, key);
+    }
+
+    public GameModelContent getGameModelContent(List<GameModelContent> list, String key) {
+        for (GameModelContent gmc : list) {
+            if (gmc.getContentKey().equals(key)) {
+                return gmc;
+            }
+        }
+        return null;
     }
 
     /**
      * @param clientScriptLibrary the clientScriptLibrary to set
      */
-    public void setClientScriptLibrary(Map<String, GameModelContent> clientScriptLibrary) {
+    public void setClientScriptLibrary(List<GameModelContent> clientScriptLibrary) {
         this.clientScriptLibrary = clientScriptLibrary;
     }
 

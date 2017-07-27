@@ -55,7 +55,7 @@ public abstract class AbstractTest {
             if (injectScript == null) {
                 throw WegasErrorMessage.error("Injected Script doesn't exists [" + injectScriptPath + "]");
             }
-            gameModel.getScriptLibrary().put(injectScriptPath, new GameModelContent("JavaScript", injectScript));
+            gameModel.getScriptLibrary().add(new GameModelContent(injectScriptPath, "JavaScript", injectScript));
         }
 
         System.out.println("Create game model : " + gameModel.getName());
@@ -78,7 +78,7 @@ public abstract class AbstractTest {
 
             scriptContent.append(injectScript);
         }
-        gameModel.getScriptLibrary().put("ConcatenatedScript", new GameModelContent("JavaScript", scriptContent.toString()));
+        gameModel.getScriptLibrary().add(new GameModelContent("ConcatenatedScripts", "JavaScript", scriptContent.toString()));
 
         System.out.println("Create game model : " + gameModel.getName());
         this.getGameModelFacade().createWithDebugGame(gameModel);

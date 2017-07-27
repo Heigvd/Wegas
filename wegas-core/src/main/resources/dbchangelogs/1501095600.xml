@@ -29,4 +29,46 @@
             <append value=" WHERE clientscriptlibrary_key IS NOT NULL" />
         </modifySql>
     </changeSet>
+
+    <changeSet author="maxence" id="1501095600-4">
+        <dropIndex tableName="gamemodelcontent" indexName="index_gamemodelcontent_csslibrary"/>
+        <dropIndex tableName="gamemodelcontent" indexName="index_gamemodelcontent_scriptlibrary"/>
+        <dropIndex tableName="gamemodelcontent" indexName="index_gamemodelcontent_clientscriptlibrary"/>
+    </changeSet>
+
+    <changeSet author="maxence" id="1501095600-7">
+        <addColumn tableName="gamemodelcontent">
+            <column name="contentkey" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="maxence" id="1501095600-8">
+        <sql>
+            update gamemodelcontent set contentkey = clientscriptlibrary_key where clientscriptlibrary_key is not null;
+        </sql>
+
+        <sql>
+            update gamemodelcontent set contentkey = scriptlibrary_key where scriptlibrary_key is not null;
+        </sql>
+        <sql>
+            update gamemodelcontent set contentkey = csslibrary_key where csslibrary_key is not null;
+        </sql>
+
+    </changeSet>
+
+    <changeSet author="maxence" id="1501095600-9">
+        <createIndex indexName="index_gamemodelcontent_csslibrary_gamemodelid_scriptlibrary_gam" tableName="gamemodelcontent" unique="true">
+            <column name="csslibrary_gamemodelid"/>
+            <column name="scriptlibrary_gamemodelid"/>
+            <column name="clientscriptlibrary_gamemodelid"/>
+            <column name="contentkey"/>
+        </createIndex>
+
+
+        <dropColumn columnName="clientscriptlibrary_key" tableName="gamemodelcontent"/>
+        <dropColumn columnName="csslibrary_key" tableName="gamemodelcontent"/>
+        <dropColumn columnName="scriptlibrary_key" tableName="gamemodelcontent"/>
+    </changeSet>
+
+
 </databaseChangeLog>

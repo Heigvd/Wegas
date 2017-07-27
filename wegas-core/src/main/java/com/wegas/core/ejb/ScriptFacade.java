@@ -169,15 +169,14 @@ public class ScriptFacade {
         }
         this.injectStaticScript(ctx, player.getGameModel());
 
-        for (Entry<String, GameModelContent> arg
-                : player.getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
-            ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + arg.getKey(), ScriptContext.ENGINE_SCOPE);
+        for (GameModelContent script :player.getGameModel().getScriptLibrary()){
+            ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
             try {
-                engine.eval(arg.getValue().getContent(), ctx);
+                engine.eval(script.getContent(), ctx);
             } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
-                throw new WegasScriptException("Server script " + arg.getKey(), ex.getLineNumber(), ex.getMessage());
+                throw new WegasScriptException("Server script " + script.getContentKey(), ex.getLineNumber(), ex.getMessage());
             } catch (Exception ex) { // Java exception (Java -> JS -> Java -> throw)
-                throw new WegasScriptException("Server script " + arg.getKey(), ex.getMessage());
+                throw new WegasScriptException("Server script " + script.getContentKey(), ex.getMessage());
             }
         }
         return ctx;

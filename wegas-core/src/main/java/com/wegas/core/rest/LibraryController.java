@@ -75,7 +75,7 @@ public class LibraryController {
      */
     @GET
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
-    public String edit(@PathParam("gameModelId") Long gameModelId,
+    public String read(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {
 
@@ -104,14 +104,8 @@ public class LibraryController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Map<String, GameModelContent> lib = libraryFacade.findLibrary(gameModelId, library);
+        libraryFacade.update(gameModelId, library, key, script);
 
-        if (lib.containsKey(key)) {
-            lib.put(key, script);
-        } else {
-            throw WegasErrorMessage.error("Library does not exists");
-        }
-        // return Response.ok().build();
         return gameModelFacade.find(gameModelId);
     }
 
@@ -135,13 +129,7 @@ public class LibraryController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Map<String, GameModelContent> lib = libraryFacade.findLibrary(gameModelId, library);
-
-        if (!lib.containsKey(key)) {
-            lib.put(key, script);
-        } else {
-            throw new WegasConflictException();
-        }
+        libraryFacade.create(gameModelId, library, key, script);
         // return Response.ok().build();
         return gameModelFacade.find(gameModelId);
     }
@@ -165,7 +153,7 @@ public class LibraryController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        libraryFacade.findLibrary(gameModelId, library).remove(key);
+        libraryFacade.delete(gameModelId, library, key);
         // return Response.ok().build();
         return gameModelFacade.find(gameModelId);
     }
