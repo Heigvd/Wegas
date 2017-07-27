@@ -44,14 +44,17 @@ public class GameModelContent implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "csslibrary_gamemodelid")
+    @JsonIgnore
     private GameModel csslibrary_GameModel;
 
     @ManyToOne
     @JoinColumn(name = "scriptlibrary_gamemodelid")
+    @JsonIgnore
     private GameModel scriptlibrary_GameModel;
 
     @ManyToOne
     @JoinColumn(name = "clientscriptlibrary_gamemodelid")
+    @JsonIgnore
     private GameModel clientscriptlibrary_GameModel;
 
     private String contentKey;
@@ -122,6 +125,7 @@ public class GameModelContent implements Serializable {
         return clientscriptlibrary_GameModel;
     }
 
+    @JsonIgnore
     public void setClientscriptlibrary_GameModel(GameModel clientscriptlibrary_GameModel) {
         this.clientscriptlibrary_GameModel = clientscriptlibrary_GameModel;
     }
@@ -159,6 +163,7 @@ public class GameModelContent implements Serializable {
         return csslibrary_GameModel;
     }
 
+    @JsonIgnore
     public void setCsslibrary_GameModel(GameModel csslibrary_GameModel) {
         this.csslibrary_GameModel = csslibrary_GameModel;
     }
@@ -182,6 +187,7 @@ public class GameModelContent implements Serializable {
         return contentKey;
     }
 
+    @JsonIgnore
     public void setContentKey(String contentKey) {
         this.contentKey = contentKey;
     }
@@ -191,6 +197,7 @@ public class GameModelContent implements Serializable {
         return scriptlibrary_GameModel;
     }
 
+    @JsonIgnore
     public void setScriptlibrary_GameModel(GameModel scriptlibrary_GameModel) {
         this.scriptlibrary_GameModel = scriptlibrary_GameModel;
     }

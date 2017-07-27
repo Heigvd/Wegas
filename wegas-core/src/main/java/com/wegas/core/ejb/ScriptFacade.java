@@ -169,7 +169,7 @@ public class ScriptFacade {
         }
         this.injectStaticScript(ctx, player.getGameModel());
 
-        for (GameModelContent script :player.getGameModel().getScriptLibrary()){
+        for (GameModelContent script :player.getGameModel().getScriptLibraryList()){
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
             try {
                 engine.eval(script.getContent(), ctx);

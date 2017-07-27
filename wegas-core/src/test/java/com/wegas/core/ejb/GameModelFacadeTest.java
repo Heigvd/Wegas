@@ -33,9 +33,9 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         GameModel gameModel = new GameModel();
         gameModel.setName(name);
-        gameModel.getClientScriptLibrary().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
-        gameModel.getScriptLibrary().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
-        gameModel.getCssLibrary().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        gameModel.getClientScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        gameModel.getScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        gameModel.getCssLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
         gameModel.getProperties().setPagesUri(SCRIPTCONTENT);
 
         final int size = gameModelFacade.findAll().size();

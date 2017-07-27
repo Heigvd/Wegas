@@ -35,13 +35,13 @@ public class LibraryFacade {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         switch (name) {
             case "Script":
-                return gameModel.getScriptLibrary();
+                return gameModel.getScriptLibraryList();
 
             case "ClientScript":
-                return gameModel.getClientScriptLibrary();
+                return gameModel.getClientScriptLibraryList();
 
             case "CSS":
-                return gameModel.getCssLibrary();
+                return gameModel.getCssLibraryList();
 
             default:
                 throw new RuntimeException("Unable to find associated library: " + name);

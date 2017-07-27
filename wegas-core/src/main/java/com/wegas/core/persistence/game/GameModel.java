@@ -487,14 +487,16 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the scriptLibrary
      */
-    public List<GameModelContent> getScriptLibrary() {
+    @JsonIgnore
+    public List<GameModelContent> getScriptLibraryList() {
         return scriptLibrary;
     }
 
     /**
      * @param scriptLibrary the scriptLibrary to set
      */
-    public void setScriptLibrary(List<GameModelContent> scriptLibrary) {
+    @JsonIgnore
+    public void setScriptLibraryList(List<GameModelContent> scriptLibrary) {
         this.scriptLibrary = scriptLibrary;
     }
 
@@ -541,22 +543,78 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the cssLibrary
      */
-    public List<GameModelContent> getCssLibrary() {
+    @JsonIgnore
+    public List<GameModelContent> getCssLibraryList() {
         return cssLibrary;
     }
 
     /**
      * @param cssLibrary the cssLibrary to set
      */
-    public void setCssLibrary(List<GameModelContent> cssLibrary) {
+    @JsonIgnore
+    public void setCssLibraryList(List<GameModelContent> cssLibrary) {
         this.cssLibrary = cssLibrary;
+    }
+
+    private Map<String, GameModelContent> getLibraryAsMap(List<GameModelContent> library) {
+        Map<String, GameModelContent> map = new HashMap<>();
+        for (GameModelContent gmc : library) {
+            map.put(gmc.getContentKey(), gmc);
+        }
+        return map;
+    }
+
+    public Map<String, GameModelContent> getCssLibrary() {
+        return getLibraryAsMap(cssLibrary);
+    }
+
+    public void setCssLibrary(Map<String, GameModelContent> library) {
+        this.cssLibrary = new ArrayList<>();
+        for (Entry<String, GameModelContent> entry : library.entrySet()) {
+            String key = entry.getKey();
+            GameModelContent gmc = entry.getValue();
+            gmc.setCsslibrary_GameModel(this);
+            gmc.setContentKey(key);
+            cssLibrary.add(gmc);
+        }
     }
 
     /**
      * @return the clientScriptLibrary
      */
-    public List<GameModelContent> getClientScriptLibrary() {
+    @JsonIgnore
+    public List<GameModelContent> getClientScriptLibraryList() {
         return clientScriptLibrary;
+    }
+
+    public Map<String, GameModelContent> getScriptLibrary() {
+        return getLibraryAsMap(scriptLibrary);
+    }
+
+    public Map<String, GameModelContent> getClientScriptLibrary() {
+        return getLibraryAsMap(clientScriptLibrary);
+    }
+
+    public void setScriptLibrary(Map<String, GameModelContent> library) {
+        this.scriptLibrary = new ArrayList<>();
+        for (Entry<String, GameModelContent> entry : library.entrySet()) {
+            String key = entry.getKey();
+            GameModelContent gmc = entry.getValue();
+            gmc.setScriptlibrary_GameModel(this);
+            gmc.setContentKey(key);
+            scriptLibrary.add(gmc);
+        }
+    }
+
+    public void setClientScriptLibrary(Map<String, GameModelContent> library) {
+        this.clientScriptLibrary = new ArrayList<>();
+        for (Entry<String, GameModelContent> entry : library.entrySet()) {
+            String key = entry.getKey();
+            GameModelContent gmc = entry.getValue();
+            gmc.setClientscriptlibrary_GameModel(this);
+            gmc.setContentKey(key);
+            clientScriptLibrary.add(gmc);
+        }
     }
 
     /**
@@ -598,7 +656,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @param clientScriptLibrary the clientScriptLibrary to set
      */
-    public void setClientScriptLibrary(List<GameModelContent> clientScriptLibrary) {
+    @JsonIgnore
+    public void setClientScriptLibraryList(List<GameModelContent> clientScriptLibrary) {
         this.clientScriptLibrary = clientScriptLibrary;
     }
 

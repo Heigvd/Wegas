@@ -99,7 +99,9 @@ abstract public class GameModelTest {
     protected GameModel createGameModelFromFile(String path, String injectScript) throws IOException {
         String pmg = TestHelper.readFile(path);
         GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
-        gameModel.getScriptLibrary().add(new GameModelContent("injectedScript", "JavaScript", injectScript));
+        GameModelContent gmc = new GameModelContent("injectedScript", injectScript, "JavaScript");
+        gmc.setScriptlibrary_GameModel(gameModel);
+        gameModel.getScriptLibraryList().add(gmc);
         System.out.println("Create game model : " + gameModel.getName());
         gmFacade.createWithDebugGame(gameModel);
         Assert.assertNotNull(gameModel.getId()); //persisted
