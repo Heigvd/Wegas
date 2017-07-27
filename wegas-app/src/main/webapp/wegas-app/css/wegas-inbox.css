@@ -134,3 +134,30 @@
 .wegas-inbox-list .msg-toggled a.msg-showmore {
     display: block;
 }
+
+.wegas-inbox-list .wegas-inbox-list--clean {
+    border: 1px solid #e5e5e5;
+}
+
+.wegas-inbox-list .msg-cleanlist {
+    border-bottom: 1px solid #e5e5e5;
+    border-top: 1px solid white;
+    min-width: 350px;
+    box-sizing: border-box;
+    padding: 10px 20px 10px 65px;
+}
+
+.wegas-inbox-list .msg-cleanlist:last-child {
+    border: none;
+}
+
+.wegas-inbox-list .msg-cleanlist .msg-date {
+    float:right;
+}
+
+
+.wegas-inbox-list .msg-cleanlist .msg-icon i {
+    margin-top: 18px;
+    position: absolute;
+    margin-left: -45px;
+}
