@@ -408,6 +408,14 @@ YUI().use(function(Y) {
             "wegas-entitychoosercss": {
                 type: CSS
             },
+            "wegas-showoverlayonclickcss" :{
+                type: CSS
+            },
+            "wegas-showoverlayonclick" :{
+                path: "js/plugin/wegas-showoverlayonclick-min.js",
+                requires: ["overlay", "wegas-showoverlayonclickcss"],
+                ws_provides: ["ShowOverlayOnClick", "ShowInboxListOnClick"]
+            },
             "wegas-chartistcss": {
                 type: CSS
             }

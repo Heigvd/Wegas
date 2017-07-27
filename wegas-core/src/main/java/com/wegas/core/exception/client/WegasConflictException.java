@@ -19,6 +19,10 @@ public class WegasConflictException extends WegasRuntimeException {
         super(message);
     }
 
+    public WegasConflictException() {
+        super();
+    }
+    
     public WegasConflictException(Throwable t) {
         super(t);
     }

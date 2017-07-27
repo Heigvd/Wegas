@@ -35,9 +35,9 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         GameModel gameModel = new GameModel();
         gameModel.setName(name);
-        gameModel.getClientScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
-        gameModel.getScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
-        gameModel.getCssLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
+        gameModel.getClientScriptLibrary().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        gameModel.getScriptLibrary().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        gameModel.getCssLibrary().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
         gameModel.getProperties().setPagesUri(SCRIPTCONTENT);
 
         final int size = gameModelFacade.findAll().size();
@@ -46,10 +46,10 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         gameModel = gameModelFacade.find(gameModel.getId());
         Assert.assertEquals(name, gameModel.getName());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScriptLibrary().get(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScript(SCRIPTNAME).getContent());
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getProperties().getPagesUri());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getCssLibrary().get(SCRIPTNAME).getContent());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getScriptLibrary().get(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getCss(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getScript(SCRIPTNAME).getContent());
 
         gameModelFacade.remove(gameModel.getId());
         Assert.assertEquals(size, gameModelFacade.findAll().size());

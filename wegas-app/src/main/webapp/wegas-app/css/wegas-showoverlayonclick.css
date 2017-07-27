@@ -1,0 +1,12 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+
+.wegas-onclick-overlay {
+    background-color: white;
+    box-shadow: 3px 3px 2px rgba(0,0,0,0.05);
+}
