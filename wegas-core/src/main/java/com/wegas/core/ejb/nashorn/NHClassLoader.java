@@ -19,7 +19,8 @@ public class NHClassLoader extends ClassLoader {
     private static final String[] blacklist = {
         "com.wegas.core.Helper",
         "javax.naming.InitialContext",
-        "java.util.ResourceBundle"
+        "java.util.ResourceBundle",
+        "org.apache.shiro"
     };
 
     Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
@@ -28,8 +29,8 @@ public class NHClassLoader extends ClassLoader {
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         logger.error("Try to load {}", name);
         for (String s : blacklist) {
-            if (s.equals(name)) {
-                logger.error("Blacklisted !");
+            if (name.startsWith(s)) {
+                logger.error("{} is blacklisted !", name);
                 return null;
             }
         }

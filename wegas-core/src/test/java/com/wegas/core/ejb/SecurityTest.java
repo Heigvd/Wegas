@@ -13,6 +13,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.persistence.User;
 import javax.ejb.EJBException;
+import junit.framework.Assert;
 import org.apache.shiro.authc.AuthenticationException;
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public class SecurityTest extends AbstractEJBTest {
         WegasUser hacker = signup("hacker@local", password);
         login(hacker);
 
-        String script = "try{var help = Java.type(\"com.wegas.core.Helper\");";
+        String script = "try{";
 
         script += "currentUserId = RequestManager.getCurrentUser().getId();";
         script += "query = RequestManager.getEntityManager().createQuery('SELECT aa.salt, aa.passwordHex FROM JpaAccount aa where aa.user.id = ' + currentUserId);";
@@ -77,5 +78,23 @@ public class SecurityTest extends AbstractEJBTest {
         login(user);
         userFacade.addTrainerToGame(user.getId(), game.getId());
     }
+
+    @Test
+    public void testSu() {
+        login(user);
+        String script = "try{";
+        
+        script += "var subject = org.apache.shiro.SecurityUtils.getSubject();";
+        script += "var token = new org.apache.shiro.subject.SimplePrincipalCollection(new java.lang.Long(1), 'jpaRealm');";
+        script += "subject.runAs(token);";
+        script += "} catch (e) {print(e);}";
+
+        scriptFacade.eval(player, new Script("JavaScript", script), null);
+
+        logger.error("CURRENT: {}", requestManager.getCurrentUser().getId() );
+        Assert.assertEquals(user.getUser(), requestManager.getCurrentUser()); // assert su has failed
+    }
+
+    
 
 }
