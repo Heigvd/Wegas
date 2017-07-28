@@ -10,7 +10,7 @@ import {
     IndependantMultiVariableCondition,
     IndependantMultiVariableMethod,
     IndependantVariableStatement,
-    register,
+    register
 } from './Script/index';
 import { css } from 'glamor';
 
@@ -26,25 +26,26 @@ const wegasSimpleButtonStyle = css({
 });
 const saveBtnStyle = css({
     background: 'none',
-    transition: '1s',
+    transition: '1s'
 });
-const activeSaveBtnStyle = css(
-    saveBtnStyle, {
-        color: 'black',
-        ':hover': {
-            color: 'green'
-        }
+const activeSaveBtnStyle = css(saveBtnStyle, {
+    color: 'black',
+    ':hover': {
+        color: 'green'
+    }
 });
-const inactiveSaveBtnStyle = css(
-    saveBtnStyle, {
-        color: 'gray'
-    }
-);
-const setSavingBtnStyle = css(
-    saveBtnStyle, {
-        color: '#4cb050'
-    }
-);
+const inactiveSaveBtnStyle = css(saveBtnStyle, {
+    color: 'gray'
+});
+const setSavingBtnStyle = css(saveBtnStyle, {
+    color: '#4cb050'
+});
+const containerForm = css({
+    position: 'relative',
+    width: '100%',
+    padding: '0 1em',
+    boxSizing: 'border-box'
+});
 
 const Form = Y.Base.create(
     'wegas-react-form',
@@ -54,10 +55,10 @@ const Form = Y.Base.create(
         initializer() {
             this.plug(Y.Plugin.WidgetToolbar);
             this.publish('submit', {
-                emitFacade: true,
+                emitFacade: true
             });
             this.publish('updated', {
-                emitFacade: false,
+                emitFacade: false
             });
         },
         renderUI() {
@@ -71,22 +72,15 @@ const Form = Y.Base.create(
                     this.fire('updated', val);
                 };
                 render(
-                    <div
-                        style={{
-                            postion: 'relative',
-                            width: '100%',
-                            paddingLeft: '1em',
-                            boxSizing: 'border-box',
-                        }}
-                    >
+                    <div className={containerForm.toString()}>
                         <RForm
-                            ref={(form) => this.set(FORM, form)}
+                            ref={form => this.set(FORM, form)}
                             schema={schema}
                             value={value}
                             onChange={boundFire}
                         />
                     </div>,
-                    this.get('contentBox').getDOMNode(),
+                    this.get('contentBox').getDOMNode()
                 );
             }
         },
@@ -105,7 +99,7 @@ const Form = Y.Base.create(
             switch (b.action) {
                 case 'submit':
                     btn.on = {
-                        click: Y.bind(this.save, this),
+                        click: Y.bind(this.save, this)
                     };
                     break;
                 default:
@@ -115,8 +109,8 @@ const Form = Y.Base.create(
                                 this.fire(action);
                             },
                             this,
-                            b.action,
-                        ),
+                            b.action
+                        )
                     };
                     break;
             }
@@ -140,7 +134,7 @@ const Form = Y.Base.create(
             // }
             this.animateSaveBtn();
             this.fire('submit', {
-                value: JSON.parse(JSON.stringify(val)), // Immutability ...
+                value: JSON.parse(JSON.stringify(val)) // Immutability ...
             });
         },
         validate() {
@@ -148,21 +142,34 @@ const Form = Y.Base.create(
         },
         // Set visual feedback for when the "save" button should be clicked
         activateSaveBtn() {
-            const btn = this.get('contentBox').get("parentNode").one('.wegas-save-form-button');
-            btn.removeClass(setSavingBtnStyle.toLocaleString()).removeClass(inactiveSaveBtnStyle.toString()).addClass(activeSaveBtnStyle.toString());
+            const btn = this.get('contentBox')
+                .get('parentNode')
+                .one('.wegas-save-form-button');
+            btn
+                .removeClass(setSavingBtnStyle.toLocaleString())
+                .removeClass(inactiveSaveBtnStyle.toString())
+                .addClass(activeSaveBtnStyle.toString());
             btn.setAttribute('title', 'Save your changes');
         },
         // Set visual feedback for when the "save" button is clicked and switches between saving and not saving
         animateSaveBtn(setSaving: boolean = true, milliSeconds: number = 2000) {
-            const btn = this.get('contentBox').get("parentNode").one('.wegas-save-form-button');
+            const btn = this.get('contentBox')
+                .get('parentNode')
+                .one('.wegas-save-form-button');
             if (setSaving) {
-                btn.removeClass(inactiveSaveBtnStyle.toString()).removeClass(activeSaveBtnStyle.toString()).addClass(setSavingBtnStyle.toLocaleString());
+                btn
+                    .removeClass(inactiveSaveBtnStyle.toString())
+                    .removeClass(activeSaveBtnStyle.toString())
+                    .addClass(setSavingBtnStyle.toLocaleString());
                 btn.setAttribute('title', 'Saving ...');
             }
-            if (!setSaving || milliSeconds >= 0){
-                setTimeout(function(){
+            if (!setSaving || milliSeconds >= 0) {
+                setTimeout(function() {
                     if (!btn) alert('no btn');
-                    btn.removeClass(setSavingBtnStyle.toLocaleString()).removeClass(activeSaveBtnStyle.toString()).addClass(inactiveSaveBtnStyle.toString());
+                    btn
+                        .removeClass(setSavingBtnStyle.toLocaleString())
+                        .removeClass(activeSaveBtnStyle.toString())
+                        .addClass(inactiveSaveBtnStyle.toString());
                     btn.setAttribute('title', 'Nothing to save');
                 }, milliSeconds);
             }
@@ -192,13 +199,13 @@ const Form = Y.Base.create(
                 setter(this: any, val: any) {
                     this.renderForm(val, this.get('cfg'));
                     return val;
-                },
+                }
             },
             /**
              * The form to manage
              */
             form: {
-                transient: true,
+                transient: true
             },
             /**
              * Configuation of the form
@@ -210,7 +217,7 @@ const Form = Y.Base.create(
                     type: {
                         type: 'string',
                         value: 'object',
-                        view: { type: 'hidden' },
+                        view: { type: 'hidden' }
                     },
                     properties: {
                         type: 'object',
@@ -228,13 +235,13 @@ const Form = Y.Base.create(
                                         choices: [
                                             { value: 'string' },
                                             { value: 'number' },
-                                            { value: 'boolean' },
-                                        ],
-                                    },
+                                            { value: 'boolean' }
+                                        ]
+                                    }
                                 },
                                 required: {
                                     type: 'boolean',
-                                    view: { label: 'Required' },
+                                    view: { label: 'Required' }
                                 },
                                 view: {
                                     type: 'object',
@@ -242,7 +249,7 @@ const Form = Y.Base.create(
                                     properties: {
                                         label: {
                                             errored: function requiredString(
-                                                v: string,
+                                                v: string
                                             ) {
                                                 if (v && v.trim()) {
                                                     return '';
@@ -250,27 +257,27 @@ const Form = Y.Base.create(
                                                 return 'is required';
                                             },
                                             view: {
-                                                label: 'Label',
+                                                label: 'Label'
                                             },
-                                            type: 'string',
-                                        },
-                                    },
-                                },
-                            },
+                                            type: 'string'
+                                        }
+                                    }
+                                }
+                            }
                         },
                         view: {
                             type: 'hashlist',
                             label: 'Fields',
-                            keyLabel: 'Name',
-                        },
-                    },
+                            keyLabel: 'Name'
+                        }
+                    }
                 },
                 setter(this: any, cfg: {}) {
                     this.renderForm(this.get('values'), cfg);
                     // this.setCfg(val);
                     return cfg;
                 },
-                index: 8,
+                index: 8
             },
             buttons: {
                 type: 'array',
@@ -279,20 +286,23 @@ const Form = Y.Base.create(
                         type: 'Button',
                         action: 'submit',
                         cssClass: wegasSimpleButtonStyle.toString(),
-                        label: '<span class="wegas-save-form-button fa fa-check-circle ' + inactiveSaveBtnStyle.toString() + '" title="No changes to save"></span>',
-                    },
+                        label:
+                            '<span class="wegas-save-form-button fa fa-check-circle ' +
+                            inactiveSaveBtnStyle.toString() +
+                            '" title="No changes to save"></span>'
+                    }
                 ],
-                view: { type: 'hidden' },
-            },
-        },
-    },
+                view: { type: 'hidden' }
+            }
+        }
+    }
 );
 
 (Form as any).Script = {
     register, // Register Global script methods
     MultiVariableMethod: IndependantMultiVariableMethod,
     MultiVariableCondition: IndependantMultiVariableCondition,
-    VariableStatement: IndependantVariableStatement,
+    VariableStatement: IndependantVariableStatement
 };
 
 /* Add relevant plugin*/

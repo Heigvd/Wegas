@@ -9,7 +9,8 @@
         "noUnusedLocals": true,
         "moduleResolution": "node",
         "noEmit": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "suppressImplicitAnyIndexErrors": true
     },
     "include": [
         "src",

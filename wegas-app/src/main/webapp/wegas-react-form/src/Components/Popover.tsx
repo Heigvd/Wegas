@@ -1,31 +1,45 @@
 import React from 'react';
 
-interface IPopoverprops {
-    onClickOutside: () => void;
+interface IPopoverProps {
+    onClickOutside?: (event: MouseEvent) => void;
     show: boolean;
 }
-class Popover extends React.Component<IPopoverprops> {
-    static defaultProps: IPopoverprops = {
+class Popover extends React.Component<IPopoverProps> {
+    static defaultProps: Partial<IPopoverProps> = {
         onClickOutside: function noop() {},
-        show: false
     };
 
-    container: HTMLDivElement | null;
-    constructor(props: IPopoverprops) {
+    container: HTMLSpanElement | null;
+    constructor(props: IPopoverProps) {
         super(props);
         this.checkClickOutside = this.checkClickOutside.bind(this);
     }
-    componentDidMount() {
+    track() {
         document.addEventListener('mousedown', this.checkClickOutside);
         document.addEventListener('touchstart', this.checkClickOutside);
     }
-    componentWillUnmount() {
+    unTrack() {
         document.removeEventListener('mousedown', this.checkClickOutside);
         document.removeEventListener('touchstart', this.checkClickOutside);
     }
+    componentDidMount() {
+        if (this.props.show) {
+            this.track();
+        }
+    }
+    componentDidUpdate(prevProps: IPopoverProps) {
+        if (!prevProps.show && this.props.show) {
+            this.track();
+        } else if (prevProps.show && !this.props.show) {
+            this.unTrack();
+        }
+    }
+    componentWillUnmount() {
+        this.unTrack();
+    }
     checkClickOutside(event: MouseEvent) {
         if (this.container && !this.container.contains(event.target as Node)) {
-            this.props.onClickOutside();
+            (this.props.onClickOutside as ((event: MouseEvent) => void))(event); // default props not handled.
         }
     }
     render() {
@@ -35,7 +49,7 @@ class Popover extends React.Component<IPopoverprops> {
                     ref={node => {
                         this.container = node;
                     }}
-                    style={{ position: 'relative' }}
+                    style={{ position: 'relative', display: 'inline-block' }}
                 >
                     <div style={{ position: 'absolute', zIndex: 1000 }}>
                         {this.props.children}
@@ -48,6 +62,6 @@ class Popover extends React.Component<IPopoverprops> {
 }
 Popover.defaultProps = {
     onClickOutside: function noop() {},
-    show: false
+    show: false,
 };
 export default Popover;

@@ -8,7 +8,7 @@ import ArrayView from './Views/array';
 import BooleanView from './Views/boolean';
 import HashlistView from './Views/hashlist';
 import HiddenView from './Views/hidden';
-import HTMLView from './Views/html';
+// import HTMLView from './Views/html';
 import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
 import FlatVariableSelect from './Views/Interacting/flatvariableselect';
 import PageSelect from './Views/Interacting/pageselect';
@@ -24,6 +24,7 @@ import WegasUrl from './Views/wegas-url';
 import ColorPicker from './Views/color-picker';
 import KeyChoice from './Views/keychoice';
 import PageLoaderSelect from './Views/Interacting/pageloaderselect';
+import Draft from './Views/RTE/Draft';
 
 setDefaultWidgets({
     array: ArrayView,
@@ -33,7 +34,7 @@ setDefaultWidgets({
     flatvariableselect: FlatVariableSelect,
     hashlist: HashlistView,
     hidden: HiddenView,
-    html: HTMLView,
+    html: Draft,
     keychoice: KeyChoice,
     number: StringView,
     object: ObjectView,
