@@ -22,22 +22,27 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
             this.handlers = [];
             this.detailsOverlay = new Y.Overlay({
                 zIndex: 100,
-                width: this.get("width"),
                 constrain: true,
                 visible: false
             }).render();
 
             this.detailsOverlay.plug(Y.Plugin.Injector);
+            var maxWidth = this.get("maxwidth");
+            if (maxWidth) {
+                this.detailsOverlay.get("boundingBox").setStyle("max-width", maxWidth);
+            }
 
             //this.detailsOverlay.set("headerContent", "<div><span>" + this.get("title") + "</span><span class=\"close fa fa-times\"></div>");
             this.detailsOverlay.setStdModContent('body', "<div></div>");
 
             this.displayed = false;
-            this.detailsOverlay.get("contentBox").addClass("wegas-onclick-overlay");
+            this.detailsOverlay.get("boundingBox").addClass("wegas-onclick-overlay");
+            this.get("host").get("boundingBox").addClass("wegas-click");
             this.bind();
         },
         bind: function() {
-            this.handlers.push(this.get("host").on("click", this.onClick, this));
+            this.handlers.push(this.get("host").get("boundingBox").on("click", this.onClick, this));
+            this.handlers.push(this.get("host").get("boundingBox").on("clickoutside", this.hide, this));
             //this.handlers.push(Y.one("body").on("click", this.hide, this));
             this.onceAfterHostEvent("render", this._sync);
             this.afterHostMethod("syncUI", this._sync);
@@ -47,39 +52,40 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
         },
         _sync: function() {
         },
-        hide: function() {
+        hide: function(e) {
             this.detailsOverlay.hide();
-            this.widget.destroy();
+            this.widget && this.widget.destroy();
             this.widget = null;
             this.displayed = false;
+
+            var bb = this.get("host").get("boundingBox");
+            bb.toggleClass("wegas-onclick-overlay--displayed", false);
         },
         onClick: function(e) {
-            if (e.pageX) {
-                this.currentPos = [e.pageX + 10, e.pageY + 20]; // TODO set in a more clever way
-            } else if (e.domEvent && e.domEvent.pageX) {
-                this.currentPos = [e.domEvent.pageX + 10, e.domEvent.pageY + 20]; // TODO set in a more clever way
-            }
-
             if (this.displayed) {
-                this.hide();
+                this.hide(null);
             } else {
                 this.display();
             }
-
-            //e.halt(true);
         },
-
         display: function() {
+            var bb, br;
             if (!this.widget) {
                 this.genWidget();
             }
-            Y.later(0, this, function() {
-                this.detailsOverlay.move(this.currentPos[0], this.currentPos[1]);
-                this.detailsOverlay.show();
-                this.displayed = true;
-            });
-        },
 
+            bb = this.get("host").get("boundingBox");
+            bb.toggleClass("wegas-onclick-overlay--displayed", true);
+
+            br = bb.getDOMNode().getBoundingClientRect();
+            this.detailsOverlay.move(br.left, br.bottom);
+            // prevent going off-screen
+            this.detailsOverlay.get("boundingBox").setStyle("max-height", window.innerHeight - br.bottom - 50);
+
+
+            this.detailsOverlay.show();
+            this.displayed = true;
+        },
         genWidget: function() {
             var theVar = this.get("variable");
             if (theVar) {
@@ -95,13 +101,25 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
                             if (this.widget) {
                                 this.widget.render(this.detailsOverlay.get("contentBox").one(".yui3-widget-bd > div"));
                                 this.widget.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this); // Event on the loaded
+
+                                Y.later(100, this, function() {
+                                    if (this.widget) {
+
+                                        var bb = this.widget.get("boundingBox"),
+                                            br = bb.getDOMNode().getBoundingClientRect();
+                                        Y.log(br);
+                                        if (br.right > window.innerWidth) {
+                                            this.detailsOverlay.get("boundingBox").setStyle("left", window.innerWidth - br.width);
+                                            //this.detailsOverlay.move(window.innerWidth - br.width, this.currentPos[1]);
+                                        }
+                                    }
+                                });
                             }
                         }, ctx));
                     }
                 });
             }
         },
-
         /**
          * Destructor methods.
          * @function
@@ -117,9 +135,10 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
         }
     }, {
         ATTRS: {
-            width: {
+            maxwidth: {
                 type: "string",
-                value: "250px"
+                value: "",
+                optional: true
             },
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
@@ -153,13 +172,14 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
     });
     Y.Plugin.ShowOverlayOnClick = ShowOverlayOnClick;
 
-    ShowInboxListOnClick = Y.Base.create("wegas-showinboxlistonclick", Y.Plugin.ShowOverlayOnClick, [], {}, {
+    ShowInboxListOnClick = Y.Base.create("wegas-showinboxlistonclick", Y.Plugin.ShowOverlayOnClick, [], {
+    }, {
         ATTRS: {
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Variable"
+                    label: "Overlay Inbox"
                 }
             },
             theWidget: {
