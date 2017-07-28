@@ -18,6 +18,7 @@ YUI.add("wegas-i18n-mcq-en", function(Y) {
             result: "Result",
             empty: "No questions available yet",
             submit: "submit",
+            answered : "answered",
             unanswered : "",    // Customizable per scenario
             notDone: "",        // Customizable per scenario
             noReply: "Please select an answer first.",
