@@ -106,7 +106,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", function(e) {
                 var question = this.get("variable.evaluated"), updatedInstance;
 
-                if (e.entity instanceof Y.Wegas.persistence.ChoiceInstance){
+                if (e.entity instanceof Y.Wegas.persistence.ChoiceInstance) {
                     updatedInstance = Y.Wegas.Facade.Variable.cache.findParentDescriptor(e.entity.getDescriptor()).getInstance();
                 } else {
                     updatedInstance = e.entity;
@@ -349,8 +349,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                             }
                             ret.push('</div>'); // end cell mcq-choice
                             ret.push('<div class="mcq-choices-vertical-checkbox', (answerable || checked) ? '' : ' spurned', (currDescr === '' ? ' nodescr' : ''), '">');
-                            if (currDescr !== '')
+                            if (currDescr !== '') {
                                 ret.push('<div class="mcq-choice-name" style="padding:0">&nbsp;</div>'); // Finish line with same style
+                            }
                             ret.push('<div class="mcq-checkbox-container">');
                             ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled style="cursor:default"'),
                                 ' id="', choiceID, '" name="', questionScriptAlias, '">');
@@ -380,24 +381,30 @@ YUI.add('wegas-mcq-view', function(Y) {
                     choiceID = choiceD.get("id");
                     currDescr = question.get("items")[i].get("description") || "";
                     isChosenReply = answerable || (allReplies[0] && allReplies[0].getChoiceDescriptor().get("id") === choiceID);
-                    if (!choiceI.get("active")) {
-                    } else {
+                    if (choiceI.get("active")) {
                         var noTitle = (choiceD.get("title").trim() == '');
                         var noDescr = (currDescr.trim() == '');
+
                         ret.push('<div class="mcq-choice-vertical', (noTitle && noDescr ? ' nohover' : ''), '">');
                         ret.push('<div class="mcq-choice', (answerable || isChosenReply) ? (noTitle && noDescr ? ' notitle' : '') : ' spurned', '">');
                         title = noTitle ? "&nbsp;" : choiceD.get("title");
                         ret.push('<div class="mcq-choice-name', (noTitle && noDescr ? ' notitle' : (!noTitle && !noDescr ? ' colspan' : '')), '">', title, '</div>');
-                        if (!noDescr)
+
+                        if (!noDescr) {
                             ret.push('<div class="mcq-choice-description">', currDescr, '</div>');
+                        }
+
                         ret.push('</div>'); // end cell mcq-choice
                         ret.push('<div class="mcq-choices-vertical-submit',
                             (answerable || isChosenReply) ? '' : ' spurned',
                             (noTitle ? ' notitle' : ''),
                             (noDescr ? ' nodescr' : ''),
                             (!noTitle && !noDescr ? ' colspan' : ''), '">');
-                        if (!noDescr)  // Previous width of this div: 115px (if allowMultiple) and else 95px
+
+                        if (!noDescr) {  // Previous width of this div: 115px (if allowMultiple) and else 95px
                             ret.push('<div class="mcq-choice-name" style="padding:0; width:100%">&nbsp;</div>'); // Finish line with same style as below
+                        }
+
                         ret.push('<div class="mcq-checkbox-container">');
                         ret.push('<button class="yui3-button"', (answerable && !readonly ? '' : ' disabled'), ' id="', choiceID, '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                         if (allowMultiple) {
@@ -433,58 +440,68 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }
             } else {
                 // It's a CBX-type question:
-                // For each defined choice, see if it's checked, i.e. if there is a reply. If not, display the ignorationAnswer.
                 if (questionInstance.get("validated")) {
-                    ret.push('<div class="mcq-replies-section">');
-                    ret.push('<div class="mcq-replies-title">', Y.Wegas.I18n.t('mcq.result').pluralize(), '</div>');
-                    ret.push('<div class="mcq-replies">');
+
+                    /*
+                     * Step one -> group all reply to display in repliesToDisplay
+                     * Each item contains its choiceDescriptor and the answer to display.
+                     * The answer to display is either the normal answer or the ignorationAnswer,
+                     * according to the reply "ignored" attribute.
+                     * 
+                     * Does not includes ignored replies with no ignorationAnswet
+                     * 
+                     */
+                    var j, repliesToDisplay = [],
+                        toDisplay,
+                        cReplies;
+
+                    // go throug each choice
                     for (i = 0; i < choices.length; i += 1) {
                         choiceD = choices[i];
                         choiceI = choiceD.getInstance();
-                        if (!choiceI.get("active"))
-                            continue;
-                        /*
-                         For each choice, there are 3 cases:
-                         1. checked => display title and answer (if any).
-                         2. unchecked and no ignorationAnswer => display nothing.
-                         3. New case: unchecked and there is an ignorationAnswer => display title and any ignorationAnswer.
-                         */
-                        var checked = false,
-                            answer = "",
-                            ignorationAnswer = "";
-                        for (var j = totalNumberOfReplies - 1; j >= 0; j -= 1) {
-                            reply = allReplies[j];
-                            if (reply.getChoiceDescriptor().get("id") === choiceD.get("id")) {
-                                if (!reply.get("ignored")) {
-                                    checked = true;
-                                    answer = reply.get("answer");
-                                } else {
-                                    ignorationAnswer = reply.get("ignorationAnswer");
-                                }
-                                break;
-                            }
-                        }
-                        if (!checked) {
-                            /*
-                             var results = choiceD.get("results")[0];
-                             if (results !== undefined)
-                             ignorationAnswer = results.get("ignorationAnswer");
-                             */
-                            // Empty (invisible) ignoration answers would be confusing and must not be displayed:
-                            if (ignorationAnswer === null || ignorationAnswer === undefined || ignorationAnswer.replace(/(\r\n|\n|\r)/gm, "").trim().length === 0)
-                                ignorationAnswer = "";
-                        }
-                        if (checked || ignorationAnswer.length !== 0) {
-                            ret.push('<div class="mcq-reply" data-choice-id="', choiceD.get("id"), '" style="font-style:normal; color:inherit">');
-                            ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
-                            if (checked) {
-                                ret.push('<div class="mcq-reply-content">', answer, '</div>');
+
+                        cReplies = choiceI.get("replies");
+
+                        // skip inactive choices or choices without replie
+                        if (choiceI.get("active") && cReplies && cReplies.length > 0) {
+                            reply = cReplies[0];
+
+                            // select the correct text to display
+                            if (!reply.get("ignored")) {
+                                toDisplay = reply.get("answer");
                             } else {
-                                ret.push('<div class="mcq-reply-content">', ignorationAnswer, '</div>');
+                                toDisplay = reply.get("ignorationAnswer");
+
+                                // skip ignored reply without text
+                                if (!toDisplay || !toDisplay.replace(/(\r\n|\n|\r)/gm, "").trim()) {
+                                    continue;
+                                }
                             }
-                            ret.push('</div>'); // end mcq-reply
+
+                            repliesToDisplay.push({
+                                choiceDescriptor: choiceD,
+                                answerText: toDisplay
+                            });
                         }
                     }
+
+                    /**
+                     * Step two : build markup 
+                     */
+                    ret.push('<div class="mcq-replies-section">');
+                    ret.push('<div class="mcq-replies-title">', (repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
+                    ret.push('<div class="mcq-replies">');
+                    for (j in repliesToDisplay) {
+                        reply = repliesToDisplay[j];
+                        choiceD = reply.choiceDescriptor;
+                        toDisplay = reply.answerText;
+
+                        ret.push('<div class="mcq-reply" data-choice-id="', choiceD.get("id"), '" style="font-style:normal; color:inherit">');
+                        ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
+                        ret.push('<div class="mcq-reply-content">', toDisplay, '</div>');
+                        ret.push('</div>'); // end mcq-reply
+                    }
+
                     ret.push('</div>'); // end mcq-replies
                     ret.push('</div>'); // end mcq-replies-section
                 }
