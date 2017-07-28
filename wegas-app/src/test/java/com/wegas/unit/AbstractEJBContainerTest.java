@@ -67,7 +67,7 @@ public abstract class AbstractEJBContainerTest extends AbstractEJBTestBase {
             if (injectScript == null) {
                 throw WegasErrorMessage.error("Injected Script doesn't exists [" + injectScriptPath + "]");
             }
-            gameModel.getScriptLibrary().add(new GameModelContent(injectScriptPath, "JavaScript", injectScript));
+            gameModel.getScriptLibraryList().add(new GameModelContent(injectScriptPath, "JavaScript", injectScript));
         }
 
         System.out.println("Create game model : " + gameModel.getName());
@@ -90,7 +90,7 @@ public abstract class AbstractEJBContainerTest extends AbstractEJBTestBase {
 
             scriptContent.append(injectScript);
         }
-        gameModel.getScriptLibrary().add(new GameModelContent("concatenatedScripts", "JavaScript", scriptContent.toString()));
+        gameModel.getScriptLibraryList().add(new GameModelContent("concatenatedScripts", "JavaScript", scriptContent.toString()));
 
         System.out.println("Create game model : " + gameModel.getName());
         gameModelFacade.createWithDebugGame(gameModel);
