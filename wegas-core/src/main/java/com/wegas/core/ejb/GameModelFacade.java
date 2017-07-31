@@ -46,6 +46,7 @@ import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.util.*;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.game.Team;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -92,10 +93,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     @EJB
     private HistoryController historyController;
 
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
-    @EJB
+    @Inject
+    private TeamFacade teamFacade;
+    
+    @Inject
     private GameFacade gameFacade;
 
     @Inject
@@ -163,7 +167,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     public void revivePrivateInstances(GameModel gameModel, InstanceOwner target) {
-        for (VariableInstance vi : target.getPrivateInstances()){
+        for (VariableInstance vi : target.getPrivateInstances()) {
             instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
         }
     }
@@ -323,15 +327,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     private void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
 // Clone Pages
-            // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
-            //Clone files & history (?)
-            for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
-                try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
-                    connector.cloneRoot(srcGameModel.getId());
-                } catch (RepositoryException ex) {
-                    logger.error("Duplicating repository {} failure, {}", srcGameModel.getId(), ex.getMessage());
-                }
+        // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
+        //Clone files & history (?)
+        for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
+            try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
+                connector.cloneRoot(srcGameModel.getId());
+            } catch (RepositoryException ex) {
+                logger.error("Duplicating repository {} failure, {}", srcGameModel.getId(), ex.getMessage());
             }
+        }
     }
 
     public GameModel createGameGameModel(final Long entityId) throws IOException {
@@ -494,6 +498,21 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
         this.runStateMachines(gameModel);
+    }
+
+    @Override
+    public void reset(final Game game) {
+        gameFacade.reset(game);
+    }
+
+    @Override
+    public void reset(final Team team) {
+        teamFacade.reset(team);
+    }
+
+    @Override
+    public void reset(final Player player) {
+        playerFacade.reset(player);
     }
 
     public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {

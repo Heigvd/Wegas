@@ -7,7 +7,10 @@
  */
 package com.wegas.core.api;
 
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 
 /**
  *
@@ -23,14 +26,37 @@ public interface GameModelFacadeI {
     void refresh(final GameModel entity);
 
     /**
+     * Reset a whole gameModel (all games, all teams and all players)
+     *
      * @param gameModel
      */
     void reset(final GameModel gameModel);
 
     /**
-     * @param gameModelId
+     * Reset a whole gameModel (all games, all teams and all players)
+     *
+     * @param gameModelId id of the gameModel to reset
      */
     void reset(final Long gameModelId);
 
+    /**
+     * Reset a game, its teams and their players
+     *
+     * @param game the game to reset
+     */
+    void reset(final Game game);
 
+    /**
+     * Reset a team and its players
+     *
+     * @param team the team to reset
+     */
+    void reset(final Team team);
+
+    /**
+     * reset a player
+     *
+     * @param player the player to reset
+     */
+    void reset(final Player player);
 }
