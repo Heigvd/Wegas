@@ -118,7 +118,13 @@ public class ScriptFacade {
      *
      */
     @EJB
-    DelayedScriptEventFacade delayedEvent;
+    private DelayedScriptEventFacade delayedEvent;
+
+    /**
+     * 
+     */
+    @Inject
+    private GameModelFacade  gameModelFacade;
 
     /**
      *
@@ -150,6 +156,7 @@ public class ScriptFacade {
         bindings.put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
         bindings.put("Instance", variableInstanceFacade);
         bindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
+        bindings.put("GameModelFacade", gameModelFacade);//
         bindings.put("RequestManager", requestManager);                  // Inject the request manager
         bindings.put("Event", event);                                    // Inject the Event manager
         bindings.put("DelayedEvent", delayedEvent);
