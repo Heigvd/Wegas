@@ -515,6 +515,14 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         playerFacade.reset(player);
     }
 
+    public void resetGame(final Player player) {
+        gameFacade.reset(player.getGame());
+    }
+
+    public void resetTeam(final Player player) {
+        teamFacade.reset(player.getTeam());
+    }
+
     public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {
         ArrayList<GameModel> gameModels = new ArrayList<>();
         Map<Long, List<String>> pMatrix = new HashMap<>();

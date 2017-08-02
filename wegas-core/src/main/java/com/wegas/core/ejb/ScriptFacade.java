@@ -161,8 +161,11 @@ public class ScriptFacade {
      *
      */
     @EJB
-    DelayedScriptEventFacade delayedEvent;
+    private DelayedScriptEventFacade delayedEvent;
 
+    /**
+     * 
+     */
     /**
      *
      */
