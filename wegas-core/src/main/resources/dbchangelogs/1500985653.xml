@@ -11,4 +11,9 @@
     <changeSet author="maxence (generated)" id="1500985659259-3">
         <dropColumn columnName="inducedpermission" tableName="permission"/>
     </changeSet>
+    <changeSet author="maxence (generated)" id="1500985659259-4">
+        <delete tableName="permission">
+            <where>permission like 'Game:View:g%'</where>
+        </delete>
+    </changeSet>
 </databaseChangeLog>
