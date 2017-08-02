@@ -58,7 +58,6 @@ public abstract class AbstractEntityTest<T extends AbstractEntity> {
     @AfterClass
     public static void closeContext() throws Exception {
         System.out.println("[WeGAS Entity Test] ...Clean context");
-        TestHelper.closeContainer();
     }
 
     @Before
