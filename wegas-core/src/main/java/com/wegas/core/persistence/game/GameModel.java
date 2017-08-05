@@ -10,11 +10,9 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -29,6 +27,7 @@ import java.util.Map.Entry;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -72,6 +71,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
+    @WegasEntityProperty
     private String name;
 
     /**
@@ -80,6 +80,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String description;
 
     /**
@@ -95,6 +96,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String comments;
 
     /**
@@ -182,6 +184,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Embedded
+    @WegasEntityProperty
     private GameModelProperties properties = new GameModelProperties();
 
     /**
@@ -257,16 +260,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     @Override
-    public void merge(AbstractEntity n) {
-        if (n instanceof GameModel) {
-            GameModel other = (GameModel) n;
-            this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
-            this.setComments(other.getComments());
-            this.getProperties().merge(other.getProperties());
-            super.merge(n);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + n.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity n) {
     }
 
     /**

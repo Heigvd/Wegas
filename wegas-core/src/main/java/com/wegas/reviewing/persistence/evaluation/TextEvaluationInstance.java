@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,6 +33,7 @@ public class TextEvaluationInstance extends EvaluationInstance {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "evaluationvalue")
+    @WegasEntityProperty
     private String value;
 
     /**
@@ -53,13 +55,6 @@ public class TextEvaluationInstance extends EvaluationInstance {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof TextEvaluationInstance) {
-            TextEvaluationInstance o = (TextEvaluationInstance) a;
-            super.merge(a);
-            this.setValue(o.getValue());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 }

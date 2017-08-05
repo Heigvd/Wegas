@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @OneToMany(mappedBy = "container", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
 
     /**
@@ -79,12 +81,6 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof EvaluationDescriptorContainer) {
-            EvaluationDescriptorContainer other = (EvaluationDescriptorContainer) a;
-            this.setEvaluations(ListUtils.mergeLists(this.getEvaluations(), other.getEvaluations()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 }

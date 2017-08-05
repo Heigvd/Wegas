@@ -44,6 +44,6 @@ public class RootDescriptors extends AbstractEntity {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
+    public void __merge(AbstractEntity other) {
     }
 }

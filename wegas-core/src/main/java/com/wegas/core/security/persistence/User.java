@@ -88,8 +88,7 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void __merge(AbstractEntity a) {
     }
 
     /**

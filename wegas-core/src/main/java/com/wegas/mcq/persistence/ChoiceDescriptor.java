@@ -9,7 +9,6 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
@@ -21,10 +20,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.ListUtils.Updater;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.merge.annotations.WegasEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.merge.utils.WegasCallback;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.Scripted;
 
@@ -42,6 +42,7 @@ import com.wegas.core.persistence.variable.Scripted;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
 })
+@WegasEntity(callback = ChoiceDescriptor.ChoiceDescriptorMergeCallback.class)
 public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> implements Scripted {
 
     private static final long serialVersionUID = 1L;
@@ -62,6 +63,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @OrderColumn
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, callback = ResultMergeCallback.class)
     private List<Result> results = new ArrayList<>();
     /**
      *
@@ -69,15 +71,18 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Basic(fetch = FetchType.LAZY)
     @Lob
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String description;
 
     /**
      *
      */
+    @WegasEntityProperty
     private Long duration = 1L;
     /**
      *
      */
+    @WegasEntityProperty
     private Long cost = 0L;
 
     @Override
@@ -96,62 +101,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof ChoiceDescriptor) {
-            ChoiceDescriptor other = (ChoiceDescriptor) a;
-            this.setDescription(other.getDescription());
-            super.merge(a);
-            this.setDuration(other.getDuration());
-            this.setCost(other.getCost());
-
-            this.setResults(ListUtils.mergeLists(this.getResults(), other.getResults(), new Updater() {
-                @Override
-                public void addEntity(AbstractEntity entity) {
-                    //Result newResult = (Result) entity;
-                }
-
-                @Override
-                public void removeEntity(AbstractEntity entity) {
-                    /*
-                     * Since orphanRemoval does not trigger preRemove event,
-                     * one should update bidirectional relation here in adition to Result.updateCacheOnDelete
-                     */
-                    Result resultToRemove = (Result) entity;
-                    for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
-                        ci.setCurrentResult(null);
-                    }
-                }
-            }));
-
-            // Default instance has already been merged,
-            // has its currentResult been removed ?
-            /*ChoiceInstance defaultInstance = this.getDefaultInstance();
-            
-            if (defaultInstance.getCurrentResult() != null && !this.getResults().contains(defaultInstance.getCurrentResult())) {
-                defaultInstance.setCurrentResult(null);
-            }*/
-            // Detect new results
-            List<String> labels = new ArrayList<>();
-            List<String> names = new ArrayList<>();
-            List<Result> newResults = new ArrayList<>();
-
-            for (Result r : this.getResults()) {
-                if (r.getId() != null) {
-                    // Store name and label existing result
-                    labels.add(r.getLabel());
-                    names.add(r.getName());
-                } else {
-                    newResults.add(r);
-                }
-            }
-
-            // set names and labels unique
-            for (Result r : newResults) {
-                Helper.setNameAndLabelForResult(r, names, labels);
-            }
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**
@@ -262,6 +212,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * @param results the results to set
      */
     public void setResults(List<Result> results) {
+        for (Result r : results) {
+            r.setChoiceDescriptor(this);
+        }
         this.results = results;
     }
 
@@ -448,5 +401,47 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             }
         }
         return false;
+    }
+
+    public static class ChoiceDescriptorMergeCallback implements WegasCallback {
+
+        @Override
+        public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
+            if (entity instanceof ChoiceDescriptor) {
+                ChoiceDescriptor cd = (ChoiceDescriptor) entity;
+
+                List<String> labels = new ArrayList<>();
+                List<String> names = new ArrayList<>();
+                List<Result> newResults = new ArrayList<>();
+
+                for (Result r : cd.getResults()) {
+                    if (r.getId() != null) {
+                        // Store name and label existing result
+                        labels.add(r.getLabel());
+                        names.add(r.getName());
+                    } else {
+                        newResults.add(r);
+                    }
+                }
+
+                // set names and labels unique
+                for (Result r : newResults) {
+                    Helper.setNameAndLabelForResult(r, names, labels);
+                }
+            }
+        }
+
+    }
+    
+    public static class ResultMergeCallback implements WegasCallback {
+        @Override
+        public void preDestroy(AbstractEntity entity, Object identifier) {
+            if (entity instanceof Result) {
+                Result resultToRemove = (Result) entity;
+                for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
+                    ci.setCurrentResult(null);
+                }
+            }
+        }
     }
 }

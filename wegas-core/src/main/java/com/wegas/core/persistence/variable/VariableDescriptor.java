@@ -12,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -52,6 +50,9 @@ import org.eclipse.persistence.config.QueryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.merge.annotations.WegasEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.merge.utils.WegasCallback;
 
 /**
  * @param <T>
@@ -124,6 +125,7 @@ import com.wegas.core.persistence.InstanceOwner;
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 @MappedSuperclass
+@WegasEntity(callback = VariableDescriptor.ScopeUpdate.class)
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
@@ -152,6 +154,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @Lob
     @JsonView(value = Views.EditorI.class)
     @Column(name = "Descriptor_comments")
+    @WegasEntityProperty
     private String comments;
 
     /**
@@ -160,6 +163,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     @JsonView(value = Views.EditorI.class)
+    @WegasEntityProperty
     private VariableInstance defaultInstance;
 
     /**
@@ -194,6 +198,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      */
     //@JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private String label;
 
     /*
@@ -206,6 +211,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
     @JoinFetch
     //@JsonView(value = Views.WithScopeI.class)
+    //@WegasEntityProperty(callback = ScopeUpdate.class)
     private AbstractScope scope;
 
     /**
@@ -214,6 +220,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * TriggerDescriptor, aso)
      */
     @Column(name = "editorLabel")
+    @WegasEntityProperty
     private String title;
 
     /**
@@ -222,10 +229,12 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @NotNull
     @Basic(optional = false)
     //@CacheIndex
+    @WegasEntityProperty
     protected String name;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty
     private Long version;
 
     public Long getVersion() {
@@ -492,31 +501,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof VariableDescriptor) {
-            try {
-                super.merge(a);
-                VariableDescriptor other = (VariableDescriptor) a;
-                this.setVersion(other.getVersion());
-                this.setName(other.getName());
-                this.setLabel(other.getLabel());
-                this.setTitle(other.getTitle());
-                this.setComments(other.getComments());
-                this.getDefaultInstance().merge(other.getDefaultInstance());
-                if (other.getScope() != null) {
-                    if (this.getScope() != null && this.getScope().getClass() != other.getScope().getClass()) {
-                        this.getVariableDescriptorFacade().updateScope(this, other.getScope());
-                    } else {
-                        this.getScope().setBroadcastScope(other.getScope().getBroadcastScope());
-                    }
-                }
-            } catch (PersistenceException pe) {
-                throw WegasErrorMessage.error("The name is already in use");
-            }
-            //this.scope.merge(vd.getScope());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
+
     }
 
     /**
@@ -617,5 +603,23 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
 
         return this.variableDescriptorFacade;
+    }
+
+    public static class ScopeUpdate implements WegasCallback {
+
+        @Override
+        public void postUpdate(AbstractEntity entity, Object originalNewValue, Object identifier) {
+            AbstractScope scope = ((VariableDescriptor) entity).getScope();
+            AbstractScope newScope = ((VariableDescriptor) originalNewValue).getScope();
+
+            if (scope != null && newScope != null) {
+                if (!scope.getClass().equals(newScope.getClass())) {
+                    VariableDescriptor variableDescriptor = scope.getVariableDescriptor();
+                    variableDescriptor.getVariableDescriptorFacade().updateScope(variableDescriptor, newScope);
+                } else {
+                    scope.setBroadcastScope(newScope.getBroadcastScope());
+                }
+            }
+        }
     }
 }

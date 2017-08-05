@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
 /**
  *
@@ -75,6 +76,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /**
      *
      */
+    @WegasEntityProperty
     private String name;
     /**
      *
@@ -169,9 +171,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        Player p = (Player) a;
-        this.setName(p.getName());
+    public void __merge(AbstractEntity a) {
     }
 
     @Override

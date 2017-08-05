@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.primitive;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import java.util.List;
+import javax.persistence.Column;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -30,7 +32,9 @@ public class TextInstance extends VariableInstance implements Searchable {
     private static final Logger logger = LoggerFactory.getLogger(TextInstance.class);
 
     @Lob
-    private String val;
+    @WegasEntityProperty
+    @Column(name = "val")
+    private String value;
 
     /**
      *
@@ -42,37 +46,28 @@ public class TextInstance extends VariableInstance implements Searchable {
      * @param value
      */
     public TextInstance(String value) {
-        this.val = value;
+        this.value = value;
     }
 
     /**
      * @return the value
      */
     public String getValue() {
-        return val;
+        return value;
     }
 
     /**
      * @param value the value to set
      */
     public void setValue(String value) {
-        this.val = value;
+        this.value = value;
     }
 
     /**
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a != null) {
-            if (a instanceof TextInstance) {
-                TextInstance vi = (TextInstance) a;
-                super.merge(a);
-                this.setValue(vi.getValue());
-            } else {
-                throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-            }
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     @Override

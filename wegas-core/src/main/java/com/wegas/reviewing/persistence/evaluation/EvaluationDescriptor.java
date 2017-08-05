@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.rest.util.Views;
 import java.util.List;
 import java.util.Objects;
@@ -58,17 +59,20 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     /**
      * to sort evaluation descriptor and instance
      */
+    @WegasEntityProperty
     private Integer index;
 
     /**
      * Evaluation name as displayed to players
      */
+    @WegasEntityProperty
     private String name;
 
     /**
      * Textual descriptor to be displayed to players
      */
     @Lob
+    @WegasEntityProperty
     private String description;
 
     /**
@@ -102,15 +106,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        super.merge(a);
-        if (a instanceof EvaluationDescriptor) {
-            EvaluationDescriptor o = (EvaluationDescriptor) a;
-            this.setDescription(o.getDescription());
-            this.setIndex(o.getIndex());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     @Override

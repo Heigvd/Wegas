@@ -11,6 +11,7 @@ import com.wegas.core.persistence.VariableProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class ObjectInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<VariableProperty> properties = new ArrayList<>();
 
     @Override
@@ -51,15 +53,6 @@ public class ObjectInstance extends VariableInstance implements Propertable {
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a != null) {
-            if (a instanceof ObjectInstance) {
-                super.merge(a);
-                ObjectInstance other = (ObjectInstance) a;
-                this.setProperties(other.getProperties());
-            } else {
-                throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-            }
-        }
+    public void __merge(AbstractEntity a) {
     }
 }

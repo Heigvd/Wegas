@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.persistence.merge.patch.WegasEntityPatch;
 import com.wegas.core.persistence.variable.Beanjection;
 import javax.persistence.MappedSuperclass;
 import org.eclipse.persistence.annotations.Cache;
@@ -64,12 +65,44 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      */
     abstract public Long getId();
 
+
+    /*
+    @Id
+    private Long oid;
+
+    public Long getOid() {
+        return oid;
+    }
+
+    public void setOid(Long oid) {
+        this.oid = oid;
+    }*/
+
+    /**
+     * Get entity cross-gamemodel identifier
+     *
+     * @return
+     */
+    @JsonIgnore
+    public String getSafeId() {
+        if (this.getId() != null) {
+            return this.getId().toString();
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Merge other into this
      *
      * @param other the entity to copy values from
      */
-    public abstract void merge(AbstractEntity other);
+    public abstract void __merge(AbstractEntity other);
+
+    public final void merge(AbstractEntity other) {
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);
+        wegasEntityPatch.apply(this);
+    }
 
     /**
      * this hashCode is base on id and class hashcode
@@ -90,6 +123,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * have the id and being instances of the same class
      *
      * @param object entity to compare to
+     *
      * @return true if object equals this, false otherwise
      */
     @Override
@@ -134,7 +168,9 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Duplicate an entity by using Jackson Mapper and provided view
      *
      * @param view
+     *
      * @return copy of this
+     *
      * @throws IOException
      */
     public AbstractEntity duplicate(Class view) throws IOException {
@@ -152,6 +188,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Same as duplicate(Views.Export)
      *
      * @return copy of this
+     *
      * @throws IOException
      */
     public AbstractEntity duplicate() throws IOException {
@@ -162,6 +199,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Serialize to JSON
      *
      * @return JSON String representing this
+     *
      * @throws IOException
      */
     public String toJson() throws IOException {
@@ -173,7 +211,9 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Serialize to JSON with view
      *
      * @param view the view to use to export this
+     *
      * @return JSON String representing this
+     *
      * @throws IOException
      */
     public String toJson(Class view) throws IOException {
@@ -193,7 +233,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
     /**
      * Default behaviour is to do nothing
-     *
+     * <p>
      * Overriding this method may helps to maintain cache integrity after
      * cascaded entity deletion
      *

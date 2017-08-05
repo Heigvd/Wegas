@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
@@ -38,5 +39,10 @@ public class TextDescriptor extends VariableDescriptor<TextInstance> {
      */
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
+    }
+
+    @Override
+    public void __merge(AbstractEntity e){
+        
     }
 }

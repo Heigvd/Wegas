@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.GameModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,9 @@ import javax.persistence.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.merge.utils.WegasCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +27,8 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
-    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
+        query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
+@WegasEntity(callback = ListDescriptor.ValidateShortcutCallback.class)
 public class ListDescriptor extends VariableDescriptor<VariableInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -36,14 +41,20 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
     //@OrderBy("id")
     @OrderColumn
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
      * List of allowed children types
      */
     @ElementCollection
+    @WegasEntityProperty
     private List<String> allowedTypes = new ArrayList<>();
 
+    /**
+     * shortcut to show within (+) treeview button, must match allowedTypes
+     */
+    @WegasEntityProperty
     private String addShortcut = "";
 
     /**
@@ -163,6 +174,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     /**
      *
      * @param index
+     *
      * @return
      */
     @Override
@@ -220,6 +232,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     /**
      *
      * @param item
+     *
      * @return
      */
     @Override
@@ -229,20 +242,20 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof ListDescriptor) {
-            super.merge(a);
-            ListDescriptor o = (ListDescriptor) a;
-            this.setAllowedTypes(new ArrayList<>());
-            this.getAllowedTypes().addAll(o.getAllowedTypes());
-            if (o.getAddShortcut() == null || o.getAddShortcut().isEmpty() || isAuthorized(o.getAddShortcut())) {
-                this.setAddShortcut(o.getAddShortcut());
-            } else {
-                throw WegasErrorMessage.error(o.getAddShortcut() + " not allowed in this folder");
-            }
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
+    public static class ValidateShortcutCallback implements WegasCallback {
+
+        @Override
+        public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
+            if (entity instanceof ListDescriptor) {
+                ListDescriptor listDescriptor = (ListDescriptor) entity;
+                String shortcut = listDescriptor.getAddShortcut();
+                if (!Helper.isNullOrEmpty(shortcut) && !listDescriptor.isAuthorized(shortcut)) {
+                    throw WegasErrorMessage.error(shortcut + " not allowed in this folder");
+                }
+            }
+        }
+    }
 }

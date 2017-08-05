@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import java.util.List;
+import javax.persistence.Column;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -32,7 +34,9 @@ public class StringInstance extends VariableInstance implements Searchable {
 
     private static final Logger logger = LoggerFactory.getLogger(StringInstance.class);
 
-    private String val;
+    @Column(name = "val")
+    @WegasEntityProperty
+    private String value;
 
     /**
      *
@@ -44,24 +48,21 @@ public class StringInstance extends VariableInstance implements Searchable {
      * @param value
      */
     public StringInstance(String value) {
-        this.val = value;
+        this.value = value;
     }
 
     /**
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        StringInstance vi = (StringInstance) a;
-        super.merge(a);
-        this.setValue(vi.getValue());
+    public void __merge(AbstractEntity a) {
     }
 
     /**
      * @return the value
      */
     public String getValue() {
-        return val;
+        return value;
     }
 
     /**
@@ -89,7 +90,7 @@ public class StringInstance extends VariableInstance implements Searchable {
             }
         }
 
-        this.val = value;
+        this.value = value;
     }
 
     @Override

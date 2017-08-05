@@ -7,7 +7,6 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Entity;
 
@@ -22,13 +21,7 @@ public class TextEvaluationDescriptor extends EvaluationDescriptor<TextEvaluatio
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof TextEvaluationDescriptor) {
-            super.merge(a);
-            // Nothing to merge
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     @Override

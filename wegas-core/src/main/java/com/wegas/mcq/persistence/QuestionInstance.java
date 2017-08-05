@@ -13,6 +13,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -35,33 +36,26 @@ public class QuestionInstance extends VariableInstance {
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean active = true;
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean unread = true;
     /**
      * False until the user has clicked on the global question-wide "submit"
      * button.
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean validated = FALSE;
 
     /**
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof QuestionInstance) {
-            QuestionInstance other = (QuestionInstance) a;
-            super.merge(a);
-            this.setActive(other.getActive());
-            this.setUnread(other.getUnread());
-            Boolean v = other.getValidated();
-            this.setValidated(v);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**

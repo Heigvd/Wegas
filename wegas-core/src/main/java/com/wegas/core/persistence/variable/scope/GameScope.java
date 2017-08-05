@@ -125,11 +125,6 @@ public class GameScope extends AbstractScope<Game> {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        //
-    }
-
-    @Override
     public Map<Game, VariableInstance> getPrivateInstances() {
         Map<Game, VariableInstance> ret = new HashMap<>();
         Player cPlayer = RequestFacade.lookup().getPlayer();

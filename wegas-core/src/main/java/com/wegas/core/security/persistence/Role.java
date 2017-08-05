@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
 import javax.persistence.*;
 import java.util.*;
@@ -41,6 +42,7 @@ public class Role extends AbstractEntity {
      */
     @Basic(optional = false)
     @Column(length = 100)
+    @WegasEntityProperty
     private String name;
 
     /**
@@ -48,6 +50,7 @@ public class Role extends AbstractEntity {
      */
     @Basic(optional = false)
     @Column(length = 255)
+    @WegasEntityProperty
     private String description;
 
     /**
@@ -55,6 +58,7 @@ public class Role extends AbstractEntity {
      */
     //@ElementCollection(fetch = FetchType.EAGER)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Permission> permissions = new ArrayList<>();
 
     /**
@@ -83,15 +87,7 @@ public class Role extends AbstractEntity {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Role) {
-            Role r = (Role) other;
-            this.setName(r.getName());
-            this.setDescription(r.getDescription());
-            this.setPermissions(ListUtils.mergeLists(this.getPermissions(), r.getPermissions()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity other) {
     }
 
     @Override

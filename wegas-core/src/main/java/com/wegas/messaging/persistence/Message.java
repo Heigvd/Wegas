@@ -12,7 +12,6 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.*;
 //import javax.xml.bind.annotation.XmlTransient;
 //import javax.xml.bind.annotation.XmlType;
@@ -20,9 +19,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.DatedEntity;
-import java.util.ArrayList;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
 /**
  *
@@ -49,42 +47,50 @@ public class Message extends NamedEntity implements DatedEntity {
     /**
      *
      */
+    @WegasEntityProperty
     private String subject;
     /**
      *
      */
     @Column(length = 64, columnDefinition = "character varying(64) default ''::character varying")
+    @WegasEntityProperty
     private String token;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String body;
     /**
      * real world time for sorting purpose
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(columnDefinition = "timestamp with time zone")
-    private Date sentTime = new Date();
+    @Column(name = "senttime", columnDefinition = "timestamp with time zone")
+    @WegasEntityProperty
+    private Date time = new Date();
 
     /**
      * Simulation date, for display purpose
      */
+    @WegasEntityProperty
     private String date;
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean unread = true;
     /**
      *
      */
     @Column(name = "mfrom")
+    @WegasEntityProperty
     private String from;
     /**
      *
      */
     @ElementCollection
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private List<String> attachements;
     /**
      *
@@ -190,23 +196,7 @@ public class Message extends NamedEntity implements DatedEntity {
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Message) {
-            super.merge(a);
-            Message other = (Message) a;
-            this.setBody(other.getBody());
-            this.setFrom(other.getFrom());
-            this.setUnread(other.getUnread());
-            this.setTime(other.getTime());
-            this.setDate(other.getDate());
-            this.setSubject(other.getSubject());
-            this.setToken(other.getToken());
-            this.setAttachements(new ArrayList<>());
-            this.getAttachements().addAll(other.getAttachements());
-            //this.setAttachements(other.attachements);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
 
@@ -322,14 +312,14 @@ public class Message extends NamedEntity implements DatedEntity {
      * @return the startTime
      */
     public Date getTime() {
-        return (Date) sentTime.clone();
+        return (Date) time.clone();
     }
 
     /**
      * @param time
      */
     public void setTime(Date time) {
-        this.sentTime.setTime(time.getTime());
+        this.time.setTime(time.getTime());
     }
 
     /**

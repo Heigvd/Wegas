@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import java.io.Serializable;
 
 /**
@@ -39,10 +40,12 @@ public class Occupation extends AbstractEntity {
      *
      */
     @Column(name = "wtime")
+    @WegasEntityProperty
     private double time = 0.0D;
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean editable = true;
     /**
      *
@@ -50,6 +53,7 @@ public class Occupation extends AbstractEntity {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String description = "";
 
     /**
@@ -80,17 +84,7 @@ public class Occupation extends AbstractEntity {
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Occupation) {
-            Occupation other = (Occupation) a;
-            this.setDescription(other.getDescription());
-            this.setTime(other.getTime());
-            this.setEditable(other.getEditable());
-            //this.setResourceInstance(other.getResourceInstance());
-            //this.setTaskDescriptor(other.getTaskDescriptor());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /*

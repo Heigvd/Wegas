@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
@@ -26,6 +27,7 @@ public class DialogueState extends State {
      *
      */
     @Lob
+    @WegasEntityProperty
     private String text;
 
     @Override
@@ -51,12 +53,6 @@ public class DialogueState extends State {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof DialogueState) {
-            this.setText(((DialogueState) other).getText());
-            super.merge(other);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity other) {
     }
 }

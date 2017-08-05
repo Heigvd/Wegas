@@ -9,10 +9,10 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
@@ -86,12 +86,14 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * the name of the variable to review. Only used for JSON de serialisation
      */
     @Transient
+    @WegasEntityProperty
     private String toReviewName;
 
     /**
      * Allow evicted users to receive something to review
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean includeEvicted;
 
     /**
@@ -99,10 +101,13 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * especially is total number of team/player is too small
      * <p>
      */
-    private Integer maxNumberOfReviewer;
+    @WegasEntityProperty
+    @Column(name="maxNumberOfReviewer")
+    private Integer maxNumberOfReview;
 
     @Basic(fetch = FetchType.LAZY)
     @Lob
+    @WegasEntityProperty
     private String description;
 
     /**
@@ -112,6 +117,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.EditorI.class)
     @NotNull
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private EvaluationDescriptorContainer feedback;
 
     /**
@@ -121,6 +127,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.EditorI.class)
     @NotNull
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private EvaluationDescriptorContainer fbComments;
 
     /**
@@ -128,21 +135,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * @param a another PeerReviewDescriptor
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof PeerReviewDescriptor) {
-            PeerReviewDescriptor other = (PeerReviewDescriptor) a;
-            super.merge(a);
-
-            this.setMaxNumberOfReview(other.getMaxNumberOfReview());
-            this.setDescription(other.getDescription());
-            this.setToReview(other.getToReview());
-            this.setToReviewName(other.getToReviewName());
-            this.getFeedback().merge(other.getFeedback());
-            this.getFbComments().merge(other.getFbComments());
-            this.setIncludeEvicted(other.getIncludeEvicted());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**
@@ -198,20 +191,20 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * @return expected number of reviewers
      */
     public Integer getMaxNumberOfReview() {
-        return maxNumberOfReviewer;
+        return maxNumberOfReview;
     }
 
     /**
      * set the expected number of reviewers
      *
-     * @param maxNumberOfReviewer the number of expected reviewers, shall be > 0
+     * @param maxNumberOfReview the number of expected reviewers, shall be > 0
      *
      */
-    public void setMaxNumberOfReview(Integer maxNumberOfReviewer) {
-        if (maxNumberOfReviewer >= 0) {
-            this.maxNumberOfReviewer = maxNumberOfReviewer;
+    public void setMaxNumberOfReview(Integer maxNumberOfReview) {
+        if (maxNumberOfReview >= 0) {
+            this.maxNumberOfReview = maxNumberOfReview;
         } else {
-            this.maxNumberOfReviewer = 1; // TODO throw error ? 
+            this.maxNumberOfReview = 1; // TODO throw error ? 
         }
     }
 

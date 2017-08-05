@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,12 +40,14 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String description;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<VariableProperty> properties = new ArrayList<>();
 
     @JsonIgnore
@@ -58,15 +61,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof ResourceDescriptor) {
-            super.merge(a);
-            ResourceDescriptor other = (ResourceDescriptor) a;
-            this.setDescription(other.getDescription());
-            this.setProperties(other.getProperties());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**

@@ -18,6 +18,7 @@ import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
 /**
  *
@@ -33,17 +34,11 @@ public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String description;
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof BurndownDescriptor) {
-            super.merge(a);
-            BurndownDescriptor other = (BurndownDescriptor) a;
-            this.setDescription(other.getDescription());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        } 
+    public void __merge(AbstractEntity a) {
     }
 
     /**

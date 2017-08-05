@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 ////import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -58,6 +59,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @NotNull
     @Basic(optional = false)
+    @WegasEntityProperty
     private String name;
 
     /**
@@ -79,6 +81,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Lob
     @JsonView(value = Views.EditorI.class)
+    @WegasEntityProperty
     private String notes;
 
     /**
@@ -139,10 +142,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        Team t = (Team) a;
-        this.setName(t.getName());
-        this.setNotes(t.getNotes());
+    public void __merge(AbstractEntity a) {
     }
 
     /**

@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
@@ -31,6 +32,7 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
      * List of allowed categories
      */
     @ElementCollection
+    @WegasEntityProperty
     private List<String> categories = new ArrayList<>();
 
     /**
@@ -72,15 +74,7 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof CategorizedEvaluationDescriptor) {
-            super.merge(a);
-            CategorizedEvaluationDescriptor o = (CategorizedEvaluationDescriptor) a;
-            this.categories = new ArrayList<>();
-            this.categories.addAll(o.getCategories());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     @Override

@@ -97,14 +97,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
     }
 
     /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-    }
-
-    /**
      * Return the instance which is accessible by the player
      *
      * @param player the player who request the instance

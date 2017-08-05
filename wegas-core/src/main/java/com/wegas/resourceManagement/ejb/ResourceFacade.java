@@ -399,24 +399,27 @@ public class ResourceFacade {
              * Transform task name into real TaskDescriptor
              */
             if (task.getImportedPredecessorNames() != null) {
+                List<String> predecessorNames = task.getImportedPredecessorNames();
                 /**
                  * New predecessor's names : be sure they're registered
                  */
+                task.getPredecessors().clear();
+                
                 for (String predecessorName : task.getImportedPredecessorNames()) {
                     TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
-                    if (!task.getPredecessorNames().contains(predecessorName)) {
+                    //if (!task.getPredecessorNames().contains(predecessorName)) {
                         task.addPredecessor(predecessor);
-                    }
+                    //}
                 }
                 /**
                  * Old predecessor's names : make sure to remove oldies
+                 * for (String predecessorName : task.getPredecessorNames()) {
+                 * TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+                 * if (!task.getImportedPredecessorNames().contains(predecessorName)) {
+                 * task.removePredecessor(predecessor);
+                 * }
+                 * }
                  */
-                for (String predecessorName : task.getPredecessorNames()) {
-                    TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
-                    if (!task.getImportedPredecessorNames().contains(predecessorName)) {
-                        task.removePredecessor(predecessor);
-                    }
-                }
             }
             //this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
 
@@ -452,7 +455,7 @@ public class ResourceFacade {
                 String taskDescriptorName = assignment.getTaskDescriptorName();
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
                     TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                    
+
                     TaskInstance newTaskInstance = (TaskInstance) variableInstanceFacade.findInstance(newTaskDescriptor, resourceInstance);
                     TaskInstance oldTaskInstance = assignment.getTaskInstance();
 
@@ -468,7 +471,7 @@ public class ResourceFacade {
                 String taskDescriptorName = activity.getTaskDescriptorName();
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
                     TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                    
+
                     TaskInstance newTaskInstance = (TaskInstance) variableInstanceFacade.findInstance(newTaskDescriptor, resourceInstance);
 
                     TaskInstance oldTaskInstance = activity.getTaskInstance();

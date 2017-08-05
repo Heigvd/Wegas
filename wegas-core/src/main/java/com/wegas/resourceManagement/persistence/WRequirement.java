@@ -27,7 +27,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 //import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import javax.persistence.Index;
 
 /**
@@ -58,21 +58,25 @@ public class WRequirement extends AbstractEntity {
      */
     @Column(name = "wrequirement_name")
     @NotNull
+    @WegasEntityProperty
     private String name;
     /**
      *
      */
     @Column(name = "wlimit")
+    @WegasEntityProperty
     private Integer limit = 0;
     /**
      *
      */
     @Column(name = "wwork")
+    @WegasEntityProperty
     private String work = "";
     /*
      *
      */
     @Column(name = "wlevel")
+    @WegasEntityProperty
     private Integer level = 0;
     /**
      *
@@ -83,14 +87,17 @@ public class WRequirement extends AbstractEntity {
     /*
      *
      */
+    @WegasEntityProperty
     private Long quantity = 0L;
     /*
      *
      */
+    @WegasEntityProperty
     private Double completeness = 0.0D;
     /*
      *
      */
+    @WegasEntityProperty
     private Double quality = 0.0D;
 
     /**
@@ -116,19 +123,7 @@ public class WRequirement extends AbstractEntity {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof WRequirement) {
-            WRequirement other = (WRequirement) a;
-            this.setLevel(other.getLevel());
-            this.setLimit(other.getLimit());
-            this.setQuantity(other.getQuantity());
-            this.setWork(other.getWork());
-            this.setCompleteness(other.getCompleteness());
-            this.setQuality(other.getQuality());
-            this.setName(other.getName());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**
@@ -137,6 +132,11 @@ public class WRequirement extends AbstractEntity {
     @Override
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String getSafeId() {
+        return this.getName();
     }
 
     /**

@@ -29,6 +29,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
 import javax.persistence.NamedQueries;
@@ -54,21 +55,25 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String description;
     /**
      *
      */
+    @WegasEntityProperty
     private boolean allowMultipleReplies = false;
     /**
      * Set this to true when the choice is to be selected with an HTML
      * radio/checkbox
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean cbx = FALSE;
     /**
      * Determines if choices are presented horizontally in a tabular fashion
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean tabular = FALSE;
     /**
      *
@@ -78,6 +83,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
     @OrderColumn
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
@@ -85,6 +91,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @ElementCollection
     @JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private List<String> pictures = new ArrayList<>();
 
     /**
@@ -92,18 +99,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof QuestionDescriptor) {
-            super.merge(a);
-            QuestionDescriptor other = (QuestionDescriptor) a;
-            this.setDescription(other.getDescription());
-            this.setAllowMultipleReplies(other.getAllowMultipleReplies());
-            this.setCbx(other.getCbx());
-            this.setTabular(other.getTabular());
-            this.setPictures(other.getPictures());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 // *** Sugar for scripts *** //
 
@@ -119,6 +115,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param p
+     *
      * @return the player instance active status
      */
     public boolean isActive(Player p) {
@@ -223,6 +220,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param p
+     *
      * @return true if the player has already answers this question
      */
     public boolean isReplied(Player p) {
@@ -238,6 +236,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * {@link #isReplied ...}
      *
      * @param p
+     *
      * @return true if the player has not yet answers this question
      */
     public boolean isNotReplied(Player p) {
@@ -266,7 +265,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param index
+     *
      * @return the iest choiceDescriptor
+     *
      * @throws IndexOutOfBoundsException
      */
     @Override

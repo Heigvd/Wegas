@@ -24,6 +24,18 @@ public class ListUtils {
         void removeEntity(AbstractEntity entity);
     }
 
+    public static class EmptyUpdater implements Updater {
+
+        @Override
+        public void addEntity(AbstractEntity entity) {
+        }
+
+        @Override
+        public void removeEntity(AbstractEntity entity) {
+        }
+
+    }
+
     /**
      * Simple interface to retrieve a key from an object.
      *
@@ -45,7 +57,7 @@ public class ListUtils {
     /**
      * Default KeyExtractor implementation
      * Extract Id from an abstractEntity
-     *
+     * <p>
      */
     public static class IdExtractor implements KeyExtractorI<Object, AbstractEntity> {
 
@@ -54,8 +66,6 @@ public class ListUtils {
             return item.getId();
         }
     }
-
-
 
     /**
      * Clone a list, not its content
@@ -143,13 +153,13 @@ public class ListUtils {
      * merged<br/>
      * - An element from the theList has to be removed if its <code>KEY</code>
      * is missing in the otherList
-     * - the otherList and its elemnt remain unchanged
+     * - the otherList and its element remain unchanged
      *
      * @param <E>       extends (@see AbstractEntity) the element type
      * @param theList   The list containing elements ("oldList")
      * @param otherList The list containing new elements (the "newList")
      * @param callback  to maintain cache integrity
-     * @param converter allow to use a peronalised element identifier (if null, elemenet.id will be used)
+     * @param converter allow to use a personalised element identifier (if null, element.id will be used)
      *
      * @return A brand new up-to-date list, which is a clone of theList
      */
@@ -177,7 +187,7 @@ public class ListUtils {
             if (otherElements.containsKey(key)) {
                 // element exists in both list
                 // merge it and store it in the merged list
-                e.merge(otherElements.get(key));
+                e.__merge(otherElements.get(key));
                 merged.put(key, e);
             } else {
                 // element does not exists anylonger

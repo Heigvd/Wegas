@@ -22,6 +22,8 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.merge.utils.WegasCallback;
 
 /**
  *
@@ -46,22 +48,26 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      */)
     @JsonManagedReference
     @OrderColumn
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, callback = ResourceInstanceMergeCallback.class)
     private List<Assignment> assignments = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Occupation> occupations = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, callback = ResourceInstanceMergeCallback.class)
     private List<Activity> activities = new ArrayList<>();
     /**
      *
      */
+    @WegasEntityProperty
     private boolean active = true;
     /**
      * @deprecated
@@ -73,6 +79,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      * @deprecated
@@ -82,6 +89,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     /**
      *
      */
+    @WegasEntityProperty
     private int confidence;
 
     @JsonIgnore
@@ -95,62 +103,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof ResourceInstance) {
-            ResourceInstance other = (ResourceInstance) a;
-            super.merge(a);
-            this.setActive(other.getActive());
-            if (other.getAssignments() != null) {
-                //ListUtils.mergeLists(this.getAssignments(), other.getAssignments());
-                this.setAssignments(
-                        ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
-                            @Override
-                            public void addEntity(AbstractEntity entity) {
-                            }
-
-                            @Override
-                            public void removeEntity(AbstractEntity entity) {
-                                if (entity instanceof Assignment) {
-                                    Assignment assignment = (Assignment) entity;
-                                    TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());
-                                    if (parent != null) {
-                                        parent.removeAssignment(assignment);
-                                    }
-                                }
-                            }
-                        }));
-            }
-            if (other.getActivities() != null) {
-                this.setActivities(ListUtils.mergeLists(this.getActivities(), other.getActivities(), new ListUtils.Updater() {
-                    @Override
-                    public void addEntity(AbstractEntity entity) {
-                        // activity.taskInstance is revived in ResourceFacade.revive
-                    }
-
-                    @Override
-                    public void removeEntity(AbstractEntity entity) {
-                        Activity activity = (Activity) entity;
-                        TaskInstance tdParent = (TaskInstance) VariableInstanceFacade.lookup().find(activity.getTaskInstance().getId());
-                        if (tdParent != null) {
-                            tdParent.removeActivity(activity);
-                        }
-                        if (activity.getRequirement() != null) {
-                            activity.getRequirement().removeActivity(activity);
-                        }
-                    }
-                }));
-            }
-            if (other.getOccupations() != null) {
-                //this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations(), new UpdaterImpl(this)));
-                this.setOccupations(ListUtils.mergeLists(this.occupations, other.occupations));
-            }
-            this.setProperties(other.getProperties());
-            //this.setProperties(other.getProperties());
-            //this.setMoral(other.getMoral());
-            this.setConfidence(other.getConfidence());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**
@@ -174,9 +127,9 @@ public class ResourceInstance extends VariableInstance implements Propertable {
         this.removeAssignment(assignment);
         this.addAssignment(assignment, index);
 
-        List<Assignment> newAssignments =new ArrayList<>();
+        List<Assignment> newAssignments = new ArrayList<>();
 
-        for (Assignment a : this.getAssignments()){
+        for (Assignment a : this.getAssignments()) {
             newAssignments.add(a);
         }
 
@@ -363,6 +316,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
 
     /**
      * @return the confidence
+     *
      * @deprecated please use instance properties
      */
     @Deprecated
@@ -374,6 +328,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      * Set the confidence value
      *
      * @param confidence the confidence to set
+     *
      * @deprecated please use instance properties
      */
     @Deprecated
@@ -396,24 +351,27 @@ public class ResourceInstance extends VariableInstance implements Propertable {
         return this.assignments;
     }
 
-    /*
-     * private class UpdaterImpl implements ListUtils.Updater {
-     *
-     * private ResourceInstance parent;
-     *
-     * public UpdaterImpl(ResourceInstance parent) {
-     * this.parent = parent;
-     * }
-     *
-     * @Override
-     * public void addEntity(AbstractEntity entity) {
-     * Occupation o = (Occupation) entity;
-     * o.setResourceInstance(parent);
-     * }
-     *
-     * @Override
-     * public void removeEntity(AbstractEntity entity) {
-     * }
-     * }
-     */
+    public static class ResourceInstanceMergeCallback implements WegasCallback {
+
+        @Override
+        public void preDestroy(AbstractEntity entity, Object identifier) {
+            if (entity instanceof Assignment) {
+                Assignment assignment = (Assignment) entity;
+                TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());
+                if (parent != null) {
+                    parent.removeAssignment(assignment);
+                }
+            } else if (entity instanceof Activity) {
+                Activity activity = (Activity) entity;
+                TaskInstance tdParent = (TaskInstance) VariableInstanceFacade.lookup().find(activity.getTaskInstance().getId());
+                if (tdParent != null) {
+                    tdParent.removeActivity(activity);
+                }
+                if (activity.getRequirement() != null) {
+                    activity.getRequirement().removeActivity(activity);
+                }
+            }
+        }
+    }
+
 }

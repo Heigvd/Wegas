@@ -9,9 +9,11 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.merge.annotations.WegasEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.merge.utils.WegasCallback;
 import com.wegas.core.rest.util.Views;
 
 import javax.persistence.Entity;
@@ -30,6 +32,7 @@ import javax.persistence.Column;
 @Entity
 //@XmlRootElement
 //@XmlType(name = "TriggerDescriptor")
+@WegasEntity(callback = TriggerDescriptor.MergeTriggerHack.class)
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;
@@ -37,6 +40,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      *
      */
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Boolean oneShot = false;
 
     /**
@@ -44,18 +48,21 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     @JsonView(Views.EditorI.class)
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean disableSelf = true;
     /**
      *
      */
     @Transient
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Script triggerEvent;
     /**
      *
      */
     @Transient
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Script postTriggerEvent;
 
     /**
@@ -134,6 +141,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * Override to make this function transient
      *
      * @return
+     *
      * @see StateMachineDescriptor#getStates
      */
     @Override
@@ -154,28 +162,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof TriggerDescriptor) {
-            TriggerDescriptor entity = (TriggerDescriptor) a;
-
-            this.setOneShot(entity.oneShot);
-            this.setDisableSelf(entity.disableSelf);
-            this.setPostTriggerEvent(entity.postTriggerEvent);
-            this.setTriggerEvent(entity.triggerEvent);
-
-            // HACK Restore Version Number
-            //Long initialStateVersion = this.getStates().get(1L).getVersion();
-            //Long finalStateVersion = this.getStates().get(2L).getVersion();
-
-            entity.setStates(this.getStates());
-            super.merge(entity);
-
-            entity.buildStateMachine();
-            //this.getStates().get(1L).setVersion(initialStateVersion);
-            //this.getStates().get(2L).setVersion(finalStateVersion);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**
@@ -242,5 +229,15 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     @Override
     public String toString() {
         return "TriggerDescriptor{id=" + this.getId() + ", oneShot=" + oneShot + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + '}';
+    }
+
+    public static class MergeTriggerHack implements WegasCallback {
+
+        @Override
+        public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
+            TriggerDescriptor td = (TriggerDescriptor) entity;
+            td.buildStateMachine();
+        }
+
     }
 }

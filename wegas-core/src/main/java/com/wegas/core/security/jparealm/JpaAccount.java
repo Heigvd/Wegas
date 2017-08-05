@@ -16,6 +16,7 @@ import org.apache.shiro.util.SimpleByteSource;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -49,6 +50,7 @@ public class JpaAccount extends AbstractAccount {
     @Basic(optional = false)
     @Column(length = 255)
     @JsonIgnore
+    @WegasEntityProperty(ignoreNull = true)
     private String passwordHex;
     /**
      *
@@ -57,17 +59,7 @@ public class JpaAccount extends AbstractAccount {
     private String salt;
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof JpaAccount) {
-            super.merge(other);
-            JpaAccount a = (JpaAccount) other;
-            if (a.getPassword() != null && !a.getPassword().isEmpty()) {                                          // Only update the password if it is set
-                this.setPassword(a.getPassword());
-                this.setPasswordHex(null);                                          // Force jpa update
-            }
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity other) {
     }
 
     /**

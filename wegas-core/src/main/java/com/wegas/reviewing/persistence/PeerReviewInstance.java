@@ -7,18 +7,14 @@
  */
 package com.wegas.reviewing.persistence;
 
-import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityComparators;
-import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -42,18 +38,21 @@ public class PeerReviewInstance extends VariableInstance {
      * Current review state
      */
     @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty
     private PeerReviewDescriptor.ReviewingState reviewState = PeerReviewDescriptor.ReviewingState.NOT_STARTED;
 
     /**
      * List of review that contains feedback written by player owning this
      */
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Review> toReview = new ArrayList<>();
 
     /**
      * List of review that contains others feedback
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Review> reviewed = new ArrayList<>();
 
     /**
@@ -124,17 +123,6 @@ public class PeerReviewInstance extends VariableInstance {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a != null) {
-            if (a instanceof PeerReviewInstance) {
-                PeerReviewInstance o = (PeerReviewInstance) a;
-                super.merge(a);
-                this.setReviewState(o.getReviewState());
-                this.setReviewed(ListUtils.mergeLists(this.reviewed, o.reviewed));
-                this.setToReview(ListUtils.mergeLists(this.toReview, o.toReview));
-            } else {
-                throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-            }
-        }
+    public void __merge(AbstractEntity a) {
     }
 }

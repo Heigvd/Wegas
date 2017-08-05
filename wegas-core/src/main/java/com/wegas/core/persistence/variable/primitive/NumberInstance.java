@@ -14,6 +14,7 @@ import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NumberListener;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -24,8 +25,8 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import javax.persistence.Column;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -45,7 +46,9 @@ public class NumberInstance extends VariableInstance {
     /**
      *
      */
-    private double val;
+    @Column(name = "val")
+    @WegasEntityProperty
+    private double value;
 
     /**
      *
@@ -53,6 +56,7 @@ public class NumberInstance extends VariableInstance {
     @ElementCollection
     @JsonView(Views.ExtendedI.class)
     //@OrderColumn
+    @WegasEntityProperty
     private List<NumberHistoryEntry> history = new ArrayList<>();
 
     /**
@@ -65,14 +69,14 @@ public class NumberInstance extends VariableInstance {
      * @param value
      */
     public NumberInstance(double value) {
-        this.val = value;
+        this.value = value;
     }
 
     /**
      * @return the value
      */
     public double getValue() {
-        return val;
+        return value;
     }
 
     /**
@@ -92,7 +96,7 @@ public class NumberInstance extends VariableInstance {
             // @fixme (occurs when instance is a defaultInstance)
         }
 
-        this.val = value;
+        this.value = value;
     }
 
     /**
@@ -146,14 +150,6 @@ public class NumberInstance extends VariableInstance {
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof NumberInstance) {
-            super.merge(a);
-            NumberInstance vi = (NumberInstance) a;
-            this.setValue(vi.getValue());
-            this.setHistory(vi.getHistory());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 }

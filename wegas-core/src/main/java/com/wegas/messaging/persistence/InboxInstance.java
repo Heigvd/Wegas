@@ -15,6 +15,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ public class InboxInstance extends VariableInstance {
 
      */
     @JsonManagedReference("inbox-message")
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Message> messages = new ArrayList<>();
     /**
      * @return the replies
@@ -101,14 +103,7 @@ public class InboxInstance extends VariableInstance {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof InboxInstance) {
-            super.merge(a);
-            InboxInstance other = (InboxInstance) a;
-            this.setMessages(ListUtils.mergeLists(this.getMessages(), other.getMessages()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**

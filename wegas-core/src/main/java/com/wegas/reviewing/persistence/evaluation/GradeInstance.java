@@ -7,10 +7,9 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -29,6 +28,7 @@ public class GradeInstance extends EvaluationInstance {
      * given grade
      */
     @Column(name = "evaluationvalue")
+    @WegasEntityProperty
     private Double value;
 
     /**
@@ -59,13 +59,6 @@ public class GradeInstance extends EvaluationInstance {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof GradeInstance) {
-            GradeInstance o = (GradeInstance) a;
-            super.merge(a);
-            this.setValue(o.getValue());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 }

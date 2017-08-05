@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 import javax.validation.constraints.Pattern;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -63,6 +64,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "Game name cannot be empty")// must at least contains one non-whitespace character
+    @WegasEntityProperty
     private String name;
 
     /**
@@ -71,6 +73,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @NotNull
     @Basic(optional = false)
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
+    @WegasEntityProperty
     private String token;
 
     /**
@@ -130,6 +133,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @Enumerated
+    @WegasEntityProperty
     private GameAccess access = GameAccess.CLOSE;
 
     /**
@@ -184,11 +188,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        Game other = (Game) a;
-        super.merge(a);
-        this.setAccess(other.getAccess());
-        this.setToken(other.getToken());
+    public void __merge(AbstractEntity a) {
     }
 
     /**

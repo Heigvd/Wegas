@@ -147,12 +147,4 @@ public class TeamScope extends AbstractScope<Team> {
             propagate(getVariableDescriptor().getGameModel(), create);
         }
     }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-    }
 }

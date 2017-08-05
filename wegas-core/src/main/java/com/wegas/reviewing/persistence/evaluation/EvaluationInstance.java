@@ -11,12 +11,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
-import java.util.Date;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -103,14 +101,6 @@ public abstract class EvaluationInstance extends AbstractEntity {
      */
     public void setDescriptor(EvaluationDescriptor ed) {
         this.evaluationDescriptor = ed;
-    }
-
-    @Override
-    public void merge(AbstractEntity a) {
-        //if (a instanceof EvaluationInstance) {
-        //EvaluationInstance o = (EvaluationInstance) a;
-        // Nothing to merge
-        //}
     }
 
     @Override

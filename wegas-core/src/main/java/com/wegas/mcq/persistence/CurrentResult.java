@@ -66,7 +66,7 @@ public class CurrentResult extends AbstractEntity  {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
+    public void __merge(AbstractEntity other) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

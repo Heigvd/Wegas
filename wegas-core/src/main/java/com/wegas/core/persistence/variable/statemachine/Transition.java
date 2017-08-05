@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
@@ -52,6 +53,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty
     private Long version;
 
     public Long getVersion() {
@@ -66,11 +68,13 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      *
      */
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Integer index = 0;
 
     /**
      *
      */
+    @WegasEntityProperty
     private Long nextStateId;
 
     @JsonIgnore
@@ -89,12 +93,14 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
                 = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Script preStateImpact;
 
     /**
      *
      */
     @Embedded
+    @WegasEntityProperty
     private Script triggerCondition;
 
     @Override
@@ -197,17 +203,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Transition) {
-            Transition newTranstion = (Transition) other;
-            this.setVersion(newTranstion.getVersion());
-            this.setNextStateId(newTranstion.getNextStateId());
-            this.setPreStateImpact(newTranstion.getPreStateImpact());
-            this.setTriggerCondition(newTranstion.getTriggerCondition());
-            this.setIndex(newTranstion.getIndex());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity other) {
     }
 
     @Override

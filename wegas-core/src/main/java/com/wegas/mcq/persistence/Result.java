@@ -18,6 +18,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
@@ -52,6 +53,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty
     private Long version;
 
     public Long getVersion() {
@@ -72,11 +74,13 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * Internal Name
      */
+    @WegasEntityProperty
     private String name;
 
     /**
      * Displayed name
      */
+    @WegasEntityProperty
     private String label;
     /**
      *
@@ -84,6 +88,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String answer;
 
     /**
@@ -92,18 +97,21 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String ignorationAnswer;
 
     /*
      *
      */
     @ElementCollection
+    @WegasEntityProperty
     private List<String> files = new ArrayList<>();
     /**
      *
      */
     @Embedded
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Script impact;
     /**
      *
@@ -117,6 +125,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
                 = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Script ignorationImpact;
     /**
      *
@@ -185,21 +194,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Result) {
-            Result other = (Result) a;
-            this.setVersion(other.getVersion());
-            this.setName(other.getName());
-            this.setLabel(other.getLabel());
-            this.setAnswer(other.getAnswer());
-            this.setImpact(other.getImpact());
-            this.setIgnorationAnswer(other.getIgnorationAnswer());
-            this.setIgnorationImpact(other.getIgnorationImpact());
-            this.setFiles(other.getFiles());
-            this.setChoiceDescriptor(other.getChoiceDescriptor());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     @Override
@@ -343,42 +338,44 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     //@XmlTransient
     @JsonIgnore
     public List<ChoiceInstance> getChoiceInstances() {
-        return currentResult.getChoiceInstances();
+        return this.getCurrentResult().getChoiceInstances();
     }
 
     public void addChoiceInstance(ChoiceInstance choiceInstance) {
+        CurrentResult cr = this.getCurrentResult();
+        if (!cr.getChoiceInstances().contains(choiceInstance)) {
+            cr.getChoiceInstances().add(choiceInstance);
+        }
+    }
+
+    public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
+        return this.getCurrentResult().remove(choiceInstance);
+    }
+
+    public CurrentResult getCurrentResult() {
         if (this.currentResult == null) {
             this.currentResult = new CurrentResult();
             this.currentResult.setResult(this);
         }
 
-        if (!this.currentResult.getChoiceInstances().contains(choiceInstance)) {
-            this.currentResult.getChoiceInstances().add(choiceInstance);
-        }
-    }
-
-    public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
-        return this.currentResult.remove(choiceInstance);
-    }
-
-    public CurrentResult getCurrentResult(){
         return currentResult;
     }
 
     public Replies getReplies() {
-        return replies;
-    }
-
-    public void addReply(Reply reply) {
         if (replies == null) {
             replies = new Replies();
             replies.setResult(this);
         }
-        this.replies.add(reply);
+        return replies;
+    }
+
+    public void addReply(Reply reply) {
+
+        this.getReplies().add(reply);
     }
 
     void removeReply(Reply reply) {
-        this.replies.remove(reply);
+        this.getReplies().remove(reply);
     }
 
     @Override
@@ -397,13 +394,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
 
     @PrePersist
     private void prePersist() {
-        if (replies == null) {
-            replies = new Replies();
-            replies.setResult(this);
-        }
-        if (currentResult == null) {
-            currentResult = new CurrentResult();
-            currentResult.setResult(this);
-        }
+        this.getReplies();
+        this.getCurrentResult();
     }
 }

@@ -41,6 +41,7 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
 ////import javax.xml.bind.annotation.XmlTransient;
 /**
@@ -136,6 +137,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty
     private Long version;
 
     public Long getVersion() {
@@ -576,11 +578,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof VariableInstance) {
-            VariableInstance instance = (VariableInstance) other;
-            this.setVersion(instance.getVersion());
-        }
+    public void __merge(AbstractEntity other) {
     }
 
     /**

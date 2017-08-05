@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
 /**
  *
@@ -48,11 +48,13 @@ public class StateMachineInstance extends VariableInstance {
      *
      */
     @Column(name = "currentstate_id")
+    @WegasEntityProperty
     private Long currentStateId;
     /**
      *
      */
     @Column(columnDefinition = "boolean default true")
+    @WegasEntityProperty
     private Boolean enabled = true;
     /**
      *
@@ -60,6 +62,7 @@ public class StateMachineInstance extends VariableInstance {
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "transitionHistory")
     @JsonIgnore
+    @WegasEntityProperty
     private List<TransitionHistoryEntry> transitionHistory = new ArrayList<>();
 
     /**
@@ -153,17 +156,7 @@ public class StateMachineInstance extends VariableInstance {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof StateMachineInstance) {
-            StateMachineInstance other = (StateMachineInstance) a;
-            super.merge(a);
-            this.setCurrentStateId(other.getCurrentStateId());
-            this.setEnabled(other.getEnabled());
-            this.setTransitionHistory(new ArrayList<>());
-            this.getTransitionHistory().addAll(other.getTransitionHistory());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     @Override

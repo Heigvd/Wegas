@@ -17,6 +17,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 
@@ -44,6 +45,7 @@ public class GameAdmin extends AbstractEntity {
     private Long id;
 
     @Lob
+    @WegasEntityProperty
     private String comments;
 
     @OneToOne
@@ -58,6 +60,7 @@ public class GameAdmin extends AbstractEntity {
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24)
+    @WegasEntityProperty
     private Status status = Status.TODO;
 
     private String prevName;
@@ -137,14 +140,7 @@ public class GameAdmin extends AbstractEntity {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof GameAdmin) {
-            GameAdmin o = (GameAdmin) other;
-            this.setStatus(o.getStatus());
-            this.setComments(o.getComments());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity other) {
     }
 
     @JsonIgnore

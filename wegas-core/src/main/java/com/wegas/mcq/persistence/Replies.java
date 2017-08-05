@@ -59,7 +59,7 @@ public class Replies extends AbstractEntity  {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
+    public void __merge(AbstractEntity other) {
         // this method is never called
         // everything is done within Reply and Result classes
         throw new UnsupportedOperationException("Unreachable statement."); 

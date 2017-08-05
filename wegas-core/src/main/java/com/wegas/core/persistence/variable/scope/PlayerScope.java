@@ -117,14 +117,6 @@ public class PlayerScope extends AbstractScope<Player> {
         }
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-    }
-
     @Override
     public Map<Player, VariableInstance> getPrivateInstances() {
         Map<Player, VariableInstance> ret = new HashMap<>();

@@ -16,6 +16,7 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -49,22 +50,26 @@ public class Reply extends AbstractEntity implements DatedEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
+    @WegasEntityProperty
     private Date createdTime = new Date();
     /**
      * /
      **
      * <p>
      */
+    @WegasEntityProperty
     private Long startTime;
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean unread = false;
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean ignored = false;
     /**
      *
@@ -73,9 +78,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
     private Replies replies;
 
     @Transient
+    @WegasEntityProperty
     private String resultName;
 
     @Transient
+    @WegasEntityProperty
     private String choiceName;
 
     /**
@@ -90,18 +97,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Reply) {
-            Reply other = (Reply) a;
-            this.setUnread(other.getUnread());
-            this.setResultName(other.getResultName());
-            this.setChoiceName(other.getChoiceName());
-            this.setStartTime(other.getStartTime());
-            this.setIgnored(other.getIgnored());
-            this.setCreatedTime(other.getCreatedTime());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**

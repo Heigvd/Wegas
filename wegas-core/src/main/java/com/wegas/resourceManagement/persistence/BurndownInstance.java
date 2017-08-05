@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 
 import javax.persistence.CascadeType;
@@ -33,6 +34,7 @@ public class BurndownInstance extends VariableInstance {
 
     @OneToMany(mappedBy = "burndownInstance", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Iteration> iterations = new ArrayList<>();
 
     /**
@@ -69,13 +71,6 @@ public class BurndownInstance extends VariableInstance {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof BurndownInstance) {
-            BurndownInstance other = (BurndownInstance) a;
-            super.merge(a);
-            this.setIterations(ListUtils.mergeLists(this.getIterations(), other.getIterations()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 }

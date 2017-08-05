@@ -38,6 +38,6 @@ public class DestroyedEntity extends AbstractEntity {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
+    public void __merge(AbstractEntity other) {
     }
 }

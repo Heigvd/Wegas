@@ -16,6 +16,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
@@ -55,6 +56,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty
     private Long version;
 
     public Long getVersion() {
@@ -69,6 +71,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      *
      */
     @JsonView(value = Views.EditorI.class)
+    @WegasEntityProperty
     private Coordinate editorPosition;
 
     /**
@@ -83,6 +86,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     /**
      *
      */
+    @WegasEntityProperty
     private String label;
 
     /**
@@ -90,6 +94,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      */
     @Embedded
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Script onEnterEvent;
 
     /**
@@ -97,6 +102,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "state_id", referencedColumnName = "state_id")
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Transition> transitions = new ArrayList<>();
 
     /**
@@ -228,17 +234,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof State) {
-            State newState = (State) other;
-            this.setLabel(newState.getLabel());
-            this.setVersion(newState.getVersion());
-            this.setOnEnterEvent(newState.getOnEnterEvent());
-            this.setEditorPosition(newState.getEditorPosition());
-            this.setTransitions(ListUtils.mergeLists(this.getTransitions(), newState.getTransitions()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity other) {
     }
 
     @Override

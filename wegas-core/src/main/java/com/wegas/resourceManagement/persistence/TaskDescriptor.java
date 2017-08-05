@@ -30,6 +30,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import javax.persistence.Column;
 import org.slf4j.Logger;
@@ -52,17 +53,20 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private String description;
     /**
      *
      */
     @Column(length = 24)
+    @WegasEntityProperty
     private String index;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
@@ -85,6 +89,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      */
     @Transient
+    @WegasEntityProperty
     private List<String> predecessorNames/*
              * = new ArrayList<>()
              */;
@@ -101,18 +106,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof TaskDescriptor) {
-            super.merge(a);
-            TaskDescriptor other = (TaskDescriptor) a;
-            this.setDescription(other.getDescription());
-            this.setIndex(other.getIndex());
-            this.setPredecessorNames(other.getImportedPredecessorNames());
-            // this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
-            this.setProperties(other.getProperties());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**
@@ -155,6 +149,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     public void setPredecessors(List<TaskDescriptor> predecessors) {
         this.predecessors = predecessors;
+        this.predecessorNames = null;
     }
 
     /**
@@ -172,6 +167,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     public void setPredecessor(Integer index, TaskDescriptor taskDescriptor) {
         this.predecessors.set(index, taskDescriptor);
+        this.predecessorNames = null;
     }
 
     /**
@@ -180,6 +176,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     public void addPredecessor(final TaskDescriptor taskDescriptor) {
         this.predecessors.add(taskDescriptor);
         taskDescriptor.dependencies.add(this);
+        this.predecessorNames = null;
     }
 
     /**
@@ -187,6 +184,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     public void removePredecessor(final TaskDescriptor taskDescriptor) {
         this.predecessors.remove(taskDescriptor);
+        this.predecessorNames = null;
     }
 
     public List<TaskDescriptor> getDependencies() {
@@ -376,11 +374,15 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @return the exportedPredecessors
      */
     public List<String> getPredecessorNames() {
-        List<String> names = new ArrayList<>();
-        for (TaskDescriptor t : this.getPredecessors()) {
-            names.add(t.getName());
+        if (predecessorNames == null || predecessorNames.isEmpty()) {
+            List<String> names = new ArrayList<>();
+            for (TaskDescriptor t : this.getPredecessors()) {
+                names.add(t.getName());
+            }
+            return names;
+        } else {
+            return predecessorNames;
         }
-        return names;
     }
 
     /**

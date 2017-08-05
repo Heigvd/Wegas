@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
@@ -23,6 +24,7 @@ public class DialogueTransition extends Transition {
 
     private static final long serialVersionUID = 1L;
     @Lob
+    @WegasEntityProperty
     private String actionText;
 
     @Override
@@ -48,13 +50,6 @@ public class DialogueTransition extends Transition {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof DialogueTransition) {
-            DialogueTransition otherDialogue = (DialogueTransition) other;
-            this.setActionText(otherDialogue.actionText);
-            super.merge(other);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity other) {
     }
 }

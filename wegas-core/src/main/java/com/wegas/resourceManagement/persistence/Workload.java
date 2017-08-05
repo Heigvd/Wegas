@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -44,21 +45,25 @@ public class Workload extends AbstractEntity implements Serializable {
     /**
      * period number
      */
+    @WegasEntityProperty
     private Long periodNumber;
 
     /**
      * workload to do before doing the period
      */
+    @WegasEntityProperty
     private Double workload;
 
     /**
      * effective workload spent during the last period
      */
+    @WegasEntityProperty
     private Double spentWorkload;
 
     /**
      * Period subdivision step
      */
+    @WegasEntityProperty
     private Integer lastWorkedStep;
 
     public Long getPeriodNumber() {
@@ -107,15 +112,6 @@ public class Workload extends AbstractEntity implements Serializable {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Workload) {
-            Workload o = (Workload) other;
-            this.setPeriodNumber(o.getPeriodNumber());
-            this.setWorkload(o.getWorkload());
-            this.setSpentWorkload(o.getSpentWorkload());
-            this.setLastWorkedStep(o.getLastWorkedStep());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity other) {
     }
 }

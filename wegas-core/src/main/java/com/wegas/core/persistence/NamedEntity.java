@@ -15,14 +15,7 @@ import java.util.Objects;
  */
 public abstract class NamedEntity extends AbstractEntity {
 
-    /**
-     *
-     * @param n
-     */
-    @Override
-    public void merge(AbstractEntity n) {
-        this.setName(((NamedEntity) n).getName());
-    }
+    private static final long serialVersionUID = -5419544250248220709L;
 
     /**
      * Get the entity internal name

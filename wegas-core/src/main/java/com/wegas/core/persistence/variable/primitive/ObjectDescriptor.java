@@ -11,6 +11,7 @@ import com.wegas.core.persistence.VariableProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.ArrayList;
@@ -35,12 +36,14 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      *
      */
     @Lob
+    @WegasEntityProperty
     private String description;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<VariableProperty> properties = new ArrayList<>();
 
     @Override
@@ -54,12 +57,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        super.merge(a);
-
-        ObjectDescriptor other = (ObjectDescriptor) a;
-        this.setDescription(other.getDescription());
-        this.setProperties(other.getProperties());
+    public void __merge(AbstractEntity a) {
     }
 
     /**

@@ -12,6 +12,8 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.merge.utils.WegasCallback;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
@@ -36,16 +38,23 @@ import java.util.*;
  @Index(columnList = "email", unique = true)
  })*/
 @NamedQueries({
-    @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND a.username = :username"),
-    @NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.email) LIKE LOWER(:email)"),
-    @NamedQuery(name = "AbstractAccount.findByFullName", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.firstname) LIKE LOWER(:firstname) AND LOWER(a.lastname) LIKE LOWER(:lastname)"),
+    @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND a.username = :username")
+    ,
+    @NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.email) LIKE LOWER(:email)")
+    ,
+    @NamedQuery(name = "AbstractAccount.findByFullName", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.firstname) LIKE LOWER(:firstname) AND LOWER(a.lastname) LIKE LOWER(:lastname)")
+    ,
     @NamedQuery(name = "AbstractAccount.findAllNonGuests", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount")
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "AaiAccount", value = AaiAccount.class),
-    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
-    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
-    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
+    @JsonSubTypes.Type(name = "AaiAccount", value = AaiAccount.class)
+    ,
+    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class)
+    ,
+    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class)
+    ,
+    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class)
+    ,
     @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
@@ -76,21 +85,25 @@ public abstract class AbstractAccount extends AbstractEntity {
     //@Basic(optional = false)
     @Column(length = 100)
     //@Pattern(regexp = "^\\w+$")
+    @WegasEntityProperty
     private String username = "";
 
     /**
      *
      */
+    @WegasEntityProperty
     private String firstname;
 
     /**
      *
      */
+    @WegasEntityProperty
     private String lastname;
 
     /**
      *
      */
+    @WegasEntityProperty
     private String email = "";
 
     /**
@@ -106,6 +119,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
+    @WegasEntityProperty(ignoreNull = true)
     private Date agreedTime = null;
 
     /**
@@ -115,6 +129,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     // Backward Compatibility
     @JsonView(Views.ExtendedI.class)
     @Transient
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Permission> permissions = new ArrayList<>();
 
     /**
@@ -140,24 +155,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof AbstractAccount) {
-            AbstractAccount a = (AbstractAccount) other;
-            this.setFirstname(a.getFirstname());
-            this.setLastname(a.getLastname());
-            this.setUsername(a.getUsername());
-            this.setEmail(a.getEmail());
-            if (a.getAgreedTime()!=null) {
-                // Never reset this attribute:
-                this.setAgreedTime(a.getAgreedTime());
-            }
-            if (a.getDeserializedPermissions() != null && !a.getDeserializedPermissions().isEmpty()) {
-                // Pass through setter to update user
-                this.getUser().setPermissions(ListUtils.mergeLists(this.getUser().getPermissions(), a.getDeserializedPermissions()));
-            }
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity other) {
     }
 
     /**
@@ -260,12 +258,11 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @return the permissions
      */
     public List<Permission> getPermissions() {
-        return this.user.getPermissions();
-    }
-
-    @JsonIgnore
-    public List<Permission> getDeserializedPermissions() {
-        return this.permissions;
+        if (this.permissions != null) {
+            return this.permissions;
+        } else {
+            return this.user.getPermissions();
+        }
     }
 
     /**
@@ -321,4 +318,16 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
     }
 
+    public static class MergePermission implements WegasCallback {
+
+        @Override
+        public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
+            /**
+             * Hack: effective permissions owner is the user not its account
+             */
+            AbstractAccount aa = (AbstractAccount) entity;
+            aa.getUser().setPermissions(aa.getPermissions());
+            aa.permissions = null;
+        }
+    }
 }

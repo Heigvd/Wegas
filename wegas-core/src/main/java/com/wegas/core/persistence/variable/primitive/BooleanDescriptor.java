@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
@@ -54,4 +55,10 @@ public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> {
     public void setValue(Player p, boolean v){
         this.getInstance(p).setValue(v);
     }
+
+
+    @Override
+    public void __merge(AbstractEntity e){
+    }
+        
 }

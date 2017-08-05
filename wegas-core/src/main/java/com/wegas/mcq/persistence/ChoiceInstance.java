@@ -16,9 +16,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +42,12 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean active = true;
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean unread = true;
     /**
      *
@@ -61,18 +63,21 @@ public class ChoiceInstance extends VariableInstance {
     @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
     //@JoinFetch
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Reply> replies = new ArrayList<>();
 
     /**
      *
      */
     @Transient
+    @WegasEntityProperty
     private String currentResultName;
 
     @Transient
     /**
      * @deprecated
      */
+    @WegasEntityProperty
     private Integer currentResultIndex = null;
 
     public ChoiceInstance() {
@@ -118,6 +123,26 @@ public class ChoiceInstance extends VariableInstance {
      */
     public void setCurrentResultName(String currentResultName) {
         this.currentResultName = currentResultName;
+
+        if (!Helper.isNullOrEmpty(this.currentResultName)) {
+            ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
+            if (choiceDesc != null) {
+                // if choiceDesc is null, the following will eventually be
+                // done by with the help of an InstanceReviveEvent
+                Result previousResult = this.getCurrentResult();
+                if (previousResult != null) {
+                    previousResult.removeChoiceInstance(this);
+                }
+                try {
+                    Result newResult = choiceDesc.getResultByName(this.currentResultName);
+                    this.setCurrentResult(newResult);
+                    newResult.addChoiceInstance(this);
+                } catch (WegasNoResultException ex) {
+                    this.setCurrentResult(null);
+                }
+            }
+
+        }
     }
 
     /**
@@ -142,44 +167,7 @@ public class ChoiceInstance extends VariableInstance {
      * @param a
      */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof ChoiceInstance) {
-            //super.merge(a);
-            super.merge(a);
-            ChoiceInstance other = (ChoiceInstance) a;
-            this.setActive(other.getActive());
-            this.setUnread(other.getUnread());
-
-            this.setReplies(ListUtils.mergeLists(replies, other.getReplies()));
-
-            // Normal
-            this.setCurrentResultName(other.getCurrentResultName());
-
-            // Backward compat
-            this.setCurrentResultIndex(other.getCurrentResultIndex());
-
-            if (!Helper.isNullOrEmpty(this.currentResultName)) {
-                ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
-                if (choiceDesc != null) {
-                    // if choiceDesc is null, the following will eventually be
-                    // done by with the help of an InstanceReviveEvent
-                    Result previousResult = this.getCurrentResult();
-                    if (previousResult != null) {
-                        previousResult.removeChoiceInstance(this);
-                    }
-                    try {
-                        Result newResult = choiceDesc.getResultByName(this.currentResultName);
-                        this.setCurrentResult(newResult);
-                        newResult.addChoiceInstance(this);
-                    } catch (WegasNoResultException ex) {
-                        this.setCurrentResult(null);
-                    }
-                }
-
-            }
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public void __merge(AbstractEntity a) {
     }
 
     /**
