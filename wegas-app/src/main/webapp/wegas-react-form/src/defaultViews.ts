@@ -24,7 +24,7 @@ import WegasUrl from './Views/wegas-url';
 import ColorPicker from './Views/color-picker';
 import KeyChoice from './Views/keychoice';
 import PageLoaderSelect from './Views/Interacting/pageloaderselect';
-import Draft from './Views/RTE/Draft';
+import html from './Views/html';
 
 setDefaultWidgets({
     array: ArrayView,
@@ -34,7 +34,7 @@ setDefaultWidgets({
     flatvariableselect: FlatVariableSelect,
     hashlist: HashlistView,
     hidden: HiddenView,
-    html: Draft,
+    html: html,
     keychoice: KeyChoice,
     number: StringView,
     object: ObjectView,

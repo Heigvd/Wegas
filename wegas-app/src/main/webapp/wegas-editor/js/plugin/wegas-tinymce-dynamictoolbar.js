@@ -8,27 +8,35 @@
 tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
     var first = true;
     function showHideToolbar() {
+        var toolbar = editor.theme.panel.find('toolbar');
+        var resizeY = 0;
         if (first) {
             this.active(false);
             first = false;
         } else {
             this.active(!this.active());
         }
-        var state = this.active(), i, barToHide = editor.settings.hidden_tootlbar;
+        var state = this.active(),
+            i,
+            barToHide = editor.settings.hidden_tootlbar;
 
         if (!barToHide) {
             barToHide = [2];
         }
-
         if (state) {
             for (i = 0; i < barToHide.length; i += 1) {
-                editor.theme.panel._items[0]._items[barToHide[i] - 1].show();
+                toolbar[barToHide[i] - 1].show();
+                resizeY += 26;
+            }
+        } else {
+            for (i = 0; i < barToHide.length; i += 1) {
+                toolbar[barToHide[i] - 1].hide();
+                resizeY -= 26;
             }
         }
-        else {
-            for (i = 0; i < barToHide.length; i += 1) {
-                editor.theme.panel._items[0]._items[barToHide[i] - 1].hide();
-            }
+        if (editor.settings.inline) {
+            editor.theme.panel.resizeBy(0, resizeY);
+            editor.theme.panel.moveRel(editor.getBody(), 'tl-bl');
         }
     }
 

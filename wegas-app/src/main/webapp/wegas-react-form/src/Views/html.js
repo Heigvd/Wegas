@@ -15,7 +15,7 @@ const marginStyle = css({
     fontSize: '13px',
     minHeight: '45px',
     color: 'darkslategrey',
-    boxShadow: '1px 1px 4px #ccc'
+    boxShadow: '1px 1px 4px #ccc',
     // border: '1px solid lightgrey',
     // borderRadius: '3px',
 });
@@ -60,11 +60,11 @@ function onFileBrowserClick(fieldName, url, type, win) {
     return false;
 }
 
-const TINYCONFIG = {
-    inline: false,
+const TINY_CONFIG = {
+    inline: true,
     plugins: [
         'autolink link image lists code media table contextmenu',
-        'paste advlist textcolor dynamic_toolbar'
+        'paste advlist textcolor dynamic_toolbar',
         // textcolor wordcount autosave
         // advlist charmap print preview hr anchor pagebreak spellchecker
         // directionality
@@ -88,35 +88,35 @@ const TINYCONFIG = {
     autoresize_min_height: 35,
     autoresize_max_height: 500,
     content_css: [
-        `${Wegas.app.get('base')}wegas-editor/css/wegas-inputex-rte.css`
+        `${Wegas.app.get('base')}wegas-editor/css/wegas-inputex-rte.css`,
     ],
     style_formats: [
         {
             // Style formats
             title: 'Title 1',
-            block: 'h1'
+            block: 'h1',
         },
         {
             title: 'Title 2',
-            block: 'h2'
+            block: 'h2',
             // styles : {
             //    color : '#ff0000'
             // }
         },
         {
             title: 'Title 3',
-            block: 'h3'
+            block: 'h3',
         },
         {
             title: 'Normal',
-            inline: 'span'
+            inline: 'span',
         },
         {
             title: 'Code',
             // icon: 'code',
-            block: 'code'
-        }
-    ]
+            block: 'code',
+        },
+    ],
     // setup: function setup(editor) {
     //     let tbs;
     //     editor.on('init', () => {
@@ -183,7 +183,7 @@ function HTMLView(props) {
         <div className={marginStyle}>
             <TinyMCE
                 content={toTinyMCE(props.value)}
-                config={TINYCONFIG}
+                config={TINY_CONFIG}
                 onChange={onValueChange}
             />
         </div>
@@ -192,7 +192,7 @@ function HTMLView(props) {
 HTMLView.propTypes = {
     onChange: PropTypes.func.isRequired,
     view: PropTypes.object,
-    value: PropTypes.string
+    value: PropTypes.string,
 };
 
 export default commonView(labeled(HTMLView));
