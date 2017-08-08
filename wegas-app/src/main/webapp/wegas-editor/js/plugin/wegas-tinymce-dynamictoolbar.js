@@ -36,7 +36,7 @@ tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
         }
         if (editor.settings.inline) {
             editor.theme.panel.resizeBy(0, resizeY);
-            editor.theme.panel.moveRel(editor.getBody(), 'tl-bl');
+            editor.theme.panel.moveBy(0, -resizeY);
         }
     }
 
