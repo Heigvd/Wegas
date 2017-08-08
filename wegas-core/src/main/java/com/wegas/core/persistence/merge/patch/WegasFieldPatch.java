@@ -10,6 +10,7 @@ package com.wegas.core.persistence.merge.patch;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.merge.utils.WegasCallback;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -22,10 +23,12 @@ public final class WegasFieldPatch extends WegasPatch {
     private Method setter;
     private Object fromValue;
     private Object toValue;
+    private AbstractEntity entity;
 
     WegasFieldPatch(Object identifier, int order, PatchMode mode,
-            WegasCallback userCallback,
-            Method getter, Method setter, Object fromValue, Object toValue) {
+            WegasCallback userCallback, AbstractEntity entity,
+            Method getter, Method setter, Object fromValue, Object toValue,
+            boolean sameEntityOnly, boolean initOnly) {
         this.mode = mode;
         this.order = order;
         this.identifier = identifier;
@@ -34,30 +37,32 @@ public final class WegasFieldPatch extends WegasPatch {
         this.fromValue = fromValue;
         this.toValue = toValue;
         this.fieldCallback = userCallback;
+        this.sameEntityOnly = sameEntityOnly;
+        this.initOnly = initOnly;
+        this.entity = entity;
+
     }
 
     @Override
     public void apply(AbstractEntity target, WegasCallback callback) {
         try {
-            Object oldValue = getter.invoke(target);
-            if (mode.equals(PatchMode.OVERRIDE) || Objects.equals(oldValue, fromValue)) {
+            if (shouldApplyPatch(target, entity)) {
+                Object oldValue = getter.invoke(target);
+                if (!initOnly || oldValue == null) {
+                    if (mode.equals(PatchMode.OVERRIDE) || Objects.equals(oldValue, fromValue)) {
 
-                if (callback != null) {
-                    callback.preUpdate(target, toValue, identifier);
-                }
+                        List<WegasCallback> callbacks = this.getCallbacks(callback);
 
-                if (fieldCallback != null) {
-                    fieldCallback.preUpdate(target, toValue, identifier);
-                }
+                        for (WegasCallback cb : callbacks) {
+                            cb.preUpdate(target, toValue, identifier);
+                        }
 
-                setter.invoke(target, toValue);
+                        setter.invoke(target, toValue);
 
-                if (callback != null) {
-                    callback.postUpdate(target, toValue, identifier);
-                }
-
-                if (fieldCallback != null) {
-                    fieldCallback.postUpdate(target, toValue, identifier);
+                        for (WegasCallback cb : callbacks) {
+                            cb.postUpdate(target, toValue, identifier);
+                        }
+                    }
                 }
             }
         } catch (Exception ex) {

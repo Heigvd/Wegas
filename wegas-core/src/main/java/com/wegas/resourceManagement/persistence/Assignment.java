@@ -21,9 +21,8 @@ import javax.persistence.*;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id")
-    ,
-    @Index(columnList = "taskdescriptor_id")
+    @Index(columnList = "variableinstance_id"),
+     @Index(columnList = "taskdescriptor_id")
 })
 @NamedQueries({
     @NamedQuery(

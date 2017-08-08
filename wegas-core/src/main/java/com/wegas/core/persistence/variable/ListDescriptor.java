@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.merge.annotations.WegasEntity;
 import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;

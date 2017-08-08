@@ -92,15 +92,13 @@ import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
     @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAMVARIABLEINSTANCES_KEY"}),
     @CacheIndex(columnNames = {"PLAYERSCOPE_ID", "VARIABLEINSTANCES_KEY"})
 })
-
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
 
  @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
  @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
  @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
  })*/
-
- /* JPA2.1 (GlassFish4) Indexes */
+/* JPA2.1 (GlassFish4) Indexes */
 @Table(indexes = {
     @Index(columnList = "gamescope_id"),
     @Index(columnList = "teamscope_id"),
@@ -109,7 +107,6 @@ import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
     @Index(columnList = "teamvariableinstances_key"),
     @Index(columnList = "gamevariableinstances_key")
 })
-
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
@@ -137,7 +134,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty
+    @WegasEntityProperty(sameEntityOnly = true)
     private Long version;
 
     public Long getVersion() {
@@ -366,10 +363,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor's id through its scope for regular instance or 
+     * Get instance descriptor's id through its scope for regular instance or
      * the default descriptor's id for default instances
      *
-     * @return descriptor id 
+     * @return descriptor id
      */
     @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
@@ -442,6 +439,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * Id of the team owning the instance
      *
      * @return team's id or null if instance is not a team instance
+     *
      * @JsonIgnore public Long getTeamScopeKey() { return teamScopeKey; }
      */
     /**
@@ -452,6 +450,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * Id of player owning the instance
      *
      * @return player's id or null if this is not a player instance
+     *
      * @JsonIgnore public Long getPlayerScopeKey() { return playerScopeKey; }
      */
     /**
@@ -514,6 +513,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     /**
      * @return the gameScopeKey
+     *
      * @JsonIgnore public Long getGameScopeKey() { return gameScopeKey; }
      */
     /**
@@ -521,6 +521,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * one
      *
      * @return instance descriptor
+     *
      * @deprecated {@link #findDescriptor()}
      */
     @JsonIgnore

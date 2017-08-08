@@ -18,8 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;

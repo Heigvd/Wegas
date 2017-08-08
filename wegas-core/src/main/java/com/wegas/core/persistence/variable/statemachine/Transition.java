@@ -53,7 +53,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty
+    @WegasEntityProperty(sameEntityOnly = true)
     private Long version;
 
     public Long getVersion() {

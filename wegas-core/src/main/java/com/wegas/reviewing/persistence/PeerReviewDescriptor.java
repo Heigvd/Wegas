@@ -117,7 +117,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.EditorI.class)
     @NotNull
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private EvaluationDescriptorContainer feedback;
 
     /**
@@ -127,7 +127,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.EditorI.class)
     @NotNull
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private EvaluationDescriptorContainer fbComments;
 
     /**

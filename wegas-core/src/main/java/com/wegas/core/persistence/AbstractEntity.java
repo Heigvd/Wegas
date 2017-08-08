@@ -22,9 +22,11 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.merge.patch.WegasEntityPatch;
 import com.wegas.core.persistence.variable.Beanjection;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.slf4j.LoggerFactory;
@@ -45,7 +47,6 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class),
     @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class)
 })
-
 /**
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg ChoiceDescriptor and result).
  * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
@@ -77,19 +78,27 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     public void setOid(Long oid) {
         this.oid = oid;
     }*/
+    @Transient
+    @WegasEntityProperty(initOnly = true)
+    private String safeId;
 
     /**
      * Get entity cross-gamemodel identifier
      *
      * @return
      */
-    @JsonIgnore
     public String getSafeId() {
-        if (this.getId() != null) {
+        if (this.safeId != null) {
+            return this.safeId;
+        } else if (this.getId() != null) {
             return this.getId().toString();
         } else {
             return null;
         }
+    }
+
+    public void setSafeId(String safeId) {
+        this.safeId = safeId;
     }
 
     /**
@@ -156,8 +165,13 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     public AbstractEntity clone() {
         AbstractEntity ae = null;
         try {
-            ae = this.getClass().newInstance();
-            ae.merge(this);
+            if (this.getId() != null) {
+                ae = this.getClass().newInstance();
+                ae.merge(this);
+            } else {
+                // no need to clone entity without id
+                ae = this;
+            }
         } catch (InstantiationException | IllegalAccessException ex) {
             logger.error("Error during clone", ex);
         }

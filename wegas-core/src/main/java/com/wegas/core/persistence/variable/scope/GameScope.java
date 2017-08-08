@@ -104,10 +104,7 @@ public class GameScope extends AbstractScope<Game> {
             g.getPrivateInstances().add(clone);
             this.setVariableInstance(g, clone);
         } else {
-            VariableInstance vi = this.getVariableInstance(g);
-            Long version = vi.getVersion();
-            vi.merge(vd.getDefaultInstance());
-            vi.setVersion(version);
+            this.getVariableInstance(g).merge(vd.getDefaultInstance());
         }
     }
 

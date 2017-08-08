@@ -89,6 +89,9 @@ public class PeerReviewInstance extends VariableInstance {
      */
     public void setToReview(List<Review> toReview) {
         this.toReview = toReview;
+        for (Review review : toReview){
+            review.setReviewer(this);
+        }
     }
 
     /**
@@ -115,6 +118,10 @@ public class PeerReviewInstance extends VariableInstance {
      */
     public void setReviewed(List<Review> reviewed) {
         this.reviewed = reviewed;
+
+        for (Review review : reviewed){
+            review.setAuthor(this);
+        }
     }
 
     public void addToReviewed(Review r) {

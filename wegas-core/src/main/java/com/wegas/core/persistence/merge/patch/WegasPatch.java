@@ -10,6 +10,8 @@ package com.wegas.core.persistence.merge.patch;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.merge.utils.WegasCallback;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -35,6 +37,25 @@ public abstract class WegasPatch {
     protected Method setter;
 
     protected WegasCallback fieldCallback;
+
+    protected boolean sameEntityOnly;
+
+    protected boolean initOnly;
+
+    protected List<WegasCallback> getCallbacks(WegasCallback userCallback) {
+        ArrayList<WegasCallback> cbs = new ArrayList<>();
+        if (fieldCallback != null) {
+            cbs.add(this.fieldCallback);
+        }
+        if (userCallback != null) {
+            cbs.add(userCallback);
+        }
+        return cbs;
+    }
+
+    protected boolean shouldApplyPatch(AbstractEntity target, AbstractEntity reference) {
+        return (!sameEntityOnly || target.equals(reference));
+    }
 
     public Object getIdentifier() {
         return identifier;
@@ -68,7 +89,7 @@ public abstract class WegasPatch {
         this.fieldCallback = userCallback;
     }
 
-    public void apply(AbstractEntity target){
+    public void apply(AbstractEntity target) {
         this.apply(target, null);
     }
 

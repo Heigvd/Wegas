@@ -43,6 +43,7 @@ public class JpaAccount extends AbstractAccount {
      *
      */
     @Transient
+    @WegasEntityProperty(ignoreNull = true)
     private String password;
     /**
      *
@@ -50,7 +51,6 @@ public class JpaAccount extends AbstractAccount {
     @Basic(optional = false)
     @Column(length = 255)
     @JsonIgnore
-    @WegasEntityProperty(ignoreNull = true)
     private String passwordHex;
     /**
      *

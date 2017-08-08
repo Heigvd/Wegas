@@ -73,6 +73,9 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
      */
     public void setEvaluations(List<EvaluationDescriptor> evaluations) {
         this.evaluations = evaluations;
+        for (EvaluationDescriptor ev : evaluations){
+            ev.setContainer(this);
+        }
     }
 
     @Override

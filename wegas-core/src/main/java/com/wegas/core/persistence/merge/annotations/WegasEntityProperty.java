@@ -26,13 +26,32 @@ public @interface WegasEntityProperty {
 
     /**
      * Set to false to only include annotated field within the patch if the patch is recursive
-     *
+     * (e.g. to exclude ListDescriptor children from patch)
      * @return
      */
     boolean includeByDefault() default true;
 
+    /**
+     * if set to true, patch will not set target property to null
+     *
+     * @return
+     */
     boolean ignoreNull() default false;
-    
+
+    /**
+     * Will only apply the patch if the target entity is the same as the entity one
+     *  (e.g. version)
+     * @return
+     */
+    boolean sameEntityOnly() default false;
+
+    /**
+     * Only merge property if the target property is null
+     *
+     * @return
+     */
+    public boolean initOnly() default false;
+
     /**
      * postUpdate, preDestroy, postPersist callback
      *

@@ -8,7 +8,6 @@
 package com.wegas.core.persistence.variable.scope;
 
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -127,10 +126,7 @@ public class TeamScope extends AbstractScope<Team> {
 
             //vif.create(newInstance);  //<----
         } else {
-            VariableInstance vi = this.getVariableInstance(t);
-            Long version = vi.getVersion();
-            vi.merge(vd.getDefaultInstance());
-            vi.setVersion(version);
+            this.getVariableInstance(t).merge(vd.getDefaultInstance());
         }
     }
 

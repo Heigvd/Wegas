@@ -97,10 +97,7 @@ public class PlayerScope extends AbstractScope<Player> {
             this.setVariableInstance(p, clone);
             //vif.create(clone);
         } else {
-            VariableInstance vi = this.getVariableInstance(p);
-            Long version = vi.getVersion();
-            vi.merge(vd.getDefaultInstance());
-            vi.setVersion(version);
+            this.getVariableInstance(p).merge(vd.getDefaultInstance());
         }
     }
 

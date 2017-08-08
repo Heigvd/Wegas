@@ -8,10 +8,8 @@
 package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
@@ -39,9 +37,8 @@ import java.util.*;
  */
 @Entity
 @Table(indexes = {
-    @Index(columnList = "author_variableinstance_id")
-    ,
-        @Index(columnList = "reviewer_variableinstance_id")
+    @Index(columnList = "author_variableinstance_id"),
+    @Index(columnList = "reviewer_variableinstance_id")
 })
 public class Review extends AbstractEntity implements DatedEntity {
 
@@ -187,6 +184,9 @@ public class Review extends AbstractEntity implements DatedEntity {
      */
     public void setFeedback(List<EvaluationInstance> feedback) {
         this.feedback = feedback;
+        for (EvaluationInstance ei : feedback) {
+            ei.setFeedbackReview(this);
+        }
     }
 
     /**
@@ -206,6 +206,10 @@ public class Review extends AbstractEntity implements DatedEntity {
      */
     public void setComments(List<EvaluationInstance> comments) {
         this.comments = comments;
+
+        for (EvaluationInstance ei : comments) {
+            ei.setCommentsReview(this);
+        }
     }
 
     /*@Override

@@ -40,8 +40,15 @@ public final class WegasEntityPatch extends WegasPatch {
 
     private List<WegasCallback> entityCallbacks;
 
+    @Override
+    protected List<WegasCallback> getCallbacks(WegasCallback userCallback) {
+        List<WegasCallback> callbacks = super.getCallbacks(userCallback);
+        callbacks.addAll(0, this.entityCallbacks);
+        return callbacks;
+    }
+
     public WegasEntityPatch(AbstractEntity from, AbstractEntity to, Boolean recursive) {
-        this(null, 0, PatchMode.OVERRIDE, null, null, null, from, to, recursive);
+        this(null, 0, PatchMode.OVERRIDE, null, null, null, from, to, recursive, false, false);
     }
 
     /**
@@ -60,7 +67,8 @@ public final class WegasEntityPatch extends WegasPatch {
      */
     WegasEntityPatch(Object identifier, int order, PatchMode mode,
             WegasCallback userCallback, Method getter, Method setter,
-            AbstractEntity from, AbstractEntity to, Boolean recursive) {
+            AbstractEntity from, AbstractEntity to, Boolean recursive,
+            boolean sameEntityOnly, boolean initOnly) {
         if ((from == null && to == null) // both entity are null
                 || (from != null && to != null && !from.getClass().equals(to.getClass()))) {
             throw WegasErrorMessage.error("imcompatible entities");
@@ -82,11 +90,17 @@ public final class WegasEntityPatch extends WegasPatch {
 
             this.identifier = identifier;
 
+            this.sameEntityOnly = sameEntityOnly;
+            this.initOnly = initOnly;
+
             Class klass = (from != null) ? from.getClass() : to.getClass();
             Map<Field, WegasEntityProperty> fields = new HashMap<>();
 
             this.entityCallbacks = new ArrayList<>();
 
+            /*
+             * Fetch all (inherited) WegasEntity annotations and all WegasEntityProperty annotated fields
+             */
             while (klass != null) {
 
                 for (Field f : klass.getDeclaredFields()) {
@@ -108,6 +122,7 @@ public final class WegasEntityPatch extends WegasPatch {
                         this.entityCallbacks.add(entityCallbackClass.newInstance());
                     }
                 }
+
                 klass = klass.getSuperclass();
             }
 
@@ -128,6 +143,8 @@ public final class WegasEntityPatch extends WegasPatch {
                     int idx = wegasProperty.order();
 
                     boolean ignoreNull = wegasProperty.ignoreNull();
+                    boolean fSameEntityOnly = wegasProperty.sameEntityOnly();
+                    boolean fInitOnly = wegasProperty.initOnly();
 
                     Class<? extends WegasCallback> userFieldCallbackClass = wegasProperty.callback();
 
@@ -154,11 +171,11 @@ public final class WegasEntityPatch extends WegasPatch {
                              * current property a list of abstract entities
                              */
                             patches.add(new WegasChildrenPatch(fieldName, idx, mode,
-                                    userFieldCallback,
+                                    userFieldCallback, to,
                                     fGetter, fSetter,
                                     (List<AbstractEntity>) fromValue,
                                     (List<AbstractEntity>) toValue,
-                                    recursive, ignoreNull));
+                                    recursive, ignoreNull, fSameEntityOnly, fInitOnly));
                             // ListUtils.mergeList
                         } else if (AbstractEntity.class.isAssignableFrom(fieldClass)) {
                             /*
@@ -167,14 +184,16 @@ public final class WegasEntityPatch extends WegasPatch {
                             patches.add(new WegasEntityPatch(fieldName, idx, mode,
                                     userFieldCallback,
                                     fGetter, fSetter,
-                                    (AbstractEntity) fromValue, (AbstractEntity) toValue, recursive));
+                                    (AbstractEntity) fromValue, (AbstractEntity) toValue,
+                                    recursive, fSameEntityOnly, fInitOnly));
                         } else {
                             // fallback -> primitive or primitive related property (eg. Boolean, List<Double>, Map<String, String>, etc)
                             if (!Objects.equals(fromValue, toValue)) {
                                 patches.add(new WegasFieldPatch(fieldName, idx,
                                         (mode == PatchMode.OVERRIDE ? PatchMode.OVERRIDE : PatchMode.UPDATE),
-                                        userFieldCallback,
-                                        fGetter, fSetter, fromValue, toValue));
+                                        userFieldCallback, to,
+                                        fGetter, fSetter, fromValue, toValue,
+                                        fSameEntityOnly, fInitOnly));
                             }
                         }
 
@@ -191,42 +210,49 @@ public final class WegasEntityPatch extends WegasPatch {
     @Override
     public void apply(AbstractEntity target, WegasCallback callback) {
         try {
+            AbstractEntity oTarget = target;
             if (getter != null) {
-                target = (AbstractEntity) getter.invoke(target);
+                target = (AbstractEntity) getter.invoke(oTarget);
             }
 
-            switch (mode) {
-                case CREATE:
-                    AbstractEntity clone = entity.clone();
-                    for (WegasCallback entityCallback : entityCallbacks) {
-                        entityCallback.postPersist(clone, identifier);
-                    }
-                    if (callback != null) {
-                        callback.postPersist(clone, identifier);
-                    }
-                    break;
-                case DELETE:
-                    if (callback != null) {
-                        callback.preDestroy(target, identifier);
-                    }
-                    for (WegasCallback entityCallback : entityCallbacks) {
-                        entityCallback.preDestroy(target, identifier);
-                    }
-                    break;
-                default:
+            if (!initOnly || target == null) {
+                List<WegasCallback> callbacks = this.getCallbacks(callback);
+                PatchMode myMode = mode;
+                if (target == null) {
+                    myMode = PatchMode.CREATE;
+                }
 
-                    for (WegasCallback entityCallback : entityCallbacks) {
-                        entityCallback.preUpdate(target, this.entity, identifier);
-                    }
+                switch (myMode) {
+                    case CREATE:
+                        AbstractEntity clone = entity.clone();
+                        for (WegasCallback cb : callbacks) {
+                            cb.postPersist(clone, identifier);
+                        }
+                        if (setter != null) {
+                            setter.invoke(oTarget, clone);
+                        }
+                        break;
+                    case DELETE:
+                        for (WegasCallback cb : callbacks) {
+                            cb.preDestroy(target, identifier);
+                        }
+                        break;
+                    default:
+                        if (shouldApplyPatch(target, entity)) {
+                            for (WegasCallback cb : callbacks) {
+                                cb.preUpdate(target, this.entity, identifier);
+                            }
 
-                    for (WegasPatch patch : patches) {
-                        patch.apply(target, null);
-                    }
+                            for (WegasPatch patch : patches) {
+                                patch.apply(target, null);
+                            }
 
-                    for (WegasCallback entityCallback : entityCallbacks) {
-                        entityCallback.postUpdate(target, this.entity, identifier);
-                    }
-                    break;
+                            for (WegasCallback cb : callbacks) {
+                                cb.postUpdate(target, this.entity, identifier);
+                            }
+                            break;
+                        }
+                }
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
