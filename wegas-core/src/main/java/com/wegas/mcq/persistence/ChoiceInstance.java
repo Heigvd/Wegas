@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
@@ -30,7 +30,6 @@ import org.eclipse.persistence.annotations.BatchFetchType;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "ChoiceInstance")
 @Table(name = "MCQChoiceInstance",
         indexes = {
             @Index(columnList = "currentresult_id")
@@ -256,7 +255,6 @@ public class ChoiceInstance extends VariableInstance {
     /**
      * @return the currentResult
      */
-    //@XmlTransient
     @JsonIgnore
     public Result getCurrentResult() {
         if (this.currentResult != null) {

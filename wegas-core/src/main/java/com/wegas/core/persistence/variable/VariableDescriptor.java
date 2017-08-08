@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -234,7 +234,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //    @JoinColumn(referencedColumnName = "variabledescriptor_id")},
     //        inverseJoinColumns = {
     //    @JoinColumn(referencedColumnName = "tag_id")})
-    //@XmlTransient
     //private List<Tag> tags;
     /**
      *

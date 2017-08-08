@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.scope;
@@ -39,7 +39,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
      *
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     private VariableInstance variableInstance;
 
@@ -156,7 +155,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
     /**
      * @return the variableInstance
      */
-    //@XmlTransient
     @JsonIgnore
     public VariableInstance getVariableInstance() {
         return variableInstance;
@@ -165,7 +163,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
     /**
      * @param variableInstance the variableInstance to set
      */
-    //@XmlTransient
     @JsonIgnore
     public void setVariableInstance(VariableInstance variableInstance) {
         this.variableInstance = variableInstance;

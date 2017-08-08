@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -43,7 +43,6 @@ import org.eclipse.persistence.config.QueryType;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 
-////import javax.xml.bind.annotation.XmlTransient;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -308,7 +307,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      * @return the scope
      */
-    //@XmlTransient
     @JsonIgnore
     //@JsonView(Views.ExtendedI.class)
     public AbstractScope getScope() {

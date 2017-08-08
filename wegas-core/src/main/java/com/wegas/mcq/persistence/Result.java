@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
@@ -32,13 +32,11 @@ import java.util.List;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "Result")
 @JsonTypeName(value = "Result")
 @Table(
         name = "MCQResult",
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"})
-            ,
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
             @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
         indexes = {
             @Index(columnList = "choicedescriptor_id")
@@ -119,8 +117,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
-                = @Column(name = "ignoration_content"))
-        ,
+                = @Column(name = "ignoration_content")),
         @AttributeOverride(name = "lang", column
                 = @Column(name = "ignoration_language"))
     })
@@ -145,7 +142,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      * This field is here so deletion will be propagated to replies.
      */
     @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@XmlTransient
     @JsonIgnore
     private Replies replies;
 
@@ -205,7 +201,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * @return the choiceDescriptor
      */
-    //@XmlTransient
     @JsonIgnore
     public ChoiceDescriptor getChoiceDescriptor() {
         return choiceDescriptor;
@@ -335,7 +330,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * @return the choiceInstances
      */
-    //@XmlTransient
     @JsonIgnore
     public List<ChoiceInstance> getChoiceInstances() {
         return this.getCurrentResult().getChoiceInstances();

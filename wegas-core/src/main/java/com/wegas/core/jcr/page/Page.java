@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.page;
@@ -23,7 +23,6 @@ import java.io.IOException;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class Page {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Page.class);
@@ -33,7 +32,6 @@ public class Page {
     static final protected String NAME_KEY = "pageName";
 
     @JsonIgnore
-    //@XmlTransient
     private static ObjectMapper mapper = new ObjectMapper();
 
     private String id;

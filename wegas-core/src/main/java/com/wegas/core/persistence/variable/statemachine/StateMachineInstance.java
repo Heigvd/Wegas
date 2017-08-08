@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -35,8 +33,6 @@ import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Access(AccessType.FIELD)
-//@XmlRootElement
-//@XmlType(name = "FSMInstance")
 @JsonTypeName(value = "FSMInstance")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class)

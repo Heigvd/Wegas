@@ -2,14 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.messaging.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
@@ -17,7 +16,6 @@ import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.CascadeType;
@@ -26,13 +24,10 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
-//import javax.xml.bind.annotation.XmlType;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "InboxInstance")
-
 public class InboxInstance extends VariableInstance {
 
     /**

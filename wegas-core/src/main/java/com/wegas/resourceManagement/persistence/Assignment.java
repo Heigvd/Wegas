@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -22,7 +21,7 @@ import javax.persistence.*;
  */
 @Table(indexes = {
     @Index(columnList = "variableinstance_id"),
-     @Index(columnList = "taskdescriptor_id")
+    @Index(columnList = "taskdescriptor_id")
 })
 @NamedQueries({
     @NamedQuery(
@@ -71,7 +70,6 @@ public class Assignment extends AbstractAssignement {
     /**
      * @return the ResourceInstance
      */
-    //@XmlTransient
     @JsonIgnore
     @JsonBackReference
     @Override
@@ -90,7 +88,6 @@ public class Assignment extends AbstractAssignement {
     /**
      * @return the taskInstance
      */
-    //@XmlTransient
     @JsonIgnore
     @Override
     public TaskInstance getTaskInstance() {

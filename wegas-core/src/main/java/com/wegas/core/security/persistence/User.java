@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -17,18 +17,14 @@ import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import java.util.*;
 
-////import javax.xml.bind.annotation.XmlTransient;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "users")
-
 @NamedQueries({
-    @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance")
-    ,
-    @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id")
-    ,
+    @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance"),
+    @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id"),
     @NamedQuery(name = "User.findUserWithPermission", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :permission AND p.user.id =:userId")
 })
 public class User extends AbstractEntity implements Comparable<User> {
@@ -94,7 +90,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      * @return all user's players
      */
-    //@XmlTransient
     @JsonIgnore
     @JsonManagedReference(value = "player-user")
     public List<Player> getPlayers() {
@@ -134,7 +129,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      * @return first user account
      */
-    //@XmlTransient
     @JsonIgnore
     public final AbstractAccount getMainAccount() {
         if (!this.accounts.isEmpty()) {
@@ -180,6 +174,7 @@ public class User extends AbstractEntity implements Comparable<User> {
 
     /**
      * @param permission
+     *
      * @return true id the permission has successfully been added
      */
     public boolean addPermission(Permission permission) {

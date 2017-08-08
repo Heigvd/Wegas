@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.security.jparealm;
@@ -13,7 +13,6 @@ import com.wegas.core.persistence.game.Game;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
-////import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Account matching a specific Game

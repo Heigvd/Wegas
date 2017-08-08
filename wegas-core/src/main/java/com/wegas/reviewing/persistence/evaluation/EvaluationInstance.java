@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence.evaluation;
@@ -33,10 +33,8 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(value = TextEvaluationInstance.class)
-    ,
-    @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class)
-    ,
+    @JsonSubTypes.Type(value = TextEvaluationInstance.class),
+    @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
 public abstract class EvaluationInstance extends AbstractEntity {
@@ -131,7 +129,7 @@ public abstract class EvaluationInstance extends AbstractEntity {
     }
 
     /**
-    @Override
+     * @Override
      * @return index
      */
     public int getIndex() {

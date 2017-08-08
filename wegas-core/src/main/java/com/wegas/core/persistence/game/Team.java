@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
-////import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -73,6 +72,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     @Enumerated(value = EnumType.STRING)
+    
     @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
     private Status status = Status.WAITING;
 
@@ -105,9 +105,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "parentgame_id", nullable = false)
-    //@XmlTransient
     @JsonIgnore
-    //@XmlInverseReference(mappedBy = "teams")
     @JsonBackReference(value = "game-team")
     private Game game;
 
@@ -170,9 +168,9 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @JsonIgnore
-    public Player getAnyLivePlayer(){
-        for (Player p : this.getPlayers()){
-            if (p.getStatus().equals(Populatable.Status.LIVE)){
+    public Player getAnyLivePlayer() {
+        for (Player p : this.getPlayers()) {
+            if (p.getStatus().equals(Populatable.Status.LIVE)) {
                 return p;
             }
         }
@@ -182,7 +180,6 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      * @param p
      */
-    //@XmlTransient
     @JsonIgnore
     public void addPlayer(Player p) {
         this.players.add(p);

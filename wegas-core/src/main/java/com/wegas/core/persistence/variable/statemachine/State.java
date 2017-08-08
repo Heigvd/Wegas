@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-//import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
@@ -36,12 +35,10 @@ import java.util.List;
             @Index(columnList = "statemachine_id")
         }
 )
-//@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
-
 //@OptimisticLocking(cascade = true)
 public class State extends AbstractEntity implements Searchable, Scripted {
 
