@@ -21,16 +21,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 
-////import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
-
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class FileDescriptor extends AbstractContentDescriptor {
 
-    //@XmlTransient
     @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
 
@@ -87,7 +82,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * @param len
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     public InputStream getBase64Data(long from, int len) {
         try {
@@ -103,7 +97,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     public InputStream getBase64Data() {
         try {
@@ -195,7 +188,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @return @throws IOException
      */
-    //@XmlTransient
     @JsonIgnore
     protected byte[] getBytesData() throws IOException {
         try {

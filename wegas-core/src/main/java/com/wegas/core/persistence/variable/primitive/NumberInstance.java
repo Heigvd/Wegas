@@ -24,7 +24,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

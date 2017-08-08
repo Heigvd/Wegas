@@ -8,8 +8,6 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import javax.persistence.Entity;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.XmlType;
 
 /**
  * Trigger: S1->(T1)->S2, S2 final (oneShot)<br/> S1->(T1)->S2->(!T1)->S1
@@ -19,8 +17,6 @@ import javax.persistence.Entity;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-//@XmlRootElement
-//@XmlType(name = "TriggerInstance")
 public class TriggerInstance extends StateMachineInstance {
 
     private static final long serialVersionUID = 1L;

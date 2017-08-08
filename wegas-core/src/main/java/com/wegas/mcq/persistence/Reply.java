@@ -29,11 +29,9 @@ import javax.persistence.*;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "Reply")
 @JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
-    @Index(columnList = "choiceinstance_id")
-    ,
+    @Index(columnList = "choiceinstance_id"),
     @Index(columnList = "replies_id")
 })
 public class Reply extends AbstractEntity implements DatedEntity {
@@ -141,7 +139,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
     /**
      * @return the MCQDescriptor
      */
-    //@XmlTransient
     @JsonIgnore
     @JsonBackReference
     public ChoiceInstance getChoiceInstance() {
@@ -255,7 +252,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
         // Make Jackson happy
     }
 
- 
     public List<String> getFiles() {
         Result result = this.getResult();
         if (result != null) {
@@ -268,8 +264,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
     public void setFiles(List<String> files) {
         // Make Jackson happy
     }
-
-   
 
     @JsonIgnore
     public Replies getReplies() {

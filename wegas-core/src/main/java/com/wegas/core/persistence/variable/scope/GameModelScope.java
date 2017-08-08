@@ -40,7 +40,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
      *
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     private VariableInstance variableInstance;
 
@@ -167,7 +166,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
     /**
      * @return the variableInstance
      */
-    //@XmlTransient
     @JsonIgnore
     public VariableInstance getVariableInstance() {
         return variableInstance;
@@ -176,7 +174,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
     /**
      * @param variableInstance the variableInstance to set
      */
-    //@XmlTransient
     @JsonIgnore
     public void setVariableInstance(VariableInstance variableInstance) {
         this.variableInstance = variableInstance;

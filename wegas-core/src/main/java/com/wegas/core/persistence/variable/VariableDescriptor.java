@@ -66,26 +66,21 @@ import com.wegas.core.persistence.InstanceOwner;
 // @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
 // @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-    @Index(columnList = "defaultinstance_variableinstance_id")
-    ,
-    @Index(columnList = "items_variabledescriptor_id")
-    ,
-    @Index(columnList = "rootgamemodel_id")
-    ,
+    @Index(columnList = "defaultinstance_variableinstance_id"),
+    @Index(columnList = "items_variabledescriptor_id"),
+    @Index(columnList = "rootgamemodel_id"),
     @Index(columnList = "dtype")
 })
 @NamedQueries({
     @NamedQuery(
             name = "VariableDescriptor.findByRootGameModelId",
             query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
-    )
-    ,
+    ),
     @NamedQuery(
             name = "VariableDescriptor.findByGameModelIdAndName",
             query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)
-                ,
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
     )
 })
@@ -93,34 +88,20 @@ import com.wegas.core.persistence.InstanceOwner;
     @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class)
-    ,
+    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
+    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
+    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
+    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
+    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
+    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
+    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
+    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
+    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
+    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 @MappedSuperclass
@@ -244,7 +225,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //    @JoinColumn(referencedColumnName = "variabledescriptor_id")},
     //        inverseJoinColumns = {
     //    @JoinColumn(referencedColumnName = "tag_id")})
-    //@XmlTransient
     //private List<Tag> tags;
     /**
      *

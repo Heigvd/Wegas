@@ -15,7 +15,6 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-////import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +116,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      *
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     @Transient
     public double getMaxValueD() {
@@ -128,7 +126,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      *
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     @Transient
     public double getMinValueD() {

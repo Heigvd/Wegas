@@ -15,14 +15,12 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
-//import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "InboxDescriptor")
 public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
 
     private static final long serialVersionUID = 1L;

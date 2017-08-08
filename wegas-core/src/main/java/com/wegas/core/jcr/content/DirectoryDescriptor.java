@@ -12,15 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-//import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     /**
@@ -53,7 +50,6 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
      *
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     public boolean isRootDirectory() {
         return this.fileSystemAbsolutePath.equals("/");
@@ -82,7 +78,6 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
      *
      * @return @throws RepositoryException
      */
-    //@XmlTransient
     @JsonIgnore
     public List<AbstractContentDescriptor> list() throws RepositoryException {
         NodeIterator nodeIterator = this.connector.listChildren(this.fileSystemAbsolutePath);

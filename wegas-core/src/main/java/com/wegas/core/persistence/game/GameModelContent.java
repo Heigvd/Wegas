@@ -11,8 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.util.Objects;
@@ -22,16 +20,12 @@ import java.util.Objects;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlRootElement
-//@XmlType(name = "")                                                             // This forces to use Class's short name as contentType
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @Table(indexes = {
-    @Index(columnList = "clientscriptlibrary_gamemodelid")
-    ,
-    @Index(columnList = "scriptlibrary_gamemodelid")
-    ,
-    @Index(columnList = "csslibrary_gamemodelid")
-    ,
+    @Index(columnList = "clientscriptlibrary_gamemodelid"),
+    @Index(columnList = "scriptlibrary_gamemodelid"),
+    @Index(columnList = "csslibrary_gamemodelid"),
     @Index(columnList = "csslibrary_gamemodelid, scriptlibrary_gamemodelid, clientscriptlibrary_gamemodelid, contentKey", unique = true)
 })
 public class GameModelContent implements Serializable {

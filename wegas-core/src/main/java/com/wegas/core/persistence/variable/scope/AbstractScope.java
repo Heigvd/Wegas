@@ -32,20 +32,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.wegas.core.persistence.InstanceOwner;
 
-////import javax.xml.bind.annotation.XmlTransient;
 /**
  * @param <T> scope context
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Entity                                                                         // Database serialization
+@Entity // Database serialization
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class)
-    ,
-    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class)
-    ,
-    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class)
-    ,
+    @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
+    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
+    @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
@@ -209,7 +205,6 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     public VariableInstance getInstance() {
         return this.getVariableInstance(RequestFacade.lookup().getPlayer());
@@ -232,7 +227,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     protected void propagate(Team t, boolean create) {
         for (Player p : t.getPlayers()) {
-            if (!p.isWaiting()){
+            if (!p.isWaiting()) {
                 propagate(p, create);
             } else {
                 logger.error("SKIP PLAYER: " + p + " -> " + p.getStatus());
@@ -248,7 +243,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     protected void propagate(Game g, boolean create) {
         for (Team t : g.getTeams()) {
-            if (!t.isWaiting()){
+            if (!t.isWaiting()) {
                 propagate(t, create);
             }
         }
@@ -280,7 +275,6 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     // @fixme here we cannot use the back-reference on an abstract reference
     //@JsonBackReference
-    //@XmlTransient
     @JsonIgnore
     public VariableDescriptor getVariableDescriptor() {
         return this.variableDescriptor;
@@ -298,7 +292,6 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      * @return
      */
     @Override
-    //@XmlTransient
     @JsonIgnore
     public Long getId() {
         return this.id;

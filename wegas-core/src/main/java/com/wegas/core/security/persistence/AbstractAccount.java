@@ -19,7 +19,6 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 
 import javax.persistence.*;
 import java.util.*;
-//////import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -163,7 +162,6 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      * @return the user
      */
-    //@XmlTransient
     @JsonIgnore
     public User getUser() {
         return user;
@@ -172,7 +170,6 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      * @param user the user to set
      */
-    //@XmlTransient
     @JsonIgnore
     public void setUser(User user) {
         this.user = user;

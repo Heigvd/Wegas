@@ -38,9 +38,8 @@ import java.util.*;
  */
 @Entity
 @Table(indexes = {
-    @Index(columnList = "author_variableinstance_id")
-    ,
-        @Index(columnList = "reviewer_variableinstance_id")
+    @Index(columnList = "author_variableinstance_id"),
+    @Index(columnList = "reviewer_variableinstance_id")
 })
 public class Review extends AbstractEntity implements DatedEntity {
 

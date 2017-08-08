@@ -30,7 +30,6 @@ import org.eclipse.persistence.annotations.BatchFetchType;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "ChoiceInstance")
 @Table(name = "MCQChoiceInstance",
         indexes = {
             @Index(columnList = "currentresult_id")
@@ -268,7 +267,6 @@ public class ChoiceInstance extends VariableInstance {
     /**
      * @return the currentResult
      */
-    //@XmlTransient
     @JsonIgnore
     public Result getCurrentResult() {
         if (this.currentResult != null) {

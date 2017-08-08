@@ -21,12 +21,10 @@ import java.util.*;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class Pages implements AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
 
-    //@XmlTransient
     @JsonIgnore
     private final PageConnector connector;
 

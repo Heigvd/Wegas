@@ -23,7 +23,6 @@ import java.io.IOException;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class Page {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Page.class);
@@ -33,7 +32,6 @@ public class Page {
     static final protected String NAME_KEY = "pageName";
 
     @JsonIgnore
-    //@XmlTransient
     private static ObjectMapper mapper = new ObjectMapper();
 
     private String id;

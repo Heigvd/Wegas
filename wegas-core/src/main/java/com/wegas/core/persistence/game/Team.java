@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import com.wegas.core.persistence.InstanceOwner;
-////import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -71,6 +70,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     @Enumerated(value = EnumType.STRING)
+    
     @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
     private Status status = Status.WAITING;
 
@@ -102,9 +102,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "parentgame_id", nullable = false)
-    //@XmlTransient
     @JsonIgnore
-    //@XmlInverseReference(mappedBy = "teams")
     @JsonBackReference(value = "game-team")
     private Game game;
 
@@ -170,9 +168,9 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @JsonIgnore
-    public Player getAnyLivePlayer(){
-        for (Player p : this.getPlayers()){
-            if (p.getStatus().equals(Populatable.Status.LIVE)){
+    public Player getAnyLivePlayer() {
+        for (Player p : this.getPlayers()) {
+            if (p.getStatus().equals(Populatable.Status.LIVE)) {
                 return p;
             }
         }
@@ -182,7 +180,6 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      * @param p
      */
-    //@XmlTransient
     @JsonIgnore
     public void addPlayer(Player p) {
         this.players.add(p);

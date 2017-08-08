@@ -13,7 +13,6 @@ import com.wegas.core.persistence.game.Game;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
-////import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Account matching a specific Game

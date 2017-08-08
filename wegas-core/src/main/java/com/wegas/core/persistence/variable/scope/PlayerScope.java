@@ -27,7 +27,6 @@ import com.wegas.core.persistence.InstanceOwner;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "PlayerScope")
 public class PlayerScope extends AbstractScope<Player> {
 
     private static final long serialVersionUID = 1L;
@@ -39,7 +38,6 @@ public class PlayerScope extends AbstractScope<Player> {
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "playerScope")
     @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
     @MapKeyJoinColumn(name = "variableinstances_key", referencedColumnName = "id")
-    //@XmlTransient
     @JsonIgnore
     private Map<Player, VariableInstance> variableInstances = new HashMap<>();
      */

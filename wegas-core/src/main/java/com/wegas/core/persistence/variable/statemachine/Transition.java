@@ -22,13 +22,12 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Access(AccessType.FIELD)
-//@XmlRootElement
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)

@@ -38,7 +38,6 @@ import com.wegas.core.persistence.variable.Scripted;
             @Index(columnList = "question_variabledescriptor_id")
         })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@XmlType(name = "ChoiceDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
 })
@@ -50,7 +49,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     @JsonBackReference
     private QuestionDescriptor question;

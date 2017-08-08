@@ -18,8 +18,7 @@ import javax.persistence.Transient;
  * @author Benjamin
  */
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "Activity", value = Activity.class)
-    ,
+    @JsonSubTypes.Type(name = "Activity", value = Activity.class),
     @JsonSubTypes.Type(name = "Assignment", value = Assignment.class)
 })
 public abstract class AbstractAssignement extends AbstractEntity {

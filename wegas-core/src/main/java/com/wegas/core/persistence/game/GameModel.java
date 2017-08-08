@@ -14,7 +14,6 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -38,13 +37,11 @@ import com.wegas.core.persistence.InstanceOwner;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
-    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC")
-    ,
-    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId")
-    ,
-    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")
-    ,
-    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")})
+    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC"),
+    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
+    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
+    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")
+})
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner {
 
     private static final long serialVersionUID = 1L;
@@ -86,6 +83,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Enumerated(value = EnumType.STRING)
+    
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -108,13 +106,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     private User createdBy;
 
     /*
      *
-     * //@XmlTransient
      *
      * @JsonIgnore private Boolean template = true;
      */
@@ -122,7 +118,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     private List<VariableDescriptor> variableDescriptors = new ArrayList<>();
 

@@ -14,15 +14,13 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id")
-    ,
+    @Index(columnList = "variableinstance_id"),
     @Index(columnList = "taskdescriptor_id")
 })
 @NamedQueries({
@@ -72,7 +70,6 @@ public class Assignment extends AbstractAssignement {
     /**
      * @return the ResourceInstance
      */
-    //@XmlTransient
     @JsonIgnore
     @JsonBackReference
     @Override
@@ -91,7 +88,6 @@ public class Assignment extends AbstractAssignement {
     /**
      * @return the taskInstance
      */
-    //@XmlTransient
     @JsonIgnore
     @Override
     public TaskInstance getTaskInstance() {

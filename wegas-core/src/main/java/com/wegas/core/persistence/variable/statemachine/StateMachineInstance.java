@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -35,8 +33,6 @@ import com.wegas.core.persistence.EntityComparators;
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Access(AccessType.FIELD)
-//@XmlRootElement
-//@XmlType(name = "FSMInstance")
 @JsonTypeName(value = "FSMInstance")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class)

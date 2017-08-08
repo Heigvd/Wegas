@@ -21,15 +21,10 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.Column;
 
-////import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-//@XmlRootElement
-//@XmlType(name = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;
@@ -137,7 +132,6 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @see StateMachineDescriptor#getStates
      */
     @Override
-    //@XmlTransient
     @JsonIgnore
     public Map<Long, State> getStates() {
         return super.getStates();

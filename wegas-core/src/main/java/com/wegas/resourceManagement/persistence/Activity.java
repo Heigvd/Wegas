@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -80,7 +79,6 @@ public class Activity extends AbstractAssignement {
      */
     @ManyToOne(optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "wrequirement_id", nullable = true)
-    //@XmlTransient
     @JsonIgnore
     private WRequirement requirement;
 

@@ -35,10 +35,8 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(uniqueConstraints = {})
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(value = TextEvaluationDescriptor.class)
-    ,
-    @JsonSubTypes.Type(value = CategorizedEvaluationDescriptor.class)
-    ,
+    @JsonSubTypes.Type(value = TextEvaluationDescriptor.class),
+    @JsonSubTypes.Type(value = CategorizedEvaluationDescriptor.class),
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends NamedEntity {
