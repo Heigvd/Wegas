@@ -129,7 +129,9 @@ function LinkInput({ url, onValidate, onRemove }: LinkInputProps) {
                 >
                     Ok
                 </button>
-                <button onClick={onRemove}>Remove</button>
+                {onRemove != undefined
+                    ? <button onClick={onRemove}>Remove</button>
+                    : null}
             </div>
         );
     }

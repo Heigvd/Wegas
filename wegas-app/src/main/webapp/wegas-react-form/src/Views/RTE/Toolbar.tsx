@@ -77,6 +77,12 @@ class Toolbar extends React.Component<
                     onClick={this.props.onChange}
                     editorState={this.props.editorState}
                 />
+                <MediaButton
+                    glyph="video-camera"
+                    type="VIDEO"
+                    onClick={this.props.onChange}
+                    editorState={this.props.editorState}
+                />
                 <StyleButton
                     glyph="font"
                     active={false}

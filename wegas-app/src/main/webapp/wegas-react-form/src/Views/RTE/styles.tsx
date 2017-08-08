@@ -9,11 +9,12 @@ import {
 import { BACKGROUND_COLORS, FOREGROUND_COLORS } from './color';
 import { FONT_FAMILY, FONT_SIZE } from './font';
 import { Link, linkDecorator } from './link';
-import { imageDecorator } from './media';
+import { imageDecorator, videoDecorator } from './media';
 
 export const decorators = new CompositeDecorator([
     linkDecorator,
     imageDecorator,
+    videoDecorator,
 ]);
 
 export const inlineStyles: { [name: string]: React.CSSProperties } = {
@@ -44,13 +45,20 @@ export const HTMLToState = convertFromHTML({
                 url: node.getAttribute('src'),
             });
         }
+        if (nodeName === 'video') {
+            return Entity.create('VIDEO', 'IMMUTABLE', {
+                url: node.getAttribute('src'),
+            });
+        }
     },
     htmlToBlock: (nodeName, node) => {
         if (
             (nodeName === 'figure' &&
                 node.firstChild &&
-                node.firstChild.nodeName === 'IMG') ||
-            nodeName === 'img'
+                (node.firstChild.nodeName === 'IMG' ||
+                    node.firstChild.nodeName === 'VIDEO')) ||
+            nodeName === 'img' ||
+            nodeName === 'video'
         ) {
             return 'atomic';
         }
@@ -70,6 +78,12 @@ const options: ConvertToHTMLOption = {
             return {
                 start: "<img src='" + entity.data.url + "'>",
                 end: '</img>',
+            };
+        }
+        if (entity.type === 'VIDEO') {
+            return {
+                start: "<video src='" + entity.data.url + "' controls>",
+                end: '</video>',
             };
         }
     },

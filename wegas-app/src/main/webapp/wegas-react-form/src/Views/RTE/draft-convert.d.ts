@@ -1,6 +1,5 @@
 declare module 'draft-convert' {
     import { ContentState, DraftInlineStyle } from 'draft-js';
-    import { OrderedSet } from 'draft-js/node_modules/immutable/dist/immutable-nonambient';
     interface ConvertToHTMLOption {
         styleToHTML?: (style: string) => JSX.Element | void;
         entityToHTML?: (

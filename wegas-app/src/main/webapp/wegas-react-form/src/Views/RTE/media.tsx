@@ -4,7 +4,6 @@ import {
     ContentBlock,
     EditorState,
     Modifier,
-    RichUtils,
     AtomicBlockUtils,
 } from 'draft-js';
 
@@ -40,6 +39,35 @@ export const imageDecorator = {
     strategy: findImageEntities,
     component: ImageEntity,
 };
+function findVideoEntities(
+    contentBlock: ContentBlock,
+    callback: (start: number, end: number) => void,
+    contentState: ContentState
+) {
+    contentBlock.findEntityRanges(character => {
+        const entityKey = character.getEntity();
+        return (
+            entityKey !== null &&
+            contentState.getEntity(entityKey).getType() === 'VIDEO'
+        );
+    }, callback);
+}
+export function Video({ url }: { url: string }) {
+    return <video src={url} controls />;
+}
+const VideoEntity = (props: {
+    contentState: ContentState;
+    children?: React.ReactChildren;
+    entityKey: string;
+}) => {
+    const { url } = props.contentState.getEntity(props.entityKey).getData();
+
+    return Video({ url });
+};
+export const videoDecorator = {
+    strategy: findVideoEntities,
+    component: VideoEntity,
+};
 export function MediaBlockRenderer(props: {
     contentState: ContentState;
     block: ContentBlock;
@@ -49,6 +77,9 @@ export function MediaBlockRenderer(props: {
     const data = entity.getData();
     if (type === 'IMAGE') {
         return <Img {...data} />;
+    }
+    if (type === 'VIDEO') {
+        return <Video {...data} />;
     }
     return null;
 }
@@ -156,18 +187,6 @@ export class MediaButton extends React.Component<
                                     stateWithEntity,
                                     entityKey,
                                     ' '
-                                )
-                            );
-                            this.setState(() => ({
-                                selectLink: false,
-                            }));
-                        }}
-                        onRemove={() => {
-                            this.props.onClick(
-                                RichUtils.toggleLink(
-                                    this.props.editorState,
-                                    selection,
-                                    null
                                 )
                             );
                             this.setState(() => ({
