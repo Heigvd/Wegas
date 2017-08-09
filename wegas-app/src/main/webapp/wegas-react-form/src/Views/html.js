@@ -14,6 +14,8 @@ const marginStyle = css({
     marginTop: '4px',
     fontSize: '13px',
     minHeight: '45px',
+    maxHeight: '500px',
+    overflow: 'auto',
     color: 'darkslategrey',
     boxShadow: '1px 1px 4px #ccc',
     // border: '1px solid lightgrey',
@@ -130,7 +132,7 @@ const TINY_CONFIG = {
 };
 /**
  * Replace data-file attribute with complete href and src
- * @param {string} content 
+ * @param {string} content
  */
 function toTinyMCE(content) {
     let updated = content;
@@ -151,10 +153,16 @@ function toTinyMCE(content) {
 }
 /**
  * Replace href/src with injector style data-file attribute
- * @param {string} content 
+ * @param {string} content
  */
 function toInjectorStyle(content) {
-    return content
+    // remove yui ids
+    const root = document.createElement('div');
+    root.innerHTML = content;
+    const yuiId = root.querySelectorAll('[id^="yui_"]');
+    yuiId.forEach(n => n.removeAttribute('id'));
+
+    return root.innerHTML
         .replace(
             new RegExp(
                 '((src|href)="[^"]*/rest/File/GameModelId/[^"]*/read([^"]*)")',
