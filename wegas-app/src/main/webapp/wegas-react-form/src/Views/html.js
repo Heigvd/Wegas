@@ -139,12 +139,7 @@ function toTinyMCE(content) {
     if (updated && Wegas.Facade.File) {
         updated = updated.replace(
             new RegExp('data-file="([^"]*)"', 'gi'),
-            'src="' +
-                Wegas.Facade.File.getPath() +
-                '$1"' +
-                ' href="' +
-                Wegas.Facade.File.getPath() +
-                '$1"'
+            `src="${Wegas.Facade.File.getPath()}$1" href="${Wegas.Facade.File.getPath()}$1"`
         ); // @hack Place both href and src so it
         // will work for both <a> and <img>
         // elements
@@ -178,28 +173,40 @@ function toInjectorStyle(content) {
             'data-file="$3"'
         ); // Replace absolute path with injector style path
 }
-function HTMLView(props) {
-    const { onChange } = props;
-    const onValueChange = event => {
-        try {
-            onChange(toInjectorStyle(event.target.getContent()));
-        } catch (e) {
-            // Has been destroyed ....
+class HTMLView extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { key: 0, content: props.value };
+        this.onChangeHandler = this.onChangeHandler.bind(this);
+    }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.value !== this.state.content) {
+            // Generate a new key to force TinyMCE to re-render.
+            this.setState({
+                key: (this.state.key + 1) % 100, // avoid potential overflow
+                content: nextProps.value,
+            });
         }
-    };
-    return (
-        <div className={marginStyle}>
-            <TinyMCE
-                content={toTinyMCE(props.value)}
-                config={TINY_CONFIG}
-                onChange={onValueChange}
-            />
-        </div>
-    );
+    }
+    onChangeHandler(event) {
+        const content = toInjectorStyle(event.target.getContent());
+        this.setState({ content }, () => this.props.onChange(content));
+    }
+    render() {
+        return (
+            <div className={marginStyle}>
+                <TinyMCE
+                    key={this.state.key}
+                    content={toTinyMCE(this.state.content)}
+                    config={TINY_CONFIG}
+                    onChange={this.onChangeHandler}
+                />
+            </div>
+        );
+    }
 }
 HTMLView.propTypes = {
     onChange: PropTypes.func.isRequired,
-    view: PropTypes.object,
     value: PropTypes.string,
 };
 
