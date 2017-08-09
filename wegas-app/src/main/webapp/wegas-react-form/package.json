@@ -20,8 +20,6 @@
     "brace": "^0.10.0",
     "classnames": "^2.2.5",
     "core-js": "^2.5.0",
-    "draft-convert": "^1.4.8",
-    "draft-js": "^0.10.1",
     "glamor": "^2.20.39",
     "jsoninput": "github:cigit/JSONInput",
     "lodash-es": "^4.17.4",
@@ -36,7 +34,6 @@
     "recast": "^0.12.6"
   },
   "devDependencies": {
-    "@types/draft-js": "^0.10.10",
     "@types/lodash-es": "^4.14.5",
     "@types/react": "^15.6.1",
     "@types/react-color": "^2.13.0",
