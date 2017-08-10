@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -33,9 +33,9 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         GameModel gameModel = new GameModel();
         gameModel.setName(name);
-        gameModel.getClientScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
-        gameModel.getScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
-        gameModel.getCssLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
+        gameModel.getClientScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        gameModel.getScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        gameModel.getCssLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
         gameModel.getProperties().setPagesUri(SCRIPTCONTENT);
 
         final int size = gameModelFacade.findAll().size();
@@ -44,10 +44,10 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         gameModel = gameModelFacade.find(gameModel.getId());
         Assert.assertEquals(name, gameModel.getName());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScriptLibrary().get(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScript(SCRIPTNAME).getContent());
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getProperties().getPagesUri());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getCssLibrary().get(SCRIPTNAME).getContent());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getScriptLibrary().get(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getCss(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getScript(SCRIPTNAME).getContent());
 
         gameModelFacade.remove(gameModel.getId());
         Assert.assertEquals(size, gameModelFacade.findAll().size());
@@ -87,9 +87,8 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         tf.create(g.getId(), t);
         Assert.assertNotNull(t.getId());
 
-        Player p = new Player();
+        Player p = gf.joinTeam(t.getId(), "John A. Player");
 
-        pf.create(t.getId(), p);
         Assert.assertNotNull(p.getId());
 
         gameModelFacade.remove(gameModel.getId());

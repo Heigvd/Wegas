@@ -56,7 +56,7 @@ YUI.add('wegas-entity', function(Y) {
                         type: 'string',
                         view: {
                             label: ' Induced permission'
-                        }
+            }
                     }
                 }
             },
@@ -78,51 +78,51 @@ YUI.add('wegas-entity', function(Y) {
         [Wegas.Editable],
         {},
         {
-            ATTRS: {
-                initialized: {
+        ATTRS: {
+            initialized: {
                     transient: true
-                },
-                destroyed: {
+            },
+            destroyed: {
                     transient: true
-                },
-                id: {
+            },
+            id: {
                     type: NUMBER,
-                    optional: true, // The id is optional for entites that have not been persisted
+                optional: true, // The id is optional for entites that have not been persisted
                     writeOnce: 'initOnly',
-                    setter: function(val) {
-                        return val * 1;
-                    },
+                setter: function(val) {
+                    return val * 1;
+                },
                     index: -2,
                     view: {
                         type: 'uneditable',
                         className: 'wegas-advanced-feature',
                         label: 'Id'
-                    }
-                },
+                }
+            },
                 '@class': {
                     value: 'null',
                     required: true,
                     writeOnce: 'initOnly',
-                    type: STRING,
+                type: STRING,
                     view: {
                         type: HIDDEN
-                    }
-                },
-                label: {
-                    transient: true,
-                    getter: function(val) {
-                        return val || this.get(NAME);
-                    }
                 }
             },
-            /**
+            label: {
+                    transient: true,
+                getter: function(val) {
+                    return val || this.get(NAME);
+                }
+            }
+        },
+        /**
          *  Defines edition menu to be used in editor
          */
-            EDITMENU: [],
-            /**
+        EDITMENU: [],
+        /**
          * Defines methods available in wysiwyge script editor
          */
-            METHODS: {}
+        METHODS: {}
         }
     );
     persistence.Entity = Entity;
@@ -135,17 +135,17 @@ YUI.add('wegas-entity', function(Y) {
         Entity,
         [],
         {
-            initializer: function(cfg) {
+        initializer: function(cfg) {
                 this.set('val', cfg);
-            },
-            toJSON: function() {
+        },
+        toJSON: function() {
                 return this.get('val');
-            }
+        }
         },
         {
-            ATTRS: {
-                val: {}
-            }
+        ATTRS: {
+            val: {}
+        }
         }
     );
     persistence.RestException = persistence.DefaultEntity;
@@ -159,17 +159,17 @@ YUI.add('wegas-entity', function(Y) {
         [],
         {},
         {
-            ATTRS: {
-                deletedEntities: {
-                    value: []
-                },
-                updatedEntities: {
-                    value: []
-                },
-                events: {
-                    value: []
-                }
+        ATTRS: {
+            deletedEntities: {
+                value: []
+            },
+            updatedEntities: {
+                value: []
+            },
+            events: {
+                value: []
             }
+        }
         }
     );
 
@@ -182,11 +182,11 @@ YUI.add('wegas-entity', function(Y) {
         [],
         {},
         {
-            ATTRS: {
-                updatedEntities: {
-                    value: []
-                }
+        ATTRS: {
+            updatedEntities: {
+                value: []
             }
+        }
         }
     );
 
@@ -200,34 +200,34 @@ YUI.add('wegas-entity', function(Y) {
         {},
         {
             EDITORNAME: 'Scenario',
-            ATTRS: {
-                name: {
-                    type: STRING,
+        ATTRS: {
+            name: {
+                type: STRING,
                     view: {
                         label: 'Name',
                         className: 'editor-form-gamemodel-name'
-                    }
-                },
-                games: {
-                    type: ARRAY,
-                    value: [],
+                }
+            },
+            games: {
+                type: ARRAY,
+                value: [],
                     transient: true
-                },
-                scriptLibrary: {
-                    value: {},
+            },
+            scriptLibrary: {
+                value: {},
                     transient: true
-                },
-                clientScriptLibrary: {
-                    value: {},
+            },
+            clientScriptLibrary: {
+                value: {},
                     transient: true
-                },
-                cssLibrary: {
-                    value: {},
+            },
+            cssLibrary: {
+                value: {},
                     transient: true
-                },
-                properties: {
+            },
+            properties: {
                     type: 'object',
-                    value: {},
+                value: {},
                     properties: {
                         freeForAll: {
                             type: 'boolean',
@@ -236,11 +236,11 @@ YUI.add('wegas-entity', function(Y) {
                                 type: 'select',
                                 choices: [
                                     {
-                                        value: true,
+                                    value: true,
                                         label: 'individually'
                                     },
                                     {
-                                        value: false,
+                                    value: false,
                                         label: 'in team'
                                     }
                                 ]
@@ -278,8 +278,8 @@ YUI.add('wegas-entity', function(Y) {
                                 label: 'Icon uri',
                                 className: 'wegas-advanced-feature',
                                 description: 'Use the lobby to edit the icon'
-                            }
-                        },
+                }
+            },
                         // still in use ??
                         websocket: {
                             type: STRING,
@@ -290,42 +290,42 @@ YUI.add('wegas-entity', function(Y) {
                         }
                     }
                 },
-                description: {
-                    type: STRING,
+            description: {
+                type: STRING,
                     view: {
                         type: 'html',
                         label: 'Description'
                     }
-                },
-                comments: {
+            },
+            comments: {
                     type: [STRING, 'null'],
                     index: 100,
                     view: {
                         type: 'textarea',
                         className: 'wegas-comments',
                         placeholder: 'Comments'
-                    }
-                },
-                canView: {
-                    transient: true
-                },
-                canEdit: {
-                    transient: true
-                },
-                canDuplicate: {
-                    transient: true
-                },
-                canInstantiate: {
-                    transient: true
-                },
-                createdTime: {
-                    transient: true
-                },
-                createdByName: {
-                    transient: true
                 }
             },
-            EDITMENU: []
+            canView: {
+                    transient: true
+            },
+            canEdit: {
+                    transient: true
+            },
+            canDuplicate: {
+                    transient: true
+            },
+            canInstantiate: {
+                    transient: true
+            },
+            createdTime: {
+                    transient: true
+            },
+            createdByName: {
+                    transient: true
+            }
+        },
+        EDITMENU: []
         }
     );
 
@@ -339,13 +339,13 @@ YUI.add('wegas-entity', function(Y) {
         {},
         {
             EDITORNAME: 'Scenario Root Descriptors',
-            ATTRS: {
-                items: {
-                    type: ARRAY,
-                    value: []
-                }
-            },
-            EDITMENU: []
+        ATTRS: {
+            items: {
+                type: ARRAY,
+                value: []
+            }
+        },
+        EDITMENU: []
         }
     );
 
@@ -358,86 +358,86 @@ YUI.add('wegas-entity', function(Y) {
         [],
         {},
         {
-            ATTRS: {
-                gameModelId: {
-                    type: STRING,
+        ATTRS: {
+            gameModelId: {
+                type: STRING,
                     view: {
                         type: HIDDEN
-                    }
-                },
-                name: {
-                    type: STRING,
+                }
+            },
+            name: {
+                type: STRING,
                     view: {
                         className: 'wegas-game-name',
                         label: 'Name'
-                    }
-                },
-                gameModelName: {
-                    //"transient": true
-                    type: STRING,
+                }
+            },
+            gameModelName: {
+                //"transient": true
+                type: STRING,
                     view: {
                         type: 'uneditable',
                         label: 'Scenario',
                         className: 'wegas-game-scenario'
-                    }
-                },
-                createdByName: {
+                }
+            },
+            createdByName: {
                     transient: true
-                },
-                createdTime: {
+            },
+            createdTime: {
                     transient: true
-                },
-                updatedTime: {
+            },
+            updatedTime: {
                     transient: true
-                },
+            },
                 gameModel: {
                     //                                                      // Extended view only
                     transient: true
-                },
-                properties: {
+            },
+            properties: {
                     transient: true
-                },
-                teams: {
+            },
+            teams: {
                     transient: true,
-                    value: []
-                },
-                shareLabel: {
-                    type: STRING,
-                    optional: true,
+                value: []
+            },
+            shareLabel: {
+                type: STRING,
+                optional: true,
                     view: {
                         type: 'uneditable',
                         label: 'Game access',
                         className: 'wegas-game-subtitle'
-                    }
-                },
-                access: {
-                    type: STRING
-                },
-                token: {
-                    type: STRING
-                },
-                keys: {
-                    type: ARRAY,
-                    value: []
-                },
-                accountkeys: {
-                    type: ARRAY,
-                    value: []
-                },
-                playersCount: {
-                    transient: true,
-                    getter: function() {
-                        var count = 0;
-                        Y.Array.each(this.get('teams'), function(t) {
-                            if (!(t instanceof persistence.DebugTeam)) {
-                                count += t.get('players').length;
-                            }
-                        });
-                        return count;
-                    }
                 }
             },
-            EDITMENU: []
+            access: {
+                    type: STRING
+                                },
+            token: {
+                    type: STRING
+            },
+            keys: {
+                type: ARRAY,
+                    value: []
+            },
+            accountkeys: {
+                type: ARRAY,
+                    value: []
+            },
+            playersCount: {
+                    transient: true,
+                getter: function() {
+                    var count = 0;
+                        Y.Array.each(this.get('teams'), function(t) {
+                        if (!(t instanceof persistence.DebugTeam)) {
+                                count += t.get('players').length;
+                        }
+                    });
+                    return count;
+                }
+            }
+        },
+        EDITMENU: []
         }
     );
     persistence.DebugGame = persistence.Game;
@@ -445,37 +445,75 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * Team mapper
      */
-    persistence.Team = Base.create(
-        'Team',
-        persistence.Entity,
-        [],
-        {},
-        {
-            ATTRS: {
+    persistence.Team = Base.create("Team", persistence.Entity, [], {
+        getPlayerByStatus: function(statuses) {
+            var i, player;
+
+            if (!Array.isArray(statuses)) {
+                statuses = [statuses];
+            }
+
+            for (i in this.get("players")) {
+                player = this.get("players")[i];
+                if (statuses.indexOf(player.get("status")) >= 0) {
+                    return player;
+                }
+            }
+
+            return null;
+
+        },
+        getLivePlayer: function() {
+            return this.getPlayerByStatus("LIVE");
+        },
+        getStatus: function() {
+            if (this.isLive()) {
+                return "LIVE";
+            } else if (this.getPlayerByStatus(["PROCESSING", "SEC_PROCESSING"])) {
+                return "PROCESSING";
+            } else if (this.getPlayerByStatus(["WAITING", "RESCHEDULED"])) {
+                return "WAITING";
+            } else {
+                return "FAILED";
+            }
+
+        },
+        /**
+         * is the team live? ie does it contains at least one live player ?
+         * @returns {Boolean}
+         */
+        isLive: function() {
+            return this.getLivePlayer() !== null;
+        }
+    }, {
+        ATTRS: {
                 '@class': {
                     value: 'Team'
-                },
-                name: {
-                    type: STRING
-                },
-                notes: {
+            },
+            name: {
+                type: STRING
+            },
+            notes: {
                     value: '',
                     view: {
                         type: HIDDEN
-                    }
-                },
-                declaredSize: {
+                }
+            },
+            declaredSize: {
                     transient: true
-                },
-                players: {
-                    value: [],
+            },
+            status: {
+                "transient": true
+            },
+            players: {
+                value: [],
                     view: {
                         type: HIDDEN
-                    }
-                },
-                gameId: IDATTRDEF
+                }
             },
-            EDITMENU: []
+            gameId: IDATTRDEF
+        },
+        EDITMENU: []
         }
     );
     /**
@@ -498,31 +536,34 @@ YUI.add('wegas-entity', function(Y) {
         [],
         {},
         {
-            ATTRS: {
-                name: {
-                    type: STRING
-                },
-                teamId: IDATTRDEF,
-                userId: {
+        ATTRS: {
+            name: {
+                type: STRING
+            },
+            teamId: IDATTRDEF,
+            userId: {
                     transient: true
-                },
-                team: {
+            },
+            team: {
                     transient: true,
-                    getter: function() {
+                getter: function() {
                         return Wegas.Facade.Game.cache.find(
                             'id',
                             this.get('teamId')
                         );
-                    }
-                },
-                verifiedId: {
-                    transient: true
-                },
-                homeOrg: {
-                    transient: true
                 }
             },
-            EDITMENU: []
+            verifiedId: {
+                    transient: true
+            },
+            homeOrg: {
+                "transient": true
+            },
+            status: {
+                "transient": true
+            }
+        },
+        EDITMENU: []
         }
     );
 
@@ -534,29 +575,29 @@ YUI.add('wegas-entity', function(Y) {
         persistence.Entity,
         [],
         {
-            getMainAccount: function() {
+        getMainAccount: function() {
                 return this.get('accounts')[0];
-            }
+        }
         },
         {
-            ATTRS: {
-                name: {
-                    type: STRING,
+        ATTRS: {
+            name: {
+                type: STRING,
                     transient: true,
-                    getter: function(val) {
-                        if (this.getMainAccount()) {
-                            return this.getMainAccount().getPublicName();
-                        }
-                        return val;
+                getter: function(val) {
+                    if (this.getMainAccount()) {
+                        return this.getMainAccount().getPublicName();
                     }
-                },
-                password: {
-                    type: STRING
-                },
-                accounts: {
-                    type: ARRAY
+                    return val;
                 }
+            },
+            password: {
+                type: STRING
+            },
+            accounts: {
+                type: ARRAY
             }
+        }
         }
     );
 
@@ -569,16 +610,16 @@ YUI.add('wegas-entity', function(Y) {
         [],
         {},
         {
-            ATTRS: {
-                name: {
-                    type: STRING
-                },
-                description: {
+        ATTRS: {
+            name: {
+                type: STRING
+            },
+            description: {
                     transient: true,
-                    type: STRING,
-                    format: TEXT,
-                    optional: true
-                },
+                type: STRING,
+                format: TEXT,
+                optional: true
+            },
                 permissions: PERMISSION
             },
             EDITMENU: [
@@ -588,9 +629,9 @@ YUI.add('wegas-entity', function(Y) {
                 },
                 {
                     type: 'DeleteEntityButton'
-                }
+                    }
             ]
-        }
+                }
     );
 
     /**
@@ -601,95 +642,95 @@ YUI.add('wegas-entity', function(Y) {
         persistence.Entity,
         [],
         {
-            getPublicName: function() {
-                return this.get(NAME);
-            }
+        getPublicName: function() {
+            return this.get(NAME);
+        }
         },
         {
-            ATTRS: {
+        ATTRS: {
                 '@class': {
                     value: 'JpaAccount'
-                },
-                name: {
+            },
+            name: {
                     transient: true,
-                    getter: function() {
+                getter: function() {
                         if (this.get('firstname') || this.get('lastname')) {
                             return (
                                 this.get('firstname') +
                                 ' ' +
                                 (this.get('lastname') || '')
                             );
-                        } else {
+                    } else {
                             return this.get('email');
-                        }
                     }
-                },
-                firstname: {
-                    type: STRING,
+                }
+            },
+            firstname: {
+                type: STRING,
                     view: {
                         label: 'First name'
-                    }
-                },
-                lastname: {
+                }
+            },
+            lastname: {
                     label: 'Last name',
-                    type: STRING,
+                type: STRING,
                     view: {
                         label: 'Last name'
-                    }
-                },
-                email: {
-                    type: STRING,
+                }
+            },
+            email: {
+                type: STRING,
                     view: {
                         type: 'string'
-                    }
-                },
-                username: {
-                    type: STRING,
-                    optional: true,
+                }
+            },
+            username: {
+                type: STRING,
+                optional: true,
                     view: {
                         label: 'Username',
                         description: 'Can be used to log in'
-                    }
-                },
-                hash: {
+                }
+            },
+            hash: {
                     transient: true
-                },
-                password: {
-                    type: STRING,
-                    optional: true,
+            },
+            password: {
+                type: STRING,
+                optional: true,
                     view: {
                         type: 'password',
                         label: 'Password',
-                        strengthIndicator: false,
-                        capsLockWarning: true,
+                    strengthIndicator: false,
+                    capsLockWarning: true,
                         description: 'Leave blank for no change'
-                    }
-                },
-                passwordConfirm: {
-                    type: STRING,
-                    optional: true,
+                }
+            },
+            passwordConfirm: {
+                type: STRING,
+                optional: true,
                     errored: function(val, formVal) {
                         if (val !== formVal.password) {
                             return 'Passwords do not match';
-                        }
-                    },
+                }
+            },
                     view: {
                         type: 'password',
                         label: 'Confirm password'
                     }
                 },
-                roles: {
-                    optional: true,
-                    type: ARRAY,
-                    items: {
+            roles: {
+                optional: true,
+                type: ARRAY,
+                items: {
                         type: STRING
-                    },
+                },
                     view: {
                         label: 'Groups'
-                    }
-                },
-                permissions: PERMISSION
+                }
             },
+                permissions: PERMISSION
+                },
             EDITMENU: [
                 {
                     type: 'EditEntityButton',
@@ -699,7 +740,7 @@ YUI.add('wegas-entity', function(Y) {
                     type: 'DeleteEntityButton'
                 }
             ]
-        }
+            }
     );
 
     /**
@@ -710,67 +751,67 @@ YUI.add('wegas-entity', function(Y) {
         persistence.Entity,
         [],
         {
-            getPublicName: function() {
-                return this.get(NAME);
-            }
+        getPublicName: function() {
+            return this.get(NAME);
+        }
         },
         {
-            ATTRS: {
+        ATTRS: {
                 '@class': {
                     value: 'AaiAccount'
-                },
-                name: {
+            },
+            name: {
                     transient: true,
-                    getter: function() {
+                getter: function() {
                         if (this.get('firstname') || this.get('lastname')) {
                             return (
                                 this.get('firstname') +
                                 ' ' +
                                 (this.get('lastname') || '')
                             );
-                        } else {
+                    } else {
                             return this.get('email');
-                        }
                     }
-                },
-                firstname: {
-                    type: STRING,
+                }
+            },
+            firstname: {
+                type: STRING,
                     view: {
                         label: 'First name'
-                    }
-                },
-                lastname: {
+                }
+            },
+            lastname: {
                     label: 'Last name',
-                    type: STRING,
+                type: STRING,
                     view: {
                         label: 'Last name'
-                    }
-                },
-                email: {
-                    type: STRING,
+                }
+            },
+            email: {
+                type: STRING,
                     view: {
                         type: 'email'
-                    }
-                },
-                roles: {
-                    optional: true,
-                    type: ARRAY,
-                    items: {
-                        type: STRING,
+                }
+            },
+            roles: {
+                optional: true,
+                type: ARRAY,
+                items: {
+                    type: STRING,
                         choices: []
-                    },
+                },
                     view: {
                         label: 'Groups'
-                    }
-                },
-                permissions: PERMISSION
+                }
             },
+                permissions: PERMISSION
+                },
             EDITMENU: [
                 {
                     type: 'DeleteEntityButton'
                 }
             ]
-        }
+            }
     );
 
     /**
@@ -781,20 +822,20 @@ YUI.add('wegas-entity', function(Y) {
         persistence.Entity,
         [],
         {
-            getPublicName: function() {
+        getPublicName: function() {
                 return 'Guest';
-            }
+        }
         },
         {
-            ATTRS: {
+        ATTRS: {
                 '@class': {
                     value: 'GuestJpaAccount'
-                },
-                permissions: {
-                    transient: true,
-                    value: []
-                }
             },
+            permissions: {
+                    transient: true,
+                value: []
+            }
+        },
             EDITMENU: [
                 {
                     type: 'DeleteEntityButton'

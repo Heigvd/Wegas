@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -14,8 +14,6 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
-import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -29,6 +27,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -38,14 +37,12 @@ import org.apache.shiro.SecurityUtils;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
-    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC")
-    ,
-    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId")
-    ,
-    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")
-    ,
-    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")})
-public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, BroadcastTarget {
+    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC"),
+    @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
+    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
+    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")
+})
+public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner {
 
     private static final long serialVersionUID = 1L;
 
@@ -86,6 +83,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Enumerated(value = EnumType.STRING)
+    
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -108,13 +106,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     private User createdBy;
 
     /*
      *
-     * //@XmlTransient
      *
      * @JsonIgnore private Boolean template = true;
      */
@@ -122,7 +118,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     private List<VariableDescriptor> variableDescriptors = new ArrayList<>();
 
@@ -160,7 +155,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "scriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
-    private Map<String, GameModelContent> scriptLibrary = new HashMap<>();
+    private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
      *
@@ -168,7 +163,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "csslibrary_gamemodelid")
     @JsonView({Views.Export.class})
-    private Map<String, GameModelContent> cssLibrary = new HashMap<>();
+    private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
      *
@@ -176,7 +171,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "clientscriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
-    private Map<String, GameModelContent> clientScriptLibrary = new HashMap<>();
+    private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
      *
@@ -223,15 +218,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             map.put(curKey, pageMap.get(curKey));
         }
         this.setPages(map);
-    }
-
-    /**
-     * @param context
-     */
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
-        for (VariableDescriptor vd : this.getVariableDescriptors()) {
-            vd.propagateDefaultInstance(context, create);
-        }
     }
 
     /**
@@ -496,14 +482,16 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the scriptLibrary
      */
-    public Map<String, GameModelContent> getScriptLibrary() {
+    @JsonIgnore
+    public List<GameModelContent> getScriptLibraryList() {
         return scriptLibrary;
     }
 
     /**
      * @param scriptLibrary the scriptLibrary to set
      */
-    public void setScriptLibrary(Map<String, GameModelContent> scriptLibrary) {
+    @JsonIgnore
+    public void setScriptLibraryList(List<GameModelContent> scriptLibrary) {
         this.scriptLibrary = scriptLibrary;
     }
 
@@ -550,28 +538,121 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the cssLibrary
      */
-    public Map<String, GameModelContent> getCssLibrary() {
+    @JsonIgnore
+    public List<GameModelContent> getCssLibraryList() {
         return cssLibrary;
     }
 
     /**
      * @param cssLibrary the cssLibrary to set
      */
-    public void setCssLibrary(Map<String, GameModelContent> cssLibrary) {
+    @JsonIgnore
+    public void setCssLibraryList(List<GameModelContent> cssLibrary) {
         this.cssLibrary = cssLibrary;
+    }
+
+    private Map<String, GameModelContent> getLibraryAsMap(List<GameModelContent> library) {
+        Map<String, GameModelContent> map = new HashMap<>();
+        for (GameModelContent gmc : library) {
+            map.put(gmc.getContentKey(), gmc);
+        }
+        return map;
+    }
+
+    public Map<String, GameModelContent> getCssLibrary() {
+        return getLibraryAsMap(cssLibrary);
+    }
+
+    public void setCssLibrary(Map<String, GameModelContent> library) {
+        this.cssLibrary = new ArrayList<>();
+        for (Entry<String, GameModelContent> entry : library.entrySet()) {
+            String key = entry.getKey();
+            GameModelContent gmc = entry.getValue();
+            gmc.setCsslibrary_GameModel(this);
+            gmc.setContentKey(key);
+            cssLibrary.add(gmc);
+        }
     }
 
     /**
      * @return the clientScriptLibrary
      */
-    public Map<String, GameModelContent> getClientScriptLibrary() {
+    @JsonIgnore
+    public List<GameModelContent> getClientScriptLibraryList() {
         return clientScriptLibrary;
+    }
+
+    public Map<String, GameModelContent> getScriptLibrary() {
+        return getLibraryAsMap(scriptLibrary);
+    }
+
+    public Map<String, GameModelContent> getClientScriptLibrary() {
+        return getLibraryAsMap(clientScriptLibrary);
+    }
+
+    public void setScriptLibrary(Map<String, GameModelContent> library) {
+        this.scriptLibrary = new ArrayList<>();
+        for (Entry<String, GameModelContent> entry : library.entrySet()) {
+            String key = entry.getKey();
+            GameModelContent gmc = entry.getValue();
+            gmc.setScriptlibrary_GameModel(this);
+            gmc.setContentKey(key);
+            scriptLibrary.add(gmc);
+        }
+    }
+
+    public void setClientScriptLibrary(Map<String, GameModelContent> library) {
+        this.clientScriptLibrary = new ArrayList<>();
+        for (Entry<String, GameModelContent> entry : library.entrySet()) {
+            String key = entry.getKey();
+            GameModelContent gmc = entry.getValue();
+            gmc.setClientscriptlibrary_GameModel(this);
+            gmc.setContentKey(key);
+            clientScriptLibrary.add(gmc);
+        }
+    }
+
+    /**
+     * @param key
+     *
+     * @return the clientScript matching the key or null
+     */
+    public GameModelContent getClientScript(String key) {
+        return this.getGameModelContent(clientScriptLibrary, key);
+    }
+
+    /**
+     * @param key
+     *
+     * @return the clientScript matching the key or null
+     */
+    public GameModelContent getScript(String key) {
+        return this.getGameModelContent(scriptLibrary, key);
+    }
+
+    /**
+     * @param key
+     *
+     * @return the clientScript matching the key or null
+     */
+    public GameModelContent getCss(String key) {
+        return this.getGameModelContent(cssLibrary, key);
+    }
+
+    public GameModelContent getGameModelContent(List<GameModelContent> list, String key) {
+        for (GameModelContent gmc : list) {
+            if (gmc.getContentKey().equals(key)) {
+                return gmc;
+            }
+        }
+        return null;
     }
 
     /**
      * @param clientScriptLibrary the clientScriptLibrary to set
      */
-    public void setClientScriptLibrary(Map<String, GameModelContent> clientScriptLibrary) {
+    @JsonIgnore
+    public void setClientScriptLibraryList(List<GameModelContent> clientScriptLibrary) {
         this.clientScriptLibrary = clientScriptLibrary;
     }
 

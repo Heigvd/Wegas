@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -26,12 +26,16 @@ import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class PlayerFacadeTest extends AbstractEJBTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlayerFacadeTest.class);
 
     private static GameFacade gameFacade;
     private static TeamFacade teamFacade;
@@ -72,14 +76,33 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         Game ng = gameFacade.find(g.getId());
         currentUser = userFacade.find(currentUser.getId());
         Assert.assertEquals(2, ng.getTeams().size());
-        Assert.assertEquals(2, ng.getTeams().get(1).getPlayers().size());
+
+        Team theTeam = null;
+        for (Team tIt : ng.getTeams()) {
+            if (!(tIt instanceof DebugTeam)) {
+                theTeam = tIt;
+                break;
+            }
+        }
+        Assert.assertNotNull(theTeam);
+        Assert.assertEquals(2, theTeam.getPlayers().size());
+
         Assert.assertEquals(2, currentUser.getPlayers().size());
 
         playerFacade.remove(p1.getId());
 
         ng = gameFacade.find(g.getId());
         Assert.assertEquals(2, ng.getTeams().size());
-        Assert.assertEquals(1, ng.getTeams().get(1).getPlayers().size());
+        theTeam = null;
+        for (Team tIt : ng.getTeams()) {
+            if (!(tIt instanceof DebugTeam)) {
+                theTeam = tIt;
+                break;
+            }
+        }
+        Assert.assertNotNull(theTeam);
+
+        Assert.assertEquals(1, theTeam.getPlayers().size());
 
         teamFacade.remove(t.getId());
 
@@ -94,6 +117,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
     @Test
     public void getInstances() {
+        logger.error("Da TEST");
         TextDescriptor gmScoped = new TextDescriptor();
         gmScoped.setName("gmScoped");
         gmScoped.setScope(new GameModelScope());
@@ -114,6 +138,8 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         pScoped.setScope(new PlayerScope());
         pScoped.setDefaultInstance(new TextInstance());
 
+        logger.error("CREATE NEW DESCRIPTORS");
+
         descriptorFacade.create(gameModel.getId(), gmScoped);
         descriptorFacade.create(gameModel.getId(), gScoped);
         descriptorFacade.create(gameModel.getId(), tScoped);
@@ -121,10 +147,20 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
         List<VariableInstance> instances = playerFacade.getInstances(player.getId());
 
+        /* One global instance */
         Assert.assertEquals(1, gameModelFacade.find(gameModel.getId()).getPrivateInstances().size());
+
+        /* One quite-global instance */
         Assert.assertEquals(1, gameFacade.find(game.getId()).getPrivateInstances().size());
+
+        /* each team own one instance */
         Assert.assertEquals(1, teamFacade.find(team.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, teamFacade.find(team2.getId()).getPrivateInstances().size());
+
+        /* each player owns one instance */
         Assert.assertEquals(1, playerFacade.find(player.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, playerFacade.find(player2.getId()).getPrivateInstances().size());
+        Assert.assertEquals(1, playerFacade.find(player21.getId()).getPrivateInstances().size());
 
         Assert.assertEquals(4, instances.size());
     }

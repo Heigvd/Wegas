@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -41,8 +40,8 @@ import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
+import com.wegas.core.persistence.InstanceOwner;
 
-////import javax.xml.bind.annotation.XmlTransient;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -91,15 +90,13 @@ import org.eclipse.persistence.config.QueryType;
     @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAMVARIABLEINSTANCES_KEY"}),
     @CacheIndex(columnNames = {"PLAYERSCOPE_ID", "VARIABLEINSTANCES_KEY"})
 })
-
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
 
  @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
  @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
  @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
  })*/
-
- /* JPA2.1 (GlassFish4) Indexes */
+/* JPA2.1 (GlassFish4) Indexes */
 @Table(indexes = {
     @Index(columnList = "gamescope_id"),
     @Index(columnList = "teamscope_id"),
@@ -108,7 +105,6 @@ import org.eclipse.persistence.config.QueryType;
     @Index(columnList = "teamvariableinstances_key"),
     @Index(columnList = "gamevariableinstances_key")
 })
-
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
@@ -241,16 +237,15 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @JsonIgnore
-    public BroadcastTarget getBroadcastTarget() {
+    public InstanceOwner getBroadcastTarget() {
         if (this.getTeam() != null) {
             return this.getTeam();
-        }
-        if (this.getPlayer() != null) {
+        } else if (this.getPlayer() != null) {
             return this.getPlayer();
-        }
-        if (this.getGame() != null) {
+        } else if (this.getGame() != null) {
             return this.getGame();
         } else {
+            //return this.getGameModel();
             return this.findDescriptor().getGameModel();
         }
     }
@@ -275,6 +270,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         } else if (this.getGame() != null) {
             return this.getGame().getChannel();
         } else if (this.gameModelScope != null) {
+            // this.getGameModel().getChannel();
             return this.getGameModelScope().getVariableDescriptor().getGameModel().getChannel();
         } else {
             // Default instance
@@ -309,7 +305,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      * @return the scope
      */
-    //@XmlTransient
     @JsonIgnore
     //@JsonView(Views.ExtendedI.class)
     public AbstractScope getScope() {
@@ -364,17 +359,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor's id through its scope
+     * Get instance descriptor's id through its scope for regular instance or
+     * the default descriptor's id for default instances
      *
-     * @return descriptor id of -1 if this is a default instance
+     * @return descriptor id
      */
     @JsonView(Views.IndexI.class)
     public Long getDescriptorId() {
-        if (this.isDefaultInstance()) {
-            return -1L;
-        } else {
-            return this.getDescriptor().getId();
-        }
+        return this.findDescriptor().getId();
     }
 
     /**
@@ -443,6 +435,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * Id of the team owning the instance
      *
      * @return team's id or null if instance is not a team instance
+     *
      * @JsonIgnore public Long getTeamScopeKey() { return teamScopeKey; }
      */
     /**
@@ -453,6 +446,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * Id of player owning the instance
      *
      * @return player's id or null if this is not a player instance
+     *
      * @JsonIgnore public Long getPlayerScopeKey() { return playerScopeKey; }
      */
     /**
@@ -515,6 +509,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     /**
      * @return the gameScopeKey
+     *
      * @JsonIgnore public Long getGameScopeKey() { return gameScopeKey; }
      */
     /**
@@ -522,6 +517,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * one
      *
      * @return instance descriptor
+     *
      * @deprecated {@link #findDescriptor()}
      */
     @JsonIgnore

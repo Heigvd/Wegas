@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.log.neo4j;
@@ -16,6 +16,7 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -89,6 +90,7 @@ public class Neo4jPlayerReply {
      * Constructs a key from several fields of the player's object.
      *
      * @param player the player data
+     *
      * @return the formed key
      */
     private static Map<String, Object> nodeKey(Player player, TYPE type) {
@@ -107,6 +109,7 @@ public class Neo4jPlayerReply {
      * @param reply              the player's answer data
      * @param choiceDescriptor   the selected choice description
      * @param questionDescriptor the selected question description
+     *
      * @return a node object
      */
     private static Map<String, Object> createJsonNode(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
@@ -120,7 +123,7 @@ public class Neo4jPlayerReply {
         object.put("choice", choiceDescriptor.getName());
         object.put("question", questionDescriptor.getName());
         object.put("result", reply.getResult().getName());
-        object.put("times", reply.getQuestionInstance().getReplies().size());
+        object.put("times", questionDescriptor.getInstance(player).getReplies(player).size());
         if (reply.getResult().getImpact() != null) {
             object.put("impact", StringEscapeUtils.escapeEcmaScript(reply.getResult().getImpact().getContent()));
         } else {
@@ -136,6 +139,7 @@ public class Neo4jPlayerReply {
      * @param player the player data
      * @param name   the variable name
      * @param value  the actual variable value
+     *
      * @return a node object
      */
     private static Map<String, Object> createJsonNode(Player player, String name, double value) {

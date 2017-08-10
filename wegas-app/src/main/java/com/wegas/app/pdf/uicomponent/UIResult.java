@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf.uicomponent;
@@ -84,7 +84,7 @@ public class UIResult extends UIComponentBase {
 
         boolean hasBeenSelected = false;
 
-        for (Reply r : result.getChoiceDescriptor().getQuestion().getInstance(defaultValues, player).getReplies()) {
+        for (Reply r : result.getChoiceDescriptor().getQuestion().getInstance(defaultValues, player).getReplies(player)) {
             if (r.getResult().getChoiceDescriptor().equals(result.getChoiceDescriptor())) {
                 hasBeenSelected = true;
             }

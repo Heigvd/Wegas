@@ -185,15 +185,15 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                      */
                     assignments: {
                         type: ARRAY,
-                        _inputex: {
-                            _type: HIDDEN,
+                        view: {
+                            type: HIDDEN,
                             value: []
                         }
                     },
                     activities: {
                         type: ARRAY,
-                        _inputex: {
-                            _type: HIDDEN,
+                        view: {
+                            type: HIDDEN,
                             value: []
                         }
                     },

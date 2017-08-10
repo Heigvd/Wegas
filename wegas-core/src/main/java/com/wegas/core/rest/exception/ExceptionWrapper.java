@@ -2,13 +2,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.exception;
 
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -17,8 +15,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
  * @deprecated
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-//@XmlRootElement
-//@XmlType(name = "RestException")
 @JsonTypeName(value = "RestException")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ExceptionWrapper {

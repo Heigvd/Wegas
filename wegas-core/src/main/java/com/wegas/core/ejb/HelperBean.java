@@ -1,3 +1,10 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
@@ -7,8 +14,6 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

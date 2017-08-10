@@ -275,7 +275,7 @@ YUI.add('wegas-widget', function(Y) {
             cssClass: {
                 type: ['null', 'string'],
                 optional: true,
-                index: 4,
+                    index: 4,
                 view: {
                     label: 'CSS class',
                     className: 'wegas-advanced-feature'
@@ -467,7 +467,7 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Open page',
                                     value: { fn: 'OpenPageAction' }
-                                },
+                                        },
                                 {
                                     label: 'Open url',
                                     value: { fn: 'OpenUrlAction' }
@@ -487,8 +487,11 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Print Variables',
                                     value: { fn: 'PrintActionPlugin' }
+                                }, {
+                                    label: "Show Inbox Overlay",
+                                    value:{fn: "ShowInboxListOnClick"}
                                 }
-                            ]
+                                        ]
                         },
                         {
                             label: 'Styles',
@@ -516,7 +519,7 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Other styles',
                                     value: { fn: 'CSSStyles' }
-                                }
+                                    }
                             ]
                         },
                         {
@@ -525,11 +528,11 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Show after',
                                     value: { fn: 'ShowAfter' }
-                                },
+                                        },
                                 {
                                     label: 'Hide after',
                                     value: { fn: 'HideAfter' }
-                                }
+                                    }
                             ]
                         },
                         {
@@ -542,13 +545,13 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Unread count',
                                     value: { fn: 'UnreadCount' }
-                                },
+                                        },
                                 {
                                     label: 'Lock',
                                     value: { fn: 'Lockable' }
                                 }
                             ]
-                        }
+                                    }
                     ]
                 },
                 index: 10,
@@ -558,13 +561,13 @@ YUI.add('wegas-widget', function(Y) {
                         fn: {
                             type: 'string'
                         },
-                        cfg: {
+                                    cfg: {
                             type: 'object'
                         }
-                    },
+                                        },
                     view: {
                         type: 'plugin'
-                    }
+                                            }
                 }
             }
         },

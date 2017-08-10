@@ -2,17 +2,19 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.security.rest;
 
 import com.wegas.core.Helper;
+import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.rest.util.Email;
 import com.wegas.core.security.aai.*;
@@ -49,6 +51,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
+import javax.inject.Inject;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -97,8 +100,12 @@ public class UserController {
     @EJB
     private TeamFacade teamFacade;
 
+    @Inject
+    private PopulatorFacade populatorFacade;
+
     /**
      * @return list of all users, sorted by names
+     *
      * @throws AuthorizationException if current user doesn't have the
      *                                permission to see other users
      */
@@ -120,7 +127,9 @@ public class UserController {
      * Get a specific user
      *
      * @param entityId user id to look for
+     *
      * @return the user matching entityId
+     *
      * @throws AuthorizationException if searched users id not the current one
      *                                or current one doesn't have the
      *                                permissions to see others users
@@ -135,13 +144,13 @@ public class UserController {
         return userFacade.find(entityId);
     }
 
-
     /**
      * Returns the e-mail addresses of all players of the given game, with more
      * relaxed security requirements than for getting the whole user profile:
      * The caller must be trainer for the given game.
      *
      * @param gameId
+     *
      * @return
      */
     @GET
@@ -168,6 +177,7 @@ public class UserController {
      * the same game.
      *
      * @param gameId
+     *
      * @return
      */
     @GET
@@ -188,6 +198,7 @@ public class UserController {
 
     /**
      * @param team
+     *
      * @return List<String>
      */
     protected List<String> collectEmails(Team team) {
@@ -215,6 +226,7 @@ public class UserController {
 
     /**
      * @param value
+     *
      * @return list of AbstractAccounts (excluding guests) matching the token
      */
     @GET
@@ -234,6 +246,7 @@ public class UserController {
      * @param value  token to search
      * @param gameId id of the game targeted account cannot be already
      *               registered in
+     *
      * @return list of account matching given search value which are not yet
      *         member of the given game
      */
@@ -250,6 +263,7 @@ public class UserController {
      * @param value     account search token
      * @param rolesList list of roles targeted account should be members (only
      *                  one membership is sufficient)
+     *
      * @return list of AbstractAccount matching the token that are member of at least
      *         one given role
      */
@@ -264,7 +278,9 @@ public class UserController {
 
     /**
      * @param values
+     *
      * @return dunno
+     *
      * @deprecated
      */
     @GET
@@ -276,7 +292,9 @@ public class UserController {
 
     /**
      * @param values
+     *
      * @return dunno
+     *
      * @deprecated
      */
     @GET
@@ -293,7 +311,9 @@ public class UserController {
      * Create a new user
      *
      * @param user new user to save
+     *
      * @return the new user
+     *
      * @throws AuthorizationException if the current user doesn't have the
      *                                permission to create users
      */
@@ -310,7 +330,9 @@ public class UserController {
      *
      * @param entityId id of user to update
      * @param entity   user to read new values from
+     *
      * @return the updated user
+     *
      * @throws AuthorizationException if current user is not the updated user or
      *                                if the current user doesn't have the
      *                                permission to edit others users
@@ -330,7 +352,9 @@ public class UserController {
      * Delete a user by account id (why not by user id ???)
      *
      * @param accountId id of account linked to the user to delete
+     *
      * @return the user that has been deleted
+     *
      * @throws AuthorizationException currentUser does not have the permission
      *                                to delete users
      */
@@ -362,7 +386,9 @@ public class UserController {
      * @param authInfo
      * @param request
      * @param response
+     *
      * @return User the current user
+     *
      * @throws WegasErrorMessage when authInfo values are incorrect
      * @throws ServletException
      * @throws IOException
@@ -410,7 +436,7 @@ public class UserController {
 
     /**
      * Logout
-     *A
+     *
      * @return 200 OK
      */
     @GET
@@ -463,6 +489,7 @@ public class UserController {
      * Look like an other user specified by its Account id. Administrators only.
      *
      * @param accountId AbstractAccount id
+     *
      * @throws AuthorizationException if current user is not an administrator
      */
     @POST
@@ -510,6 +537,7 @@ public class UserController {
      *
      * @param account
      * @param request
+     *
      * @return Response : Status Not acceptable if email is wrong or username
      *         already exist. Created otherwise.
      */
@@ -548,25 +576,25 @@ public class UserController {
                 }
             } else {
                 r = Response.status(Response.Status.BAD_REQUEST)
-                    .entity(WegasErrorMessage.error("This username is already taken", "CREATE-ACCOUNT-TAKEN-USERNAME")).build();
+                        .entity(WegasErrorMessage.error("This username is already taken", "CREATE-ACCOUNT-TAKEN-USERNAME")).build();
             }
         } else {
             r = Response.status(Response.Status.BAD_REQUEST)
-                .entity(WegasErrorMessage.error("This e-mail address is not valid", "CREATE-ACCOUNT-INVALID-EMAIL")).build();
+                    .entity(WegasErrorMessage.error("This e-mail address is not valid", "CREATE-ACCOUNT-INVALID-EMAIL")).build();
         }
         return r;
     }
-
 
     /**
      * Create a user based on an AaiAccount
      *
      * @param account
      * @param request
+     *
      * @return void
      */
     public void create(AaiAccount account,
-                       @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) {
         if (!this.checkExistingPersistentId(account.getPersistentId())) {
             User user = new User(account);
             userFacade.create(user);
@@ -577,20 +605,21 @@ public class UserController {
 
     /**
      * Logs in an AAI-authenticated user or creates a new account for him.
+     *
      * @return AaiLoginResponse telling e.g. if the user is new.
-     * Session cookies for the user's browser are also returned.
+     *         Session cookies for the user's browser are also returned.
      *
      * @param userDetails
      */
     @POST
     @Path("AaiLogin")
     public AaiLoginResponse aaiLogin(AaiUserDetails userDetails,
-                                     @Context HttpServletRequest request,
-                                     @Context HttpServletResponse response) throws ServletException, IOException {
+            @Context HttpServletRequest request,
+            @Context HttpServletResponse response) throws ServletException, IOException {
 
         // Check if the invocation is by HTTPS. @TODO: verify certificate.
         if (!request.isSecure()) {
-            return new AaiLoginResponse("AAI login request must be made by HTTPS",false,false);
+            return new AaiLoginResponse("AAI login request must be made by HTTPS", false, false);
         }
 
         if (!AaiConfigInfo.isAaiEnabled()) {
@@ -600,8 +629,8 @@ public class UserController {
 
         String server = AaiConfigInfo.getAaiServer(); // Ignored if empty !
         String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
-        if (server.length() != 0 && !getRequestingIP(request).equals(server) ||
-            secret.length() != 0 && !userDetails.getSecret().equals(secret)){
+        if (server.length() != 0 && !getRequestingIP(request).equals(server)
+                || secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
             logger.error("Real secret: " + userDetails.getSecret() + ", expected: " + secret);
             logger.error("Real remote host: " + getRequestingIP(request) + ", expected: " + server);
             Enumeration<String> headerNames = request.getHeaderNames();
@@ -624,12 +653,12 @@ public class UserController {
         }
 
         try {
-            Long accountId = (Long)subject.getPrincipal();
+            Long accountId = (Long) subject.getPrincipal();
             AaiToken token = new AaiToken(accountId, userDetails);
             token.setRememberMe(userDetails.isRememberMe());
             subject.login(token);
             accountFacade.refreshAaiAccount(userDetails);
-            return new AaiLoginResponse("Login successful",true,false);
+            return new AaiLoginResponse("Login successful", true, false);
         } catch (AuthenticationException aex) {
             logger.error("User not found, creating new account.");
             AaiAccount account = new AaiAccount(userDetails);
@@ -640,9 +669,9 @@ public class UserController {
                 token.setRememberMe(userDetails.isRememberMe());
                 subject.login(token);
             } catch (AuthenticationException aex2) {
-                return new AaiLoginResponse("New account created, could not login to it",false,true);
+                return new AaiLoginResponse("New account created, could not login to it", false, true);
             }
-            return new AaiLoginResponse("New account created, login successful",true,true);
+            return new AaiLoginResponse("New account created, login successful", true, true);
         }
     }
 
@@ -651,6 +680,7 @@ public class UserController {
      * Depending on local config, it may be necessary to check additional headers.
      *
      * @param request
+     *
      * @return the IP address
      */
     public String getRequestingIP(HttpServletRequest request) {
@@ -712,7 +742,9 @@ public class UserController {
      * deprecated ?
      *
      * @param instance
+     *
      * @return list of "Role"
+     *
      * @throws AuthorizationException when current user doesn't have edit
      *                                permission on given instance
      */
@@ -749,7 +781,14 @@ public class UserController {
         Collection<Team> teamsToReturn = new ArrayList<>();
         User currentUser = userFacade.getCurrentUser();
         final List<Player> players = currentUser.getPlayers();
+
+        List<DatedEntity> queue = populatorFacade.getQueue();
+
         for (Player p : players) {
+            if (p.getStatus().equals(Populatable.Status.WAITING)
+                    || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
+                p.setQueueSize(queue.indexOf(p) + 1);
+            }
             teamsToReturn.add(p.getTeam());
         }
         if (!teamsToReturn.isEmpty()) {
@@ -763,6 +802,7 @@ public class UserController {
      * Find a team for the current user.
      *
      * @param teamId the id of the team joined by the current user.
+     *
      * @return Response, No Content if no team found, the team otherwise
      */
     @GET
@@ -787,6 +827,7 @@ public class UserController {
 
     /**
      * @param entityId
+     *
      * @return all users having any permissions related to game or gameModel
      *         identified by entityId
      */
@@ -801,6 +842,7 @@ public class UserController {
 
     /**
      * @param entityId
+     *
      * @return all users having any permissions related to game or gameModel
      *         identified by entityId
      */
@@ -815,6 +857,7 @@ public class UserController {
      * Get role members
      *
      * @param roleId
+     *
      * @return all members with the given role
      */
     @GET
@@ -908,6 +951,7 @@ public class UserController {
      * Check if email is valid. (Only a string test)
      *
      * @param email
+     *
      * @return true if given address is valid
      */
     private boolean checkEmailString(String email) {
@@ -925,6 +969,7 @@ public class UserController {
      * Check if username is already in use
      *
      * @param username username to check
+     *
      * @return true is username is already in use
      */
     private boolean checkExistingUsername(String username) {
@@ -940,6 +985,7 @@ public class UserController {
      * Check if persistent ID is already in use
      *
      * @param persistentId to check
+     *
      * @return true is persistentId is already in use
      */
     private boolean checkExistingPersistentId(String persistentId) {

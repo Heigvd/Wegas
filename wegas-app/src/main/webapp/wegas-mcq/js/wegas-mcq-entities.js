@@ -10,7 +10,6 @@
  */
 YUI.add('wegas-mcq-entities', function (Y) {
     "use strict";
-
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
@@ -19,15 +18,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
         VERSION_ATTR_DEF,
         SELFARG,
         IDATTRDEF;
-
     VERSION_ATTR_DEF = {
         type: NUMBER,
         view: {
             type: HIDDEN
         }
     };
-
-
     IDATTRDEF = {
         type: NUMBER,
         optional: true, // The id is optional for entites that have not been persisted
@@ -110,7 +106,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     // className: 'wegas-advanced-feature',
                     indent: true
                 },
-                index: 10
+                    index: 10
             },
             description: {
                 type: NULLSTRING,
@@ -270,11 +266,18 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             replies: {
                 value: [],
-                setter: function(v) {
-                    v.sort(function(a, b) {
+                "transient": true,
+                getter: function() {
+                    var replies = [], choices, i, qDesc;
+                    qDesc = this.getDescriptor();
+                    choices = qDesc.get("items");
+                    for (i in choices) {
+                        replies = replies.concat(choices[i].getInstance().get("replies"));
+                    }
+                    replies.sort(function(a, b) {
                         return a.get("createdTime") - b.get("createdTime");
                     });
-                    return v;
+                    return replies;
                 },
                 type: ARRAY,
                 view: {
@@ -337,6 +340,17 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             value: true,
                             view: {
                                 label: 'Active from start',
+                            }
+                        },
+                        unread: {
+                            value: true,
+                            type: BOOLEAN
+                        },
+                        replies: {
+                            type: ARRAY,
+                            value: [],
+                            view: {
+                                type: HIDDEN,
                             }
                         },
                         currentResultName: {
@@ -463,7 +477,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             type: "entityarrayfieldselect",
                             returnAttr: "name",
                             field: "results",
-                            }
+                        }
                         }
                     ]
                 }
@@ -508,6 +522,17 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 label: 'Active from start'
                             }
                         },
+                        unread: {
+                            value: true,
+                            type: BOOLEAN
+                        },
+                        replies: {
+                            type: ARRAY,
+                            value: [],
+                            view: {
+                                type: HIDDEN,
+                            }
+                        },
                         currentResultName: {
                             type: NULLSTRING,
                             view: {
@@ -545,7 +570,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                     className: "wegas-advanced-feature",
                                     label:"Version"
                                 },
-                                index: -1
+                                    index: -1
                             },
                             name: {
                                 type: STRING,
@@ -615,7 +640,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 view: {
                                     label: "Impact on variables when ignored",
                                     type: SCRIPT
-                                },
+                            },
                                 index: 5,
 
                             },
@@ -725,7 +750,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     className: "wegas-advanced-feature",
                     label: "Version"
                 },
-                index: -1
+                    index: -1
             },
             label: {
                 type: STRING,
@@ -760,7 +785,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     type: HTML,
                     label: "Feedback",
                     borderTop: true
-                },
+            },
                 index: 10
             },
             impact: {
@@ -769,8 +794,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
                     content: {
                         type: STRING
-                    }
-                },
+                }
+            },
                 view: {
                     label: "Impact",
                     type: SCRIPT
@@ -797,8 +822,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
                     content: {
                         type: STRING
-                    }
-                },
+                }
+            },
                 visible: function (val, formVal) {
                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
                     return parent ? parent.parentDescriptor.get("cbx") : false;
@@ -880,6 +905,19 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 value: true,
                 type: BOOLEAN
             },
+            replies: {
+                value: [],
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("createdTime") - b.get("createdTime");
+                    });
+                    return v;
+                },
+                type: ARRAY,
+                view: {
+                    type: HIDDEN
+                }
+            },
             currentResultName: {
                 type: STRING,
                 view: {
@@ -893,8 +931,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     persistence.Reply = Y.Base.create("Reply", persistence.Entity, [], {
         getChoiceDescriptor: function () {
-            if (this.get("result")) {
-                return this.get("result").getChoiceDescriptor();
+            if (this.get("choiceName")) {
+                return Y.Wegas.Facade.Variable.cache.find("name", this.get("choiceName"));
+            }
+        },
+        getResult: function() {
+            var choice = this.getChoiceDescriptor();
+            if (choice) {
+                return Y.Array.find(choice.get("results"), Y.bind(function(item) {
+                    return item.get("name") === this.get("resultName");
+                }, this));
             }
         },
         /**
@@ -941,11 +987,35 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     label: 'Is ignored'
                 }
             },
-            result: {
+            resultName: {
+                type: STRING,
                 view: {
                     type: HIDDEN
+                }
+            },
+            choiceName: {
+                type: STRING,
+                view: {
+                    type: HIDDEN
+                }
+            },
+            answer: {
+                type: STRING,
+                view: {
+                    type: HIDDEN
+                }
+            },
+            ignorationAnswer: {
+                type: STRING,
+                view: {
+                    type: HIDDEN
+                }
                 },
-                "transient": true
+            files: {
+                type: ARRAY,
+                view: {
+                    type: HIDDEN
+                }
             },
             createdTime: {
                 "transient": true

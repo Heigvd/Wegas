@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.rest;
@@ -110,13 +110,9 @@ public class PeerReviewController {
             assertReviewReadRight(review, player);
 
             PeerReviewDescriptor prd = (PeerReviewDescriptor) authorInstance.getDescriptor();
-
             VariableDescriptor toReview = prd.getToReview();
-            // Find a player owning the author instance
-            Player author = instanceFacade.findAPlayer(authorInstance);
 
-            // And return this author istance
-            return toReview.getInstance(author);
+            return instanceFacade.findInstance(toReview, authorInstance);
         } catch (NoPlayerException ex) {
             throw WegasErrorMessage.error("Unable to find a player");
         }
@@ -141,7 +137,7 @@ public class PeerReviewController {
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         reviewFacade.submit(prdId, playerId);
-        requestFacade.commit(true); // Player scoped
+        requestFacade.commit(); // Player scoped
 
         return Response.ok().build();
     }
@@ -217,7 +213,7 @@ public class PeerReviewController {
         Player player = playerFacade.find(playerId);
         assertReviewWriteRight(reviewFacade.findReview(review.getId()), player);
         Review submitedReview = reviewFacade.submitReview(review, player);
-        requestFacade.commit(true); // Player scoped
+        requestFacade.commit(); // Player scoped
         return reviewFacade.getPeerReviewInstanceFromReview(submitedReview, player);
     }
 
@@ -317,8 +313,8 @@ public class PeerReviewController {
         for (PeerReviewInstance pri : instances) {
             try {
                 Player findAPlayer = instanceFacade.findAPlayer(pri);
-                requestFacade.commit(findAPlayer, false);
-                //requestFacade.firePlayerAction(findAPlayer);
+                requestFacade.commit(findAPlayer);
+                //requestFacade.runStateMachines(findAPlayer);
             } catch (NoPlayerException ex) {
             }
         }

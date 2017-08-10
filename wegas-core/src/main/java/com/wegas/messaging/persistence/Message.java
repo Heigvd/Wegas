@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.messaging.persistence;
@@ -12,10 +12,7 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -29,7 +26,6 @@ import java.util.ArrayList;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "Message")
 @JsonTypeName(value = "Message")
 
 @Table(indexes = {
@@ -44,6 +40,7 @@ public class Message extends NamedEntity implements DatedEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mcqvarinstrep_seq")
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *
@@ -249,7 +246,6 @@ public class Message extends NamedEntity implements DatedEntity {
     }
 
     @Override
-    //@XmlTransient
     @JsonIgnore
     public String getName() {
         return this.subject;
@@ -286,7 +282,6 @@ public class Message extends NamedEntity implements DatedEntity {
     /**
      * @return the MCQDescriptor
      */
-    //@XmlTransient
     @JsonIgnore
     public InboxInstance getInboxInstance() {
         return inboxInstance;

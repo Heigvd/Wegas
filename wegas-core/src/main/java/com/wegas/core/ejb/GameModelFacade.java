@@ -2,14 +2,14 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -24,6 +24,7 @@ import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.rest.FileController;
 import com.wegas.core.rest.HistoryController;
 import com.wegas.core.security.ejb.UserFacade;
@@ -43,6 +44,8 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.util.*;
+import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.game.Team;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -83,12 +86,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     /**
      *
      */
-    @Inject
-    private Event<ResetEvent> resetEvent;
-
-    /**
-     *
-     */
     @EJB
     private FileController fileController;
 
@@ -98,11 +95,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @EJB
     private PlayerFacade playerFacade;
 
+    @Inject
+    private TeamFacade teamFacade;
+
     @EJB
     private GameFacade gameFacade;
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     /**
      *
@@ -124,6 +127,72 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         // 
         userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
+    }
+
+    /**
+     * @param gameModel
+     * @param context
+     * @param create
+     */
+    public void propagateAndReviveDefaultInstances(GameModel gameModel, InstanceOwner context, boolean create) {
+        this.propagateDefaultInstances(gameModel, context, create);
+        this.getEntityManager().flush();
+        this.reviveInstances(gameModel, context);
+    }
+
+    /**
+     * @param gameModel
+     * @param context
+     * @param create
+     */
+    public void createAndRevivePrivateInstance(GameModel gameModel, InstanceOwner context) {
+        this.createInstances(gameModel, context);
+        this.getEntityManager().flush();
+        this.reviveInstances(gameModel, context);
+    }
+
+    public void createInstances(GameModel gameModel, InstanceOwner owner) {
+        for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
+            vd.createInstances(owner);
+        }
+    }
+
+    public void propagateDefaultInstances(GameModel gameModel, InstanceOwner context, boolean create) {
+        // Propagate default instances 
+        for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
+            vd.propagateDefaultInstance(context, create);
+        }
+
+    }
+
+    public void revivePrivateInstances(GameModel gameModel, InstanceOwner target) {
+        for (VariableInstance vi : target.getPrivateInstances()){
+            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+        }
+    }
+
+    public void reviveInstances(GameModel gameModel, InstanceOwner context) {
+        //logger.error("REVIVE INSTANCES");
+        //Helper.printWegasStackTrace(new Exception());
+
+        // revive just propagated instances
+        for (VariableInstance vi : context.getAllInstances()) {
+            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+        }
+    }
+
+    public void runStateMachines(InstanceOwner context) {
+        // Send reset envent to run state machines
+        stateMachineFacade.runStateMachines(context);
+    }
+
+    public void reviveScopeInstances(GameModel gameModel, AbstractScope aScope) {
+        aScope.propagateDefaultInstance(null, true);
+        this.getEntityManager().flush();
+        // revive just propagated instances
+        for (VariableInstance vi : (Collection<VariableInstance>) aScope.getVariableInstances().values()) {
+            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+        }
     }
 
     /**
@@ -217,13 +286,15 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
+     * Only used by GameModelFacade.addDebugGame
+     *
      * @param gameModel
      * @param game
      */
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
         getEntityManager().persist(game);
-        gameModel.propagateDefaultInstance(game, true);
+        this.propagateAndReviveDefaultInstances(gameModel, game, true); // init debug game
     }
 
     @Asynchronous
@@ -264,7 +335,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
             // Clone Pages
             // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
-
             //Clone files & history (?)
             for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
                 try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
@@ -402,10 +472,28 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
-        gameModel.propagateDefaultInstance(gameModel, false);
-        //getEntityManager().flush();
-        // Send an reset event (for the state machine and other)
-        resetEvent.fire(new ResetEvent(gameModel));
+        this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
+        this.runStateMachines(gameModel);
+    }
+
+    public void reset(final Game game) {
+        gameFacade.reset(game);
+    }
+
+    public void reset(final Team team) {
+        teamFacade.reset(team);
+    }
+
+    public void reset(final Player player) {
+        playerFacade.reset(player);
+    }
+
+    public void resetGame(final Player player) {
+        gameFacade.reset(player.getGame());
+    }
+
+    public void resetTeam(final Player player) {
+        teamFacade.reset(player.getTeam());
     }
 
     public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {

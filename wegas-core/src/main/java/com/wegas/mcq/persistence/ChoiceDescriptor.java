@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.ListUtils.Updater;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.Scripted;
@@ -37,7 +38,6 @@ import com.wegas.core.persistence.variable.Scripted;
             @Index(columnList = "question_variabledescriptor_id")
         })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@XmlType(name = "ChoiceDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
 })
@@ -49,7 +49,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     @JsonBackReference
     private QuestionDescriptor question;
@@ -103,14 +102,32 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             this.setDuration(other.getDuration());
             this.setCost(other.getCost());
 
-            this.setResults(ListUtils.mergeReplace(this.getResults(), other.getResults()));
+            this.setResults(ListUtils.mergeLists(this.getResults(), other.getResults(), new Updater() {
+                @Override
+                public void addEntity(AbstractEntity entity) {
+                    //Result newResult = (Result) entity;
+                }
 
-            // Has currentResult been removed ?
-            ChoiceInstance defaultInstance = this.getDefaultInstance();
-            if (!this.getResults().contains(defaultInstance.getCurrentResult())) {
+                @Override
+                public void removeEntity(AbstractEntity entity) {
+                    /*
+                     * Since orphanRemoval does not trigger preRemove event,
+                     * one should update bidirectional relation here in adition to Result.updateCacheOnDelete
+                     */
+                    Result resultToRemove = (Result) entity;
+                    for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
+                        ci.setCurrentResult(null);
+                    }
+                }
+            }));
+
+            // Default instance has already been merged,
+            // has its currentResult been removed ?
+            /*ChoiceInstance defaultInstance = this.getDefaultInstance();
+            
+            if (defaultInstance.getCurrentResult() != null && !this.getResults().contains(defaultInstance.getCurrentResult())) {
                 defaultInstance.setCurrentResult(null);
-            }
-
+            }*/
             // Detect new results
             List<String> labels = new ArrayList<>();
             List<String> names = new ArrayList<>();
@@ -148,6 +165,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     /**
      * @param player
      * @param resultName
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
@@ -162,7 +180,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             previousResult.removeChoiceInstance(choiceInstance);
         }
 
-        newCurrentResult.addChoiceInstance(choiceInstance);
+        if (newCurrentResult != null) {
+            newCurrentResult.addChoiceInstance(choiceInstance);
+        }
 
         choiceInstance.setCurrentResult(newCurrentResult);
     }
@@ -171,7 +191,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * Select this choice result matching given name
      * <p>
      * @param name result-to-find's name
+     *
      * @return the specified result
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Result getResultByName(String name) throws WegasNoResultException {
@@ -255,6 +277,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * has the choice been explicitely ignored ?
      *
      * @param p
+     *
      * @return true only if the choice is not selectable any longer
      */
     public boolean hasBeenIgnored(Player p) {
@@ -265,24 +288,20 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 //Check box not yet validated -> no choices have been submited, nor ignorated
                 return false;
             } else {
-                for (Reply r : qi.getReplies()) {
-                    if (r.getResult().getChoiceDescriptor().equals(this)) {
-                        // reply for this choice found
-                        return r.getIgnored();
-                    }
+                for (Reply r : this.getInstance(p).getReplies()) {
+                    // reply for this choice found
+                    return r.getIgnored();
                 }
                 return false;
             }
         } else {
-            for (Reply r : qi.getReplies()) {
-                if (r.getResult().getChoiceDescriptor().equals(this)) {
-                    // Choice is linked to a reply => not ignored
-                    return false;
-                }
+            // Choice is linked to at least a reply => not ignored
+            if (!this.getInstance(p).getReplies().isEmpty()) {
+                return false;
             }
-            // this choice has not been selected and no choices are selectable any longer
-            return !(this.getQuestion().getAllowMultipleReplies() || qi.getReplies().isEmpty());
         }
+        // this choice has not been selected and no choices are selectable any longer
+        return !(this.getQuestion().getAllowMultipleReplies() || qi.getReplies(p).isEmpty());
     }
 
     /**
@@ -305,20 +324,16 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 //Check box not yet validated -> no chocie have been selected 
                 return true;
             } else {
-                for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
-                    if (r.getResult().getChoiceDescriptor().equals(this)) {
-                        // reply for this choice found
-                        return r.getIgnored();
-                    }
+                for (Reply r : this.getInstance(p).getReplies()) {
+                    // reply for this choice found
+                    return r.getIgnored();
                 }
                 return false;
             }
         } else {
-            for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
-                if (r.getResult().getChoiceDescriptor().equals(this)) {
-                    // Choice is linked to a reply => not ignored
-                    return false;
-                }
+            if (!this.getInstance(p).getReplies().isEmpty()) {
+                // Choice is linked to a reply => not ignored
+                return false;
             }
             return true;
         }
@@ -336,8 +351,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         if (this.getQuestion().getCbx() && !this.getQuestion().getInstance(p).getValidated()) {
             return false;
         }
-        for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
-            if (!r.getIgnored() && r.getResult().getChoiceDescriptor().equals(this)) {
+        for (Reply r : this.getInstance(p).getReplies()) {
+            if (!r.getIgnored()) {
                 return true;
             }
         }
@@ -353,7 +368,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      *         exist
      */
     public boolean hasResultBeenApplied(Player p, Result result) {
-        for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
+        for (Reply r : this.getInstance(p).getReplies()) {
             if (r.getResult().equals(result)) {
                 return true;
             }
@@ -369,6 +384,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * <p>
      * @return true if one or more question reply referencing the given result
      *         exist
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public boolean hasResultBeenApplied(Player p, String resultName) throws WegasNoResultException {

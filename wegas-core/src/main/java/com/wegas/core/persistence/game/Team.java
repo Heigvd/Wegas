@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -10,7 +10,6 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-////import javax.xml.bind.annotation.XmlTransient;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -39,8 +38,10 @@ import java.util.Map;
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")})
-public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity {
+    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId"),
+    @NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
+})
+public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
 
     private static final long serialVersionUID = 1L;
 
@@ -64,6 +65,14 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
+
+    /**
+     *
+     */
+    @Enumerated(value = EnumType.STRING)
+    
+    @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
+    private Status status = Status.WAITING;
 
     /**
      *
@@ -93,19 +102,15 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "parentgame_id", nullable = false)
-    //@XmlTransient
     @JsonIgnore
-    //@XmlInverseReference(mappedBy = "teams")
     @JsonBackReference(value = "game-team")
     private Game game;
 
     /**
      *
-    @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
-    private Long gameId;
+     * @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
+     * private Long gameId;
      */
-
-
     /**
      *
      */
@@ -162,10 +167,19 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
         return players;
     }
 
+    @JsonIgnore
+    public Player getAnyLivePlayer() {
+        for (Player p : this.getPlayers()) {
+            if (p.getStatus().equals(Populatable.Status.LIVE)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
     /**
      * @param p
      */
-    //@XmlTransient
     @JsonIgnore
     public void addPlayer(Player p) {
         this.players.add(p);
@@ -246,6 +260,16 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    @Override
+    public Status getStatus() {
+        return status;
+    }
+
+    @Override
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Integer getDeclaredSize() {

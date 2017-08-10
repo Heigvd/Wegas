@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
@@ -12,8 +12,12 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -76,8 +80,8 @@ public class GameController extends AbstractGameController {
             currentPlayer = playerFacade.findLive(this.getPlayerId());
             if (currentPlayer == null) {
                 currentPlayer = playerFacade.findTestPlayer(this.getPlayerId());
-                if (currentPlayer != null && 
-                    !SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.gameModelId)){
+                if (currentPlayer != null
+                        && !SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.gameModelId)) {
                     currentPlayer = null;
                 }
             }
@@ -86,7 +90,7 @@ public class GameController extends AbstractGameController {
         if (this.gameId != null) {                                              // If a gameId is provided, we use it
             try {
                 currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,
-                    userFacade.getCurrentUser().getId());                   // Try to check if current shiro user is registered to the target game
+                        userFacade.getCurrentUser().getId());                   // Try to check if current shiro user is registered to the target game
 
             } catch (WegasNoResultException | WegasNotFoundException e) {                                     // If we still have nothing
                 errorController.dispatch("You are not registered to this game.");
@@ -103,8 +107,14 @@ public class GameController extends AbstractGameController {
 
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.dispatch("The game you are looking for could not be found.");
+        } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
+            try {
+                externalContext.dispatch("/wegas-app/jsf/error/waiting.xhtml");
+            } catch (IOException ex) {
+                Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
-            && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {
+                && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {
             try {
                 externalContext.dispatch("/wegas-app/jsf/error/accessdenied.xhtml");
             } catch (IOException ex) {

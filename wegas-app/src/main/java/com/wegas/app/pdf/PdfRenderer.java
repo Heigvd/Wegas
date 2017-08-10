@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf;
@@ -189,7 +189,12 @@ public class PdfRenderer implements Filter {
                     InputStream iStream = new StringInputStream(content);
                     tidy.parse(iStream, os);
 
-                    String toString = os.toString();
+
+                    /**
+                     * Since injecting correct url within print.xhtml.h:doctype.system leads to nothing good, let's hack 
+                     */
+                    String urlDTD = req.getRequestURL().toString().replace(req.getServletPath(), "/wegas-app/DTD/xhtml1-transitional.dtd");
+                    String toString = os.toString().replaceFirst("__DTD_URL__", urlDTD);
 
                     StringReader contentReader = new StringReader(toString);
 

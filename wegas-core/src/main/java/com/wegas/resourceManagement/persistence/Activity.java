@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -80,7 +79,6 @@ public class Activity extends AbstractAssignement {
      */
     @ManyToOne(optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "wrequirement_id", nullable = true)
-    //@XmlTransient
     @JsonIgnore
     private WRequirement requirement;
 
@@ -217,11 +215,6 @@ public class Activity extends AbstractAssignement {
         } else {
             return deserialisedRequirementName;
         }
-    }
-
-    @JsonIgnore
-    public String getDeserialisedRequirementName() {
-        return deserialisedRequirementName;
     }
 
     /**

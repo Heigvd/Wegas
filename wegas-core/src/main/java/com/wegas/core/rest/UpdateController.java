@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -537,7 +537,8 @@ public class UpdateController {
             DebugTeam dt = new DebugTeam();
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
-            g.getGameModel().propagateDefaultInstance(dt, true);
+            gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true); // restart missing debugTeam
+            gameModelFacade.runStateMachines(dt);
             this.getEntityManager().flush();
             if (++counter == 25) {
                 break;

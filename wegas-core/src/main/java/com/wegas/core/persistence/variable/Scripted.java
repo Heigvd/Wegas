@@ -1,8 +1,8 @@
 /*
  * Wegas
  * http://wegas.albasim.ch
-  
- * Copyright (c) 2014 School of Business and Engineering Vaud, Comem
+ *
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;

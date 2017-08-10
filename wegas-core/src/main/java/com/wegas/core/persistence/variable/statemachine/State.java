@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-//import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
@@ -37,12 +36,10 @@ import java.util.List;
             @Index(columnList = "statemachine_id")
         }
 )
-//@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
-
 //@OptimisticLocking(cascade = true)
 public class State extends AbstractEntity implements Searchable, Scripted {
 
@@ -199,12 +196,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      */
     @JsonIgnore
     public List<Transition> getSortedTransitions() {
-        Collections.sort(this.transitions, new Comparator<Transition>() {
-            @Override
-            public int compare(Transition t1, Transition t2) {
-                return t1.getIndex() - t2.getIndex();
-            }
-        });
+        Collections.sort(this.transitions, new ComparatorImpl());
         return this.transitions;
     }
 
@@ -240,7 +232,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
             this.setVersion(newState.getVersion());
             this.setOnEnterEvent(newState.getOnEnterEvent());
             this.setEditorPosition(newState.getEditorPosition());
-            this.setTransitions(ListUtils.mergeReplace(this.getTransitions(), newState.getTransitions()));
+            this.setTransitions(ListUtils.mergeLists(this.getTransitions(), newState.getTransitions()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
@@ -249,5 +241,19 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     @Override
     public String toString() {
         return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
+    }
+
+    /**
+     * Compare transition by index
+     */
+    private static class ComparatorImpl implements Comparator<Transition> {
+
+        public ComparatorImpl() {
+        }
+
+        @Override
+        public int compare(Transition t1, Transition t2) {
+            return t1.getIndex() - t2.getIndex();
+        }
     }
 }

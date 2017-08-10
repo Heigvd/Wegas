@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence.evaluation;
@@ -11,12 +11,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
-import java.util.Date;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -35,10 +33,8 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(value = TextEvaluationInstance.class)
-    ,
-    @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class)
-    ,
+    @JsonSubTypes.Type(value = TextEvaluationInstance.class),
+    @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
 public abstract class EvaluationInstance extends AbstractEntity {
@@ -141,7 +137,7 @@ public abstract class EvaluationInstance extends AbstractEntity {
     }
 
     /**
-    @Override
+     * @Override
      * @return index
      */
     public int getIndex() {

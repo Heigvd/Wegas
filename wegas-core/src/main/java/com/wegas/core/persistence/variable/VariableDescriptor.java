@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -51,9 +51,11 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @param <T>
+ *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
@@ -64,26 +66,21 @@ import org.slf4j.LoggerFactory;
 // @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
 // @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-    @Index(columnList = "defaultinstance_variableinstance_id")
-    ,
-    @Index(columnList = "items_variabledescriptor_id")
-    ,
-    @Index(columnList = "rootgamemodel_id")
-    ,
+    @Index(columnList = "defaultinstance_variableinstance_id"),
+    @Index(columnList = "items_variabledescriptor_id"),
+    @Index(columnList = "rootgamemodel_id"),
     @Index(columnList = "dtype")
 })
 @NamedQueries({
     @NamedQuery(
             name = "VariableDescriptor.findByRootGameModelId",
             query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
-    )
-    ,
+    ),
     @NamedQuery(
             name = "VariableDescriptor.findByGameModelIdAndName",
             query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)
-                ,
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
     )
 })
@@ -91,34 +88,20 @@ import org.slf4j.LoggerFactory;
     @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class)
-    ,
+    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
+    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
+    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
+    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
+    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
+    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
+    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
+    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
+    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
+    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 @MappedSuperclass
@@ -130,11 +113,11 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * HACK
-     *
+     * <p>
      * Injecting VariableDescriptorFacade here don't bring business logic within
      * data because the very only functionality that is being used here aims to
      * replace some slow JPA mechanisms
-     *
+     * <p>
      */
     @JsonIgnore
     @Transient
@@ -242,7 +225,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //    @JoinColumn(referencedColumnName = "variabledescriptor_id")},
     //        inverseJoinColumns = {
     //    @JoinColumn(referencedColumnName = "tag_id")})
-    //@XmlTransient
     //private List<Tag> tags;
     /**
      *
@@ -386,6 +368,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * Fetch variable instance for the given player
      *
      * @param player
+     *
      * @return variableInstance belonging to the player
      */
     public T getInstance(Player player) {
@@ -404,6 +387,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @param defaultInstance indicate whether one wants the default instance r
      *                        the one belonging to player
      * @param player          the player
+     *
      * @return either the default instance of the one belonging to player
      */
     @JsonIgnore
@@ -458,6 +442,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param scope the scope to set
+     *
      * @fixme here we cannot use managed references since this.class is
      * abstract.
      */
@@ -529,7 +514,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *                context. It may be an instance of GameModel, Game, Team,
      *                or Player
      */
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         int sFlag = 0;
         if (scope instanceof GameModelScope) { // gms
             sFlag = 4;
@@ -550,13 +535,22 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
     }
 
+    public void createInstances(InstanceOwner instanceOwner) {
+        if ((scope instanceof GameModelScope && instanceOwner instanceof GameModel)
+                || (scope instanceof GameScope && instanceOwner instanceof Game)
+                || (scope instanceof TeamScope && instanceOwner instanceof Team)
+                || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
+            scope.propagateDefaultInstance(instanceOwner, true);
+        }
+    }
+
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        //logger.error("CHANNEL TOKEN: " + Helper.getAudienceToken(this.getGameModel()));
-        map.put(Helper.getAudienceToken(this.getGameModel()), entities);
+        //logger.error("CHANNEL TOKEN: " + this.getGameModel().getChannel());
+        map.put(this.getGameModel().getChannel(), entities);
         return map;
     }
 
@@ -565,6 +559,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * all the given criterias
      *
      * @param criterias
+     *
      * @return return true if there is a match
      */
     @Override

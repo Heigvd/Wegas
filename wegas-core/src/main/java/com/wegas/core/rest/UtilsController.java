@@ -1,8 +1,16 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 package com.wegas.core.rest;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
 import com.wegas.core.Helper;
+import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.HelperBean;
 import fish.payara.micro.cdi.Outbound;
@@ -37,6 +45,9 @@ public class UtilsController {
 
     @Inject
     private HazelcastInstance hzInstance;
+
+    @Inject
+    private PopulatorScheduler populatorScheduler;
 
     @DELETE
     @Path("EmCache")
@@ -132,4 +143,29 @@ public class UtilsController {
         return sb.toString();
     }
 
+
+    @GET
+    @Path("StartPopulating")
+    @RequiresRoles("Administrator")
+    public String startPopulating(){
+        populatorScheduler.startAll();
+        return "STARTED";
+    }
+
+
+    @GET
+    @Path("StopPopulating")
+    @RequiresRoles("Administrator")
+    public String stopPopulating(){
+        populatorScheduler.stopAll();
+        return "STOPPED";
+    }
+
+    @GET
+    @Path("AbortPopulating")
+    @RequiresRoles("Administrator")
+    public String abortPopulating(){
+        populatorScheduler.abortAll();
+        return "STOPPED";
+    }
 }

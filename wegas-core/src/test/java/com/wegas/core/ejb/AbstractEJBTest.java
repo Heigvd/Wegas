@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -108,6 +108,8 @@ public class AbstractEJBTest {
         User user21 = new User();
         userFacade.create(user21);
         player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
+
+        RequestFacade.lookup().setPlayer(player.getId());
     }
 
     @After

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence.evaluation;
@@ -82,7 +82,7 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     public void merge(AbstractEntity a) {
         if (a instanceof EvaluationDescriptorContainer) {
             EvaluationDescriptorContainer other = (EvaluationDescriptorContainer) a;
-            this.setEvaluations(ListUtils.mergeReplace(this.getEvaluations(), other.getEvaluations()));
+            this.setEvaluations(ListUtils.mergeLists(this.getEvaluations(), other.getEvaluations()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

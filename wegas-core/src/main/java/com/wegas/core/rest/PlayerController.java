@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -62,6 +62,7 @@ public class PlayerController {
 
     /**
      * @param playerId
+     *
      * @return the player matching given id
      */
     @GET
@@ -76,6 +77,7 @@ public class PlayerController {
      * Returns ALL players in the server ....
      *
      * @param gameId
+     *
      * @return all players
      */
     @GET
@@ -87,6 +89,7 @@ public class PlayerController {
 
     /**
      * @param teamId
+     *
      * @return HTTP 201 with the team or 4xx if something went wrong
      */
     @POST
@@ -106,8 +109,10 @@ public class PlayerController {
                     Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
 
                     if (existingPlayer == null) {
-                        playerFacade.create(teamToJoin, currentUser);
-
+                        gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId());
+                        // reload up to date team
+                        teamFacade.detach(teamToJoin);
+                        teamToJoin = teamFacade.find(teamToJoin.getId());
                         return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
                     }
                 }
@@ -125,6 +130,7 @@ public class PlayerController {
      *
      * @param playerId id of player to update
      * @param entity
+     *
      * @return up to date player
      */
     @PUT
@@ -136,6 +142,7 @@ public class PlayerController {
 
     /**
      * @param playerId
+     *
      * @return just deleted player
      */
     @DELETE
@@ -160,6 +167,7 @@ public class PlayerController {
      * Resets all the variables of a given player
      *
      * @param playerId playerId
+     *
      * @return HTTP 200 OK
      */
     @GET

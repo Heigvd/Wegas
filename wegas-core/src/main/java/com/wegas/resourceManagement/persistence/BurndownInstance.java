@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -73,7 +73,6 @@ public class BurndownInstance extends VariableInstance {
         if (a instanceof BurndownInstance) {
             BurndownInstance other = (BurndownInstance) a;
             super.merge(a);
-            //this.setIterations(ListUtils.mergeReplace(this.getIterations(), other.getIterations()));
             this.setIterations(ListUtils.mergeLists(this.getIterations(), other.getIterations()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");

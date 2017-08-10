@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.ejb;
@@ -259,8 +259,7 @@ public class ReviewingFacade {
             for (Iterator<PeerReviewInstance> it = pris.iterator(); it.hasNext();) {
                 PeerReviewInstance pri = it.next();
                 try {
-                    Player findAPlayer = variableInstanceFacade.findAPlayer(pri);
-                    VariableInstance toReviewInstance = toReview.getInstance(findAPlayer);
+                    VariableInstance toReviewInstance = variableInstanceFacade.findInstance(toReview, pri);
                     boolean reject = false;
 
                     if (pri.getReviewState() == PeerReviewDescriptor.ReviewingState.COMPLETED

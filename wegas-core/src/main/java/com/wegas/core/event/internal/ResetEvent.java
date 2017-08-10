@@ -2,16 +2,16 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.event.internal;
 
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.game.Player;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -31,8 +31,9 @@ import java.util.List;
 public class ResetEvent implements Serializable {
 
     private static final long serialVersionUID = -837744356172473317L;
+    private boolean clear;
 
-    private BroadcastTarget context;
+    private InstanceOwner context;
 
     public ResetEvent() {
     }
@@ -40,16 +41,18 @@ public class ResetEvent implements Serializable {
     /**
      *
      * @param context
+     * @param clear
      */
-    public ResetEvent(BroadcastTarget context) {
+    public ResetEvent(InstanceOwner context, boolean clear) {
         this.context = context;
+        this.clear = clear;
     }
 
     /**
      *
      * @return this reset event context
      */
-    public BroadcastTarget getContext() {
+    public InstanceOwner getContext() {
         return context;
     }
 
@@ -63,5 +66,13 @@ public class ResetEvent implements Serializable {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    public boolean isClear() {
+        return clear;
+    }
+
+    public void setClear(boolean clear) {
+        this.clear = clear;
     }
 }

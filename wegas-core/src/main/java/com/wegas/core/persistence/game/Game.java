@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -13,11 +13,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.jparealm.GameAccount;
@@ -27,6 +25,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import javax.validation.constraints.Pattern;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -42,14 +41,12 @@ import javax.validation.constraints.Pattern;
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC")
-    ,
-    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
-    ,
+    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game extends NamedEntity implements Broadcastable, BroadcastTarget, DatedEntity {
+public class Game extends NamedEntity implements Broadcastable, InstanceOwner, DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -94,7 +91,6 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     private User createdBy;
 
@@ -102,7 +98,6 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    //@XmlTransient
     @JsonIgnore
     private Set<GameAccount> gameAccounts;
 
@@ -236,7 +231,6 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
     /**
      * @param t
      */
-    //@XmlTransient
     @JsonIgnore
     public void addTeam(Team t) {
         this.getTeams().add(t);

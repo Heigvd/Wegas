@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -84,7 +84,7 @@ public class StateMachineController {
 
         checkPermissions(player.getGame().getId(), playerId);
         final StateMachineInstance stateMachineInstance = stateMachineFacade.doTransition(gameModelId, playerId, stateMachineDescriptorId, transitionId);
-        requestFacade.commit(player, true);
+        requestFacade.commit(player);
         return stateMachineInstance;
     }
 

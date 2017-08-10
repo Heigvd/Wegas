@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.scope;
@@ -20,13 +20,13 @@ import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "PlayerScope")
 public class PlayerScope extends AbstractScope<Player> {
 
     private static final long serialVersionUID = 1L;
@@ -38,7 +38,6 @@ public class PlayerScope extends AbstractScope<Player> {
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "playerScope")
     @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
     @MapKeyJoinColumn(name = "variableinstances_key", referencedColumnName = "id")
-    //@XmlTransient
     @JsonIgnore
     private Map<Player, VariableInstance> variableInstances = new HashMap<>();
      */
@@ -52,9 +51,11 @@ public class PlayerScope extends AbstractScope<Player> {
     }
 
     /**
+     * Get the instances which belongs to the player
      *
-     * @param player
-     * @return
+     * @param player instance owner
+     *
+     * @return the player's instance
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
@@ -102,7 +103,7 @@ public class PlayerScope extends AbstractScope<Player> {
     }
 
     @Override
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         if (context instanceof Player) {
             propagate((Player) context, create);
         } else if (context instanceof Team) {

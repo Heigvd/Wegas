@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -59,7 +59,7 @@ public class DelayedScriptEventFacade {
             // fire Script (ie base mechanism and static server script eval)
             scriptEventFacade.fire(p, payload.getEventName());
             // force FSM evaluation and make sur EntityManager has flush
-            requestFacade.commit(p, true);
+            requestFacade.commit(p);
 
             rm.markManagermentStartTime();
             /*

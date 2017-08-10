@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -21,15 +21,10 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.Column;
 
-////import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-//@XmlRootElement
-//@XmlType(name = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;
@@ -137,7 +132,6 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @see StateMachineDescriptor#getStates
      */
     @Override
-    //@XmlTransient
     @JsonIgnore
     public Map<Long, State> getStates() {
         return super.getStates();
@@ -158,20 +152,21 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         if (a instanceof TriggerDescriptor) {
             TriggerDescriptor entity = (TriggerDescriptor) a;
 
-            entity.buildStateMachine();
             this.setOneShot(entity.oneShot);
             this.setDisableSelf(entity.disableSelf);
             this.setPostTriggerEvent(entity.postTriggerEvent);
             this.setTriggerEvent(entity.triggerEvent);
 
             // HACK Restore Version Number
-            Long initialStateVersion = this.getStates().get(1L).getVersion();
-            Long finalStateVersion = this.getStates().get(2L).getVersion();
+            //Long initialStateVersion = this.getStates().get(1L).getVersion();
+            //Long finalStateVersion = this.getStates().get(2L).getVersion();
 
+            entity.setStates(this.getStates());
             super.merge(entity);
 
-            this.getStates().get(1L).setVersion(initialStateVersion);
-            this.getStates().get(2L).setVersion(finalStateVersion);
+            entity.buildStateMachine();
+            //this.getStates().get(1L).setVersion(initialStateVersion);
+            //this.getStates().get(2L).setVersion(finalStateVersion);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
