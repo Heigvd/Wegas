@@ -562,7 +562,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         showForm: function(state) {
             var form;
             state = state || this.get(ENTITY);
-            Plugin.EditEntityAction.hideRightTabs();
+            Plugin.EditEntityAction.destroyEditionTab();
             this.editionHighlight();
 
             form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
@@ -753,6 +753,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 fsmViewer.showMessage("info", "Unable to delete initial state");
                 return;
             }
+            if (this.get("boundingBox").hasClass("wegas-editing")) { //Currently editing
+                Plugin.EditEntityAction.destroyEditionTab();
+            }
             Y.Array.each(this.transitionsTarget.slice(0), function(t) {
                 t.disconnect();
             });
@@ -792,7 +795,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         },
         showForm: function(transition) {
             var form;
-            Plugin.EditEntityAction.hideRightTabs();
+            Plugin.EditEntityAction.destroyEditionTab();
             this.editionHighlight();
 
             transition = transition || this.get(ENTITY);
@@ -872,7 +875,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 con = this.connection,
                 transitions;
             if (Y.one(con.getLabelOverlay().getElement()).hasClass("wegas-editing")) { //Currently editing
-                Plugin.EditEntityAction.hideRightTabs();
+                Plugin.EditEntityAction.destroyEditionTab();
             }
             this.connection = null;
             jp.detach(con, {

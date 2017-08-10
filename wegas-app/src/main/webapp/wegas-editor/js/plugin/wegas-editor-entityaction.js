@@ -100,7 +100,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
             return new Promise(function(resolve) {
                 var doShow = function(entity, dataSource) {
-                    //EditEntityAction.hideRightTabs();
+                    //EditEntityAction.destroyEditionTab();
                     var form = EditEntityAction.showEditForm(entity, function(data) { // Display the edit form
                         // entity.setAttrs(cfg);
                         dataSource.cache.put(data, {
@@ -180,7 +180,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     //if (form.toolbar.item(0)) { form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px"); }
                     resolve(form);
                 };
-                //EditEntityAction.hideRightTabs();                                   // Hide all active tabs
+                //EditEntityAction.destroyEditionTab();                                   // Hide all active tabs
                 EditEntityAction.getEditionTab();                                   // Create the edition tab
                 // (and the left panel won't pop in and out)
 
@@ -319,6 +319,9 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             Y.all(".wegas-editing").removeClass("wegas-editing");               // @Hack for state machine edition tab
             Y.Widget.getByNode(".wegas-layout-right > .wegas-widget").unplug(Plugin.WidgetToolbar);
         },
+        destroyEditionTab(){
+            Wegas.TabView.destroyTab(EDIT_TAB_LABEL);
+        },
         /**
          *
          * @param {type} level
@@ -361,7 +364,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
      */
     NewEntityAction = Y.Base.create("NewEntityAction", EditEntityAction, [], {
         showAddForm: function(entity) {
-            EditEntityAction.hideRightTabs();                                   // Hide all active tabs
+          //  EditEntityAction.destroyEditionTab();                                   // Hide all active tabs
             EditEntityAction.showEditForm(entity, Y.bind(function(newVal) {
                 var dataSource = this.get(DATASOURCE);
                 this.showOverlay();
@@ -470,7 +473,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
                     });
 
-                    EditEntityAction.hideRightTabs();                           // Hide all active tabs
+                   // EditEntityAction.destroyEditionTab();                           // Hide all active tabs
                     form = EditEntityAction.showEditForm(child, Y.bind(function(newVal) {
                         var assoc = this.associateDescriptor(container),
                             oldVal;
@@ -505,7 +508,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     newEntity = Wegas.Editable.revive({
                         "@class": this.get("targetClass")
                     });
-                    EditEntityAction.hideRightTabs();                           // Hide all active tabs
+                   // EditEntityAction.destroyEditionTab();                           // Hide all active tabs
                     EditEntityAction.showEditForm(newEntity, Y.bind(function(newVal) {
                         var assoc = this.associateDescriptor(container);
                         newEntity.setAttrs(newVal);
@@ -513,7 +516,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         dataSource.cache.put(assoc.descriptor.toObject(), {
                             on: {
                                 success: Y.bind(function(e) {
-                                    EditEntityAction.hideRightTabs();
+                                  //  EditEntityAction.destroyEditionTab();
                                     if (this.get("showEditionAfterRequest")) {
                                         var button = Wegas.Widget.create(e.response.entity.get(this.get("attributeKey")).slice(-1)[0].getMenuCfg({
                                             dataSource: dataSource,
@@ -546,7 +549,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             on: {
                                 success: Y.bind(function() {
                                     this.hideOverlay();
-                                    EditEntityAction.hideRightTabs();
+                                    EditEntityAction.destroyEditionTab();
                                 }, this),
                                 failure: Y.bind(this.hideOverlay, this)
                             }
@@ -568,7 +571,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
                     dataSource.cache.put(assoc.descriptor.toObject(), {
                         on: {
-                            success: EditEntityAction.hideRightTabs,
+                            success: EditEntityAction.destroyEditionTab,
                             failure: Y.bind(this.hideOverlay, this)
                         }
                     });
@@ -600,7 +603,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
      */
     AddEntityChildAction = Y.Base.create("AddEntityChildAction", NewEntityAction, [], {
         showAddForm: function(entity, parentData) {
-            EditEntityAction.hideRightTabs();                                   // Hide all active tabs
+            //EditEntityAction.destroyEditionTab();                                   // Hide all active tabs
             EditEntityAction.showEditForm(entity, Y.bind(function(newVal) {
                 //@Hack since the server return the parent list,
                 // and we have no way to identify the newly created descriptor
@@ -721,21 +724,21 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 this.hideOverlay();
                                 /*if (EditEntityAction.currentEntity) {
                                  if (EditEntityAction.currentEntity.get(ID) === entity.get(ID)) {
-                                 EditEntityAction.hideRightTabs();
+                                 EditEntityAction.destroyEditionTab();
 
                                  } else if (entity.get("@class") === "ListDescriptor") {
                                  for (i = 0; i < entity.get("items").length; i += 1) {
                                  // Who cares about deeper levels ? TODO...
                                  if (EditEntityAction.currentEntity.get(ID) ===
                                  entity.get("items")[i].get(ID)) {
-                                 EditEntityAction.hideRightTabs();
+                                 EditEntityAction.destroyEditionTab();
                                  }
                                  }
                                  } else if (entity.get("@class") === "FSMDescriptor") {
                                  // Before closing the tabs, be sure the Transition/State belongs to the destroyed FSM
                                  if (EditEntityAction.currentEntity.get("@class") === "Transition" ||
                                  EditEntityAction.currentEntity.get("@class") === "State") {
-                                 EditEntityAction.hideRightTabs();
+                                 EditEntityAction.destroyEditionTab();
                                  }
                                  }
                                  }*/
@@ -862,7 +865,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     if (/*entity instanceof persistence.FSMDescriptor ||*/
                         entity instanceof persistence.State ||
                         entity instanceof persistence.Transition) {
-                        EditEntityAction.hideRightTabs();
+                        EditEntityAction.destroyEditionTab();
                     }
                 }
             });                                                            // Removable tab
@@ -922,7 +925,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 on: {
                     click: function() {
                         target.unplug(Plugin.Toolbar);
-                        Y.Plugin.EditEntityAction.hideRightTabs();
+                        Y.Plugin.EditEntityAction.destroyEditionTab();
                     }
                 }
             });                                                                 // Add close button

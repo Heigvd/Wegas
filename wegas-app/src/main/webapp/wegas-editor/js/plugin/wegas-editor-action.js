@@ -516,7 +516,7 @@ YUI.add('wegas-editor-action', function(Y) {
                                 //.showMessage("successPopup", "Game left", 2000)  // Popup
                                 .showMessage("success", "Game left");            // toolbar
 
-                            Y.Plugin.EditEntityAction.hideRightTabs();              // Empty right tab on join
+                            Y.Plugin.EditEntityAction.destroyEditionTab();              // Empty right tab on join
                         }, this)
                     }
                 });
@@ -582,7 +582,7 @@ YUI.add('wegas-editor-action', function(Y) {
                 }
             }
             if (removeTab) {
-                Y.Plugin.EditEntityAction.hideRightTabs();
+                Y.Plugin.EditEntityAction.destroyEditionTab();
             }
         },
         onDescriptorDelete: function(e) {

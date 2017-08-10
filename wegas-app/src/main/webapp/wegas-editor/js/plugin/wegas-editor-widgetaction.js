@@ -62,7 +62,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
          * @private
          */
         execute: function () {
-            Plugin.EditEntityAction.hideRightTabs();
+            Plugin.EditEntityAction.destroyEditionTab();
             var widget = this.get('widget'),
                 showForm,
                 PAGE_META = '@pageMeta',
@@ -260,7 +260,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                 var targetWidget = this.get('widget'),
                     root = targetWidget.get('root');
                 if (Plugin.EditEntityAction.currentEntity === targetWidget) {
-                    Plugin.EditEntityAction.hideRightTabs();
+                    Plugin.EditEntityAction.destroyEditionTab();
                 }
                 targetWidget.destroy();
                 this.get('dataSource').cache.patch(root.toObject());

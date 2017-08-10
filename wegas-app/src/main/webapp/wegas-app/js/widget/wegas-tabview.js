@@ -188,6 +188,16 @@ YUI.add('wegas-tabview', function(Y) {
             }
             return existingTab;
         },
+        /**
+         * Destroy and remove given tab id
+         * @param {string} id tab to destroy
+         */
+        destroyTab: function(id) {
+            if (TabView.tabs[id] && typeof TabView.tabs[id].remove === 'function') {
+                TabView.tabs[id].remove().destroy();
+                TabView.tabs[id] = undefined;
+            }
+        },
         findTab: function(id) {
             return TabView.tabs[id];
         },
