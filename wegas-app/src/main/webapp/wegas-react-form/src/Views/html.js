@@ -136,10 +136,14 @@ const TINY_CONFIG = {
  */
 function toTinyMCE(content) {
     let updated = content;
+    if (updated === null) {
+        updated = undefined;
+    }
     if (updated && Wegas.Facade.File) {
         updated = updated.replace(
             new RegExp('data-file="([^"]*)"', 'gi'),
-            `src="${Wegas.Facade.File.getPath()}$1" href="${Wegas.Facade.File.getPath()}$1"`
+            `src="${Wegas.Facade.File.getPath()}$1"
+             href="${Wegas.Facade.File.getPath()}$1"`
         ); // @hack Place both href and src so it
         // will work for both <a> and <img>
         // elements
