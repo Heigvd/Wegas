@@ -102,7 +102,7 @@ public class EMailFacade {
      * @param body
      */
     public void send(Player p, String from, String subject, String body) throws MessagingException {
-        this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain", false);
+        this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain; charset=utf-8", false);
     }
 
     /**
