@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.unit.pmg;
@@ -99,7 +99,9 @@ abstract public class GameModelTest {
     protected GameModel createGameModelFromFile(String path, String injectScript) throws IOException {
         String pmg = TestHelper.readFile(path);
         GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
-        gameModel.getScriptLibrary().put("injectedScript", new GameModelContent("JavaScript", injectScript));
+        GameModelContent gmc = new GameModelContent("injectedScript", injectScript, "JavaScript");
+        gmc.setScriptlibrary_GameModel(gameModel);
+        gameModel.getScriptLibraryList().add(gmc);
         System.out.println("Create game model : " + gameModel.getName());
         gmFacade.createWithDebugGame(gameModel);
         Assert.assertNotNull(gameModel.getId()); //persisted

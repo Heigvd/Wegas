@@ -472,6 +472,10 @@ YUI.add("wegas-widget", function(Y) {
                                                 type: BUTTON,
                                                 label: "Print Variables",
                                                 data: "PrintActionPlugin"
+                                            }, {
+                                                type: BUTTON,
+                                                label: "Show Inbox Overlay",
+                                                data: "ShowInboxListOnClick"
                                             }
                                         ]
                                     }

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -45,6 +45,7 @@ import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.util.*;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.game.Team;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -93,6 +94,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     @EJB
     private PlayerFacade playerFacade;
+
+    @Inject
+    private TeamFacade teamFacade;
 
     @EJB
     private GameFacade gameFacade;
@@ -470,6 +474,26 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
         this.runStateMachines(gameModel);
+    }
+
+    public void reset(final Game game) {
+        gameFacade.reset(game);
+    }
+
+    public void reset(final Team team) {
+        teamFacade.reset(team);
+    }
+
+    public void reset(final Player player) {
+        playerFacade.reset(player);
+    }
+
+    public void resetGame(final Player player) {
+        gameFacade.reset(player.getGame());
+    }
+
+    public void resetTeam(final Player player) {
+        teamFacade.reset(player.getTeam());
     }
 
     public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {

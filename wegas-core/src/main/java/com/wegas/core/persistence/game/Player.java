@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -14,7 +14,6 @@ import com.wegas.core.security.persistence.User;
 import java.util.Date;
 import java.util.Objects;
 import javax.persistence.*;
-//////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -34,18 +33,14 @@ import com.wegas.core.persistence.InstanceOwner;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId")
-    ,
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId")
-    ,
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId")
-    ,
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
+    @NamedQuery(name = "DEPRECATED_Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId"),
     @NamedQuery(name = "Player.findToPopulate", query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
-    @Index(columnList = "user_id")
-    ,
+    @Index(columnList = "user_id"),
     @Index(columnList = "parentteam_id")
 })
 public class Player extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
@@ -88,7 +83,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JsonBackReference(value = "player-team")
     @JoinColumn(name = "parentteam_id", nullable = false)
-    //@XmlInverseReference(mappedBy = "players")
     private Team team;
 
     @Transient
@@ -101,6 +95,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      *
      */
     @Enumerated(value = EnumType.STRING)
+    
     @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
     private Status status = Status.WAITING;
 
@@ -239,7 +234,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      *
      * @return id of gameModel the player is linked to
      */
-    //@XmlTransient
     @JsonIgnore
     public long getGameModelId() {
         return this.getTeam().getGame().getGameModel().getId();
@@ -258,7 +252,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      *
      * @return id of the game the player is linked to
      */
-    //@XmlTransient
     @JsonIgnore
     public long getGameId() {
         return this.getTeam().getGame().getId();

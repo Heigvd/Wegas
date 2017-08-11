@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.scope;
@@ -26,7 +26,6 @@ import com.wegas.core.persistence.InstanceOwner;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "TeamScope")
 public class TeamScope extends AbstractScope<Team> {
 
     private static final long serialVersionUID = 1L;
@@ -41,7 +40,6 @@ public class TeamScope extends AbstractScope<Team> {
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "teamScope")
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     @MapKeyJoinColumn(name = "teamvariableinstances_key", referencedColumnName = "id")
-    //@XmlTransient
     @JsonIgnore
     private Map<Team, VariableInstance> teamVariableInstances = new HashMap<>();
      */

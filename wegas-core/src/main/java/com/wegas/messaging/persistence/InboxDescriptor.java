@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.messaging.persistence;
@@ -15,14 +15,12 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
-//import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "InboxDescriptor")
 public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
 
     private static final long serialVersionUID = 1L;

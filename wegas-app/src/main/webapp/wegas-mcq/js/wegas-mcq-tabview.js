@@ -94,6 +94,26 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 nbReplies = questionInstance.get("replies").length,
                 highlightUnanswered = (this.get("highlightUnanswered") && (cbxType ? !validatedCbx : (nbReplies === 0)));
 
+            /*
+             * The followinbg seciton may replace  the next one
+             */
+            /*
+             if (nbReplies > 0 || validatedCbx) {
+             label = ""; // make sure the label is no null
+             if (question.get("allowMultipleReplies")) {
+             if (cbxType) {
+             label = Wegas.I18n.t('mcq.answered').capitalize();
+             } else {
+             label = questionInstance.get("replies").length + "x";
+             }
+             } else { // Find the last selected replies
+             choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
+             label = choiceDescriptor.get("title") || "";
+             label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
+             }
+             }
+             */
+
             if (cbxType) {
                 if (validatedCbx)
                     label = ""; // Dummy status string
