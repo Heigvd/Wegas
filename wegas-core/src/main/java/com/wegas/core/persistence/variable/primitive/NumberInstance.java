@@ -14,7 +14,7 @@ import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NumberListener;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;

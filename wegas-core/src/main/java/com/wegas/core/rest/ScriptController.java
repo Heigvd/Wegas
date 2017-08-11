@@ -10,7 +10,6 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;

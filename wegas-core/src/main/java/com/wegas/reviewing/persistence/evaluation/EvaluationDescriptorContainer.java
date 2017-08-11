@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import org.slf4j.Logger;

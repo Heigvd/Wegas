@@ -54,7 +54,7 @@ public abstract class NamedEntity extends AbstractEntity {
     @Override
     public boolean equals(Object entity) {
         if (entity instanceof NamedEntity) {
-            return this.getName().equals(((NamedEntity) entity).getName()) && super.equals(entity);
+            return Objects.equals(this.getName(), ((NamedEntity) entity).getName()) && super.equals(entity);
         } else {
             return false;
         }

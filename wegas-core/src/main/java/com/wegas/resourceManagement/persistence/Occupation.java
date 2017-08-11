@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import java.io.Serializable;
 
 /**

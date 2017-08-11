@@ -11,9 +11,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.merge.annotations.WegasEntity;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.merge.utils.WegasCallback;
+import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.rest.util.Views;
 
 import javax.persistence.Entity;

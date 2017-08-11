@@ -26,7 +26,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import javax.persistence.Index;
 
 /**
@@ -130,11 +130,6 @@ public class WRequirement extends AbstractEntity {
     @Override
     public Long getId() {
         return id;
-    }
-
-    @Override
-    public String getSafeId() {
-        return this.getName();
     }
 
     /**

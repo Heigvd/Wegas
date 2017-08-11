@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.merge.utils.WegasCallback;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 
 /**
  *

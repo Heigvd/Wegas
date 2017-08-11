@@ -16,7 +16,7 @@ import org.apache.shiro.util.SimpleByteSource;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 
 import javax.persistence.*;
 import java.util.Date;

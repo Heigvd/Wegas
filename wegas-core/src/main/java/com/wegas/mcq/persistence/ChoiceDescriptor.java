@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.merge.annotations.WegasEntity;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.merge.utils.WegasCallback;
+import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.Scripted;
 

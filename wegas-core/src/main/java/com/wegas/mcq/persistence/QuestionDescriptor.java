@@ -29,7 +29,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
 import javax.persistence.NamedQueries;
@@ -289,7 +289,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     @Override
-    public void addItem(int index, ChoiceDescriptor item) {
+    public void addItem(Integer index, ChoiceDescriptor item) {
         if (this.getGameModel() != null) {
             this.getGameModel().addToVariableDescriptors(item);
         }

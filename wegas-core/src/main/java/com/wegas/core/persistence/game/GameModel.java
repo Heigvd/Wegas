@@ -27,7 +27,7 @@ import java.util.Map.Entry;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -37,11 +37,11 @@ import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
-    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC"),
+    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status AND a.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO ORDER BY a.name ASC"),
     @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
-    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
-    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")
-})
+    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name AND a.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"),
+    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"),
+    @NamedQuery(name = "GameModel.findModelByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status and a.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL ORDER BY a.name ASC"),})
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner {
 
     private static final long serialVersionUID = 1L;
@@ -69,7 +69,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
-    @WegasEntityProperty
+    @WegasEntityProperty(sameEntityOnly = true)
     private String name;
 
     /**
@@ -78,7 +78,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(sameEntityOnly = true)
     private String description;
 
     /**
@@ -89,13 +89,18 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
+    @Enumerated(value = EnumType.STRING)
+    
+    @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
+    private GmType type = GmType.SCENARIO;
+
     /**
      *
      */
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(sameEntityOnly = true)
     private String comments;
 
     /**
@@ -111,6 +116,18 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private User createdBy;
+
+    /**
+     *
+     */
+    @ManyToOne
+    private GameModel reference;
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "reference")
+    private List<GameModel> implementations = new ArrayList<>();
 
     /*
      *
@@ -133,7 +150,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JoinColumn(name = "rootgamemodel_id")
     @OrderColumn
     @JsonView(Views.Export.class)
-    //@JsonManagedReference
+    
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
     private List<VariableDescriptor> childVariableDescriptors = new ArrayList<>();
 
     /**
@@ -158,6 +176,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "scriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
+    
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
@@ -166,6 +186,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "csslibrary_gamemodelid")
     @JsonView({Views.Export.class})
+    
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
     private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
@@ -174,6 +196,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "clientscriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
+    
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
     private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
@@ -189,6 +213,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Transient
     @JsonView({Views.Export.class})
+    
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
     private Map<String, JsonNode> pages;
 
     /**
@@ -236,6 +262,18 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         if (!this.getVariableDescriptors().contains(vd)) {
             this.getVariableDescriptors().add(vd);
             vd.setGameModel(this);
+        }
+    }
+
+    public void addToChildVariableDescriptors(Integer index, VariableDescriptor vd) {
+        if (index != null) {
+            this.getChildVariableDescriptors().remove(vd);
+            this.getChildVariableDescriptors().add(index, vd);
+        } else {
+            if (!this.getChildVariableDescriptors().contains(vd)) {
+                this.getChildVariableDescriptors().add(vd);
+                vd.setRootGameModel(this);
+            }
         }
     }
 
@@ -426,6 +464,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
         this.childVariableDescriptors = new ArrayList<>();
+        this.variableDescriptors = new ArrayList<>();
         for (VariableDescriptor vd : variableDescriptors) {
             this.addItem(vd);
         }
@@ -433,18 +472,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public void addItem(VariableDescriptor variableDescriptor) {
-        this.getChildVariableDescriptors().add(variableDescriptor);
-        this.getVariableDescriptors().add(variableDescriptor);
-        variableDescriptor.setGameModel(this);
-        variableDescriptor.setRootGameModel(this);
+        this.addItem(null, variableDescriptor);
     }
 
     @Override
-    public void addItem(int index, VariableDescriptor variableDescriptor) {
-        this.getChildVariableDescriptors().add(index, variableDescriptor);
-        this.getVariableDescriptors().add(variableDescriptor);
-        variableDescriptor.setGameModel(this);
-        variableDescriptor.setRootGameModel(this);
+    public void addItem(Integer index, VariableDescriptor variableDescriptor) {
+        this.addToVariableDescriptors(variableDescriptor);
+        this.addToChildVariableDescriptors(index, variableDescriptor);
     }
 
     /**
@@ -494,6 +528,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return all players from all teams and all games
      */
     @JsonIgnore
+    @Override
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>();
         for (Game g : this.getGames()) {
@@ -781,6 +816,36 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return status != Status.PLAY;
     }
 
+    public GmType getType() {
+        return type;
+    }
+
+    public void setType(GmType type) {
+        this.type = type;
+    }
+
+    public GameModel getReference() {
+        return reference;
+    }
+
+    public void setReference(GameModel reference) {
+        this.reference = reference;
+        if (reference != null) {
+            reference.getImplementations().add(this);
+        }
+    }
+
+    public List<GameModel> getImplementations() {
+        return implementations;
+    }
+
+    public void setImplementations(List<GameModel> implementations) {
+        this.implementations = implementations;
+        for (GameModel implementation : implementations) {
+            implementation.setReference(this);
+        }
+    }
+
     /**
      * @param template the template to set public void setTemplate(Boolean
      *                 template) { this.template = template; }
@@ -814,6 +879,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         map.put(this.getChannel(), entities);
         return map;
     }*/
+    public enum GmType {
+        MODEL,
+        REFERENCE,
+        SCENARIO
+    }
+
     public enum Status {
         /**
          * Not a template game model but one linked to an effective game

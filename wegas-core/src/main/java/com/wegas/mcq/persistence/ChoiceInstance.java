@@ -18,7 +18,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import java.util.ArrayList;
 import java.util.List;

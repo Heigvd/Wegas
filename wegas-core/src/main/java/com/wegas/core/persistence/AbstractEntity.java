@@ -22,11 +22,11 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.merge.patch.WegasEntityPatch;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.patch.WegasEntityPatch;
+import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.persistence.variable.Beanjection;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.slf4j.LoggerFactory;
@@ -63,39 +63,26 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      */
     abstract public Long getId();
 
-
-    /*
-    @Id
-    private Long oid;
-
-    public Long getOid() {
-        return oid;
-    }
-
-    public void setOid(Long oid) {
-        this.oid = oid;
-    }*/
-    @Transient
     @WegasEntityProperty(initOnly = true)
-    private String safeId;
+    private String refId;
 
     /**
      * Get entity cross-gamemodel identifier
      *
      * @return
      */
-    public String getSafeId() {
-        if (this.safeId != null) {
-            return this.safeId;
+    public String getRefId() {
+        if (this.refId != null) {
+            return this.refId;
         } else if (this.getId() != null) {
-            return this.getId().toString();
+            return this.getClass().getSimpleName() + ":" + this.getId();
         } else {
             return null;
         }
     }
 
-    public void setSafeId(String safeId) {
-        this.safeId = safeId;
+    public void setRefId(String refId) {
+        this.refId = refId;
     }
 
     /**
@@ -107,6 +94,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
     public final void merge(AbstractEntity other) {
         WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);
+        logger.error(wegasEntityPatch.toString());
         wegasEntityPatch.apply(this);
     }
 

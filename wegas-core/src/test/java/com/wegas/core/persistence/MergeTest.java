@@ -7,24 +7,39 @@
  */
 package com.wegas.core.persistence;
 
+import ch.qos.logback.classic.Level;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.ejb.MergeFacade;
+import com.wegas.core.merge.patch.WegasPatch;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
+import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectInstance;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.naming.NamingException;
 import junit.framework.Assert;
 import org.junit.Test;
+import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +51,15 @@ import org.slf4j.LoggerFactory;
 public class MergeTest extends AbstractEJBTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MergeTest.class);
+    private static final Reflections reflections;
+
+    static {
+        reflections = new Reflections("com.wegas");
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
+        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.DEBUG);
+    }
 
     @Test
     public void testTextDescriptorMerge() {
@@ -79,6 +103,7 @@ public class MergeTest extends AbstractEJBTest {
         ListDescriptor newListD = new ListDescriptor();
         newListD.setVersion(listD.getVersion());
         newListD.setName("MyRenamedList");
+        newListD.setDefaultInstance(new ListInstance());
 
         allowed.add("NumberDescriptor");
         allowed.add("StringDescriptor");
@@ -165,7 +190,6 @@ public class MergeTest extends AbstractEJBTest {
 
     @Test
     public void testGetterAndSetter() {
-        Reflections reflections = new Reflections("com.wegas");
         Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
 
         List<Exception> exes = new ArrayList<>();
@@ -183,10 +207,181 @@ public class MergeTest extends AbstractEJBTest {
             }
         }
 
-        for (Exception ex: exes){
+        for (Exception ex : exes) {
             System.out.println(ex);
         }
 
         Assert.assertEquals(0, exes.size());
+    }
+
+    private NumberDescriptor createNumberDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, Double min, Double max, Double defaultValue, Double... history) {
+        NumberDescriptor desc = new NumberDescriptor();
+        List<Double> hist = new ArrayList<>();
+        for (Double h : history) {
+            hist.add(h);
+        }
+        desc.setName(name);
+        desc.setLabel(label);
+        desc.setScope(new TeamScope());
+        desc.setMinValue(min);
+        desc.setMaxValue(max);
+        desc.setDefaultInstance(new NumberInstance());
+        desc.getDefaultInstance().setValue(defaultValue);
+        desc.getDefaultInstance().setHistory(hist);
+
+        if (parent == null) {
+            descriptorFacade.create(gameModel.getId(), desc);
+        } else {
+            descriptorFacade.createChild(parent.getId(), desc);
+        }
+
+        return desc;
+    }
+
+    private StringDescriptor createString(GameModel gameModel, DescriptorListI parent, String name, String label, String value) {
+        StringDescriptor desc = new StringDescriptor();
+        desc.setDefaultInstance(new StringInstance());
+        desc.setName(name);
+        desc.setLabel(label);
+        desc.getDefaultInstance().setValue(value);
+
+        if (parent == null) {
+            descriptorFacade.create(gameModel.getId(), desc);
+        } else {
+            descriptorFacade.createChild(parent.getId(), desc);
+        }
+
+        return desc;
+    }
+
+    private ListDescriptor createList(GameModel gameModel, DescriptorListI parent, String name, String label) {
+        ListDescriptor desc = new ListDescriptor();
+        desc.setDefaultInstance(new ListInstance());
+        desc.setName(name);
+        desc.setLabel(label);
+
+        if (parent == null) {
+            descriptorFacade.create(gameModel.getId(), desc);
+        } else {
+            descriptorFacade.createChild(parent.getId(), desc);
+        }
+
+        return desc;
+    }
+
+    @Test
+    public void testModelise() throws NamingException {
+        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
+
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        GameModel gameModel3 = new GameModel();
+        gameModel3.setName("gamemodel #3");
+        gameModelFacade.createWithDebugGame(gameModel3);
+
+        ListDescriptor list1_1 = createList(gameModel1, null, "MyFirstFolder", "My First Folder");
+        createNumberDescriptor(gameModel1, list1_1, "x", "X", 0.0, 100.0, 1.0, 1.1);
+        createNumberDescriptor(gameModel1, list1_1, "y", "Y", 0.0, 100.0, 2.0, 2.1);
+        createNumberDescriptor(gameModel1, list1_1, "z", "Z", 0.0, 100.0, 3.0, 3.1);
+        createNumberDescriptor(gameModel1, list1_1, "t", "T", 0.0, 100.0, 4.0, 4.1);
+
+        ListDescriptor list1_2 = createList(gameModel2, null, "MyFirstFolder", "My First Folder");
+        createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", 0.0, 100.0, 1.0, 1.1, 1.2);
+        createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", 0.0, 100.0, 2.0, 2.1, 2.2);
+        createNumberDescriptor(gameModel2, list1_2, "z", "LABEL Z", 0.0, 100.0, 3.0, 3.1, 3.2);
+        createNumberDescriptor(gameModel2, list1_2, "t", "LABEL T", 0.0, 100.0, 4.0, 4.1, 4.2);
+
+        createNumberDescriptor(gameModel3, null, "x", "LBL X", -100.0, 100.0, 1.5, 1.1, 1.2);
+        createNumberDescriptor(gameModel3, null, "y", "LBL Y", -100.0, 100.0, 2.5, 2.1, 2.2);
+        createNumberDescriptor(gameModel3, null, "z", "LBL Z", -100.0, 100.0, 3.5, 3.1, 3.2);
+        createNumberDescriptor(gameModel3, null, "t", "LBL T", -100.0, 100.0, 4.5, 4.1, 4.2);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+        gameModel3 = gameModelFacade.find(gameModel3.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+        scenarios.add(gameModel3);
+
+        GameModel model = mergeFacade.createGameModelModel(scenarios);
+
+        List<VariableDescriptor> children = new ArrayList<>();
+        children.addAll(model.getChildVariableDescriptors());
+
+        while (children.size() > 0) {
+            VariableDescriptor vd = children.remove(0);
+            switch (vd.getName()) {
+                case "x":
+                    vd.setVisibility(ModelScoped.Visibility.INTERNAL);
+                    break;
+                case "y":
+                    vd.setVisibility(ModelScoped.Visibility.PROTECTED);
+                    break;
+                case "z":
+                    vd.setVisibility(ModelScoped.Visibility.INHERITED);
+                    break;
+                case "t":
+                    vd.setVisibility(ModelScoped.Visibility.PRIVATE);
+                    break;
+                default:
+            }
+
+            logger.info("Vd {} -> {}", vd, vd.getVisibility());
+            if (vd instanceof DescriptorListI) {
+                children.addAll(((DescriptorListI) vd).getItems());
+            }
+        }
+
+        mergeFacade.createModel(model, scenarios);
+
+
+
+        logger.info("FINI");
+    }
+
+    //@Test
+    public void printWegasEntity() {
+        Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
+        for (Class<? extends AbstractEntity> klass : sub) {
+            if (!Modifier.isAbstract(klass.getModifiers())) {
+                System.out.println("");
+                System.out.println("Class " + klass.getSimpleName());
+                Set<Field> allFields = ReflectionUtils.getAllFields(klass, ReflectionUtils.withAnnotation(WegasEntityProperty.class));
+                for (Field field : allFields) {
+                    System.out.println(" * " + field.getName() + " : " + field.getType().getSimpleName());
+                }
+            }
+        }
+    }
+
+    //@Test
+    public void printEntity() {
+        Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
+
+        for (Class<? extends AbstractEntity> klass : sub) {
+            List<Field> fields = new ArrayList<>();
+            for (Field field : klass.getDeclaredFields()) {
+                if (field.getAnnotation(WegasEntityProperty.class) != null) {
+                    fields.add(field);
+                }
+            }
+
+            if (fields.size() > 0) {
+                System.out.println("");
+                System.out.println("Class " + klass.getSimpleName());
+                for (Field field : fields) {
+                    System.out.println(" * " + field.getName() + " : " + field.getType().getSimpleName());
+                }
+            }
+        }
     }
 }

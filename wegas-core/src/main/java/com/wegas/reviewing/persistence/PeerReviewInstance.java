@@ -8,7 +8,7 @@
 package com.wegas.reviewing.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 
 import javax.persistence.CascadeType;

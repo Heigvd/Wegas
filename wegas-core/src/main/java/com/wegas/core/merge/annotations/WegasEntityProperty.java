@@ -5,10 +5,11 @@
  * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.persistence.merge.annotations;
+package com.wegas.core.merge.annotations;
 
-import com.wegas.core.persistence.merge.utils.EmptyCallback;
-import com.wegas.core.persistence.merge.utils.WegasCallback;
+import com.wegas.core.merge.utils.EmptyCallback;
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.variable.ModelScoped;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,6 +28,7 @@ public @interface WegasEntityProperty {
     /**
      * Set to false to only include annotated field within the patch if the patch is recursive
      * (e.g. to exclude ListDescriptor children from patch)
+     *
      * @return
      */
     boolean includeByDefault() default true;
@@ -40,7 +42,8 @@ public @interface WegasEntityProperty {
 
     /**
      * Will only apply the patch if the target entity is the same as the entity one
-     *  (e.g. version)
+     * (e.g. version)
+     *
      * @return
      */
     boolean sameEntityOnly() default false;
@@ -60,6 +63,8 @@ public @interface WegasEntityProperty {
     Class<? extends WegasCallback> callback() default EmptyCallback.class;
 
     PropertyType propertyType() default PropertyType.PROPERTY;
+
+    public ModelScoped.Visibility[] cascadeOverride() default {ModelScoped.Visibility.INTERNAL, ModelScoped.Visibility.PROTECTED};
 
     public enum PropertyType {
         PROPERTY,

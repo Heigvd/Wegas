@@ -159,7 +159,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param entity
      * @param propagate indicate whether default instance should be propagated
      */
-    public void revive(GameModel gameModel, VariableDescriptor entity, boolean propagate) {
+    public void shallowRevive(GameModel gameModel, VariableDescriptor entity, boolean propagate) {
         if (entity.getScope() == null) {
             entity.setScope(new TeamScope());
             propagate = true;
@@ -185,11 +185,18 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
             gameModelFacade.reviveScopeInstances(gameModel, scope);
         }
 
-        gameModel.addToVariableDescriptors(entity);
+        if (gameModel != null) {
+            gameModel.addToVariableDescriptors(entity);
+        }
+    }
+
+    public void revive(GameModel gameModel, VariableDescriptor entity, boolean propagate) {
+        this.shallowRevive(gameModel, entity, propagate);
         if (entity instanceof DescriptorListI) {
             this.reviveItems(gameModel, (DescriptorListI) entity, propagate); // also revive children
         }
     }
+
 
     /**
      * @param gameModel
@@ -206,12 +213,17 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param entity
      */
     public void preDestroy(GameModel gameModel, VariableDescriptor entity) {
-        gameModel.removeFromVariableDescriptors(entity);
+        if (gameModel != null) {
+            gameModel.removeFromVariableDescriptors(entity);
+        }
 
         Collection<VariableInstance> values = entity.getScope().getVariableInstances().values();
+        logger.debug("PreDestroy: remove {} entities for {}", values.size(), entity);
         for (VariableInstance vi : values) {
+            logger.debug("Destroy {}", vi);
             variableInstanceFacade.remove(vi);
         }
+        variableInstanceFacade.remove(entity.getDefaultInstance());
 
         if (entity instanceof DescriptorListI) {
             this.preDestroyItems(gameModel, (DescriptorListI) entity);
@@ -229,8 +241,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     }
 
     /**
-     * @param variableDescriptorId
-     * @param entity
+     * @param variableDescriptorId is of the parent
+     * @param entity               new descriptor to add to the parent
      *
      * @return
      */
@@ -240,12 +252,14 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     }
 
     /**
+     * Create descriptor at gameModel rootLevel
+     *
      * @param gameModelId
      * @param variableDescriptor
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
         GameModel find = this.gameModelFacade.find(gameModelId);
-         /*
+        /*
         for (Game g : find.getGames()) {
             logger.error("Game " + g);
             for (Team t : g.getTeams()) {

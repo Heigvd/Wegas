@@ -13,6 +13,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.AbstractEntity;
 import java.util.Objects;
 
 /**
@@ -28,7 +29,7 @@ import java.util.Objects;
     @Index(columnList = "csslibrary_gamemodelid"),
     @Index(columnList = "csslibrary_gamemodelid, scriptlibrary_gamemodelid, clientscriptlibrary_gamemodelid, contentKey", unique = true)
 })
-public class GameModelContent implements Serializable {
+public class GameModelContent extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -82,6 +83,10 @@ public class GameModelContent implements Serializable {
         this.contentKey = key;
         this.content = content;
         this.contentType = contentType;
+    }
+
+    @Override
+    public void __merge(AbstractEntity other) {
     }
 
     @Override

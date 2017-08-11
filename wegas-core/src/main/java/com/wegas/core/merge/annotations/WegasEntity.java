@@ -5,9 +5,9 @@
  * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.persistence.merge.annotations;
+package com.wegas.core.merge.annotations;
 
-import com.wegas.core.persistence.merge.utils.WegasCallback;
+import com.wegas.core.merge.utils.WegasCallback;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

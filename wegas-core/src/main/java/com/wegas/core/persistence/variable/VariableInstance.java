@@ -41,7 +41,7 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

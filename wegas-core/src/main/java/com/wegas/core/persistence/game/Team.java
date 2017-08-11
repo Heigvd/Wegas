@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

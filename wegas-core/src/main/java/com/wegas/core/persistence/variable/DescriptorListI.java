@@ -39,7 +39,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      * @param index
      * @param item
      */
-    void addItem(int index, T item);
+    void addItem(Integer index, T item);
 
     /**
      *

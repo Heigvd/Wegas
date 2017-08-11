@@ -10,7 +10,7 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;

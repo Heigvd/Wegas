@@ -50,9 +50,10 @@ import org.eclipse.persistence.config.QueryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.merge.annotations.WegasEntity;
-import com.wegas.core.persistence.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.merge.utils.WegasCallback;
+import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 
 /**
  * @param <T>
@@ -107,12 +108,13 @@ import com.wegas.core.persistence.merge.utils.WegasCallback;
 })
 //@MappedSuperclass
 @WegasEntity(callback = VariableDescriptor.ScopeUpdate.class)
-abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable, AcceptInjection {
+abstract public class VariableDescriptor<T extends VariableInstance>
+        extends NamedEntity
+        implements Searchable, LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
 
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
-
     /**
      * HACK
      * <p>
@@ -144,7 +146,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     @JsonView(value = Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(cascadeOverride = {Visibility.INTERNAL})
     private VariableInstance defaultInstance;
 
     /**
@@ -174,6 +176,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @JoinColumn(name = "rootgamemodel_id")
     @JsonIgnore
     private GameModel rootGameModel;
+
+    @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty
+    private Visibility visibility;
 
     /**
      *
@@ -483,6 +489,16 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @Override
     public void __merge(AbstractEntity a) {
 
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    @Override
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     /**

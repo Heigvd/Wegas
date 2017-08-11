@@ -16,7 +16,6 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
