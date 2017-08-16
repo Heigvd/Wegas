@@ -13,6 +13,7 @@ import {
     register
 } from './Script/index';
 import { css } from 'glamor';
+import { debounce } from 'lodash-es';
 
 const Y = getY(); // Current YUI instance
 const Wegas: { [key: string]: any } = Y.Wegas;
@@ -60,6 +61,8 @@ const Form = Y.Base.create(
             this.publish('updated', {
                 emitFacade: false
             });
+            // reduce number of calls when setting both 'schema' and 'value' at the same time
+            this.renderForm = debounce(this.renderForm, 10);
         },
         renderUI() {
             Y.Array.each(this.get('buttons'), this.addButton, this);

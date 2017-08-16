@@ -2,11 +2,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import TinyMCE from 'react-tinymce';
+import { css } from 'glamor';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
-import { css } from 'glamor';
 import FormStyles from './form-styles';
 
 const marginStyle = css({
