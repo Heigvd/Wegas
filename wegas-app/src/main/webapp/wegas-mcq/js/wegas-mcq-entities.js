@@ -803,7 +803,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 index: 11
             },
             ignorationAnswer: {
-                type: STRING,
+                type: NULLSTRING,
                 optional: true,
                 visible: function (val, formVal) {
                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
@@ -835,8 +835,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 index:13
             },
             choiceDescriptorId: {
-                type: STRING,
-                optional: true,
+                type: NUMBER,
                 view: {
                     type: HIDDEN
                 }
