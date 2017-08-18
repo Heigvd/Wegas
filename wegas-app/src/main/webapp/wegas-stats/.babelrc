@@ -9,7 +9,12 @@
                 "modules": false,
                 "loose": true,
                 "targets": {
-                    "browsers": ["last 2 versions"]
+                    "browsers": [
+                        "last 2 Chrome version",
+                        "last 2 Safari versions",
+                        "last 2 Firefox versions"
+                    ],
+                    "uglify": true
                 },
                 "exclude": ["transform-regenerator"]
             }
