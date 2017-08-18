@@ -10,12 +10,16 @@ class GameSelect extends React.Component {
         };
     }
     componentWillReceiveProps(props) {
-        this.setState({
-            options: props.games.map(val => ({
-                value: val.id,
-                label: val.name ? `${val.name} (${val.gmName})` : val.id,
-            })),
-        });
+        if (props.games !== this.props.games) {
+            this.setState({
+                options: props.games.map(val => ({
+                    value: val.id,
+                    label: val.name
+                        ? `${val.name} (${val.gmName}) by ${val.creator} (P: ${val.playersCount})`
+                        : val.id,
+                })),
+            });
+        }
     }
     onChange(group, value) {
         const val = value.map(v => v.value);
@@ -47,9 +51,7 @@ class GameSelect extends React.Component {
                         multi
                         onChange={this.onChange.bind(this, groupId)}
                         options={opt}
-                        value={
-                            this.state.groups[groupId]
-                        }
+                        value={this.state.groups[groupId]}
                     />
                 </span>
             );

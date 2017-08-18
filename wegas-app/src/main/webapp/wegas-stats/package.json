@@ -9,7 +9,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.16.2",
     "babel-preset-env": "^1.6.0",
     "chartist": "^0.11.0",
     "lodash": "^4.17.4",

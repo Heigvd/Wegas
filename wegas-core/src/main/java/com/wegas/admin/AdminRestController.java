@@ -34,10 +34,10 @@ public class AdminRestController {
     @Path("Game")
     @GET
     public Collection<GameAdmin> get(@QueryParam("type") String type) {
-        String[] types = type.split(",");
         if (type == null) {
             return adminFacade.findAll();
         } else {
+            String[] types = type.split(",");
             List<GameAdmin.Status> statuses = new ArrayList<>();
             for (int i = 0; i < types.length; i++) {
                 try {
