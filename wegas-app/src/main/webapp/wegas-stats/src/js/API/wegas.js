@@ -1,22 +1,22 @@
-import Axios from 'axios';
+import jsonFetch from './wegasFetch';
 
 const PUBLIC = 'Public';
-const EDITOR_EXTENDED = "Editor";
-function basePath(view = 'Public') {
+const EDITOR_EXTENDED = 'Editor';
+
+function basePath(view = PUBLIC) {
     return `/rest/${view}/GameModel/`;
 }
 
 export function getVariables(gmId) {
-    return Axios.get(`${basePath(EDITOR_EXTENDED)}${gmId}/VariableDescriptor`)
-        .then(res => res.data);
+    return jsonFetch(`${basePath(EDITOR_EXTENDED)}${gmId}/VariableDescriptor`);
 }
 
 export function getGameModelForGame(gameId) {
-    return Axios.get(`${basePath(PUBLIC)}Game/${gameId}`)
-        .then(res => res.data.gameModelId);
+    return jsonFetch(`${basePath()}Game/${gameId}`).then(
+        data => data.gameModelId
+    );
 }
 
 export function getGames() {
-    return Axios.get(`${basePath(PUBLIC)}Game`)
-        .then(res => res.data);
+    return jsonFetch(`/rest/Admin/Game`);
 }
