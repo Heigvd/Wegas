@@ -17,8 +17,7 @@
             0,
             4
         ],
-        "react/jsx-closing-bracket-location": 0,
-        "react/jsx-space-before-closing": 1
+        "react/jsx-closing-bracket-location": 0
     },
     "env": {
         "es6": true,

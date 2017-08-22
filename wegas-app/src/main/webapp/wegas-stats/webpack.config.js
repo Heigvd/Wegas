@@ -3,46 +3,42 @@ const npmPackage = /node_modules/;
 const buildPath = path.resolve(__dirname, 'build');
 module.exports = {
     entry: {
-        app: [
-            './src/index.js'
-        ],
-        vendor: [
-            'react', 'react-dom', 'react-router', 'history',
-            'axios', 'redux', 'react-redux',
-            'updeep', 'chartist', 'tcomb-form', 'style-loader'
-        ]
+        app: ['./src/index.js']
     },
     output: {
         path: buildPath,
         filename: '[name].bundle-min.js',
-        publicPath: '/dev/'
+        publicPath: '/dev/',
     },
-    externals: {
-    },
+    externals: {},
+    node: { fs: 'empty' },
     module: {
         loaders: [
             {
                 test: /\.css$/,
-                loader: 'style!css?-singleton'
-            }, {
+                loader: 'style-loader!css-loader?-singleton',
+            },
+            {
                 test: /\.less$/,
-                loader: 'style!css!less'
-            }, {
+                loader: 'style-loader!css-loader!less-loader',
+            },
+            {
                 test: /\.js$/,
-                loaders: [
-                    'react-hot', 'babel-loader'
-                ],
-                exclude: [npmPackage]
-            }, {
+                use: ['babel-loader'],
+                exclude: npmPackage,
+            },
+            {
                 test: /\.json$/,
-                loader: 'json'
-            }, {
+                loader: 'json-loader',
+            },
+            {
                 test: /\.(woff2|woff|eot|ttf)/,
-                loader: 'file'
-            }, {
+                loader: 'file-loader',
+            },
+            {
                 test: /\.(jpe?g|gif|png|svg)/,
-                loader: 'file'
-            }
-        ]
-    }
+                loader: 'file-loader',
+            },
+        ],
+    },
 };
