@@ -49,6 +49,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -163,6 +164,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         if (entity.getScope() == null) {
             entity.setScope(new TeamScope());
             propagate = true;
+        } else if (entity.getScope().getShouldCreateInstance()) {
+            propagate = true;
+            entity.getScope().setShouldCreateInstance(false);
         }
 
         /*
@@ -197,7 +201,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         }
     }
 
-
     /**
      * @param gameModel
      * @param entity
@@ -223,8 +226,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
             logger.debug("Destroy {}", vi);
             variableInstanceFacade.remove(vi);
         }
-        variableInstanceFacade.remove(entity.getDefaultInstance());
 
+        // Cascade base deletion...
+        //variableInstanceFacade.remove(entity.getDefaultInstance());
         if (entity instanceof DescriptorListI) {
             this.preDestroyItems(gameModel, (DescriptorListI) entity);
         }
@@ -574,9 +578,13 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param newScope
      */
     public void updateScope(VariableDescriptor vd, AbstractScope newScope) {
-        Collection<VariableInstance> values = vd.getScope().getVariableInstancesByKeyId().values();
-        for (VariableInstance vi : values) {
-            variableInstanceFacade.remove(vi);
+        if (vd.getScope() != null) {
+            Collection<VariableInstance> values = null;
+            values = vd.getScope().getVariableInstancesByKeyId().values();
+
+            for (VariableInstance vi : values) {
+                variableInstanceFacade.remove(vi);
+            }
         }
         vd.setScope(newScope);
         this.getEntityManager().persist(vd);

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.merge.patch;
 
+import com.wegas.core.IndentLogger;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.persistence.AbstractEntity;
@@ -16,7 +17,6 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class WegasPatch {
 
-    protected final static Logger logger = LoggerFactory.getLogger(WegasPatch.class);
+    protected final static IndentLogger logger = new IndentLogger(LoggerFactory.getLogger(WegasPatch.class));
 
     public static enum PatchMode {
         CREATE,
@@ -47,6 +47,7 @@ public abstract class WegasPatch {
 
     protected List<Visibility> cascadeOverride = new ArrayList<>();
 
+    protected boolean ignoreNull;
     protected boolean sameEntityOnly;
     protected boolean initOnly;
     protected boolean recursive;
@@ -54,14 +55,15 @@ public abstract class WegasPatch {
     protected WegasPatch(Object identifier, Integer order,
             Method getter, Method setter,
             WegasCallback fieldCallback,
-            boolean sameEntityOnly, boolean initOnly,
-            boolean recursive,
+            boolean ignoreNull, boolean sameEntityOnly,
+            boolean initOnly, boolean recursive,
             Visibility[] cascade) {
         this.identifier = identifier;
         this.order = order;
         this.getter = getter;
         this.setter = setter;
         this.fieldCallback = fieldCallback;
+        this.ignoreNull = ignoreNull;
         this.sameEntityOnly = sameEntityOnly;
         this.initOnly = initOnly;
         this.recursive = recursive;
@@ -142,7 +144,9 @@ public abstract class WegasPatch {
         /* 
          * Determine patch mode
          */
-        if (target == null) {
+        if (PatchMode.DELETE.equals(parentMode)) {
+            mode = PatchMode.DELETE;
+        } else if (target == null) {
             if (to != null) {
                 // CREATE
                 mode = PatchMode.CREATE;
@@ -224,4 +228,5 @@ public abstract class WegasPatch {
         sb.append("\n");
         this.indent(sb, ident);
     }
+
 }

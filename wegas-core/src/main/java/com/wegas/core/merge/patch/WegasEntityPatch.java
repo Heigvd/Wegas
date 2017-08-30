@@ -15,7 +15,6 @@ import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -54,7 +53,7 @@ public final class WegasEntityPatch extends WegasPatch {
     }
 
     public WegasEntityPatch(AbstractEntity from, AbstractEntity to, Boolean recursive) {
-        this(null, 0, null, null, null, from, to, recursive, false, false, new Visibility[]{Visibility.INTERNAL, Visibility.PROTECTED});
+        this(null, 0, null, null, null, from, to, recursive, false, false, false, new Visibility[]{Visibility.INTERNAL, Visibility.PROTECTED});
     }
 
     /**
@@ -74,10 +73,10 @@ public final class WegasEntityPatch extends WegasPatch {
     WegasEntityPatch(Object identifier, int order,
             WegasCallback userCallback, Method getter, Method setter,
             AbstractEntity from, AbstractEntity to, boolean recursive,
-            boolean sameEntityOnly, boolean initOnly,
+            boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
             Visibility[] cascade) {
 
-        super(identifier, order, getter, setter, userCallback, sameEntityOnly, initOnly, recursive, cascade);
+        super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, cascade);
 
         if ((from == null && to == null) // both entity are null
                 || (from != null && to != null && !from.getClass().equals(to.getClass()))) {
@@ -127,18 +126,26 @@ public final class WegasEntityPatch extends WegasPatch {
                 klass = klass.getSuperclass();
             }
 
-            if (fromEntity != null && this.toEntity != null) {
+            if (fromEntity != null || this.toEntity != null) {
 
+                // process @WegasEntityProperty fields
                 for (Entry<Field, WegasEntityProperty> entry : fields.entrySet()) {
+                    // Get field info 
                     Field field = entry.getKey();
                     WegasEntityProperty wegasProperty = entry.getValue();
 
                     String fieldName = field.getName();
                     Class fieldClass = field.getType();
 
+                    PropertyDescriptor property = new PropertyDescriptor(fieldName, field.getDeclaringClass());
+
+                    Method fGetter = property.getReadMethod();
+                    Method fSetter = property.getWriteMethod();
+
+                    // Get annotation properties
                     int idx = wegasProperty.order();
 
-                    boolean ignoreNull = wegasProperty.ignoreNull();
+                    boolean fIgnoreNull = wegasProperty.ignoreNull();
                     boolean fSameEntityOnly = wegasProperty.sameEntityOnly();
                     boolean fInitOnly = wegasProperty.initOnly();
                     Visibility[] fCascadeOverride = wegasProperty.cascadeOverride();
@@ -150,45 +157,40 @@ public final class WegasEntityPatch extends WegasPatch {
                         userFieldCallback = userFieldCallbackClass.newInstance();
                     }
 
-                    PropertyDescriptor property = new PropertyDescriptor(fieldName, field.getDeclaringClass());
+                    // Get effective from and to values
+                    Object fromValue = fromEntity != null ? fGetter.invoke(fromEntity) : null;
+                    Object toValue = toEntity != null ? fGetter.invoke(toEntity) : null;
 
-                    Method fGetter = property.getReadMethod();
-                    Method fSetter = property.getWriteMethod();
-
-                    Object fromValue = fGetter.invoke(fromEntity);
-                    Object toValue = fGetter.invoke(toEntity);
-
-                    if (!ignoreNull || toValue != null) {
-
-                        // Which case ?
-                        if (wegasProperty.propertyType().equals(WegasEntityProperty.PropertyType.CHILDREN)
-                                && (List.class.isAssignableFrom(fieldClass) || Map.class.isAssignableFrom(fieldClass))) {
-                            /*
+                    //if (!fIgnoreNull || toValue != null) {
+                    // Which case ?
+                    if (wegasProperty.propertyType().equals(WegasEntityProperty.PropertyType.CHILDREN)
+                            && (List.class.isAssignableFrom(fieldClass) || Map.class.isAssignableFrom(fieldClass))) {
+                        /*
                              * current property is a list or a map of abstract entities
-                             */
-                            patches.add(new WegasChildrenPatch(fieldName, idx,
-                                    userFieldCallback, to,
-                                    fGetter, fSetter,
-                                    fromValue, toValue,
-                                    recursive, ignoreNull, fSameEntityOnly, fInitOnly, fCascadeOverride));
-                        } else if (AbstractEntity.class.isAssignableFrom(fieldClass)) {
-                            /*
+                         */
+                        patches.add(new WegasChildrenPatch(fieldName, idx,
+                                userFieldCallback, to,
+                                fGetter, fSetter,
+                                fromValue, toValue,
+                                recursive, fIgnoreNull, fSameEntityOnly, fInitOnly, fCascadeOverride));
+                    } else if (AbstractEntity.class.isAssignableFrom(fieldClass)) {
+                        /*
                             * the property is an abstract entity -> register patch
-                             */
-                            patches.add(new WegasEntityPatch(fieldName, idx,
-                                    userFieldCallback,
-                                    fGetter, fSetter,
-                                    (AbstractEntity) fromValue, (AbstractEntity) toValue,
-                                    recursive, fSameEntityOnly, fInitOnly, fCascadeOverride));
-                        } else {
-                            // fallback -> primitive or primitive related property (eg. Boolean, List<Double>, Map<String, String>, etc)
-                            patches.add(new WegasFieldPatch(fieldName, idx,
-                                    userFieldCallback, to,
-                                    fGetter, fSetter, fromValue, toValue,
-                                    fSameEntityOnly, fInitOnly, fCascadeOverride));
-                        }
-
+                         */
+                        patches.add(new WegasEntityPatch(fieldName, idx,
+                                userFieldCallback,
+                                fGetter, fSetter,
+                                (AbstractEntity) fromValue, (AbstractEntity) toValue,
+                                recursive, fIgnoreNull, fSameEntityOnly, fInitOnly, fCascadeOverride));
+                    } else {
+                        // fallback -> primitive or primitive related property (eg. Boolean, List<Double>, Map<String, String>, etc)
+                        patches.add(new WegasFieldPatch(fieldName, idx,
+                                userFieldCallback, to,
+                                fGetter, fSetter, fromValue, toValue,
+                                fIgnoreNull, fSameEntityOnly, fInitOnly, fCascadeOverride));
                     }
+
+                    //}
                 }
                 Collections.sort(patches, new PatchOrderComparator());
             }
@@ -212,6 +214,10 @@ public final class WegasEntityPatch extends WegasPatch {
         if (numPass == 0) {
             rootPatch = true;
         }
+
+        logger.info("Apply #{} {} (from {} -> to {}) on {}", numPass, this.getClass().getSimpleName(), fromEntity, toEntity, target);
+        logger.indent();
+
         do {
             if (rootPatch) {
                 numPass++;
@@ -221,173 +227,180 @@ public final class WegasEntityPatch extends WegasPatch {
                 if (getter != null) {
                     target = (AbstractEntity) getter.invoke(oTarget);
                 }
-                logger.info("Apply #{} {} {} -> {}", numPass, this.getClass().getSimpleName(), fromEntity, target);
 
-                if (!initOnly || target == null) {
-                    List<WegasCallback> callbacks = this.getCallbacks(callback);
+                if (!ignoreNull || toEntity != null) {
+                    if (!initOnly || target == null) {
+                        List<WegasCallback> callbacks = this.getCallbacks(callback);
 
-                    Visibility visibility = null;
-                    Visibility ownVisibility = null;
-                    if (toEntity instanceof ModelScoped) {
-                        ownVisibility = ((ModelScoped) toEntity).getVisibility();
-                        visibility = ownVisibility;
-                    }
-                    PatchMode myMode = this.getPatchMode(target, fromEntity, toEntity, parentMode, inheritedVisibility, ownVisibility);
-
-                    if (visibility == null) {
-                        visibility = inheritedVisibility;
-                    }
-                    logger.debug("MODE IS: " + myMode);
-
-                    if (myMode != null) {
-                        switch (myMode) {
-                            case CREATE:
-                                if (numPass > 1) {
-                                    logger.debug(" CREATE CLONE");
-
-                                    AbstractEntity newEntity;
-                                    if (collector.getDeleted().containsKey(toEntity.getRefId())) {
-                                        // the newEntity to create has just been removed from another list -> MOVE
-                                        logger.debug(" -> MOVE JUST DELETED");
-
-                                        // Fetch previously deleted entity
-                                        newEntity = collector.getDeleted().remove(toEntity.getRefId());
-                                        for (WegasCallback cb : callbacks) {
-                                            cb.preUpdate(target, this.toEntity, identifier);
-                                        }
-
-                                        // Force update
-                                        //newEntity.merge(toEntity);
-                                        //.apply(newEntity, null, PatchMode.UPDATE, null, collector, numPass);
-                                        WegasEntityPatch createPatch = new WegasEntityPatch(newEntity, toEntity, true);
-                                        createPatch.apply(newEntity, null, PatchMode.UPDATE, visibility, collector, null);
-
-                                        for (WegasCallback cb : callbacks) {
-                                            cb.postPersist(newEntity, identifier);
-                                        }
-
-                                        for (WegasCallback cb : callbacks) {
-                                            cb.postUpdate(target, this.toEntity, identifier);
-                                        }
-
-                                    } else {
-                                        //newEntity = toEntity.clone(); //   -> INTERNAL CLONE
-                                        newEntity = toEntity.getClass().newInstance();
-                                        WegasEntityPatch clone = new WegasEntityPatch(newEntity, toEntity, true);
-                                        clone.apply(newEntity, null, PatchMode.UPDATE, visibility, collector, null);
-
-                                        for (WegasCallback cb : callbacks) {
-                                            cb.postPersist(newEntity, identifier);
-                                        }
-
-                                    }
-                                    if (setter != null) {
-                                        setter.invoke(oTarget, newEntity);
-                                    }
-                                } else {
-                                    logger.debug("SKIP CREATION DURING 1st pass");
-                                }
-                                break;
-                            case DELETE:
-                                if (numPass < 2) {
-                                    logger.debug(" DELETE");
-
-                                    if (fromEntity != null && target != null) {
-                                        String refId = fromEntity.getRefId();
-                                        /*
-                                 * entity which is to be delete here has been created elsewhere
-                                 * let's mark the move
-                                         */
-                                        if (collector.getCreated().containsKey(refId)) {
-                                            logger.debug(" BUT MOVED!!!");
-                                            // remove entity from the list of entities to detroy
-                                            AbstractEntity remove = collector.getCreated().remove(refId);
-
-                                            /*
-                                     * compute a patch to reflect changes between this fromEntity and other toEntity;
-                                             */
-                                            WegasEntityPatch patch = new WegasEntityPatch(this.fromEntity, remove, this.recursive);
-                                            remove.merge(target);
-                                            patch.apply(remove, callback, parentMode, visibility, collector, numPass);
-                                        } else {
-                                            // register entity to destroy
-                                            collector.getDeleted().put(refId, target);
-                                        }
-
-                                        for (WegasCallback cb : callbacks) {
-                                            cb.preDestroy(target, identifier);
-                                        }
-
-                                        if (setter != null) {
-                                            setter.invoke(oTarget, (Object) null);
-                                        }
-                                    }
-                                }
-                                break;
-                            case SKIP:
-                                logger.debug("SKIP");
-                                break;
-                            default:
-                                if (shouldApplyPatch(target, toEntity)) {
-                                    if (numPass > 1) {
-                                        for (WegasCallback cb : callbacks) {
-                                            cb.preUpdate(target, this.toEntity, identifier);
-                                        }
-                                    }
-
-                                    for (WegasPatch patch : patches) {
-                                        patch.apply(target, null, myMode, visibility, collector, numPass);
-                                    }
-
-                                    if (numPass > 1) {
-                                        for (WegasCallback cb : callbacks) {
-                                            cb.postUpdate(target, this.toEntity, identifier);
-                                        }
-                                    }
-                                } else {
-                                    logger.debug(" REJECT ENTITY PATCH: SAME_ENTITY_ONLY FAILED");
-                                }
-                                break;
+                        Visibility visibility = null;
+                        Visibility ownVisibility = null;
+                        if (toEntity instanceof ModelScoped) {
+                            ownVisibility = ((ModelScoped) toEntity).getVisibility();
+                            visibility = ownVisibility;
                         }
+                        PatchMode myMode = this.getPatchMode(target, fromEntity, toEntity, parentMode, inheritedVisibility, ownVisibility);
+
+                        if (visibility == null) {
+                            visibility = inheritedVisibility;
+                        }
+                        logger.debug("MODE IS: " + myMode);
+
+                        if (myMode != null) {
+                            switch (myMode) {
+                                case CREATE:
+                                    if (numPass > 1) {
+                                        logger.debug(" CREATE CLONE");
+
+                                        if (collector.getDeleted().containsKey(toEntity.getRefId())) {
+                                            // the newEntity to create has just been removed from another list -> MOVE
+                                            logger.debug(" -> MOVE JUST DELETED");
+
+                                            // Fetch previously deleted entity
+                                            LifecycleCollector.CollectedEntity remove = collector.getDeleted().remove(toEntity.getRefId());
+
+                                            target = remove.getEntity();
+
+                                            for (WegasCallback cb : callbacks) {
+                                                cb.preUpdate(target, this.toEntity, identifier);
+                                            }
+
+                                            // Force update
+                                            WegasEntityPatch createPatch = new WegasEntityPatch(remove.getPayload(), toEntity, true);
+                                            createPatch.apply(target, null, PatchMode.UPDATE, visibility, collector, null);
+
+                                            for (WegasCallback cb : callbacks) {
+                                                cb.add(target, null, identifier);
+                                            }
+
+                                            for (WegasCallback cb : callbacks) {
+                                                cb.postUpdate(target, this.toEntity, identifier);
+                                            }
+
+                                        } else {
+                                            //newEntity = toEntity.clone(); //   -> INTERNAL CLONE
+                                            target = toEntity.getClass().newInstance();
+                                            WegasEntityPatch clone = new WegasEntityPatch(target, toEntity, true);
+                                            clone.apply(target, null, PatchMode.UPDATE, visibility, collector, null);
+
+                                            for (WegasCallback cb : callbacks) {
+                                                cb.add(target, null, identifier);
+                                            }
+                                            collector.getCreated().put(target.getRefId(), new LifecycleCollector.CollectedEntity(target, toEntity, callbacks));
+
+                                        }
+                                        if (setter != null) {
+                                            setter.invoke(oTarget, target);
+                                        }
+                                    } else {
+                                        logger.debug("SKIP CREATION DURING 1st pass");
+                                    }
+                                    break;
+                                case DELETE:
+                                    if (numPass < 2) {
+                                        logger.debug(" DELETE");
+
+                                        if (fromEntity != null && target != null) {
+
+                                            // DELETE CHILDREN TOO TO COLLECT THEM
+                                            for (WegasPatch patch : patches) {
+                                                patch.apply(target, null, myMode, visibility, collector, numPass);
+                                            }
+
+                                            String refId = fromEntity.getRefId();
+                                            // Should include all AbstractEntity contained within target, so they can be reused by CREATE case
+                                            collector.getDeleted().put(refId, new LifecycleCollector.CollectedEntity(target, fromEntity, callbacks));
+
+                                            for (WegasCallback cb : callbacks) {
+                                                cb.remove(target, null, identifier);
+                                            }
+
+                                            if (setter != null) {
+                                                setter.invoke(oTarget, (Object) null);
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case SKIP:
+                                    logger.debug("SKIP");
+                                    break;
+                                default:
+                                    if (shouldApplyPatch(target, toEntity)) {
+                                        if (numPass > 1) {
+                                            for (WegasCallback cb : callbacks) {
+                                                cb.preUpdate(target, this.toEntity, identifier);
+                                            }
+                                        }
+
+                                        for (WegasPatch patch : patches) {
+                                            patch.apply(target, null, myMode, visibility, collector, numPass);
+                                        }
+
+                                        if (numPass > 1) {
+                                            for (WegasCallback cb : callbacks) {
+                                                cb.postUpdate(target, this.toEntity, identifier);
+                                            }
+                                        }
+                                    } else {
+                                        logger.debug(" REJECT ENTITY PATCH: SAME_ENTITY_ONLY FAILED");
+                                    }
+                                    break;
+                            }
+                        }
+                    } else {
+                        logger.debug("REJECT PATCH : NO RE-INIT");
                     }
+
                 } else {
-                    logger.debug("REJECT PATCH : NO RE-INIT");
+                    logger.debug("REJECT PATCH : IGNORE NULL");
                 }
+
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         } while (rootPatch && numPass < 2);
 
-        logger.info("  ** DONE {} {} -> {}", this.getClass().getSimpleName(), fromEntity, target);
+        logger.info("  ** DONE {} (from {} to {}) on {}", this.getClass().getSimpleName(), fromEntity, toEntity, target);
 
         if (processCollectedData) {
+            // TODO: @WegasEntity(finalizer = MyFinalizer.class)
+
             // Finalize patch
             logger.info("Collect: {}", collector);
             VariableDescriptorFacade vdf = null;
 
-            for (Entry<String, AbstractEntity> entry : collector.getDeleted().entrySet()) {
-                AbstractEntity entity = entry.getValue();
-                if (entity instanceof VariableDescriptor) {
-                    VariableDescriptor vd = (VariableDescriptor) entity;
-                    if (vdf == null) {
-                        vdf = VariableDescriptorFacade.lookup();
+            // ->  implement as callbacks !!!!
+            for (Entry<String, LifecycleCollector.CollectedEntity> entry : collector.getDeleted().entrySet()) {
+                LifecycleCollector.CollectedEntity collectedEntity = entry.getValue();
+                AbstractEntity entity = collectedEntity.getEntity();
+
+                List<WegasCallback> callbacks = collectedEntity.getCallbacks();
+                if (callbacks != null) {
+                    for (WegasCallback cb : callbacks) {
+                        cb.destroy(entity, identifier);
                     }
-                    vdf.preDestroy(vd.getGameModel(), vd);
                 }
+
+                if (vdf == null) {
+                    vdf = VariableDescriptorFacade.lookup();
+                }
+
+                vdf.removeAbstractEntity(entity);
             }
 
-            for (Entry<String, AbstractEntity> entry : collector.getCreated().entrySet()) {
-                AbstractEntity entity = entry.getValue();
-                if (entity instanceof VariableDescriptor) {
-                    VariableDescriptor vd = (VariableDescriptor) entity;
-                    if (vdf == null) {
-                        vdf = VariableDescriptorFacade.lookup();
+            for (Entry<String, LifecycleCollector.CollectedEntity> entry : collector.getCreated().entrySet()) {
+                LifecycleCollector.CollectedEntity collectedEntity = entry.getValue();
+                AbstractEntity entity = collectedEntity.getEntity();
+
+                List<WegasCallback> callbacks = collectedEntity.getCallbacks();
+                if (callbacks != null) {
+                    for (WegasCallback cb : callbacks) {
+                        cb.persist(entity, identifier);
                     }
-                    vdf.shallowRevive(null, vd, true);
                 }
             }
         }
 
+        logger.unindent();
         return collector;
     }
 

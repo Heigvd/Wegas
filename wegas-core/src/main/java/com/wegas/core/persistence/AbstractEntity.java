@@ -94,7 +94,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
     public final void merge(AbstractEntity other) {
         WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);
-        logger.error(wegasEntityPatch.toString());
+        //logger.error(wegasEntityPatch.toString());
         wegasEntityPatch.apply(this);
     }
 
@@ -132,13 +132,10 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
         if (this.getClass() != object.getClass()) {                             // First, the two object shall be instances of the same class
             return false;
-        }
-
-        if (object instanceof AbstractEntity) {                                 // Then, object shall be an AbstractEntity
+        } else {
             AbstractEntity other = (AbstractEntity) object;
             return this.getId() != null && this.getId().equals(other.getId());
         }
-        return false;
     }
 
     /**

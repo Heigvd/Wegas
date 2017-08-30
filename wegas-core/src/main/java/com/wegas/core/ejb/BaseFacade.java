@@ -142,6 +142,10 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
         this.remove(this.find(entityId));
     }
 
+    public void removeAbstractEntity(AbstractEntity entity) {
+        this.getEntityManager().remove(entity);
+    }
+
     /**
      *
      * find T instance by id

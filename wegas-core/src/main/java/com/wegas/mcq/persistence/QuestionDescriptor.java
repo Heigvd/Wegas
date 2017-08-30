@@ -28,7 +28,6 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
@@ -83,7 +82,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
     @OrderColumn
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
@@ -304,6 +303,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
 
     @Override
     public boolean remove(ChoiceDescriptor item) {
+        item.setQuestion(null);
         this.getGameModel().removeFromVariableDescriptors(item);
         return this.getItems().remove(item);
     }

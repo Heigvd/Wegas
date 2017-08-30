@@ -106,29 +106,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     public void __merge(AbstractEntity a) {
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof EvaluationDescriptor) {
-            EvaluationDescriptor ed = (EvaluationDescriptor) o;
-
-            if (ed.getId() == null || this.getId() == null) {
-                return false;
-            } else {
-                return this.getId().equals(ed.getId());
-            }
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.id);
-        hash = 53 * hash + Objects.hashCode(this.name);
-        return hash;
-    }
-
     /**
      * Return the name of the evaluation
      *

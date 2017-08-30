@@ -29,9 +29,9 @@ public final class WegasFieldPatch extends WegasPatch {
     WegasFieldPatch(Object identifier, int order,
             WegasCallback userCallback, AbstractEntity entity,
             Method getter, Method setter, Object fromValue, Object toValue,
-            boolean sameEntityOnly, boolean initOnly,
+            boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
             Visibility[] cascade) {
-        super(identifier, order, getter, setter, userCallback, sameEntityOnly, initOnly, false, cascade);
+        super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, false, cascade);
         this.identifier = identifier;
         this.fromValue = fromValue;
         this.toValue = toValue;
@@ -45,27 +45,36 @@ public final class WegasFieldPatch extends WegasPatch {
             try {
                 if (shouldApplyPatch(target, entity)) {
                     Object oldTargetValue = getter.invoke(target);
-                    if (oldTargetValue == null
-                            || parentMode.equals(PatchMode.OVERRIDE)
-                            || (!initOnly && Objects.equals(oldTargetValue, fromValue))) {
+                    if (!parentMode.equals(PatchMode.DELETE)) {
+                        if (oldTargetValue == null
+                                || parentMode.equals(PatchMode.OVERRIDE)
+                                || (!initOnly && Objects.equals(oldTargetValue, fromValue))) {
+                            if (!ignoreNull || toValue != null) {
 
-                        logger.debug("Apply {} := {} => {}", identifier,  oldTargetValue, toValue);
-                        List<WegasCallback> callbacks = this.getCallbacks(callback);
+                                logger.debug("Apply {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
+                                List<WegasCallback> callbacks = this.getCallbacks(callback);
 
-                        for (WegasCallback cb : callbacks) {
-                            cb.preUpdate(target, toValue, identifier);
-                        }
+                                for (WegasCallback cb : callbacks) {
+                                    cb.preUpdate(target, toValue, identifier);
+                                }
 
-                        setter.invoke(target, toValue);
+                                setter.invoke(target, toValue);
 
-                        for (WegasCallback cb : callbacks) {
-                            cb.postUpdate(target, toValue, identifier);
+                                for (WegasCallback cb : callbacks) {
+                                    cb.postUpdate(target, toValue, identifier);
+                                }
+                            } else {
+                                logger.debug("REJECT IGNORE NULL {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
+                            }
+
+                        } else {
+                            logger.debug("REJECT  NO RE-INIT OR USER CHANGE {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
                         }
                     } else {
-                        logger.debug("REJECT {} : NO RE-INIT OR USER CHANGE", this);
+                        logger.debug("REJECT {} : DELETE", this);
                     }
                 } else {
-                    logger.debug("REJECT {}: SAME_ENTITY_ONLY FAILED", this);
+                    logger.debug("REJECT {}: SAME_ENTITY_ONLY FAILED {} ->  {}", this, target, entity);
                 }
             } catch (Exception ex) {
                 throw new RuntimeException(ex);

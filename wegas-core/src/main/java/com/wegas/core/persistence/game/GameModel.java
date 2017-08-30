@@ -151,7 +151,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OrderColumn
     @JsonView(Views.Export.class)
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
+    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<VariableDescriptor> childVariableDescriptors = new ArrayList<>();
 
     /**
@@ -272,9 +272,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         } else {
             if (!this.getChildVariableDescriptors().contains(vd)) {
                 this.getChildVariableDescriptors().add(vd);
-                vd.setRootGameModel(this);
             }
         }
+        vd.setRootGameModel(this);
     }
 
     public void removeFromVariableDescriptors(VariableDescriptor vd) {
@@ -731,9 +731,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public boolean remove(VariableDescriptor item) {
+        item.setRootGameModel(null);
         this.getVariableDescriptors().remove(item);
         return this.getChildVariableDescriptors().remove(item);
-
     }
 
     @PostPersist

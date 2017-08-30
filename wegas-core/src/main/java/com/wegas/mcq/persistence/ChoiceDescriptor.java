@@ -433,7 +433,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     
     public static class ResultMergeCallback implements WegasCallback {
         @Override
-        public void preDestroy(AbstractEntity entity, Object identifier) {
+        public void remove(AbstractEntity entity, Object container, Object identifier) {
             if (entity instanceof Result) {
                 Result resultToRemove = (Result) entity;
                 for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {

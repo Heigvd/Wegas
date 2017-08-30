@@ -34,7 +34,6 @@ import java.util.Set;
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Entity
-
 @Table(indexes = {
     @Index(columnList = "burndowninstance_variableinstance_id")
 })
@@ -119,6 +118,8 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      * indicates the total remaining workload for the corresponding period.
      */
     @OneToMany(mappedBy = "iteration", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    
     @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Workload> workloads = new ArrayList<>();
 
@@ -368,8 +369,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     @JsonProperty
     public void setPlannedWorkloads(Map<Long, Double> plannedWorkloads) {
         this.plannedWorkloads.clear();
-        for (Entry<Long, Double> entry : plannedWorkloads.entrySet()) {
-            this.plannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+        if (plannedWorkloads != null) {
+            for (Entry<Long, Double> entry : plannedWorkloads.entrySet()) {
+                this.plannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+            }
         }
     }
 
@@ -447,8 +450,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     public void setReplannedWorkloads(Map<Long, Double> replannedWorkloads) {
         this.replannedWorkloads.clear();
-        for (Entry<Long, Double> entry : replannedWorkloads.entrySet()) {
-            this.replannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+        if (replannedWorkloads != null) {
+            for (Entry<Long, Double> entry : replannedWorkloads.entrySet()) {
+                this.replannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+            }
         }
     }
 

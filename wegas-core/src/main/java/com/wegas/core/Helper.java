@@ -12,6 +12,7 @@ import com.hazelcast.core.Member;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -767,7 +768,6 @@ public class Helper {
         }
     }
 
-
     public static void printWegasStackTrace(Throwable t) {
         StringBuilder sb = new StringBuilder(t.getClass().getName());
         sb.append(" - ").append(t.getMessage());
@@ -778,5 +778,38 @@ public class Helper {
             }
         }
         logger.error(sb.toString());
+    }
+
+    private static void indent(StringBuilder sb, int ident) {
+        for (int i = 0; i < ident; i++) {
+            sb.append("  ");
+        }
+    }
+
+    private static void newLine(StringBuilder sb, int ident) {
+        sb.append("\n");
+        Helper.indent(sb, ident);
+    }
+
+    private static void printDescriptors(List<VariableDescriptor> list, StringBuilder sb, int level) {
+        for (VariableDescriptor vd : list) {
+            newLine(sb, level);
+            sb.append(vd);
+            if (vd instanceof DescriptorListI) {
+                printDescriptors(((DescriptorListI) vd).getItems(), sb, level + 1);
+            }
+        }
+    }
+
+    public static String printGameModel(GameModel gameModel) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("GameModel ").append(gameModel);
+
+        newLine(sb, 0);
+
+        printDescriptors(gameModel.getItems(), sb, 1);
+
+        return sb.toString();
     }
 }

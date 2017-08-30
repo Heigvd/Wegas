@@ -7,7 +7,10 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -50,6 +53,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
     /**
      *
      * @param index
+     *
      * @return iest child
      */
     T item(int index);
@@ -57,7 +61,28 @@ public interface DescriptorListI<T extends VariableDescriptor> {
     /**
      *
      * @param item
+     *
      * @return true if item has successfully been removed
      */
     boolean remove(T item);
+
+    public static class UpdateChild implements WegasCallback {
+
+        @Override
+        public void add(AbstractEntity entity, Object container, Object identifier) {
+            if (container instanceof DescriptorListI && entity instanceof VariableDescriptor) {
+                DescriptorListI parent = (DescriptorListI) container;
+                parent.addItem((VariableDescriptor) entity);
+            }
+        }
+
+        @Override
+        public void remove(AbstractEntity entity, Object container, Object identifier) {
+            //DescriptorListI list = (DescriptorListI) entity;
+            if (container instanceof DescriptorListI && entity instanceof VariableDescriptor) {
+                DescriptorListI parent = (DescriptorListI) container;
+                parent.remove((VariableDescriptor) entity);
+            }
+        }
+    }
 }

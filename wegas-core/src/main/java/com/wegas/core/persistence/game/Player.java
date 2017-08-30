@@ -381,24 +381,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     @Override
-    public boolean equals(Object player) {
-        return super.equals(player) && this.hashCode() == player.hashCode();
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 83 * hash + Objects.hashCode(this.id);
-        //hash = 83 * hash + Objects.hashCode(this.user);
-        //hash = 83 * hash + Objects.hashCode(this.userId);
-        hash = 83 * hash + Objects.hashCode(this.name);
-        hash = 83 * hash + Objects.hashCode(this.joinTime);
-        //hash = 83 * hash + Objects.hashCode(this.team);
-        //hash = 83 * hash + Objects.hashCode(this.teamId);
-        return hash;
-    }
-
-    @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getTeam().getEntities();
     }

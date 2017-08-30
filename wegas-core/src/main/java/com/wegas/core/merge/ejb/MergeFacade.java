@@ -260,10 +260,11 @@ public class MergeFacade {
                 // revive
                 logger.info("Revive {}", scenario);
                 scenario.propagateGameModel();
+                variableDescriptorFacade.reviveItems(scenario, scenario, false);
                 gameModelFacade.reset(scenario);
             }
 
-            logger.info ("PROCESS COMPLETED");
+            logger.info("PROCESS COMPLETED");
 
         } catch (IOException ex) {
             logger.error("Exception while creating model", ex);
@@ -306,16 +307,29 @@ public class MergeFacade {
 
     }
 
+    public void propagateModel(Long gameModelId) {
+        this.propagateModel(gameModelFacade.find(gameModelId));
+    }
+
     public void propagateModel(GameModel gameModel) {
         if (gameModel.getType().equals(GmType.MODEL)) {
             GameModel reference = gameModel.getReference();
             if (reference != null) {
                 WegasPatch patch = new WegasEntityPatch(reference, gameModel, Boolean.TRUE);
 
-                for (GameModel implementation : gameModel.getImplementations()) {
-                    patch.apply(implementation);
+                for (GameModel scenario : reference.getImplementations()) {
+                    if (!scenario.equals(gameModel)) {
+                        patch.apply(scenario);
+
+                        logger.info("Revive {}", scenario);
+                        scenario.propagateGameModel();
+                        variableDescriptorFacade.reviveItems(scenario, scenario, false);
+                        gameModelFacade.reset(scenario);
+                    }
                 }
+
                 patch.apply(reference);
+                reference.propagateGameModel();
             } else {
                 throw WegasErrorMessage.error("Reference is missing");
             }

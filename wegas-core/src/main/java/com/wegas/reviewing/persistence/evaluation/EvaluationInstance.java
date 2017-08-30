@@ -102,28 +102,6 @@ public abstract class EvaluationInstance extends AbstractEntity {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o instanceof EvaluationInstance) {
-            EvaluationInstance ed = (EvaluationInstance) o;
-
-            if (ed.getId() == null || this.getId() == null) {
-                return false;
-            } else {
-                return this.getId().equals(ed.getId());
-            }
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.id);
-        return hash;
-    }
-
-    @Override
     public Long getId() {
         return this.id;
     }

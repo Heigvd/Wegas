@@ -367,6 +367,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         gm = gameModelFacade.find(gameModel.getId());
         Assert.assertEquals(0, gm.getVariableDescriptors().size());
         Assert.assertEquals(0, gm.getChildVariableDescriptors().size());
+
     }
 
     @Test

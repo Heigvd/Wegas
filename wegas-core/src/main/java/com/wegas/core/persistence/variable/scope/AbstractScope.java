@@ -74,6 +74,10 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     @Transient
     private Beanjection beans;
 
+    @JsonIgnore
+    @Transient
+    private boolean shouldCreateInstance = false;
+
     /**
      *
      */
@@ -311,6 +315,14 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
         this.broadcastScope = broadcastScope;
     }
 
+    public boolean getShouldCreateInstance() {
+        return shouldCreateInstance;
+    }
+
+    public void setShouldCreateInstance(boolean shouldCreateInstance) {
+        this.shouldCreateInstance = shouldCreateInstance;
+    }
+
     @Override
     public void setBeanjection(Beanjection beanjection) {
         this.beans = beanjection;
@@ -337,7 +349,6 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
 
         return this.variableInstanceFacade;
     }
-
 
     @Override
     public void __merge(AbstractEntity a) {

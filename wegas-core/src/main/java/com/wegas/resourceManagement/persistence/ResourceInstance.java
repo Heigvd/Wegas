@@ -352,7 +352,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     public static class ResourceInstanceMergeCallback implements WegasCallback {
 
         @Override
-        public void preDestroy(AbstractEntity entity, Object identifier) {
+        public void remove(AbstractEntity entity, Object container, Object identifier) {
             if (entity instanceof Assignment) {
                 Assignment assignment = (Assignment) entity;
                 TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());

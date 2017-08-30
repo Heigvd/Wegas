@@ -7,18 +7,21 @@
  */
 package com.wegas.core.persistence;
 
-import ch.qos.logback.classic.Level;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.ejb.MergeFacade;
-import com.wegas.core.merge.patch.WegasPatch;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
@@ -28,6 +31,7 @@ import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.security.persistence.User;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -46,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ * @author Maxence
  */
 public class MergeTest extends AbstractEJBTest {
 
@@ -55,10 +59,14 @@ public class MergeTest extends AbstractEJBTest {
 
     static {
         reflections = new Reflections("com.wegas");
+        /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptor.class)).setLevel(Level.DEBUG);
+
         ((ch.qos.logback.classic.Logger) logger).setLevel(Level.DEBUG);
+        // */
     }
 
     @Test
@@ -214,7 +222,7 @@ public class MergeTest extends AbstractEJBTest {
         Assert.assertEquals(0, exes.size());
     }
 
-    private NumberDescriptor createNumberDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, Double min, Double max, Double defaultValue, Double... history) {
+    private NumberDescriptor createNumberDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, Double min, Double max, Double defaultValue, Double... history) {
         NumberDescriptor desc = new NumberDescriptor();
         List<Double> hist = new ArrayList<>();
         for (Double h : history) {
@@ -222,6 +230,7 @@ public class MergeTest extends AbstractEJBTest {
         }
         desc.setName(name);
         desc.setLabel(label);
+        desc.setVisibility(visibility);
         desc.setScope(new TeamScope());
         desc.setMinValue(min);
         desc.setMaxValue(max);
@@ -269,8 +278,25 @@ public class MergeTest extends AbstractEJBTest {
         return desc;
     }
 
+    private VariableDescriptor getDescriptor(GameModel gm, String name) {
+        try {
+            return descriptorFacade.find(gm, name);
+        } catch (WegasNoResultException ex) {
+            return null;
+        }
+    }
+
+    private VariableInstance getInstance(GameModel gm, String vName) {
+        VariableDescriptor vd = this.getDescriptor(gm, vName);
+        if (vd != null) {
+            Player p = gm.getPlayers().get(0);
+            return vd.getInstance(p);
+        }
+        return null;
+    }
+
     @Test
-    public void testModelise() throws NamingException {
+    public void testModelise() throws NamingException, WegasNoResultException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
         GameModel gameModel1 = new GameModel();
@@ -286,21 +312,22 @@ public class MergeTest extends AbstractEJBTest {
         gameModelFacade.createWithDebugGame(gameModel3);
 
         ListDescriptor list1_1 = createList(gameModel1, null, "MyFirstFolder", "My First Folder");
-        createNumberDescriptor(gameModel1, list1_1, "x", "X", 0.0, 100.0, 1.0, 1.1);
-        createNumberDescriptor(gameModel1, list1_1, "y", "Y", 0.0, 100.0, 2.0, 2.1);
-        createNumberDescriptor(gameModel1, list1_1, "z", "Z", 0.0, 100.0, 3.0, 3.1);
-        createNumberDescriptor(gameModel1, list1_1, "t", "T", 0.0, 100.0, 4.0, 4.1);
+        //                                           N,   L,  Min, Max,   Def, History...
+        createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.1);
+        createNumberDescriptor(gameModel1, list1_1, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.1);
+        createNumberDescriptor(gameModel1, list1_1, "z", "Z", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.1);
+        createNumberDescriptor(gameModel1, list1_1, "t", "T", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.1);
 
         ListDescriptor list1_2 = createList(gameModel2, null, "MyFirstFolder", "My First Folder");
-        createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", 0.0, 100.0, 1.0, 1.1, 1.2);
-        createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", 0.0, 100.0, 2.0, 2.1, 2.2);
-        createNumberDescriptor(gameModel2, list1_2, "z", "LABEL Z", 0.0, 100.0, 3.0, 3.1, 3.2);
-        createNumberDescriptor(gameModel2, list1_2, "t", "LABEL T", 0.0, 100.0, 4.0, 4.1, 4.2);
+        createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.1, 1.2);
+        createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.1, 2.2);
+        createNumberDescriptor(gameModel2, list1_2, "z", "LABEL Z", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.1, 3.2);
+        createNumberDescriptor(gameModel2, list1_2, "t", "LABEL T", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.1, 4.2);
 
-        createNumberDescriptor(gameModel3, null, "x", "LBL X", -100.0, 100.0, 1.5, 1.1, 1.2);
-        createNumberDescriptor(gameModel3, null, "y", "LBL Y", -100.0, 100.0, 2.5, 2.1, 2.2);
-        createNumberDescriptor(gameModel3, null, "z", "LBL Z", -100.0, 100.0, 3.5, 3.1, 3.2);
-        createNumberDescriptor(gameModel3, null, "t", "LBL T", -100.0, 100.0, 4.5, 4.1, 4.2);
+        createNumberDescriptor(gameModel3, null, "x", "LBL X", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 1.5, 1.1, 1.2);
+        createNumberDescriptor(gameModel3, null, "y", "LBL Y", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 2.5, 2.1, 2.2);
+        createNumberDescriptor(gameModel3, null, "z", "LBL Z", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 3.5, 3.1, 3.2);
+        createNumberDescriptor(gameModel3, null, "t", "LBL T", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 4.5, 4.1, 4.2);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -333,6 +360,7 @@ public class MergeTest extends AbstractEJBTest {
                     vd.setVisibility(ModelScoped.Visibility.PRIVATE);
                     break;
                 default:
+                    vd.setVisibility(ModelScoped.Visibility.INHERITED);
             }
 
             logger.info("Vd {} -> {}", vd, vd.getVisibility());
@@ -341,9 +369,232 @@ public class MergeTest extends AbstractEJBTest {
             }
         }
 
-        mergeFacade.createModel(model, scenarios);
+        model = mergeFacade.createModel(model, scenarios);
+
+        NumberInstance xi1, xi2, xi3;
+        NumberInstance yi1, yi2, yi3;
+        NumberInstance zi1, zi2, zi3;
+
+        /*
+         * X: Model override scenarios
+         */
+        xi1 = (NumberInstance) getInstance(gameModel1, "x");
+        xi2 = (NumberInstance) getInstance(gameModel2, "x");
+        xi3 = (NumberInstance) getInstance(gameModel3, "x");
+
+        Assert.assertEquals("X", xi1.findDescriptor().getLabel());
+        Assert.assertEquals("X", xi2.findDescriptor().getLabel());
+        Assert.assertEquals("X", xi3.findDescriptor().getLabel());
+        Assert.assertEquals(1.0, xi1.getValue(), 0.00001);
+        Assert.assertEquals(1.0, xi2.getValue(), 0.00001);
+        Assert.assertEquals(1.0, xi3.getValue(), 0.00001);
 
 
+        /*
+         * Y: model override descriptor but update defaultinstance 
+         */
+        yi1 = (NumberInstance) getInstance(gameModel1, "y");
+        yi2 = (NumberInstance) getInstance(gameModel2, "y");
+        yi3 = (NumberInstance) getInstance(gameModel3, "y");
+
+        Assert.assertEquals("Y", yi1.findDescriptor().getLabel());
+        Assert.assertEquals("Y", yi2.findDescriptor().getLabel());
+        Assert.assertEquals("Y", yi3.findDescriptor().getLabel());
+        Assert.assertEquals(2.0, yi1.getValue(), 0.00001);
+        Assert.assertEquals(2.0, yi2.getValue(), 0.00001);
+        Assert.assertEquals(2.5, yi3.getValue(), 0.00001);
+
+
+        /*
+         * Z: model update descriptor and defaultinstance 
+         */
+        zi1 = (NumberInstance) getInstance(gameModel1, "z");
+        zi2 = (NumberInstance) getInstance(gameModel2, "z");
+        zi3 = (NumberInstance) getInstance(gameModel3, "z");
+
+        Assert.assertEquals("Z", zi1.findDescriptor().getLabel());
+        Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel());
+        Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel());
+        Assert.assertEquals(3.0, zi1.getValue(), 0.00001);
+        Assert.assertEquals(3.0, zi2.getValue(), 0.00001);
+        Assert.assertEquals(3.5, zi3.getValue(), 0.00001);
+
+        // Update model
+        NumberDescriptor xModel = (NumberDescriptor) descriptorFacade.find(model, "x");
+        NumberDescriptor yModel = (NumberDescriptor) descriptorFacade.find(model, "y");
+        NumberDescriptor zModel = (NumberDescriptor) descriptorFacade.find(model, "z");
+
+        xModel.setLabel("my X");
+        xModel.getDefaultInstance().setValue(11.0);
+        descriptorFacade.update(xModel.getId(), xModel);
+
+        yModel.setLabel("my Y");
+        yModel.getDefaultInstance().setValue(12.0);
+        descriptorFacade.update(yModel.getId(), yModel);
+
+        zModel.setLabel("my Z");
+        zModel.getDefaultInstance().setValue(13.0);
+        descriptorFacade.update(zModel.getId(), zModel);
+
+        mergeFacade.propagateModel(model.getId());
+
+        /*
+         * X: Model override scenarios
+         */
+        xi1 = (NumberInstance) getInstance(gameModel1, "x");
+        xi2 = (NumberInstance) getInstance(gameModel2, "x");
+        xi3 = (NumberInstance) getInstance(gameModel3, "x");
+
+        Assert.assertEquals("my X", xi1.findDescriptor().getLabel());
+        Assert.assertEquals("my X", xi2.findDescriptor().getLabel());
+        Assert.assertEquals("my X", xi3.findDescriptor().getLabel());
+        Assert.assertEquals(11.0, xi1.getValue(), 0.00001);
+        Assert.assertEquals(11.0, xi2.getValue(), 0.00001);
+        Assert.assertEquals(11.0, xi3.getValue(), 0.00001);
+
+
+        /*
+         * Y: model override descriptor but update defaultinstance 
+         */
+        yi1 = (NumberInstance) getInstance(gameModel1, "y");
+        yi2 = (NumberInstance) getInstance(gameModel2, "y");
+        yi3 = (NumberInstance) getInstance(gameModel3, "y");
+
+        Assert.assertEquals("my Y", yi1.findDescriptor().getLabel());
+        Assert.assertEquals("my Y", yi2.findDescriptor().getLabel());
+        Assert.assertEquals("my Y", yi3.findDescriptor().getLabel());
+        Assert.assertEquals(12.0, yi1.getValue(), 0.00001);
+        Assert.assertEquals(12.0, yi2.getValue(), 0.00001);
+        Assert.assertEquals(2.5, yi3.getValue(), 0.00001);
+
+
+        /*
+         * Z: model update descriptor and defaultinstance 
+         */
+        zi1 = (NumberInstance) getInstance(gameModel1, "z");
+        zi2 = (NumberInstance) getInstance(gameModel2, "z");
+        zi3 = (NumberInstance) getInstance(gameModel3, "z");
+
+        Assert.assertEquals("my Z", zi1.findDescriptor().getLabel());
+        Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel());
+        Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel());
+        Assert.assertEquals(13.0, zi1.getValue(), 0.00001);
+        Assert.assertEquals(13.0, zi2.getValue(), 0.00001);
+        Assert.assertEquals(3.5, zi3.getValue(), 0.00001);
+
+        /**
+         * Create new descriptors in model
+         */
+        ListDescriptor folder = (ListDescriptor) getDescriptor(model, "myFirstFolder");
+        createNumberDescriptor(model, folder, "alpha", "α", ModelScoped.Visibility.PROTECTED, -1.0, +1.0, 0.666, 0.0, 0.333);
+        createNumberDescriptor(model, null, "pi", "π", ModelScoped.Visibility.INHERITED, null, null, 3.14);
+
+        /**
+         * Switch to 2D and move x to root level
+         */
+        descriptorFacade.remove(getDescriptor(model, "z").getId());
+        descriptorFacade.move(getDescriptor(model, "x").getId(), 0);
+
+        mergeFacade.propagateModel(model.getId());
+
+        /**
+         * Assert new descriptor stand in the correct folder
+         */
+        Assert.assertEquals(getDescriptor(gameModel1, "myFirstFolder"), getDescriptor(gameModel1, "alpha").getParentList());
+        Assert.assertEquals(getDescriptor(gameModel2, "myFirstFolder"), getDescriptor(gameModel2, "alpha").getParentList());
+        Assert.assertEquals(getDescriptor(gameModel3, "myFirstFolder"), getDescriptor(gameModel3, "alpha").getParentList());
+
+        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "pi").getRootGameModel());
+        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "pi").getRootGameModel());
+        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "pi").getRootGameModel());
+
+        /**
+         * Assert z no longer exists
+         */
+        Assert.assertNull(getDescriptor(gameModel1, "z"));
+        Assert.assertNull(getDescriptor(gameModel2, "z"));
+        Assert.assertNull(getDescriptor(gameModel3, "z"));
+
+        /**
+         * Assert x stands at root level
+         */
+        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "x").getRootGameModel());
+        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "x").getRootGameModel());
+        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "x").getRootGameModel());
+
+        Assert.assertNull(getDescriptor(gameModel1, "x").getParentList());
+        Assert.assertNull(getDescriptor(gameModel2, "x").getParentList());
+        Assert.assertNull(getDescriptor(gameModel3, "x").getParentList());
+
+        /**
+         * remove var from root level
+         */
+        descriptorFacade.remove(getDescriptor(model, "x").getId());
+        mergeFacade.propagateModel(model.getId());
+
+        /**
+         * Assert x no longer exists
+         */
+        Assert.assertNull(getDescriptor(gameModel1, "x"));
+        Assert.assertNull(getDescriptor(gameModel2, "x"));
+        Assert.assertNull(getDescriptor(gameModel3, "x"));
+
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel3.getId())));
+
+        /**
+         * Change Y default value and move to root
+         * <p>
+         */
+        NumberDescriptor y1 = (NumberDescriptor) getDescriptor(model, "y");
+
+        y1.setLabel("my Y");
+        y1.getDefaultInstance().setValue(22.0);
+        descriptorFacade.update(y1.getId(), y1);
+        descriptorFacade.move(getDescriptor(model, "y").getId(), 0);
+
+        mergeFacade.propagateModel(model.getId());
+
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel3.getId())));
+
+        /**
+         * Assert y stands at root level
+         */
+        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "y").getRootGameModel());
+        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "y").getRootGameModel());
+        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "y").getRootGameModel());
+
+        Assert.assertNull(getDescriptor(gameModel1, "y").getParentList());
+        Assert.assertNull(getDescriptor(gameModel2, "y").getParentList());
+        Assert.assertNull(getDescriptor(gameModel3, "y").getParentList());
+
+        /*
+         * Y: model override descriptor but update defaultinstance 
+         */
+        Assert.assertEquals(22.0, ((NumberInstance) getInstance(gameModel1, "y")).getValue(), 0.00001);
+        Assert.assertEquals(22.0, ((NumberInstance) getInstance(gameModel2, "y")).getValue(), 0.00001);
+        Assert.assertEquals(2.5, ((NumberInstance) getInstance(gameModel3, "y")).getValue(), 0.00001);
+
+        /* Move alpha to root & delete */
+        descriptorFacade.move(getDescriptor(model, "alpha").getId(), 0);
+        descriptorFacade.remove(getDescriptor(model, "myFirstFolder").getId());
+
+        mergeFacade.propagateModel(model.getId());
+
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel3.getId())));
+
+        Assert.assertNull(getDescriptor(gameModel1, "myFirstFolder"));
+        Assert.assertNull(getDescriptor(gameModel2, "myFirstFolder"));
+        Assert.assertNull(getDescriptor(gameModel3, "myFirstFolder"));
+
+        Assert.assertEquals(0.666, ((NumberInstance) getInstance(gameModel1, "alpha")).getValue(), 0.00001);
+        Assert.assertEquals(0.666, ((NumberInstance) getInstance(gameModel2, "alpha")).getValue(), 0.00001);
+        Assert.assertEquals(0.666, ((NumberInstance) getInstance(gameModel3, "alpha")).getValue(), 0.00001);
 
         logger.info("FINI");
     }
@@ -383,5 +634,59 @@ public class MergeTest extends AbstractEJBTest {
                 }
             }
         }
+    }
+
+    private Team createTeam(Game g, String name) {
+        Team t = new Team(name);
+        t.setGame(g);
+        teamFacade.create(g.getId(), t);
+        return t;
+    }
+
+    private Player createPlayer(Team t) {
+        User u = new User();
+        userFacade.create(u);
+
+        return gameFacade.joinTeam(t.getId(), u.getId());
+    }
+
+    /**
+     * Test registeredGames
+     */
+    @Test
+    public void testMassiveJoinBigGame() throws Exception {
+        int nbTeam = 100;
+        int nbPlayer = 10;
+        int nbVariable = 500;
+
+        GameModel bigGameModel = new GameModel();
+        bigGameModel.setName("a big gamemodel");
+        gameModelFacade.createWithDebugGame(bigGameModel);
+
+        long start;
+
+        for (int i = 0; i < nbVariable; i++) {
+            start = System.currentTimeMillis();
+            createNumberDescriptor(bigGameModel, null, "Number #" + i, "#" + i, ModelScoped.Visibility.INHERITED, 0.0, 100.0, 0.0);
+            logger.error("Create Variable # {} in {}", i, (System.currentTimeMillis() - start));
+        }
+
+        Game g = new Game("game");
+        g.setGameModel(bigGameModel);
+        gameFacade.create(g);
+
+        for (int i = 0; i < nbTeam; i++) {
+            long startTeam = System.currentTimeMillis();
+            Team t = createTeam(g, "T" + i);
+            logger.error("Team in {}", (System.currentTimeMillis() - startTeam));
+            logger.error("Create Team # {}", i);
+            for (int j = 0; j < nbPlayer; j++) {
+                start = System.currentTimeMillis();
+                createPlayer(t);
+                logger.error("   Create Player # {} in {}", j, (System.currentTimeMillis() - start));
+            }
+        }
+
+        gameModelFacade.reset(bigGameModel.getId());
     }
 }

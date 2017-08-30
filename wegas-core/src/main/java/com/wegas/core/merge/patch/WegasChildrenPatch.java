@@ -40,7 +40,7 @@ public final class WegasChildrenPatch extends WegasPatch {
             boolean recursive, boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
             Visibility[] cascade) {
 
-        super(identifier, order, getter, setter, userCallback, sameEntityOnly, initOnly, recursive, cascade);
+        super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, cascade);
         this.patches = new ArrayList<>();
         this.from = from;
         this.to = to;
@@ -59,7 +59,7 @@ public final class WegasChildrenPatch extends WegasPatch {
             patches.add(new WegasEntityPatch(key, 0, null, null, null,
                     fromEntity,
                     toEntity, // null -> DELETE ; not null -> UPDATE
-                    recursive, false, false, cascade));
+                    recursive, false, false, false, cascade));
 
             if (to != null) {
                 // since the patch to update "to" has been created, remove "to" from the map
@@ -73,7 +73,7 @@ public final class WegasChildrenPatch extends WegasPatch {
             AbstractEntity toEntity = entry.getValue();
             patches.add(new WegasEntityPatch(key, 0, userCallback, null, null,
                     null, toEntity, // from null to no null  -> CREATE
-                    recursive, false, false, cascade));
+                    recursive, false, false, false, cascade));
         }
     }
 
@@ -99,107 +99,124 @@ public final class WegasChildrenPatch extends WegasPatch {
     @Override
     public LifecycleCollector apply(AbstractEntity target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass) {
         logger.debug("Apply {} {}", this.getClass().getSimpleName(), identifier);
+        logger.indent();
         try {
             if (shouldApplyPatch(target, referenceEntity)) {
                 Object children = getter.invoke(target);
 
-                if (!initOnly || children == null) {
-                    final List<AbstractEntity> childrenList;
+                if (!ignoreNull || to != null) {
+                    if (!initOnly || children == null) {
+                        final List<AbstractEntity> childrenList;
 
-                    final Map<Object, AbstractEntity> childrenMap;
+                        final Map<Object, AbstractEntity> childrenMap;
 
-                    if (children instanceof Map) {
-                        childrenMap = new HashMap<>();
-                        childrenMap.putAll(childrenMap);
-                        childrenList = null;
-                        children = childrenMap;
-                    } else if (children instanceof List) {
-                        childrenList = new ArrayList<>();
-                        childrenList.addAll((List<? extends AbstractEntity>) children);
-                        children = childrenList;
+                        if (children instanceof Map) {
+                            childrenMap = new HashMap<>();
+                            childrenMap.putAll((Map<? extends Object, ? extends AbstractEntity>) children);
+                            childrenList = null;
+                            children = childrenMap;
+                        } else if (children instanceof List) {
+                            childrenList = new ArrayList<>();
+                            childrenList.addAll((List<? extends AbstractEntity>) children);
+                            children = childrenList;
 
-                        childrenMap = null;
+                            childrenMap = null;
+                        } else {
+                            throw WegasErrorMessage.error("Incompatible type");
+                        }
+
+                        final Object finalChildren = children;
+
+                        Map<Object, AbstractEntity> tmpMap = asMap(children);
+                        List<WegasCallback> callbacks = this.getCallbacks(callback);
+
+                        WegasCallback registerChild = new WegasCallback() {
+                            @Override
+                            public void add(AbstractEntity entity, Object container, Object identifier) {
+                                if (childrenList != null) {
+                                    childrenList.add(entity);
+                                } else if (childrenMap != null) {
+                                    childrenMap.put(identifier, entity);
+                                }
+
+                                for (WegasCallback cb : callbacks) {
+                                    cb.add(entity, finalChildren, identifier);
+                                }
+                            }
+
+                            @Override
+                            public void remove(AbstractEntity entity, Object container, Object identifier) {
+                                if (childrenList != null) {
+                                    childrenList.remove(entity);
+                                } else if (childrenMap != null) {
+                                    childrenMap.remove(identifier);
+                                }
+
+                                for (WegasCallback cb : callbacks) {
+                                    cb.remove(entity, finalChildren, identifier);
+                                }
+                            }
+                        };
+
+                        for (WegasCallback cb : callbacks) {
+                            cb.preUpdate(target, to, identifier);
+                        }
+
+                        for (WegasEntityPatch patch : patches) {
+                            Object key = patch.getIdentifier();
+                            AbstractEntity child = tmpMap.get(key);
+
+                            patch.apply(child, registerChild, parentMode, visibility, collector, numPass);
+                        }
+
+                        if (childrenList != null && numPass > 1) {
+                            /*
+                             * RESTORE LIST ORDER !
+                             */
+                            int i, j, delta = 0, newPos;
+                            final List<AbstractEntity> toList = new ArrayList<>();
+
+                            tmpMap = asMap(children);
+                            for (AbstractEntity entity : (List<AbstractEntity>) to) {
+                                if (tmpMap.containsKey(entity.getRefId())) {
+                                    toList.add(entity);
+                                }
+                            }
+
+                            for (i = 0; i < childrenList.size(); i++) {
+                                AbstractEntity childA = childrenList.get(i);
+                                for (j = i; j < toList.size(); j++) {
+                                    AbstractEntity childB = toList.get(j);
+
+                                    if (childA.equals(childB) || (childA.getRefId() != null && childA.getRefId().equals(childB.getRefId()))) {
+                                        break;
+                                    }
+                                }
+                                if (j < toList.size()) {
+                                    newPos = j + delta;
+                                    if (newPos > i) {
+                                        AbstractEntity child = childrenList.remove(i);
+                                        childrenList.add(newPos, child);
+                                        i--;
+                                    }
+                                } else {
+                                    delta++;
+                                }
+                            }
+                        }
+
+                        setter.invoke(target, children);
+
+                        for (WegasCallback cb : callbacks) {
+                            cb.postUpdate(target, to, identifier);
+                        }
                     } else {
-                        throw WegasErrorMessage.error("Incompatible type");
+                        logger.debug("REJECT PATCH: INIT ONLY");
                     }
-
-                    Map<Object, AbstractEntity> tmpMap = asMap(children);
-                    List<WegasCallback> callbacks = this.getCallbacks(callback);
-
-                    WegasCallback registerChild = new WegasCallback() {
-                        @Override
-                        public void postPersist(AbstractEntity entity, Object identifier) {
-                            if (childrenList != null) {
-                                childrenList.add(entity);
-                            } else if (childrenMap != null) {
-                                childrenMap.put(identifier, entity);
-                            }
-
-                            for (WegasCallback cb : callbacks) {
-                                cb.postPersist(entity, identifier);
-                            }
-                        }
-
-                        @Override
-                        public void preDestroy(AbstractEntity entity, Object identifier) {
-                            if (childrenList != null) {
-                                childrenList.remove(entity);
-                            } else if (childrenMap != null) {
-                                childrenMap.remove(identifier);
-                            }
-
-                            for (WegasCallback cb : callbacks) {
-                                cb.preDestroy(entity, identifier);
-                            }
-                        }
-                    };
-
-                    for (WegasCallback cb : callbacks) {
-                        cb.preUpdate(target, to, identifier);
-                    }
-
-                    for (WegasEntityPatch patch : patches) {
-                        Object key = patch.getIdentifier();
-                        AbstractEntity child = tmpMap.get(key);
-
-                        patch.apply(child, registerChild, parentMode, visibility, collector, numPass);
-                    }
-
-                    if (childrenList != null) {
-                        /*
-                         * RESTORE LIST ORDER !
-                         */
-                        int i, j, delta = 0, newPos;
-                        final List<AbstractEntity> toList = (List<AbstractEntity>) to;
-
-                        for (i = 0; i < childrenList.size(); i++) {
-                            AbstractEntity childA = childrenList.get(i);
-                            for (j = i; j < toList.size(); j++) {
-                                AbstractEntity childB = toList.get(j);
-
-                                if (childA.equals(childB) || (childA.getRefId() != null && childA.getRefId().equals(childB.getRefId()))) {
-                                    break;
-                                }
-                            }
-                            if (j < toList.size()) {
-                                newPos = j + delta;
-                                if (newPos > i) {
-                                    AbstractEntity child = childrenList.remove(i);
-                                    childrenList.add(newPos, child);
-                                    i--;
-                                }
-                            } else {
-                                delta++;
-                            }
-                        }
-                    }
-
-                    setter.invoke(target, children);
-
-                    for (WegasCallback cb : callbacks) {
-                        cb.postUpdate(target, to, identifier);
-                    }
+                } else {
+                    logger.debug("REJECT PATCH: IGNORE_NULL");
                 }
+
             } else {
                 logger.debug("REJECT PATCH: SAME_ENTITY_ONLY FAILED");
             }
@@ -207,6 +224,7 @@ public final class WegasChildrenPatch extends WegasPatch {
             throw new RuntimeException(ex);
         }
         logger.debug(" DONE {} {}", this.getClass().getSimpleName(), identifier);
+        logger.unindent();
         return collector;
     }
 

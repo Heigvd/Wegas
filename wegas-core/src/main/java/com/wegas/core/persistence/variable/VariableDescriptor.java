@@ -54,6 +54,7 @@ import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import java.util.logging.Level;
 
 /**
  * @param <T>
@@ -603,19 +604,50 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     public static class ScopeUpdate implements WegasCallback {
 
+        private AbstractScope cloneScope(AbstractScope scope) {
+            AbstractScope newScope = null;
+            try {
+                if (scope != null) {
+                    newScope = scope.getClass().newInstance();
+                    newScope.setBroadcastScope(scope.getBroadcastScope());
+                }
+            } catch (Exception ex) {
+                logger.error("Fails to copy scope {}", newScope);
+            }
+            if (newScope == null) {
+                newScope = new TeamScope();
+                newScope.setBroadcastScope("TeamScope");
+            }
+            return newScope;
+        }
+
         @Override
         public void postUpdate(AbstractEntity entity, Object originalNewValue, Object identifier) {
-            AbstractScope scope = ((VariableDescriptor) entity).getScope();
+            VariableDescriptor vd = (VariableDescriptor) entity;
+            AbstractScope scope = vd.getScope();
             AbstractScope newScope = ((VariableDescriptor) originalNewValue).getScope();
 
             if (scope != null && newScope != null) {
                 if (!scope.getClass().equals(newScope.getClass())) {
                     VariableDescriptor variableDescriptor = scope.getVariableDescriptor();
-                    variableDescriptor.getVariableDescriptorFacade().updateScope(variableDescriptor, newScope);
+                    variableDescriptor.getVariableDescriptorFacade().updateScope(variableDescriptor, cloneScope(newScope));
                 } else {
                     scope.setBroadcastScope(newScope.getBroadcastScope());
                 }
+            } else if (scope == null) {
+                newScope = cloneScope(newScope);
+                newScope.setShouldCreateInstance(true);
+                vd.setScope(newScope);
             }
         }
+
+        @Override
+        public void destroy(AbstractEntity entity, Object identifier) {
+            if (entity instanceof VariableDescriptor){
+                VariableDescriptor vd =(VariableDescriptor) entity;
+                vd.getVariableDescriptorFacade().preDestroy(vd.getGameModel(), vd);
+            }
+        }
+
     }
 }

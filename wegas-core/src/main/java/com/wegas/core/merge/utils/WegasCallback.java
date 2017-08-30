@@ -15,19 +15,65 @@ import com.wegas.core.persistence.AbstractEntity;
  */
 public interface WegasCallback {
 
-    default public void postPersist(AbstractEntity entity, Object identifier) {
+    /**
+     * Called when an entity is created or when a child is added to its parent
+     *
+     * @param entity
+     * @param identifier
+     */
+    default public void add(AbstractEntity entity, Object container, Object identifier) {
 
     }
 
+    /**
+     * Just before entity or field update
+     *
+     * @param entity
+     * @param newValue
+     * @param identifier
+     */
     default public void preUpdate(AbstractEntity entity, Object newValue, Object identifier) {
 
     }
 
+    /**
+     * Just after entity or field update
+     *
+     * @param entity
+     * @param ref
+     * @param identifier
+     */
     default public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
 
     }
 
-    default public void preDestroy(AbstractEntity entity, Object identifier) {
+    /**
+     * Called when an entity is removed or when a child is removed from its parent
+     *
+     * @param entity
+     * @param identifier
+     */
+    default public void remove(AbstractEntity entity, Object container, Object identifier) {
+
+    }
+
+    /**
+     * Called after the patch has been completely processed for each branch new entity
+     *
+     * @param entity
+     * @param identifier
+     */
+    default public void persist(AbstractEntity entity, Object identifier) {
+
+    }
+
+    /**
+     * Called after the patch has been completely processed for each entity which is to be removed
+     *
+     * @param entity
+     * @param identifier
+     */
+    default public void destroy(AbstractEntity entity, Object identifier) {
 
     }
 }

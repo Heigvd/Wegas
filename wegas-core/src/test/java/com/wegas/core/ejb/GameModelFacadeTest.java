@@ -70,10 +70,13 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         final int size = gameModelFacade.findAll().size();
         gameModelFacade.create(gameModel);
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
+        gameModel.setName(GAMENAME2);
+
 
         // Edit this gam
-        GameModel gm2 = gameModelFacade.update(gameModel.getId(), new GameModel(GAMENAME2));
+        GameModel gm2 = gameModelFacade.update(gameModel.getId(), gameModel);
         Assert.assertEquals(GAMENAME2, gm2.getName());
+        
 
         // Create a game, a team and a player
         Game g = new Game(NAME, TOKEN);
