@@ -102,9 +102,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.index = index;
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * Return the name of the evaluation

@@ -146,10 +146,4 @@ public class NumberInstance extends VariableInstance {
         }
     }
 
-    /**
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

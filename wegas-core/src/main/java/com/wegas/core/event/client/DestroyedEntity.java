@@ -37,7 +37,4 @@ public class DestroyedEntity extends AbstractEntity {
         return effectiveClass;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 }

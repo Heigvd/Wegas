@@ -79,13 +79,6 @@ public class Occupation extends AbstractEntity {
         this.time = time;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /*
      @PostPersist

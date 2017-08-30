@@ -293,9 +293,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         }
     }
 
-    @Override
-    public void __merge(AbstractEntity n) {
-    }
 
     /**
      *

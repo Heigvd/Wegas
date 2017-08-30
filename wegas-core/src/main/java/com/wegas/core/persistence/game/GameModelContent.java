@@ -85,9 +85,6 @@ public class GameModelContent extends AbstractEntity implements Serializable {
         this.contentType = contentType;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     @Override
     public boolean equals(Object obj) {

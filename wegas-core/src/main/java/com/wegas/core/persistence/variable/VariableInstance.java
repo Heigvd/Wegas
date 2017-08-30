@@ -576,9 +576,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         this.gameModelScope = gameModelScope;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     /**
      *

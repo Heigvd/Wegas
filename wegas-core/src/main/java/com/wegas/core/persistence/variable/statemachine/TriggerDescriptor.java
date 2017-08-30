@@ -155,9 +155,6 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         this.buildStateMachine();
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      *

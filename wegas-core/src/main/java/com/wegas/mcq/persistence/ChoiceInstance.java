@@ -161,13 +161,6 @@ public class ChoiceInstance extends VariableInstance {
         this.currentResultIndex = index;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the active

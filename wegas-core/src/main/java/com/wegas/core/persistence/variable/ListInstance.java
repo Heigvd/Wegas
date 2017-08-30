@@ -31,7 +31,4 @@ public class ListInstance extends VariableInstance {
         return ((ListDescriptor) this.getDescriptor()).item(index);
     }
 
-    public void __merge(AbstractEntity ae){
-
-    }
 }

@@ -35,13 +35,6 @@ public abstract class AbstractAssignement extends AbstractEntity {
     @WegasEntityProperty
     private String taskDescriptorName;
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      *

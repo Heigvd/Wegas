@@ -85,12 +85,6 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         this.refId = refId;
     }
 
-    /**
-     * Merge other into this
-     *
-     * @param other the entity to copy values from
-     */
-    public abstract void __merge(AbstractEntity other);
 
     public final void merge(AbstractEntity other) {
         WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);

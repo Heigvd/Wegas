@@ -288,13 +288,6 @@ public class TaskInstance extends VariableInstance implements Propertable {
         req.setTaskInstance(this);
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {

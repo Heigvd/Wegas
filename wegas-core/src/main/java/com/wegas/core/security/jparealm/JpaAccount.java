@@ -58,9 +58,6 @@ public class JpaAccount extends AbstractAccount {
     @JsonIgnore
     private String salt;
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     /**
      *

@@ -83,7 +83,4 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
         return id;
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

@@ -120,9 +120,6 @@ public class WRequirement extends AbstractEntity {
         this.work = work;
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the id

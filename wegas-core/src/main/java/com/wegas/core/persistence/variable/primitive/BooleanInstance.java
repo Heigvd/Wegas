@@ -59,11 +59,4 @@ public class BooleanInstance extends VariableInstance {
         this.value = value;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

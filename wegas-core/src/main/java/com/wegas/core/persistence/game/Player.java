@@ -165,9 +165,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         }
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     @Override
     public Long getId() {

@@ -49,7 +49,4 @@ public class DialogueTransition extends Transition {
         this.actionText = actionText;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 }

@@ -151,9 +151,6 @@ public class StateMachineInstance extends VariableInstance {
         this.setTransitionHistory(h);
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     @Override
     public String toString() {

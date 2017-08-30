@@ -64,9 +64,6 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
         this.maxValue = maxValue;
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     @Override
     protected GradeInstance newInstance() {

@@ -86,9 +86,6 @@ public class Role extends AbstractEntity {
         this.name = name;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     @Override
     public Long getId() {

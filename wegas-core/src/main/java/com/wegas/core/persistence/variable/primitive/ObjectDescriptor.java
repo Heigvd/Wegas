@@ -52,13 +52,6 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
         return this.properties;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the description

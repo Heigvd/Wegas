@@ -153,9 +153,6 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.id = id;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     /**
      * @return the user

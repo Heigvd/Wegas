@@ -136,12 +136,6 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         this.setDeclaredSize(declaredSize);
     }
 
-    /**
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the gameModel

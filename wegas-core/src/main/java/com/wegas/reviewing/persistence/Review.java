@@ -212,16 +212,6 @@ public class Review extends AbstractEntity implements DatedEntity {
         }
     }
 
-    /*@Override
-    public Map<String, List<AbstractEntity>> getEntities() {
-        Map<String, List<AbstractEntity>> entities = new HashMap<>();
-        Helper.merge(entities, this.getAuthor().getEntities());
-        Helper.merge(entities, this.getReviewer().getEntities());
-        return entities;
-    }*/
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {

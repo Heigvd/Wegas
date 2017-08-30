@@ -64,9 +64,6 @@ public class AaiAccount extends AbstractAccount {
         this.setHomeOrg(userDetails.getHomeOrg());
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     // This attribute should not be sent to the client side, hence the JsonIgnore:
     @JsonIgnore

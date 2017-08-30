@@ -350,7 +350,4 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
         return this.variableInstanceFacade;
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

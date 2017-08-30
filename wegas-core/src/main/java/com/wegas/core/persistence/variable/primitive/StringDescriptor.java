@@ -60,13 +60,6 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
         this.name = name;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the validationPattern

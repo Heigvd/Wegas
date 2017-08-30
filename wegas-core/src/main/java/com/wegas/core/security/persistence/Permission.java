@@ -90,9 +90,6 @@ public class Permission extends AbstractEntity {
         this.inducedPermission = inducedPermission;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     @Override
     public boolean equals(Object obj) {

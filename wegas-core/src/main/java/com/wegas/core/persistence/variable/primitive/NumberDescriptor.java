@@ -73,13 +73,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         super(name, defaultInstance);
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the minValue

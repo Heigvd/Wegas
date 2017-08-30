@@ -51,12 +51,6 @@ public class StringInstance extends VariableInstance implements Searchable {
         this.value = value;
     }
 
-    /**
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the value

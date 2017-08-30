@@ -37,9 +37,6 @@ public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
     @WegasEntityProperty
     private String description;
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the description

@@ -56,13 +56,6 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
         return properties;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the description

@@ -95,9 +95,6 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return "StateMachineDescriptor{id=" + this.getId() + ", states=" + states + '}';
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /*
      * script methods

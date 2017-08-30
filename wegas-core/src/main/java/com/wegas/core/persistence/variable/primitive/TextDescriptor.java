@@ -41,8 +41,4 @@ public class TextDescriptor extends VariableDescriptor<TextInstance> {
         return this.getInstance(p).getValue();
     }
 
-    @Override
-    public void __merge(AbstractEntity e){
-        
-    }
 }

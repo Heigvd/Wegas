@@ -97,9 +97,6 @@ public class InboxInstance extends VariableInstance {
         this.messages.add(0, message);
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @param message

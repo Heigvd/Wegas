@@ -51,12 +51,6 @@ public class QuestionInstance extends VariableInstance {
     @WegasEntityProperty
     private Boolean validated = FALSE;
 
-    /**
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the active

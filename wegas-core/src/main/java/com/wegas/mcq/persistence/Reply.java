@@ -91,12 +91,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @JsonBackReference
     private ChoiceInstance choiceInstance;
 
-    /**
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the ignored status.

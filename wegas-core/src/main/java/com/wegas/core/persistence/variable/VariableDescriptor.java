@@ -484,13 +484,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         this.title = title;
     }
 
-    /**
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-
-    }
 
     @Override
     public Visibility getVisibility() {

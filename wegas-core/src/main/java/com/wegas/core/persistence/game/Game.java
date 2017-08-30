@@ -185,9 +185,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
         this.setUpdatedTime(new Date());
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the teams

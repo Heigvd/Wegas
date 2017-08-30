@@ -188,13 +188,6 @@ public class Message extends NamedEntity implements DatedEntity {
         return this.getTime();
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
 
     /*@Override

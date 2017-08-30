@@ -54,7 +54,4 @@ public class TextEvaluationInstance extends EvaluationInstance {
         this.value = value;
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

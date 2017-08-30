@@ -38,14 +38,6 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     @WegasEntityProperty
     private Boolean capped = FALSE;
 
-    /**
-     * Merge descriptor
-     *
-     * @param a descriptor to read value from
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the description

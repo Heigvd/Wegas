@@ -201,9 +201,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
         this.triggerCondition = triggerCondition;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     @Override
     public String toString() {

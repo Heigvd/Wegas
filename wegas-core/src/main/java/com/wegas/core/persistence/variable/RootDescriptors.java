@@ -43,7 +43,4 @@ public class RootDescriptors extends AbstractEntity {
         this.rootLevelDescriptors = items;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 }

@@ -94,13 +94,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         return ret;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      *

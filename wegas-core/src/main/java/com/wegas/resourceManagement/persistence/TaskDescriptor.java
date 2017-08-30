@@ -100,14 +100,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         return this.properties;
     }
 
-    /**
-     *
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return the description

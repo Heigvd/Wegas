@@ -57,7 +57,4 @@ public class CategorizedEvaluationInstance extends EvaluationInstance {
         }
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

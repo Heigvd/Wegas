@@ -531,13 +531,6 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         this.setReplannedWorkloads(planning);
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * tie lifecycle events with burdownInstnace ones

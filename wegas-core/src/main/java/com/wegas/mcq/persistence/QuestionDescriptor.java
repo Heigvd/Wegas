@@ -93,14 +93,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @WegasEntityProperty
     private List<String> pictures = new ArrayList<>();
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
-// *** Sugar for scripts *** //
 
     /**
      *

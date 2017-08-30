@@ -57,8 +57,5 @@ public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> {
     }
 
 
-    @Override
-    public void __merge(AbstractEntity e){
-    }
         
 }

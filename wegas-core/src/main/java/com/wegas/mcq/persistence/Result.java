@@ -186,12 +186,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         return ret;
     }
 
-    /**
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     @Override
     public Long getId() {

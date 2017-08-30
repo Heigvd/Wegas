@@ -95,13 +95,6 @@ public class Activity extends AbstractAssignement {
         this.requirement = null;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     @Override
     public Long getId() {

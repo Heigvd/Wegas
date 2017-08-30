@@ -20,9 +20,6 @@ public class TextEvaluationDescriptor extends EvaluationDescriptor<TextEvaluatio
 
     private static final long serialVersionUID = 1L;
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     @Override
     protected TextEvaluationInstance newInstance() {

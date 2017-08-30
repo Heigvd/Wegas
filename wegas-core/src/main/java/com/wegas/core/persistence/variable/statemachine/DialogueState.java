@@ -52,7 +52,4 @@ public class DialogueState extends State {
         this.text = text;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 }

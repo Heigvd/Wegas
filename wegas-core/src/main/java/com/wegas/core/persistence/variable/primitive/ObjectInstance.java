@@ -48,11 +48,4 @@ public class ObjectInstance extends VariableInstance implements Propertable {
         return this.properties;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

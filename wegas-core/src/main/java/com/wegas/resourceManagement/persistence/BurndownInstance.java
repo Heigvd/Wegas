@@ -68,7 +68,4 @@ public class BurndownInstance extends VariableInstance {
         iteration.setBurndownInstance(this);
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

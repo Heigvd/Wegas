@@ -110,7 +110,4 @@ public class Workload extends AbstractEntity implements Serializable {
         return id;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 }

@@ -63,12 +63,6 @@ public class TextInstance extends VariableInstance implements Searchable {
         this.value = value;
     }
 
-    /**
-     * @param a
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     @Override
     public Boolean containsAll(List<String> criterias) {

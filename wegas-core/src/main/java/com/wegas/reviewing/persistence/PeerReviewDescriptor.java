@@ -130,13 +130,6 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @WegasEntityProperty
     private EvaluationDescriptorContainer fbComments;
 
-    /**
-     *
-     * @param a another PeerReviewDescriptor
-     */
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * Return the variable that will be reviewed

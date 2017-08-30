@@ -58,7 +58,4 @@ public class GradeInstance extends EvaluationInstance {
         this.value = value;
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

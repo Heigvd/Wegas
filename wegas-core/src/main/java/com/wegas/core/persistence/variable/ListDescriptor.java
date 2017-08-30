@@ -241,9 +241,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         return this.getItems().remove(item);
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     public static class ValidateShortcutCallback implements WegasCallback {
 

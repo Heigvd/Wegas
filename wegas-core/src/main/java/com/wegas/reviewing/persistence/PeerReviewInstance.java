@@ -129,7 +129,4 @@ public class PeerReviewInstance extends VariableInstance {
         r.setAuthor(this);
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 }

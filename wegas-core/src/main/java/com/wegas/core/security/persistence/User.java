@@ -83,9 +83,6 @@ public class User extends AbstractEntity implements Comparable<User> {
         return id;
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     /**
      * @return all user's players

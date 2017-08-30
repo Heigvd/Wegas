@@ -73,9 +73,6 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
         categories.remove(category);
     }
 
-    @Override
-    public void __merge(AbstractEntity a) {
-    }
 
     @Override
     protected CategorizedEvaluationInstance newInstance() {

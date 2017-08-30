@@ -141,9 +141,6 @@ public class GameAdmin extends AbstractEntity {
         return this.creator;
     }
 
-    @Override
-    public void __merge(AbstractEntity other) {
-    }
 
     @JsonIgnore
     public void populate() {
