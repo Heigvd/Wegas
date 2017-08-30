@@ -74,6 +74,9 @@ define(["ember"], function(Ember) {
         isDelete: function() {
             return this.get("model").get("gameStatus") === "DELETE";
         }.property(),
+        isSuppressed: function() {
+            return this.get("model").get("gameStatus") === "SUPPRESSED";
+        }.property(),
         gameLink: function(key, value) {
             return "host.html?gameId=" + this.get("model").get("gameId");
         }.property("gameId"),

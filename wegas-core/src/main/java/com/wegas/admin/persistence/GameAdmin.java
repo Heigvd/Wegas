@@ -70,6 +70,8 @@ public class GameAdmin extends AbstractEntity {
     @Lob
     private String prevPlayers;
 
+    private Long prevGameId;
+
     @Lob
     private String prevTeams;
 
@@ -128,7 +130,7 @@ public class GameAdmin extends AbstractEntity {
         if (this.getGame() != null) {
             return this.getGame().getId();
         }
-        return null;
+        return this.prevGameId;
     }
 
     public Date getCreatedTime() {
@@ -151,6 +153,7 @@ public class GameAdmin extends AbstractEntity {
             this.prevTeamCount = this.getTeamCount();
             this.prevPlayers = this.getPlayers().toString();
             this.prevTeams = this.getTeams().toString();
+            this.prevGameId = this.getGame().getId();
         }
     }
 
