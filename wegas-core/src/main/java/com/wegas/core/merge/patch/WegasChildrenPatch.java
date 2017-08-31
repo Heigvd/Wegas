@@ -15,13 +15,13 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
+ * Patch List or Map of AbstrctEntities
  *
  * @author maxence
  */
@@ -49,6 +49,9 @@ public final class WegasChildrenPatch extends WegasPatch {
         Map<Object, AbstractEntity> fromMap = asMap(from);
         Map<Object, AbstractEntity> toMap = asMap(to);
 
+        /*
+         * Go through initial children
+         */
         for (Entry<Object, AbstractEntity> entry : fromMap.entrySet()) {
             Object key = entry.getKey();
 
@@ -77,6 +80,15 @@ public final class WegasChildrenPatch extends WegasPatch {
         }
     }
 
+    /**
+     * return a new Map which contains all children
+     * If children is a map, return map is a copy of children.
+     * If children is a list, returned map contains all children indexed by their refId
+     *
+     * @param children List or Map which contains children
+     *
+     * @return a brand new map which contains all children
+     */
     private Map<Object, AbstractEntity> asMap(Object children) {
         Map<Object, AbstractEntity> theMap = new HashMap<>();
         if (children instanceof List) {

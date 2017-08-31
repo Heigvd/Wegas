@@ -24,7 +24,7 @@ public @interface WegasEntity {
     /**
      * postUpdate, preDestroy, postPersist callback
      *
-     * @return
+     * @return entity level callbacks to apply
      */
     Class<? extends WegasCallback> callback();
 }

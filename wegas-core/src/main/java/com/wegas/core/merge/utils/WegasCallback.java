@@ -11,6 +11,8 @@ import com.wegas.core.persistence.AbstractEntity;
 
 /**
  *
+ * Define some callback called during the patch process
+ *
  * @author maxence
  */
 public interface WegasCallback {
@@ -18,8 +20,9 @@ public interface WegasCallback {
     /**
      * Called when an entity is created or when a child is added to its parent
      *
-     * @param entity
-     * @param identifier
+     * @param entity     added entity
+     * @param container  entity parent
+     * @param identifier entity identifier
      */
     default public void add(AbstractEntity entity, Object container, Object identifier) {
 

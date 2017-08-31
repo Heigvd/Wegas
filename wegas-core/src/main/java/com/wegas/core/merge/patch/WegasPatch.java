@@ -74,6 +74,13 @@ public abstract class WegasPatch {
 
     }
 
+    /**
+     * Get all callbacks to take into account for this patch (entity + entity super classed + field + user callbacks)
+     *
+     * @param userCallback callback specific to patch
+     *
+     * @return list of all callback to call
+     */
     protected List<WegasCallback> getCallbacks(WegasCallback userCallback) {
         ArrayList<WegasCallback> cbs = new ArrayList<>();
         if (fieldCallback != null) {
@@ -85,6 +92,14 @@ public abstract class WegasPatch {
         return cbs;
     }
 
+    /**
+     * Test sameEntityOnly condition
+     *
+     * @param target    entity to patch
+     * @param reference entity which represent the new value
+     *
+     * @return whether or not this patch should be applied on target
+     */
     protected boolean shouldApplyPatch(AbstractEntity target, AbstractEntity reference) {
         return (!sameEntityOnly || target.equals(reference));
     }
@@ -137,6 +152,18 @@ public abstract class WegasPatch {
         return mode;
     }
 
+    /**
+     * Determine the patch mode according to concerned entities and visibilities
+     *
+     * @param target              object to patch
+     * @param from                initial value reference
+     * @param to                  final value reference
+     * @param parentMode          parent PatchMode
+     * @param inheritedVisibility parent visibility
+     * @param visibility          current visibility
+     *
+     * @return
+     */
     protected PatchMode getPatchMode(Object target, Object from, Object to, PatchMode parentMode, Visibility inheritedVisibility, Visibility visibility) {
         PatchMode mode;
 
@@ -145,8 +172,10 @@ public abstract class WegasPatch {
          * Determine patch mode
          */
         if (PatchMode.DELETE.equals(parentMode)) {
+            // delete is delete, always.
             mode = PatchMode.DELETE;
         } else if (target == null) {
+            // No target
             if (to != null) {
                 // CREATE
                 mode = PatchMode.CREATE;
@@ -164,16 +193,19 @@ public abstract class WegasPatch {
         } else {
             if (from != null) {
                 if (to == null) {
+                    // from not null to null -> DELETE
                     mode = PatchMode.DELETE;
                 } else {
+                    // from not null to not null
                     if (to instanceof ModelScoped && from instanceof ModelScoped) {
                         Visibility fromScope = ((ModelScoped) from).getVisibility();
                         Visibility toScope = ((ModelScoped) to).getVisibility();
 
                         if (from.equals(target)) {
-                            // same entity 
+                            // same entity -> Update or override
                             mode = getWithParent(parentMode, inheritedVisibility, visibility);
                         } else {
+                            // cross gameModel entities
                             if (toScope.equals(Visibility.PRIVATE)) {
                                 // change from * to PRIVATE -> DELETE
                                 mode = PatchMode.DELETE;
@@ -206,6 +238,13 @@ public abstract class WegasPatch {
         return this.print(0).toString();
     }
 
+    /**
+     * Pretty printer
+     *
+     * @param ident
+     *
+     * @return
+     */
     protected StringBuilder print(int ident) {
         StringBuilder sb = new StringBuilder();
         indent(sb, ident);

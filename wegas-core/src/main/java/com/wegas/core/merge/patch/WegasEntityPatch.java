@@ -202,8 +202,15 @@ public final class WegasEntityPatch extends WegasPatch {
 
     @Override
     public LifecycleCollector apply(AbstractEntity target, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass) {
+
+        /**
+         * Two pass patch
+         * First pass update and delete
+         * Second create/move entities
+         */
         boolean rootPatch = false;
         boolean processCollectedData = false;
+
         if (collector == null) {
             collector = new LifecycleCollector();
             processCollectedData = true;

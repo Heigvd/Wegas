@@ -7,9 +7,12 @@
  */
 package com.wegas.core.merge.utils;
 
+import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 
 /**
- * Since optional annotations require a default value, here is the default value for @WegasEntityProperty.callback
+ * Since optional annotations require a default value, here is the default value for {@link WegasEntityProperty#callback()  property callback} and {@link WegasEntity#callback() entity callback}
+ *
  * @author maxence
  */
 public class EmptyCallback implements WegasCallback {
