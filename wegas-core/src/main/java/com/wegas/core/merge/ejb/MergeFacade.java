@@ -13,6 +13,9 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
+import com.wegas.core.merge.utils.WegasEntitiesHelper;
+import com.wegas.core.merge.utils.WegasEntityFields;
+import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
@@ -20,13 +23,13 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -220,6 +223,29 @@ public class MergeFacade {
         return model;
     }
 
+    private void resetRefIds(AbstractEntity target, AbstractEntity reference) {
+        if (target != null && reference != null) {
+            target.setRefId(reference.getRefId());
+
+            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
+
+            for (WegasFieldProperties field : entityIterator.getFields()) {
+                if (field.getType().equals(WegasFieldProperties.FieldType.CHILD)) {
+                    Method readMethod = field.getPropertyDescriptor().getReadMethod();
+                    try {
+                        AbstractEntity targetChild = (AbstractEntity) readMethod.invoke(target);
+                        AbstractEntity referenceChild = (AbstractEntity) readMethod.invoke(reference);
+
+                        this.resetRefIds(targetChild, referenceChild);
+                        
+                    } catch (Exception ex) {
+                        throw new WegasErrorMessage("error", "Invocation Failure: should never appends");
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Attach all scenarios to the given model
      *
@@ -242,14 +268,13 @@ public class MergeFacade {
         for (VariableDescriptor modelVd : model.getVariableDescriptors()) {
             // iterate over all model's descriptors
             String modelParentRef = this.getParentRef(modelVd);
-            String refId = modelVd.getRefId();
             String name = modelVd.getName();
 
             for (GameModel scenario : scenarios) {
                 try {
                     // get corresponding descriptor in the scenrio
                     VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
-                    vd.setRefId(refId); // make sure corresponding descriptors share the same refId
+                    this.resetRefIds(vd, modelVd); // make sure corresponding descriptors share the same refId
                     String parentRef = this.getParentRef(vd);
                     if (!parentRef.equals(modelParentRef)) {
                         logger.info("Descriptor {} will be moved from {} to {}", vd, vd.getParent(), modelVd.getParent());

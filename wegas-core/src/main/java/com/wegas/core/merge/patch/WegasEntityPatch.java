@@ -11,22 +11,21 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.merge.utils.WegasEntitiesHelper;
+import com.wegas.core.merge.utils.WegasEntityFields;
+import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -90,107 +89,70 @@ public final class WegasEntityPatch extends WegasPatch {
 
             this.patches = new ArrayList<>();
 
-            Class klass = (fromEntity != null) ? fromEntity.getClass() : toEntity.getClass();
-            Map<Field, WegasEntityProperty> fields = new HashMap<>();
-
-            this.entityCallbacks = new ArrayList<>();
-
-            /*
-             * Fetch all (inherited) WegasEntity annotations and all WegasEntityProperty annotated fields
-             */
-            while (klass != null) {
-
-                for (Field f : klass.getDeclaredFields()) {
-                    WegasEntityProperty wegasProperty = f.getDeclaredAnnotation(WegasEntityProperty.class);
-
-                    /*
-                     *  Only cares about annotated fields and exclude nonDefaultFields if the patch is not recursive
-                     */
-                    if (wegasProperty != null && (wegasProperty.includeByDefault() || recursive)) {
-                        fields.put(f, wegasProperty);
-                    }
-                }
-
-                /*
-                 * Fetch all class level WegasEntity annotations
-                 */
-                WegasEntity wegasEntity = (WegasEntity) klass.getAnnotation(WegasEntity.class);
-                if (wegasEntity != null) {
-                    Class<? extends WegasCallback> entityCallbackClass = wegasEntity.callback();
-
-                    if (entityCallbackClass != null && !entityCallbackClass.equals(EmptyCallback.class)) {
-                        this.entityCallbacks.add(entityCallbackClass.newInstance());
-                    }
-                }
-
-                klass = klass.getSuperclass();
-            }
-
             if (fromEntity != null || this.toEntity != null) {
+                Class klass = (fromEntity != null) ? fromEntity.getClass() : toEntity.getClass();
+
+                WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(klass);
+
+                this.entityCallbacks = new ArrayList<>();
+                this.entityCallbacks.addAll(entityIterator.getEntityCallbacks());
 
                 // process @WegasEntityProperty fields
-                for (Entry<Field, WegasEntityProperty> entry : fields.entrySet()) {
+                for (WegasFieldProperties fieldProperties : entityIterator.getFields()) {
                     // Get field info 
-                    Field field = entry.getKey();
-                    WegasEntityProperty wegasProperty = entry.getValue();
+                    Field field = fieldProperties.getField();
+                    WegasEntityProperty wegasProperty = fieldProperties.getAnnotation();
 
-                    String fieldName = field.getName();
-                    Class fieldClass = field.getType();
+                    //  ignore nonDefaultFields if the patch is not recursive
+                    if (wegasProperty.includeByDefault() || recursive) {
 
-                    PropertyDescriptor property = new PropertyDescriptor(fieldName, field.getDeclaringClass());
+                        String fieldName = field.getName();
 
-                    Method fGetter = property.getReadMethod();
-                    Method fSetter = property.getWriteMethod();
+                        PropertyDescriptor property = fieldProperties.getPropertyDescriptor();
 
-                    // Get annotation properties
-                    int idx = wegasProperty.order();
+                        Method fGetter = property.getReadMethod();
+                        Method fSetter = property.getWriteMethod();
 
-                    boolean fIgnoreNull = wegasProperty.ignoreNull();
-                    boolean fSameEntityOnly = wegasProperty.sameEntityOnly();
-                    boolean fInitOnly = wegasProperty.initOnly();
-                    Visibility[] fCascadeOverride = wegasProperty.cascadeOverride();
+                        Class<? extends WegasCallback> userFieldCallbackClass = wegasProperty.callback();
 
-                    Class<? extends WegasCallback> userFieldCallbackClass = wegasProperty.callback();
+                        WegasCallback userFieldCallback = null;
+                        if (userFieldCallbackClass != null && !userFieldCallbackClass.equals(EmptyCallback.class)) {
+                            userFieldCallback = userFieldCallbackClass.newInstance();
+                        }
 
-                    WegasCallback userFieldCallback = null;
-                    if (userFieldCallbackClass != null && !userFieldCallbackClass.equals(EmptyCallback.class)) {
-                        userFieldCallback = userFieldCallbackClass.newInstance();
+                        // Get effective from and to values
+                        Object fromValue = fromEntity != null ? fGetter.invoke(fromEntity) : null;
+                        Object toValue = toEntity != null ? fGetter.invoke(toEntity) : null;
+
+                        // Which case ?
+                        switch (fieldProperties.getType()) {
+                            case PROPERTY:
+
+                                // primitive or primitive related property (eg. Boolean, List<Double>, Map<String, String>, etc)
+                                patches.add(new WegasFieldPatch(fieldName, wegasProperty.order(),
+                                        userFieldCallback, to,
+                                        fGetter, fSetter, fromValue, toValue,
+                                        wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), wegasProperty.cascadeOverride()));
+                                break;
+                            case CHILD:
+                                // the property is an abstract entity -> register patch
+                                patches.add(new WegasEntityPatch(fieldName, wegasProperty.order(),
+                                        userFieldCallback,
+                                        fGetter, fSetter,
+                                        (AbstractEntity) fromValue, (AbstractEntity) toValue,
+                                        recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), wegasProperty.cascadeOverride()));
+
+                                break;
+                            case CHILDREN:
+                                // current property is a list or a map of abstract entities
+                                patches.add(new WegasChildrenPatch(fieldName, wegasProperty.order(),
+                                        userFieldCallback, to,
+                                        fGetter, fSetter,
+                                        fromValue, toValue,
+                                        recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), wegasProperty.cascadeOverride()));
+                                break;
+                        }
                     }
-
-                    // Get effective from and to values
-                    Object fromValue = fromEntity != null ? fGetter.invoke(fromEntity) : null;
-                    Object toValue = toEntity != null ? fGetter.invoke(toEntity) : null;
-
-                    //if (!fIgnoreNull || toValue != null) {
-                    // Which case ?
-                    if (wegasProperty.propertyType().equals(WegasEntityProperty.PropertyType.CHILDREN)
-                            && (List.class.isAssignableFrom(fieldClass) || Map.class.isAssignableFrom(fieldClass))) {
-                        /*
-                             * current property is a list or a map of abstract entities
-                         */
-                        patches.add(new WegasChildrenPatch(fieldName, idx,
-                                userFieldCallback, to,
-                                fGetter, fSetter,
-                                fromValue, toValue,
-                                recursive, fIgnoreNull, fSameEntityOnly, fInitOnly, fCascadeOverride));
-                    } else if (AbstractEntity.class.isAssignableFrom(fieldClass)) {
-                        /*
-                            * the property is an abstract entity -> register patch
-                         */
-                        patches.add(new WegasEntityPatch(fieldName, idx,
-                                userFieldCallback,
-                                fGetter, fSetter,
-                                (AbstractEntity) fromValue, (AbstractEntity) toValue,
-                                recursive, fIgnoreNull, fSameEntityOnly, fInitOnly, fCascadeOverride));
-                    } else {
-                        // fallback -> primitive or primitive related property (eg. Boolean, List<Double>, Map<String, String>, etc)
-                        patches.add(new WegasFieldPatch(fieldName, idx,
-                                userFieldCallback, to,
-                                fGetter, fSetter, fromValue, toValue,
-                                fIgnoreNull, fSameEntityOnly, fInitOnly, fCascadeOverride));
-                    }
-
-                    //}
                 }
                 Collections.sort(patches, new PatchOrderComparator());
             }
@@ -222,12 +184,13 @@ public final class WegasEntityPatch extends WegasPatch {
             rootPatch = true;
         }
 
-        logger.info("Apply #{} {} (from {} -> to {}) on {}", numPass, this.getClass().getSimpleName(), fromEntity, toEntity, target);
+        logger.info("{} (from {} -> to {}) on {}", this.getClass().getSimpleName(), fromEntity, toEntity, target);
         logger.indent();
 
         do {
             if (rootPatch) {
                 numPass++;
+                logger.info("Start pass #{}", numPass);
             }
             try {
                 AbstractEntity oTarget = target;

@@ -5,13 +5,16 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.persistence;
+package com.wegas.core.ejb.merge;
 
+import ch.qos.logback.classic.Level;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.ejb.MergeFacade;
+import com.wegas.core.merge.patch.WegasPatch;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -52,14 +55,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence
  */
-public class MergeTest extends AbstractEJBTest {
+public class MergeFacadeTest extends AbstractEJBTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(MergeTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(MergeFacadeTest.class);
     private static final Reflections reflections;
 
     static {
         reflections = new Reflections("com.wegas");
-        /*
+         /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
@@ -313,16 +316,16 @@ public class MergeTest extends AbstractEJBTest {
 
         ListDescriptor list1_1 = createList(gameModel1, null, "MyFirstFolder", "My First Folder");
         //                                           N,   L,  Min, Max,   Def, History...
-        createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.1);
-        createNumberDescriptor(gameModel1, list1_1, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.1);
-        createNumberDescriptor(gameModel1, list1_1, "z", "Z", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.1);
-        createNumberDescriptor(gameModel1, list1_1, "t", "T", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.1);
+        createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        createNumberDescriptor(gameModel1, list1_1, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
+        createNumberDescriptor(gameModel1, list1_1, "z", "Z", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.0, 3.1);
+        createNumberDescriptor(gameModel1, list1_1, "t", "T", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.0, 4.1);
 
         ListDescriptor list1_2 = createList(gameModel2, null, "MyFirstFolder", "My First Folder");
-        createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.1, 1.2);
-        createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.1, 2.2);
-        createNumberDescriptor(gameModel2, list1_2, "z", "LABEL Z", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.1, 3.2);
-        createNumberDescriptor(gameModel2, list1_2, "t", "LABEL T", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.1, 4.2);
+        createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
+        createNumberDescriptor(gameModel2, list1_2, "z", "LABEL Z", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.0, 3.1);
+        createNumberDescriptor(gameModel2, list1_2, "t", "LABEL T", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.0, 4.1);
 
         createNumberDescriptor(gameModel3, null, "x", "LBL X", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 1.5, 1.1, 1.2);
         createNumberDescriptor(gameModel3, null, "y", "LBL Y", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 2.5, 2.1, 2.2);
@@ -339,7 +342,7 @@ public class MergeTest extends AbstractEJBTest {
         scenarios.add(gameModel2);
         scenarios.add(gameModel3);
 
-        GameModel model = mergeFacade.createGameModelModel(scenarios);
+        GameModel model = mergeFacade.extractCommonContent(scenarios);
 
         List<VariableDescriptor> children = new ArrayList<>();
         children.addAll(model.getChildVariableDescriptors());
@@ -369,7 +372,14 @@ public class MergeTest extends AbstractEJBTest {
             }
         }
 
+        logger.info ("Create Model");
         model = mergeFacade.createModel(model, scenarios);
+
+        logger.debug(Helper.printGameModel(model));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel3.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
+
 
         NumberInstance xi1, xi2, xi3;
         NumberInstance yi1, yi2, yi3;
@@ -412,6 +422,10 @@ public class MergeTest extends AbstractEJBTest {
         zi2 = (NumberInstance) getInstance(gameModel2, "z");
         zi3 = (NumberInstance) getInstance(gameModel3, "z");
 
+        logger.error("Z {} history {}", zi1, zi1.getHistory());
+        logger.error("Z {} history {}", zi2, zi2.getHistory());
+        logger.error("Z {} history {}", zi3, zi3.getHistory());
+
         Assert.assertEquals("Z", zi1.findDescriptor().getLabel());
         Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel());
         Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel());
@@ -434,8 +448,10 @@ public class MergeTest extends AbstractEJBTest {
 
         zModel.setLabel("my Z");
         zModel.getDefaultInstance().setValue(13.0);
+        zModel.getDefaultInstance().getHistory().add(13.0);
         descriptorFacade.update(zModel.getId(), zModel);
 
+        logger.info ("Propagate Model Update");
         mergeFacade.propagateModel(model.getId());
 
         /*
@@ -475,6 +491,10 @@ public class MergeTest extends AbstractEJBTest {
         zi2 = (NumberInstance) getInstance(gameModel2, "z");
         zi3 = (NumberInstance) getInstance(gameModel3, "z");
 
+        logger.error("Z {} history {}", zi1, zi1.getHistory());
+        logger.error("Z {} history {}", zi2, zi2.getHistory());
+        logger.error("Z {} history {}", zi3, zi3.getHistory());
+
         Assert.assertEquals("my Z", zi1.findDescriptor().getLabel());
         Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel());
         Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel());
@@ -495,6 +515,7 @@ public class MergeTest extends AbstractEJBTest {
         descriptorFacade.remove(getDescriptor(model, "z").getId());
         descriptorFacade.move(getDescriptor(model, "x").getId(), 0);
 
+        logger.info ("Propagate Model: Create Alpha &Pi; Remove Z and move X");
         mergeFacade.propagateModel(model.getId());
 
         /**
@@ -530,6 +551,7 @@ public class MergeTest extends AbstractEJBTest {
          * remove var from root level
          */
         descriptorFacade.remove(getDescriptor(model, "x").getId());
+        logger.info ("Propagate Model: Remove X");
         mergeFacade.propagateModel(model.getId());
 
         /**
@@ -554,6 +576,7 @@ public class MergeTest extends AbstractEJBTest {
         descriptorFacade.update(y1.getId(), y1);
         descriptorFacade.move(getDescriptor(model, "y").getId(), 0);
 
+        logger.info ("Propagate Model: Update Y.value; move Y to Root");
         mergeFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
@@ -582,6 +605,7 @@ public class MergeTest extends AbstractEJBTest {
         descriptorFacade.move(getDescriptor(model, "alpha").getId(), 0);
         descriptorFacade.remove(getDescriptor(model, "myFirstFolder").getId());
 
+        logger.info ("Propagate Model: Update Y.value; move Y to Root");
         mergeFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));

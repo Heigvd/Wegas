@@ -27,22 +27,55 @@ public abstract class WegasPatch {
 
     protected final static IndentLogger logger = new IndentLogger(LoggerFactory.getLogger(WegasPatch.class));
 
+    /**
+     * Represent the patch mode
+     */
     public static enum PatchMode {
+        /**
+         * object is to be created
+         */
         CREATE,
+        /**
+         * object is to be deleted
+         */
         DELETE,
+        /**
+         * object is to be updated, but only if the change doesn't overwrite a user change
+         */
         UPDATE,
+        /**
+         * object is to be update
+         */
         OVERRIDE,
+        /**
+         * Nothing to do (e.g. deleting a non existing object)
+         */
         SKIP
     }
 
+    /**
+     * Id which identify the patch
+     */
     protected Object identifier;
 
+    /**
+     * Patch order allows to apply patches in a defined order
+     */
     protected Integer order;
 
+    /**
+     * getter get the value to patch
+     */
     protected Method getter;
 
+    /**
+     * setter to set the new patched value
+     */
     protected Method setter;
 
+    /**
+     * Some 
+     */
     protected WegasCallback fieldCallback;
 
     protected List<Visibility> cascadeOverride = new ArrayList<>();
