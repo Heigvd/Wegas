@@ -515,6 +515,8 @@ public class MergeFacadeTest extends AbstractEJBTest {
     public void testModelise_PrimitiveCollection() throws NamingException, WegasNoResultException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
+        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
+
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         gameModelFacade.createWithDebugGame(gameModel1);
@@ -595,6 +597,14 @@ public class MergeFacadeTest extends AbstractEJBTest {
         n1.getDefaultInstance().setHistory(history);
         descriptorFacade.update(n1.getId(), n1);
 
+        NumberInstance ni1 = (NumberInstance) getInstance(gameModel1, "aNumber");
+        List<Double> history1 = ni1.getHistory();
+        history1.add(3.14);
+        ni1.setHistory(history1);
+        vif.update(ni1.getId(), ni1);
+        
+        assertListEquals(((NumberInstance) getInstance(gameModel1, "aNumber")).getHistory(), 1.1, 1.2, 1.3, 3.14);
+        
         /*
           |    what     |  model             |          #1                        |        #2          |
           | desc.prop0  | value0             | value0   -> value0.1 -> value0.1   | value0             |
@@ -650,6 +660,8 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
         assertListEquals(((NumberDescriptor) getDescriptor(gameModel2, "aNumber")).getDefaultInstance().getHistory(), 1.1, 1.2, 1.3, 1.2, 1.1, 1.0);
 
+        assertListEquals(((NumberInstance) getInstance(gameModel1, "aNumber")).getHistory(), 1.1, 1.2, 1.3, 1.4, 1.3, 1.2, 1.2, 1.1, 1.0);
+        
         logger.info("DONE");
     }
 
