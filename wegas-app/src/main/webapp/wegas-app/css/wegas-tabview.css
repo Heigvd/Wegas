@@ -93,7 +93,7 @@
 }
 
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-label,
-.yui3-skin-sam .wegas-layout-pane .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label {
+.yui3-skin-sam .wegas-layout-column .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label {
     border-radius: 10px 10px 0 0;
     color: white;
     font-family: Rockwell;

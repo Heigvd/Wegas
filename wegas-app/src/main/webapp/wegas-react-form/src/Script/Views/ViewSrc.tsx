@@ -14,13 +14,14 @@ const iconStyle = css({
     'cursor': 'pointer',
     'verticalAlign': '1px',
     'padding': '4px',
+    'border': '1px solid lightgray',
     'borderRadius': '50%',
     ':hover': {
         background: 'lightgray',
     },
 });
 
-const viewSourceTooltip = 'View source code';
+const viewSourceTooltip = 'Open source code';
 const hideSourceTooltip = 'Hide source code';
 
 /**

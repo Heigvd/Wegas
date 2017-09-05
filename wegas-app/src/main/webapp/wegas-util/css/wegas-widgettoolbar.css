@@ -32,7 +32,7 @@
     overflow: hidden;
     padding: 0.5em;
     word-wrap: normal;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
 }
 .wegas-toolbar-panel {
     overflow: hidden;

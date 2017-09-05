@@ -219,41 +219,30 @@ YUI.add('wegas-helper', function(Y) {
         getFilename: function(path) {
             return path.replace(/^.*[\\\/]/, '');
         },
+
         /**
          * @function
-         * source: http://stackoverflow.com/a/15203639
+         * source: https://stackoverflow.com/a/7557433/5628         Updated on May 23, 2017
          * @param {type} el
          * @returns {Boolean}
          */
-        isElementVisible: function(el) {
+        isElementInViewport: function(el) {
             if (el.getDOMNode) {
                 el = el.getDOMNode();
             }
-            var eap,
-                rect = el.getBoundingClientRect(),
-                docEl = document.documentElement,
-                vWidth = window.innerWidth || docEl.clientWidth,
-                vHeight = window.innerHeight || docEl.clientHeight,
-                efp = function(x, y) {
-                    return document.elementFromPoint(x, y);
-                },
-                contains = "contains" in el ? "contains" : "compareDocumentPosition",
-                has = contains === "contains" ? 1 : 0x14;
-            // Return false if it's not in the viewport
-            if (rect.right < 0 || rect.bottom < 0 || rect.left > vWidth || rect.top > vHeight) {
-                return false;
-            }
-            // Return true if any of its four corners are visible
-            return ((eap = efp(rect.left, rect.top)) === el || el[contains](eap) === has ||
-                    (eap = efp(rect.right, rect.top)) === el || el[contains](eap) === has ||
-                    (eap = efp(rect.right, rect.bottom)) === el || el[contains](eap) === has ||
-                    (eap = efp(rect.left, rect.bottom)) === el || el[contains](eap) === has);
+            var rect = el.getBoundingClientRect();
+            return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+            );
         },
         /**
          *
          */
         scrollIntoViewIfNot: function(node, alignTop) {
-            if (!Helper.isElementVisible(node)) {
+            if (!Helper.isElementInViewport(node)) {
                 node.scrollIntoView(alignTop);
             }
         },

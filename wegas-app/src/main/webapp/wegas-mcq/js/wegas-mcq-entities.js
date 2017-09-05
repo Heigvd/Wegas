@@ -333,6 +333,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         descriptorId: IDATTRDEF,
                         unread: {
                             type: BOOLEAN,
+                            value: true,
                             view: { type: HIDDEN }
                         },
                         active: {
@@ -341,10 +342,6 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             view: {
                                 label: 'Active from start',
                             }
-                        },
-                        unread: {
-                            value: true,
-                            type: BOOLEAN
                         },
                         replies: {
                             type: ARRAY,
@@ -513,6 +510,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         descriptorId: IDATTRDEF,
                         unread: {
                             type: BOOLEAN,
+                            value: true,
                             view: { type: HIDDEN }
                         },
                         active: {
@@ -521,10 +519,6 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             view: {
                                 label: 'Active from start'
                             }
-                        },
-                        unread: {
-                            value: true,
-                            type: BOOLEAN
                         },
                         replies: {
                             type: ARRAY,
@@ -902,7 +896,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             unread: {
                 value: true,
-                type: BOOLEAN
+                type: BOOLEAN,
+                view: { type: HIDDEN }
             },
             replies: {
                 value: [],

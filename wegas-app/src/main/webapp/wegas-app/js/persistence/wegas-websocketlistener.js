@@ -57,8 +57,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
         onLifeCycleEvent: function(data) {
             var payload = Y.JSON.parse(data),
                 node = this._getNode();
-            /*(Y.Widget.getByNode("#centerTabView") &&
-             Y.Widget.getByNode("#centerTabView").get("selection")) ||
+            /*(Wegas.TabView.getPreviewTabView() &&
+             Wegas.TabView.getPreviewTabView().get("selection")) ||
              ;*/
 
             if (payload.status === "DOWN") {
@@ -81,8 +81,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     datasource = this.getDatasourceFromClassName(entities[i]["@class"]);
                     entity = datasource.cache.find("id", entities[i].id);
                     if (entity) {
-                        // due to the parent-child descriptors organisation, such a 
-                        // destroyed descriptor may have already been deleted from 
+                        // due to the parent-child descriptors organisation, such a
+                        // destroyed descriptor may have already been deleted from
                         // the cache while updating its parent...
                         // -> Avoid deleting notfound entities
                         datasource.cache.updateCache("DELETE", entity, false);

@@ -26,7 +26,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
 
             if (DATASOURCE.editable) {
                 this.plug(PageTreeviewToolbarMenu);
-                this.plug(PageTreeViewContextMenu);
+                // @TODO Reactivate this once the new editor FORM2 is ready for production
+                //this.plug(PageTreeViewContextMenu);
                 this.treeView.plug(Plugin.TreeViewSortable, {
                     nodeGroups: [{
                         nodeClass: "widget-node",

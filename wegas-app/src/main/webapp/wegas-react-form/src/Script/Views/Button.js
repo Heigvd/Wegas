@@ -5,8 +5,8 @@ import IconButton from '../../Components/IconButton';
 import classNames from 'classnames';
 
 const removeStatement = css({
-    color: 'indianred',
-    ':hover': { color: 'red' }
+    color: '#d4d4d4',
+    ':hover': { color: 'gray' }
 });
 const trashcan = css({
     color: 'white'

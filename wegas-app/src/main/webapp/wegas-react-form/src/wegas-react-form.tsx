@@ -154,11 +154,23 @@ const Form = Y.Base.create(
                 .addClass(activeSaveBtnStyle.toString());
             btn.setAttribute('title', 'Save your changes');
         },
+        // Set normal visual appearance (i.e. when the "save" button does not need to be clicked)
+        deactivateSaveBtn() {
+            const btn = this.get('contentBox')
+                .get('parentNode')
+                .one('.wegas-save-form-button');
+            btn
+                .removeClass(setSavingBtnStyle.toLocaleString())
+                .removeClass(activeSaveBtnStyle.toString())
+                .addClass(inactiveSaveBtnStyle.toString());
+            btn.setAttribute('title', 'Nothing to save');
+        },
         // Set visual feedback for when the "save" button is clicked and switches between saving and not saving
         animateSaveBtn(setSaving: boolean = true, milliSeconds: number = 2000) {
             const btn = this.get('contentBox')
                 .get('parentNode')
-                .one('.wegas-save-form-button');
+                .one('.wegas-save-form-button'),
+                ctx = this;
             if (setSaving) {
                 btn
                     .removeClass(inactiveSaveBtnStyle.toString())
@@ -169,11 +181,7 @@ const Form = Y.Base.create(
             if (!setSaving || milliSeconds >= 0) {
                 setTimeout(function() {
                     if (!btn) alert('no btn');
-                    btn
-                        .removeClass(setSavingBtnStyle.toLocaleString())
-                        .removeClass(activeSaveBtnStyle.toString())
-                        .addClass(inactiveSaveBtnStyle.toString());
-                    btn.setAttribute('title', 'Nothing to save');
+                    ctx.deactivateSaveBtn();
                 }, milliSeconds);
             }
         }

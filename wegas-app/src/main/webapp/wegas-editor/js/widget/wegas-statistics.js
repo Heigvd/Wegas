@@ -207,7 +207,9 @@ YUI.add("wegas-statistics", function(Y) {
             destructor: function() {
                 this._gmPromise = null;
                 this._questionButton.destroy();
-                this.chart.destroy();
+                if (this.chart.destroy) {
+                    this.chart.destroy();
+                }
                 Y.Array.each(this.handlers, function(element) {
                     element.detach();
                 });

@@ -229,7 +229,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         },
         {
         ATTRS: {
-                version: VERSION_ATTR_DEF,
+            version: VERSION_ATTR_DEF,
             parentDescriptorId: {
                 type: NUMBER,
                     view: {
@@ -346,7 +346,16 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     type: 'EditEntityButton'
                 },
                 {
-                type: BUTTON,
+                    type: BUTTON,
+                    label: 'Search for usages',
+                    plugins: [
+                        {
+                            fn: 'SearchEntityAction'
+                        }
+                    ]
+                },
+                {
+                    type: BUTTON,
                     label: 'Copy',
                     plugins: [
                         {
@@ -562,7 +571,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     persistence.VariableInstance = Base.create("VariableInstance", persistence.Entity, [], {
         getDescriptor: function() {
             return Y.Wegas.Facade.Variable.cache.find("id", this.get("descriptorId"));
-        }    
+        }
     }, {
         ATTRS: {
                 version: VERSION_ATTR_DEF,

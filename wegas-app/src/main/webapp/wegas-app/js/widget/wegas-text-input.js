@@ -94,6 +94,12 @@ YUI.add('wegas-text-input', function(Y) {
                                     dynamic_toolbar: Y.Wegas.app.get('base') +
                                         'wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js'
                                 },
+                                branding: false,
+                                /*
+                                init_instance_callback : function(editor) {
+                                    console.log("Editor: " + editor.id + " is now initialized.");
+                                },
+                                */
                                 //toolbar1: "bold italic bullist | link image media code addToolbarButton",
                                 toolbar1: this.get('toolbar1'),
                                 toolbar2: this.get('toolbar2'),
@@ -121,8 +127,17 @@ YUI.add('wegas-text-input', function(Y) {
                                         Y.bind(this._onChange, this)
                                     ); // text input & ctrl-related operations
                                     //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
-                                    this.editor = editor;
-                                    this.syncUI();
+                                    // Callback for when the editor has been initialized and setContent is allowed:
+                                    editor.on('init',
+                                        Y.bind(
+                                            function () {
+                                                this.editor = editor;
+                                                // This will call setContent():
+                                                this.syncUI();
+                                            },
+                                            this
+                                        )
+                                    );
                                 }, this),
                                 image_advtab: true,
                                 autoresize_min_height: 35,
@@ -221,22 +236,20 @@ YUI.add('wegas-text-input', function(Y) {
                                 '</div>'
                         );
                 } else {
-                    Y.later(500, this, function() {
-                        var content = this.getInitialContent();
-                        if (this.editor) {
-                            if (content != this._initialContent) {
-                                this._initialContent = content;
-                                this.editor.setContent(content);
-                            }
-                        } else {
-                            //debugger;
+                    var content = this.getInitialContent();
+                    if (this.editor) {
+                        if (content != this._initialContent) {
+                            this._initialContent = content;
+                            this.editor.setContent(content);
                         }
-                        this.updateCounters();
-                        /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
-                     if (tmceI) {
-                     tmceI.setContent(this.getInitialContent());
-                     }*/
-                    });
+                    } else {
+                        // Nothing happens for now. Upon tinyMCE's event 'init', setContent will be called again.
+                    }
+                    this.updateCounters();
+                    /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
+                    if (tmceI) {
+                        tmceI.setContent(this.getInitialContent());
+                    }*/
                 }
             },
             getInitialContent: function() {

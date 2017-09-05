@@ -180,7 +180,6 @@ YUI.add("wegas-parent", function (Y) {
                         }, {
                                 type: BUTTON,
                                 label: "Input",
-                                cssClass: "wegas-advanced-feature",
                                 plugins: [{
                                     fn: "WidgetMenu",
                                     cfg: {

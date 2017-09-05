@@ -54,29 +54,11 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
 
             });
+            this.treeView.get("boundingBox").setStyle("top", "25px"); // Make place for the search field
             this.handlers.push(this.get("contentBox").prepend(
-                "<div class='wegas-filter-input' style='display: none'><input placeholder='Search...'/></div>")
-                .one(".wegas-filter-input input").on("valueChange", function(e) {
-                //var arrSearch;
-                if (e.prevVal === "") {
-                    savedState = this.treeView.saveState();
-                }
-                searchVal = Y.Lang.trim(e.newVal);
-                /*
-                 * Search AND element splited by ", "
-                 */
-                /*arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
-                 arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
-                 return Y.Wegas.Helper.RegExpQuote(item);
-                 });
-                 searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";*/
-                searchRE = Y.Wegas.Helper.RegExpQuote(searchVal);
-                //                if (searchVal.length) {
-                this._timer.reset();
-                //                } else {
-                //                    this._timer.timeOut();
-                //                }
-            }, this));
+                "<div class='wegas-filter-input'><input type='search' placeholder='Search...'/></div>")
+                .one(".wegas-filter-input input").on("valueChange", this.checkSearchField, this));
+            /*
             this._toggleSearchBtn = new Y.ToggleButton({
                 render: this.toolbar.get("header"),
                 label: "<span class='wegas-icon wegas-icon-zoom'></span>",
@@ -99,18 +81,28 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     }, this)
                 }
             });
+            */
             this._searchBttn = new Y.Button({
                 render: this.get("boundingBox").one(".wegas-filter-input"),
-                label: "<span title='Search in every fields'>Full</span>",
+                label: "<span title='Search in all fields'>Full</span>",
                 on: {
                     click: Y.bind(function() {
                         var btnBox = this._searchBttn.get("boundingBox");
-                        Y.Wegas.DataSource.abort(req);
-                        if (!searchVal) {
-                            return;
+                        Y.Wegas.DataSource.abort(this.req);
+                        if (!this.searchVal) {
+                            var inputValue = Y.one(".wegas-filter-input input").get("value");
+                            if (inputValue === "") {
+                                return;
+                            } else {
+                                this.searchVal = inputValue;
+                                this.checkSearchField({
+                                    newVal: inputValue,
+                                    prevVal: ""
+                                }, true);
+                            }
                         }
                         btnBox.addClass("loading");
-                        req = Y.Wegas.Facade.Variable.cache.remoteSearch(searchVal, Y.bind(function(results) {
+                        this.req = Y.Wegas.Facade.Variable.cache.remoteSearch(this.searchVal, Y.bind(function(results) {
                             btnBox.removeClass("loading");
                             this.setAttrs({
                                 testFn: function(val) {
@@ -123,10 +115,10 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 }
             });
             this._timer.on("timeOut", function() {
-                if (!searchRE.length) {
-                    this.treeView.applyState(savedState);
+                if (!this.searchRE.length) {
+                    this.treeView.applyState(this.savedState);
                 }
-                this.treeView.filter.set("searchVal", searchRE);
+                this.treeView.filter.set("searchVal", this.searchRE);
                 this.treeView.filter.set("testFn", searchFn);
             }, this);
             this._validateBttn = new Y.ToggleButton({
@@ -157,7 +149,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     }, this)
                 }
             });
-            this._validateBttn.get(CONTENTBOX).setStyle("marginLeft", "8px");
+            this._validateBttn.get(CONTENTBOX).setStyle("float", "right").setStyle("marginRight", "3px");
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
                         nodeClass: "wegas-editor-questionitem",
@@ -564,6 +556,29 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 default:
             }
             return node;
+        },
+        checkSearchField: function(e, noTimer) {
+            //var arrSearch;
+            if (e.prevVal === "") {
+                this.savedState = this.treeView.saveState();
+            }
+            this.searchVal = Y.Lang.trim(e.newVal);
+            /*
+             * Search AND element splited by ", "
+             */
+            /*arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
+             arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
+             return Y.Wegas.Helper.RegExpQuote(item);
+             });
+             searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";*/
+            this.searchRE = Y.Wegas.Helper.RegExpQuote(this.searchVal);
+            //                if (searchVal.length) {
+            if (!noTimer) {
+                this._timer.reset();
+            }
+            //                } else {
+            //                    this._timer.timeOut();
+            //                }
         }
     });
     Wegas.VariableTreeView = VariableTreeView;

@@ -65,7 +65,7 @@ YUI.add("treeview", function(Y) {
          */
         bindUI: function() {
             //this.after("*:addChild", function(e) {
-            /* Selection is not updated if a child with selected attribute is added, force it. 
+            /* Selection is not updated if a child with selected attribute is added, force it.
             if (e.target.get(SELECTION)){
                 e.target._set(SELECTION, e.target.get(SELECTION));
             }*/
