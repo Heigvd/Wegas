@@ -82,7 +82,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
     @OrderColumn
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
+    @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *

@@ -68,16 +68,5 @@ public @interface WegasEntityProperty {
      */
     Class<? extends WegasCallback> callback() default EmptyCallback.class;
 
-    /**
-     * Property or children ? 
-     * @return 
-     */
-    PropertyType propertyType() default PropertyType.PROPERTY;
-
     public ModelScoped.Visibility[] cascadeOverride() default {ModelScoped.Visibility.INTERNAL, ModelScoped.Visibility.PROTECTED};
-
-    public enum PropertyType {
-        PROPERTY,
-        CHILDREN
-    }
 }

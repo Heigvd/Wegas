@@ -32,7 +32,7 @@ public class BurndownInstance extends VariableInstance {
 
     @OneToMany(mappedBy = "burndownInstance", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Iteration> iterations = new ArrayList<>();
 
     /**

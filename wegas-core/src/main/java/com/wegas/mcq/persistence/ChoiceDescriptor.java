@@ -62,7 +62,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, callback = ResultMergeCallback.class)
+    @WegasEntityProperty(callback = ResultMergeCallback.class)
     private List<Result> results = new ArrayList<>();
     /**
      *

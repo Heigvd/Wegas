@@ -150,7 +150,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OrderColumn
     @JsonView(Views.Export.class)
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
+    @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<VariableDescriptor> childVariableDescriptors = new ArrayList<>();
 
     /**
@@ -176,7 +176,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JoinColumn(name = "scriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
@@ -186,7 +186,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JoinColumn(name = "csslibrary_gamemodelid")
     @JsonView({Views.Export.class})
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
@@ -196,7 +196,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JoinColumn(name = "clientscriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
@@ -213,7 +213,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Transient
     @JsonView({Views.Export.class})
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false)
     private Map<String, JsonNode> pages;
 
     /**

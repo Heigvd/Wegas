@@ -47,7 +47,7 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @OneToMany(mappedBy = "container", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
 
     /**

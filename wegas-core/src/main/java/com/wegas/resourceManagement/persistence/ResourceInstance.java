@@ -47,7 +47,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     @JsonManagedReference
     @OrderColumn
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, callback = ResourceInstanceMergeCallback.class)
+    @WegasEntityProperty(callback = ResourceInstanceMergeCallback.class)
     private List<Assignment> assignments = new ArrayList<>();
     /**
      *
@@ -55,7 +55,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Occupation> occupations = new ArrayList<>();
     /**
      *
@@ -63,7 +63,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, callback = ResourceInstanceMergeCallback.class)
+    @WegasEntityProperty(callback = ResourceInstanceMergeCallback.class)
     private List<Activity> activities = new ArrayList<>();
     /**
      *

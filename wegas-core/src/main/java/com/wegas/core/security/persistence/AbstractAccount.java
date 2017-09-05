@@ -126,7 +126,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     @JsonView(Views.ExtendedI.class)
     @Transient
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Permission> permissions = new ArrayList<>();
 
     /**

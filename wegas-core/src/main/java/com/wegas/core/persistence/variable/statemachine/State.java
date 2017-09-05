@@ -97,7 +97,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "state_id", referencedColumnName = "state_id")
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Transition> transitions = new ArrayList<>();
 
     /**

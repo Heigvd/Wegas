@@ -83,7 +83,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
      */
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     //@JoinColumn(referencedColumnName = "variableinstance_id")
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<WRequirement> requirements = new ArrayList<>();
 
     /**

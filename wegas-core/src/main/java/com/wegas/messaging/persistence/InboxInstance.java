@@ -57,7 +57,7 @@ public class InboxInstance extends VariableInstance {
 
      */
     @JsonManagedReference("inbox-message")
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Message> messages = new ArrayList<>();
     /**
      * @return the replies

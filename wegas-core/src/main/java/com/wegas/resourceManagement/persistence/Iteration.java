@@ -119,7 +119,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     @OneToMany(mappedBy = "iteration", cascade = CascadeType.ALL, orphanRemoval = true)
 
     
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Workload> workloads = new ArrayList<>();
 
     /**

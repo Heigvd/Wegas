@@ -83,7 +83,7 @@ public class Review extends AbstractEntity implements DatedEntity {
      * 'reviewer' only)
      */
     @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
@@ -91,7 +91,7 @@ public class Review extends AbstractEntity implements DatedEntity {
      * (writable by 'author' only)
      */
     @OneToMany(mappedBy = "commentsReview", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<EvaluationInstance> comments = new ArrayList<>();
 
     @Override

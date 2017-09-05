@@ -62,7 +62,7 @@ public class ChoiceInstance extends VariableInstance {
     @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
     //@JoinFetch
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Reply> replies = new ArrayList<>();
 
     /**

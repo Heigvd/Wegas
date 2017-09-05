@@ -58,7 +58,7 @@ public class Role extends AbstractEntity {
      */
     //@ElementCollection(fetch = FetchType.EAGER)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Permission> permissions = new ArrayList<>();
 
     /**

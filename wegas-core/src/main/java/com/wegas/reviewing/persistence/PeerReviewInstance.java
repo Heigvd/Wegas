@@ -7,7 +7,6 @@
  */
 package com.wegas.reviewing.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 
@@ -45,14 +44,14 @@ public class PeerReviewInstance extends VariableInstance {
      * List of review that contains feedback written by player owning this
      */
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Review> toReview = new ArrayList<>();
 
     /**
      * List of review that contains others feedback
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
+    @WegasEntityProperty
     private List<Review> reviewed = new ArrayList<>();
 
     /**

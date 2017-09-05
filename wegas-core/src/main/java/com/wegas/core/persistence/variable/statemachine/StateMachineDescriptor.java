@@ -49,7 +49,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, ignoreNull = true)
+    @WegasEntityProperty(ignoreNull = true)
     private Map<Long, State> states = new HashMap<>();
 
     /**

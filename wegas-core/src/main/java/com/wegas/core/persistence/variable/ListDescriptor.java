@@ -41,7 +41,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
     //@OrderBy("id")
     @OrderColumn
-    @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
+    @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
