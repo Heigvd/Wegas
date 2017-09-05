@@ -9,7 +9,7 @@ package com.wegas.core.merge.patch;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.LifecycleCollector;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -28,14 +28,14 @@ import java.util.Map.Entry;
 public final class WegasChildrenPatch extends WegasPatch {
 
     private Object from;
-    private final AbstractEntity referenceEntity;
+    private final Mergeable referenceEntity;
     private Boolean primitive = null;
     private Object to;
 
     private List<WegasPatch> patches;
 
     WegasChildrenPatch(Object identifier, int order,
-            WegasCallback userCallback, AbstractEntity referenceEntity,
+            WegasCallback userCallback, Mergeable referenceEntity,
             Method getter, Method setter,
             Object from, Object to,
             boolean recursive, boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
@@ -64,8 +64,8 @@ public final class WegasChildrenPatch extends WegasPatch {
                 patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, fromEntity, toEntity, false, false, false, cascade));
             } else {
                 patches.add(new WegasEntityPatch(key, 0, null, null, null,
-                        (AbstractEntity) fromEntity,
-                        (AbstractEntity) toEntity, // null -> DELETE ; not null -> UPDATE
+                        (Mergeable) fromEntity,
+                        (Mergeable) toEntity, // null -> DELETE ; not null -> UPDATE
                         recursive, false, false, false, cascade));
             }
 
@@ -83,7 +83,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                 patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, null, toEntity, false, false, false, cascade));
             } else {
                 patches.add(new WegasEntityPatch(key, 0, userCallback, null, null,
-                        null, (AbstractEntity) toEntity, // from null to no null  -> CREATE
+                        null, (Mergeable) toEntity, // from null to no null  -> CREATE
                         recursive, false, false, false, cascade));
             }
         }
@@ -107,13 +107,13 @@ public final class WegasChildrenPatch extends WegasPatch {
                 Object get = list.get(i);
                 if (get != null) {
                     if (primitive == null) {
-                        primitive = !AbstractEntity.class.isAssignableFrom(get.getClass());
+                        primitive = !Mergeable.class.isAssignableFrom(get.getClass());
                     }
                     if (primitive) {
                         theMap.put("" + i + ":" + get, get);
                         // theMap.put(i, get);
                     } else {
-                        theMap.put(((AbstractEntity) get).getRefId(), get);
+                        theMap.put(((Mergeable) get).getRefId(), get);
 
                     }
                 }
@@ -125,7 +125,7 @@ public final class WegasChildrenPatch extends WegasPatch {
             for (Entry<Object, Object> entry : map.entrySet()) {
                 Object v = entry.getValue();
                 if (primitive == null && v != null) {
-                    primitive = !AbstractEntity.class.isAssignableFrom(v.getClass());
+                    primitive = !Mergeable.class.isAssignableFrom(v.getClass());
                 }
                 theMap.put(entry.getKey(), v);
             }
@@ -136,9 +136,9 @@ public final class WegasChildrenPatch extends WegasPatch {
 
     @Override
     public LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass) {
-        AbstractEntity targetEntity = null;
-        if (target instanceof AbstractEntity) {
-            targetEntity = (AbstractEntity) target;
+        Mergeable targetEntity = null;
+        if (target instanceof Mergeable) {
+            targetEntity = (Mergeable) target;
         }
 
         logger.debug("Apply {} {}", this.getClass().getSimpleName(), identifier);
@@ -259,7 +259,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                                         toList.add(entity);
                                     }
                                 } else {
-                                    if (tmpMap.containsKey(((AbstractEntity) entity).getRefId())) {
+                                    if (tmpMap.containsKey(((Mergeable) entity).getRefId())) {
                                         toList.add(entity);
                                     }
                                 }
@@ -272,8 +272,8 @@ public final class WegasChildrenPatch extends WegasPatch {
                                     Object childB = toList.get(j);
 
                                     if ((childA.equals(childB))
-                                            || (childA instanceof AbstractEntity && childB instanceof AbstractEntity
-                                            && (((AbstractEntity) childA).getRefId() != null && ((AbstractEntity) childA).getRefId().equals(((AbstractEntity) childB).getRefId())))) {
+                                            || (childA instanceof Mergeable && childB instanceof Mergeable
+                                            && (((Mergeable) childA).getRefId() != null && ((Mergeable) childA).getRefId().equals(((Mergeable) childB).getRefId())))) {
                                         break;
                                     }
                                 }

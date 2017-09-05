@@ -11,80 +11,84 @@ import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.Mergeable;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Embeddable
-public class GameModelProperties implements Serializable {
+public class GameModelProperties implements Serializable, Mergeable {
 
+    @Override
+    public String getRefId() {
+        return "GameModelProperties";
+    }
+
+    @Override
+    public void setRefId(String refId) {
+    }
+    
     private static final long serialVersionUID = 1L;
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean freeForAll = false;
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String pagesUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String cssUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String websocket = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String logID = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String scriptUri = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String clientScriptUri = "";
     /**
      *
      */
+    @WegasEntityProperty
     private String imageUri = "";
     /**
      *
      */
+    @WegasEntityProperty
     private String iconUri = "";
 
     /**
      *
      */
     public GameModelProperties() {
-    }
-
-    /**
-     *
-     * @param other
-     */
-    public void merge(GameModelProperties other) {
-        this.setFreeForAll(other.getFreeForAll());
-        this.setPagesUri(other.getPagesUri());
-        this.setIconUri(other.getIconUri());
-        this.setImageUri(other.getImageUri());
-        this.setWebsocket(other.getWebsocket());
-        this.setLogID(other.getLogID());
-        this.setCssUri(other.getCssUri());
-        this.setScriptUri(other.getScriptUri());
-        this.setClientScriptUri(other.getClientScriptUri());
     }
 
     /**

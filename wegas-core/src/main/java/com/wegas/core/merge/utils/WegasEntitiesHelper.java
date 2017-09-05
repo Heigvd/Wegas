@@ -7,7 +7,7 @@
  */
 package com.wegas.core.merge.utils;
 
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,16 +21,16 @@ public class WegasEntitiesHelper {
     /**
      * static storage for WegasEntityFields
      */
-    private static final Map<Class<? extends AbstractEntity>, WegasEntityFields> iterators = new HashMap<>();
+    private static final Map<Class<? extends Mergeable>, WegasEntityFields> iterators = new HashMap<>();
 
     /**
      * Get WegasEntityProperty fields descriptor for the given class
      *
-     * @param klass a class which extends AbstractEntity
+     * @param klass a class which extends Mergeable
      *
      * @return all WegasEntityProperty defined within klass and all its super-classes
      */
-    public static WegasEntityFields getEntityIterator(Class<? extends AbstractEntity> klass) {
+    public static WegasEntityFields getEntityIterator(Class<? extends Mergeable> klass) {
         synchronized (iterators) {
             if (iterators.containsKey(klass)) {
                 return iterators.get(klass);

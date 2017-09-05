@@ -17,6 +17,7 @@ import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelProperties;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -336,6 +337,58 @@ public class MergeFacadeTest extends AbstractEJBTest {
         for (int i = 0; i < expected.size(); i++) {
             Assert.assertEquals(expected.get(i), list[i]);
         }
+    }
+
+    @Test
+    public void testModelise_GameModel() throws NamingException, WegasNoResultException {
+        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
+
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        GameModelProperties properties1 = gameModel1.getProperties();
+        properties1.setLogID("DefaultLogId1");
+        properties1.setIconUri("MyIconUri");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        GameModelProperties properties2 = gameModel2.getProperties();
+        properties2.setLogID("DefaultLogId2");
+        properties2.setIconUri("MyIconUri");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        GameModel model = mergeFacade.extractCommonContent(scenarios);
+
+        logger.info("Create Model");
+        model = mergeFacade.createModel(model, scenarios);
+
+        Assert.assertEquals("DefaultLogId1", model.getProperties().getLogID());
+        Assert.assertEquals("DefaultLogId1", gameModel1.getProperties().getLogID());
+        Assert.assertEquals("DefaultLogId2", gameModel2.getProperties().getLogID());
+
+        model.getProperties().setLogID("NewLogId");
+        model = gameModelFacade.update(model.getId(), model);
+
+        /**
+         * Update gameModel properties
+         */
+        mergeFacade.propagateModel(model.getId());
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        Assert.assertEquals("NewLogId", model.getProperties().getLogID());
+        Assert.assertEquals("NewLogId", gameModel1.getProperties().getLogID());
+        Assert.assertEquals("DefaultLogId2", gameModel2.getProperties().getLogID());
+
     }
 
     @Test

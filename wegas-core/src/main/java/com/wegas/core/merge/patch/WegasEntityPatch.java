@@ -10,13 +10,14 @@ package com.wegas.core.merge.patch;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.merge.utils.WegasFieldProperties;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.beans.PropertyDescriptor;
@@ -39,8 +40,8 @@ public final class WegasEntityPatch extends WegasPatch {
      */
     private List<WegasPatch> patches;
 
-    private AbstractEntity fromEntity;
-    private AbstractEntity toEntity;
+    private Mergeable fromEntity;
+    private Mergeable toEntity;
 
     private List<WegasCallback> entityCallbacks;
 
@@ -51,7 +52,7 @@ public final class WegasEntityPatch extends WegasPatch {
         return callbacks;
     }
 
-    public WegasEntityPatch(AbstractEntity from, AbstractEntity to, Boolean recursive) {
+    public WegasEntityPatch(Mergeable from, Mergeable to, Boolean recursive) {
         this(null, 0, null, null, null, from, to, recursive, false, false, false, new Visibility[]{Visibility.INTERNAL, Visibility.PROTECTED});
     }
 
@@ -71,7 +72,7 @@ public final class WegasEntityPatch extends WegasPatch {
      */
     WegasEntityPatch(Object identifier, int order,
             WegasCallback userCallback, Method getter, Method setter,
-            AbstractEntity from, AbstractEntity to, boolean recursive,
+            Mergeable from, Mergeable to, boolean recursive,
             boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
             Visibility[] cascade) {
 
@@ -139,7 +140,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                 patches.add(new WegasEntityPatch(fieldName, wegasProperty.order(),
                                         userFieldCallback,
                                         fGetter, fSetter,
-                                        (AbstractEntity) fromValue, (AbstractEntity) toValue,
+                                        (Mergeable) fromValue, (Mergeable) toValue,
                                         recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), wegasProperty.cascadeOverride()));
 
                                 break;
@@ -164,7 +165,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
     @Override
     public LifecycleCollector apply(Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass) {
-        AbstractEntity target = (AbstractEntity) targetObject;
+        Mergeable target = (Mergeable) targetObject;
 
         /**
          * Two pass patch
@@ -194,9 +195,9 @@ public final class WegasEntityPatch extends WegasPatch {
                 logger.info("Start pass #{}", numPass);
             }
             try {
-                AbstractEntity oTarget = target;
+                Mergeable oTarget = target;
                 if (getter != null) {
-                    target = (AbstractEntity) getter.invoke(oTarget);
+                    target = (Mergeable) getter.invoke(oTarget);
                 }
 
                 if (!ignoreNull || toEntity != null) {
@@ -278,7 +279,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                             }
 
                                             String refId = fromEntity.getRefId();
-                                            // Should include all AbstractEntity contained within target, so they can be reused by CREATE case
+                                            // Should include all Mergeable contained within target, so they can be reused by CREATE case
                                             collector.getDeleted().put(refId, new LifecycleCollector.CollectedEntity(target, fromEntity, callbacks));
 
                                             for (WegasCallback cb : callbacks) {
@@ -333,16 +334,13 @@ public final class WegasEntityPatch extends WegasPatch {
         logger.info("  ** DONE {} (from {} to {}) on {}", this.getClass().getSimpleName(), fromEntity, toEntity, target);
 
         if (processCollectedData) {
-            // TODO: @WegasEntity(finalizer = MyFinalizer.class)
-
             // Finalize patch
             logger.info("Collect: {}", collector);
             VariableDescriptorFacade vdf = null;
 
-            // ->  implement as callbacks !!!!
             for (Entry<String, LifecycleCollector.CollectedEntity> entry : collector.getDeleted().entrySet()) {
                 LifecycleCollector.CollectedEntity collectedEntity = entry.getValue();
-                AbstractEntity entity = collectedEntity.getEntity();
+                Mergeable entity = collectedEntity.getEntity();
 
                 List<WegasCallback> callbacks = collectedEntity.getCallbacks();
                 if (callbacks != null) {
@@ -355,12 +353,14 @@ public final class WegasEntityPatch extends WegasPatch {
                     vdf = VariableDescriptorFacade.lookup();
                 }
 
-                vdf.removeAbstractEntity(entity);
+                if (entity instanceof AbstractEntity) {
+                    vdf.removeAbstractEntity((AbstractEntity)entity);
+                }
             }
 
             for (Entry<String, LifecycleCollector.CollectedEntity> entry : collector.getCreated().entrySet()) {
                 LifecycleCollector.CollectedEntity collectedEntity = entry.getValue();
-                AbstractEntity entity = collectedEntity.getEntity();
+                Mergeable entity = collectedEntity.getEntity();
 
                 List<WegasCallback> callbacks = collectedEntity.getCallbacks();
                 if (callbacks != null) {

@@ -9,22 +9,22 @@ package com.wegas.core.merge.utils;
 
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Contains all WegasEntityProperty annotated fields for a given AbstractEntity class
+ * Contains all WegasEntityProperty annotated fields for a given Mergeable class
  *
  * @author maxence
  */
 public class WegasEntityFields {
 
     /**
-     * AbstractEntity this object is related to
+     * Mergeable this object is related to
      */
-    private final Class<? extends AbstractEntity> theClass;
+    private final Class<? extends Mergeable> theClass;
 
     /**
      * list of WegasEntityProperty annotated fields (including inherited) defined in theClass
@@ -41,7 +41,7 @@ public class WegasEntityFields {
      *
      * @param theClass
      */
-    public WegasEntityFields(Class<? extends AbstractEntity> theClass) {
+    public WegasEntityFields(Class<? extends Mergeable> theClass) {
         try {
             this.theClass = theClass;
 
@@ -88,7 +88,7 @@ public class WegasEntityFields {
      *
      * @return the class which defined all those fields
      */
-    public Class<? extends AbstractEntity> getTheClass() {
+    public Class<? extends Mergeable> getTheClass() {
         return theClass;
     }
 

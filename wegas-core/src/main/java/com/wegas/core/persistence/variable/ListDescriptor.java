@@ -17,6 +17,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -245,7 +246,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     public static class ValidateShortcutCallback implements WegasCallback {
 
         @Override
-        public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
+        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
             if (entity instanceof ListDescriptor) {
                 ListDescriptor listDescriptor = (ListDescriptor) entity;
                 String shortcut = listDescriptor.getAddShortcut();

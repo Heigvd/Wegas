@@ -9,11 +9,11 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -72,7 +72,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     public NumberDescriptor(String name, NumberInstance defaultInstance) {
         super(name, defaultInstance);
     }
-
 
     /**
      * @return the minValue
@@ -217,14 +216,16 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     public static class ValdateDefaultValue implements WegasCallback {
 
         @Override
-        public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
-            NumberDescriptor nd =(NumberDescriptor) entity;
-            NumberInstance ni = nd.getDefaultInstance();
-            double value = ni.getValue();
+        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+            if (entity instanceof NumberDescriptor) {
+                NumberDescriptor nd = (NumberDescriptor) entity;
+                NumberInstance ni = nd.getDefaultInstance();
+                double value = ni.getValue();
 
-            if (!nd.isValueValid(value)) {
-                throw new WegasOutOfBoundException(nd.getMinValue(),
-                        nd.getMaxValue(), value, nd.getLabel());
+                if (!nd.isValueValid(value)) {
+                    throw new WegasOutOfBoundException(nd.getMinValue(),
+                            nd.getMaxValue(), value, nd.getLabel());
+                }
             }
         }
     }

@@ -7,7 +7,7 @@
  */
 package com.wegas.core.merge.utils;
 
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 
 /**
  *
@@ -35,7 +35,7 @@ public interface WegasCallback {
      * @param newValue
      * @param identifier
      */
-    default public void preUpdate(AbstractEntity entity, Object newValue, Object identifier) {
+    default public void preUpdate(Mergeable entity, Object newValue, Object identifier) {
 
     }
 
@@ -46,7 +46,7 @@ public interface WegasCallback {
      * @param ref
      * @param identifier
      */
-    default public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
+    default public void postUpdate(Mergeable entity, Object ref, Object identifier) {
 
     }
 
@@ -68,7 +68,7 @@ public interface WegasCallback {
      * @param entity
      * @param identifier
      */
-    default public void persist(AbstractEntity entity, Object identifier) {
+    default public void persist(Mergeable entity, Object identifier) {
 
     }
 
@@ -78,7 +78,7 @@ public interface WegasCallback {
      * @param entity
      * @param identifier
      */
-    default public void destroy(AbstractEntity entity, Object identifier) {
+    default public void destroy(Mergeable entity, Object identifier) {
 
     }
 }

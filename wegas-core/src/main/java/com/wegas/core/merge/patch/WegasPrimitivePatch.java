@@ -8,7 +8,7 @@
 package com.wegas.core.merge.patch;
 
 import com.wegas.core.merge.utils.LifecycleCollector;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -28,7 +28,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
 
     private Object fromValue;
     private Object toValue;
-    private AbstractEntity entity;
+    private Mergeable entity;
 
     /**
      * patch through getter and setter or with add/remove callback ?
@@ -51,7 +51,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
      * @param cascade
      */
     WegasPrimitivePatch(Object identifier, int order,
-            WegasCallback userCallback, AbstractEntity entity,
+            WegasCallback userCallback, Mergeable entity,
             Method getter, Method setter, Object fromValue, Object toValue,
             boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
             Visibility[] cascade) {
@@ -69,9 +69,9 @@ public final class WegasPrimitivePatch extends WegasPatch {
 
     @Override
     public LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass) {
-        AbstractEntity targetEntity = null;
+        Mergeable targetEntity = null;
         if (isField) {
-            targetEntity = (AbstractEntity) target;
+            targetEntity = (Mergeable) target;
         }
 
         if (numPass < 2) {

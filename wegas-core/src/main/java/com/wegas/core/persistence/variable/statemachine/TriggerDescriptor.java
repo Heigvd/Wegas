@@ -14,6 +14,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.rest.util.Views;
 
 import javax.persistence.Entity;
@@ -225,7 +226,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     public static class MergeTriggerHack implements WegasCallback {
 
         @Override
-        public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
+        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
             TriggerDescriptor td = (TriggerDescriptor) entity;
             td.buildStateMachine();
         }

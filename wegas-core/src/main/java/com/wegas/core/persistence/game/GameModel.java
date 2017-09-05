@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -292,7 +291,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             }
         }
     }
-
 
     /**
      *

@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.patch.WegasEntityPatch;
-import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.persistence.variable.Beanjection;
 import javax.persistence.MappedSuperclass;
 import org.eclipse.persistence.annotations.Cache;
@@ -50,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @MappedSuperclass
 @Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
-public abstract class AbstractEntity implements Serializable, Cloneable {
+public abstract class AbstractEntity implements Serializable, Cloneable, Mergeable {
 
     private static final long serialVersionUID = -2538440276749623728L;
 
@@ -71,6 +70,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      *
      * @return
      */
+    @Override
     public String getRefId() {
         if (this.refId != null) {
             return this.refId;
@@ -81,6 +81,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         }
     }
 
+    @Override
     public void setRefId(String refId) {
         this.refId = refId;
     }

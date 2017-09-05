@@ -10,8 +10,8 @@ package com.wegas.core.merge.patch;
 import com.wegas.core.IndentLogger;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.merge.utils.LifecycleCollector;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
@@ -133,7 +133,7 @@ public abstract class WegasPatch {
      *
      * @return whether or not this patch should be applied on target
      */
-    protected boolean shouldApplyPatch(AbstractEntity target, AbstractEntity reference) {
+    protected boolean shouldApplyPatch(Mergeable target, Mergeable reference) {
         return (!sameEntityOnly || target.equals(reference));
     }
 
@@ -161,7 +161,7 @@ public abstract class WegasPatch {
         this.fieldCallback = userCallback;
     }
 
-    public void apply(AbstractEntity target) {
+    public void apply(Mergeable target) {
         this.apply(target, null, PatchMode.UPDATE, null, null, null);
     }
 

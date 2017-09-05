@@ -8,7 +8,7 @@
 package com.wegas.core.merge.utils;
 
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class represent all properties linked to an {@link AbstractEntity} {@link WegasEntityProperty} field
+ * This class represent all properties linked to an {@link Mergeable} {@link WegasEntityProperty} field
  *
  * @author maxence
  */
@@ -69,7 +69,7 @@ public class WegasFieldProperties {
              * current property is a list or a map of abstract entities
              */
             this.type = FieldType.CHILDREN;
-        } else if (AbstractEntity.class.isAssignableFrom(fieldClass)) {
+        } else if (Mergeable.class.isAssignableFrom(fieldClass)) {
             /*
              * the property is an abstract entity -> register patch
              */
@@ -90,7 +90,7 @@ public class WegasFieldProperties {
     }
 
     /**
-     * Indicate which kind of filed it is (PROPERTY means ~primitive, Child means one AbstractEntity, Children means list or map of AbstractEntity)
+     * Indicate which kind of filed it is (PROPERTY means ~primitive, Child means one Mergeable, Children means list or map of Mergeable)
      *
      * @return the field type
      */
@@ -127,7 +127,7 @@ public class WegasFieldProperties {
 
     /**
      * There is three different kind of properties
-     * CHILD: field type is an AbstractEntity
+     * CHILD: field type is a Mergeable object
      * CHILDREN: a list or a map of children
      * PROPERTY: any other value (eg primitive types)
      */

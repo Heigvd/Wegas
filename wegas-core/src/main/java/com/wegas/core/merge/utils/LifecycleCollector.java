@@ -7,7 +7,7 @@
  */
 package com.wegas.core.merge.utils;
 
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,23 +61,23 @@ public class LifecycleCollector {
 
     public static final class CollectedEntity {
 
-        private AbstractEntity entity;
+        private Mergeable entity;
 
-        private AbstractEntity payload;
+        private Mergeable payload;
 
         List<WegasCallback> callbacks;
 
-        public CollectedEntity(AbstractEntity entity, AbstractEntity payload, List<WegasCallback> callbacks) {
+        public CollectedEntity(Mergeable entity, Mergeable payload, List<WegasCallback> callbacks) {
             this.entity = entity;
             this.payload = payload;
             this.callbacks = callbacks;
         }
 
-        public AbstractEntity getEntity() {
+        public Mergeable getEntity() {
             return entity;
         }
 
-        public void setEntity(AbstractEntity entity) {
+        public void setEntity(Mergeable entity) {
             this.entity = entity;
         }
 
@@ -89,11 +89,11 @@ public class LifecycleCollector {
             this.callbacks = callbacks;
         }
 
-        public AbstractEntity getPayload() {
+        public Mergeable getPayload() {
             return payload;
         }
 
-        public void setPayload(AbstractEntity payload) {
+        public void setPayload(Mergeable payload) {
             this.payload = payload;
         }
     }

@@ -8,7 +8,6 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
@@ -25,6 +24,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.Scripted;
 
@@ -397,7 +397,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     public static class ChoiceDescriptorMergeCallback implements WegasCallback {
 
         @Override
-        public void postUpdate(AbstractEntity entity, Object ref, Object identifier) {
+        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
             if (entity instanceof ChoiceDescriptor) {
                 ChoiceDescriptor cd = (ChoiceDescriptor) entity;
 

@@ -53,6 +53,7 @@ import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.util.logging.Level;
 
@@ -615,7 +616,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         }
 
         @Override
-        public void postUpdate(AbstractEntity entity, Object originalNewValue, Object identifier) {
+        public void postUpdate(Mergeable entity, Object originalNewValue, Object identifier) {
             VariableDescriptor vd = (VariableDescriptor) entity;
             AbstractScope scope = vd.getScope();
             AbstractScope newScope = ((VariableDescriptor) originalNewValue).getScope();
@@ -635,7 +636,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         }
 
         @Override
-        public void destroy(AbstractEntity entity, Object identifier) {
+        public void destroy(Mergeable entity, Object identifier) {
             if (entity instanceof VariableDescriptor){
                 VariableDescriptor vd =(VariableDescriptor) entity;
                 vd.getVariableDescriptorFacade().preDestroy(vd.getGameModel(), vd);
