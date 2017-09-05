@@ -19,6 +19,7 @@ import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -30,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -88,6 +90,41 @@ public class MergeFacade {
                 scenarios = loadGameModels(scenarios);
                 // extract the first scenario to act as reference
                 model = (GameModel) scenarios.remove(0).duplicate();
+
+                /**
+                 * TODO : filter gameModelContent & pages
+                 */
+                //model.getGameModelContent(list, key);
+                Map<String, Map<String, GameModelContent>> libraries = model.getLibraries();
+                List<Map<String, Map<String, GameModelContent>>> otherLibraries = new ArrayList<>();
+
+                for (GameModel other : scenarios) {
+                    otherLibraries.add(other.getLibraries());
+                }
+
+                for (Entry<String, Map<String, GameModelContent>> libEntry : libraries.entrySet()) {
+
+                    String libraryName = libEntry.getKey();
+
+                    Map<String, GameModelContent> library = libEntry.getValue();
+                    for (Entry<String, GameModelContent> entry : library.entrySet()) {
+                        String key = entry.getKey();
+                        boolean exists = true;
+                        for (Map<String, Map<String, GameModelContent>> otherLibs : otherLibraries) {
+                            Map<String, GameModelContent> otherLib = otherLibs.get(libraryName);
+                            if (!otherLib.containsKey(key)) {
+                                exists = false;
+                                // at least on scenrios which doesn't define the entry
+                                break;
+                            }
+                        }
+                        
+                        if (!exists) {
+                            library.remove(key);
+                        }
+                    }
+                }
+                model.setLibraries(libraries);
 
                 List<VariableDescriptor> vdQueue = new ArrayList<>();
                 vdQueue.addAll(model.getChildVariableDescriptors());

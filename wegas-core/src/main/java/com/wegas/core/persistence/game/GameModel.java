@@ -560,6 +560,23 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.properties = properties;
     }
 
+    @JsonIgnore
+    public Map<String, Map<String, GameModelContent>> getLibraries(){
+         Map<String, Map<String, GameModelContent>> libraries =new HashMap<>();
+
+         libraries.put("Script", this.getScriptLibrary());
+         libraries.put("ClientScript", this.getClientScriptLibrary());
+         libraries.put("CSS", this.getCssLibrary());
+
+         return libraries;
+    }
+
+    public void setLibraries(Map<String, Map<String, GameModelContent>> libraries){
+        this.setScriptLibrary(libraries.get("Script"));
+        this.setClientScriptLibrary(libraries.get("ClientScript"));
+        this.setCssLibrary(libraries.get("CSS"));
+    }
+
     /**
      * @return the cssLibrary
      */
@@ -883,6 +900,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public enum Status {
         /**
          * Not a template game model but one linked to an effective game
+         * TODO -> MOVE to GmType
          */
         PLAY,
         /**

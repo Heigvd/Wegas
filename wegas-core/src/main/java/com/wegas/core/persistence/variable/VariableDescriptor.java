@@ -55,7 +55,6 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
-import java.util.logging.Level;
 
 /**
  * @param <T>
@@ -181,7 +180,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty
-    private Visibility visibility;
+    private Visibility visibility = Visibility.PRIVATE;
 
     /**
      *

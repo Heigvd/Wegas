@@ -17,6 +17,7 @@ import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.GameModelProperties;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import javax.naming.NamingException;
 import junit.framework.Assert;
@@ -340,7 +342,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testModelise_GameModel() throws NamingException, WegasNoResultException {
+    public void testModelise_GameModelProperties() throws NamingException, WegasNoResultException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
         GameModel gameModel1 = new GameModel();
@@ -389,6 +391,124 @@ public class MergeFacadeTest extends AbstractEJBTest {
         Assert.assertEquals("NewLogId", gameModel1.getProperties().getLogID());
         Assert.assertEquals("DefaultLogId2", gameModel2.getProperties().getLogID());
 
+    }
+
+    private void createCss(GameModel theModel) {
+        Map<String, GameModelContent> cssLibrary = theModel.getCssLibrary();
+
+        GameModelContent css = new GameModelContent();
+        css.setContent(".model_rule { color: red}");
+        css.setContentType("text/css");
+        css.setVisibility(ModelScoped.Visibility.INTERNAL);
+        cssLibrary.put("modelCss", css);
+
+        css = new GameModelContent();
+        css.setContent(".protected_rule { color: red}");
+        css.setContentType("text/css");
+        css.setVisibility(ModelScoped.Visibility.PROTECTED);
+        cssLibrary.put("protectedCss", css);
+
+        css = new GameModelContent();
+        css.setContent(".inherited_rule { color: red}");
+        css.setContentType("text/css");
+        css.setVisibility(ModelScoped.Visibility.INHERITED);
+        cssLibrary.put("inheritedCss", css);
+
+        css = new GameModelContent();
+        css.setContent(".private_rule { color: red}");
+        css.setContentType("text/css");
+        css.setVisibility(ModelScoped.Visibility.PRIVATE);
+        cssLibrary.put("privateCss", css);
+
+        theModel.setCssLibrary(cssLibrary);
+    }
+
+    @Test
+    public void testModelise_GameModelContent() throws NamingException, WegasNoResultException {
+        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
+
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        this.createCss(gameModel1);
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        this.createCss(gameModel2);
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        GameModel model = mergeFacade.extractCommonContent(scenarios);
+
+        logger.info("Create Model");
+        model = mergeFacade.createModel(model, scenarios);
+
+        model = gameModelFacade.find(model.getId());
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        printLibraries(model);
+        printLibraries(gameModel1);
+        printLibraries(gameModel2);
+
+        /**
+         * Update CSS sheets
+         */
+        Map<String, GameModelContent> cssLibrary;
+        cssLibrary = model.getCssLibrary();
+        GameModelContent lib;
+        lib = cssLibrary.get("inheritedCss");
+        lib.setContent(".inherited_rule { color: hotpink}");
+
+        lib = model.getCss("protectedCss");
+        lib.setContent(".protected_rule { color: hotpink}");
+
+        model.setCssLibrary(cssLibrary);
+        model = gameModelFacade.merge(model);
+
+
+        cssLibrary =gameModel1.getCssLibrary();
+        lib = cssLibrary.get("inheritedCss");
+        lib.setContent(".inherited_rule { color: lavender}");
+
+        lib = model.getCss("protectedCss");
+        lib.setContent(".protected_rule { color: lavender}");
+
+        gameModel1.setCssLibrary(cssLibrary);
+        gameModel1 = gameModelFacade.merge(gameModel1);
+
+        /**
+         * Update gameModel properties
+         */
+        mergeFacade.propagateModel(model.getId());
+
+        model = gameModelFacade.find(model.getId());
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        printLibraries(model);
+        printLibraries(gameModel1);
+        printLibraries(gameModel2);
+    }
+
+    private void printLibraries(GameModel gameModel) {
+        StringBuilder sb = new StringBuilder(gameModel.toString()).append("\n");
+        for (Entry<String, Map<String, GameModelContent>> entry : gameModel.getLibraries().entrySet()) {
+            String libraryName = entry.getKey();
+            sb.append("  ").append(libraryName).append("\n");
+            for (Entry<String, GameModelContent> content : entry.getValue().entrySet()) {
+                GameModelContent value = content.getValue();
+                sb.append("   - ").append(value.getId()).append(" ").append(value.getVisibility()).append("::").append(content.getKey()).append(" (").append(value.getContentType()).append("): ").append(value.getContent()).append("\n");
+            }
+        }
+        logger.info("Libraries: {}", sb);
     }
 
     @Test

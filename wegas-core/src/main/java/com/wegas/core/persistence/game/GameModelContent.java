@@ -13,7 +13,9 @@ import java.io.Serializable;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.ModelScoped;
 import java.util.Objects;
 
 /**
@@ -29,11 +31,11 @@ import java.util.Objects;
     @Index(columnList = "csslibrary_gamemodelid"),
     @Index(columnList = "csslibrary_gamemodelid, scriptlibrary_gamemodelid, clientscriptlibrary_gamemodelid, contentKey", unique = true)
 })
-public class GameModelContent extends AbstractEntity implements Serializable {
+public class GameModelContent extends AbstractEntity implements Serializable, ModelScoped {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
 
@@ -52,11 +54,13 @@ public class GameModelContent extends AbstractEntity implements Serializable {
     @JsonIgnore
     private GameModel clientscriptlibrary_GameModel;
 
+    @WegasEntityProperty
     private String contentKey;
 
     /**
      *
      */
+    @WegasEntityProperty
     private String contentType;
     /**
      *
@@ -65,7 +69,12 @@ public class GameModelContent extends AbstractEntity implements Serializable {
     @Basic(optional = false, fetch = FetchType.LAZY)
     //@Column(columnDefinition = "text")
     //@JsonView({Views.Export.class})
+    @WegasEntityProperty
     private String content = "";
+
+    @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty
+    private Visibility visibility = Visibility.PRIVATE;
 
     /**
      *
@@ -84,7 +93,6 @@ public class GameModelContent extends AbstractEntity implements Serializable {
         this.content = content;
         this.contentType = contentType;
     }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -196,6 +204,16 @@ public class GameModelContent extends AbstractEntity implements Serializable {
     @JsonIgnore
     public void setScriptlibrary_GameModel(GameModel scriptlibrary_GameModel) {
         this.scriptlibrary_GameModel = scriptlibrary_GameModel;
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        return this.visibility;
+    }
+
+    @Override
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     @JsonIgnore
