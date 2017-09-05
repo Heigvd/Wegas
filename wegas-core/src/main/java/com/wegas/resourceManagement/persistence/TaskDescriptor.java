@@ -366,7 +366,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @return the exportedPredecessors
      */
     public List<String> getPredecessorNames() {
-        if (predecessorNames == null || predecessorNames.isEmpty()) {
+        if (predecessorNames == null){
             List<String> names = new ArrayList<>();
             for (TaskDescriptor t : this.getPredecessors()) {
                 names.add(t.getName());

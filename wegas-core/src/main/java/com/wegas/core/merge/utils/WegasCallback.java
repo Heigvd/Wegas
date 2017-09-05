@@ -20,11 +20,11 @@ public interface WegasCallback {
     /**
      * Called when an entity is created or when a child is added to its parent
      *
-     * @param entity     added entity
+     * @param child      added entity
      * @param container  entity parent
-     * @param identifier entity identifier
+     * @param identifier entity identifier (map key or position in list)
      */
-    default public void add(AbstractEntity entity, Object container, Object identifier) {
+    default public void add(Object child, Object container, Object identifier) {
 
     }
 
@@ -53,11 +53,13 @@ public interface WegasCallback {
     /**
      * Called when an entity is removed or when a child is removed from its parent
      *
-     * @param entity
-     * @param identifier
+     * @param child      the child to remove from container
+     * @param container  container to remove child from
+     * @param identifier child identifier
+     * @return child key (key for map and idx for list), null is nothing was removed
      */
-    default public void remove(AbstractEntity entity, Object container, Object identifier) {
-
+    default public Object remove(Object child, Object container, Object identifier) {
+        return null;
     }
 
     /**

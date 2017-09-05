@@ -29,9 +29,10 @@ public final class WegasChildrenPatch extends WegasPatch {
 
     private Object from;
     private final AbstractEntity referenceEntity;
+    private Boolean primitive = null;
     private Object to;
 
-    private List<WegasEntityPatch> patches;
+    private List<WegasPatch> patches;
 
     WegasChildrenPatch(Object identifier, int order,
             WegasCallback userCallback, AbstractEntity referenceEntity,
@@ -46,23 +47,27 @@ public final class WegasChildrenPatch extends WegasPatch {
         this.to = to;
         this.referenceEntity = referenceEntity;
 
-        Map<Object, AbstractEntity> fromMap = asMap(from);
-        Map<Object, AbstractEntity> toMap = asMap(to);
+        Map<Object, Object> fromMap = asMap(from);
+        Map<Object, Object> toMap = asMap(to);
 
         /*
          * Go through initial children
          */
-        for (Entry<Object, AbstractEntity> entry : fromMap.entrySet()) {
+        for (Entry<Object, Object> entry : fromMap.entrySet()) {
             Object key = entry.getKey();
 
-            AbstractEntity fromEntity = entry.getValue();
-            AbstractEntity toEntity = toMap.get(key);
+            Object fromEntity = entry.getValue();
+            Object toEntity = toMap.get(key);
 
             // this patch handles delete and update cases
-            patches.add(new WegasEntityPatch(key, 0, null, null, null,
-                    fromEntity,
-                    toEntity, // null -> DELETE ; not null -> UPDATE
-                    recursive, false, false, false, cascade));
+            if (primitive) {
+                patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, fromEntity, toEntity, false, false, false, cascade));
+            } else {
+                patches.add(new WegasEntityPatch(key, 0, null, null, null,
+                        (AbstractEntity) fromEntity,
+                        (AbstractEntity) toEntity, // null -> DELETE ; not null -> UPDATE
+                        recursive, false, false, false, cascade));
+            }
 
             if (to != null) {
                 // since the patch to update "to" has been created, remove "to" from the map
@@ -71,12 +76,16 @@ public final class WegasChildrenPatch extends WegasPatch {
         }
 
         /* Remaining entities in toMap are new */
-        for (Entry<Object, AbstractEntity> entry : toMap.entrySet()) {
+        for (Entry<Object, Object> entry : toMap.entrySet()) {
             Object key = entry.getKey();
-            AbstractEntity toEntity = entry.getValue();
-            patches.add(new WegasEntityPatch(key, 0, userCallback, null, null,
-                    null, toEntity, // from null to no null  -> CREATE
-                    recursive, false, false, false, cascade));
+            Object toEntity = entry.getValue();
+            if (primitive) {
+                patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, null, toEntity, false, false, false, cascade));
+            } else {
+                patches.add(new WegasEntityPatch(key, 0, userCallback, null, null,
+                        null, (AbstractEntity) toEntity, // from null to no null  -> CREATE
+                        recursive, false, false, false, cascade));
+            }
         }
     }
 
@@ -89,19 +98,36 @@ public final class WegasChildrenPatch extends WegasPatch {
      *
      * @return a brand new map which contains all children
      */
-    private Map<Object, AbstractEntity> asMap(Object children) {
-        Map<Object, AbstractEntity> theMap = new HashMap<>();
+    private Map<Object, Object> asMap(Object children) {
+        Map<Object, Object> theMap = new HashMap<>();
         if (children instanceof List) {
-            List<AbstractEntity> list = (List<AbstractEntity>) children;
+            List<Object> list = (List<Object>) children;
 
-            for (AbstractEntity ae : list) {
-                theMap.put(ae.getRefId(), ae);
+            for (int i = 0; i < list.size(); i++) {
+                Object get = list.get(i);
+                if (get != null) {
+                    if (primitive == null) {
+                        primitive = !AbstractEntity.class.isAssignableFrom(get.getClass());
+                    }
+                    if (primitive) {
+                        theMap.put("" + i + ":" + get, get);
+                        // theMap.put(i, get);
+                    } else {
+                        theMap.put(((AbstractEntity) get).getRefId(), get);
+
+                    }
+                }
             }
-        } else if (children instanceof Map) {
-            Map<Object, AbstractEntity> map = (Map<Object, AbstractEntity>) children;
 
-            for (Entry<Object, AbstractEntity> entry : map.entrySet()) {
-                theMap.put(entry.getKey(), entry.getValue());
+        } else if (children instanceof Map) {
+            Map<Object, Object> map = (Map<Object, Object>) children;
+
+            for (Entry<Object, Object> entry : map.entrySet()) {
+                Object v = entry.getValue();
+                if (primitive == null && v != null) {
+                    primitive = !AbstractEntity.class.isAssignableFrom(v.getClass());
+                }
+                theMap.put(entry.getKey(), v);
             }
 
         }
@@ -109,27 +135,32 @@ public final class WegasChildrenPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(AbstractEntity target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass) {
+    public LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass) {
+        AbstractEntity targetEntity = null;
+        if (target instanceof AbstractEntity) {
+            targetEntity = (AbstractEntity) target;
+        }
+
         logger.debug("Apply {} {}", this.getClass().getSimpleName(), identifier);
         logger.indent();
         try {
-            if (shouldApplyPatch(target, referenceEntity)) {
-                Object children = getter.invoke(target);
+            if (shouldApplyPatch(targetEntity, referenceEntity)) {
+                Object children = getter.invoke(targetEntity);
 
                 if (!ignoreNull || to != null) {
                     if (!initOnly || children == null) {
-                        final List<AbstractEntity> childrenList;
+                        final List<Object> childrenList;
 
-                        final Map<Object, AbstractEntity> childrenMap;
+                        final Map<Object, Object> childrenMap;
 
                         if (children instanceof Map) {
                             childrenMap = new HashMap<>();
-                            childrenMap.putAll((Map<? extends Object, ? extends AbstractEntity>) children);
+                            childrenMap.putAll((Map<? extends Object, ? extends Object>) children);
                             childrenList = null;
                             children = childrenMap;
                         } else if (children instanceof List) {
                             childrenList = new ArrayList<>();
-                            childrenList.addAll((List<? extends AbstractEntity>) children);
+                            childrenList.addAll((List<? extends Object>) children);
                             children = childrenList;
 
                             childrenMap = null;
@@ -139,76 +170,118 @@ public final class WegasChildrenPatch extends WegasPatch {
 
                         final Object finalChildren = children;
 
-                        Map<Object, AbstractEntity> tmpMap = asMap(children);
+                        Map<Object, Object> tmpMap = asMap(children);
                         List<WegasCallback> callbacks = this.getCallbacks(callback);
 
                         WegasCallback registerChild = new WegasCallback() {
                             @Override
-                            public void add(AbstractEntity entity, Object container, Object identifier) {
+                            public void add(Object child, Object container, Object identifier) {
+
                                 if (childrenList != null) {
-                                    childrenList.add(entity);
+                                    logger.info("Add child {}", child);
+                                    if (identifier != null && identifier instanceof Integer) {
+                                        childrenList.add((Integer) identifier, child);
+                                    } else {
+                                        childrenList.add(child);
+                                    }
                                 } else if (childrenMap != null) {
-                                    childrenMap.put(identifier, entity);
+                                    childrenMap.put(identifier, child);
                                 }
 
                                 for (WegasCallback cb : callbacks) {
-                                    cb.add(entity, finalChildren, identifier);
+                                    cb.add(child, finalChildren, identifier);
                                 }
                             }
 
                             @Override
-                            public void remove(AbstractEntity entity, Object container, Object identifier) {
+                            public Object remove(Object child, Object container, Object identifier) {
+                                Object key = null;
                                 if (childrenList != null) {
-                                    childrenList.remove(entity);
+                                    logger.info("remove child {}", child);
+                                    int indexOf = childrenList.indexOf(child);
+                                    if (indexOf >= 0) {
+                                        key = indexOf;
+                                        childrenList.remove(child);
+                                    }
                                 } else if (childrenMap != null) {
                                     childrenMap.remove(identifier);
+                                    key = identifier;
                                 }
 
                                 for (WegasCallback cb : callbacks) {
-                                    cb.remove(entity, finalChildren, identifier);
+                                    cb.remove(child, finalChildren, identifier);
                                 }
+                                return key;
                             }
                         };
 
                         for (WegasCallback cb : callbacks) {
-                            cb.preUpdate(target, to, identifier);
+                            cb.preUpdate(targetEntity, to, identifier);
                         }
 
-                        for (WegasEntityPatch patch : patches) {
+                        logger.info("Pre Patch: target: {} from: {} to: {}", children, from, to);
+                        for (WegasPatch patch : patches) {
                             Object key = patch.getIdentifier();
-                            AbstractEntity child = tmpMap.get(key);
+                            Object child = tmpMap.get(key);
 
                             patch.apply(child, registerChild, parentMode, visibility, collector, numPass);
                         }
 
-                        if (childrenList != null && numPass > 1) {
+                        logger.info("Post Patch: target: {} from: {} to: {}", children, from, to);
+
+                        if (childrenList != null && numPass > 1 && !childrenList.isEmpty()) {
                             /*
                              * RESTORE LIST ORDER !
                              */
+                            logger.info("Restore list order");
                             int i, j, delta = 0, newPos;
-                            final List<AbstractEntity> toList = new ArrayList<>();
+                            final List<Object> toList = new ArrayList<>();
 
-                            tmpMap = asMap(children);
-                            for (AbstractEntity entity : (List<AbstractEntity>) to) {
-                                if (tmpMap.containsKey(entity.getRefId())) {
-                                    toList.add(entity);
+                            if (primitive) {
+                                tmpMap = new HashMap<>();
+                                for (Object child : childrenList) {
+                                    Long count = (Long) tmpMap.get(child);
+                                    if (count == null) {
+                                        count = 0l;
+                                    }
+                                    count++;
+                                    tmpMap.put(child, count);
+                                }
+                            } else {
+                                tmpMap = asMap(children);
+                            }
+                            for (Object entity : (List<Object>) to) {
+                                if (primitive) {
+                                    Long count = (Long) tmpMap.get(entity);
+                                    if (count != null && count > 0) {
+                                        count--;
+                                        tmpMap.put(entity, count);
+                                        toList.add(entity);
+                                    }
+                                } else {
+                                    if (tmpMap.containsKey(((AbstractEntity) entity).getRefId())) {
+                                        toList.add(entity);
+                                    }
                                 }
                             }
+                            logger.info("sort {} against {}", childrenList, toList);
 
                             for (i = 0; i < childrenList.size(); i++) {
-                                AbstractEntity childA = childrenList.get(i);
-                                for (j = i; j < toList.size(); j++) {
-                                    AbstractEntity childB = toList.get(j);
+                                Object childA = childrenList.get(i);
+                                for (j = i - delta; j < toList.size(); j++) {
+                                    Object childB = toList.get(j);
 
-                                    if (childA.equals(childB) || (childA.getRefId() != null && childA.getRefId().equals(childB.getRefId()))) {
+                                    if ((childA.equals(childB))
+                                            || (childA instanceof AbstractEntity && childB instanceof AbstractEntity
+                                            && (((AbstractEntity) childA).getRefId() != null && ((AbstractEntity) childA).getRefId().equals(((AbstractEntity) childB).getRefId())))) {
                                         break;
                                     }
                                 }
                                 if (j < toList.size()) {
                                     newPos = j + delta;
                                     if (newPos > i) {
-                                        AbstractEntity child = childrenList.remove(i);
-                                        childrenList.add(newPos, child);
+                                        Object child = childrenList.remove(i);
+                                        childrenList.add(childrenList.size(), child);
                                         i--;
                                     }
                                 } else {
@@ -217,10 +290,10 @@ public final class WegasChildrenPatch extends WegasPatch {
                             }
                         }
 
-                        setter.invoke(target, children);
+                        setter.invoke(targetEntity, children);
 
                         for (WegasCallback cb : callbacks) {
-                            cb.postUpdate(target, to, identifier);
+                            cb.postUpdate(targetEntity, to, identifier);
                         }
                     } else {
                         logger.debug("REJECT PATCH: INIT ONLY");

@@ -46,6 +46,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      */)
     @JsonManagedReference
     @OrderColumn
+    
     @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, callback = ResourceInstanceMergeCallback.class)
     private List<Assignment> assignments = new ArrayList<>();
     /**
@@ -53,6 +54,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
+    
     @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN)
     private List<Occupation> occupations = new ArrayList<>();
     /**
@@ -60,6 +62,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
+    
     @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, callback = ResourceInstanceMergeCallback.class)
     private List<Activity> activities = new ArrayList<>();
     /**
@@ -95,7 +98,6 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     public List<VariableProperty> getInternalProperties() {
         return properties;
     }
-
 
     /**
      * @return the assignments
@@ -345,7 +347,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     public static class ResourceInstanceMergeCallback implements WegasCallback {
 
         @Override
-        public void remove(AbstractEntity entity, Object container, Object identifier) {
+        public Object remove(Object entity, Object container, Object identifier) {
             if (entity instanceof Assignment) {
                 Assignment assignment = (Assignment) entity;
                 TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());
@@ -362,6 +364,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
                     activity.getRequirement().removeActivity(activity);
                 }
             }
+            return null;
         }
     }
 

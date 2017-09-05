@@ -42,6 +42,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.naming.NamingException;
 import junit.framework.Assert;
@@ -62,7 +63,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
     static {
         reflections = new Reflections("com.wegas");
-         /*
+        // /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
@@ -225,6 +226,32 @@ public class MergeFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(0, exes.size());
     }
 
+    private ObjectDescriptor createObjectDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, String... values) {
+        ObjectDescriptor desc = new ObjectDescriptor();
+        desc.setName(name);
+        desc.setLabel(label);
+        desc.setVisibility(visibility);
+        desc.setScope(new TeamScope());
+
+        desc.setDefaultInstance(new ObjectInstance());
+        ObjectInstance defaultInstance = desc.getDefaultInstance();
+
+        int i = 0;
+        for (String prop : values) {
+            desc.setProperty("prop" + i, prop);
+            defaultInstance.setProperty("prop" + i, prop);
+            i++;
+        }
+
+        if (parent == null) {
+            descriptorFacade.create(gameModel.getId(), desc);
+        } else {
+            descriptorFacade.createChild(parent.getId(), desc);
+        }
+
+        return desc;
+    }
+
     private NumberDescriptor createNumberDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, Double min, Double max, Double defaultValue, Double... history) {
         NumberDescriptor desc = new NumberDescriptor();
         List<Double> hist = new ArrayList<>();
@@ -250,11 +277,16 @@ public class MergeFacadeTest extends AbstractEJBTest {
         return desc;
     }
 
-    private StringDescriptor createString(GameModel gameModel, DescriptorListI parent, String name, String label, String value) {
+    private StringDescriptor createString(GameModel gameModel, DescriptorListI parent, String name, String label, String value, String... allowedValues) {
         StringDescriptor desc = new StringDescriptor();
         desc.setDefaultInstance(new StringInstance());
         desc.setName(name);
         desc.setLabel(label);
+
+        for (String aV : allowedValues) {
+            desc.getAllowedValues().add(aV);
+        }
+
         desc.getDefaultInstance().setValue(value);
 
         if (parent == null) {
@@ -296,6 +328,156 @@ public class MergeFacadeTest extends AbstractEJBTest {
             return vd.getInstance(p);
         }
         return null;
+    }
+
+    private void assertListEquals(List<? extends Object> expected, Object... list) {
+        Assert.assertEquals(expected.size(), list.length);
+
+        for (int i = 0; i < expected.size(); i++) {
+            Assert.assertEquals(expected.get(i), list[i]);
+        }
+    }
+
+    @Test
+    public void testModelise_PrimitiveCollection() throws NamingException, WegasNoResultException {
+        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
+
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        createObjectDescriptor(gameModel1, null, "aSet", "My Set", ModelScoped.Visibility.PRIVATE, "value0", "value1");
+        createString(gameModel1, null, "aString", "My String", "v1", "v1", "v10");
+        createNumberDescriptor(gameModel1, null, "aNumber", "MyNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
+
+        createObjectDescriptor(gameModel2, null, "aSet", "My Set", ModelScoped.Visibility.PRIVATE, "value0", "value1");
+        createString(gameModel2, null, "aString", "My String", "v1", "v1", "v10");
+        createNumberDescriptor(gameModel2, null, "aNumber", "MyNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        GameModel model = mergeFacade.extractCommonContent(scenarios);
+
+        List<VariableDescriptor> children = new ArrayList<>();
+        children.addAll(model.getChildVariableDescriptors());
+
+        while (children.size() > 0) {
+            VariableDescriptor vd = children.remove(0);
+            vd.setVisibility(ModelScoped.Visibility.INHERITED);
+
+            if (vd instanceof DescriptorListI) {
+                children.addAll(((DescriptorListI) vd).getItems());
+            }
+        }
+
+        logger.info("Create Model");
+        model = mergeFacade.createModel(model, scenarios);
+
+        logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
+
+        ObjectDescriptor om1 = (ObjectDescriptor) getDescriptor(model, "aSet");
+        om1.setProperty("prop1", "value1.0");
+        om1.getDefaultInstance().setProperty("prop1", "value1.0");
+        descriptorFacade.update(om1.getId(), om1);
+
+        ObjectDescriptor o1 = (ObjectDescriptor) getDescriptor(gameModel1, "aSet");
+        o1.setProperty("prop0", "value0.1");
+        o1.setProperty("prop1", "value1.1");
+        o1.setProperty("prop2", "value2.1");
+        o1.getDefaultInstance().setProperty("prop0", "value0.1");
+        o1.getDefaultInstance().setProperty("prop1", "value1.1");
+        o1.getDefaultInstance().setProperty("prop2", "value2.1");
+        descriptorFacade.update(o1.getId(), o1);
+
+        StringDescriptor s1 = (StringDescriptor) getDescriptor(gameModel1, "aString");
+        s1.getAllowedValues().remove(1);
+        s1.getAllowedValues().add("v11");
+        descriptorFacade.update(s1.getId(), s1);
+
+        NumberDescriptor nm = (NumberDescriptor) getDescriptor(model, "aNumber");
+        List<Double> history = nm.getDefaultInstance().getHistory();
+        history.add(1.2);
+        history.add(1.1);
+        history.add(1.0);
+        nm.getDefaultInstance().setHistory(history);
+        descriptorFacade.update(nm.getId(), nm);
+
+        NumberDescriptor n1 = (NumberDescriptor) getDescriptor(gameModel1, "aNumber");
+        history = n1.getDefaultInstance().getHistory();
+        history.add(1.4);
+        history.add(1.3);
+        history.add(1.2);
+        n1.getDefaultInstance().setHistory(history);
+        descriptorFacade.update(n1.getId(), n1);
+
+        /*
+          |    what     |  model             |          #1                        |        #2          |
+          | desc.prop0  | value0             | value0   -> value0.1 -> value0.1   | value0             |
+          | desc.prop1  | value1 -> value1.0 | value1   -> value1.1 -> value1.1   | value1 -> value1.0 |
+          | desc.prop2  |                    | value2.1                           |                    |
+          | inst.prop0  | value0             | value0   -> value0.1 -> value0.1.  | value0             |
+          | inst.prop1  | value1 -> value1.0 | value1   -> value1.1 -> value1.1   | value1 -> value1.0 |
+          | inst.prop2  |                    | value2.1                           |                    |
+          | str         | v1; v10            | v1;v11                             | v1;v10             |
+          | nbr hist    | 123 + 210          | 123 + 432 => 12343210              | 123 + 210         |
+         */
+        mergeFacade.propagateModel(model.getId());
+
+        logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
+
+        logger.info("aNumberHistory : {} {}",
+                ((NumberDescriptor) getDescriptor(gameModel1, "aNumber")).getDefaultInstance().getHistory(),
+                ((NumberDescriptor) getDescriptor(gameModel2, "aNumber")).getDefaultInstance().getHistory());
+
+        List<String> allowedValues1 = ((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues();
+        List<String> allowedValues2 = ((StringDescriptor) getDescriptor(gameModel2, "aString")).getAllowedValues();
+
+        allowedValues1.size();
+        allowedValues2.size();
+        logger.info("aStringEnum : {} {}", allowedValues1, allowedValues2);
+
+        Map<String, String> properties;
+        properties = ((ObjectDescriptor) getDescriptor(gameModel1, "aSet")).getProperties();
+        Assert.assertEquals("value0.1", properties.get("prop0"));
+        Assert.assertEquals("value1.1", properties.get("prop1"));
+        Assert.assertEquals("value2.1", properties.get("prop2"));
+
+        properties = ((ObjectDescriptor) getDescriptor(gameModel1, "aSet")).getDefaultInstance().getProperties();
+
+        Assert.assertEquals("value0.1", properties.get("prop0"));
+        Assert.assertEquals("value1.1", properties.get("prop1"));
+        Assert.assertEquals("value2.1", properties.get("prop2"));
+
+        properties = ((ObjectDescriptor) getDescriptor(gameModel2, "aSet")).getProperties();
+        Assert.assertEquals("value0", properties.get("prop0"));
+        Assert.assertEquals("value1.0", properties.get("prop1"));
+
+        properties = ((ObjectDescriptor) getDescriptor(gameModel2, "aSet")).getDefaultInstance().getProperties();
+        Assert.assertEquals("value0", properties.get("prop0"));
+        Assert.assertEquals("value1.0", properties.get("prop1"));
+
+        assertListEquals(((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues(), "v1", "v11", "v10");
+        assertListEquals(((StringDescriptor) getDescriptor(gameModel2, "aString")).getAllowedValues(), "v1", "v10");
+
+        assertListEquals(((NumberDescriptor) getDescriptor(gameModel1, "aNumber")).getDefaultInstance().getHistory(), 1.1, 1.2, 1.3, 1.4, 1.3, 1.2, 1.2, 1.1, 1.0);
+
+        assertListEquals(((NumberDescriptor) getDescriptor(gameModel2, "aNumber")).getDefaultInstance().getHistory(), 1.1, 1.2, 1.3, 1.2, 1.1, 1.0);
+
+        logger.info("DONE");
     }
 
     @Test
@@ -372,14 +554,13 @@ public class MergeFacadeTest extends AbstractEJBTest {
             }
         }
 
-        logger.info ("Create Model");
+        logger.info("Create Model");
         model = mergeFacade.createModel(model, scenarios);
 
         logger.debug(Helper.printGameModel(model));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel3.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
-
 
         NumberInstance xi1, xi2, xi3;
         NumberInstance yi1, yi2, yi3;
@@ -451,7 +632,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         zModel.getDefaultInstance().getHistory().add(13.0);
         descriptorFacade.update(zModel.getId(), zModel);
 
-        logger.info ("Propagate Model Update");
+        logger.info("Propagate Model Update");
         mergeFacade.propagateModel(model.getId());
 
         /*
@@ -515,7 +696,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         descriptorFacade.remove(getDescriptor(model, "z").getId());
         descriptorFacade.move(getDescriptor(model, "x").getId(), 0);
 
-        logger.info ("Propagate Model: Create Alpha &Pi; Remove Z and move X");
+        logger.info("Propagate Model: Create Alpha &Pi; Remove Z and move X");
         mergeFacade.propagateModel(model.getId());
 
         /**
@@ -551,7 +732,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
          * remove var from root level
          */
         descriptorFacade.remove(getDescriptor(model, "x").getId());
-        logger.info ("Propagate Model: Remove X");
+        logger.info("Propagate Model: Remove X");
         mergeFacade.propagateModel(model.getId());
 
         /**
@@ -576,7 +757,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         descriptorFacade.update(y1.getId(), y1);
         descriptorFacade.move(getDescriptor(model, "y").getId(), 0);
 
-        logger.info ("Propagate Model: Update Y.value; move Y to Root");
+        logger.info("Propagate Model: Update Y.value; move Y to Root");
         mergeFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
@@ -605,7 +786,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         descriptorFacade.move(getDescriptor(model, "alpha").getId(), 0);
         descriptorFacade.remove(getDescriptor(model, "myFirstFolder").getId());
 
-        logger.info ("Propagate Model: Update Y.value; move Y to Root");
+        logger.info("Propagate Model: Update Y.value; move Y to Root");
         mergeFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
@@ -677,7 +858,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
     /**
      * Test registeredGames
      */
-    @Test
+    //@Test
     public void testMassiveJoinBigGame() throws Exception {
         int nbTeam = 100;
         int nbPlayer = 10;

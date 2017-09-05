@@ -69,7 +69,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
     public static class UpdateChild implements WegasCallback {
 
         @Override
-        public void add(AbstractEntity entity, Object container, Object identifier) {
+        public void add(Object entity, Object container, Object identifier) {
             if (container instanceof DescriptorListI && entity instanceof VariableDescriptor) {
                 DescriptorListI parent = (DescriptorListI) container;
                 parent.addItem((VariableDescriptor) entity);
@@ -77,12 +77,13 @@ public interface DescriptorListI<T extends VariableDescriptor> {
         }
 
         @Override
-        public void remove(AbstractEntity entity, Object container, Object identifier) {
+        public Object remove(Object entity, Object container, Object identifier) {
             //DescriptorListI list = (DescriptorListI) entity;
             if (container instanceof DescriptorListI && entity instanceof VariableDescriptor) {
                 DescriptorListI parent = (DescriptorListI) container;
                 parent.remove((VariableDescriptor) entity);
             }
+            return null;
         }
     }
 }

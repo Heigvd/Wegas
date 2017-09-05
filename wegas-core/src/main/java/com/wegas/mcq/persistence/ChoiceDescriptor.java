@@ -61,6 +61,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @OrderColumn
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
+    
     @WegasEntityProperty(propertyType = WegasEntityProperty.PropertyType.CHILDREN, callback = ResultMergeCallback.class)
     private List<Result> results = new ArrayList<>();
     /**
@@ -93,7 +94,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         }
         return ret;
     }
-
 
     /**
      *
@@ -423,16 +423,18 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         }
 
     }
-    
+
     public static class ResultMergeCallback implements WegasCallback {
+
         @Override
-        public void remove(AbstractEntity entity, Object container, Object identifier) {
+        public Object remove(Object entity, Object container, Object identifier) {
             if (entity instanceof Result) {
                 Result resultToRemove = (Result) entity;
                 for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
                     ci.setCurrentResult(null);
                 }
             }
+            return null;
         }
     }
 }

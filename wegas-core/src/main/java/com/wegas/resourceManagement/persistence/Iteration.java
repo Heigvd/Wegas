@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -496,7 +495,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }
 
     public List<String> getTaskNames() {
-        if (taskNames == null || taskNames.isEmpty()) {
+        if (taskNames == null) {
             List<String> names = new ArrayList<>();
             for (TaskInstance ti : getTasks()) {
                 names.add(ti.findDescriptor().getName());
@@ -530,7 +529,6 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         internalPlan(periodNumber, workload, planning);
         this.setReplannedWorkloads(planning);
     }
-
 
     /**
      * tie lifecycle events with burdownInstnace ones

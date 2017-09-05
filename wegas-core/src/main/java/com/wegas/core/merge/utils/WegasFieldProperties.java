@@ -64,8 +64,7 @@ public class WegasFieldProperties {
          * guess field type
          */
         // Which case ?
-        if (wegasProperty.propertyType().equals(WegasEntityProperty.PropertyType.CHILDREN)
-                && (List.class.isAssignableFrom(fieldClass) || Map.class.isAssignableFrom(fieldClass))) {
+        if (List.class.isAssignableFrom(fieldClass) || Map.class.isAssignableFrom(fieldClass)) {
             /*
              * current property is a list or a map of abstract entities
              */

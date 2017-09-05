@@ -794,7 +794,7 @@ public class Helper {
     private static void printDescriptors(List<VariableDescriptor> list, StringBuilder sb, int level) {
         for (VariableDescriptor vd : list) {
             newLine(sb, level);
-            sb.append(vd);
+            sb.append(vd).append(" -> ").append(vd.getDefaultInstance());
             if (vd instanceof DescriptorListI) {
                 printDescriptors(((DescriptorListI) vd).getItems(), sb, level + 1);
             }

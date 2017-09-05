@@ -129,7 +129,7 @@ public final class WegasEntityPatch extends WegasPatch {
                             case PROPERTY:
 
                                 // primitive or primitive related property (eg. Boolean, List<Double>, Map<String, String>, etc)
-                                patches.add(new WegasFieldPatch(fieldName, wegasProperty.order(),
+                                patches.add(new WegasPrimitivePatch(fieldName, wegasProperty.order(),
                                         userFieldCallback, to,
                                         fGetter, fSetter, fromValue, toValue,
                                         wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), wegasProperty.cascadeOverride()));
@@ -163,7 +163,8 @@ public final class WegasEntityPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(AbstractEntity target, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass) {
+    public LifecycleCollector apply(Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass) {
+        AbstractEntity target = (AbstractEntity) targetObject;
 
         /**
          * Two pass patch

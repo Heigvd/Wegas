@@ -237,7 +237,7 @@ public class MergeFacade {
                         AbstractEntity referenceChild = (AbstractEntity) readMethod.invoke(reference);
 
                         this.resetRefIds(targetChild, referenceChild);
-                        
+
                     } catch (Exception ex) {
                         throw new WegasErrorMessage("error", "Invocation Failure: should never appends");
                     }
@@ -413,6 +413,8 @@ public class MergeFacade {
             GameModel reference = gameModel.getReference();
             if (reference != null) {
                 WegasPatch patch = new WegasEntityPatch(reference, gameModel, Boolean.TRUE);
+
+                logger.info("PropagatePatch: {}" + patch);
 
                 for (GameModel scenario : reference.getImplementations()) {
                     if (!scenario.equals(gameModel)) {

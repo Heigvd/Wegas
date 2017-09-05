@@ -165,7 +165,7 @@ public abstract class WegasPatch {
         this.apply(target, null, PatchMode.UPDATE, null, null, null);
     }
 
-    protected abstract LifecycleCollector apply(AbstractEntity target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass);
+    protected abstract LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass);
 
     private PatchMode getWithParent(PatchMode parentMode, Visibility inheritedVisibility, Visibility visibility) {
         logger.debug("GET MODE (parentMode {}; inheritedV: {}, v: {}", parentMode, inheritedVisibility, visibility);
