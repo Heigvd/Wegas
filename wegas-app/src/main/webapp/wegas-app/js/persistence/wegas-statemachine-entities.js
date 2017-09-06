@@ -361,15 +361,15 @@ YUI.add("wegas-statemachine-entities", function (Y) {
             triggerCondition: {
                 type: [NULL, OBJECT],
                 properties: {
-                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                    "@class": { type: STRING, value: "Script" },
                     content: {
-                        type: STRING,
-                        view: {
-                            label: 'Condition',
-                            type: "scriptcondition"
-                        }
+                        type: STRING
                     }
                 },
+                view: {
+                    type: 'scriptcondition',
+                    label: 'Condition'
+                }
             },
             version: VERSION_ATTR_DEF,
             stateId: IDATTRDEF,
