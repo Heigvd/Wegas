@@ -20,7 +20,7 @@ const plugins = [
         'process.env': {
             NODE_ENV: PROD
                 ? JSON.stringify('production')
-                : JSON.stringify('dev')
+                : JSON.stringify('development')
         }
     }),
     // new webpack.optimize.ModuleConcatenationPlugin(), // webpack 3
