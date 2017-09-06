@@ -210,7 +210,8 @@ public class ReviewingFacade {
 
         int numberOfReview;
 
-        if (prd.getGameModel().getTemplate()) {
+        if (!prd.getGameModel().getType().equals(GameModel.GmType.PLAY)) {
+            // Not a real game
             // Edit Scenario Case -> there is only one game (debug) and one player (TestPlayer)
             // In this case, allow the player to review itself once
             numberOfReview = 2;
@@ -556,7 +557,7 @@ public class ReviewingFacade {
      * Moreover, as the variable may not yet exists (especially when posting a
      * whole GameModel) when the PeerReviewDescriptor is created, we'll have to
      * wait to resolve such identifier.
-     *
+     * <p>
      * This is done by listening to EntityRevivedEvent
      *
      * @param event

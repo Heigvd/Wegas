@@ -121,7 +121,8 @@ public class GameFacade extends BaseFacade<Game> {
         GameModel gm = gameModelFacade.duplicate(gameModelId);
         gm.setName(gameModelFacade.find(gameModelId).getName());// @HACK Set name back to the original
         gm.setComments(""); // Clear comments
-        gm.setStatus(GameModel.Status.PLAY);
+        gm.setStatus(GameModel.Status.LIVE);
+        gm.setType(GameModel.GmType.PLAY);
         this.create(gm, game);
 
         // Since Permission on gameModel is provided through game induced permission, revice initial permission on gamemodel:
@@ -418,8 +419,8 @@ public class GameFacade extends BaseFacade<Game> {
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId";
 
-        gameModelFacade.processQuery(userQuery, gmMatrix, gMatrix, GameModel.Status.PLAY, status);
-        gameModelFacade.processQuery(roleQuery, gmMatrix, gMatrix, GameModel.Status.PLAY, status);
+        gameModelFacade.processQuery(userQuery, gmMatrix, gMatrix, GameModel.GmType.PLAY, GameModel.Status.LIVE, status);
+        gameModelFacade.processQuery(roleQuery, gmMatrix, gMatrix, GameModel.GmType.PLAY, GameModel.Status.LIVE, status);
 
         for (Map.Entry<Long, List<String>> entry : gMatrix.entrySet()) {
             Long id = entry.getKey();

@@ -36,11 +36,11 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
-    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status AND a.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO ORDER BY a.name ASC"),
+    @NamedQuery(name = "GameModel.findByTypeAndStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status AND a.type = :type ORDER BY a.name ASC"),
     @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name AND a.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"),
-    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"),
-    @NamedQuery(name = "GameModel.findModelByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status and a.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL ORDER BY a.name ASC"),})
+    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO")
+})
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner {
 
     private static final long serialVersionUID = 1L;
@@ -128,11 +128,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(mappedBy = "reference")
     private List<GameModel> implementations = new ArrayList<>();
 
-    /*
-     *
-     *
-     * @JsonIgnore private Boolean template = true;
-     */
     /**
      *
      */
@@ -175,7 +170,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "scriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
-    
     @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
@@ -185,7 +179,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "csslibrary_gamemodelid")
     @JsonView({Views.Export.class})
-    
     @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> cssLibrary = new ArrayList<>();
 
@@ -195,7 +188,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "clientscriptlibrary_gamemodelid")
     @JsonView({Views.Export.class})
-    
     @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
@@ -212,7 +204,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Transient
     @JsonView({Views.Export.class})
-    
     @WegasEntityProperty(includeByDefault = false)
     private Map<String, JsonNode> pages;
 
@@ -561,17 +552,17 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     @JsonIgnore
-    public Map<String, Map<String, GameModelContent>> getLibraries(){
-         Map<String, Map<String, GameModelContent>> libraries =new HashMap<>();
+    public Map<String, Map<String, GameModelContent>> getLibraries() {
+        Map<String, Map<String, GameModelContent>> libraries = new HashMap<>();
 
-         libraries.put("Script", this.getScriptLibrary());
-         libraries.put("ClientScript", this.getClientScriptLibrary());
-         libraries.put("CSS", this.getCssLibrary());
+        libraries.put("Script", this.getScriptLibrary());
+        libraries.put("ClientScript", this.getClientScriptLibrary());
+        libraries.put("CSS", this.getCssLibrary());
 
-         return libraries;
+        return libraries;
     }
 
-    public void setLibraries(Map<String, Map<String, GameModelContent>> libraries){
+    public void setLibraries(Map<String, Map<String, GameModelContent>> libraries) {
         this.setScriptLibrary(libraries.get("Script"));
         this.setClientScriptLibrary(libraries.get("ClientScript"));
         this.setCssLibrary(libraries.get("CSS"));
@@ -821,13 +812,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         // Here so game deserialization works
     }
 
-    /**
-     * @return the template
-     */
-    public Boolean getTemplate() {
-        return status != Status.PLAY;
-    }
-
     public GmType getType() {
         return type;
     }
@@ -859,10 +843,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     * @param template the template to set public void setTemplate(Boolean
-     *                 template) { this.template = template; }
-     */
-    /**
      * TODO: select game.* FROM GAME where dtype like 'DEBUGGAME' and
      * gamemodelid = this.getId()
      *
@@ -892,17 +872,25 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return map;
     }*/
     public enum GmType {
+        /**
+         * A model
+         */
         MODEL,
+        /**
+         * Model reference
+         */
         REFERENCE,
-        SCENARIO
+        /**
+         * Model implementation
+         */
+        SCENARIO,
+        /**
+         * Private COPY for games
+         */
+        PLAY
     }
 
     public enum Status {
-        /**
-         * Not a template game model but one linked to an effective game
-         * TODO -> MOVE to GmType
-         */
-        PLAY,
         /**
          * Template GameModel
          */

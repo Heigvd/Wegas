@@ -8,6 +8,8 @@
 package com.wegas.core.ejb.merge;
 
 import ch.qos.logback.classic.Level;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -39,6 +41,7 @@ import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.persistence.User;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -423,6 +426,89 @@ public class MergeFacadeTest extends AbstractEJBTest {
         theModel.setCssLibrary(cssLibrary);
     }
 
+    private void createPages(GameModel theModel, String... pages) throws IOException {
+        Map<String, JsonNode> gmPages = theModel.getPages();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        for (Integer i = 0; i < pages.length; i++) {
+            JsonNode page = mapper.readTree(pages[i]);
+            gmPages.put(i.toString(), page);
+        }
+
+        theModel.setPages(gmPages);
+    }
+
+    private void printPages(GameModel gameModel) {
+        StringBuilder sb = new StringBuilder(gameModel.toString()).append("\n");
+
+        for (Entry<String, JsonNode> page : gameModel.getPages().entrySet()) {
+            String pageName = page.getKey();
+            sb.append("  ").append(pageName).append("\n").append(page.getValue()).append("\n");
+        }
+        logger.info("Pages: {}", sb);
+    }
+
+    @Test
+    public void testModelise_GameModelPages() throws NamingException, WegasNoResultException, IOException {
+        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
+
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+
+        this.createPages(gameModel1, "{\"type\": \"AbsoluteLayout\", \"children\": []}", "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        this.createPages(gameModel2, "{\"type\": \"AbsoluteLayout\", \"children\": []}", "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}", "{\"type\": \"AbsoluteLayout\", \"children\": []}");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        printPages(gameModel1);
+        printPages(gameModel2);
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        GameModel model = mergeFacade.extractCommonContent(scenarios);
+
+        logger.info("Create Model");
+        model = mergeFacade.createModel(model, scenarios);
+
+        model = gameModelFacade.find(model.getId());
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        printPages(model);
+        printPages(gameModel1);
+        printPages(gameModel2);
+
+        /**
+         * Update pages
+         */
+        model = gameModelFacade.merge(model);
+
+        gameModel1 = gameModelFacade.merge(gameModel1);
+
+        /**
+         * Update gameModel properties
+         */
+        mergeFacade.propagateModel(model.getId());
+
+        model = gameModelFacade.find(model.getId());
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        printPages(model);
+        printPages(gameModel1);
+        printPages(gameModel2);
+    }
+
     @Test
     public void testModelise_GameModelContent() throws NamingException, WegasNoResultException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
@@ -473,8 +559,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         model.setCssLibrary(cssLibrary);
         model = gameModelFacade.merge(model);
 
-
-        cssLibrary =gameModel1.getCssLibrary();
+        cssLibrary = gameModel1.getCssLibrary();
         lib = cssLibrary.get("inheritedCss");
         lib.setContent(".inherited_rule { color: lavender}");
 
@@ -496,6 +581,10 @@ public class MergeFacadeTest extends AbstractEJBTest {
         printLibraries(model);
         printLibraries(gameModel1);
         printLibraries(gameModel2);
+
+        /**
+         * ASSERTS
+         */
     }
 
     private void printLibraries(GameModel gameModel) {
@@ -602,9 +691,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         history1.add(3.14);
         ni1.setHistory(history1);
         vif.update(ni1.getId(), ni1);
-        
+
         assertListEquals(((NumberInstance) getInstance(gameModel1, "aNumber")).getHistory(), 1.1, 1.2, 1.3, 3.14);
-        
+
         /*
           |    what     |  model             |          #1                        |        #2          |
           | desc.prop0  | value0             | value0   -> value0.1 -> value0.1   | value0             |
@@ -661,7 +750,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         assertListEquals(((NumberDescriptor) getDescriptor(gameModel2, "aNumber")).getDefaultInstance().getHistory(), 1.1, 1.2, 1.3, 1.2, 1.1, 1.0);
 
         assertListEquals(((NumberInstance) getInstance(gameModel1, "aNumber")).getHistory(), 1.1, 1.2, 1.3, 1.4, 1.3, 1.2, 1.2, 1.1, 1.0);
-        
+
         logger.info("DONE");
     }
 

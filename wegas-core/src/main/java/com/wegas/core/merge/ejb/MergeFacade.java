@@ -7,6 +7,7 @@
  */
 package com.wegas.core.merge.ejb;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -92,9 +93,16 @@ public class MergeFacade {
                 model = (GameModel) scenarios.remove(0).duplicate();
 
                 /**
-                 * TODO : filter gameModelContent & pages
+                 * filter pages
                  */
-                //model.getGameModelContent(list, key);
+                Map<String, JsonNode> pages = model.getPages();
+                for (GameModel scenario : scenarios){
+                    scenario.setPages(pages);
+                }
+
+                /**
+                 * Filter gameModelContents
+                 */
                 Map<String, Map<String, GameModelContent>> libraries = model.getLibraries();
                 List<Map<String, Map<String, GameModelContent>>> otherLibraries = new ArrayList<>();
 
@@ -118,7 +126,7 @@ public class MergeFacade {
                                 break;
                             }
                         }
-                        
+
                         if (!exists) {
                             library.remove(key);
                         }

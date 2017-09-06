@@ -165,7 +165,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     public void revivePrivateInstances(GameModel gameModel, InstanceOwner target) {
-        for (VariableInstance vi : target.getPrivateInstances()){
+        for (VariableInstance vi : target.getPrivateInstances()) {
             instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
         }
     }
@@ -422,12 +422,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
+     * @param gmType
      * @param status
      *
      * @return all gameModel matching the given status
      */
-    public List<GameModel> findByStatus(final GameModel.Status status) {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByStatus", GameModel.class);
+    public List<GameModel> findByTypeAndStatus(final GameModel.GmType gmType, final GameModel.Status status) {
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByTypeAndStatus", GameModel.class);
+        query.setParameter("type", gmType);
         query.setParameter("status", status);
         return query.getResultList();
     }
@@ -495,7 +497,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         teamFacade.reset(player.getTeam());
     }
 
-    public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {
+    public Collection<GameModel> findByTypeStatusAndUser(GameModel.GmType type,
+            GameModel.Status status) {
         ArrayList<GameModel> gameModels = new ArrayList<>();
         Map<Long, List<String>> pMatrix = new HashMap<>();
 
@@ -506,8 +509,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId ";
 
-        this.processQuery(userQuery, pMatrix, null, status, null);
-        this.processQuery(roleQuery, pMatrix, null, status, null);
+        this.processQuery(userQuery, pMatrix, null, type, status, null);
+        this.processQuery(roleQuery, pMatrix, null, type, status, null);
 
         for (Map.Entry<Long, List<String>> entry : pMatrix.entrySet()) {
             Long id = entry.getKey();
@@ -526,19 +529,19 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         return gameModels;
     }
 
-    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.Status gmStatus, Game.Status gStatus) {
+    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.GmType gmType, GameModel.Status gmStatus, Game.Status gStatus) {
         TypedQuery<Permission> query = this.getEntityManager().createQuery(sqlQuery, Permission.class);
         User user = requestManager.getCurrentUser();
         query.setParameter("userId", user.getId());
         List<Permission> resultList = query.getResultList();
 
         for (Permission p : resultList) {
-            processPermission(p.getValue(), gmMatrix, gMatrix, gmStatus, gStatus);
-            processPermission(p.getInducedPermission(), gmMatrix, gMatrix, gmStatus, gStatus);
+            processPermission(p.getValue(), gmMatrix, gMatrix, gmType, gmStatus, gStatus);
+            processPermission(p.getInducedPermission(), gmMatrix, gMatrix, gmType, gmStatus, gStatus);
         }
     }
 
-    private void processPermission(String permission, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.Status gmStatus, Game.Status gStatus) {
+    private void processPermission(String permission, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.GmType gmType, GameModel.Status gmStatus, Game.Status gStatus) {
         if (permission != null && !permission.isEmpty()) {
             String[] split = permission.split(":");
             if (split.length == 3) {
@@ -546,7 +549,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
                 String idPrefix = null;
                 Map<Long, List<String>> pMatrix;
 
-                if (split[0].equals("GameModel") && gmStatus != null) {
+                if (split[0].equals("GameModel") && gmStatus != null && gmType != null) {
                     type = "GameModel";
                     idPrefix = "gm";
                     pMatrix = gmMatrix;
@@ -563,7 +566,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
                 if (!pId.isEmpty()) {
                     if (pId.equals("*")) {
                         if (type.equals("GameModel")) {
-                            for (GameModel gm : this.findByStatus(gmStatus)) {
+                            for (GameModel gm : this.findByTypeAndStatus(gmType, gmStatus)) {
                                 ids.add(gm.getId());
                             }
                         } else { //ie Game
@@ -622,7 +625,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     @Schedule(hour = "4", dayOfMonth = "Last Sat")
     public void removeGameModels() {
-        List<GameModel> byStatus = this.findByStatus(Status.DELETE);
+        List<GameModel> byStatus = this.findByTypeAndStatus(GameModel.GmType.SCENARIO, Status.DELETE);
         for (GameModel gm : byStatus) {
             this.remove(gm);
         }
