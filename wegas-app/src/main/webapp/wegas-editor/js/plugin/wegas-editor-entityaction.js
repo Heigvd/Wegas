@@ -298,7 +298,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             tab.form.detach("updated");
             tab.form.on("updated", function(e) {
                 // If it's a widget, check first if any of its own properties have really been modified.
-                if (isDifferent(e, EditEntityAction.currentEntity)) {
+                if (isDifferent(e, entity)) {
                     tab.form.activateSaveBtn();
                     EditEntityAction.setUnsaved(true);
                 } else {

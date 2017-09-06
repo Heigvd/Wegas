@@ -30,9 +30,8 @@
     min-height: 17.1px;
     position: relative;
     overflow: hidden;
-    padding: 0.5em;
+    padding: 0.5em 0.5em 0 0.5em;
     word-wrap: normal;
-    /*white-space: nowrap;*/
 }
 .wegas-toolbar-panel {
     overflow: hidden;

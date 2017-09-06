@@ -99,7 +99,7 @@
                 ]
             }, {
                 "type": "OpenTabButton",
-                "label": "Help (partly obsolete)",
+                "label": "Help (old)",
                 "cssClass": "editor-scenarist-button wegas-advanced-feature",
                 "wchildren": [
                     {

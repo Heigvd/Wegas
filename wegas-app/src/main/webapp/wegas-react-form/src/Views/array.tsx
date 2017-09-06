@@ -96,6 +96,7 @@ class Adder extends React.Component<WidgetProps.ArrayProps & IArrayProps, { open
 function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
     const valueLength = Array.isArray(props.value) ? props.value.length : 0;
     const { maxItems = Infinity, minItems = 0 } = props.schema;
+    const disabled = props.view.disabled;
     function renderChild(child: React.ReactChild, index: number) {
         return (
             <div className={listElementContainerStyle.toString()}>
@@ -103,7 +104,7 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
                     {child}
                 </span>
                 <span className={hiddenStyle.toString()}>
-                    {minItems < valueLength
+                    {minItems < valueLength && !disabled
                         ? <IconButton
                             icon="fa fa-trash"
                             onClick={() => props.onChildRemove(index)}
@@ -120,9 +121,14 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
 
     return (
         <div className={arrayStyle.toString()}>
-            {maxItems > valueLength
+            {maxItems > valueLength && !disabled
                 ? <Adder {...props} />
-                : null}
+                : <label
+                    className={FormStyles.biggerLabelStyle.toString()}
+                  >
+                    {props.view.label}
+                </label>
+            }
             {children}
         </div>
     );
