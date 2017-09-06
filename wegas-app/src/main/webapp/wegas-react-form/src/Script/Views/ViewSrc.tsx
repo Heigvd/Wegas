@@ -11,7 +11,7 @@ interface IViewSrcProps {
 }
 
 const iconStyle = css({
-    label: 'iconStyle',
+    label: 'ViewSrc-iconStyle',
     'cursor': 'pointer',
     'verticalAlign': '1px',
     'padding': '4px',

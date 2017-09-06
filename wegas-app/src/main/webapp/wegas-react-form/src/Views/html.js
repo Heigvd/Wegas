@@ -10,6 +10,7 @@ import { getY } from './../index';
 import FormStyles from './form-styles';
 
 const marginStyle = css({
+    label: 'html-marginstyle',
     width: FormStyles.textInputWidth,
     marginTop: '4px',
     fontSize: '13px',
@@ -17,6 +18,7 @@ const marginStyle = css({
     maxHeight: '500px',
     overflow: 'auto',
     color: 'darkslategrey',
+    backgroundColor: 'white',
     boxShadow: '1px 1px 4px #ccc',
     // border: '1px solid lightgrey',
     // borderRadius: '3px',

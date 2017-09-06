@@ -4,8 +4,10 @@ import classNames from 'classnames';
 import FormStyles from '../Views/form-styles';
 
 const containerStyle = css({
+    label: 'commonView-containerStyle',
     position: 'relative',
-    marginTop: '0.8em'
+    marginTop: '0.8em',
+    maxWidth: '600px'
 });
 
 const extraShortStyle = css({

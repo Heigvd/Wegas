@@ -6,15 +6,17 @@ import Statement from './Views/Statement';
 import {css} from 'glamor';
 
 const removeButtonStyle = css({
+    label: 'addStatement-removeButtonStyle',
     opacity: 0,
-    marginTop: '1.1em',
+    marginTop: '8px',
     verticalAlign: 'top',
     paddingRight: '5px',
     display: 'inline-block',
-    transition: 'opacity 500ms 500ms'
+    transition: 'opacity 300ms 300ms'
 });
 
 const removeContainerStyle = css({
+    label: 'addStatement-removeContainerStyle',
     // borderLeft: 'solid 1px lightsteelblue',
     // marginTop: '2em',
     backgroundColor: '#f0f0ff',

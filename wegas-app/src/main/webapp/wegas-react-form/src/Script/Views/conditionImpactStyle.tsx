@@ -1,6 +1,7 @@
 import { css } from 'glamor';
 
 export const containerStyle = css({
+    label: 'conditionImpactStyle',
     display: 'inline-block',
-    verticalAlign: 'top'
+    verticalAlign: 'middle'
 });
