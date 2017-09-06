@@ -32,6 +32,9 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
+@Table(indexes = {
+    @Index(columnList = "reference_gamemodelid")
+})
 //@Table(uniqueConstraints =
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -90,7 +93,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Enumerated(value = EnumType.STRING)
     
-    @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
+    @Column(length = 24, columnDefinition = "character varying(24) default 'SCENARIO'::character varying")
     private GmType type = GmType.SCENARIO;
 
     /**

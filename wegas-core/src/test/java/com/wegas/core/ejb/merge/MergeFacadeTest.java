@@ -69,7 +69,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
     static {
         reflections = new Reflections("com.wegas");
-        // /*
+         /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);

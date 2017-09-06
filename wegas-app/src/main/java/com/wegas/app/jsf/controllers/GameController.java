@@ -11,9 +11,13 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -37,6 +41,8 @@ import org.apache.shiro.SecurityUtils;
 @ManagedBean(name = "gameController")
 @RequestScoped
 public class GameController extends AbstractGameController {
+
+    private static final long serialVersionUID = 1563759464312489408L;
 
     /**
      *
@@ -100,8 +106,24 @@ public class GameController extends AbstractGameController {
 
         if (this.gameModelId != null) {
             GameModel find = gameModelFacade.find(this.gameModelId);
-            if (find != null && find.getTemplate() && SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.gameModelId)) {
-                currentPlayer = find.getGames().get(0).getTeams().get(0).getPlayers().get(0);
+            if (find != null && SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.gameModelId)) {
+                boolean debug = false;
+                for (Game g : find.getGames()) {
+                    debug = g instanceof DebugGame;
+                    for (Team t : g.getTeams()) {
+                        debug = debug || t instanceof DebugTeam;
+                        if (debug && !t.getPlayers().isEmpty()) {
+                            currentPlayer = t.getPlayers().get(0);
+                            break;
+                        }
+                    }
+                    if (currentPlayer != null) {
+                        break;
+                    }
+                }
+                if (currentPlayer == null) {
+                    errorController.dispatch("GameModel has no debug player");
+                }
             }
         }
 

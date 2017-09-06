@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence" id="1504688739111-1">
+        <addColumn tableName="gamemodel">
+            <column name="reference_gamemodelid" type="int8"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="maxence" id="1504688739111-2">
+        <addColumn tableName="abstractaccount">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="abstractscope">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="activity">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="assignment">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="evaluationdescriptor">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="evaluationdescriptorcontainer">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="evaluationinstance">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="fsm_state">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="game">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="gameadmin">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="gamemodel">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="gamemodelcontent">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="iteration">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="mcqcurrentresult">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="mcqreplies">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="mcqreply">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="mcqresult">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="message">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="occupation">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="permission">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="player">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="review">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="roles">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="team">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="transition">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="users">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="variabledescriptor">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="variableinstance">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="workload">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="wrequirement">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="maxence" id="1504688739111-3">
+        <addColumn tableName="gamemodel">
+            <column defaultValue="SCENARIO" name="type" type="varchar(24)"/>
+        </addColumn>
+        <sql>UPDATE gamemodel SET status = 'LIVE', type = 'PLAY' WHERE status = 'PLAY';</sql>
+        <sql>UPDATE gamemodel SET type = 'SCENARIO' WHERE status IS NULL;</sql>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1504688739111-34">
+        <addColumn tableName="gamemodelcontent">
+            <column defaultValue="PRIVATE" name="visibility" type="varchar(24)"/>
+        </addColumn>
+        <sql>UPDATE gamemodelcontent SET visibility = 'PRIVATE';</sql>
+        <addColumn tableName="variabledescriptor">
+            <column defaultValue="PRIVATE" name="visibility" type="varchar(24)"/>
+        </addColumn>
+        <sql>UPDATE variabledescriptor SET visibility = 'PRIVATE';</sql>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1504688739111-35">
+        <addForeignKeyConstraint baseColumnNames="reference_gamemodelid" baseTableName="gamemodel" constraintName="fk_gamemodel_reference_gamemodelid" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="gamemodelid" referencedTableName="gamemodel"/>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1504688739111-36">
+        <createIndex indexName="index_gamemodel_reference_gamemodelid" tableName="gamemodel" unique="false">
+            <column name="reference_gamemodelid"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

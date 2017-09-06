@@ -13,6 +13,12 @@ package com.wegas.core.persistence.variable;
  */
 public interface ModelScoped {
 
+    /**
+     * INTERNAL -> TO BE RENAMED
+     * PROTECTED
+     * INHERITED
+     * PRIVATE
+     */
     public static enum Visibility {
         /**
          * propagated: true

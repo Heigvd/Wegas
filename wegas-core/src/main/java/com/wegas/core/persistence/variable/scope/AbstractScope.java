@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
@@ -343,7 +344,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
         } else if (this.variableInstanceFacade == null) {
             // but it may not... so here is a lookup fallback
             logger.error("LOOKUP OCCURS : " + this);
-            new Exception().printStackTrace();
+            Helper.printWegasStackTrace(new Exception());
             this.variableInstanceFacade = VariableInstanceFacade.lookup();
         }
 
