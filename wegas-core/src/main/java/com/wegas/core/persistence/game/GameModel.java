@@ -82,6 +82,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
     private String name;
 
+    @Basic(optional = false)
+    private Integer UIVersion = 2;
     /**
      *
      */
@@ -302,6 +304,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
             this.setName(other.getName());
             this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
             this.setComments(other.getComments());
+            this.setUIVersion(other.getUIVersion());
             this.getProperties().merge(other.getProperties());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + n.getClass().getSimpleName() + ") is not possible");
@@ -409,6 +412,14 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getUIVersion() {
+        return UIVersion;
+    }
+
+    public void setUIVersion(Integer UIVersion) {
+        this.UIVersion = UIVersion;
     }
 
     /**
