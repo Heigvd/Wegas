@@ -172,6 +172,12 @@ public class HistoryController {
 
         gm.setName(gameModelFacade.findUniqueName(gm.getName()));               // Find a unique name for this new game
         gameModelFacade.createWithDebugGame(gm);
+        
+        GameModel original = gameModelFacade.find(gameModelId);
+        if (original.getReference() != null){
+            // original is a model ?
+            
+        }
 
         return gm;
     }

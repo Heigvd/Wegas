@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

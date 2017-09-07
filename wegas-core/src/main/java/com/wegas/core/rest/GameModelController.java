@@ -93,38 +93,19 @@ public class GameModelController {
         return model;
     }
 
-    @POST
-    @Path("persistModel/{ids}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public GameModel persistModel(@PathParam("ids") String ids, GameModel model) throws IOException {
-
-        model = mergeFacade.createModelFromIds(model, this.getIdsFromString(ids));
-
-        return model;
-    }
-
-    @POST
-    @Path("extractAndPersistModel/{ids}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public GameModel extractAndPersistModel(@PathParam("ids") String ids, GameModel model) throws IOException {
-
-        List<Long> idsFromString = getIdsFromString(ids);
-        model = mergeFacade.extractCommonContentFromIds(idsFromString);
-        model = mergeFacade.createModelFromIds(model, idsFromString);
-
-        return model;
-    }
-
     /**
      * Create a model
      *
      * @param modelId model to propagate
+     *
      * @return the model
+     *
+     * @throws java.io.IOException
      *
      */
     @GET
     @Path("propagateModel/{modelId : [1-9][0-9]*}")
-    public GameModel propagateModel(@PathParam("mnodelId") Long modelId) {
+    public GameModel propagateModel(@PathParam("mnodelId") Long modelId) throws IOException {
         return mergeFacade.propagateModel(modelId);
     }
 

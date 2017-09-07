@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
     <changeSet author="maxence" id="1504688739111-1">
         <addColumn tableName="gamemodel">
-            <column name="reference_gamemodelid" type="int8"/>
+            <column name="model_gamemodelid" type="int8"/>
         </addColumn>
     </changeSet>
 
@@ -119,12 +119,12 @@
     </changeSet>
 
     <changeSet author="maxence (generated)" id="1504688739111-35">
-        <addForeignKeyConstraint baseColumnNames="reference_gamemodelid" baseTableName="gamemodel" constraintName="fk_gamemodel_reference_gamemodelid" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="gamemodelid" referencedTableName="gamemodel"/>
+        <addForeignKeyConstraint baseColumnNames="model_gamemodelid" baseTableName="gamemodel" constraintName="fk_gamemodel_model_gamemodelid" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="gamemodelid" referencedTableName="gamemodel"/>
     </changeSet>
 
     <changeSet author="maxence (generated)" id="1504688739111-36">
-        <createIndex indexName="index_gamemodel_reference_gamemodelid" tableName="gamemodel" unique="false">
-            <column name="reference_gamemodelid"/>
+        <createIndex indexName="index_gamemodel_model_gamemodelid" tableName="gamemodel" unique="false">
+            <column name="model_gamemodelid"/>
         </createIndex>
     </changeSet>
 </databaseChangeLog>

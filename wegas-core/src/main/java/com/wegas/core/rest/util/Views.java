@@ -19,6 +19,12 @@ public class Views {
     }
 
     /**
+     * Only use for internal serialization (like refIds)
+     */
+    public interface InternalI {
+    }
+
+    /**
      * FUCK
      */
     public interface LobbyI {
@@ -73,6 +79,12 @@ public class Views {
      * Do not include ids nor VariableInstances, Export usage
      */
     public static class Export implements EditorI, ExtendedI {
+    }
+
+    /**
+     * Do not include ids nor VariableInstances, but refIds LocalExport usage
+     */
+    public static class LocalExport extends Export implements InternalI {
     }
 
 }

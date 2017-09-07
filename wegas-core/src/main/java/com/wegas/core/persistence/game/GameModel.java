@@ -33,7 +33,7 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
  */
 @Entity
 @Table(indexes = {
-    @Index(columnList = "reference_gamemodelid")
+    @Index(columnList = "model_gamemodelid")
 })
 //@Table(uniqueConstraints =
 //        @UniqueConstraint(columnNames = "name"))
@@ -124,12 +124,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @ManyToOne
     @JsonIgnore
-    private GameModel reference;
+    private GameModel model;
 
     /**
      *
      */
-    @OneToMany(mappedBy = "reference")
+    @OneToMany(mappedBy = "model")
     @JsonIgnore
     private List<GameModel> implementations = new ArrayList<>();
 
@@ -243,6 +243,17 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             map.put(curKey, pageMap.get(curKey));
         }
         this.setPages(map);
+    }
+
+    public GameModel getReference() {
+        if (this.getType() == GmType.MODEL) {
+            for (GameModel implementation : this.getImplementations()) {
+                if (implementation.getType().equals(GmType.REFERENCE)) {
+                    return implementation;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -825,14 +836,16 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.type = type;
     }
 
-    public GameModel getReference() {
-        return reference;
+    public GameModel getModel() {
+        return model;
     }
 
-    public void setReference(GameModel reference) {
-        this.reference = reference;
-        if (reference != null) {
-            reference.getImplementations().add(this);
+    public void setModel(GameModel model) {
+        this.model = model;
+        if (model != null) {
+            if (!model.getImplementations().contains(this)) {
+                model.getImplementations().add(this);
+            }
         }
     }
 
@@ -843,7 +856,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public void setImplementations(List<GameModel> implementations) {
         this.implementations = implementations;
         for (GameModel implementation : implementations) {
-            implementation.setReference(this);
+            implementation.setModel(this);
         }
     }
 

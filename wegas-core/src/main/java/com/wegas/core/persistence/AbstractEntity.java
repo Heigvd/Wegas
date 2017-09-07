@@ -21,6 +21,7 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.patch.WegasEntityPatch;
@@ -63,6 +64,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable, Mergeab
     abstract public Long getId();
 
     @WegasEntityProperty(initOnly = true)
+    @JsonView(Views.InternalI.class)
     private String refId;
 
     /**
@@ -183,7 +185,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable, Mergeab
      * @throws IOException
      */
     public AbstractEntity duplicate() throws IOException {
-        return this.duplicate(Views.Export.class);
+        return this.duplicate(Views.LocalExport.class);
     }
 
     /**

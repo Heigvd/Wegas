@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence" id="1504773448-1">
+        <sql>
+            -- Create new listInstances to replace mistyped numnerInstances owned by ListDescriptors
+            INSERT INTO listinstance 
+            SELECT vi.variableinstance_id 
+            FROM  variableinstance AS vi 
+            LEFT JOIN abstractscope AS scope ON (vi.playerscope_id = scope.id OR vi.teamscope_id = scope.id OR vi.gamescope_id = scope.id  OR scope.variableinstance_variableinstance_id = vi.variableinstance_id ) 
+            LEFT JOIN variabledescriptor AS vd ON (vd.variabledescriptor_id = scope.variabledescriptor_variabledescriptor_id OR vd.defaultinstance_variableinstance_id = vi.variableinstance_id)  
+            WHERE vi.dtype = 'NumberInstance' AND vd.dtype = 'ListDescriptor';
+        </sql>
+        <sql>
+            -- Update link from variableinstance to listinstance
+            UPDATE variableinstance AS vi 
+            SET dtype = 'ListInstance' 
+            FROM (
+            SELECT vi.variableinstance_id 
+            FROM  variableinstance AS vi 
+            LEFT JOIN abstractscope AS scope ON (vi.playerscope_id = scope.id OR vi.teamscope_id = scope.id OR vi.gamescope_id = scope.id  OR scope.variableinstance_variableinstance_id = vi.variableinstance_id )
+            LEFT JOIN variabledescriptor AS vd ON (vd.variabledescriptor_id = scope.variabledescriptor_variabledescriptor_id OR vd.defaultinstance_variableinstance_id = vi.variableinstance_id)
+            WHERE vi.dtype = 'NumberInstance' AND vd.dtype = 'ListDescriptor') 
+            AS FOO 
+            WHERE vi.variableinstance_id = FOO.variableinstance_id;
+        </sql>
+        <sql>
+            -- remove old numberinstance
+            DELETE FROM numberinstance AS ni 
+            WHERE ni.variableinstance_id IN ( SELECT variableinstance_id FROM listinstance);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

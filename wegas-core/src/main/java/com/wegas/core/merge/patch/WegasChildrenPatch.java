@@ -288,6 +288,8 @@ public final class WegasChildrenPatch extends WegasPatch {
                                     delta++;
                                 }
                             }
+
+                            logger.info("sorted: {}", childrenList);
                         }
 
                         setter.invoke(targetEntity, children);

@@ -18,6 +18,7 @@ import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +39,11 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     //@BatchFetch(BatchFetchType.IN)
+    
     @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
     //@OrderBy("id")
     @OrderColumn
+    
     @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<VariableDescriptor> items = new ArrayList<>();
 
@@ -242,6 +245,13 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         return this.getItems().remove(item);
     }
 
+    /*@PrePersist
+    public void prePersist_cleanDefaultInstance() {
+        VariableInstance defaultInstance = this.getDefaultInstance();
+        if (defaultInstance instanceof NumberInstance) {
+            this.setDefaultInstance(new ListInstance());
+        }
+    }*/
 
     public static class ValidateShortcutCallback implements WegasCallback {
 

@@ -32,7 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -113,6 +112,7 @@ public class MergeFacade {
         if (!scenarios.isEmpty()) {
             try {
                 // get a copy
+                List<GameModel> allScenarios = loadGameModels(scenarios);
                 scenarios = loadGameModels(scenarios);
                 // extract the first scenario to act as reference
 
@@ -233,6 +233,20 @@ public class MergeFacade {
                         }
                     }
                 } while (restart);
+
+                /*
+                 * Persist GameModel
+                 */
+                model.setType(GameModel.GmType.MODEL);
+                model.setModel(null);
+                gameModelFacade.create(model);
+
+                for (GameModel scenario : allScenarios) {
+                    logger.info("Register Implementation {} to {}", scenario, model);
+                    //model.getImplementations().add(scenario);
+                    scenario.setModel(model);
+                }
+
             } catch (IOException ex) {
                 logger.error("Exception while creating model", ex);
             }
@@ -255,57 +269,6 @@ public class MergeFacade {
         } else {
             return null; //throw error ? 
         }
-    }
-
-    /**
-     *
-     * @param model
-     * @param idsFromString
-     *
-     * @return
-     */
-    public GameModel createModelFromIds(GameModel model, List<Long> idsFromString) {
-        return this.createModel(model, loadGameModelsFromIds(idsFromString));
-    }
-
-    /**
-     * Persist the given model.
-     * <p>
-     * Persist the model, create its reference and integrate all scenarios to it,
-     *
-     * @param model     the model which is to be created
-     * @param scenarios the list of scenarios which implements the model
-     *
-     * @return the persisted model
-     */
-    public GameModel createModel(GameModel model, List<GameModel> scenarios) {
-        scenarios = loadGameModels(scenarios);
-
-        try {
-            /*
-             * Persist GameModel
-             */
-            model.setType(GameModel.GmType.MODEL);
-            model.setReference(null);
-            gameModelFacade.create(model);
-
-            /*
-             * create reference
-             */
-            GameModel reference = (GameModel) model.duplicate();
-            reference.setType(GameModel.GmType.REFERENCE);
-            reference.setReference(null);
-            gameModelFacade.create(reference);
-
-            // Attach reference to model
-            model.setReference(reference);
-
-            this.integrateScenario(model, scenarios);
-
-        } catch (IOException ex) {
-            logger.error("Exception while creating model", ex);
-        }
-        return model;
     }
 
     private void resetRefIds(AbstractEntity target, AbstractEntity reference) {
@@ -338,116 +301,121 @@ public class MergeFacade {
      * @param scenarios scenario to attach to model
      */
     public void integrateScenario(GameModel model, List<GameModel> scenarios) {
-        GameModel reference = model.getReference();
-        scenarios = loadGameModels(scenarios);
+        if (model != null) {
+            if (GmType.MODEL.equals(model.getType())) {
+                GameModel reference = model.getReference();
 
-        // set scenarios refId to model refId
-        for (GameModel scenario : scenarios) {
-            scenario.setRefId(model.getRefId());
-        }
+                scenarios = loadGameModels(scenarios);
 
-        /**
-         * filter pages
-         */
-        Map<String, JsonNode> pages = model.getPages();
-        for (GameModel scenario : scenarios) {
-            scenario.setPages(pages);
-        }
+                // set scenarios refId to model refId
+                for (GameModel scenario : scenarios) {
+                    scenario.setRefId(model.getRefId());
+                }
 
-        Map<VariableDescriptor, VariableDescriptor> toMove = new HashMap<>();
-        Map<GameModel, List<VariableDescriptor>> toCreate = new HashMap<>();
+                /**
+                 * filter pages
+                 */
+                Map<String, JsonNode> pages = reference.getPages();
+                for (GameModel scenario : scenarios) {
+                    scenario.setPages(pages);
+                }
 
-        logger.info("Assert variables structure match structure in the model and override refIds");
-        for (VariableDescriptor modelVd : model.getVariableDescriptors()) {
-            // iterate over all model's descriptors
-            String modelParentRef = this.getParentRef(modelVd);
-            String name = modelVd.getName();
+                Map<VariableDescriptor, VariableDescriptor> toMove = new HashMap<>();
+                Map<GameModel, List<VariableDescriptor>> toCreate = new HashMap<>();
 
-            for (GameModel scenario : scenarios) {
-                try {
-                    // get corresponding descriptor in the scenrio
-                    VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
-                    this.resetRefIds(vd, modelVd); // make sure corresponding descriptors share the same refId
-                    String parentRef = this.getParentRef(vd);
-                    if (!parentRef.equals(modelParentRef)) {
-                        logger.info("Descriptor {} will be moved from {} to {}", vd, vd.getParent(), modelVd.getParent());
-                        // Parents differs
-                        toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
-                    }
-                } catch (WegasNoResultException ex) {
-                    // corresponding descriptor not found -> it has to be created
-                    logger.info("Descriptor {} will be created in {}", modelVd, modelVd.getParent());
-                    if (modelVd instanceof DescriptorListI) {
-                        toCreate.putIfAbsent(scenario, new ArrayList<>());
-                        toCreate.get(scenario).add(modelVd);
+                logger.info("Assert variables structure match structure in the model and override refIds");
+                for (VariableDescriptor modelVd : model.getVariableDescriptors()) {
+                    // iterate over all model's descriptors
+                    String modelParentRef = this.getParentRef(modelVd);
+                    String name = modelVd.getName();
+
+                    for (GameModel scenario : scenarios) {
+                        try {
+                            // get corresponding descriptor in the scenrio
+                            VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
+                            this.resetRefIds(vd, modelVd); // make sure corresponding descriptors share the same refId
+                            String parentRef = this.getParentRef(vd);
+                            if (!parentRef.equals(modelParentRef)) {
+                                logger.info("Descriptor {} will be moved from {} to {}", vd, vd.getParent(), modelVd.getParent());
+                                // Parents differs
+                                toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
+                            }
+                        } catch (WegasNoResultException ex) {
+                            // corresponding descriptor not found -> it has to be created
+                            logger.info("Descriptor {} will be created in {}", modelVd, modelVd.getParent());
+                            if (modelVd instanceof DescriptorListI) {
+                                toCreate.putIfAbsent(scenario, new ArrayList<>());
+                                toCreate.get(scenario).add(modelVd);
+                            }
+                        }
                     }
                 }
+
+                // Create missing descriptors (DescriptorListI) to ensure all scenarios have the correct struct
+                for (GameModel scenario : toCreate.keySet()) {
+                    List<VariableDescriptor> vdToCreate = toCreate.get(scenario);
+
+                    logger.info("Create missing descriptor for {}", scenario);
+                    boolean restart;
+                    do {
+                        restart = false;
+                        for (Iterator<VariableDescriptor> it = vdToCreate.iterator(); it.hasNext();) {
+                            VariableDescriptor vd = it.next();
+
+                            logger.info(" - missing descriptor is {}", vd);
+                            DescriptorListI modelParent = vd.getParent();
+                            if (modelParent instanceof VariableDescriptor) {
+                                String parentName = ((VariableDescriptor) modelParent).getName();
+                                try {
+                                    VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
+                                    VariableDescriptor clone = (VariableDescriptor) vd.clone();
+                                    variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone);
+
+                                    logger.info(" CREATE AT ROOL LEVEL");
+                                    it.remove();
+                                    restart = true;
+                                } catch (WegasNoResultException ex) {
+                                    logger.info(" PARENT {} NOT FOUND -> POSTPONE", modelParent);
+                                }
+                            } else {
+                                logger.info(" CREATE AT ROOL LEVEL");
+                                VariableDescriptor clone = (VariableDescriptor) vd.clone();
+                                variableDescriptorFacade.createChild(scenario, scenario, clone);
+                                it.remove();
+                                restart = true;
+                            }
+                        }
+                    } while (restart);
+                }
+
+                logger.info("Move misplaced descriptors");
+                for (Entry<VariableDescriptor, VariableDescriptor> entry : toMove.entrySet()) {
+                    logger.info("Process : {}", entry);
+                    //key : the descriptor to move; value: corresponding descriptor within the model
+                    this.move(entry.getKey(), entry.getValue());
+                }
+
+                // generate initial patch agains model
+                WegasEntityPatch initialPatch = new WegasEntityPatch(model, reference, true);
+
+                logger.info("InitialPatch: {}", initialPatch);
+
+                // apply patch to all scenarios
+                for (GameModel scenario : scenarios) {
+                    //initialPatch.apply(scenario, null, WegasPatch.PatchMode.OVERRIDE);
+                    logger.info("Patch {}", scenario);
+                    initialPatch.apply(scenario);
+                    // revive
+                    scenario.setModel(model);
+                    logger.info("Revive {}", scenario);
+                    scenario.propagateGameModel();
+                    variableDescriptorFacade.reviveItems(scenario, scenario, false);
+                    gameModelFacade.reset(scenario);
+                }
+
+                logger.info("PROCESS COMPLETED");
             }
         }
-
-        // Create missing descriptors (DescriptorListI) to ensure all scenarios have the correct struct
-        for (GameModel scenario : toCreate.keySet()) {
-            List<VariableDescriptor> vdToCreate = toCreate.get(scenario);
-
-            logger.info("Create missing descriptor for {}", scenario);
-            boolean restart;
-            do {
-                restart = false;
-                for (Iterator<VariableDescriptor> it = vdToCreate.iterator(); it.hasNext();) {
-                    VariableDescriptor vd = it.next();
-
-                    logger.info(" - missing descriptor is {}", vd);
-                    DescriptorListI modelParent = vd.getParent();
-                    if (modelParent instanceof VariableDescriptor) {
-                        String parentName = ((VariableDescriptor) modelParent).getName();
-                        try {
-                            VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
-                            VariableDescriptor clone = (VariableDescriptor) vd.clone();
-                            variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone);
-
-                            logger.info(" CREATE AT ROOL LEVEL");
-                            it.remove();
-                            restart = true;
-                        } catch (WegasNoResultException ex) {
-                            logger.info(" PARENT {} NOT FOUND -> POSTPONE", modelParent);
-                        }
-                    } else {
-                        logger.info(" CREATE AT ROOL LEVEL");
-                        VariableDescriptor clone = (VariableDescriptor) vd.clone();
-                        variableDescriptorFacade.createChild(scenario, scenario, clone);
-                        it.remove();
-                        restart = true;
-                    }
-                }
-            } while (restart);
-        }
-
-        logger.info("Move misplaced descriptors");
-        for (Entry<VariableDescriptor, VariableDescriptor> entry : toMove.entrySet()) {
-            logger.info("Process : {}", entry);
-            //key : the descriptor to move; value: corresponding descriptor within the model
-            this.move(entry.getKey(), entry.getValue());
-        }
-
-        // generate initial patch agains model
-        WegasEntityPatch initialPatch = new WegasEntityPatch(reference, model, true);
-
-        logger.info("InitialPatch: {}", initialPatch);
-
-        // apply patch to all scenarios
-        for (GameModel scenario : scenarios) {
-            //initialPatch.apply(scenario, null, WegasPatch.PatchMode.OVERRIDE);
-            logger.info("Patch {}", scenario);
-            initialPatch.apply(scenario);
-            scenario.setReference(reference);
-            // revive
-            logger.info("Revive {}", scenario);
-            scenario.propagateGameModel();
-            variableDescriptorFacade.reviveItems(scenario, scenario, false);
-            gameModelFacade.reset(scenario);
-        }
-
-        logger.info("PROCESS COMPLETED");
     }
 
     /**
@@ -491,8 +459,12 @@ public class MergeFacade {
      * Propagate mode to all implementations
      *
      * @param gameModelId
+     *
+     * @return
+     *
+     * @throws java.io.IOException
      */
-    public GameModel propagateModel(Long gameModelId) {
+    public GameModel propagateModel(Long gameModelId) throws IOException {
         return this.propagateModel(gameModelFacade.find(gameModelId));
     }
 
@@ -502,16 +474,32 @@ public class MergeFacade {
      * @param gameModel
      *
      * @return
+     *
+     * @throws java.io.IOException
      */
-    public GameModel propagateModel(GameModel gameModel) {
+    private GameModel propagateModel(GameModel gameModel) throws IOException {
         if (gameModel.getType().equals(GmType.MODEL)) {
             GameModel reference = gameModel.getReference();
-            if (reference != null) {
+
+            if (reference == null) {
+                /*
+                 * create reference
+                 */
+                logger.info("Create Reference");
+                reference = (GameModel) gameModel.duplicate();
+                reference.setType(GameModel.GmType.REFERENCE);
+                reference.setModel(gameModel);
+                gameModelFacade.create(reference);
+
+                this.integrateScenario(gameModel, gameModel.getImplementations());
+
+            } else {
+
                 WegasPatch patch = new WegasEntityPatch(reference, gameModel, Boolean.TRUE);
 
                 logger.info("PropagatePatch: {}" + patch);
 
-                for (GameModel scenario : reference.getImplementations()) {
+                for (GameModel scenario : gameModel.getImplementations()) {
                     // avoid propagating to game's scenarios or to the model
                     if (scenario.getType().equals(GmType.SCENARIO)) {
                         patch.apply(scenario);
@@ -526,10 +514,8 @@ public class MergeFacade {
                 patch.apply(reference);
                 reference.propagateGameModel();
 
-                return gameModel;
-            } else {
-                throw WegasErrorMessage.error("Reference is missing");
             }
+            return gameModel;
         } else {
             throw WegasErrorMessage.error("GameModel " + gameModel + " is not a model (sic)");
         }

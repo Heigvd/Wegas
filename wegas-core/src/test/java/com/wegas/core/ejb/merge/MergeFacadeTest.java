@@ -69,7 +69,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
     static {
         reflections = new Reflections("com.wegas");
-         /*
+        // /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
@@ -345,7 +345,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testModelise_GameModelProperties() throws NamingException, WegasNoResultException {
+    public void testModelise_GameModelProperties() throws NamingException, WegasNoResultException, IOException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
         GameModel gameModel1 = new GameModel();
@@ -370,10 +370,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel1);
         scenarios.add(gameModel2);
 
-        GameModel model = mergeFacade.extractCommonContent(scenarios);
-
         logger.info("Create Model");
-        model = mergeFacade.createModel(model, scenarios);
+        GameModel model = mergeFacade.extractCommonContent(scenarios);
+        mergeFacade.propagateModel(model.getId());
 
         Assert.assertEquals("DefaultLogId1", model.getProperties().getLogID());
         Assert.assertEquals("DefaultLogId1", gameModel1.getProperties().getLogID());
@@ -429,8 +428,6 @@ public class MergeFacadeTest extends AbstractEJBTest {
         css.setVisibility(ModelScoped.Visibility.PRIVATE);
         cssLibrary.put("privateCss" + uniqueToken, css);
 
-
-
         theModel.setCssLibrary(cssLibrary);
     }
 
@@ -483,10 +480,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel1);
         scenarios.add(gameModel2);
 
-        GameModel model = mergeFacade.extractCommonContent(scenarios);
-
         logger.info("Create Model");
-        model = mergeFacade.createModel(model, scenarios);
+        GameModel model = mergeFacade.extractCommonContent(scenarios);
+        mergeFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
         gameModel1 = gameModelFacade.find(gameModel1.getId());
@@ -518,7 +514,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testModelise_GameModelContent() throws NamingException, WegasNoResultException {
+    public void testModelise_GameModelContent() throws NamingException, WegasNoResultException, IOException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
         GameModel gameModel1 = new GameModel();
@@ -539,10 +535,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel1);
         scenarios.add(gameModel2);
 
-        GameModel model = mergeFacade.extractCommonContent(scenarios);
-
         logger.info("Create Model");
-        model = mergeFacade.createModel(model, scenarios);
+        GameModel model = mergeFacade.extractCommonContent(scenarios);
+        mergeFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
         gameModel1 = gameModelFacade.find(gameModel1.getId());
@@ -609,7 +604,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testModelise_PrimitiveCollection() throws NamingException, WegasNoResultException {
+    public void testModelise_PrimitiveCollection() throws NamingException, WegasNoResultException, IOException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
         VariableInstanceFacade vif = VariableInstanceFacade.lookup();
@@ -638,22 +633,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel1);
         scenarios.add(gameModel2);
 
-        GameModel model = mergeFacade.extractCommonContent(scenarios);
-
-        List<VariableDescriptor> children = new ArrayList<>();
-        children.addAll(model.getChildVariableDescriptors());
-
-        while (children.size() > 0) {
-            VariableDescriptor vd = children.remove(0);
-            vd.setVisibility(ModelScoped.Visibility.INHERITED);
-
-            if (vd instanceof DescriptorListI) {
-                children.addAll(((DescriptorListI) vd).getItems());
-            }
-        }
-
         logger.info("Create Model");
-        model = mergeFacade.createModel(model, scenarios);
+        GameModel model = mergeFacade.extractCommonContent(scenarios);
+        model = mergeFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
@@ -763,7 +745,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testModelise() throws NamingException, WegasNoResultException {
+    public void testModelise() throws NamingException, WegasNoResultException, IOException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
         GameModel gameModel1 = new GameModel();
@@ -806,11 +788,14 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel2);
         scenarios.add(gameModel3);
 
+        logger.info("Create Model");
         GameModel model = mergeFacade.extractCommonContent(scenarios);
+        mergeFacade.propagateModel(model.getId());
 
         List<VariableDescriptor> children = new ArrayList<>();
         children.addAll(model.getChildVariableDescriptors());
 
+        logger.info("Update Visibilities");
         while (children.size() > 0) {
             VariableDescriptor vd = children.remove(0);
             switch (vd.getName()) {
@@ -830,14 +815,16 @@ public class MergeFacadeTest extends AbstractEJBTest {
                     vd.setVisibility(ModelScoped.Visibility.INHERITED);
             }
 
+            descriptorFacade.update(vd.getId(), vd);
+
             logger.info("Vd {} -> {}", vd, vd.getVisibility());
             if (vd instanceof DescriptorListI) {
                 children.addAll(((DescriptorListI) vd).getItems());
             }
         }
 
-        logger.info("Create Model");
-        model = mergeFacade.createModel(model, scenarios);
+        logger.info("Initial Model Propagation");
+        model = mergeFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(model));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));

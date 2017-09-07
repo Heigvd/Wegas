@@ -19,9 +19,12 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.RootDescriptors;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -169,6 +172,14 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
             entity.getScope().setShouldCreateInstance(false);
         }
 
+        if (entity instanceof ListDescriptor) {
+            VariableInstance defaultInstance = entity.getDefaultInstance();
+            if (defaultInstance instanceof NumberInstance){
+                logger.error("Incompatible default instance {}", defaultInstance);
+                entity.setDefaultInstance(new ListInstance());
+            }
+        }
+
         /*
          * This flush is required by several EntityRevivedEvent listener, 
          * which opperate some SQL queries (which didn't return anything before
@@ -289,7 +300,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         final VariableDescriptor oldEntity = this.find(entityId);               // Retrieve the entity to duplicate
 
         final ObjectMapper mapper = JacksonMapperProvider.getMapper();          // Retrieve a jackson mapper instance
-        final String serialized = mapper.writerWithView(Views.Export.class).
+        final String serialized = mapper.writerWithView(Views.Export.class). // no id. no refId
                 writeValueAsString(oldEntity);                                  // Serialize the entity
         final VariableDescriptor newEntity
                 = mapper.readValue(serialized, oldEntity.getClass());           // and deserialize it

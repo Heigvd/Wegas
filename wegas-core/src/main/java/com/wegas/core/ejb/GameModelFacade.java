@@ -117,6 +117,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @Override
     public void create(final GameModel entity) {
 
+        // So What? 
+        
         getEntityManager().persist(entity);
 
         final User currentUser = userFacade.getCurrentUser();
