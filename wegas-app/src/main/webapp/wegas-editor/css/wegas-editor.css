@@ -9,10 +9,13 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
 
- 
+
 /* Header toggle button */
 .yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode{
     background-color : red;
+}
+.yui3-skin-sam.wegas-editmode .wegas-layout-hd .gamemodel-type{
+    color : red;
 }
 .yui3-skin-sam .host-switchmode {
     /* margin-right: 10px; */
@@ -29,7 +32,7 @@
     background: white;
     color: #03283A;
 }
- 
+
 
 /* Set font in the editor*/
 body, button, .yui3-skin-sam .yui3-datatable-table {

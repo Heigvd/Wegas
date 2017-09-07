@@ -32,25 +32,25 @@ YUI.add('wegas-scriptlibrary', function(Y) {
             CONTENT_TEMPLATE:
                 '<div><div class="empty">No file found, click the "New" button to create one.</div></div>',
             /**
-         * @function
-         * @private
-         */
+             * @function
+             * @private
+             */
             initializer: function() {
                 /**
-             * @field
-             * @private
-             */
+                 * @field
+                 * @private
+                 */
                 this.currentScriptName = null;
                 /**
-             * @field
-             * @private
-             */
+                 * @field
+                 * @private
+                 */
                 this.scripts = null;
             },
             /**
-         * @function
-         * @private
-         */
+             * @function
+             * @private
+             */
             renderUI: function() {
                 this.aceField = new Y.inputEx.AceField({
                     parentEl: this.get(CONTENTBOX),
@@ -64,9 +64,9 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 this.renderToolbar();
             },
             /**
-         * @function
-         * @private
-         */
+             * @function
+             * @private
+             */
             bindUI: function() {
                 //this.responseHandler = Wegas.Facade.GameModel.after("update", this.syncUI, this); //don't work if two widgets in differents tabs are open (I comment this line and add "updateCache: false at each requests)
 
@@ -77,7 +77,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                         this.syncEditor();
                     },
                     this
-                );
+                    );
 
                 this.aceField.once(
                     'updated',
@@ -85,7 +85,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                         this.saveButton.set('disabled', false);
                     },
                     this
-                );
+                    );
 
                 // sync aceField changes with local library
                 this.aceField.session.on(
@@ -93,8 +93,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     Y.bind(function() {
                         // Each time the ace content change
                         var libraries = this.scripts
-                                ? this.scripts.get('val')
-                                : {},
+                            ? this.scripts.get('val')
+                            : {},
                             selected = this.selectField.getValue();
 
                         if (libraries[selected]) {
@@ -103,14 +103,14 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             libraries[selected].content = newContent;
                         }
                     }, this)
-                );
+                    );
 
                 this.get(CONTENTBOX).on('key', this.save, 'down:83+ctrl', this); // ctrl-s shortcut
             },
             /**
-         * @function
-         * @private
-         */
+             * @function
+             * @private
+             */
             syncUI: function() {
                 while (this.selectField.choicesList.length > 0) {
                     // Remove existing choices
@@ -142,15 +142,15 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                 },
                             },
                             this
-                        ),
+                            ),
                     },
                     this
-                );
+                    );
             },
             /**
-         * @function
-         * @private
-         */
+             * @function
+             * @private
+             */
             destructor: function() {
                 // this.responseHandler.detach();
                 this.selectField.destroy();
@@ -167,9 +167,9 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 this.hideOverlay();
             },
             /**
-         *
-         * @returns {undefined}
-         */
+             *
+             * @returns {undefined}
+             */
             syncAceField: function() {
                 var i,
                     isEmpty = true,
@@ -204,22 +204,22 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 this.hideOverlay();
             },
             /**
-         * @function
-         * @private
-         */
+             * @function
+             * @private
+             */
             syncEditor: function() {
                 var libraries = this.scripts ? this.scripts.get('val') : {},
                     selected = this.selectField.getValue(),
                     val = libraries[selected]
-                        ? libraries[selected].content || ''
-                        : '';
+                    ? libraries[selected].content || ''
+                    : '';
 
                 this.aceField.setValue(val, false);
             },
             /**
-         * @function
-         * @private
-         */
+             * @function
+             * @private
+             */
             renderToolbar: function() {
                 this.plug(Y.Plugin.WidgetToolbar);
 
@@ -238,11 +238,11 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             }
                             if (
                                 libraries.hasOwnProperty(this.currentScriptName)
-                            ) {
+                                ) {
                                 this.showMessage(
                                     'error',
                                     'This name already exists.'
-                                );
+                                    );
                                 return;
                             }
                             this.showOverlay();
@@ -252,7 +252,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     '/' +
                                     Wegas.Facade.GameModel.get(
                                         'currentGameModelId'
-                                    ) +
+                                        ) +
                                     '/Library/' +
                                     this.get('library') +
                                     '/' +
@@ -271,18 +271,18 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                                 'success',
                                                 'Script created',
                                                 1000
-                                            );
+                                                );
                                             this.syncUI();
                                         },
                                         failure: function() {
                                             this.showMessage(
                                                 'error',
                                                 'Error while saving script.'
-                                            );
+                                                );
                                         },
                                     },
                                     this
-                                ),
+                                    ),
                             });
                         }, this),
                     },
@@ -324,8 +324,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                         click: Y.bind(function() {
                             Wegas.Panel.confirm(
                                 'Are you sure you want to delete the "' +
-                                    this.currentScriptName +
-                                    '" script ?',
+                                this.currentScriptName +
+                                '" script ?',
                                 Y.bind(function() {
                                     this.showOverlay();
                                     Wegas.Facade.GameModel.sendRequest({
@@ -333,7 +333,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                             '/' +
                                             Wegas.Facade.GameModel.get(
                                                 'currentGameModelId'
-                                            ) +
+                                                ) +
                                             '/Library/' +
                                             this.get('library') +
                                             '/' +
@@ -348,16 +348,16 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                                     this.showMessage(
                                                         'success',
                                                         'Script deleted'
-                                                    );
+                                                        );
                                                     if (
                                                         this.get('library') ===
                                                         'CSS'
-                                                    ) {
+                                                        ) {
                                                         this.updateStyleSheet(
                                                             this
-                                                                .currentScriptName,
+                                                            .currentScriptName,
                                                             ''
-                                                        );
+                                                            );
                                                     }
                                                     this.currentScriptName = null;
                                                     this.syncUI();
@@ -366,14 +366,14 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                                     this.showMessage(
                                                         'error',
                                                         'Error while deleting script.'
-                                                    );
+                                                        );
                                                 },
                                             },
                                             this
-                                        ),
+                                            ),
                                     });
                                 }, this)
-                            );
+                                );
                         }, this),
                     },
                 }).render(toolbarNode);
@@ -408,7 +408,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     this.updateStyleSheet(
                                         this.currentScriptName,
                                         this.aceField.getValue()
-                                    );
+                                        );
                                 }
                                 if (this.get('library') === 'ClientScript') {
                                     try {
@@ -417,7 +417,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                         this.showMessage(
                                             'error',
                                             'This script contains errors'
-                                        );
+                                            );
                                     }
                                 }
                                 //this.syncUI();
@@ -426,11 +426,11 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                 this.showMessage(
                                     'error',
                                     'Error while saving script'
-                                );
+                                    );
                             },
                         },
                         this
-                    ),
+                        ),
                 });
             },
             updateStyleSheet: function(id, content) {

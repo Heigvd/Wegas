@@ -123,12 +123,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @ManyToOne
+    @JsonIgnore
     private GameModel reference;
 
     /**
      *
      */
     @OneToMany(mappedBy = "reference")
+    @JsonIgnore
     private List<GameModel> implementations = new ArrayList<>();
 
     /**

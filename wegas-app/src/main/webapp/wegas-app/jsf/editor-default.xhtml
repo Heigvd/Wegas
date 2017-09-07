@@ -10,7 +10,7 @@
         <ui:define name="head">
 
             <!-- Page styles -->
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
 
             <!-- Stylesheets from current game model style library -->
             <style type="text/css">#{editorGameController.styleSheets}</style>
@@ -35,7 +35,7 @@
 
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
-                    Y.namespace("Wegas.Config").ExtraTabs = [/*Tab(s) cfg {label:"label", children:[]}*/]
+                    Y.namespace("Wegas.Config").ExtraTabs = [/*Tab(s) cfg {label:"label", children:[]}*/];
 
                     var app = new Y.Wegas.App({
                         dataSources: {

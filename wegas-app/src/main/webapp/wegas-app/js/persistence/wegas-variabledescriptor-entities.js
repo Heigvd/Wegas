@@ -194,6 +194,23 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     _type: HIDDEN
                 }
             },
+            visibility: {
+                type: STRING,
+                value: "PRIVATE",
+                choices: [{
+                        value: "INTERNAL",
+                        label: "Internal"
+                    }, {
+                        value: "PROTECTED",
+                        label: "Protected"
+                    }, {
+                        value: "INHERITED",
+                        label: "Inherited"
+                    }, {
+                        value: "PRIVATE",
+                        label: "Private"
+                    }]
+            },
             comments: {
                 type: STRING,
                 optional: true,

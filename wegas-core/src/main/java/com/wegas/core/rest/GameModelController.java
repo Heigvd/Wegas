@@ -23,6 +23,9 @@ import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.merge.ejb.MergeFacade;
+import java.util.List;
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
@@ -44,9 +47,13 @@ public class GameModelController {
     @EJB
     private GameModelFacade gameModelFacade;
 
+    @Inject
+    private MergeFacade mergeFacade;
+
     /**
      *
      * @param gm
+     *
      * @return the new game model
      */
     @POST
@@ -58,11 +65,76 @@ public class GameModelController {
         return gm;
     }
 
+    private List<Long> getIdsFromString(String ids) {
+        List<Long> scenarioIds = new ArrayList<>();
+
+        for (String id : ids.split(",")) {
+            scenarioIds.add(Long.parseLong(id));
+        }
+
+        return scenarioIds;
+    }
+
+    /**
+     * Create a model
+     *
+     * @param ids comma separated list of gameModel id to base the new model on
+     *
+     * @return a unpersisted model
+     *
+     * @throws IOException
+     */
+    @GET
+    @Path("extractModel/{ids}")
+    public GameModel createModel(@PathParam("ids") String ids) throws IOException {
+
+        GameModel model = mergeFacade.extractCommonContentFromIds(getIdsFromString(ids));
+
+        return model;
+    }
+
+    @POST
+    @Path("persistModel/{ids}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public GameModel persistModel(@PathParam("ids") String ids, GameModel model) throws IOException {
+
+        model = mergeFacade.createModelFromIds(model, this.getIdsFromString(ids));
+
+        return model;
+    }
+
+    @POST
+    @Path("extractAndPersistModel/{ids}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public GameModel extractAndPersistModel(@PathParam("ids") String ids, GameModel model) throws IOException {
+
+        List<Long> idsFromString = getIdsFromString(ids);
+        model = mergeFacade.extractCommonContentFromIds(idsFromString);
+        model = mergeFacade.createModelFromIds(model, idsFromString);
+
+        return model;
+    }
+
+    /**
+     * Create a model
+     *
+     * @param modelId model to propagate
+     * @return the model
+     *
+     */
+    @GET
+    @Path("propagateModel/{modelId : [1-9][0-9]*}")
+    public GameModel propagateModel(@PathParam("mnodelId") Long modelId) {
+        return mergeFacade.propagateModel(modelId);
+    }
+
     /**
      *
      * @param templateGameModelId
      * @param gm
+     *
      * @return the new game model
+     *
      * @throws IOException
      */
     @POST
@@ -83,15 +155,18 @@ public class GameModelController {
 
     /**
      * EXPERIMENTAL
-     *
+     * <p>
      * update default instance based on given player ones
      *
      * @param templateGameModelId
      * @param playerId
+     *
      * @return up to date reseted gamemodel
+     *
      * @throws IOException
      */
     @POST
+    
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -106,19 +181,22 @@ public class GameModelController {
 
     /**
      * EXPERIMENTAL & BUGGY
-     *
+     * <p>
      * Create a new gameModel based on given player instances status (new
      * gameModel default instance fetch from player ones)
-     *
+     * <p>
      * This one is Buggy since several instances merge are not cross-gameModel
      * compliant
      *
      * @param templateGameModelId
      * @param playerId
+     *
      * @return the new gameModel
+     *
      * @throws IOException
      */
     @POST
+    
     @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -133,7 +211,9 @@ public class GameModelController {
      *
      * @param file
      * @param details
+     *
      * @return the new uploaded gameModel
+     *
      * @throws IOException
      */
     @POST
@@ -155,10 +235,11 @@ public class GameModelController {
     /**
      *
      * @param entityId
+     *
      * @return the requested GameModel
      */
     @GET
-    @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")                   // @hack force utf-8 charset
+    @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8") // @hack force utf-8 charset
     @Path("{entityId : [1-9][0-9]*}")
     public GameModel get(@PathParam("entityId") Long entityId) {
 
@@ -168,8 +249,8 @@ public class GameModelController {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")                   // @hack force utf-8 charset
-    @Path("{entityId : [1-9][0-9]*}/{filename: .*}.json")                       // @hack allow to add a filename with *.json to have a nice file
+    @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8") // @hack force utf-8 charset
+    @Path("{entityId : [1-9][0-9]*}/{filename: .*}.json") // @hack allow to add a filename with *.json to have a nice file
     public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) {
         return Response.ok(this.get(entityId))
                 .header("Content-Disposition", "attachment; filename=" + filename).build();
@@ -179,6 +260,7 @@ public class GameModelController {
      *
      * @param entityId
      * @param entity
+     *
      * @return up to date gameModel
      */
     @PUT
@@ -193,7 +275,9 @@ public class GameModelController {
     /**
      *
      * @param entityId
+     *
      * @return game model Copy
+     *
      * @throws IOException
      */
     @POST
@@ -219,6 +303,7 @@ public class GameModelController {
      *
      * @param entityId
      * @param status
+     *
      * @return the game model with up to date status
      */
     @PUT
@@ -254,6 +339,7 @@ public class GameModelController {
      * Get all gameModel with given status
      *
      * @param status
+     *
      * @return all gameModels with given status the user has access too
      */
     @GET
@@ -266,6 +352,7 @@ public class GameModelController {
      * count gameModel with given status
      *
      * @param status
+     *
      * @return the number of gameModel with the given status the current user
      *         has access too
      */
@@ -279,6 +366,7 @@ public class GameModelController {
      * Move to bin a LIVE gameModel, Delete a bin one
      *
      * @param entityId
+     *
      * @return the just movedToBin/deleted gameModel
      */
     @DELETE

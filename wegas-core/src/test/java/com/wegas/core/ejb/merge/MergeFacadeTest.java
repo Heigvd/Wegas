@@ -396,7 +396,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
     }
 
-    private void createCss(GameModel theModel) {
+    private void createCss(GameModel theModel, String uniqueToken) {
         Map<String, GameModelContent> cssLibrary = theModel.getCssLibrary();
 
         GameModelContent css = new GameModelContent();
@@ -422,6 +422,14 @@ public class MergeFacadeTest extends AbstractEJBTest {
         css.setContentType("text/css");
         css.setVisibility(ModelScoped.Visibility.PRIVATE);
         cssLibrary.put("privateCss", css);
+
+        css = new GameModelContent();
+        css.setContent(".private_rule { color: red}");
+        css.setContentType("text/css");
+        css.setVisibility(ModelScoped.Visibility.PRIVATE);
+        cssLibrary.put("privateCss" + uniqueToken, css);
+
+
 
         theModel.setCssLibrary(cssLibrary);
     }
@@ -515,12 +523,12 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
-        this.createCss(gameModel1);
+        this.createCss(gameModel1, "sheet1");
         gameModelFacade.createWithDebugGame(gameModel1);
 
         GameModel gameModel2 = new GameModel();
         gameModel2.setName("gamemodel #2");
-        this.createCss(gameModel2);
+        this.createCss(gameModel2, "sheet2");
         gameModelFacade.createWithDebugGame(gameModel2);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());

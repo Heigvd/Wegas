@@ -71,6 +71,30 @@ public class MergeFacade {
     }
 
     /**
+     *
+     * @param scenarioIds
+     *
+     * @return
+     */
+    public GameModel extractCommonContentFromIds(List<Long> scenarioIds) {
+        return extractCommonContent(loadGameModelsFromIds(scenarioIds));
+    }
+
+    /**
+     *
+     * @param scenarioIds
+     *
+     * @return
+     */
+    private List<GameModel> loadGameModelsFromIds(List<Long> scenarioIds) {
+        List<GameModel> scenarios = new ArrayList<>();
+        for (Long id : scenarioIds) {
+            scenarios.add(gameModelFacade.find(id));
+        }
+        return scenarios;
+    }
+
+    /**
      * Create a gameModel which contains only the content which is shared among all gameModels
      * The structure, as well as gameModel properties, will be the same as the first scenario in the list
      * The returned scenario is not persisted. Caller may personalize the model (changing descriptors visibility).
@@ -84,25 +108,21 @@ public class MergeFacade {
      */
     public GameModel extractCommonContent(List<GameModel> scenarios) {
 
+        logger.info("Extract Common Content");
         GameModel model = null;
         if (!scenarios.isEmpty()) {
             try {
                 // get a copy
                 scenarios = loadGameModels(scenarios);
                 // extract the first scenario to act as reference
-                model = (GameModel) scenarios.remove(0).duplicate();
 
-                /**
-                 * filter pages
-                 */
-                Map<String, JsonNode> pages = model.getPages();
-                for (GameModel scenario : scenarios){
-                    scenario.setPages(pages);
-                }
+                logger.info("Create model, based on first scenario");
+                model = (GameModel) scenarios.remove(0).duplicate();
 
                 /**
                  * Filter gameModelContents
                  */
+                logger.info("Filter Libraries");
                 Map<String, Map<String, GameModelContent>> libraries = model.getLibraries();
                 List<Map<String, Map<String, GameModelContent>>> otherLibraries = new ArrayList<>();
 
@@ -113,10 +133,13 @@ public class MergeFacade {
                 for (Entry<String, Map<String, GameModelContent>> libEntry : libraries.entrySet()) {
 
                     String libraryName = libEntry.getKey();
+                    logger.info(" Process {}", libraryName);
 
                     Map<String, GameModelContent> library = libEntry.getValue();
-                    for (Entry<String, GameModelContent> entry : library.entrySet()) {
+                    for (Iterator<Entry<String, GameModelContent>> it = library.entrySet().iterator(); it.hasNext();) {
+                        Entry<String, GameModelContent> entry = it.next();
                         String key = entry.getKey();
+                        GameModelContent content = entry.getValue();
                         boolean exists = true;
                         for (Map<String, Map<String, GameModelContent>> otherLibs : otherLibraries) {
                             Map<String, GameModelContent> otherLib = otherLibs.get(libraryName);
@@ -126,9 +149,12 @@ public class MergeFacade {
                                 break;
                             }
                         }
-
-                        if (!exists) {
-                            library.remove(key);
+                        if (exists) {
+                            content.setVisibility(ModelScoped.Visibility.INHERITED);
+                            logger.info(" -> keep {}", key);
+                        } else {
+                            logger.info(" -> evict {}", key);
+                            it.remove();
                         }
                     }
                 }
@@ -142,8 +168,10 @@ public class MergeFacade {
                 /**
                  * Select variable descriptor to keep
                  */
+                logger.info("Process variables");
                 while (vdQueue.size() > 0) {
                     VariableDescriptor vd = vdQueue.remove(0);
+                    logger.info(" Process {}", vd);
                     boolean exists = true;
                     // does the descriptor exists in all gameModel ?
                     for (GameModel other : scenarios) {
@@ -185,8 +213,9 @@ public class MergeFacade {
                  * When it's the case, the descriptor must be kept. 
                  * If the descriptor doesn't contains any children, it can be removed
                  */
-                boolean restart = false;
+                boolean restart;
                 do {
+                    restart = false;
                     for (Iterator<VariableDescriptor> it = exclusionCandidates.iterator(); it.hasNext();) {
                         VariableDescriptor vd = it.next();
                         logger.debug("Should keep {} ?", vd);
@@ -226,6 +255,17 @@ public class MergeFacade {
         } else {
             return null; //throw error ? 
         }
+    }
+
+    /**
+     *
+     * @param model
+     * @param idsFromString
+     *
+     * @return
+     */
+    public GameModel createModelFromIds(GameModel model, List<Long> idsFromString) {
+        return this.createModel(model, loadGameModelsFromIds(idsFromString));
     }
 
     /**
@@ -304,6 +344,14 @@ public class MergeFacade {
         // set scenarios refId to model refId
         for (GameModel scenario : scenarios) {
             scenario.setRefId(model.getRefId());
+        }
+
+        /**
+         * filter pages
+         */
+        Map<String, JsonNode> pages = model.getPages();
+        for (GameModel scenario : scenarios) {
+            scenario.setPages(pages);
         }
 
         Map<VariableDescriptor, VariableDescriptor> toMove = new HashMap<>();
@@ -444,16 +492,18 @@ public class MergeFacade {
      *
      * @param gameModelId
      */
-    public void propagateModel(Long gameModelId) {
-        this.propagateModel(gameModelFacade.find(gameModelId));
+    public GameModel propagateModel(Long gameModelId) {
+        return this.propagateModel(gameModelFacade.find(gameModelId));
     }
 
     /**
      * Propagate mode to all implementations
      *
      * @param gameModel
+     *
+     * @return
      */
-    public void propagateModel(GameModel gameModel) {
+    public GameModel propagateModel(GameModel gameModel) {
         if (gameModel.getType().equals(GmType.MODEL)) {
             GameModel reference = gameModel.getReference();
             if (reference != null) {
@@ -462,7 +512,8 @@ public class MergeFacade {
                 logger.info("PropagatePatch: {}" + patch);
 
                 for (GameModel scenario : reference.getImplementations()) {
-                    if (!scenario.equals(gameModel)) {
+                    // avoid propagating to game's scenarios or to the model
+                    if (scenario.getType().equals(GmType.SCENARIO)) {
                         patch.apply(scenario);
 
                         logger.info("Revive {}", scenario);
@@ -474,6 +525,8 @@ public class MergeFacade {
 
                 patch.apply(reference);
                 reference.propagateGameModel();
+
+                return gameModel;
             } else {
                 throw WegasErrorMessage.error("Reference is missing");
             }
