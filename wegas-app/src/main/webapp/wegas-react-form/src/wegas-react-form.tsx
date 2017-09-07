@@ -145,9 +145,9 @@ const Form = Y.Base.create(
         },
         // Set visual feedback for when the "save" button should be clicked
         activateSaveBtn() {
-            const btn = this.get('contentBox')
-                .get('parentNode')
-                .one('.wegas-save-form-button');
+            const ptn = this.get('contentBox').get('parentNode');
+            if (!ptn) return;
+            const btn = ptn.one('.wegas-save-form-button');
             btn
                 .removeClass(setSavingBtnStyle.toLocaleString())
                 .removeClass(inactiveSaveBtnStyle.toString())
@@ -156,9 +156,9 @@ const Form = Y.Base.create(
         },
         // Set normal visual appearance (i.e. when the "save" button does not need to be clicked)
         deactivateSaveBtn() {
-            const btn = this.get('contentBox')
-                .get('parentNode')
-                .one('.wegas-save-form-button');
+            const ptn = this.get('contentBox').get('parentNode');
+            if (!ptn) return;
+            const btn = ptn.one('.wegas-save-form-button');
             btn
                 .removeClass(setSavingBtnStyle.toLocaleString())
                 .removeClass(activeSaveBtnStyle.toString())

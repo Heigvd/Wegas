@@ -49,7 +49,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
     IDATTRDEF = {
         type: NUMBER,
         view: {
-            labale: 'Id',
+            label: 'Id',
             type: HIDDEN
         }
     };
@@ -86,13 +86,14 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 value: [],
                 type: ARRAY,
                 view: {
-                    type: HIDDEN,
-                    label: "Transition History"
-                    //,
-                    //elementType:{
-                    //    type:NUMBER,
-                    //    readonly:true
-                    //}
+                    label: "Transition History",
+                    disabled: true,
+                },
+                items: {
+                    type: "number",
+                    view: {
+                        disabled: true
+                    }
                 }
             }
         },
@@ -180,6 +181,11 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                             }
                         },
                         id: IDATTRDEF,
+                        descriptorId: {
+                            view: {
+                                type: HIDDEN
+                            }
+                        },
                         version: VERSION_ATTR_DEF,
                         currentStateId: {
                             type: NUMBER,
@@ -303,7 +309,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 "@class": {
                     value: "State"
                 },
-                stateMachineId: VERSION_ATTR_DEF,
+                stateMachineId: IDATTRDEF,
                 version: VERSION_ATTR_DEF,
                 label: {
                     type: STRING,
@@ -338,6 +344,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                         });
                     },
                     view: {
+                        label: 'Box position',
                         className: 'wegas-advanced-feature'
                     },
                     properties: {

@@ -23,7 +23,16 @@ export namespace FormStyles {
             color: FormStyles.labelColor,
             fontFamily: FormStyles.labelFontFamily,
         }
-    )
+    );
+
+    export const biggerLabelStyle = css(
+        FormStyles.labelStyle,
+        {
+            fontSize: '115%',
+            marginBottom: '3px'
+        }
+    );
+
 }
 
 export default FormStyles;

@@ -29,9 +29,11 @@ interface IAsyncSelectProps {
     };
 }
 const selectStyle = css({
+    label: 'select-selectStyle',
     padding: '2px',
     borderRadius: '3px',
-    border: '1px solid lightgray'
+    border: '1px solid lightgray',
+    width: '120px'
 });
 
 const selectContainerStyle = css({

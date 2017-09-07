@@ -5,19 +5,35 @@ import commonView from '../HOC/commonView';
 import { css } from 'glamor';
 import FormStyles from './form-styles';
 
-const inputStyle = css({
-    borderRadius: '3px',
-    boxSizing: 'border-box',
-    border: '1px solid lightgrey',
-    fontSize: '13px',
-    color: 'darkslategrey',
-    boxShadow: '1px 1px 4px #ccc',
-    width: '100%',
-    maxWidth: FormStyles.textInputWidth,
-    padding: '0px'
+const placeholderStyleDetails = css({
+    fontStyle: 'italic'
 });
 
+const placeholderStyle = css({
+    '::-webkit-input-placeholder' : placeholderStyleDetails,
+    ':-moz-placeholder' : placeholderStyleDetails,
+    '::-moz-placeholder' : placeholderStyleDetails,
+    ':-ms-input-placeholder' : placeholderStyleDetails
+});
+
+const inputStyle = css(
+    placeholderStyle,
+    {
+        label: 'string-inputStyle',
+        borderRadius: '3px',
+        boxSizing: 'border-box',
+        border: '1px solid lightgrey',
+        fontSize: '13px',
+        color: 'darkslategrey',
+        boxShadow: '1px 1px 4px #ccc',
+        width: '100%',
+        maxWidth: FormStyles.textInputWidth,
+        padding: '0px'
+    }
+);
+
 const textareaFocus = css({
+    label: 'string-textareaFocus',
     ':focus': {
         border: '1px solid lightgrey'
     }
@@ -25,6 +41,7 @@ const textareaFocus = css({
 
 const textareaStyle = css(
     {
+        label: 'string-textareaStyle',
         borderRadius: '3px',
         width: '100%',
         maxWidth: FormStyles.textareaWidth,

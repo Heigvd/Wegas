@@ -10,6 +10,7 @@ import { getY } from './../index';
 import FormStyles from './form-styles';
 
 const marginStyle = css({
+    label: 'html-marginstyle',
     width: FormStyles.textInputWidth,
     marginTop: '4px',
     fontSize: '13px',
@@ -17,6 +18,7 @@ const marginStyle = css({
     maxHeight: '500px',
     overflow: 'auto',
     color: 'darkslategrey',
+    backgroundColor: 'white',
     boxShadow: '1px 1px 4px #ccc',
     // border: '1px solid lightgrey',
     // borderRadius: '3px',
@@ -182,6 +184,7 @@ class HTMLView extends React.Component {
         super(props);
         this.state = { key: 0, content: props.value };
         this.onChangeHandler = this.onChangeHandler.bind(this);
+        this.doNotCheck = false;
     }
     componentWillReceiveProps(nextProps) {
         if (nextProps.value !== this.state.content) {
@@ -190,11 +193,26 @@ class HTMLView extends React.Component {
                 key: (this.state.key + 1) % 100, // avoid potential overflow
                 content: nextProps.value,
             });
+            this.doNotCheck = true;
         }
     }
+
+    componentDidUpdate() {
+        this.doNotCheck = false;
+    }
+
+    // Listens both to tinyMCE's synthetic 'change' events and to its basic 'onKeyup' events.
+    // NB: the event parameter is not the same in both cases.
     onChangeHandler(event) {
-        const content = toInjectorStyle(event.target.getContent());
-        this.setState({ content }, () => this.props.onChange(content));
+        // console.log(event.originalEvent ? event.originalEvent.type : event.type);
+        if (this.doNotCheck) {
+            return;
+        }
+        const oldContent = this.state.content;
+        const newContent = toInjectorStyle(tinymce.activeEditor.getContent());
+        if (oldContent !== newContent) {
+            this.setState({content: newContent}, () => this.props.onChange(newContent));
+        }
     }
     render() {
         return (
@@ -204,6 +222,7 @@ class HTMLView extends React.Component {
                     content={toTinyMCE(this.state.content)}
                     config={TINY_CONFIG}
                     onChange={this.onChangeHandler}
+                    onKeyup={this.onChangeHandler}
                 />
             </div>
         );

@@ -2,12 +2,7 @@ import React from 'react';
 import { css } from 'glamor';
 import FormStyles from '../Views/form-styles';
 
-const labelStyle = css(FormStyles.labelStyle, {
-    fontSize: '115%',
-    marginBottom: '3px'
-});
-
-const prefixedLabelStyle = css(labelStyle, {
+const prefixedLabelStyle = css(FormStyles.biggerLabelStyle, {
     display: 'block'
 });
 
@@ -45,7 +40,7 @@ export default function labeled<P extends { id: string }>(
                 return (
                     <div className={cssContainer}>
                         <Comp id={this.id} {...props} />
-                        <label htmlFor={this.id} {...labelStyle}>
+                        <label htmlFor={this.id} {...FormStyles.biggerLabelStyle}>
                             {props.view.label}
                         </label>
                     </div>

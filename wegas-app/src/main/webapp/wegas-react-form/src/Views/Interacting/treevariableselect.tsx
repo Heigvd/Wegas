@@ -9,17 +9,20 @@ import { css } from "glamor";
 const separatorCss = css({ borderTop: "solid 1px" });
 
 const containerCss = css({
+    label: 'treevariableselect-containerCss',
     color: '#6A95B6',
     display: 'inline-block',
     marginTop: '1.0em'
 });
 
 const iconCss = css({
+    label: 'treevariableselect-iconCss',
     color: 'black',
     fontSize: '85%'
 });
 
 const treeCss = css({
+    label: 'treevariableselect-treeCss',
     padding: '5px 10px',
     backgroundColor: 'white',
     boxShadow: '0 2px 5px black',
@@ -28,18 +31,21 @@ const treeCss = css({
 });
 
 const selectorLinkCss = css({
+    label: 'treevariableselect-selectorLinkCss',
     position: 'relative',
     marginRight: '1em'
 });
 
 const pathCss = css({
+    label: 'treevariableselect-pathCss',
     position: 'absolute',
     fontSize: '75%',
     whiteSpace: 'nowrap',
-    bottom: '150%'
+    bottom: '128%'
 });
 
 const labelCss = css({
+    label: 'treevariableselect-labelCss',
     color: 'black'
 });
 
