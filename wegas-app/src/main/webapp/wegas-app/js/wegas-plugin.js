@@ -138,10 +138,15 @@ YUI.add("wegas-plugin", function(Y) {
      */
     var FireAndForgetRequestAction = Y.Base.create("FireAndForgetRequest", Action, [], {
         execute: function() {
+            var headers = Y.mix({}, this.get("headers"));
+            Y.mix(headers, {
+                "Content-Type": "application/json"
+            });
+
             Y.io(Y.Wegas.app.get("base") + this.get("url"), {
                 "method": this.get("method"),
                 "data": this.get("data"),
-                "headers": {"Content-Type": "application/json"}
+                "headers": headers
             });
         }
     }, {
@@ -169,6 +174,10 @@ YUI.add("wegas-plugin", function(Y) {
                 _inputex: {
                     label: ""
                 }
+            },
+            headers: {
+                type: "object",
+                value: {}
             },
             data: {
                 type: "string"

@@ -79,11 +79,11 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.pagesUri != ''}">
                                  */
                                 source: "#{editorGameController.currentGameModel.properties.pagesUri}",
-                                    /* THIS IS NOT A COMMENT
-                                     * </ui:fragment>
-                                     */
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
 
-                                    initialFullRequest: '<ui:insert name="pageUri">/wegas-app/db/wegas-editor-layout.json</ui:insert>',
+                                initialFullRequest: '<ui:insert name="pageUri">/wegas-app/db/wegas-editor-layout.json</ui:insert>',
                                 //initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
                                 //initialRequest 'EditorLayout',
                                 plugins: [{
@@ -166,6 +166,35 @@
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                             loadedPlayers = [Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id")];
                         Y.all(".wegas-title").setContent(gm.get("name"));       // Update the title
+                        //
+
+                        if (gm.get("type") === "MODEL") {
+                            var advMenuNode = Y.one(".editor-scenarist-advanced-button"),
+                                advMenu = Y.Widget.getByNode(advMenuNode).menu,
+                                propagateButton;
+                            propagateButton = new Y.Wegas.Button({
+                                label: "Propagate model to scenario"
+                            });
+                            propagateButton.plug(Y.Plugin.FireAndForgetRequestAction, {
+                                url: "rest/GameModel/propagateModel/" + gm.get("id"),
+                                method: "PUT",
+                                headers: {
+                                    "managed-mode": true
+                                }
+                            });
+                            advMenu.add(propagateButton);
+
+                            Y.use("wegas-text", function() {
+                                var myText = new Y.Wegas.Text({
+                                    //cssClass: "gamemodel-type wegas-advanced-feature",
+                                    cssClass: "gamemodel-type",
+                                    content: "!!!!! MODEL !!!!!"
+                                }).render(".wegas-layout-hd");
+                            });
+                        }
+
+
+                        //
                         // Handle player change event
                         Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function(e) {// Whenever the current player id changes
                             var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),

@@ -119,7 +119,7 @@
             }, {
                 "type": "Button",
                 "label": "Advanced",
-                "cssClass": "editor-scenarist-button wegas-advanced-feature",
+                "cssClass": "editor-scenarist-button editor-scenarist-advanced-button wegas-advanced-feature",
                 "plugins": [
                     {
                         "fn": "WidgetMenu",

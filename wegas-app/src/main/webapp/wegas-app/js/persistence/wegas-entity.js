@@ -214,6 +214,9 @@ YUI.add("wegas-entity", function(Y) {
                     index: 100
                 }
             },
+            type :{
+                type: STRING
+            },
             canView: {
                 "transient": true
             },
