@@ -10,6 +10,7 @@ package com.wegas.core.merge.ejb;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -24,6 +25,7 @@ import com.wegas.core.persistence.game.GameModel.GmType;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.RootDescriptors;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -54,6 +56,9 @@ public class MergeFacade {
 
     @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      * return a new list of managed scenarios
@@ -512,6 +517,9 @@ public class MergeFacade {
                         //scenario.propagateGameModel();
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
                         gameModelFacade.reset(scenario);
+                        
+                        // HACK!!! TODO refactor propagation  (do not embed children within parents, but only ids)
+                        variableDescriptorFacade.propagateRootVariableDescriptors(scenario);
                     }
                 }
 

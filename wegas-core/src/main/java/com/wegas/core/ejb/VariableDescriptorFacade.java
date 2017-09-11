@@ -141,7 +141,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         return list;
     }
 
-    private void propagateRootVariableDescriptors(GameModel gameModel) {
+    public void propagateRootVariableDescriptors(GameModel gameModel) {
         RootDescriptors rd = new RootDescriptors();
         rd.setId(gameModel.getId());
         rd.setItems(gameModel.getItems());
