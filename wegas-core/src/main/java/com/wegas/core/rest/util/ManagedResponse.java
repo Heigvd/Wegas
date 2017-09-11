@@ -9,6 +9,7 @@ package com.wegas.core.rest.util;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.event.client.ClientEvent;
+import com.wegas.core.event.client.DestroyedEntity;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ManagedResponse {
 
-    private List<AbstractEntity> deletedEntities;
+    private List<DestroyedEntity> deletedEntities;
     private List<AbstractEntity> updatedEntities;
     private List<ClientEvent> events;
 
@@ -34,7 +35,7 @@ public class ManagedResponse {
      *
      * @return all entities that have been destroyed during the request
      */
-    public List<AbstractEntity> getDeletedEntities() {
+    public List<DestroyedEntity> getDeletedEntities() {
         return deletedEntities;
     }
 
@@ -43,7 +44,10 @@ public class ManagedResponse {
      * @param deletedEntities
      */
     public void setDeletedEntities(List<AbstractEntity> deletedEntities) {
-        this.deletedEntities = deletedEntities;
+        this.deletedEntities.clear();
+        for (AbstractEntity entity: deletedEntities){
+            this.deletedEntities.add(new DestroyedEntity(entity));
+        }
     }
 
     /**

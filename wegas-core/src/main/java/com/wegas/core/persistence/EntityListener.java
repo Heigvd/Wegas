@@ -96,6 +96,7 @@ public class EntityListener {
                 // GameModel is not broadcastable ...
                 /// requestManager.addOutofdateEntities(b.getEntities());
             } else if (b instanceof AbstractEntity) {
+                logger.debug("PostUpdate {}", o);
                 logger.debug("Propagate: " + b.getClass().getSimpleName() + "::" + ((AbstractEntity) b).getId());
                 Map<String, List<AbstractEntity>> entities = b.getEntities();
                 requestManager.addUpdatedEntities(entities);
@@ -109,6 +110,7 @@ public class EntityListener {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
             if (entities != null) {
+                logger.debug("PreRemove {}", o);
                 if (b instanceof VariableDescriptor || b instanceof VariableInstance || b instanceof Game) {
                     logger.debug(("#Entities: " + entities.size()));
                     requestManager.addDestroyedEntities(entities);

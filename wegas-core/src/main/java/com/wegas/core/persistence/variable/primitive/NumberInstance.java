@@ -9,9 +9,7 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.merge.annotations.WegasEntityProperty;

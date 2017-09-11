@@ -8,9 +8,7 @@
 package com.wegas.core.persistence.variable;
 
 import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
-import org.slf4j.LoggerFactory;
 
 /**
  *

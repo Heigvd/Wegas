@@ -791,12 +791,12 @@ public class Helper {
         Helper.indent(sb, ident);
     }
 
-    private static void printDescriptors(List<VariableDescriptor> list, StringBuilder sb, int level) {
+    private static void printDescriptors(GameModel gameModel, List<VariableDescriptor> list, StringBuilder sb, int level) {
         for (VariableDescriptor vd : list) {
             newLine(sb, level);
-            sb.append(vd).append(" -> ").append(vd.getDefaultInstance());
+            sb.append(vd).append("(").append(gameModel.getVariableDescriptors().contains(vd)).append(" -> ").append(vd.getDefaultInstance());
             if (vd instanceof DescriptorListI) {
-                printDescriptors(((DescriptorListI) vd).getItems(), sb, level + 1);
+                printDescriptors(gameModel, ((DescriptorListI) vd).getItems(), sb, level + 1);
             }
         }
     }
@@ -808,7 +808,7 @@ public class Helper {
 
         newLine(sb, 0);
 
-        printDescriptors(gameModel.getItems(), sb, 1);
+        printDescriptors(gameModel, gameModel.getItems(), sb, 1);
 
         return sb.toString();
     }

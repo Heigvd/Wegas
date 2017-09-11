@@ -13,12 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

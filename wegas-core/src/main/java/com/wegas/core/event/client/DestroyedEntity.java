@@ -23,9 +23,9 @@ public class DestroyedEntity extends AbstractEntity {
     @JsonProperty(value = "@class")
     private final String effectiveClass;
 
-    public DestroyedEntity(Long id, String klass) {
-        this.id = id;
-        this.effectiveClass = klass;
+    public DestroyedEntity(AbstractEntity entity) {
+        this.id = entity.getId();
+        this.effectiveClass = entity.getJSONClassName();
     }
 
     @Override

@@ -371,7 +371,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.extractCommonContent(scenarios);
+        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
         mergeFacade.propagateModel(model.getId());
 
         Assert.assertEquals("DefaultLogId1", model.getProperties().getLogID());
@@ -481,7 +481,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.extractCommonContent(scenarios);
+        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
         mergeFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
@@ -536,7 +536,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.extractCommonContent(scenarios);
+        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
         mergeFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
@@ -634,7 +634,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.extractCommonContent(scenarios);
+        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
         model = mergeFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
@@ -789,7 +789,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         scenarios.add(gameModel3);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.extractCommonContent(scenarios);
+        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
         mergeFacade.propagateModel(model.getId());
 
         List<VariableDescriptor> children = new ArrayList<>();

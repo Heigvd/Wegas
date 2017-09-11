@@ -8,6 +8,7 @@
 package com.wegas.core.merge.ejb;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -75,8 +76,8 @@ public class MergeFacade {
      *
      * @return
      */
-    public GameModel extractCommonContentFromIds(List<Long> scenarioIds) {
-        return extractCommonContent(loadGameModelsFromIds(scenarioIds));
+    public GameModel createModelFromCommonContentFromIds(List<Long> scenarioIds) {
+        return createModelFromCommonContent(loadGameModelsFromIds(scenarioIds));
     }
 
     /**
@@ -105,7 +106,7 @@ public class MergeFacade {
      *
      * @return a game model which contains what all given scenario have in common
      */
-    public GameModel extractCommonContent(List<GameModel> scenarios) {
+    public GameModel createModelFromCommonContent(List<GameModel> scenarios) {
 
         logger.info("Extract Common Content");
         GameModel model = null;
@@ -239,7 +240,7 @@ public class MergeFacade {
                  */
                 model.setType(GameModel.GmType.MODEL);
                 model.setModel(null);
-                gameModelFacade.create(model);
+                gameModelFacade.createWithDebugGame(model);
 
                 for (GameModel scenario : allScenarios) {
                     logger.info("Register Implementation {} to {}", scenario, model);
@@ -408,7 +409,10 @@ public class MergeFacade {
                     // revive
                     scenario.setModel(model);
                     logger.info("Revive {}", scenario);
-                    scenario.propagateGameModel();
+                    //scenario.propagateGameModel();
+
+                    logger.debug(Helper.printGameModel(scenario));
+
                     variableDescriptorFacade.reviveItems(scenario, scenario, false);
                     gameModelFacade.reset(scenario);
                 }
@@ -505,14 +509,14 @@ public class MergeFacade {
                         patch.apply(scenario);
 
                         logger.info("Revive {}", scenario);
-                        scenario.propagateGameModel();
+                        //scenario.propagateGameModel();
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
                         gameModelFacade.reset(scenario);
                     }
                 }
 
                 patch.apply(reference);
-                reference.propagateGameModel();
+                //reference.propagateGameModel();
 
             }
             return gameModel;

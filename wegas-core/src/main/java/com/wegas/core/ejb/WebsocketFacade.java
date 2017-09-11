@@ -26,7 +26,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.PusherChannelExistenceWebhook;
-import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
@@ -316,7 +315,7 @@ public class WebsocketFacade {
                      * only id and class name are propagated
                      */
                     for (AbstractEntity ae : toPropagate) {
-                        refreshed.add(new DestroyedEntity(ae.getId(), ae.getJSONClassName()));
+                        refreshed.add(new DestroyedEntity(ae));
                     }
                     event = eventClass.getDeclaredConstructor(List.class).newInstance(refreshed);
                 } else {

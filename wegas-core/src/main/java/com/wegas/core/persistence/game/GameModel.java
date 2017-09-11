@@ -245,6 +245,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.setPages(map);
     }
 
+    @JsonIgnore
     public GameModel getReference() {
         if (this.getType() == GmType.MODEL) {
             for (GameModel implementation : this.getImplementations()) {
@@ -470,6 +471,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         for (VariableDescriptor vd : variableDescriptors) {
             this.addItem(vd);
         }
+        this.propagateGameModel();
     }
 
     @Override

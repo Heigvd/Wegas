@@ -84,11 +84,11 @@ public class GameModelController {
      *
      * @throws IOException
      */
-    @GET
+    @POST
     @Path("extractModel/{ids}")
     public GameModel createModel(@PathParam("ids") String ids) throws IOException {
 
-        GameModel model = mergeFacade.extractCommonContentFromIds(getIdsFromString(ids));
+        GameModel model = mergeFacade.createModelFromCommonContentFromIds(getIdsFromString(ids));
 
         return model;
     }
@@ -103,9 +103,9 @@ public class GameModelController {
      * @throws java.io.IOException
      *
      */
-    @GET
+    @PUT
     @Path("propagateModel/{modelId : [1-9][0-9]*}")
-    public GameModel propagateModel(@PathParam("mnodelId") Long modelId) throws IOException {
+    public GameModel propagateModel(@PathParam("modelId") Long modelId) throws IOException {
         return mergeFacade.propagateModel(modelId);
     }
 

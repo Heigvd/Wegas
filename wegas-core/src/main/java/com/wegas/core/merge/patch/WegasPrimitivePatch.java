@@ -83,45 +83,47 @@ public final class WegasPrimitivePatch extends WegasPatch {
                     } else {
                         oldTargetValue = target;
                     }
-                    if (!parentMode.equals(PatchMode.DELETE)) {
-                        if (oldTargetValue == null
-                                || parentMode.equals(PatchMode.OVERRIDE)
-                                || (!initOnly && Objects.equals(oldTargetValue, fromValue))) {
-                            if (!ignoreNull || toValue != null) {
+                    if (!parentMode.equals(PatchMode.DELETE)) { // skip delete mode
+                        if (!initOnly || oldTargetValue == null) { // do not set non-null && initOnly value
+                            if (parentMode.equals(PatchMode.OVERRIDE) || (!initOnly && Objects.equals(oldTargetValue, fromValue))) {
+                                if (!ignoreNull || toValue != null) {
 
-                                logger.debug("Apply {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
-                                List<WegasCallback> callbacks = this.getCallbacks(callback);
+                                    logger.debug("Apply {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
+                                    List<WegasCallback> callbacks = this.getCallbacks(callback);
 
-                                for (WegasCallback cb : callbacks) {
-                                    cb.preUpdate(targetEntity, toValue, identifier);
-                                }
-
-                                if (isField) {
-                                    setter.invoke(targetEntity, toValue);
-                                } else {
                                     for (WegasCallback cb : callbacks) {
-                                        Object key = null;
+                                        cb.preUpdate(targetEntity, toValue, identifier);
+                                    }
 
-                                        if (oldTargetValue != null) {
-                                            key = cb.remove(oldTargetValue, null, identifier);
-                                        } else {
-                                            key =identifier;
-                                        }
-                                        if (toValue != null) {
-                                            cb.add(toValue, null, key);
+                                    if (isField) {
+                                        setter.invoke(targetEntity, toValue);
+                                    } else {
+                                        for (WegasCallback cb : callbacks) {
+                                            Object key = null;
+
+                                            if (oldTargetValue != null) {
+                                                key = cb.remove(oldTargetValue, null, identifier);
+                                            } else {
+                                                key = identifier;
+                                            }
+                                            if (toValue != null) {
+                                                cb.add(toValue, null, key);
+                                            }
                                         }
                                     }
+
+                                    for (WegasCallback cb : callbacks) {
+                                        cb.postUpdate(targetEntity, toValue, identifier);
+                                    }
+                                } else {
+                                    logger.debug("REJECT IGNORE NULL {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
                                 }
 
-                                for (WegasCallback cb : callbacks) {
-                                    cb.postUpdate(targetEntity, toValue, identifier);
-                                }
                             } else {
-                                logger.debug("REJECT IGNORE NULL {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
+                                logger.debug("REJECT USER CHANGE {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
                             }
-
                         } else {
-                            logger.debug("REJECT  NO RE-INIT OR USER CHANGE {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
+                            logger.debug("REJECT NO RE-INIT {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
                         }
                     } else {
                         logger.debug("REJECT {} : DELETE", this);

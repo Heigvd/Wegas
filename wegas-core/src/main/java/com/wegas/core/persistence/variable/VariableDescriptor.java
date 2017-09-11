@@ -180,6 +180,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty
+    
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     private Visibility visibility = Visibility.PRIVATE;
 
@@ -341,6 +342,19 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         }
     }
 
+    /**
+     * @return
+     */
+    @JsonIgnore
+    public DescriptorListI<? extends VariableDescriptor> getParentOrNull() {
+        if (parentList != null) {
+            return parentList;
+        } else if (rootGameModel != null) {
+            return rootGameModel;
+        }
+        return null;
+    }
+
     @JsonIgnore
     public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (parentList != null) {
@@ -348,7 +362,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         } else if (rootGameModel != null) {
             return rootGameModel;
         } else {
-            throw new WegasNotFoundException("ORPHAN DESCRIPTOR");
+            throw new WegasNotFoundException("ORPHAN DESCRIPTOR"); // is somebody expect this exception or return null will do the job ?
         }
     }
 
@@ -484,7 +498,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     public void setTitle(String title) {
         this.title = title;
     }
-
 
     @Override
     public Visibility getVisibility() {
@@ -637,8 +650,8 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
         @Override
         public void destroy(Mergeable entity, Object identifier) {
-            if (entity instanceof VariableDescriptor){
-                VariableDescriptor vd =(VariableDescriptor) entity;
+            if (entity instanceof VariableDescriptor) {
+                VariableDescriptor vd = (VariableDescriptor) entity;
                 vd.getVariableDescriptorFacade().preDestroy(vd.getGameModel(), vd);
             }
         }

@@ -39,6 +39,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -174,15 +176,98 @@ public class RequestManager {
         }
     }
 
-    public void addEntity(String audience, AbstractEntity updated, Map<String, List<AbstractEntity>> container) {
-        if (!container.containsKey(audience)) {
-            container.put(audience, new ArrayList<>());
+    public boolean contains(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
+        for (List<AbstractEntity> entities : container.values()) {
+            if (entities.contains(entity)) {
+                return true;
+            }
         }
-        List<AbstractEntity> entities = container.get(audience);
-        if (entities.contains(updated)) {
-            entities.remove(updated);
+        return false;
+    }
+
+    private void removeEntityFromContainer(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
+        logger.debug("Remove {} from container", entity);
+        for (List<AbstractEntity> entities : container.values()) {
+            if (entities.contains(entity)) {
+                logger.debug("remove {}", entity);
+                entities.remove(entity);
+            }
         }
-        entities.add(updated);
+    }
+
+    private void removeChildrenFromContainer(Map<String, List<AbstractEntity>> container, DescriptorListI list) {
+        // remove all  children which are already registered
+        List<VariableDescriptor> queue = new LinkedList<>();
+        queue.addAll(list.getItems());
+
+        while (queue.size() > 0) {
+            VariableDescriptor child = queue.remove(0);
+            this.removeEntityFromContainer(container, child);
+            if (child instanceof DescriptorListI) {
+                queue.addAll(((DescriptorListI) child).getItems());
+            }
+        }
+    }
+
+    private boolean isAnyParentInContainer(Map<String, List<AbstractEntity>> container, VariableDescriptor vd) {
+        boolean exists = false;
+        while (vd != null && !exists) {
+            if (contains(container, vd)) {
+                logger.debug("Container contains {}", vd);
+                exists = true;
+            } else {
+                DescriptorListI parent = vd.getParentOrNull();
+                if (parent instanceof VariableDescriptor) {
+                    vd = (VariableDescriptor) parent;
+                } else {
+                    vd = null;
+                }
+            }
+        }
+        return exists;
+    }
+
+    public void addEntity(String audience, AbstractEntity entity, Map<String, List<AbstractEntity>> container) {
+        boolean add = true;
+
+        if (entity instanceof VariableDescriptor) {
+            VariableDescriptor vd = (VariableDescriptor) entity;
+
+            if (vd instanceof DescriptorListI) {
+                logger.error("Remove previously registered children");
+                this.removeChildrenFromContainer(container, (DescriptorListI) vd);
+            }
+
+            if (this.isAnyParentInContainer(container, vd)) {
+                // No need to add a descriptor if its parent is already registered
+                logger.debug("{} parent is already registered", vd);
+                add = false;
+            }
+
+            if (container == destroyedEntities) {
+                logger.info("DestroyedEntities -> remove {} (and its children) from 'updated' container:");
+                if (vd instanceof DescriptorListI) {
+                    removeChildrenFromContainer(updatedEntities, (DescriptorListI) vd);
+                }
+                removeEntityFromContainer(updatedEntities, vd);
+            } else if (container == updatedEntities) {
+                logger.info("UpdatedEntities: do not add {} if entities has already been destroyed", vd);
+                if (isAnyParentInContainer(destroyedEntities, vd)){
+                    add = false;
+                }
+            }
+        }
+
+        if (add) {
+            if (!container.containsKey(audience)) {
+                container.put(audience, new ArrayList<>());
+            }
+            List<AbstractEntity> entities = container.get(audience);
+            if (entities.contains(entity)) {
+                entities.remove(entity);
+            }
+            entities.add(entity);
+        }
     }
 
     /**
@@ -628,6 +713,7 @@ public class RequestManager {
 
     /**
      * @param millis
+     *
      * @throws java.lang.InterruptedException
      */
     public void pleaseWait(long millis) throws InterruptedException {
