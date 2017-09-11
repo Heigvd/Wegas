@@ -84,8 +84,8 @@ public final class WegasPrimitivePatch extends WegasPatch {
                         oldTargetValue = target;
                     }
                     if (!parentMode.equals(PatchMode.DELETE)) { // skip delete mode
-                        if (!initOnly || oldTargetValue == null) { // do not set non-null && initOnly value
-                            if (parentMode.equals(PatchMode.OVERRIDE) || (!initOnly && Objects.equals(oldTargetValue, fromValue))) {
+                        if (!initOnly || oldTargetValue == null) { // do no overwrite non-null value if initOnly is set
+                            if (parentMode.equals(PatchMode.OVERRIDE) || (Objects.equals(oldTargetValue, fromValue))) { // do not override user-change but in protected mode
                                 if (!ignoreNull || toValue != null) {
 
                                     logger.debug("Apply {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
