@@ -238,6 +238,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this._timer.destroy();
             this.treeView.destroy();
         },
+        getNodes: function() {
+            var ds = this.get(DATASOURCE),
+                selector = this.get("dataSelector"),
+                entities = (selector) ? ds.cache.findAll(selector.key, selector.val) : Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items");
+
+            return this.genTreeViewElements(entities);
+        },
         findNode: function(entity) {
             return this.treeView.find(function(item) {
                 if (item.get("data") && item.get("data").entity.get("id") === entity.get("id")) {
@@ -564,6 +571,9 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 default:
             }
             return node;
+        }
+    }, {
+        ATTRS: {
         }
     });
     Wegas.VariableTreeView = VariableTreeView;

@@ -248,6 +248,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @return the variableDescriptors
      */
     @Override
+    @JsonView(Views.ExportI.class)
     public List<ChoiceDescriptor> getItems() {
         return items;
     }

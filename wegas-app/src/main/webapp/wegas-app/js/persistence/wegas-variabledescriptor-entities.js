@@ -173,6 +173,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 }));
             });
             this.get("scope").setInstance(player, promise);
+        },
+        getParent: function() {
+            return Y.Wegas.Facade.Variable.cache.findParentDescriptor(this);
         }
     }, {
         ATTRS: {
@@ -190,6 +193,15 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             parentDescriptorId: {
                 type: NUMBER,
                 optional: true,
+                "transient": true,
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
+            parentDescriptorType: {
+                type: STRING,
+                optional: true,
+                "transient": true,
                 _inputex: {
                     _type: HIDDEN
                 }
@@ -856,18 +868,19 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         getChildByKey: function(key, value, directChildOnly) {
             var needle,
                 filterFn = function(it) {
+                    var children;
                     if (it.get(key) === value) {
                         needle = it;
                         return false;
-                    } else if (Y.Wegas.Facade.Variable.cache.getChildren(it)) {
-                        if (!directChildOnly) {
-                            return Y.Array.every(Y.Wegas.Facade.Variable.cache.getChildren(it), filterFn);
-                        } else {
-                            return true;
-                        }
                     } else {
-                        return true;
+                        children = it.get("items");
+                        if (children) {
+                            if (!directChildOnly) {
+                                return Y.Array.every(children, filterFn);
+                            }
+                        }
                     }
+                    return true;
                 };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
@@ -889,6 +902,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             "@class": {
                 value: "ListDescriptor"
             },
+            itemsIds: {
+                type: ARRAY,
+                value: [],
+                "transient": true,
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
             items: {
                 type: ARRAY,
                 value: [],
@@ -896,12 +917,17 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 _inputex: {
                     _type: HIDDEN
                 },
-                setter: function(val) {
-                    var i;
-                    for (i = 0; i < val.length; i = i + 1) { // We set up a back reference to the parent
-                        val[i].parentDescriptor = this;
+                /*
+                 * one would use setter, but more complicated to keep up to date
+                 * @param {type} val
+                 * @returns {undefined}
+                 */
+                getter: function(val) {
+                    var items = [], i, ids = this.get("itemsIds");
+                    for (i = 0; i < ids.length; i++) {
+                        items.push(Y.Wegas.Facade.Variable.cache.findById(ids[i]));
                     }
-                    return val;
+                    return items;
                 }
             },
             /**

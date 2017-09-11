@@ -69,6 +69,7 @@ YUI.add("wegas-template", function(Y) {
                     data.value = undefined;
                 }
 
+                //   I PUCKED
                 if (desc instanceof Wegas.persistence.ListDescriptor && desc.get("currentItem")) {       // If the widget is a list,
                     desc = desc.get("currentItem"); // display it with the current list and the current element
                 }

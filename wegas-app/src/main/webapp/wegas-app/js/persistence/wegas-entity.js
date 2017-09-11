@@ -153,6 +153,34 @@ YUI.add("wegas-entity", function(Y) {
                 value: {},
                 "transient": true
             },
+            itemsIds: {
+                type: ARRAY,
+                value: [],
+                "transient": true,
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
+            items: {
+                type: ARRAY,
+                value: [],
+                "transient": true,
+                _inputex: {
+                    _type: HIDDEN
+                },
+                /*
+                 * one would use setter, but more complicated to keep up to date
+                 * @param {type} val
+                 * @returns {undefined}
+                 */
+                getter: function(val) {
+                    var items = [], i, ids = this.get("itemsIds");
+                    for (i = 0; i < ids.length; i++) {
+                        items.push(Y.Wegas.Facade.Variable.cache.findById(ids[i]));
+                    }
+                    return items;
+                }
+            },
             properties: {
                 value: {},
                 _inputex: {
@@ -236,20 +264,6 @@ YUI.add("wegas-entity", function(Y) {
         EDITMENU: []
     });
 
-
-    /**
-     * GameModel root descriptor encapsulation
-     */
-    persistence.RootDescriptors = Base.create("RootDescriptors", persistence.Entity, [], {}, {
-        EDITORNAME: "Scenario Root Descriptors",
-        ATTRS: {
-            items: {
-                type: ARRAY,
-                value: []
-            }
-        },
-        EDITMENU: []
-    });
 
     /**
      * Game mapper

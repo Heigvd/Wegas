@@ -187,7 +187,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
             if (entity instanceof Y.Wegas.persistence.VariableInstance) {
                 return Y.Wegas.Facade.Instance;
             } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor ||
-                entity instanceof Y.Wegas.persistence.RootDescriptors) {
+                entity instanceof Y.Wegas.persistence.GameModel) {
                 return Y.Wegas.Facade.Variable;
             } else if (entity instanceof Y.Wegas.persistence.Game) {
                 return Y.Wegas.Facade.Game;
