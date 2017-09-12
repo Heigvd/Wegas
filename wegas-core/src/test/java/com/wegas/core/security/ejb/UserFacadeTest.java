@@ -14,6 +14,7 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
@@ -23,6 +24,8 @@ import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -81,6 +84,9 @@ public class UserFacadeTest {
      */
     @Before
     public void setUp() {
+        // Login as u !
+        Subject subject = SecurityUtils.getSubject();
+        subject.login(new GuestToken(u.getMainAccount().getId()));
         /*
         gameModel = new GameModel();
         gameModelFacade.create(gameModel);
