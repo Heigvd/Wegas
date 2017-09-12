@@ -184,7 +184,6 @@ public class RequestManager {
     }
 
     private void removeEntityFromContainer(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
-        logger.debug("Remove {} from container", entity);
         for (List<AbstractEntity> entities : container.values()) {
             if (entities.contains(entity)) {
                 logger.debug("remove {}", entity);
@@ -197,10 +196,8 @@ public class RequestManager {
 
         boolean add = true;
         if (container == destroyedEntities) {
-            logger.info("Remove destroyed {} from 'updated' container:");
             removeEntityFromContainer(updatedEntities, entity);
         } else if (container == updatedEntities) {
-            logger.info("UpdatedEntities: do not add {} if it has already been destroyed", entity);
             if (contains(destroyedEntities, entity)) {
                 add = false;
             }
