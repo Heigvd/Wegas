@@ -16,8 +16,8 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import junit.framework.Assert;
 import org.junit.Test;
+import org.junit.Assert;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

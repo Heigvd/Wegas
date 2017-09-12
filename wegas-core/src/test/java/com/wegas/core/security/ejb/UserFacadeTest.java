@@ -13,7 +13,6 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
