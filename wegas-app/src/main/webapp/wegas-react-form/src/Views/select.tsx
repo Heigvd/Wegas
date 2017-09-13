@@ -3,6 +3,7 @@ import labeled from '../HOC/labeled';
 import asyncComp from '../HOC/async';
 import commonView from '../HOC/commonView';
 import { css } from 'glamor';
+import classNames from 'classnames';
 
 type choice = {
     value: {};
@@ -20,6 +21,7 @@ interface ISelectProps {
     onChange: (value: string) => void;
     view: {
         choices: (string | choice)[];
+        hidden?: boolean;
     };
 }
 interface IAsyncSelectProps {
@@ -37,6 +39,11 @@ const selectStyle = css({
     borderRadius: '3px',
     border: '1px solid lightgray',
     width: '130px'
+});
+
+const hiddenStyle = css({
+    label: 'select-hiddenStyle',
+    display: 'none'
 });
 
 const selectContainerStyle = css({
@@ -81,10 +88,11 @@ function SelectView(props: ISelectProps) {
     const menuItems = ([title] as (choice | string | typeof title)[])
         .concat(choices)
         .map(genItems);
+    const hidden = props.view.hidden ? `${hiddenStyle}` : '';
     return (
         <select
             id={props.id}
-            className={`${selectStyle}`}
+            className={classNames(`${selectStyle}`, hidden)}
             value={JSON.stringify(props.value)}
             onChange={onChange}
         >

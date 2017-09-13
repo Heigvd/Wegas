@@ -54,7 +54,7 @@ class Condition extends React.Component {
         super(props);
         const negated = props.node.negated || false;
         if (props.node.type === "CallExpression") {
-            // Transform call returning a boolean into an easier to handle logical expression:
+            // Transform calls returning a boolean into an easier to handle logical expression:
             this.state = {
                 left: props.node,
                 right: b.literal(!negated),
