@@ -186,10 +186,8 @@ public class RequestManager {
     }
 
     private void removeEntityFromContainer(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
-        logger.debug("Remove {} from container", entity);
         for (List<AbstractEntity> entities : container.values()) {
             if (entities.contains(entity)) {
-                logger.debug("remove {}", entity);
                 entities.remove(entity);
             }
         }
@@ -213,7 +211,6 @@ public class RequestManager {
         boolean exists = false;
         while (vd != null && !exists) {
             if (contains(container, vd)) {
-                logger.debug("Container contains {}", vd);
                 exists = true;
             } else {
                 DescriptorListI parent = vd.getParentOrNull();
@@ -234,24 +231,20 @@ public class RequestManager {
             VariableDescriptor vd = (VariableDescriptor) entity;
 
             if (vd instanceof DescriptorListI) {
-                logger.error("Remove previously registered children");
                 this.removeChildrenFromContainer(container, (DescriptorListI) vd);
             }
 
             if (this.isAnyParentInContainer(container, vd)) {
                 // No need to add a descriptor if its parent is already registered
-                logger.debug("{} parent is already registered", vd);
                 add = false;
             }
 
             if (container == destroyedEntities) {
-                logger.info("DestroyedEntities -> remove {} (and its children) from 'updated' container:");
                 if (vd instanceof DescriptorListI) {
                     removeChildrenFromContainer(updatedEntities, (DescriptorListI) vd);
                 }
                 removeEntityFromContainer(updatedEntities, vd);
             } else if (container == updatedEntities) {
-                logger.info("UpdatedEntities: do not add {} if entities has already been destroyed", vd);
                 if (isAnyParentInContainer(destroyedEntities, vd)){
                     add = false;
                 }

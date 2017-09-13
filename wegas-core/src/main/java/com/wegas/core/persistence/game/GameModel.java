@@ -466,8 +466,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @param variableDescriptors
      */
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
-        this.childVariableDescriptors = new ArrayList<>();
-        this.variableDescriptors = new ArrayList<>();
+        this.childVariableDescriptors = variableDescriptors;
+        this.variableDescriptors.clear();
+
         for (VariableDescriptor vd : variableDescriptors) {
             this.addItem(vd);
         }

@@ -40,11 +40,9 @@ import javax.persistence.NamedQuery;
  */
 @Entity
 @Table(name = "MCQQuestionDescriptor")
-
 @NamedQueries({
     @NamedQuery(name = "QuestionDescriptor.findDistinctChildrenLabels", query = "SELECT DISTINCT(cd.label) FROM ChoiceDescriptor cd WHERE cd.question.id = :containerId")
 })
-
 public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -82,6 +80,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
     @OrderColumn
+    
     @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
@@ -92,7 +91,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty
     private List<String> pictures = new ArrayList<>();
-
 
     /**
      *
@@ -247,8 +245,11 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void setItems(List<ChoiceDescriptor> items) {
-        this.items = new ArrayList<>();
-        for (ChoiceDescriptor cd : items) {                                     //@todo: due to duplication, fix this
+        if (this.items != items) {
+            // do not clear new list if it's the same 
+            this.items.clear();
+        }
+        for (ChoiceDescriptor cd : items) {
             this.addItem(cd);
         }
     }
@@ -272,11 +273,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void addItem(ChoiceDescriptor item) {
-        if (this.getGameModel() != null) {
-            this.getGameModel().addToVariableDescriptors(item);
-        }
-        this.getItems().add(item);
-        item.setQuestion(this);
+        this.addItem(null, item);
     }
 
     @Override
@@ -284,7 +281,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.getGameModel() != null) {
             this.getGameModel().addToVariableDescriptors(item);
         }
-        this.getItems().add(index, item);
+
+        if (!this.getItems().contains(item)) {
+            if (index != null) {
+                this.getItems().add(index, item);
+            } else {
+                this.getItems().add(item);
+            }
+        }
         item.setQuestion(this);
     }
 

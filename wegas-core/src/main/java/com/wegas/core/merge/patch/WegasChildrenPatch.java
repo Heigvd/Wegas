@@ -27,6 +27,8 @@ import java.util.Map.Entry;
  */
 public final class WegasChildrenPatch extends WegasPatch {
 
+    private final Visibility[] cascade;
+
     private Object from;
     private final Mergeable referenceEntity;
     private Boolean primitive = null;
@@ -46,6 +48,7 @@ public final class WegasChildrenPatch extends WegasPatch {
         this.from = from;
         this.to = to;
         this.referenceEntity = referenceEntity;
+        this.cascade =cascade;
 
         Map<Object, Object> fromMap = asMap(from);
         Map<Object, Object> toMap = asMap(to);
@@ -159,9 +162,10 @@ public final class WegasChildrenPatch extends WegasPatch {
                             childrenList = null;
                             children = childrenMap;
                         } else if (children instanceof List) {
-                            childrenList = new ArrayList<>();
-                            childrenList.addAll((List<? extends Object>) children);
-                            children = childrenList;
+                            //childrenList = new ArrayList<>();
+                            //childrenList.addAll((List<? extends Object>) children);
+                            //children = childrenList;
+                            childrenList = (List<Object>) children;
 
                             childrenMap = null;
                         } else {
@@ -217,6 +221,25 @@ public final class WegasChildrenPatch extends WegasPatch {
 
                         for (WegasCallback cb : callbacks) {
                             cb.preUpdate(targetEntity, to, identifier);
+                        }
+
+                        if (parentMode == PatchMode.OVERRIDE) {
+                            /*
+                             first delete all children (and collect them) in order to keep only those which exists in the "toList"
+                            */
+
+                            for (Entry<Object, Object> entry : tmpMap.entrySet()) {
+                                WegasPatch patch;
+                                Object key = entry.getKey();
+                                Object toBeDeleted =entry.getValue();
+                                if (primitive) {
+                                    patch = new WegasPrimitivePatch(key, 0, null, null, null, null, toBeDeleted, null, false, false, false, cascade);
+                                } else {
+                                    patch = new WegasEntityPatch(key, 0, null, null, null, (Mergeable)toBeDeleted, null, recursive, false, false, false, cascade);
+                                }
+                                patch.apply(toBeDeleted, registerChild, parentMode, visibility, collector, numPass);
+                            }
+
                         }
 
                         logger.info("Pre Patch: target: {} from: {} to: {}", children, from, to);

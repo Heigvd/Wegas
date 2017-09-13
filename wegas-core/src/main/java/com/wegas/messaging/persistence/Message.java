@@ -7,7 +7,6 @@
  */
 package com.wegas.messaging.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import java.util.Date;

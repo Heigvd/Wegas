@@ -16,6 +16,9 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.ejb.MergeFacade;
 import com.wegas.core.merge.patch.WegasPatch;
+import com.wegas.core.merge.utils.WegasEntitiesHelper;
+import com.wegas.core.merge.utils.WegasEntityFields;
+import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -43,20 +46,19 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import javax.naming.NamingException;
-import junit.framework.Assert;
 import org.junit.Test;
-import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.junit.Assert;
 
 /**
  *
@@ -69,7 +71,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
     static {
         reflections = new Reflections("com.wegas");
-        // /*
+          /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
@@ -620,10 +622,12 @@ public class MergeFacadeTest extends AbstractEJBTest {
         createObjectDescriptor(gameModel1, null, "aSet", "My Set", ModelScoped.Visibility.PRIVATE, "value0", "value1");
         createString(gameModel1, null, "aString", "My String", "v1", "v1", "v10");
         createNumberDescriptor(gameModel1, null, "aNumber", "MyNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
+        createNumberDescriptor(gameModel1, null, "anOtherNumber", "My2ndNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
 
         createObjectDescriptor(gameModel2, null, "aSet", "My Set", ModelScoped.Visibility.PRIVATE, "value0", "value1");
         createString(gameModel2, null, "aString", "My String", "v1", "v1", "v10");
         createNumberDescriptor(gameModel2, null, "aNumber", "MyNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
+        createNumberDescriptor(gameModel2, null, "anOtherNumber", "My2ndNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 5.3, 32.14);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -635,11 +639,21 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
         logger.info("Create Model");
         GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
+
+        VariableDescriptor descriptor = getDescriptor(model, "anOtherNumber");
+
+        descriptor.setVisibility(ModelScoped.Visibility.INTERNAL);
+        descriptorFacade.update(descriptor.getId(), descriptor);
+
         model = mergeFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
+
+        logger.info("anOtherNumberHistory : {} {}",
+                ((NumberDescriptor) getDescriptor(gameModel1, "anOtherNumber")).getDefaultInstance().getHistory(),
+                ((NumberDescriptor) getDescriptor(gameModel2, "anOtherNumber")).getDefaultInstance().getHistory());
 
         ObjectDescriptor om1 = (ObjectDescriptor) getDescriptor(model, "aSet");
         om1.setProperty("prop1", "value1.0");
@@ -692,8 +706,8 @@ public class MergeFacadeTest extends AbstractEJBTest {
           | inst.prop0  | value0             | value0   -> value0.1 -> value0.1.  | value0             |
           | inst.prop1  | value1 -> value1.0 | value1   -> value1.1 -> value1.1   | value1 -> value1.0 |
           | inst.prop2  |                    | value2.1                           |                    |
-          | str         | v1; v10            | v1;v11                             | v1;v10             |
-          | nbr hist    | 123 + 210          | 123 + 432 => 12343210              | 123 + 210         |
+          | str         | v1; v10            | v1;v11 -> v1;v11                   | v1;v10             |
+          | nbr hist    | 123 + 210          | 123 + 432 => 123432210             | 123 + 210          |
          */
         mergeFacade.propagateModel(model.getId());
 
@@ -732,7 +746,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         Assert.assertEquals("value0", properties.get("prop0"));
         Assert.assertEquals("value1.0", properties.get("prop1"));
 
-        assertListEquals(((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues(), "v1", "v11", "v10");
+        assertListEquals(((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues(), "v1", "v11");
         assertListEquals(((StringDescriptor) getDescriptor(gameModel2, "aString")).getAllowedValues(), "v1", "v10");
 
         assertListEquals(((NumberDescriptor) getDescriptor(gameModel1, "aNumber")).getDefaultInstance().getHistory(), 1.1, 1.2, 1.3, 1.4, 1.3, 1.2, 1.2, 1.1, 1.0);
@@ -1074,15 +1088,26 @@ public class MergeFacadeTest extends AbstractEJBTest {
     }
 
     //@Test
-    public void printWegasEntity() {
+    public void printEntityChildren() {
         Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
+
         for (Class<? extends AbstractEntity> klass : sub) {
-            if (!Modifier.isAbstract(klass.getModifiers())) {
+            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(klass);
+            List<WegasFieldProperties> fields = entityIterator.getFields();
+
+            List<WegasFieldProperties> children = new LinkedList<>();
+
+            for (WegasFieldProperties field : fields) {
+                if (field.getType() == WegasFieldProperties.FieldType.CHILDREN) {
+                    children.add(field);
+                }
+            }
+
+            if (children.size() > 0) {
                 System.out.println("");
                 System.out.println("Class " + klass.getSimpleName());
-                Set<Field> allFields = ReflectionUtils.getAllFields(klass, ReflectionUtils.withAnnotation(WegasEntityProperty.class));
-                for (Field field : allFields) {
-                    System.out.println(" * " + field.getName() + " : " + field.getType().getSimpleName());
+                for (WegasFieldProperties field : children) {
+                    System.out.println(" * " + field.getField().getName() + " : " + field.getField().getType().getSimpleName());
                 }
             }
         }
@@ -1093,18 +1118,14 @@ public class MergeFacadeTest extends AbstractEJBTest {
         Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
 
         for (Class<? extends AbstractEntity> klass : sub) {
-            List<Field> fields = new ArrayList<>();
-            for (Field field : klass.getDeclaredFields()) {
-                if (field.getAnnotation(WegasEntityProperty.class) != null) {
-                    fields.add(field);
-                }
-            }
+            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(klass);
+            List<WegasFieldProperties> fields = entityIterator.getFields();
 
             if (fields.size() > 0) {
                 System.out.println("");
                 System.out.println("Class " + klass.getSimpleName());
-                for (Field field : fields) {
-                    System.out.println(" * " + field.getName() + " : " + field.getType().getSimpleName());
+                for (WegasFieldProperties field : fields) {
+                    System.out.println(" * " + field.getField().getName() + " : " + field.getField().getType().getSimpleName());
                 }
             }
         }

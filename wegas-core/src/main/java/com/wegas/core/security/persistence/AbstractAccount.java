@@ -37,20 +37,19 @@ import java.util.*;
  })*/
 @NamedQueries({
     @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND a.username = :username"),
-    
+
     @NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.email) LIKE LOWER(:email)"),
-    
+
     @NamedQuery(name = "AbstractAccount.findByFullName", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.firstname) LIKE LOWER(:firstname) AND LOWER(a.lastname) LIKE LOWER(:lastname)"),
-    
+
     @NamedQuery(name = "AbstractAccount.findAllNonGuests", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount")
 })
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "AaiAccount", value = AaiAccount.class),
-     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
-     @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
-    
+    @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
+    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
     @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
-    
+
     @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
@@ -125,7 +124,6 @@ public abstract class AbstractAccount extends AbstractEntity {
     // Backward Compatibility
     @JsonView(Views.ExtendedI.class)
     @Transient
-    
     @WegasEntityProperty
     private List<Permission> permissions = new ArrayList<>();
 
@@ -260,7 +258,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @param permissions the permissions to set
      */
     public void setPermissions(List<Permission> permissions) {
-        this.permissions = permissions;
+        this.getUser().setPermissions(permissions);
     }
 
     /**

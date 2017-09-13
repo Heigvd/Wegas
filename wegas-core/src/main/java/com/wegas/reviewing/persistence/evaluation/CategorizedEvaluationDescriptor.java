@@ -7,8 +7,6 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import java.util.ArrayList;
 import java.util.List;

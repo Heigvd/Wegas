@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;

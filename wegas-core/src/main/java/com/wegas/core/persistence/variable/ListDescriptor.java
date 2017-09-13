@@ -37,6 +37,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     //@BatchFetch(BatchFetchType.IN)
+
     
     @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
     //@OrderBy("id")
@@ -120,7 +121,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public void setItems(List<VariableDescriptor> items) {
-        this.items = new ArrayList<>();
+        if (this.items != items) {
+            this.items.clear();
+        }
         for (VariableDescriptor vd : items) {
             this.addItem(vd);
         }
@@ -132,15 +135,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @Override
     public void addItem(VariableDescriptor item) {
-        if (isAuthorized(item)) {
-            if (this.getGameModel() != null) {
-                this.getGameModel().addToVariableDescriptors(item);
-            }
-            this.getItems().add(item);
-            item.setParentList(this);
-        } else {
-            throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
-        }
+        this.addItem(null, item);
     }
 
     @Override
@@ -149,7 +144,13 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
             if (this.getGameModel() != null) {
                 this.getGameModel().addToVariableDescriptors(item);
             }
-            this.getItems().add(index, item);
+            if (!this.getItems().contains(item)) {
+                if (index != null) {
+                    this.getItems().add(index, item);
+                } else {
+                    this.getItems().add(item);
+                }
+            }
             item.setParentList(this);
         } else {
             throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
@@ -250,7 +251,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
             this.setDefaultInstance(new ListInstance());
         }
     }*/
-
     public static class ValidateShortcutCallback implements WegasCallback {
 
         @Override

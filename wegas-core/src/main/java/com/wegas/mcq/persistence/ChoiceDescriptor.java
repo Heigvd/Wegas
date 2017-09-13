@@ -61,7 +61,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @OrderColumn
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
-    
     @WegasEntityProperty(callback = ResultMergeCallback.class)
     private List<Result> results = new ArrayList<>();
     /**
