@@ -71,6 +71,7 @@ const IMPACT = {
             arguments: [
                 {
                     type: 'string',
+                    required: true,
                     view: { placeholder: 'Event name ?' }
                 }
             ]

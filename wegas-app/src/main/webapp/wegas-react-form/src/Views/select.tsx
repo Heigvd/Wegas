@@ -8,6 +8,9 @@ type choice = {
     value: {};
     label?: string;
     disabled?: boolean;
+    view?: {
+        cssClass?: string
+    },
     children?: choice[];
 };
 type choices = (string | choice)[];
@@ -33,7 +36,7 @@ const selectStyle = css({
     padding: '2px',
     borderRadius: '3px',
     border: '1px solid lightgray',
-    width: '120px'
+    width: '130px'
 });
 
 const selectContainerStyle = css({

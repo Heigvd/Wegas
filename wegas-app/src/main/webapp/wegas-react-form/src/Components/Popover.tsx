@@ -51,7 +51,7 @@ class Popover extends React.Component<IPopoverProps> {
                     }}
                     style={{ position: 'relative', display: 'inline-block' }}
                 >
-                    <div style={{ position: 'absolute', zIndex: 1000 }}>
+                    <div style={{ position: 'absolute', zIndex: 1000, top: '4px' }}>
                         {this.props.children}
                     </div>
                 </div>

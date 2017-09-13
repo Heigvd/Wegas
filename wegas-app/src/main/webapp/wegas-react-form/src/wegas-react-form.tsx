@@ -145,7 +145,7 @@ const Form = Y.Base.create(
         },
         // Set visual feedback for when the "save" button should be clicked
         activateSaveBtn() {
-            const ptn = this.get('contentBox').get('parentNode');
+            const ptn = this.get('contentBox')._node && this.get('contentBox').get('parentNode');
             if (!ptn) return;
             const btn = ptn.one('.wegas-save-form-button');
             btn
@@ -156,7 +156,7 @@ const Form = Y.Base.create(
         },
         // Set normal visual appearance (i.e. when the "save" button does not need to be clicked)
         deactivateSaveBtn() {
-            const ptn = this.get('contentBox').get('parentNode');
+            const ptn = this.get('contentBox')._node && this.get('contentBox').get('parentNode');
             if (!ptn) return;
             const btn = ptn.one('.wegas-save-form-button');
             btn
@@ -180,7 +180,6 @@ const Form = Y.Base.create(
             }
             if (!setSaving || milliSeconds >= 0) {
                 setTimeout(function() {
-                    if (!btn) alert('no btn');
                     ctx.deactivateSaveBtn();
                 }, milliSeconds);
             }

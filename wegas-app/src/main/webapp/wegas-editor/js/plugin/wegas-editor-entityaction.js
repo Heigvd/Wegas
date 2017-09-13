@@ -380,13 +380,17 @@ YUI.add("wegas-editor-entityaction", function(Y) {
          *
          */
         showEditFormOverlay: function() {
-            EditEntityAction.form.showOverlay();
+            if (EditEntityAction.form) {
+                EditEntityAction.form.showOverlay();
+            }
         },
         /**
          *
          */
         hideEditFormOverlay: function() {
-            EditEntityAction.form.hideOverlay();
+            if (EditEntityAction.form) {
+                EditEntityAction.form.hideOverlay();
+            }
         },
         /**
          *

@@ -35,14 +35,38 @@ function getMethodDescriptor(node) {
     const { global, method, variable, member } = extractMethod(node);
     return global ? globalMethodDescriptor(member, method) : methodDescriptor(variable, method);
 }
+
+function getNegation(op) {
+    switch(op) {
+        case '===': return '!==';
+        case '!==': return '===';
+        case '>':   return '<=';
+        case '<':   return '>=';
+        case '>=':  return '<';
+        case '<=':  return '>';
+        default:
+            return 'Internal error, getNegation(' + op + ')';
+    }
+}
+
 class Condition extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            left: props.node.left,
-            right: props.node.right,
-            operator: props.node.operator || '==='
-        };
+        const negated = props.node.negated || false;
+        if (props.node.type === "CallExpression") {
+            // Transform call returning a boolean into an easier to handle logical expression:
+            this.state = {
+                left: props.node,
+                right: b.literal(!negated),
+                operator: '==='
+            };
+        } else {
+            this.state = {
+                left: props.node.left,
+                right: props.node.right,
+                operator: props.node.operator ? (negated ? getNegation(props.node.operator) : props.node.operator) : '==='
+            };
+        }
         const descr = getMethodDescriptor(this.state.left);
         this.returns = descr && descr.returns; // store current method's returns
     }

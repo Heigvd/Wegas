@@ -6,6 +6,7 @@ import { css } from 'glamor';
 import FormStyles from './form-styles';
 
 const booleanContainerStyle = css({
+    label: 'boolean-booleanContainerStyle',
     marginTop: '-5px',
     '& span': {
         display: 'inline-block',

@@ -9,9 +9,9 @@ import commonView from '../HOC/commonView';
  */
 
 const labelStyle = css(FormStyles.labelStyle, {
-    marginTop: '8px',
-    marginRight: '2px',
-    verticalAlign: '2px'
+    margin: '8px 2px 15px 0',
+    verticalAlign: '2px',
+    display: 'inline-block'
 });
 
 const containerStyle = css({

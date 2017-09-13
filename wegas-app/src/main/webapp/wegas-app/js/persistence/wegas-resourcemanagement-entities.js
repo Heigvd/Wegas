@@ -197,7 +197,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             value: []
                         }
                     },
-                    /* FORM2 : 
+                    /* FORM2 :
                      activities: {
                      type: ARRAY,
                      value: [],
@@ -281,8 +281,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Activate",
                     arguments: [SELFARG]
             },
-            desactivate: {
-                label: "Desactivate",
+            deactivate: {
+                label: "Deactivate",
                     arguments: [SELFARG]
             },
             separator1: {
@@ -705,7 +705,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Activate",
                     arguments: [SELFARG]
             },
-            desactivate: {
+            deactivate: {
                 label: "Deactivate",
                     arguments: [SELFARG]
             },

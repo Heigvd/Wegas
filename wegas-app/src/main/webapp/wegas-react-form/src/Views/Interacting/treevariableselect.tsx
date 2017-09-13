@@ -12,7 +12,7 @@ const containerCss = css({
     label: 'treevariableselect-containerCss',
     color: '#6A95B6',
     display: 'inline-block',
-    marginTop: '1.0em'
+    marginTop: '0.75em'
 });
 
 const iconCss = css({
@@ -41,7 +41,7 @@ const pathCss = css({
     position: 'absolute',
     fontSize: '75%',
     whiteSpace: 'nowrap',
-    bottom: '128%'
+    bottom: '125%'
 });
 
 const labelCss = css({
@@ -249,7 +249,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
                     </div>
                     {labelIconForVariable(this.props.value) ||
                         this.labelIconForAdditional(this.props.value) ||
-                        'please select...'}
+                        ' Please select ...'}
                 </a>
             </div>
         );

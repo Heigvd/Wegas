@@ -7,7 +7,7 @@ const BINARYOPERATORS = [{
     label: 'equals'
 }, {
     value: '!==',
-    label: 'is different than'
+    label: 'is different from'
 }];
 const NUMBERBINARYOPERATORS = BINARYOPERATORS.concat([{
     value: '>',

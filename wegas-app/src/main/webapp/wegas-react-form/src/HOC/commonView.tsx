@@ -27,6 +27,13 @@ const shortInlineStyle = css(
     shortStyle
 );
 
+const shortNumberStyle = css(
+    {
+        label: 'commonView shortNumberStyle',
+        width: '75px'
+    }
+);
+
 const longStyle = css({
     maxWidth: FormStyles.defaultEditorWidth
 });
@@ -47,8 +54,8 @@ const errorStyle = css({
 // Used e.g. inside "Choices" (answers to questions):
 const borderTopStyle = css({
     borderTop: '2px solid #6a95b6',
-    width: '40em',
-    paddingTop: '1em'
+    paddingTop: '1em',
+    width: FormStyles.defaultEditorWidth
 });
 
 const indentStyle = css({
@@ -57,6 +64,9 @@ const indentStyle = css({
 
 interface ICommonViewProps {
     errorMessage?: string[];
+    schema?: {
+        type?: string;
+    };
     view: {
         description?: string;
         className?: string;
@@ -77,10 +87,13 @@ export default function commonView<E>(
                 {v}
             </span>
         );
-        const layout = view.layout;
+        const layout = view.layout,
+              schema = props.schema;
+        const isLiteralNumberInput = layout === undefined && schema && schema.type === 'number';
         return (
             <div
                 className={classNames(view.className, `${containerStyle}`, {
+                    [`${shortNumberStyle}`]: isLiteralNumberInput === true,
                     [`${shortStyle}`]: layout === 'short',
                     [`${shortInlineStyle}`]: layout === 'shortInline',
                     [`${longStyle}`]: layout === 'long',

@@ -65,6 +65,10 @@ const methodSchema = (view, variable, type) => {
     if (!choices.length) {
         return null;
     }
+    if (choices.length === 1 && type === 'condition') {
+        // Don't show meaningless menus with only one entry (typically getValue on variables in conditions):
+        return null;
+    }
     return {
         type: 'string',
         required: true,

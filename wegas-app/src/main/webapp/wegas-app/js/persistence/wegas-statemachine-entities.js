@@ -274,7 +274,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     arguments: [SELFARG]
                 },
                 disable: {
-                    label: "desactivate",
+                    label: "deactivate",
                     arguments: [SELFARG]
                 },
                 isEnabled: {
