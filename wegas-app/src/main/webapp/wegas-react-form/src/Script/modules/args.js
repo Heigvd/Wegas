@@ -95,10 +95,17 @@ export function typeToValue(value, schema) {
 export function matchSchema(value, schema) {
     const newVal = valueToType(typeToValue(value, schema), schema);
     return (
-        value &&
-        newVal.type === value.type &&
-        newVal.name === value.name &&
-        newVal.value === value.value
+        value && (
+            (
+                newVal.type === value.type &&
+                newVal.name === value.name &&
+                newVal.value === value.value
+            ) || (
+                value.type === 'UnaryExpression' && newVal.type === 'Literal' &&
+                newVal.name === value.name &&
+                value.value === undefined
+            )
+        )
     );
 }
 /**

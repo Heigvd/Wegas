@@ -3,6 +3,9 @@ import Form from 'jsoninput';
 import PropTypes from 'prop-types';
 import { argSchema, valueToType, typeToValue, matchSchema } from './args';
 import { containerStyle } from '../Views/conditionImpactStyle';
+import { types } from 'recast';
+
+const b = types.builders;
 
 export default class ArgFrom extends React.Component {
     constructor(props) {
@@ -31,7 +34,12 @@ export default class ArgFrom extends React.Component {
     render() {
         const { value, onChange } = this.props;
         const { schema } = this.state;
-        const val = value || valueToType(undefined, schema);
+        // Reduce unary minus operator to a simple literal to make matching work:
+        let negativeValue;
+        if (value && value.type === 'UnaryExpression' && value.operator === '-' && value.argument.type === 'Literal') {
+            negativeValue = b.literal(-value.argument.value);
+        }
+        const val = negativeValue || value || valueToType(undefined, schema);
         return (
             <div className={containerStyle}>
                 <Form

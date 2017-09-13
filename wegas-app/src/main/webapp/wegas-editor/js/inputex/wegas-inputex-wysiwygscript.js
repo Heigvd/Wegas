@@ -330,6 +330,16 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                 return parse(i.left) + " <em>" + findLabel(Y.inputEx.Wegas.VariableDescriptorSelect.LOGICALOPERATORS,
                                                 i.operator) + "</em> " + parse(i.right);
                             case Syntax.BinaryExpression:
+                                // Try to prevent display of "undefined" for right-hand operands:
+                                if (!i.right.value) {
+                                    var right = i.right;
+                                    if (right.type === 'UnaryExpression' && right.operator === '-') {
+                                        var arg = right.argument;
+                                        if (arg.type === 'Literal' && typeof arg.value === 'number') {
+                                            i.right.value = -arg.value;
+                                        }
+                                    }
+                                }
                                 //return parse(i.left) + " <em>" + findLabel(Y.inputEx.Wegas.BINARYOPERATORS, i.operator) + "</em> " + i.right.value;
                                 return parse(i.left) + " <em>" + i.operator.replace("===",
                                                 "=").replace("!==", "<>") + "</em> " + i.right.value;

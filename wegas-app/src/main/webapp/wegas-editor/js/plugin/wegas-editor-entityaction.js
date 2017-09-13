@@ -232,7 +232,9 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             // 'Other' may contain additional properties, which will be ignored.
             // In fact, 'Other' is normally a Yui3 object containing a copy of the properties of 'Ref'.
             function isDifferent(ref, other) {
-                if (!other) return false;
+                if (ref && !other) {
+                    return true;
+                }
                 for (var name in ref) {
                     if (ref.hasOwnProperty(name)) {
                         var currProp = ref[name],
