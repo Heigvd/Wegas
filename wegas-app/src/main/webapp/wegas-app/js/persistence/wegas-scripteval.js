@@ -62,7 +62,7 @@ YUI.add('wegas-scripteval', function(Y) {
             }
 
             if (cfg && cfg.on && cfg.on.success instanceof Function) {
-                cfg.on.success({ //                                              // Make the result from the local eval look like a server response
+                cfg.on.success({//                                              // Make the result from the local eval look like a server response
                     response: {
                         entity: result
                     }
@@ -137,16 +137,18 @@ YUI.add('wegas-scripteval', function(Y) {
 
             for (i in data) {
                 if (data.hasOwnProperty(i)) {
-                    this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance(player)));
-                    buildItems(data[i], this.context[data[i].get('name')]);
-                //                    if (data[i] instanceof Wegas.persistence.ListDescriptor) {
-                //                        this.context[data[i].get('name')].items = [];
-                //                        for (j in data[i].get("items")) {
-                //                            if (data[i].get("items").hasOwnProperty(j)) {
-                //                                this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance(player))));
-                //                            }
-                //                        }
-                //                    }
+                    if (data[i].get("parentDescriptorType") === "GameModel") { // Only includes root-level variables
+                        this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance(player)));
+                        buildItems(data[i], this.context[data[i].get('name')]);
+                    }
+                    //                    if (data[i] instanceof Wegas.persistence.ListDescriptor) {
+                    //                        this.context[data[i].get('name')].items = [];
+                    //                        for (j in data[i].get("items")) {
+                    //                            if (data[i].get("items").hasOwnProperty(j)) {
+                    //                                this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance(player))));
+                    //                            }
+                    //                        }
+                    //                    }
                 }
             }
             /*SANDBOX*/
