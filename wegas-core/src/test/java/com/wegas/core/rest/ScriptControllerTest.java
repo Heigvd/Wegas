@@ -16,13 +16,12 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import java.util.List;
 import java.util.Map;
 import javax.naming.NamingException;
-import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Assert;
 
 /**
  *
