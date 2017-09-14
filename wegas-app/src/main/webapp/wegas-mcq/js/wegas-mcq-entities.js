@@ -43,34 +43,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 value: "QuestionDescriptor"
             },
-            itemsIds: {
-                type: ARRAY,
-                value: [],
-                "transient": true,
-                _inputex: {
-                    _type: HIDDEN
-                }
-            },
-            items: {
-                type: ARRAY,
-                value: [],
-                "transient": true,
-                _inputex: {
-                    _type: HIDDEN
-                },
-                /*
-                 * one would use setter, but more complicated to keep up to date
-                 * @param {type} val
-                 * @returns {undefined}
-                 */
-                getter: function(val) {
-                    var items = [], i, ids = this.get("itemsIds");
-                    for (i = 0; i < ids.length; i++) {
-                        items.push(Y.Wegas.Facade.Variable.cache.findById(ids[i]));
-                    }
-                    return items;
-                }
-            },
             title: {
                 type: STRING,
                 optional: true,

@@ -14,6 +14,7 @@ YUI.add("wegas-entity", function(Y) {
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
         BUTTON = "Button", TEXT = "text", HTML = "html", GROUP = "group",
+        ITEMS = "items",
         Wegas = Y.namespace("Wegas"), persistence = Y.namespace("Wegas.persistence"),
         Base = Y.Base, Entity,
         IDATTRDEF = {
@@ -124,10 +125,65 @@ YUI.add("wegas-entity", function(Y) {
         }
     });
 
+    persistence.VariableContainer = function() {};
+    Y.mix(persistence.VariableContainer.prototype, {
+        /**
+         * Extend clone to add transient childs
+         */
+        clone: function() {
+            var object = Wegas.Editable.prototype.clone.call(this), i;
+            object.items = [];
+            for (i in this.get(ITEMS)) {
+                if (this.get(ITEMS).hasOwnProperty(i)) {
+                    object.items.push(this.get(ITEMS)[i].clone());
+                }
+            }
+            return object;
+        },
+        /**
+         *
+         * @param {type} i
+         * @returns {Y.Wegas.persistence.VariableDescriptor}
+         */
+        item: function(i) {
+            return this.get("items")[i];
+        },
+        size: function() {
+            return this.get("items").length;
+        }
+    });
+    persistence.VariableContainer.ATTRS = {
+        itemsIds: {
+            type: ARRAY,
+            value: [],
+            "transient": true,
+            _inputex: {
+                _type: HIDDEN
+            }
+        },
+        items: {
+            type: ARRAY,
+            value: [],
+            "transient": true,
+            _inputex: {
+                _type: HIDDEN
+            },
+            /*
+             * one would use setter, but more complicated to keep up to date
+             * @param {type} val
+             * @returns {undefined}
+             */
+            getter: function() {
+                return Y.Array.map(this.get('itemsIds'), Y.Wegas.Facade.Variable.cache.findById, Y.Wegas.Facade.Variable.cache);
+            }
+        }
+    };
+
+
     /**
      * GameModel mapper
      */
-    persistence.GameModel = Base.create("GameModel", persistence.Entity, [], {}, {
+    persistence.GameModel = Base.create("GameModel", persistence.Entity, [persistence.VariableContainer], {}, {
         EDITORNAME: "Scenario",
         ATTRS: {
             name: {
@@ -152,34 +208,6 @@ YUI.add("wegas-entity", function(Y) {
             cssLibrary: {
                 value: {},
                 "transient": true
-            },
-            itemsIds: {
-                type: ARRAY,
-                value: [],
-                "transient": true,
-                _inputex: {
-                    _type: HIDDEN
-                }
-            },
-            items: {
-                type: ARRAY,
-                value: [],
-                "transient": true,
-                _inputex: {
-                    _type: HIDDEN
-                },
-                /*
-                 * one would use setter, but more complicated to keep up to date
-                 * @param {type} val
-                 * @returns {undefined}
-                 */
-                getter: function(val) {
-                    var items = [], i, ids = this.get("itemsIds");
-                    for (i = 0; i < ids.length; i++) {
-                        items.push(Y.Wegas.Facade.Variable.cache.findById(ids[i]));
-                    }
-                    return items;
-                }
             },
             properties: {
                 value: {},
