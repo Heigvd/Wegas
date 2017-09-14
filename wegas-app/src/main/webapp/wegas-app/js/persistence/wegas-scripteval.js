@@ -130,17 +130,15 @@ YUI.add('wegas-scripteval', function(Y) {
          * @returns {undefined}
          */
         _buildContext: function(player) {
-            var i,
-                data = this.get("host").data, j;
+            var i, j,
+                data = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items");
             this.upToDate = true;
             this.context = {};
 
             for (i in data) {
                 if (data.hasOwnProperty(i)) {
-                    if (data[i].get("parentDescriptorType") === "GameModel") { // Only includes root-level variables
-                        this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance(player)));
-                        buildItems(data[i], this.context[data[i].get('name')]);
-                    }
+                    this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance(player)));
+                    buildItems(data[i], this.context[data[i].get('name')]);
                     //                    if (data[i] instanceof Wegas.persistence.ListDescriptor) {
                     //                        this.context[data[i].get('name')].items = [];
                     //                        for (j in data[i].get("items")) {
