@@ -130,6 +130,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             if (currentEntity) {
                 this.currentEntity = currentEntity; // Keeps a reference to the current entity
                 entityStack.push(currentEntity);
+
                 while (currentEntity.get("parentDescriptorType") !== "GameModel") { // Add the current entity hierarchy
                     currentEntity = currentEntity.getParent();
                     entityStack.push(currentEntity);
@@ -173,6 +174,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             var ret = [],
                 entity = currentEntity ? currentEntity.getParent() : Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                 items = entity.get("items");
+
+            if (entity instanceof Y.Wegas.persistence.GameModel) {
+                entity = null;
+            }
 
             ret.push(this.generateSelectConfig(entity, currentEntity, items));
             Y.Array.each(ret, this.addField, this);
@@ -956,7 +961,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     }, this);
                 }
             } else {
-                items = Wegas.Facade.Variable.data;
+                items = Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items");
             }
 
             if (options.selectableLevels) {
