@@ -105,11 +105,13 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     }
 
     /**
-     * @param gameModel
-     * @param list
-     * @param entity
+     * Create a new descriptor in a DescriptorListI
      *
-     * @return Parent descriptor container which contains the new child
+     * @param gameModel the gameModel
+     * @param list      new descriptor parent
+     * @param entity    new descriptor to create
+     *
+     * @return the new descriptor
      */
     public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
 
