@@ -86,7 +86,7 @@ class Condition extends React.Component {
                     const node = b.binaryExpression(
                         state.operator,
                         state.left,
-                        state.right
+                        state.right || valueToType(defaultValue(descr.returns), {type: descr.returns})
                     );
                     this.props.onChange(node);
                 }
@@ -96,7 +96,7 @@ class Condition extends React.Component {
             this.setState({ right: undefined });
         } else if (this.returns !== descr.returns) {
             if (state.left.type === "CallExpression" &&
-                descr.returns === "boolean" &&        // Is this the correct check for bool ???
+                descr.returns === "boolean" &&
                 state.left.callee.property.name !== "getValue")
             {
                 this.setState(state.left, sendUpdate);
