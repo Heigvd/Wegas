@@ -47,6 +47,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg ChoiceDescriptor and result).
  * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
+ * 
+ * INVALIDATE OBJECT FIX DirectCollectionMapping NPE
  */
 @MappedSuperclass
 @Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)

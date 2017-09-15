@@ -74,6 +74,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     }
 
     /**
+     *
      * @return the minValue
      */
     public Double getMinValue() {
@@ -223,8 +224,8 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
                 double value = ni.getValue();
 
                 if (!nd.isValueValid(value)) {
-                    throw new WegasOutOfBoundException(nd.getMinValue(),
-                            nd.getMaxValue(), value, nd.getLabel());
+                    throw new WegasOutOfBoundException(this.getMinValue(),
+                            this.getMaxValue(), this.getDefaultValue(), this.getName(), this.getLabel());
                 }
             }
         }

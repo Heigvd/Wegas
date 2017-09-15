@@ -87,7 +87,7 @@ public class NumberInstance extends VariableInstance {
                 NumberDescriptor desc = (NumberDescriptor) vd;
 
                 if (!desc.isValueValid(value)) {
-                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getLabel());
+                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getName(), desc.getLabel());
                 }
             }
         } catch (NullPointerException e) {
