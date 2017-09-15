@@ -4,6 +4,7 @@ import commonView from '../HOC/commonView';
 import ObjectView from './object';
 import IconButton from '../Components/IconButton';
 import { WidgetProps } from 'jsoninput/typings/types';
+import { AddStatementButton } from '../Script/Views/Button';
 
 const halfWidth: CSSProperties = {
     display: 'inline-block',
@@ -88,24 +89,28 @@ class HashlistView extends React.Component<
                 );
             }
         );
+        /*
+        <TextField
+            id={id}
+            key="newkeyinput"
+            value={this.state.newInputValue}
+            onChange={this.onAdderChange}
+            view={{
+                label: this.props.view.keyLabel || 'Key',
+                style: halfWidth
+            }}
+        />
+        */
 
         return (
             <ObjectView {...restProps}>
                 {newChildren}
-                <TextField
-                    id={id}
-                    key="newkeyinput"
-                    value={this.state.newInputValue}
-                    onChange={this.onAdderChange}
-                    view={{
-                        label: this.props.view.keyLabel || 'Key',
-                        style: halfWidth
-                    }}
-                />
-                <IconButton
+                <br/>
+                <AddStatementButton
                     key="newkeyadd"
                     icon="fa fa-plus-circle"
                     tooltip="Add property value"
+                    label="Property"
                     onClick={this.addChild}
                 />
             </ObjectView>

@@ -568,7 +568,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
 
                 form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
                 form.toolbar.add(new Y.Wegas.Button({
-                    label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
                         click: Y.bind(function () {
                             var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
@@ -582,14 +583,16 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     }
                 }));
                 form.toolbar.add(new Y.Wegas.Button({
-                    label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
                         click: Y.bind(this.deleteSelf, this)
                     }
                 }));
                 if (this.get(PARENT).get(ENTITY).getInitialStateId() !== this.get(SID)) {
                     form.toolbar.add(new Y.Wegas.Button({
-                        label: '<span class="wegas-icon state-initial"></span>Initial State',
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-flag-checkered', 'Make this the initial state'), // '<span class="wegas-icon state-initial"></span>Initial State',
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                         on: {
                             click: Y.bind(this.setAsInitial, this)
                         }
@@ -805,7 +808,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
 
                 form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
                 form.toolbar.add(new Y.Wegas.Button({
-                    label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
                         click: Y.bind(function () {
                             var entity = this.get(ENTITY).toObject("id"), tr;
@@ -817,7 +821,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     }
                 }));
                 form.toolbar.add(new Y.Wegas.Button({
-                    label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
                         click: Y.bind(this.disconnect, this)
                     }

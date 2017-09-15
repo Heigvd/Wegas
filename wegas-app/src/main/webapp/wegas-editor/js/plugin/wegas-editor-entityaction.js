@@ -85,28 +85,6 @@ YUI.add("wegas-editor-entityaction", function(Y) {
          * @returns {undefined}
          */
         showUpdateForm: function(entity, dataSource) {
-
-            /*
-             * Adds icon, styling and tooltip to a button being created. Uses Font Awesome icons.
-             *
-             * @param menuItem the button being created
-             * @param faName the icon name in Font Awesome
-             * @param tooltip optional: the text to be displayed on mouse hover
-             * @param bgStyle optional: the CSS class of the background circle
-             * @return the modified menuItem
-             */
-            function stackedIcon(menuItem, faName, tooltip, bgStyle) {
-                bgStyle = bgStyle || '';
-                tooltip = tooltip ? ' title="' + tooltip + '"' : '';
-                menuItem.label =
-                    '<span class="fa-stack fa-lg"' + tooltip + '">' +
-                    '<i class="fa fa-circle fa-stack-2x ' + bgStyle + '"></i>' +
-                    '<i class="fa ' + faName + ' fa-stack-1x"></i>' +
-                    '</span>';
-                menuItem.cssClass = (menuItem.cssClass ? menuItem.cssClass + ' ' : '') + 'wegas-stacked-button';
-                return menuItem;
-            }
-
             return new Promise(function(resolve) {
                 var doShow = function(entity, dataSource) {
                     //EditEntityAction.destroyEditionTab();
@@ -137,7 +115,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         if (! i.label) {                                        // @Overhack to centralize more icon definitions here
                             switch (i.type) {
                                 case "DeleteEntityButton":
-                                    i = stackedIcon(i, 'fa-trash', 'Delete');
+                                    i = EditEntityAction.stackedIcon(i, 'fa-trash', 'Delete');
                                     break;
                             }
                         } else {
@@ -162,16 +140,16 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                             }
                                         }, this);
                                     }
-                                    i = stackedIcon(i, 'fa-plus-circle', 'Add element');
+                                    i = EditEntityAction.stackedIcon(i, 'fa-plus-circle', 'Add element');
                                     break;
                                 case "Sort":
-                                    i = stackedIcon(i, 'fa-sort-alpha-asc', 'Sort contents alphabetically');
+                                    i = EditEntityAction.stackedIcon(i, 'fa-sort-alpha-asc', 'Sort contents alphabetically');
                                     break;
                                 case "Copy":
-                                    i = stackedIcon(i, 'fa-files-o', 'Duplicate');
+                                    i = EditEntityAction.stackedIcon(i, 'fa-files-o', 'Duplicate');
                                     break;
                                 case "Export":
-                                    i = stackedIcon(i, 'fa-download',  'Export');
+                                    i = EditEntityAction.stackedIcon(i, 'fa-download',  'Export');
                                     break;
                             }
                         }
@@ -317,6 +295,31 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             //Y.fire("rightTabShown");
 
             return tab.form;
+        },
+        /*
+         * Adds icon, styling and tooltip to a button being created. Uses Font Awesome icons.
+         *
+         * @param menuItem the button being created
+         * @param faName the icon name in Font Awesome
+         * @param tooltip optional: the text to be displayed on mouse hover
+         * @param bgStyle optional: the CSS class of the background circle
+         * @return the modified menuItem
+         */
+        stackedIcon: function(menuItem, faName, tooltip, bgStyle) {
+            menuItem.label = this.getStackedIconLabel(faName, tooltip, bgStyle);
+            menuItem.cssClass = (menuItem.cssClass ? menuItem.cssClass + ' ' : '') + this.getStackedIconClass();
+            return menuItem;
+        },
+        getStackedIconLabel: function(faName, tooltip, bgStyle) {
+            bgStyle = bgStyle || '';
+            tooltip = tooltip ? ' title="' + tooltip + '"' : '';
+            return '<span class="fa-stack fa-lg"' + tooltip + '">' +
+                '<i class="fa fa-circle fa-stack-2x ' + bgStyle + '"></i>' +
+                '<i class="fa ' + faName + ' fa-stack-1x"></i>' +
+                '</span>';
+        },
+        getStackedIconClass: function() {
+            return 'wegas-stacked-button';
         },
         setUnsaved: function(unsaved) {
             EditEntityAction.unsaved = unsaved;

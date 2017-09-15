@@ -11,7 +11,7 @@
  */
 YUI.add('wegas-resourcemanagement-entities', function(Y) {
     "use strict";
-    var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
+    var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "Name",
         SELF = "self", BOOLEAN = "boolean", NUMBER = "number", OBJECT = "object",
         HTML = "html", VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
         GROUP = "group", LIST = "list", SELECT = "select", KEY = "key", NULLSTRING = ["null", STRING],
@@ -585,7 +585,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             description: {
                 type: STRING,
                 optional: true,
-                index: 0,
+                index: -1,
                 view: {
                     label: "Description",
                     type: HTML
@@ -605,6 +605,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     descriptorId: IDATTRDEF,
                     requirements: {
                         type: ARRAY,
+                        view: {
+                            label: "Resource requirements"
+                        },
                         items: {
                             type: OBJECT,
                             properties: {
@@ -634,7 +637,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                         required: true,
                                     value: 1,
                                     view: {
-                                        label: 'quantity'
+                                        label: 'Quantity'
                                     }
                                 },
                                 limit: {
@@ -642,7 +645,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                         required: true,
                                     value: 100,
                                     view: {
-                                        label: 'limit'
+                                        label: 'Limit'
                                     }
                                 },
                                 completeness: {
@@ -673,6 +676,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         }
                     },
                     properties: {
+                        index: 3,
                         additionalProperties: {
                             view: { label: VALUE }
                         },
@@ -686,7 +690,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             properties: {
                 type: OBJECT,
-                index: 2,
+                index: 3,
                 additionalProperties: {
                     type: STRING,
                     view: {

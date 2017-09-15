@@ -56,10 +56,11 @@ YUI.add('wegas-widgetmenu', function(Y) {
         bind: function() {
             var node = this.get("targetNode");
             node.delegate(this.get("event"), function(e) {                      // Target event listener
-                this.show(e.target);
                 e.halt(true);                                                   // Prevent event from bubbling
-                this.fire("menuOpen", {domEvent: e});                           // Notify the parent the menu has been
-                                                                                // opened
+                Y.Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                    this.show(e.target);
+                    this.fire("menuOpen", {domEvent: e});                        // Notify the parent the menu has been
+                }, this));                                                       // opened
             }, this.get("selector"), this);
 
             node.addClass("wegas-widgetmenu-hassubmenu");                       // Add submenu class
