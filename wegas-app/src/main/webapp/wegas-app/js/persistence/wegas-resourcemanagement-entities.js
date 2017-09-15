@@ -273,16 +273,16 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         },
         METHODS: {
             getActive: {
-                label: "Is active",
+                label: "is active",
                 returns: BOOLEAN,
                     arguments: [SELFARG]
             },
             activate: {
-                label: "Activate",
+                label: "activate",
                     arguments: [SELFARG]
             },
-            deactivate: {
-                label: "Deactivate",
+            desactivate: {
+                label: "deactivate",
                     arguments: [SELFARG]
             },
             separator1: {
@@ -702,18 +702,18 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         },
         METHODS: {
             activate: {
-                label: "Activate",
+                label: "activate",
                     arguments: [SELFARG]
             },
-            deactivate: {
-                label: "Deactivate",
+            desactivate: {
+                label: "deactivate",
                     arguments: [SELFARG]
             },
             separator1: {
                 label: "\u2501\u2501\u2501\u2501"
             },
             getActive: {
-                label: "Is active",
+                label: "is active",
                 returns: BOOLEAN,
                     arguments: [SELFARG]
             },

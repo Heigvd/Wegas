@@ -12,7 +12,8 @@ const containerCss = css({
     label: 'treevariableselect-containerCss',
     color: '#6A95B6',
     display: 'inline-block',
-    marginTop: '0.75em'
+    marginTop: '0.75em',
+    paddingLeft: '4px'
 });
 
 const iconCss = css({
@@ -160,8 +161,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
     constructor(props: ITreeSelectProps) {
         super(props);
         this.state = {
-            search: labelForVariable(props.value) ||
-            this.labelForAdditional(props.value),
+            search: labelForVariable(props.value) || this.labelForAdditional(props.value),
             searching: !props.value
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
@@ -244,7 +244,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
                         })}
                     className={`${selectorLinkCss}`}
                 >
-                    <div className={`${pathCss}`}>
+                    <div className={`${pathCss}`} title="Folder containing this variable">
                         {buildPath(this.props.value)}
                     </div>
                     {labelIconForVariable(this.props.value) ||

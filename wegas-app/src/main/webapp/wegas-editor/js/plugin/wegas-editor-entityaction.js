@@ -21,7 +21,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction, SortEntityAction,
         DeleteEntityAction, SearchEntityAction, ToolbarMenu;
 
-    var MESSAGE_DISCARD_EDITS = "There are unsaved changes.\nDiscard your modifications?";
+    var MESSAGE_DISCARD_EDITS = "There are unsaved changes.<br/>Discard your modifications?";
 
     /**
      * @class
@@ -67,10 +67,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             if (!entity) {
                 return;
             }
-            if (EditEntityAction.acceptLosingEdits()) {
+            EditEntityAction.allowDiscardingEdits(Y.bind(function() {
                 EditEntityAction.discardEdits();
                 EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
-            }
+            }, this));
             Wegas.TabView.restoreColumn(Wegas.TabView.getCurrentEditorTabViewId());
         }
     }, {
@@ -321,16 +321,19 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         setUnsaved: function(unsaved) {
             EditEntityAction.unsaved = unsaved;
         },
-        acceptLosingEdits: function() {
+        allowDiscardingEdits: function(okCb, cancelCb) {
             if (EditEntityAction.unsaved === true) {
-                if (confirm(MESSAGE_DISCARD_EDITS)) {
-                    EditEntityAction.discardEdits();
-                    return true;
-                } else {
-                    return false;
-                }
+                Y.Wegas.Panel.confirm(
+                    MESSAGE_DISCARD_EDITS,
+                    Y.bind(function() {
+                        EditEntityAction.discardEdits();
+                        okCb && okCb();
+                    }, this),
+                    cancelCb,
+                    "Discard",
+                    "Cancel");
             } else {
-                return true;
+                okCb && okCb();
             }
         },
         discardEdits: function() {

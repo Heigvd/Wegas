@@ -51,12 +51,6 @@ function condition(Comp) {
                 }
             },
             visitExpressionStatement(path) {
-                if (isMatch(path.node.expression, {type: 'UnaryExpression' }) && path.node.expression.operator === '!') {
-                    path.node.expression.argument.negated = true;
-                    // Drop the negation operator since it will be propagated inside its own argument:
-                    expr.splice(0, 0, path.node.expression.argument);
-                    return false;
-                }
                 if (isMatch(path.node.expression, { type: 'LogicalExpression' })) {
                     this.traverse(path);
                     return undefined;

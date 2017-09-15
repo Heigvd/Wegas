@@ -214,7 +214,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
             activate: {
                 arguments: [SELFARG]
             },
-            deactivate: {
+            desactivate: {
+                label: "deactivate",
                 arguments: [SELFARG]
             },
             isReplied: {
@@ -423,7 +424,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 activate: {
                     arguments: [SELFARG]
                 },
-                deactivate: {
+                desactivate: {
+                    label: "deactivate",
                     arguments: [SELFARG]
                 },
                 isActive: {
@@ -683,7 +685,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 activate: {
                     arguments: [SELFARG]
                 },
-                deactivate: {
+                desactivate: {
+                    label: "deactivate",
                     arguments: [SELFARG]
                 },
                 hasBeenSelected: {

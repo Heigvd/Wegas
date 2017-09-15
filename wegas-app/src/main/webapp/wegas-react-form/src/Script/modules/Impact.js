@@ -18,6 +18,16 @@ import {
 } from './globalMethod';
 import JSEditor from '../Views/asyncJSEditor';
 import { containerStyle } from '../Views/conditionImpactStyle';
+import { css } from 'glamor';
+
+const errorStyle = css({
+    label: 'Impact-errorStyle',
+    color: '#999',
+    fontSize: '12px',
+    paddingLeft: '40px',
+    paddingTop: '3px',
+    marginBottom: '-3px'
+});
 
 const upgradeSchema = (varSchema, methodType = 'getter') => {
     const ret = {
@@ -167,7 +177,7 @@ class Impact extends React.Component {
                             }
                         }}
                     />
-                    <div>{error}</div>
+                    <div className={errorStyle}>{error}</div>
                 </div>
             );
         }

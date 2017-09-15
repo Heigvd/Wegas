@@ -560,7 +560,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 .set("title", impact ? "<b>Impact</b><br />" + impact : "").plug(Y.Plugin.Tooltip);
         },
         showForm: function(state) {
-            if (Plugin.EditEntityAction.acceptLosingEdits()) {
+            Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
                 var form;
                 state = state || this.get(ENTITY);
                 Plugin.EditEntityAction.destroyEditionTab();
@@ -595,7 +595,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         }
                     }));
                 }
-            }
+            }, this));
         },
         bindUI: function() {
             var stateMachine = this.get(PARENT),
@@ -796,7 +796,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             this.connection = cfg.connection;
         },
         showForm: function(transition) {
-            if (Plugin.EditEntityAction.acceptLosingEdits()) {
+            Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
                 var form;
                 Plugin.EditEntityAction.destroyEditionTab();
                 this.editionHighlight();
@@ -822,7 +822,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         click: Y.bind(this.disconnect, this)
                     }
                 }));
-            }
+            }, this));
         },
         renderUI: function() {
             var connection, parentTransitions,

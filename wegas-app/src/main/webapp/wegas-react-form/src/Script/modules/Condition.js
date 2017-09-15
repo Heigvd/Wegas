@@ -36,72 +36,88 @@ function getMethodDescriptor(node) {
     return global ? globalMethodDescriptor(member, method) : methodDescriptor(variable, method);
 }
 
-function getNegation(op) {
-    switch(op) {
-        case '===': return '!==';
-        case '!==': return '===';
-        case '>':   return '<=';
-        case '<':   return '>=';
-        case '>=':  return '<';
-        case '<=':  return '>';
-        default:
-            return 'Internal error, getNegation(' + op + ')';
-    }
-}
-
 class Condition extends React.Component {
     constructor(props) {
         super(props);
-        const negated = props.node.negated || false;
-        if (props.node.type === "CallExpression") {
-            // Transform calls returning a boolean into an easier to handle logical expression:
-            this.state = {
-                left: props.node,
-                right: b.literal(!negated),
-                operator: '==='
-            };
+        const node = props.node,
+              isCall = node.type === "CallExpression",
+              descr = getMethodDescriptor(isCall ? node : node.left),
+              isBoolCall = isCall && descr.returns === "boolean";
+        if (isBoolCall) {
+            this.state = node;
         } else {
             this.state = {
-                left: props.node.left,
-                right: props.node.right,
-                operator: props.node.operator ? (negated ? getNegation(props.node.operator) : props.node.operator) : '==='
+                left: node.left,
+                right: node.right,
+                operator: node.operator || '==='
             };
         }
-        const descr = getMethodDescriptor(this.state.left);
         this.returns = descr && descr.returns; // store current method's returns
     }
     componentWillReceiveProps(nextProps) {
-        this.setState({
-            left: nextProps.node.left,
-            right: nextProps.node.right,
-            operator: nextProps.node.operator || '==='
-        });
+        const node = nextProps.node,
+              isCall = node.type === "CallExpression",
+              descr = isCall ? getMethodDescriptor(node) : null,
+              isBoolCall = isCall && descr.returns === "boolean";
+        if (isBoolCall && node.callee.property.name !== "getValue") {
+            this.setState(node);
+        } else {
+            this.setState({
+                left: node.left,
+                right: node.right,
+                operator: node.operator || '==='
+            });
+        }
     }
     check() {
-        const descr = getMethodDescriptor(this.state.left);
+        const state = this.state,
+              isCall = state.type === "CallExpression",
+              descr = getMethodDescriptor(isCall ? state : state.left),
+              isBoolCall = isCall && descr.returns === "boolean";
         const sendUpdate = () => {
-            if (this.state.operator && this.state.left) {
-                const node = b.binaryExpression(
-                    this.state.operator,
-                    this.state.left,
-                    this.state.right
+            if (isBoolCall && state.callee.property.name !== "getValue") {
+                const node = b.callExpression(
+                    state.callee,
+                    state.arguments
                 );
                 this.props.onChange(node);
+            } else {
+                if (state.operator && state.left) {
+                    const node = b.binaryExpression(
+                        state.operator,
+                        state.left,
+                        state.right
+                    );
+                    this.props.onChange(node);
+                }
             }
         };
         if (!descr) {
             this.setState({ right: undefined });
         } else if (this.returns !== descr.returns) {
-            this.setState({ operator: '===', right: valueToType(defaultValue(descr.returns), { type: descr.returns }) }, sendUpdate);
+            if (state.left.type === "CallExpression" &&
+                descr.returns === "boolean" &&        // Is this the correct check for bool ???
+                state.left.callee.property.name !== "getValue")
+            {
+                this.setState(state.left, sendUpdate);
+            } else {
+                this.setState({
+                    operator: '===',
+                    right: valueToType(defaultValue(descr.returns), {type: descr.returns})
+                }, sendUpdate);
+            }
             this.returns = descr.returns;
         } else {
             sendUpdate();
         }
     }
     render() {
-        const descr = getMethodDescriptor(this.state.left);
+        const state = this.state,
+              isCall = state.type === "CallExpression",
+              descr = getMethodDescriptor(isCall ? state : state.left),
+              isBoolCall = isCall && descr.returns === "boolean";
         let container;
-        if (descr) {
+        if (descr && !isBoolCall) {
             const schema = {
                 type: descr.returns,
                 value: defaultValue(descr.returns),
@@ -110,22 +126,22 @@ class Condition extends React.Component {
             container = [(
                 <div key="operator" className={containerStyle} >
                     <ConditionOperator
-                        operator={this.state.operator}
+                        operator={state.operator}
                         onChange={v => this.setState({ operator: v }, this.check)}
                         type={descr.returns}
                     />
                 </div>
             ),
             (<div key="right" className={containerStyle} >
-                {renderForm(this.state.right, schema, v => this.setState({ right: v }, this.check), undefined, 'right')}
+                {renderForm(state.right, schema, v => this.setState({ right: v }, this.check), undefined, 'right')}
             </div>)];
         }
         return (
             <div>
                 <Impact
                     {...this.props}
-                    node={this.state.left}
-                    onChange={v => this.setState({ left: v }, this.check)}
+                    node={isBoolCall ? state : state.left}
+                    onChange={v => this.setState((isBoolCall ? v : { left: v }), this.check)}
                 />
                 {container}
             </div>

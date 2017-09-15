@@ -659,10 +659,15 @@ YUI.add('wegas-tabview', function(Y) {
          */
         onRemoveClick: function(e) {
             var tab = this.get("host"),
-                isEditTab = tab.hasPlugin("editentity");
-            if (!isEditTab || (isEditTab && Plugin.EditEntityAction.acceptLosingEdits())) {
-                tab.remove().destroy();
-                delete TabView.tabs[tab.get("id")];
+                isEditTab = tab.hasPlugin("editentity"),
+                doDelete = function() {
+                    tab.remove().destroy();
+                    delete TabView.tabs[tab.get("id")];
+                };
+            if (isEditTab) {
+                Plugin.EditEntityAction.allowDiscardingEdits(doDelete);
+            } else {
+                doDelete();
             }
             e.stopPropagation();
         },

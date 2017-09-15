@@ -10,6 +10,7 @@ import { handleMethodArgs } from './args';
 const { builders: b, visit, namedTypes: n } = types;
 const Y = getY();
 function methodDescriptor(variable, method) {
+    if (!variable || !method) return null;
     try {
         return Y.Wegas.Facade.Variable.cache
             .find('name', variable)
