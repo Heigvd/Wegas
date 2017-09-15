@@ -88,7 +88,7 @@ export function typeToValue(value, schema) {
 }
 
 /**
- * Check if a given AST matches it's schema
+ * Check if a given AST matches its schema
  * @param {Object} value The ast node
  * @param {{type:string}} schema The schema to check against
  */

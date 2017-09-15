@@ -264,7 +264,7 @@ const Form = Y.Base.create(
                                                 if (v && v.trim()) {
                                                     return '';
                                                 }
-                                                return 'is required';
+                                                return 'is required!';
                                             },
                                             view: {
                                                 label: 'Label'
