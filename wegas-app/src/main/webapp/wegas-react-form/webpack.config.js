@@ -66,7 +66,7 @@ module.exports = {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
         mainFields: ['module', 'jsnext:main', 'browser', 'main']
     },
-    plugins: plugins,
+    plugins,
     module: {
         rules: [
             {

@@ -9,26 +9,20 @@
                 "modules": false,
                 "loose": true,
                 "targets": {
-                    "browsers": [
-                        "last 2 versions"
-                    ]
+                    "browsers": ["last 2 versions"]
                 },
                 "exclude": ["transform-regenerator"]
             }
         ]
     ],
-    "plugins": [
-        "transform-object-rest-spread",
-        "syntax-dynamic-import"
-    ],
+    "plugins": ["transform-object-rest-spread", "syntax-dynamic-import"],
     "env": {
         "development": {
-            "presets": []
+            "presets": [],
+            "plugins": ["./babel-plugin-glamor-css-autolabel.js"]
         },
         "production": {
-            "plugins": [
-                "transform-react-remove-prop-types"
-            ]
+            "plugins": ["transform-react-remove-prop-types"]
         }
     }
 }
