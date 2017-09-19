@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -19,10 +19,10 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import java.io.IOException;
 import java.util.List;
 import javax.naming.NamingException;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.junit.Assert;
 
 /**
  *
@@ -68,7 +68,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         // Check its value
         NumberInstance instance = (NumberInstance) variableInstanceFacade.find(desc1.getId(), player);
-        Assert.assertEquals(VAL2, instance.getValue());
+        Assert.assertEquals(VAL2, instance.getValue(), 0.0001);
 
         // Edit the variable instance
         NumberInstance newNumberInstance = new NumberInstance(VAL3);
@@ -78,12 +78,13 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         // Verify the new value
         instance = (NumberInstance) variableInstanceFacade.find(desc1.getId(), player.getId());
-        Assert.assertEquals(VAL3, instance.getValue());
+        Assert.assertEquals(VAL3, instance.getValue(), 0.0001);
 
         // Reset the game and test
         gameModelFacade.reset(scenario.getId());
         instance = (NumberInstance) variableInstanceFacade.find(desc1.getId(), player);
         Assert.assertEquals(VAL2, instance.getValue());
+        Assert.assertEquals(VAL2, instance.getValue(), 0.0001);
 
         variableDescriptorFacade.remove(desc1.getId());
     }
@@ -251,7 +252,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         // Check its value
         NumberInstance instance = (NumberInstance) variableInstanceFacade.find(desc1.getId(), player);
-        Assert.assertEquals(VAL2, instance.getValue());
+        Assert.assertEquals(VAL2, instance.getValue(), 0.0001);
 
         // Edit the variable instance
         NumberInstance newInstance = new NumberInstance(VAL3);
@@ -261,12 +262,12 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         // Verify the new value
         instance = (NumberInstance) variableInstanceFacade.find(desc1.getId(), player.getId());
-        Assert.assertEquals(VAL3, instance.getValue());
+        Assert.assertEquals(VAL3, instance.getValue(), 0.0001);
 
         // Reset the game and test
         gameModelFacade.reset(scenario.getId());
         instance = (NumberInstance) variableInstanceFacade.find(desc1.getId(), player);
-        Assert.assertEquals(VAL2, instance.getValue());
+        Assert.assertEquals(VAL2, instance.getValue(), 0.0001);
 
         variableDescriptorFacade.remove(desc1.getId());
     }
@@ -446,13 +447,13 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         DescriptorListI duplicate
                 = (DescriptorListI) variableDescriptorFacade.duplicate(list1.getId());                 // Duplicate a root variable
-        Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) duplicate.item(1)).item(0)).item(0)).getInstance(player).getValue());
+        Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) duplicate.item(1)).item(0)).item(0)).getInstance(player).getValue(), 0.0001);
 
         duplicate = (DescriptorListI) variableDescriptorFacade.duplicate(list3.getId());             // Duplicate a sub child variable
-        Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) duplicate.item(0)).item(0)).getInstance(player).getValue());
+        Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) duplicate.item(0)).item(0)).getInstance(player).getValue(), 0.0001);
 
         GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(scenario.getId());
         DescriptorListI find = (DescriptorListI) variableDescriptorFacade.find(duplicateGm, LISTNAME1);
-        Assert.assertEquals(10.0, ((NumberInstance) ((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0).getScope().getVariableInstances().values().iterator().next()).getValue());
+        Assert.assertEquals(10.0, ((NumberInstance) ((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0).getScope().getVariableInstances().values().iterator().next()).getValue(), 0.0001);
     }
 }

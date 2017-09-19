@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr;
@@ -11,6 +11,7 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadConcern;
+import com.mongodb.client.MongoDatabase;
 import com.wegas.core.Helper;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;

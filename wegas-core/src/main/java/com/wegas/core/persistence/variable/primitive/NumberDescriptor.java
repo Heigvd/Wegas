@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
@@ -15,7 +15,6 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-////import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +71,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         super.merge(a);
         if (!this.isValueValid(this.getDefaultValue())) {
             throw new WegasOutOfBoundException(this.getMinValue(),
-                    this.getMaxValue(), this.getDefaultValue(), this.getLabel());
+                    this.getMaxValue(), this.getDefaultValue(), this.getName(), this.getLabel());
         }
     }
 
@@ -108,7 +107,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      *
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     @Transient
     public double getMaxValueD() {
@@ -119,7 +117,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      *
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     @Transient
     public double getMinValueD() {

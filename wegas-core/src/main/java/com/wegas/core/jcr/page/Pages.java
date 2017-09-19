@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.page;
@@ -21,12 +21,10 @@ import java.util.*;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class Pages implements AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
 
-    //@XmlTransient
     @JsonIgnore
     private final PageConnector connector;
 

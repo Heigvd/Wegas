@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.security.rest;
@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +50,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
-import javax.inject.Inject;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -672,8 +672,9 @@ public class UserController {
             email.setReplyTo(mainAccount.getEmail());
         }
 
-        String body = email.getBody();
-        body += "<br /><br /><hr /><i> Sent by " + name + " from albasim.ch</i>";
+        String body = "<!DOCTYPE html><html><head></head><body>" +
+                email.getBody();
+        body += "<br /><br /><hr /><i> Sent by " + name + " from albasim.ch</i></body></html>";
         email.setBody(body);
 
         email.setFrom(name + " via Wegas <noreply@" + Helper.getWegasProperty("mail.default_domain") + ">");

@@ -1,3 +1,4 @@
+import 'core-js'; // polyfill injection point
 import { render } from 'react-dom';
 import AppRoute from './route';
 

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
@@ -38,7 +38,6 @@ import com.wegas.core.persistence.variable.Scripted;
             @Index(columnList = "question_variabledescriptor_id")
         })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@XmlType(name = "ChoiceDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
 })
@@ -50,7 +49,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     @JsonBackReference
     private QuestionDescriptor question;

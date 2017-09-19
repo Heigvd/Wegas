@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
@@ -20,10 +20,8 @@ import java.util.zip.ZipEntry;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 abstract public class AbstractContentDescriptor {
 
-    //@XmlTransient
     @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);
 
@@ -43,7 +41,6 @@ abstract public class AbstractContentDescriptor {
         }
     }
 
-    //@XmlTransient
     @JsonIgnore
     private boolean synched = false;
     /**
@@ -57,13 +54,11 @@ abstract public class AbstractContentDescriptor {
     /**
      *
      */
-    //@XmlTransient
     @JsonIgnore
     protected String fileSystemAbsolutePath;
     /**
      *
      */
-    ////@XmlTransient
     @JsonIgnore
     protected ContentConnector connector;
 
@@ -150,7 +145,6 @@ abstract public class AbstractContentDescriptor {
     /**
      * @return full path
      */
-    //@XmlTransient
     @JsonIgnore
     public String getFullPath() {
         String p = fileSystemAbsolutePath;
@@ -192,7 +186,6 @@ abstract public class AbstractContentDescriptor {
     /**
      * @return true if is synched
      */
-    //@XmlTransient
     @JsonIgnore
     public boolean isSynched() {
         return synched;
@@ -202,7 +195,6 @@ abstract public class AbstractContentDescriptor {
      * @return truc if node exists
      * @throws RepositoryException
      */
-    //@XmlTransient
     @JsonIgnore
     public boolean exist() throws RepositoryException {
         return connector.nodeExist(fileSystemAbsolutePath);
@@ -212,7 +204,6 @@ abstract public class AbstractContentDescriptor {
      * @return true is this has children
      * @throws RepositoryException
      */
-    //@XmlTransient
     @JsonIgnore
     public boolean hasChildren() throws RepositoryException {
         return connector.getNode(fileSystemAbsolutePath).hasNodes();
@@ -243,7 +234,6 @@ abstract public class AbstractContentDescriptor {
      * @return the child
      * @throws RepositoryException
      */
-    //@XmlTransient
     @JsonIgnore
     public AbstractContentDescriptor addChild(AbstractContentDescriptor file) throws RepositoryException {
         Node parent = connector.getNode(fileSystemAbsolutePath);
@@ -263,7 +253,6 @@ abstract public class AbstractContentDescriptor {
      * @param force
      * @throws RepositoryException
      */
-    //@XmlTransient
     @JsonIgnore
     public void delete(boolean force) throws RepositoryException {
         if (this.exist()) {
@@ -278,7 +267,6 @@ abstract public class AbstractContentDescriptor {
     /**
      * @throws RepositoryException
      */
-    //@XmlTransient
     @JsonIgnore
     public void getContentFromRepository() throws RepositoryException {
         this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
@@ -289,7 +277,6 @@ abstract public class AbstractContentDescriptor {
     /**
      * @throws RepositoryException
      */
-    //@XmlTransient
     @JsonIgnore
     public void setContentToRepository() throws RepositoryException {
         connector.setMimeType(fileSystemAbsolutePath, mimeType);
@@ -301,7 +288,6 @@ abstract public class AbstractContentDescriptor {
     /**
      * @throws RepositoryException
      */
-    //@XmlTransient
     @JsonIgnore
     public void saveToRepository() throws RepositoryException {
         String parentPath = this.getPath();
@@ -326,7 +312,6 @@ abstract public class AbstractContentDescriptor {
      *
      * @param absolutePath
      */
-    //@XmlTransient
     @JsonIgnore
     private void parseAbsolutePath(String absolutePath) {
 //        absolutePath = absolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
@@ -351,7 +336,6 @@ abstract public class AbstractContentDescriptor {
     /**
      * Convert name and path to a fileSystemAbsolutePath
      */
-    //@XmlTransient
     @JsonIgnore
     private void buildNamespaceAbsolutePath() {
         if (this.path.equals("/")) {

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -43,7 +43,6 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import com.wegas.core.persistence.InstanceOwner;
 
-////import javax.xml.bind.annotation.XmlTransient;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
@@ -99,15 +98,13 @@ import com.wegas.core.persistence.InstanceOwner;
     ,
     @CacheIndex(columnNames = {"PLAYERSCOPE_ID", "VARIABLEINSTANCES_KEY"})
 })
-
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
 
  @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
  @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
  @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
  })*/
-
- /* JPA2.1 (GlassFish4) Indexes */
+/* JPA2.1 (GlassFish4) Indexes */
 @Table(indexes = {
     @Index(columnList = "gamescope_id")
     ,
@@ -121,7 +118,6 @@ import com.wegas.core.persistence.InstanceOwner;
     ,
     @Index(columnList = "gamevariableinstances_key")
 })
-
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class)
@@ -335,7 +331,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      * @return the scope
      */
-    //@XmlTransient
     @JsonIgnore
     //@JsonView(Views.ExtendedI.class)
     public AbstractScope getScope() {

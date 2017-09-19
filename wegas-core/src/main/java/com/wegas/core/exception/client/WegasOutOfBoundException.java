@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.exception.client;
@@ -19,6 +19,7 @@ public class WegasOutOfBoundException extends WegasRuntimeException {
     private final Double max;
     private final Double value;
     private final String variableName;
+    private final String label;
 
     /**
      *
@@ -26,13 +27,15 @@ public class WegasOutOfBoundException extends WegasRuntimeException {
      * @param max
      * @param value
      * @param variableName
+     * @param label
      */
-    public WegasOutOfBoundException(Double min, Double max, Double value, String variableName) {
+    public WegasOutOfBoundException(Double min, Double max, Double value, String variableName, String label) {
         super();
         this.min = min;
         this.max = max;
         this.value = value;
         this.variableName = variableName;
+        this.label = label;
     }
 
     public Double getMin() {
@@ -47,7 +50,11 @@ public class WegasOutOfBoundException extends WegasRuntimeException {
         return value;
     }
 
-    public String getVariableName(){
+    public String getVariableName() {
         return variableName;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

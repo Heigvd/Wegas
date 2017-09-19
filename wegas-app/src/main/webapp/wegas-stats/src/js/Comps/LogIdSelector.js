@@ -9,9 +9,9 @@ import { connect } from 'react-redux';
 // }))
 class LogIdSelector extends React.Component {
 
-    onChange(value) {
-        if (value) {
-            setTimeout(() => this.context.history.pushState(null, `/${value}`), 200); // @hack already...
+    onChange(selected) {
+        if (selected) {
+            setTimeout(() => this.props.history.push(`/${selected.value}`), 200); // @hack already...
         }
     }
 
@@ -29,9 +29,6 @@ class LogIdSelector extends React.Component {
             );
     }
 }
-LogIdSelector.contextTypes = {
-    history: PropTypes.object,
-};
 export default connect(state => ({
     status: state.logIds.status,
     logIds: state.logIds.value,

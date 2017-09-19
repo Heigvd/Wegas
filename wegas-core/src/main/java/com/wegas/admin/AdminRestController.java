@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.admin;
@@ -34,10 +34,10 @@ public class AdminRestController {
     @Path("Game")
     @GET
     public Collection<GameAdmin> get(@QueryParam("type") String type) {
-        String[] types = type.split(",");
         if (type == null) {
             return adminFacade.findAll();
         } else {
+            String[] types = type.split(",");
             List<GameAdmin.Status> statuses = new ArrayList<>();
             for (int i = 0; i < types.length; i++) {
                 try {

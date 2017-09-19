@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core;
@@ -16,7 +16,6 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

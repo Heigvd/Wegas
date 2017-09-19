@@ -1,3 +1,10 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 package com.wegas.core.rest;
 
 import com.wegas.test.AbstractEJBTest;
@@ -6,8 +13,8 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import junit.framework.Assert;
 import org.junit.Test;
+import org.junit.Assert;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

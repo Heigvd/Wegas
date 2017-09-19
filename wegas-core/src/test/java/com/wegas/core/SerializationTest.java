@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core;
@@ -392,7 +392,7 @@ public class SerializationTest {
 
         nd.getDefaultInstance().setValue(-10);
 
-        String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd.getLabel()));
+        String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd.getName(), nd.getLabel()));
         System.out.println("WOOB: " + json);
         assertPropertyEquals(json, "@class", "WegasOutOfBoundException");
 
@@ -415,7 +415,7 @@ public class SerializationTest {
         WarningEvent warn = new WarningEvent("Warning Dummy Event", payload);
 
         List<WegasRuntimeException> exceptions = new ArrayList<>();
-        exceptions.add(new WegasOutOfBoundException(0.0, 10.0, 15.0, ndPayload.getLabel()));
+        exceptions.add(new WegasOutOfBoundException(0.0, 10.0, 15.0, ndPayload.getLabel(), ndPayload.getLabel()));
         exceptions.add(WegasErrorMessage.error("Error Message"));
         exceptions.add(new WegasScriptException("var a = truc;", 123, "OUPS"));
 

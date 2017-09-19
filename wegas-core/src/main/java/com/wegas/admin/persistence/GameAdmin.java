@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.admin.persistence;
@@ -68,6 +68,8 @@ public class GameAdmin extends AbstractEntity {
     @Lob
     private String prevPlayers;
 
+    private Long prevGameId;
+
     @Lob
     private String prevTeams;
 
@@ -126,7 +128,7 @@ public class GameAdmin extends AbstractEntity {
         if (this.getGame() != null) {
             return this.getGame().getId();
         }
-        return null;
+        return this.prevGameId;
     }
 
     public Date getCreatedTime() {
@@ -156,6 +158,7 @@ public class GameAdmin extends AbstractEntity {
             this.prevTeamCount = this.getTeamCount();
             this.prevPlayers = this.getPlayers().toString();
             this.prevTeams = this.getTeams().toString();
+            this.prevGameId = this.getGame().getId();
         }
     }
 

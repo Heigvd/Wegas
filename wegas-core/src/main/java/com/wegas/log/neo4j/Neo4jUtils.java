@@ -2,10 +2,9 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 package com.wegas.log.neo4j;
 
 import com.wegas.core.Helper;
@@ -46,7 +45,8 @@ class Neo4jUtils {
         Driver tmpDriver = null;
         if (!Helper.isNullOrEmpty(NEO4J_SERVER_URL)) {
             try {
-                tmpDriver = GraphDatabase.driver(NEO4J_SERVER_URL, AuthTokens.basic(NEO4J_BASIC_USER, NEO4J_BASIC_PASSWORD));
+                tmpDriver = GraphDatabase.driver(NEO4J_SERVER_URL, AuthTokens.basic(NEO4J_BASIC_USER, NEO4J_BASIC_PASSWORD),
+                        Config.build().withTrustStrategy(Config.TrustStrategy.trustAllCertificates()).toConfig());
             } catch (Exception ex) {
                 logger.error("Check neo4j configuration", ex);
             }
@@ -64,7 +64,7 @@ class Neo4jUtils {
      */
 
     static StatementResult queryDBString(String parametrizedQuery, Object... keysAndValues) throws ClientException {
-        if(driver == null){
+        if (driver == null) {
             return new EmptyStatementResult();
         }
         try (Session session = driver.session()) {
@@ -115,6 +115,11 @@ class Neo4jUtils {
 
         @Override
         public ResultSummary consume() {
+            return null;
+        }
+
+        @Override
+        public ResultSummary summary() {
             return null;
         }
     }

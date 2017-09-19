@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -115,7 +115,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
     @JsonProperty
     public void setDuration(double duration) {
         if (duration < 0.0) {
-            throw new WegasOutOfBoundException(0.0, null, duration, "duration");
+            throw new WegasOutOfBoundException(0.0, null, duration, "duration", "duration");
         } else {
             this.duration = duration;
         }

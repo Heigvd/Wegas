@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -25,7 +25,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-//import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import javax.persistence.Index;
@@ -97,7 +96,6 @@ public class WRequirement extends AbstractEntity {
      *
      */
     @OneToMany(mappedBy = "requirement", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@XmlTransient
     @JsonIgnore
     private List<Activity> activities = new ArrayList<>();
 
@@ -259,7 +257,6 @@ public class WRequirement extends AbstractEntity {
      *
      * @param taskInstance
      */
-    //@XmlTransient
     @JsonIgnore
     public void setTaskInstance(TaskInstance taskInstance) {
         this.taskInstance = taskInstance;

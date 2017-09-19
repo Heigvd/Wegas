@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -94,7 +94,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     private User createdBy;
 
@@ -102,7 +101,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    //@XmlTransient
     @JsonIgnore
     private Set<GameAccount> gameAccounts;
 
@@ -247,7 +245,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     /**
      * @param t
      */
-    //@XmlTransient
     @JsonIgnore
     public void addTeam(Team t) {
         this.getTeams().add(t);

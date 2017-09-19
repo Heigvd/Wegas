@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.messaging.ejb;
@@ -102,7 +102,7 @@ public class EMailFacade {
      * @param body
      */
     public void send(Player p, String from, String subject, String body) throws MessagingException {
-        this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain", false);
+        this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain; charset=utf-8", false);
     }
 
     /**

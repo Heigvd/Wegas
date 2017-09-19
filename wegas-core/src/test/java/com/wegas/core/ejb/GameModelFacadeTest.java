@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -10,13 +10,13 @@ package com.wegas.core.ejb;
 import com.wegas.test.TestHelper;
 import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.*;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.NamingException;
 import java.util.function.Function;
+import org.junit.Assert;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
