@@ -889,9 +889,13 @@ YUI().use(function (Y) {
         base: "./wegas-react-form/",
         root: "/wegas-react-form/",
         modules: {
+            "wegas-react-form-async": {
+                path: "dist/bundle.js",
+                requires: [],
+            },
             "wegas-react-form": {
                 path: "dist/bundle.js",
-                requires: ["roboto-font", "tinymce", "wegas-panel-fileselect"],
+                requires: ["wegas-react-form-async", "roboto-font", "tinymce", "wegas-panel-fileselect"],
                 ws_provides: "RForm"
             },
             // "wegas-react-manifest": {

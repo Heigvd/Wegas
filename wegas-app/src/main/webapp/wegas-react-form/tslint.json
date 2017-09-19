@@ -1,43 +1,35 @@
 {
     "defaultSeverity": "error",
-    "extends": [
-        "tslint:latest",
-        "tslint-react"
-    ],
+    "extends": ["tslint:latest", "tslint-react"],
     "jsRules": {
-        "quotemark": [
-            true,
-            "single",
-            "jsx-double",
-            "avoid-escape"
-        ],
+        "quotemark": [true, "single", "jsx-double", "avoid-escape"],
         "object-literal-sort-keys": false
     },
     "rules": {
-        "quotemark": [
-            true,
-            "single",
-            "jsx-double",
-            "avoid-escape"
-        ],
+        "quotemark": [true, "single", "jsx-double", "avoid-escape"],
         "object-literal-sort-keys": false,
-        "ordered-imports": [
-            false
+        "object-literal-key-quotes": false,
+        "ordered-imports": [false],
+        "arrow-parens": false,
+        "trailing-comma": [
+            true,
+            {
+                "multiline": {
+                    "objects": "always",
+                    "arrays": "always",
+                    "functions": "never",
+                    "typeLiterals": "ignore"
+                }
+            }
         ],
         "jsx-no-multiline-js": false,
         "jsx-no-lambda": {
             "severity": "warning"
         },
         "member-access": false,
-        "array-type": [
-            true,
-            "array"
-        ],
+        "array-type": [true, "array"],
         "jsx-wrap-multiline": false,
-        "jsx-boolean-value": [
-            true,
-            "never"
-        ]
+        "jsx-boolean-value": [true, "never"]
     },
     "rulesDirectory": []
 }
