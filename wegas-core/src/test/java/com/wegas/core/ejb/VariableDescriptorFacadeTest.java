@@ -83,7 +83,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // Reset the game and test
         gameModelFacade.reset(scenario.getId());
         instance = (NumberInstance) variableInstanceFacade.find(desc1.getId(), player);
-        Assert.assertEquals(VAL2, instance.getValue());
         Assert.assertEquals(VAL2, instance.getValue(), 0.0001);
 
         variableDescriptorFacade.remove(desc1.getId());
