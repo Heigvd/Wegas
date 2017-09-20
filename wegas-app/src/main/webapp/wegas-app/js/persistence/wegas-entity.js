@@ -146,10 +146,10 @@ YUI.add("wegas-entity", function(Y) {
          * @returns {Y.Wegas.persistence.VariableDescriptor}
          */
         item: function(i) {
-            return this.get("items")[i];
+            return Y.Wegas.Facade.Variable.cache.findById(this.get("itemsIds")[i]);
         },
         size: function() {
-            return this.get("items").length;
+            return this.get("itemsIds").length;
         }
     });
     persistence.VariableContainer.ATTRS = {
