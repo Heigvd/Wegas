@@ -11,6 +11,7 @@
         "object-literal-key-quotes": false,
         "ordered-imports": [false],
         "arrow-parens": false,
+        "no-submodule-imports":false,
         "trailing-comma": [
             true,
             {

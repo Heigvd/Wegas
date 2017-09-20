@@ -6,10 +6,11 @@ import IconButton from '../Components/IconButton';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { AddStatementButton } from '../Script/Views/Button';
 
+const KEY_DEFAULT_VALUE = '';
 const halfWidth: CSSProperties = {
     display: 'inline-block',
     position: 'relative',
-    width: '50%'
+    width: '50%',
 };
 type HashListProps = WidgetProps.ObjectProps & { id: string };
 class HashlistView extends React.Component<
@@ -20,25 +21,16 @@ class HashlistView extends React.Component<
     constructor(props: HashListProps) {
         super(props);
         this.state = {
-            newInputValue: ''
+            newInputValue: '',
         };
         this.child = {};
         this.addChild = this.addChild.bind(this);
-        this.onAdderChange = this.onAdderChange.bind(this);
-    }
-    onAdderChange(value: string) {
-        this.setState({
-            newInputValue: value
-        });
     }
     addChild() {
-        const newInputValue = this.state.newInputValue;
-        this.setState({
-            newInputValue: ''
-        });
-        this.props.addKey(newInputValue);
+        this.props.addKey(KEY_DEFAULT_VALUE, '');
+
         setTimeout(() => {
-            const input = this.child[newInputValue].querySelector('input');
+            const input = this.child[KEY_DEFAULT_VALUE].querySelector('input');
             if (input !== null) {
                 input.focus();
             }
@@ -58,32 +50,30 @@ class HashlistView extends React.Component<
                 }
 
                 return (
-                    <div key={child.props.editKey}>
+                    <div>
                         <IconButton
                             icon="fa fa-trash"
                             tooltip="Remove property"
                             onClick={remove}
                         />
-                        <div style={{ position: 'relative' }}>
+                        <div
+                            style={{ position: 'relative' }}
+                            ref={node => {
+                                if (node !== null) {
+                                    this.child[child.props.editKey] = node;
+                                }
+                            }}
+                        >
                             <TextField
                                 id={id}
                                 value={child.props.editKey}
                                 onChange={onKeyChange}
                                 view={{
                                     label: this.props.view.keyLabel || 'Key',
-                                    style: halfWidth
+                                    style: halfWidth,
                                 }}
                             />
-                            <div
-                                style={halfWidth}
-                                ref={node => {
-                                    if (node !== null) {
-                                        this.child[child.props.editKey] = node;
-                                    }
-                                }}
-                            >
-                                {child}
-                            </div>
+                            <div style={halfWidth}>{child}</div>
                         </div>
                     </div>
                 );
@@ -105,7 +95,7 @@ class HashlistView extends React.Component<
         return (
             <ObjectView {...restProps}>
                 {newChildren}
-                <br/>
+                <br />
                 <AddStatementButton
                     key="newkeyadd"
                     icon="fa fa-plus-circle"
