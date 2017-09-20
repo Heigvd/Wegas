@@ -207,7 +207,7 @@ public class ScriptFacade {
         putBinding(bindings, "ResourceFacade", ResourceFacadeI.class, resourceFacade);
         putBinding(bindings, "IterationFacade", IterationFacadeI.class, iterationFacade);
         
-        putBinding(bindings, "QuestionDescriptorFacade", QuestionDescriptorFacadeI.class, questionDescriptorFacade);
+        putBinding(bindings, "QuestionFacade", QuestionDescriptorFacadeI.class, questionDescriptorFacade);
         putBinding(bindings, "StateMachineFacade", StateMachineFacadeI.class, stateMachineFacade);
         putBinding(bindings, "ReviewingFacade", ReviewingFacadeI.class, reviewingFacade);
         
