@@ -30,8 +30,8 @@ interface IKeyChoiceProps {
     };
 }
 function KeyChoice(props: WidgetProps.ObjectProps & IKeyChoiceProps) {
-    const valueKeys = Object.keys(props.value);
-    const keys = Object.keys(props.schema.properties).filter(
+    const valueKeys = Object.keys(props.value || {});
+    const keys = Object.keys(props.schema.properties || {}).filter(
         c => !valueKeys.includes(c)
     );
     return (
@@ -51,14 +51,15 @@ function KeyChoice(props: WidgetProps.ObjectProps & IKeyChoiceProps) {
                             view={{
                                 choices: keys.concat(c.props.editKey),
                                 className: css({
-                                    display: 'inline-block'
-                                }).toString()
+                                    display: 'inline-block',
+                                }).toString(),
                             }}
                             value={c.props.editKey}
                             onChange={(value: string) => {
-                                const v = Object.assign({}, props.value, {
-                                    [value]: undefined
-                                });
+                                const v = {
+                                    ...props.value,
+                                    [value]: undefined,
+                                };
                                 delete v[c.props.editKey];
                                 props.onChange(v);
                             }}
