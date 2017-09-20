@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChromePicker } from 'react-color';
+import ChromePicker from 'react-color/lib/components/chrome/Chrome';
 import { css } from 'glamor';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
@@ -15,7 +15,7 @@ class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
     constructor(props: IColorProps) {
         super(props);
         this.state = {
-            pick: false
+            pick: false,
         };
     }
     render() {
@@ -38,7 +38,7 @@ class ColorPicker extends React.Component<IColorProps, { pick: boolean }> {
             width: '12px',
             height: '12px',
             backgroundColor: this.props.value,
-            border: 'solid 1px black'
+            border: 'solid 1px black',
         });
         return (
             <div

@@ -8,7 +8,6 @@ import ArrayView from './Views/array';
 import BooleanView from './Views/boolean';
 import HashlistView from './Views/hashlist';
 import HiddenView from './Views/hidden';
-// import HTMLView from './Views/html';
 import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
 import FlatVariableSelect from './Views/Interacting/flatvariableselect';
 import PageSelect from './Views/Interacting/pageselect';

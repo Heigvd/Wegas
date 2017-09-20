@@ -26,7 +26,7 @@ const plugins = [
     // new webpack.optimize.ModuleConcatenationPlugin(), // webpack 3
     new webpack.optimize.CommonsChunkPlugin({
         name: 'bundle',
-        async: 'vendors',
+        async: false,
         minChunks: function minChunks(module) {
             const context = module.context;
             return context && context.indexOf('node_modules') > -1;
