@@ -97,7 +97,6 @@ public class TeamController {
      */
     @PUT
     @Path("{teamId : [1-9][0-9]*}")
-    @Deprecated
     public Team update(@PathParam("teamId") Long teamId, Team entity) {
         Game game = teamFacade.find(teamId).getGame();
         requestManager.assertGameTrainer(game);
