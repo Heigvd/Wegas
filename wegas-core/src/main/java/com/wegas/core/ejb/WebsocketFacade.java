@@ -172,7 +172,7 @@ public class WebsocketFacade {
 
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send lock  \"{}\" to \"\"", token, channel);
+            logger.error("send lock  \"{}\" to \"{}\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}", null);
         }
@@ -180,7 +180,7 @@ public class WebsocketFacade {
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send unlock  \"{}\" to \"\"", token, channel);
+            logger.error("send unlock  \"{}\" to \"{}\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
         }
