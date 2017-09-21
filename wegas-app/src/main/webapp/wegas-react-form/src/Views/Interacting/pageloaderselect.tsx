@@ -1,5 +1,5 @@
 import React from 'react';
-import { Combobox } from 'react-widgets';
+import Combobox from 'react-widgets/lib/Combobox';
 import { getY } from '../../index';
 import labeled from '../../HOC/labeled';
 import commonView from '../../HOC/commonView';
@@ -22,7 +22,7 @@ interface IPageLoaderSelectProps {
 function PageLoaderSelect({
     value,
     onChange,
-    view: { choices }
+    view: { choices },
 }: IPageLoaderSelectProps) {
     const root: Y.Widget = Y.Wegas.PageLoader.find(PREVIEW_PAGELOADER_ID);
     const list: Y.ArrayList = root.get('contentBox').all('.wegas-pageloader');
@@ -33,7 +33,7 @@ function PageLoaderSelect({
             const name: string = w.get('pageLoaderId');
             plId.push({
                 label: name,
-                value: name
+                value: name,
             });
         }
     });

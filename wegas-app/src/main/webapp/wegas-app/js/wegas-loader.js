@@ -891,7 +891,6 @@ YUI().use(function (Y) {
         modules: {
             "wegas-react-form-async": {
                 path: "dist/bundle.js",
-                requires: [],
             },
             "wegas-react-form": {
                 path: "dist/bundle.js",
