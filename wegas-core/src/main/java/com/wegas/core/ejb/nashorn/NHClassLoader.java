@@ -35,6 +35,13 @@ public class NHClassLoader extends ClassLoader {
             }
         }
 
-        return super.loadClass(name);
+        try {
+            Class<?> loadClass = Thread.currentThread().getContextClassLoader().loadClass(name);
+            logger.error("LOAD {}", loadClass);
+            return loadClass;
+        } catch (ClassNotFoundException ex) {
+            logger.error("LOAD ERROR {}", name);
+            throw ex;
+        }
     }
 }
