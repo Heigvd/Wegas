@@ -117,6 +117,11 @@ module.exports = {
                     name: '[name].[ext]',
                 },
             },
+            {
+                test: /\.js$/,
+                use: ['source-map-loader'],
+                enforce: 'pre',
+            },
         ],
     },
     devServer: {
