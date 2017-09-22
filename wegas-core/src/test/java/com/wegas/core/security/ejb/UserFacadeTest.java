@@ -9,7 +9,6 @@ package com.wegas.core.security.ejb;
 
 import com.wegas.test.AbstractEJBTestBase;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
@@ -18,10 +17,6 @@ import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJBException;
-import javax.ejb.embeddable.EJBContainer;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

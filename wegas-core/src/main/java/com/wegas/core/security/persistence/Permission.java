@@ -10,16 +10,16 @@ package com.wegas.core.security.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,15 +27,12 @@ import org.eclipse.persistence.config.QueryHints;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Permission.findByPermission", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission")
-    ,
-    @NamedQuery(name = "Permission.findByPermissionAndUser", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission AND p.user.id = :userId")
-    ,
+    @NamedQuery(name = "Permission.findByPermission", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission"),
+    @NamedQuery(name = "Permission.findByPermissionAndUser", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission AND p.user.id = :userId"),
     @NamedQuery(name = "Permission.findByRole", query = "SELECT p FROM Permission p WHERE p.role.id = :roleId",
             hints = {
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
-            })
-    ,
+            }),
     @NamedQuery(name = "Permission.findByUser", query = "SELECT p FROM Permission p WHERE p.user.id = :userId",
             hints = {
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
@@ -43,14 +40,16 @@ import org.eclipse.persistence.config.QueryHints;
 })
 @Table(
         indexes = {
-            @Index(columnList = "role_id")
-            ,
+            @Index(columnList = "role_id"),
             @Index(columnList = "user_id")
         }
 )
 public class Permission extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
+    public static final Logger logger = LoggerFactory.getLogger(Permission.class);
+    
     /**
      *
      */
@@ -97,18 +96,6 @@ public class Permission extends AbstractEntity {
         this.value = value;
     }
 
-    /**
-     *
-     * @param value
-     * @param inducedPermission
-     *
-     */
-    /*
-    public Permission(String value, String inducedPermission) {
-        this.value = value;
-        this.inducedPermission = inducedPermission;
-    }
-     */
     @Override
     public void merge(AbstractEntity other) {
         if (other instanceof Permission) {

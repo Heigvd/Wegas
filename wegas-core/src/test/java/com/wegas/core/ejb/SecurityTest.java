@@ -13,9 +13,9 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.persistence.User;
 import javax.ejb.EJBException;
-import junit.framework.Assert;
 import org.apache.shiro.authc.AuthenticationException;
 import org.junit.Test;
+import org.junit.Assert;
 
 /**
  *

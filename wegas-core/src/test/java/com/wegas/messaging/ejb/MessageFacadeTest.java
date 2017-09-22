@@ -8,7 +8,6 @@
 package com.wegas.messaging.ejb;
 
 import com.wegas.test.AbstractEJBTest;
-import com.wegas.core.ejb.*;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -17,7 +16,6 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import com.wegas.core.rest.ScriptController;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;

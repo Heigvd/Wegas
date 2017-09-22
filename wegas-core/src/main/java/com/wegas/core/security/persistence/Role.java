@@ -26,9 +26,8 @@ import org.eclipse.persistence.config.QueryHints;
 })
 @Cacheable(true)
 @NamedQueries({
-    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")
-    ,
-    @NamedQuery(name = "Roles.findByUser", query = "SELECT role FROM Role role JOIN role.users user WHERE user.id = :userId",
+    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name"),
+    @NamedQuery(name = "Roles.findByUser", query = "SELECT r FROM Role r JOIN r.users u WHERE u.id = :userId",
             hints = {
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
             })
@@ -169,6 +168,7 @@ public class Role extends AbstractEntity {
 
     /**
      * @param permission
+     *
      * @return true if the permission has successfully been added
      */
     public boolean addPermission(String permission) {
@@ -177,6 +177,7 @@ public class Role extends AbstractEntity {
 
     /**
      * @param permission
+     *
      * @return true if the permission has successfully been added
      */
     public boolean addPermission(Permission permission) {
@@ -190,6 +191,7 @@ public class Role extends AbstractEntity {
 
     /**
      * @param permission
+     *
      * @return true if the permission has successfully been removed
      */
     public boolean removePermission(String permission) {
