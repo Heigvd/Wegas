@@ -210,6 +210,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             this.treeView.destroyAll();
 
             for (i in index) {
+                // Make the index attribute numeric:
+                index[i].index = +index[i].index;
                 if (index.hasOwnProperty(i)) {
                     tmpPageId = "" + index[i].id;
                     node = new Y.TreeNode({
@@ -404,14 +406,16 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                      }, */
                     {
                         type: "Button",
-                        label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                         on: {
                             click: Y.bind(host.duplicatePage, host, data.page)
                         }
                     },
                     {
                         type: "Button",
-                        label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                         on: {
                             click: Y.bind(host.deletePage, host, data.page)
                         }

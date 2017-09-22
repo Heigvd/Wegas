@@ -8,7 +8,8 @@ const prefixedLabelStyle = css(FormStyles.biggerLabelStyle, {
 
 const labelTextStyle = css({
     // Leave some space between label (if any) and following widget:
-    paddingRight: '8px'
+    paddingRight: '8px',
+    whiteSpace: 'nowrap'
 });
 
 interface ILabelProps {

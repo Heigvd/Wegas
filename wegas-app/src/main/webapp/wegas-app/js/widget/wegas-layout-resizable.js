@@ -141,8 +141,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     TabView.moveTabsAwayFrom(preferredEditorTabView, editorTab);
                 }
                 // For the initial view, hide the + menu of the Attributes tabView
-                Y.one(TabView.getOppositeTabView(preferredEditorTabView) + " .wegas-plus-tab").show();
-                Y.one(preferredEditorTabView + " .wegas-plus-tab").hide();
+                TabView.showPlusMenu(TabView.getOppositeTabView(preferredEditorTabView));
                 editorTab.set("selected", 2);
                 TabView.getTab(TabView.getPreviewTabLabel()).set("selected", 2);
             },
@@ -165,7 +164,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
              */
             getPosition: function(position) {
                 var cb = this.get("contentBox");
-                switch (position) {
+                switch (this.getShortPositionName(position)) {
                     case "top" :
                         return cb.one(".wegas-layout-hd");
                     case "bottom" :
@@ -215,6 +214,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
              * @param position
              */
             showPosition: function(position) {
+                position = this.getShortPositionName(position);
                 var target = this.getPosition(position);
                 if (parseInt(target.getStyle("width"), 10) < 70) {                  // If is hidden
                     target.setStyle("left", this.initialLeft[position]);            // Reset left value
@@ -314,14 +314,13 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 if (centerWidthStyle !== '0px') {
                     centerNode.setStyles({
                         left: leftWidth,
-                        right: rightNode.getComputedStyle("width"),
+                        right: rightWidth,
                         width: 'auto'
                     });
                     rightNode.setStyles({
                         left: 'auto'
                     });
                 } else {
-                    Y.Plugin.RemoveTabView.prototype.showRemoveTabViewIcons("center");
                     if (e && e.currentTarget.handle === 'l') {  // Left handle of right column has been moved
                         var windowWidth = parseInt(window.innerWidth || document.documentElement.clientWidth);
                         leftNode.setStyles({
@@ -334,9 +333,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                         });
                     }
                 }
-                if (rightWidth === '0px' || rightWidthStyle === '0px') {
-                    Y.Plugin.RemoveTabView.prototype.showRemoveTabViewIcons("right");
-                }
+                // if (rightWidth === '0px' || rightWidthStyle === '0px') {  }
                 this.savePosition(leftWidth, centerNode.getComputedStyle("width"), rightWidth);
                 Y.Wegas.app.fire("layout:resize");
             },

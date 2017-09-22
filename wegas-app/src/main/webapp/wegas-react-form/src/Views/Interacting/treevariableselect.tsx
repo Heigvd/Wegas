@@ -220,7 +220,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
                             }
                         }}
                         value={this.state.search}
-                        type="text"
+                        type="search"
                         onChange={ev =>
                             this.setState({
                                 search: ev.target.value

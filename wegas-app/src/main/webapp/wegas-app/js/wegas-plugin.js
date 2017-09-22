@@ -70,6 +70,9 @@ YUI.add('wegas-plugin', function(Y) {
                     return '' + i;
                 }
             }
+            if (Plugin[name]) {
+                return name;  // @HACK some places send the classname instead of the plugin name (e.g. conditional disable)
+            }
             return undefined;
         }
     });

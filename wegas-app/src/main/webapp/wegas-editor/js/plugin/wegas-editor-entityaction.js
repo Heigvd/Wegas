@@ -219,6 +219,11 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             otherProp = other._yuid ? other.get(name) : other[name];
                         if (typeof currProp === "object") {
                             if (currProp === otherProp) continue;
+                            // Special case where the plugins property is an empty array in the form but undefined in the widget.
+                            // We might also try to detect when a variable is created but not yet edited, but that would be pretty messy.
+                            if (name === "plugins" && otherProp === undefined && Array.isArray(currProp) && currProp.length === 0) {
+                                continue;
+                            }
                             if (isDifferent(currProp, otherProp)) return true;
                         } else if (currProp !== otherProp) {
                             return true;

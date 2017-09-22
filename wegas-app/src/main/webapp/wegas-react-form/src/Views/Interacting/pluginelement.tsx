@@ -20,10 +20,17 @@ function friendlyName(label: string) {
         case 'CSSStyles': return 'Other styles';
         case 'ShowAfter': return 'Show after';
         case 'HideAfter': return 'Hide after';
-        case 'ConditionalDisable': return 'Conditional disable';
+        case 'ConditionalDisable':
+        case 'wegas-conditionaldisable': return 'Conditional disable';
+        case 'wegas-conditionaldisable2': return 'Conditional disable #2';
+        case 'wegas-conditionaldisable3': return 'Conditional disable #3';
+        case 'wegas-conditionaldisable4': return 'Conditional disable #4';
+        case 'wegas-conditionaldisable5': return 'Conditional disable #5';
         case 'UnreadCount': return 'Unread count';
-        case 'Lockable': return 'Lock';
-        default: return 'internal error'
+        case 'Lockable':
+        case 'wegas-lockable': return 'Lock';
+        case 'wegas-showinboxlistonclick': return 'Show inbox list on click';
+        default: return 'internal error: ' + label;
     };
 };
 

@@ -19,6 +19,7 @@ import {
 import JSEditor from '../Views/asyncJSEditor';
 import { containerStyle } from '../Views/conditionImpactStyle';
 import { css } from 'glamor';
+import classNames from 'classnames';
 
 const errorStyle = css({
     label: 'Impact-errorStyle',
@@ -27,6 +28,11 @@ const errorStyle = css({
     paddingLeft: '40px',
     paddingTop: '3px',
     marginBottom: '-3px'
+});
+
+const newLineStyle = css({
+    display: 'block',
+    marginLeft: '30px'
 });
 
 const upgradeSchema = (varSchema, methodType = 'getter') => {
@@ -220,18 +226,22 @@ class Impact extends React.Component {
             const argsDescr = (methodDesc && methodDesc.arguments) || [];
             child = child.concat(
                 argsDescr.map((argDescr, i) => (
-                    <ArgForm
+                    <span
                         key={i}
-                        schema={argDescr}
-                        value={args[i]}
-                        onChange={v => {
-                            this.setState(prevState => {
-                                const prevArgs = prevState.args;
-                                prevArgs[i] = v;
-                                return { args: prevArgs };
-                            }, this.checkVariableMethod);
-                        }}
-                    />
+                        className={classNames({[newLineStyle.toString()]:  argDescr.view && argDescr.view.label })}
+                    >
+                        <ArgForm
+                            schema={argDescr}
+                            value={args[i]}
+                            onChange={v => {
+                                this.setState(prevState => {
+                                    const prevArgs = prevState.args;
+                                    prevArgs[i] = v;
+                                    return { args: prevArgs };
+                                }, this.checkVariableMethod);
+                            }}
+                        />
+                    </span>
                 ))
             );
         }
