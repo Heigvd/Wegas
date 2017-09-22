@@ -42,10 +42,8 @@ import com.wegas.core.persistence.InstanceOwner;
         }
 )
 @NamedQueries({
-    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC")
-    ,
-    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
-    ,
+    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -73,6 +71,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @NotNull
     @Basic(optional = false)
+    
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     private String token;
 
@@ -104,12 +103,9 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @JsonIgnore
     private Set<GameAccount> gameAccounts;
 
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("game-team")
-    private List<Team> teams = new ArrayList<>();
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private GameTeams gameTeams;
 
     @JsonIgnore
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
@@ -137,6 +133,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @Enumerated(value = EnumType.STRING)
+    
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -168,11 +165,9 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @PrePersist
     public void prePersist() {
         this.setCreatedTime(new Date());
-        /*
-         * if (this.getTeams().isEmpty()) {
-         * this.addTeam(new DebugTeam());
-         * }
-         */
+        if (gameTeams == null) {
+            this.setGameTeams(new GameTeams());
+        }
         this.preUpdate();
     }
 
@@ -192,13 +187,25 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
         this.setToken(other.getToken());
     }
 
+    public GameTeams getGameTeams() {
+        if (gameTeams == null){
+            this.setGameTeams(new GameTeams());
+        }
+        return gameTeams;
+    }
+
+    public void setGameTeams(GameTeams gameTeams) {
+        this.gameTeams = gameTeams;
+        this.gameTeams.setGame(this);
+    }
+
     /**
      * @return the teams
      */
     @JsonManagedReference("game-team")
     @JsonView(Views.IndexI.class)
     public List<Team> getTeams() {
-        return this.teams;
+        return this.getGameTeams().getTeams();
     }
 
     /**
@@ -206,7 +213,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @JsonManagedReference("game-team")
     public void setTeams(List<Team> teams) {
-        this.teams = teams;
+        this.getGameTeams().setTeams(teams);
     }
 
     @JsonIgnore
@@ -223,6 +230,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      * @return all players from all teams
      */
     @JsonIgnore
+    @Override
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>();
         for (Team t : this.getTeams()) {
@@ -247,6 +255,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @JsonIgnore
     public void addTeam(Team t) {
+
         this.getTeams().add(t);
         t.setGame(this);
         //t.setGameId(this.getId());
@@ -518,12 +527,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
 
     @Override
     public String getRequieredUpdatePermission() {
-        if (this.getAccess() == GameAccess.OPEN) {
-            // Everybody can create a team and add it to the game
-            return null;
-        } else {
-            return "W-" + this.getChannel();
-        }
+        return "W-" + this.getChannel();
     }
 
     @Override

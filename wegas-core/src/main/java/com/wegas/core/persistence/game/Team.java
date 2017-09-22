@@ -29,9 +29,9 @@ import com.wegas.core.security.persistence.User;
  */
 @Entity
 @Table(
-        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "parentgame_id"}),
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "gameteams_id"}),
         indexes = {
-            @Index(columnList = "parentgame_id")
+            @Index(columnList = "gameteams_id")
         }
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -39,8 +39,7 @@ import com.wegas.core.security.persistence.User;
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")
-    ,
+    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameTeams.game.id = :gameId"),
     @NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
 public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
@@ -100,13 +99,11 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
-     * The game model this belongs to
+     * The game this team belongs to
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "parentgame_id", nullable = false)
     @JsonIgnore
-    @JsonBackReference(value = "game-team")
-    private Game game;
+    private GameTeams gameTeams;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User createdBy;
@@ -172,12 +169,20 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         this.setNotes(t.getNotes());
     }
 
+    public GameTeams getGameTeams() {
+        return gameTeams;
+    }
+
+    public void setGameTeams(GameTeams gameTeams) {
+        this.gameTeams = gameTeams;
+    }
+
     /**
      * @return the gameModel
      */
     @JsonBackReference(value = "game-team")
     public Game getGame() {
-        return game;
+        return getGameTeams().getGame();
     }
 
     /**
@@ -185,7 +190,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonBackReference(value = "game-team")
     public void setGame(Game game) {
-        this.game = game;
+        this.setGameTeams(game.getGameTeams());
     }
 
     /**
@@ -268,7 +273,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      * @return the gameId
      */
     public Long getGameId() {
-        return (game != null ? game.getId() : null);
+        return (getGame() != null ? getGame().getId() : null);
     }
 
     /**
