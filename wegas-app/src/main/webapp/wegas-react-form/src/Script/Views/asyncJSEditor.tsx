@@ -1,12 +1,9 @@
-import { asyncReactor } from 'async-reactor';
+import loadAsync from '../../HOC/loadAsyncComp';
 import React from 'react';
 import { AceEditorProps } from 'react-ace/types';
 
-function JSE(props: AceEditorProps) {
-    return import(
-        /* webpackChunkName: "ace-js" */ './JSEditor'
-    ).then(({ JSEditor }) => <JSEditor {...props} />);
-}
-export default asyncReactor(JSE, () =>
-    <i>Loading ...</i>
+export default loadAsync(() =>
+    import(/* webpackChunkName: "ace-js" */ './JSEditor').then(
+        ({ JSEditor }) => JSEditor
+    )
 ) as React.ComponentClass<AceEditorProps>;

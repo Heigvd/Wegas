@@ -4,8 +4,7 @@ import 'core-js';
 import { Schema } from 'jsoninput';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
-
-import { css, keyframes } from 'glamor';
+import { css } from 'glamor';
 import { debounce } from 'lodash-es';
 import promised from './HOC/loadAsyncComp';
 
@@ -38,25 +37,20 @@ const containerForm = css({
     padding: '0 1em',
     boxSizing: 'border-box',
 });
-const scale = keyframes({
-    '0%': {
-        transform: 'scale(0)',
-        opacity: 1,
-    },
-    '100%': {
-        transform: 'scale(1)',
-        opacity: 0,
-    },
+const AsyncForm = promised(() => {
+    import(/* webpackChunkName: "reactForm" */ './defaultViews');
+    return import(/* webpackChunkName: "reactForm" */ 'jsoninput').then(
+        RForm => {
+            return (props: {
+                schema: Schema;
+                formRef: React.Ref<React.Component>;
+                value?: {};
+                onChange: (value: any) => void;
+            }) => <RForm.default ref={props.formRef} {...props} />;
+        }
+    );
 });
-const loaderStyle = css({
-    width: '30px',
-    height: '30px',
-    backgroundColor: '#808080',
-    borderRadius: '50%',
-    margin: 'auto',
-    animation: `${scale} 1s infinite ease-in-out`,
-});
-const Loader = () => <div {...loaderStyle} />;
+
 YUI.add('wegas-react-form', Y => {
     const Wegas: { [key: string]: any } = Y.Wegas;
     const Form = Y.Base.create(
@@ -90,20 +84,6 @@ YUI.add('wegas-react-form', Y => {
                     const boundFire = (val: {}) => {
                         this.fire('updated', val);
                     };
-                    import(/* webpackChunkName: "reactForm" */ './defaultViews');
-                    const AsyncForm = promised(
-                        import(/* webpackChunkName: "reactForm" */ 'jsoninput').then(
-                            RForm => (props: {
-                                schema: Schema;
-                                formRef: React.Ref<{}>;
-                                value: any;
-                                onChange: (value: any) => void;
-                            }) => (
-                                <RForm.default ref={props.formRef} {...props} />
-                            )
-                        ),
-                        Loader
-                    );
                     render(
                         <div className={containerForm.toString()}>
                             <AsyncForm
