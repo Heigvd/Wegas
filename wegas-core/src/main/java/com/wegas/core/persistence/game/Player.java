@@ -295,10 +295,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         return status;
     }
 
-    public void setStatus(int i) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     @Override
     public void setStatus(Status status) {
         this.status = status;
