@@ -1,42 +1,31 @@
 import React from 'react';
-import debounce from '../HOC/callbackDebounce';
+import deb from 'lodash-es/debounce';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 import { css } from 'glamor';
 import FormStyles from './form-styles';
 
-const placeholderStyleDetails = css({
-    fontStyle: 'italic'
+const inputStyle = css({
+    label: 'string-inputStyle',
+    borderRadius: '3px',
+    boxSizing: 'border-box',
+    border: '1px solid lightgrey',
+    fontSize: '13px',
+    color: 'darkslategrey',
+    boxShadow: '1px 1px 4px #ccc',
+    width: '100%',
+    maxWidth: FormStyles.textInputWidth,
+    padding: '0px',
+    '::placeholder': {
+        fontStyle: 'italic',
+    },
 });
-
-const placeholderStyle = css({
-    '::-webkit-input-placeholder' : placeholderStyleDetails,
-    ':-moz-placeholder' : placeholderStyleDetails,
-    '::-moz-placeholder' : placeholderStyleDetails,
-    ':-ms-input-placeholder' : placeholderStyleDetails
-});
-
-const inputStyle = css(
-    placeholderStyle,
-    {
-        label: 'string-inputStyle',
-        borderRadius: '3px',
-        boxSizing: 'border-box',
-        border: '1px solid lightgrey',
-        fontSize: '13px',
-        color: 'darkslategrey',
-        boxShadow: '1px 1px 4px #ccc',
-        width: '100%',
-        maxWidth: FormStyles.textInputWidth,
-        padding: '0px'
-    }
-);
 
 const textareaFocus = css({
     label: 'string-textareaFocus',
     ':focus': {
-        border: '1px solid lightgrey'
-    }
+        border: '1px solid lightgrey',
+    },
 });
 
 const textareaStyle = css(
@@ -48,12 +37,11 @@ const textareaStyle = css(
         fontStyle: 'italic',
         fontSize: '15px',
         border: 'none',
-        color: 'darkgrey'
+        color: 'darkgrey',
     },
     textareaFocus
 );
 
-const debounceOnChange = debounce('onChange');
 function fromNotToEmpty(value?: void | string | number) {
     if (value === null || value === undefined) {
         return '';
@@ -72,23 +60,41 @@ interface IStringProps {
     };
     onChange: (value: string) => void;
 }
-type StringProps = IStringProps;
 class StringView extends React.Component<
-    StringProps,
+    IStringProps,
     { value: string | number }
 > {
-    constructor(props: StringProps) {
+    debouncedOnChange: ((value: string) => void) & _.Cancelable;
+    constructor(props: IStringProps) {
         super(props);
         this.state = { value: fromNotToEmpty(props.value) };
+        this.handleChange = this.handleChange.bind(this);
+        this.debouncedOnChange = deb(props.onChange, 300);
     }
-    componentWillReceiveProps(nextProps: StringProps) {
+    componentWillReceiveProps(nextProps: IStringProps) {
         this.setState({ value: fromNotToEmpty(nextProps.value) });
+        if (nextProps.onChange !== this.props.onChange) {
+            this.debouncedOnChange.flush();
+            this.debouncedOnChange = deb(nextProps.onChange, 300);
+        }
+    }
+    componentWillUnmout() {
+        this.debouncedOnChange.flush();
     }
     handleChange(
-        event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+        event:
+            | React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+            | React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>
     ) {
-        const v = event.target.value;
-        this.setState({ value: v }, () => this.props.onChange(v));
+        const value = event.currentTarget.value;
+        const eventType = event.type;
+        this.setState({ value }, () => {
+            if (eventType === 'change') {
+                this.debouncedOnChange(value);
+            } else {
+                this.props.onChange(value);
+            }
+        });
     }
     render() {
         if (typeof this.props.view.rows === 'number') {
@@ -97,7 +103,8 @@ class StringView extends React.Component<
                     id={this.props.id}
                     className={textareaStyle.toString()}
                     rows={this.props.view.rows}
-                    onChange={ev => this.handleChange(ev)}
+                    onChange={this.handleChange}
+                    onBlur={this.handleChange}
                     placeholder={this.props.view.placeholder}
                     value={this.state.value}
                     disabled={this.props.view.disabled}
@@ -111,11 +118,12 @@ class StringView extends React.Component<
                 type="text"
                 placeholder={this.props.view.placeholder}
                 value={this.state.value}
-                onChange={ev => this.handleChange(ev)}
+                onChange={this.handleChange}
+                onBlur={this.handleChange}
                 disabled={this.props.view.disabled}
             />
         );
     }
 }
 
-export default commonView(labeled(debounceOnChange<StringProps>(StringView)));
+export default commonView(labeled(StringView));
