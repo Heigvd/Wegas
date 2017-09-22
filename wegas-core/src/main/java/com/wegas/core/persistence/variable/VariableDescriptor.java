@@ -365,6 +365,37 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
+     * Retrieve an instance which stands in the same scope as given variableInstance
+     *
+     * @param variableInstance
+     *
+     * @return
+     *
+     */
+    @JsonIgnore
+    public T findInstance(VariableInstance variableInstance) {
+
+        // if the given VariableInstance is a default instance, return the descripto default instance
+        if (variableInstance.isDefaultInstance()) {
+            return this.getDefaultInstance();
+        }
+
+        AbstractScope iScope = variableInstance.getScope();
+
+        if (iScope instanceof PlayerScope) {
+            return (T) scope.getVariableInstance(variableInstance.getPlayer());
+        } else if (iScope instanceof TeamScope) {
+            return (T) scope.getVariableInstance(variableInstance.getTeam());
+        } else if (iScope instanceof GameScope) {
+            return (T) scope.getVariableInstance(variableInstance.getGame());
+        } else if (iScope instanceof GameModelScope) {
+            return (T) scope.getVariableInstance(variableInstance.getGameModel());
+        }
+
+        return null;
+    }
+
+    /**
      * Fetch variable instance for the given player
      *
      * @param player
@@ -587,7 +618,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.beans = beanjection;
     }
 
-    private VariableDescriptorFacade getVariableDescriptorFacade() {
+    private VariableDescriptorFacade getVariableDescriptorFacade() { // SEE UPDATE SCOPE IN MERGE
         if (this.beans != null && this.beans.getVariableDescriptorFacade() != null) {
             return this.beans.getVariableDescriptorFacade();
         } else if (this.variableDescriptorFacade == null) {

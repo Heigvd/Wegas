@@ -258,8 +258,9 @@ public class ReviewingFacade {
             VariableDescriptor toReview = prd.getToReview();
             for (Iterator<PeerReviewInstance> it = pris.iterator(); it.hasNext();) {
                 PeerReviewInstance pri = it.next();
-                try {
-                    VariableInstance toReviewInstance = variableInstanceFacade.findInstance(toReview, pri);
+                VariableInstance toReviewInstance = toReview.findInstance(pri);
+                if (toReviewInstance != null) {
+
                     boolean reject = false;
 
                     if (pri.getReviewState() == PeerReviewDescriptor.ReviewingState.COMPLETED
@@ -286,8 +287,6 @@ public class ReviewingFacade {
                         evicted.add(pri);
                         it.remove();
                     }
-                } catch (NoPlayerException ex) {
-                    // Evict
                 }
             }
             numberOfReview = Math.min(prd.getMaxNumberOfReview(), pris.size() - 1);
@@ -556,7 +555,7 @@ public class ReviewingFacade {
      * Moreover, as the variable may not yet exists (especially when posting a
      * whole GameModel) when the PeerReviewDescriptor is created, we'll have to
      * wait to resolve such identifier.
-     *
+     * <p>
      * This is done by listening to EntityRevivedEvent
      *
      * @param event
