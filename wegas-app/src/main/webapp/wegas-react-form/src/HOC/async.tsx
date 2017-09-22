@@ -3,7 +3,7 @@ import React from 'react';
 enum STATUS {
     STOP = 'stop',
     RUN = 'run',
-    END = 'end'
+    END = 'end',
 }
 
 type PromiseProps<I, O> = (props: I) => Promise<O> | O;
@@ -14,32 +14,40 @@ function promised<P, O>(Comp: React.ComponentClass<{}> | React.SFC<{}>) {
             status: STATUS;
         }
         class Async extends React.Component<P, IAsyncState> {
+            mounted: boolean = true;
             constructor(props: P) {
                 super(props);
                 this.state = {
-                    status: STATUS.STOP
+                    status: STATUS.STOP,
                 };
             }
             componentWillMount() {
                 this.setState({ status: STATUS.RUN });
                 Promise.resolve(promising(this.props)).then(result => {
-                    this.setState({
-                        result,
-                        status: STATUS.END
-                    });
+                    if (this.mounted) {
+                        this.setState({
+                            result,
+                            status: STATUS.END,
+                        });
+                    }
                 });
             }
             componentWillReceiveProps(nextProps: P) {
                 this.setState({ status: STATUS.RUN });
                 Promise.resolve(promising(nextProps)).then(result => {
-                    this.setState({
-                        result,
-                        status: STATUS.END
-                    });
+                    if (this.mounted) {
+                        this.setState({
+                            result,
+                            status: STATUS.END,
+                        });
+                    }
                 });
             }
             shouldComponentUpdate(nextProps: P, nextState: IAsyncState) {
                 return nextState.status === STATUS.END;
+            }
+            componentWillUnmount() {
+                this.mounted = false;
             }
             render() {
                 if (this.state.status === STATUS.END) {

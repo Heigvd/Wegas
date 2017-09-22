@@ -125,7 +125,7 @@ export function handleArgs(member, method, args, onChange) {
  * register new global method under given type.
  * @param {string} type Global type (getter, condition)
  * @param {{key:{label:string,
-            arguments:[],
+            arguments:any[],
             className:string=,
             returns:string=}
         }} methodsObject a key value config. Key is a global method ("member.method")

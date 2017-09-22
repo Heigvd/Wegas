@@ -44,7 +44,12 @@ YUI.add('wegas-console-wysiwyg', function (Y) {
             var cb = this.get(CONTENTBOX);
             var reactContainer = cb.append("<div></div>");
             this.plug(Plugin.WidgetToolbar);
-            this.srcField = Y.Wegas.RForm.Script.MultiVariableMethod({ value: { '@class': 'Script', content: ';' } }, reactContainer.getDOMNode());
+            Y.Wegas.RForm.Script
+                .MultiVariableMethod(
+                    { value: { '@class': 'Script', content: ';' } },
+                    reactContainer.getDOMNode()
+                )
+                .then(ret => (this.srcField = ret));
             // this.srcField = new Y.Wegas.RForm({cfg: { type: "object", view: { type: 'script' } } }).render(x);
             // this.srcField = new Y.inputEx.WysiwygScript({
             //     parentEl: cb
