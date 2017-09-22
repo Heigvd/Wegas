@@ -94,12 +94,14 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     display: none;
 }
 
-#centerTabView .yui3-tabview-panel:empty:before,
-#rightTabView .yui3-tabview-panel:empty:before,
-#centerTabView .yui3-tabview-panel .panel-inner:empty:before,
-#rightTabView .yui3-tabview-panel .panel-inner:empty:before,
-#centerTabView .yui3-tabview-panel .empty-edit-panel:before,
-#rightTabView .yui3-tabview-panel .empty-edit-panel:before {
+#centerTabView .yui3-tabview-panel:empty:after,
+#rightTabView .yui3-tabview-panel:empty:after,
+#centerTabView > .yui3-tabview-content > .yui3-tabview-panel:after,
+#rightTabView > .yui3-tabview-content > .yui3-tabview-panel:after,
+#centerTabView .yui3-tabview-panel .panel-inner:empty:after,
+#rightTabView .yui3-tabview-panel .panel-inner:empty:after,
+#centerTabView .yui3-tabview-panel .empty-edit-panel:after,
+#rightTabView .yui3-tabview-panel .empty-edit-panel:after {
     content: "Nothing selected";
     text-align: center;
     margin-top: 2em;
@@ -130,7 +132,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     top: 36px;
     bottom: 0px;
     width: 100%;
-    overflow: auto;
+    overflow: hidden;
     border-top: 4px solid #b7cb90 !important;
 }
 
@@ -142,7 +144,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel {
     position: relative;
     height: 100%;
-    overflow: auto;
+    /*overflow: auto;*/
 }
 
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner {
@@ -182,12 +184,14 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 }
 
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab {
-    color: #888686;
-    background: none;
     font-size: 20px;
-    padding: 0;
     top: 10px;
     margin-left: 10px;
+    background: #b7cb90;
+    padding: 5px 0 0 0;
+    color: white;
+    border-radius: 10px 10px 0 0;
+    width: 33px;
 }
 
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab:hover {
@@ -461,7 +465,11 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 }
 
 .yui3-skin-sam .wegas-layout-column .yui3-tabview-list {
-    margin: 0 .5em;
+    margin: 0 6px;
+}
+
+.yui3-skin-sam .wegas-layout-column #rightTabView > .yui3-tabview-content > .yui3-tabview-list {
+    margin-left: 10px;
 }
 
 .yui3-skin-sam .wegas-layout-column .yui3-tabview-list:empty {

@@ -317,9 +317,6 @@
                 ],
                 "plugins": [
                     {
-                        "fn": "RestoreRightCol"
-                    },
-                    {
                         "fn": "RemoveTabView",
                         "cfg": {
                             "tabViewName": "center"
@@ -514,9 +511,6 @@
                     }
                 ],
                 "plugins": [
-                    {
-                        "fn": "RestoreCenterCol"
-                    },
                     {
                         "fn": "ExtraTabs",
                         "cfg": {

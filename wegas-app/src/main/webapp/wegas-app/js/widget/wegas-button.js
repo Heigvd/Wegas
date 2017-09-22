@@ -415,7 +415,10 @@ YUI.add('wegas-button', function(Y) {
                 displayValue: {
                     type: 'boolean',
                     optional: true,
-                    value: true
+                    value: true,
+                    view: {
+                        label: "Display value"
+                    }
                 },
                 userCounters: {
                     type: 'object',

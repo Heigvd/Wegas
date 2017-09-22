@@ -70,15 +70,20 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                 menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function (i) {
 
                     switch (i.label) { // @hack add icons to some buttons
+                        case 'Add':
+                            i.label = Plugin.EditEntityAction.getStackedIconLabel('fa-plus-circle', 'Add graphical element');
+                            break;
                         case 'Delete':
+                            i.label = Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete');
+                            break;
                         case 'Copy':
+                            i.label = Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate');
+                            break;
                         case 'Edit':
-                            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, '-').toLowerCase() +
-                                '"></span>' + i.label;
+                            // Do nothing
                             break;
                     }
-
-                    // return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+                    i.cssClass = Plugin.EditEntityAction.getStackedIconClass();
                     return (i.label && (i.label !== 'New' && i.label.indexOf('Edit') < 0));
                 }); // Retrieve menu and remove the first item
                  formCfg.properties.children = {
@@ -124,12 +129,12 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                                 attrs: entity.getAttrs()
                             });
                             Plugin.EditEntityAction.hideEditFormOverlay();
-                            Plugin.EditEntityAction.showFormMessage('success', UPDATED_MSG);
+                            //Plugin.EditEntityAction.showFormMessage('success', UPDATED_MSG);
                             this.highlight(Plugin.EditEntityAction.currentEntity, true);
                         }, this));
                     } else {
                         Plugin.EditEntityAction.hideEditFormOverlay();
-                        Plugin.EditEntityAction.showFormMessage('success', UPDATED_MSG);
+                        //Plugin.EditEntityAction.showFormMessage('success', UPDATED_MSG);
                     }
                 }, this), Y.bind(function (entity) {
                     if (entity) {
@@ -137,7 +142,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                     }
                 }, this), cfg);
 
-                form.toolbar.add(menuItems).item(0).get('contentBox').setStyle('marginLeft', '10px');
+                form.toolbar.add(menuItems);
             }, this);
 
             /* Inject page's name */
@@ -172,6 +177,14 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                                 }
                             }
                         };
+                        // Also update the widget to prevent false update notifications:
+                        widget.set(PAGE_META,
+                            {
+                                id: meta.id,
+                                name: meta.name,
+                                index: meta.index
+                            }
+                        );
                     }
                     showForm(formCfg);
                 });

@@ -382,8 +382,15 @@ YUI.add('wegas-pageeditor', function(Y) {
         _syncWidgetEdition: function() {
             var widget = Y.Plugin.EditEntityAction.currentEntity === this.overlayWidget ? Y.Plugin.EditEntityAction.currentEntity : null;
             if (widget) {
+                /*
+                // This does not work anymore with Form 2.0:
                 Y.Plugin.EditEntityAction.form.set("values", widget.toObject());
                 Y.Plugin.EditEntityAction.form.syncUI();
+                */
+                // Simulate a renewed click on the same widget to regenerate the form:
+                if (this.overlayMask.menu.getMenu().size() > 0) {
+                    this.overlayMask.menu.getMenu().item(0).fire("click");
+                }
             }
         }
     }, {

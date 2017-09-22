@@ -658,7 +658,7 @@ YUI().use(function (Y) {
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
-                requires: ["wegas-plugin", "wegas-form", "wegas-react-form", "wegas-panel"],
+                requires: ["wegas-plugin", "wegas-form", "wegas-react-form", "wegas-panel", "wegas-tabview"],
                 ws_provides: ["NewEntityAction", "EditEntityAction", "NewEntityButton"]
             },
             "wegas-editor-form": {

@@ -1511,37 +1511,40 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             view: { label: 'From', layout: 'long' }
                         },
                         {
-                        type: STRING,
+                            type: STRING,
+                            value: '',
                             view: { label: 'Date' }
                         },
                         {
-                        type: STRING,
+                            type: STRING,
                             view: { label: 'Subject' },
-                        required: true
+                            required: true
                         },
                         {
                             type: STRING,
                             view: { type: HTML, label: 'Body' },
-                        required: true
+                            required: true
                         },
                         {
-                        type: STRING,
+                            type: STRING,
                             view: {
                                 label: 'Token',
                                 className: 'wegas-advanced-feature',
-                                description: 'like a message identifier, may be used to reference the message within FSM/Trigger condition'
+                                description: 'Like a message identifier, may be used to reference the message within FSM/Trigger condition'
                             }
                         },
                         {
                             type: 'array',
+                            view: { label: 'Attachments'},
                             items: {
                                 type: STRING,
+                                required: true,
                                 view: {
                                     type: 'wegasurl',
-                                    label: '',
-                            required: true
+                                    label: 'Select file'
+                                }
                         }
-                            }
+
                         }
                     ]
             },

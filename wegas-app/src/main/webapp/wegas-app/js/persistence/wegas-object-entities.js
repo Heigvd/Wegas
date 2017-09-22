@@ -118,7 +118,7 @@ YUI.add('wegas-object-entities', function(Y) {
                 arguments: [SELFARG]
             },
             getProperty: {
-                label: "property equals",
+                label: "property",  // "property equals"
                 returns: STRING,
                 arguments: [SELFARG, {
                     view: { label: NAME },

@@ -13,8 +13,6 @@ YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
     var RemoveTabView,
-        RestoreCenterCol,
-        RestoreRightCol,
         TabDocker,
         Plugin = Y.Plugin, Wegas = Y.Wegas,
         CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
@@ -318,8 +316,30 @@ YUI.add('wegas-tabview', function(Y) {
             if (Wegas.app.widget.isHidden(tabView)) {
                 Wegas.app.widget.showPosition(tabView);
                 // Hide icons for restoring this tabview from other tabview
-                var tabviewNode = Y.Widget.getByNode(this.getOppositeTabView(tabViewSelector));
-                tabviewNode.get(CONTENTBOX).one('.wegas-open-' + tabView + '-tabview').addClass("hidden");
+                //var tabviewNode = Y.Widget.getByNode(this.getOppositeTabView(tabViewSelector));
+                //tabviewNode.get(CONTENTBOX).one('.wegas-open-' + tabView + '-tabview').addClass("hidden");
+            }
+        },
+
+        /*
+        ** Shows the plus-menu of the given tabView and hides the other one.
+        ** If we are showing the menu of the editor tabView, hide its first entry (for moving the editor),
+        ** otherwise show its first entry.
+         */
+        showPlusMenu: function(tabViewId, hideFirstEntry) {
+            tabViewId = this.getLongPositionName(tabViewId);
+            var editorTabView = this.getCurrentEditorTabViewId() || this.getDefaultEditorTabView(),
+                isEditorTabView = editorTabView.indexOf(tabViewId) > -1,
+                plusMenu = Y.one(tabViewId + " .wegas-plus-tab");
+            if (!plusMenu) return;
+            var menu = Y.Widget.getByNode(plusMenu).hasPlugin("menu"),
+                firstEntry = menu.getMenu().item(0);
+            Y.one(tabViewId + " .wegas-plus-tab").show();
+            Y.one(TabView.getOppositeTabView(tabViewId) + " .wegas-plus-tab").hide();
+            if (isEditorTabView || hideFirstEntry === true) {
+                firstEntry.hide();
+            } else {
+                firstEntry.show();
             }
         },
 
@@ -371,6 +391,19 @@ YUI.add('wegas-tabview', function(Y) {
                 return 'left';
             } else if(position.indexOf('top') >= 0) {
                 return 'top';
+            }
+        },
+
+        // Translates 'center' into '#centerTabView' etc.
+        getLongPositionName: function(position) {
+            if (position.indexOf('center') >= 0) {
+                return '#centerTabView';
+            } else if (position.indexOf('right') >= 0) {
+                return '#rightTabView';
+            } else if(position.indexOf('left') >= 0) {
+                return '#leftTabView';
+            } else if(position.indexOf('top') >= 0) {
+                return '.wegas-layout-hd';
             }
         },
 
@@ -649,7 +682,17 @@ YUI.add('wegas-tabview', function(Y) {
             this.onceAfterHostEvent('tab:render', this.afterTabRender, this);
         },
         afterTabRender: function(e) {
-            this.get("host").get(BOUNDINGBOX).append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
+            var tab = this.get("host");
+            tab.get(BOUNDINGBOX).append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
+            // Unhide the tabView closing button and the first entry "Attributes" in the plus-menu:
+            var tabView = tab.get("tabSelector");
+            var cross = Y.Widget.getByNode(tabView).get(CONTENTBOX).one('.wegas-removeTabview');
+            if (cross) {
+                cross.show();
+            }
+            if (e.target.get("label") !== EDITOR_TAB_LABEL) {
+                Wegas.TabView.showPlusMenu(tabView);
+            }
         },
         /**
          * @function
@@ -659,17 +702,23 @@ YUI.add('wegas-tabview', function(Y) {
          */
         onRemoveClick: function(e) {
             var tab = this.get("host"),
-                isEditTab = tab.hasPlugin("editentity"),
+                tabView = tab.get("tabSelector"),
+                isEditTab = tab.get("label") === EDITOR_TAB_LABEL, // Must be true even if the form is empty.
                 doDelete = function() {
                     tab.remove().destroy();
                     delete TabView.tabs[tab.get("id")];
                 };
+            e.stopPropagation();
             if (isEditTab) {
                 Plugin.EditEntityAction.allowDiscardingEdits(doDelete);
+                // Also close the tabView:
+                var cross = Y.Widget.getByNode(tabView).get(CONTENTBOX).one(".wegas-removeTabview");
+                if (cross) {
+                    cross.simulate("click");
+                }
             } else {
                 doDelete();
             }
-            e.stopPropagation();
         },
         destructor: function() {
             if (this.get("closeCallback")) {
@@ -709,14 +758,15 @@ YUI.add('wegas-tabview', function(Y) {
         },
         expand: function() {
             var tab = this.get("host");
-/*
-            // Try to move the Preview tab to the last position near the + button:
-            var tabViewSelector = tab.get("tabSelector"),
-                tabView = Y.Widget.getByNode(tabViewSelector);
-            TabView.moveToTabView(tab.get("label"), tabViewSelector, {}, tabView.size() - 1, true);
-*/
             tab.show();
-            tab.get("panelNode").show()
+            tab.get("panelNode").show();
+            // Unhide the tabView closing button and the first entry "Attributes" in the plus-menu:
+            var tabView = tab.get("tabSelector");
+            var cross = Y.Widget.getByNode(tabView).get(CONTENTBOX).one('.wegas-removeTabview');
+            if (cross) {
+                cross.show();
+            }
+            Wegas.TabView.showPlusMenu(tabView);
         }
     }, {
         NS: "hideable",
@@ -877,7 +927,7 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<div class="wegas-removeTabview fa fa-chevron-left" title="Hide %name% column"></div>',
+        ADD_TEMPLATE: '<div class="wegas-removeTabview fa fa-times" title="Close %name% column"></div>', // fa-chevron-left
         /**
          * @function
          * @private
@@ -932,38 +982,64 @@ YUI.add('wegas-tabview', function(Y) {
             }, this);
             this.onHostEvent("addChild", function() {
                 if (Wegas.app.widget) {
-                    Wegas.app.widget.showPosition(this.get("tabViewName"));
+                    var tabViewId = this.get("tabViewName");
+                    Wegas.app.widget.showPosition(tabViewId);
+                    // Display the tabView removal icon in the other tabView in case it was empty (no tabs)
+                    var otherTabView = Wegas.TabView.getOppositeTabView(tabViewId),
+                        cross = Y.Widget.getByNode(otherTabView).get(CONTENTBOX).one('.wegas-removeTabview');
+                    if (cross) {
+                        cross.show();
+                    }
                 }
             });
-        },
-        // Hides the given tabView/Column and shows the button for un-hiding it again.
-        showRemoveTabViewIcons: function(tabView) {
-            tabView = tabView || this.get("tabViewName");
-            if (tabView.indexOf("center") >= 0) {
-                var reopenIcon = Y.Widget.getByNode('#rightTabView').get("contentBox").one('.wegas-open-center-tabview');
-                if (reopenIcon) {
-                    reopenIcon.removeClass('hidden');
-                }
-            } else if (tabView.indexOf("right") >= 0) {
-                var reopenIcon = Y.Widget.getByNode('#centerTabView').get("contentBox").one('.wegas-open-right-tabview');
-                if (reopenIcon) {
-                    reopenIcon.removeClass('hidden');
-                }
-            }
         },
         onClick: function(e) {
             e.stopPropagation();
             var tabView = this.get("tabViewName"),
-                otherTabView = Wegas.TabView.getShortPositionName(Wegas.TabView.getOppositeTabView(tabView));
-            if (!Wegas.app.widget.isHidden(otherTabView)) {
-                Wegas.app.widget.hidePosition(tabView);
-                this.showRemoveTabViewIcons(tabView);
+                editorTabView = Wegas.TabView.getCurrentEditorTabViewId();
+            // Are we closing the tabView containing the edit/form tab?
+            if ((editorTabView && editorTabView.indexOf(tabView) > -1) ||
+                Wegas.TabView.getDefaultEditorTabView().indexOf(tabView) > -1) {
+                // We are closing the tabview with the edit/form tab. Make it close itself properly:
+                Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                    Plugin.EditEntityAction.discardEdits();
+                    var tab = Wegas.TabView.getTab(EDITOR_TAB_LABEL);
+                    if (tab) {
+                        tab.get("boundingBox").one('.yui3-tab-remove').simulate("click");
+                    }
+
+                    // If the other column is NOT visible, show it and activate its plus-menu
+                    var otherTabView = Wegas.TabView.getOppositeTabView(tabView);
+                    if (Wegas.app.widget.isHidden(otherTabView)) {
+                        Wegas.app.widget.showPosition(otherTabView);
+                        Wegas.TabView.showPlusMenu(otherTabView, true);
+                    }
+                    Wegas.app.widget.hidePosition(tabView);
+                }));
             } else {
-                // Hide this column and show the other:
-                Wegas.app.widget.hidePosition(tabView);
-                this.showRemoveTabViewIcons(tabView);
-                Wegas.app.widget.showPosition(otherTabView);
-                this.showRemoveTabViewIcons(otherTabView);
+                // It's the other tabView (Preview, plus-menu, ...)
+                // Keep the tabView open, but do the following: (1) hide the close button, (2) close all its tabs, (3) hide the "Attributes" entry of the plus-menu
+                e.target.hide();
+                var tabViewObj = this.get("host"),
+                    nbTabs = tabViewObj.size(),
+                    index = 0;
+                for (var i = nbTabs-1; i >= 0; i--) {
+                    var currTab = tabViewObj.item(i);
+                    if (currTab.name === "tab") {
+                        var cross = currTab.get("boundingBox").one('.yui3-tab-remove');
+                        if (cross) {
+                            cross.simulate("click");
+                        }
+                    }
+                }
+                // If the other column is visible, activate its plus-menu
+                var otherTabView = Wegas.TabView.getOppositeTabView(tabView);
+                if (Wegas.app.widget.isHidden(otherTabView) === false) {
+                    Wegas.TabView.showPlusMenu(otherTabView);
+                    Wegas.app.widget.hidePosition(tabView);
+                } else {
+                    Wegas.TabView.showPlusMenu(tabView, true);
+                }
             }
         }
     }, {
@@ -974,92 +1050,6 @@ YUI.add('wegas-tabview', function(Y) {
         }
     });
     Plugin.RemoveTabView = RemoveTabView;
-
-    /**
-     * Center tab management
-     * @name Y.Plugin.RestoreCenterCol
-     * @extends Y.Plugin.Base
-     * @constructor
-     */
-    RestoreCenterCol = function() {
-        RestoreCenterCol.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.extend(RestoreCenterCol, Plugin.Base, {
-        /** @lends Y.Wegas.RestoreCenterCol# */
-        ADD_TEMPLATE: '<button class="yui3-button wegas-open-center-tabview hidden" title="Open center column"><i class=\"fa fa-chevron-right\"></i></button>',
-        /**
-         * @function
-         * @private
-         * @description Uses a tab for restoring tabview.
-         * If this tab is clicked, show host tabview.
-         */
-        initializer: function() {
-            var tabview = this.get('host');
-            tabview.after('render', this.afterRender, this);
-            tabview.get(CONTENTBOX).delegate('click', this.onClick, '.wegas-open-center-tabview', this);
-        },
-        afterRender: function(e) {
-            var tabview = this.get('host');
-            tabview.get(CONTENTBOX).one('> ul').prepend(this.ADD_TEMPLATE);
-        },
-        onClick: function(e) {
-            e.stopPropagation();
-            Y.later(100, this, function() {
-                Wegas.app.widget.showPosition("center");
-                // Hide arrows for restoring this tabview
-                var tabview = this.get('host');
-                tabview.get(CONTENTBOX).one('.wegas-open-center-tabview').addClass("hidden");
-            });
-        }
-    }, {
-        NS: "restoretab",
-        NAME: "restoretab"
-    });
-    Plugin.RestoreCenterCol = RestoreCenterCol;
-
-    /**
-     * Right column management
-     * @name Y.Plugin.RestoreRightCol
-     * @extends Y.Plugin.Base
-     * @constructor
-     */
-    RestoreRightCol = function() {
-        RestoreRightCol.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.extend(RestoreRightCol, Plugin.Base, {
-        /** @lends Y.Wegas.RestoreRightCol# */
-        ADD_TEMPLATE: '<button class="yui3-button wegas-open-right-tabview hidden" title="Open right-side column"><i class=\"fa fa-chevron-left\"></i></button>',
-        /**
-         * @function
-         * @private
-         * @description Uses a tab for restoring tabview.
-         * If this tab is clicked, show host tabview.
-         */
-        initializer: function() {
-            var tabview = this.get('host');
-            tabview.after('render', this.afterRender, this);
-            tabview.get(CONTENTBOX).delegate('click', this.onClick, '.wegas-open-right-tabview', this);
-        },
-        afterRender: function(e) {
-            var tabview = this.get('host');
-            tabview.get(CONTENTBOX).one('> ul').append(this.ADD_TEMPLATE);
-        },
-        onClick: function(e) {
-            e.stopPropagation();
-            Y.later(100, this, function() {
-                Wegas.app.widget.showPosition("right");
-                // Hide arrows for restoring this tabview
-                var tabview = this.get('host');
-                tabview.get(CONTENTBOX).one('.wegas-open-right-tabview').addClass("hidden");
-            });
-        }
-    }, {
-        NS: "restoretab",
-        NAME: "restoretab"
-    });
-    Plugin.RestoreRightCol = RestoreRightCol;
 
     /**
      * Plugin that resizes the tabview's button if required
