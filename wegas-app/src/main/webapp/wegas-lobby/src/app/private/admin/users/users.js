@@ -35,7 +35,8 @@ angular.module('private.admin.users', [
             ITEMS_IN_FIRST_BATCH,
             ITEMS_IN_NEXT_BATCHES;
 
-        ctrl.groups = [];
+        ctrl.groups = [];           // Display buffer
+        ctrl.groupTransient = [];   // Filtering-related group information. Indexed by group id.
         ctrl.search = "";
         ctrl.loading = false;
 
@@ -87,6 +88,15 @@ angular.module('private.admin.users', [
                     playerGroup = nbGroups - 1;
                 // First we copy all groups except Players:
                 ctrl.groups = source.slice(0, playerGroup);
+                for (var i = 0; i < playerGroup; i++) {
+                    var gId = source[i].id;
+                    /*
+                    ctrl.groupTransient[gId] = {
+                        isExpanded: gId.isExpanded,
+                        realSize: gId.realSize
+                    };
+                    */
+                }
                 var remaining = maxItemsDisplayed - nbFixedItems(source);
                 if (remaining < 0){
                     remaining = source[playerGroup].users.length;
@@ -96,10 +106,14 @@ angular.module('private.admin.users', [
                     newPlayers = {
                         id: srcPlayers.id,
                         name: srcPlayers.name,
-                        isExpanded: srcPlayers.isExpanded,
-                        realSize: srcPlayers.realSize,
                         users: srcPlayers.users.slice(0, remaining)
-            };
+                    };
+                /*
+                ctrl.groupTransient[srcPlayers.id] = {
+                    isExpanded: srcPlayers.isExpanded,
+                    realSize: srcPlayers.realSize
+                };
+                */
                 ctrl.groups.push(newPlayers);
 
                 prevSource = source;
@@ -149,10 +163,12 @@ angular.module('private.admin.users', [
                             id: maxId+1, // Give this pseudo-group an unused id.
                             name: "Player",
                             numberOfMember: allUsers.length,
-                            realSize: allUsers.length,
-                            users: allUsers,
-                            isExpanded: false
+                            users: allUsers
                         });
+                        ctrl.groupTransient[maxId+1] = {
+                            realSize: allUsers.length,
+                            isExpanded: false
+                        }
                     }
                     $q.all(promises).then(function() {
                         // ===================
@@ -180,8 +196,10 @@ angular.module('private.admin.users', [
         function updateGroupMembers(group){
             return GroupsModel.getMembers(group.id).then(function(data) {
                 group.users = $filter('orderBy')(data, 'name') || [];
-                group.realSize = group.users.length;
-                group.isExpanded = false;
+                ctrl.groupTransient[group.id] = {
+                    realSize: group.users.length,
+                    isExpanded: false
+                }
             });
         }
 
@@ -216,17 +234,19 @@ angular.module('private.admin.users', [
                 gres[i] = {
                     id: group.id,
                     name: group.name,
+                    users: ures,
+                };
+                ctrl.groupTransient[group.id] = {
                     // Expand automatically only if resulting items <= 3:
                     isExpanded: ures.length <= 3,
-                    users: ures,
-                    realSize: ures.length + " / " + group.realSize
+                    realSize: ures.length + " / " + group.users.length
                 };
             }
             return gres;
         }
 
         /*
-         ** Filters rawGroups according to the given search string and puts the result in ctrl.groups.
+         ** Filters rawGroups according to the given search string and puts the result in ctrl.groups and ctrl.groupTransient.
          ** Hypotheses on input array rawGroups:
          ** 1. It's already ordered according to the 'name' attribute,
          **    so that the output automatically follows the same ordering.
@@ -236,8 +256,8 @@ angular.module('private.admin.users', [
                 if (isFiltering){
                     isFiltering = false;
                     for (var i = 0; i < rawGroups.length; i++){
-                        ctrl.groups[i].isExpanded = false;
-                        rawGroups[i].isExpanded = false;
+                        ctrl.groupTransient[i].isExpanded = false;
+                        //rawGroups[i].isExpanded = false;
                     }
                     initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching
                 }
@@ -263,10 +283,10 @@ angular.module('private.admin.users', [
         ctrl.toggleExpansion = function(group) {
             if (group.users && group.users.length > 0) {
                 // First impact the display buffer (ctrl.groups):
-                group.isExpanded = !group.isExpanded;
+                ctrl.groupTransient[group.id].isExpanded = !ctrl.groupTransient[group.id].isExpanded;
                 // Then the real list:
-                var realGroup = currentList()[findGroup(group.id)];
-                realGroup.isExpanded = group.isExpanded;
+                //var realGroup = currentList()[findGroup(group.id)];
+                //realGroup.isExpanded = group.isExpanded;
             } else {
                 $translate('ADMIN-GROUPS-NO-MEMBERS-ERROR').then(function (message) {
                     Flash.danger(message);

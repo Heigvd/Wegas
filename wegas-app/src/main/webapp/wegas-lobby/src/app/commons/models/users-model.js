@@ -255,6 +255,9 @@ angular.module('wegas.models.users', [])
                                         for (var i = 0; i < user.roles.length; i++) {
                                             var role = user.roles[i];
                                             // Additional attributes created in user admin code:
+                                            if (role.users || role.isExpanded || role.realSize) {
+                                                Y.log("*******  Users-model.js : There are still extraneous properties, user = " + user.username);
+                                            }
                                             delete role.users;
                                             delete role.isExpanded;
                                             delete role.realSize;
