@@ -310,7 +310,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
                  * A player who match the given variableInstance scope must be
                  * manually selected !
                  */
-                Player p = entity.getOwner().getAnyLivePlayer();
+                Player p = find.getOwner().getAnyLivePlayer();
                 requestFacade.getRequestManager().setPlayer(p);
             }
 
