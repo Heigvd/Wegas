@@ -32,7 +32,7 @@ function scriptRenderer(Component) {
             },
             destroy: function destroy() {
                 unmountComponentAtNode(container);
-            }
+            },
         };
     };
 }
@@ -54,5 +54,5 @@ export {
     register,
     IndependantMultiVariableCondition,
     IndependantMultiVariableMethod,
-    IndependantVariableStatement
+    IndependantVariableStatement,
 };
