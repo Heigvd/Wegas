@@ -27,7 +27,7 @@ import java.util.*;
     @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id"),
     @NamedQuery(name = "User.findUserWithPermission", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :permission AND p.user.id =:userId")
 })
-public class User extends AbstractEntity implements Comparable<User> {
+public class User extends AbstractEntity implements Comparable<User>, PermissionOwner {
 
     private static final long serialVersionUID = 1L;
 
@@ -153,15 +153,17 @@ public class User extends AbstractEntity implements Comparable<User> {
     }
 
     /**
-     * @return the permissions
+     * {@inheritDoc }
      */
+    @Override
     public List<Permission> getPermissions() {
         return this.permissions;
     }
 
     /**
-     * @param permissions the permissions to set
+     * {@inheritDoc }
      */
+    @Override
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
         for (Permission p : this.permissions) {
@@ -169,22 +171,16 @@ public class User extends AbstractEntity implements Comparable<User> {
         }
     }
 
-    public boolean removePermission(Permission permission) {
-        return this.permissions.remove(permission);
-    }
-
     /**
-     * @param permission
-     *
-     * @return true id the permission has successfully been added
+     * {@inheritDoc }
      */
+    @Override
     public boolean addPermission(Permission permission) {
-        if (!this.permissions.contains(permission)) {
+        if (!this.hasPermission(permission)) {
             permission.setUser(this);
             return this.permissions.add(permission);
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**

@@ -9,6 +9,7 @@ package com.wegas.core.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -21,7 +22,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
-import com.wegas.core.persistence.variable.primitive.ObjectInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
@@ -31,6 +31,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
@@ -63,9 +64,11 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import javax.inject.Inject;
 import javax.persistence.Query;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.config.QueryType;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -78,19 +81,22 @@ public class UpdateController {
     private static Logger logger = LoggerFactory.getLogger(UpdateController.class);
 
     @EJB
-    VariableDescriptorFacade descriptorFacade;
+    private VariableDescriptorFacade descriptorFacade;
 
     @EJB
-    VariableDescriptorController descriptorController;
+    private VariableDescriptorController descriptorController;
 
     @EJB
-    GameModelFacade gameModelFacade;
+    private GameModelFacade gameModelFacade;
 
     @Inject
-    ResourceFacade resourceFacade;
+    private GameFacade gameFacade;
 
     @Inject
-    RequestManager requestManager;
+    private ResourceFacade resourceFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      * @return Some String encoded HTML
@@ -115,6 +121,7 @@ public class UpdateController {
      * Retrieve
      *
      * @param gameModelId
+     *
      * @return static "Finished" string...
      */
     @GET
@@ -135,6 +142,7 @@ public class UpdateController {
 
     /**
      * @param gameModelId
+     *
      * @return static "Finished" string...
      */
     @GET
@@ -723,5 +731,40 @@ public class UpdateController {
         String sql = "SELECT variableinstance FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
         TypedQuery<VariableInstance> query = this.getEntityManager().createQuery(sql, VariableInstance.class).setMaxResults(3000);
         return query.getResultList();
+    }
+
+    @GET
+    @Path("ErrPlayers")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Player> getPlayerWithoutPermissions() {
+        // Find player without Game:View permission
+        EntityManager entityManager = this.getEntityManager();
+        String sqlQuery = "SELECT DISTINCT p.* "
+                + "FROM player as p "
+                + "JOIN users AS u on u.id = p.user_id "
+                + "JOIN team AS t ON (p.parentteam_id = t.id AND t.dtype = 'Team') "
+                + "JOIN game AS g ON t.parentgame_id = g.game_id "
+                + "LEFT JOIN permission as perm ON ("
+                + "   perm.permissions = 'Game:View:g' || g.game_id "
+                + "   AND p.user_id = perm.user_id)"
+                + "WHERE perm.id IS NULL";
+
+        Query query = entityManager.createNativeQuery(sqlQuery, Player.class);
+
+        List<Player> players = query.getResultList();
+
+        return players;
+    }
+
+    @POST
+    @Path("RecoverRights")
+    public String recoverRights() {
+        List<Player> players = this.getPlayerWithoutPermissions();
+        for (Player p : players) {
+            logger.error("Player: {}", p);
+            User user = p.getUser();
+            gameFacade.addRights(user, p.getGame());
+        }
+        return "OK";
     }
 }
