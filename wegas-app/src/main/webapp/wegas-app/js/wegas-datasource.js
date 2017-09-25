@@ -198,16 +198,26 @@ YUI.add('wegas-datasource', function(Y) {
             Wegas.DataSource.superclass.plug.call(this, Plugin, config);
         },
         sendEventsFromCollector: function(collector) {
-            var eventName, i;
-            for (eventName in collector.events) {
-                if (collector.events.hasOwnProperty(eventName)) {
-                    if (collector.events[eventName].length > 0) {
-                        for (i in collector.events[eventName]) {
-                            this.fire(eventName, collector.events[eventName][i]);
+
+            var eventName, i, ds, dsid, events, updatedDs = [];
+
+            collector = collector || {};
+            for (dsid in collector) {
+                if (collector.hasOwnProperty(dsid)) {
+                    ds = collector[dsid].ds;
+                    events = collector[dsid].events;
+                    for (eventName in events) {
+                        if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
+                            updatedDs.push(ds);
+                            for (i in events[eventName]) {
+                                ds.fire(eventName, events[eventName][i]);
+                            }
                         }
-                        this.sendUpdateEvent();
                     }
                 }
+            }
+            for (dsid in updatedDs) {
+                updatedDs[dsid].sendUpdateEvent();
             }
         },
         sendUpdateEvent: function() {
@@ -386,7 +396,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         onResponseRevived: function(e) {
             var i, entity, evtPayload, response = e.serverResponse,
-                toUpdate = !e.cfg || e.cfg.updateCache !== false, ds, dsid, collector = {};
+                toUpdate = !e.cfg || e.cfg.updateCache !== false, collector = {};
 
             if (Lang.isArray(response)) { // Non-managed response: we apply the operation for each object in the returned array
                 if (toUpdate) { // No Update ? No-update...
@@ -434,13 +444,7 @@ YUI.add('wegas-datasource', function(Y) {
             if (!e.error) { // If there was an server error, do not update the cache
                 if (toUpdate) { // No Update ? No-update...
                     if (!e.cfg || !e.cfg.initialRequest) {
-
-                        for (dsid in collector) {
-                            if (collector.hasOwnProperty(dsid)) {
-                                ds = collector[dsid].ds;
-                                ds.sendEventsFromCollector(collector[dsid]);
-                            }
-                        }
+                        this.get(HOST).sendEventsFromCollector(collector);
                     }
                 }
             }

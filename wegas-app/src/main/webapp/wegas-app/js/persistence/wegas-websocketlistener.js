@@ -179,12 +179,9 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     }
                 }
 
-                for (dsId in collector) {
-                    if (collector.hasOwnProperty(dsId)) {
-                        ds = collector[dsId].ds;
-                        ds.sendEventsFromCollector(collector[dsId]);
-                    }
-                }
+
+                Y.Wegas.Facade.Variable.sendEventsFromCollector(collector);
+
                 this._after(token);
             });
         },
