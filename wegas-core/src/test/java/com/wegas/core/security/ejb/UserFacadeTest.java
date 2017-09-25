@@ -16,7 +16,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
@@ -128,8 +127,8 @@ public class UserFacadeTest {
         a = accountFacade.find(abstractAccount.getId());
         Assert.assertEquals(PERM2, u.getPermissions().get(1).getValue());
 
-        u.removePermission(new Permission(PERM));
-        u.removePermission(new Permission(PERM2));
+        u.removePermission(PERM);
+        u.removePermission(PERM2);
         accountFacade.update(a.getId(), a);
         a = accountFacade.find(abstractAccount.getId());
         Assert.assertTrue(a.getPermissions().isEmpty());

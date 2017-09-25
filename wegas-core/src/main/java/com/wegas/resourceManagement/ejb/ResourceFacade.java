@@ -453,7 +453,8 @@ public class ResourceFacade {
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
                     TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
                     
-                    TaskInstance newTaskInstance = (TaskInstance) variableInstanceFacade.findInstance(newTaskDescriptor, resourceInstance);
+                    
+                    TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance);
                     TaskInstance oldTaskInstance = assignment.getTaskInstance();
 
                     if (oldTaskInstance != null) {
@@ -469,7 +470,7 @@ public class ResourceFacade {
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
                     TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
                     
-                    TaskInstance newTaskInstance = (TaskInstance) variableInstanceFacade.findInstance(newTaskDescriptor, resourceInstance);
+                    TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance);
 
                     TaskInstance oldTaskInstance = activity.getTaskInstance();
                     if (oldTaskInstance != null) {

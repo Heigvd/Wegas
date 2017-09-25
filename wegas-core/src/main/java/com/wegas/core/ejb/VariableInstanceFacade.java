@@ -268,97 +268,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         return this.findGame(this.find(instanceId));
     }
 
-    public VariableInstance findInstance(VariableDescriptor descriptor, VariableInstance variableInstance) throws NoPlayerException {
-
-        if (variableInstance.isDefaultInstance()) {
-            return descriptor.getDefaultInstance();
-        }
-
-        AbstractScope scope = variableInstance.getScope();
-
-        AbstractScope descScope = descriptor.getScope();
-
-        if (scope instanceof PlayerScope) {
-            return descScope.getVariableInstance(variableInstance.getPlayer());
-        } else if (scope instanceof TeamScope) {
-            return descScope.getVariableInstance(variableInstance.getTeam());
-        } else if (scope instanceof GameScope) {
-            return descScope.getVariableInstance(variableInstance.getGame());
-        } else if (scope instanceof GameModelScope) {
-            return descScope.getVariableInstance(variableInstance.getGameModel());
-        }
-
-        return null;
-    }
-
-    /**
-     * from the given instance, return any player who own it (eg.
-     * Descriptor.getInstance(player) = instance). The returned player must be alive
-     *
-     * @param instance
-     *
-     * @return any player
-     *
-     * @throws NoPlayerException             if there is no such a player
-     * @throws UnsupportedOperationException for default instances
-     */
-    public Player findAPlayer(VariableInstance instance)
-            throws NoPlayerException {
-        // make sure to have a managed instance to have the scope !
-        instance = this.find(instance.getId());
-        List<Player> players;
-
-        if (instance.getScope() instanceof PlayerScope) {
-            Player p = playerFacade.find(instance.getPlayer().getId());
-            if (p == null || !p.getStatus().equals(Populatable.Status.LIVE)) {
-                throw new NoPlayerException();
-            }
-            return p;
-        } else if (instance.getScope() instanceof TeamScope) {
-            Team t = teamFacade.find(instance.getTeam().getId());
-            if (t.getPlayers().isEmpty()) {
-                throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
-            } else {
-                players = teamFacade.find(instance.getTeam().getId()).getPlayers();
-            }
-        } else if (instance.getScope() instanceof GameScope) {
-
-            Game g = gameFacade.find(instance.getGame().getId());
-            if (g.getPlayers().isEmpty()) {
-                throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeam().getId()).getName() + "] has no player");
-            } else {
-                players = gameFacade.find(instance.getGame().getId()).getPlayers();
-            }
-        } else if (instance.getScope() instanceof GameModelScope) {
-            Game g;
-            Team t;
-            if (instance.getDescriptor().getGameModel().getGames().isEmpty()) {
-                throw new NoPlayerException("GameModel [" + instance.getDescriptor().getGameModel().getName() + "] has no game");
-            } else {
-                g = instance.getDescriptor().getGameModel().getGames().get(0);
-                if (g.getTeams().isEmpty()) {
-                    throw new NoPlayerException("Game [" + g.getName() + "] has no team");
-                } else {
-                    t = g.getTeams().get(0);
-                    if (t.getPlayers().isEmpty()) {
-                        throw new NoPlayerException("Team [" + t.getName() + "] has no player");
-                    } else {
-                        players = t.getPlayers();
-                    }
-                }
-            }
-        } else {
-            // default instance case
-            throw new UnsupportedOperationException();  // Should never occur
-        }
-        for (Player p : players) {
-            if (p.getStatus().equals(Populatable.Status.LIVE)) {
-                return p;
-            }
-        }
-        throw new NoPlayerException("No Live player");
-    }
-
     /**
      *
      * Update the variable instance entity of the given descriptor and player.
@@ -389,25 +298,26 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
 
     @Override
     public VariableInstance update(final Long entityId, final VariableInstance entity) {
-        if (requestFacade.getRequestManager().getPlayer() == null) {
-            /*
-             * When there is no player in the current requestFacade context and
-             * since requestFacade will blindly selects any player in such a
-             * case.
-             * A player who match the given variableInstance scope must be
-             * manually selected !
-             */
-            try {
-                Player findAPlayer = this.findAPlayer(entity);
-                requestFacade.getRequestManager().setPlayer(findAPlayer);
-            } catch (NoPlayerException ex) {
-                throw WegasErrorMessage.error("Unable to find a player for instance " + entity);
+        VariableInstance find = this.find(entityId);
+        if (find.isDefaultInstance()) {
+            return super.update(entityId, entity);
+        } else {
+            if (requestFacade.getRequestManager().getPlayer() == null) {
+                /*
+                 * When there is no player in the current requestFacade context and
+                 * since requestFacade will blindly selects any player in such a
+                 * case.
+                 * A player who match the given variableInstance scope must be
+                 * manually selected !
+                 */
+                Player p = entity.getOwner().getAnyLivePlayer();
+                requestFacade.getRequestManager().setPlayer(p);
             }
-        }
 
-        VariableInstance ret = super.update(entityId, entity);
-        requestFacade.commit();
-        return ret;
+            VariableInstance ret = super.update(entityId, entity);
+            requestFacade.commit();
+            return ret;
+        }
     }
 
     @Override

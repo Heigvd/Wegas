@@ -163,11 +163,13 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      * @return the players
      */
     @JsonManagedReference(value = "player-team")
+    @Override
     public List<Player> getPlayers() {
         return players;
     }
 
     @JsonIgnore
+    @Override
     public Player getAnyLivePlayer() {
         for (Player p : this.getPlayers()) {
             if (p.getStatus().equals(Populatable.Status.LIVE)) {

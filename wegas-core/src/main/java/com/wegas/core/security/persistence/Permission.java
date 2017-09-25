@@ -11,7 +11,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import java.util.Objects;
 
 /**
  *
@@ -96,25 +95,6 @@ public class Permission extends AbstractEntity {
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            return true;
-        } else {
-            return (obj != null
-                    && obj instanceof Permission
-                    && this.value.equals(((Permission) obj).getValue()));
-        }
-
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 61 * hash + Objects.hashCode(this.value);
-        return hash;
     }
 
     /**
