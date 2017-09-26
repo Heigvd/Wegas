@@ -20,8 +20,12 @@ const marginStyle = css({
     color: 'darkslategrey',
     backgroundColor: 'white',
     boxShadow: '1px 1px 4px #ccc',
-    // border: '1px solid lightgrey',
-    // borderRadius: '3px',
+    resize: 'both',
+    '& > div' : {
+        // The inline DIV must fill up the entire container except a small (bottom) margin for the resize handle
+        minHeight: 'calc( 100% - 10px )',
+        outline: 'none !important'
+    }
 });
 
 const Wegas = getY().Wegas;
@@ -68,7 +72,7 @@ const TINY_CONFIG = {
     inline: true,
     plugins: [
         'autolink link image lists code media table contextmenu',
-        'paste advlist textcolor dynamic_toolbar',
+        'paste advlist textcolor dynamic_toolbar autoresize',
         // textcolor wordcount autosave
         // advlist charmap print preview hr anchor pagebreak spellchecker
         // directionality
@@ -87,10 +91,12 @@ const TINY_CONFIG = {
     toolbar_items_size: 'small',
     hidden_tootlbar: [2, 3],
     file_browser_callback: onFileBrowserClick,
-    resize: true,
+    resize: 'both',
     image_advtab: true,
     autoresize_min_height: 35,
     autoresize_max_height: 500,
+    autoresize_bottom_margin: 10,
+    autoresize_on_init: true,
     content_css: [
         `${Wegas.app.get('base')}wegas-editor/css/wegas-inputex-rte.css`,
     ],
@@ -214,9 +220,19 @@ class HTMLView extends React.Component {
             this.setState({content: newContent}, () => this.props.onChange(newContent));
         }
     }
+
+    // A click on the container transfers the focus to the inner DIV containing TinyMCE.
+    onClickHandler(event) {
+        var elem=event.target.firstChild;
+        if (elem && elem.focus) {
+            elem.focus();
+        }
+    }
+
     render() {
         return (
-            <div className={marginStyle}>
+            <div className={marginStyle}
+                onClick={this.onClickHandler}>
                 <TinyMCE
                     key={this.state.key}
                     content={toTinyMCE(this.state.content)}

@@ -104,7 +104,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             value: 'TriggerDescriptor'
         },
         {
-            label: 'Dialogue',
+            label: 'Dialog',
             value: 'DialogueDescriptor'
         },
         {
@@ -1265,7 +1265,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'Dialogue',
+                                        label: 'Dialog',
                                         targetClass: 'DialogueDescriptor' /*,
                                      cfg: {
                                      states: {

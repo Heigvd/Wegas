@@ -26,12 +26,13 @@
     float: right;
     position: absolute;
     right: 4px;
+    top: 7px;
 }
 
 .wegas-editor-treeview .yui3-treenode.selected .yui3-treenode-content-label,
 .wegas-editor-treeview .yui3-treeleaf.selected .yui3-treeleaf-content-label,
 .wegas-editor-treeview .yui3-treenode.selected .yui3-treenode-content-extra .add-child-shortcut {
-    color: white;
+    color: #4E525E;
 }
 
 .wegas-editor-treeview .yui3-treenode.selected .yui3-treenode .yui3-treenode-content-extra .add-child-shortcut {
@@ -129,9 +130,6 @@
     box-sizing: border-box;
 }
 
-/*.yui3-u-selected {
-    background: url("../../wegas-app/images/wegas-icon-toggle.png") no-repeat 56px 11px;
-}*/
 
 /** Variable Treeview **/
 
@@ -143,7 +141,6 @@
 
 .wegas-editor-variabletreeview .yui3-dd-drop > div > .yui3-treenode-content-icon,
 .wegas-editor-variabletreeview .yui3-dd-drop > div > div > .yui3-treeleaf-content-icon {
-    /* cursor: url(../images/openhand.cur) 7 5, default; */
     cursor: move;
 }
 

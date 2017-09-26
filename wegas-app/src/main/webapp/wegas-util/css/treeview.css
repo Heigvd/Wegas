@@ -29,27 +29,19 @@
 
 .yui3-treenode-content-toggle:before {
     content: "▼";
-}
-.yui3-treenode-collapsed .yui3-treenode-content-toggle:before {
-    content: "►";
+    color: #ccc;
 }
 
-/*
-.yui3-treenode-content-toggle {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    background-image: url(../../wegas-app/images/wegas-icon-toggle.png);
-    background-repeat: no-repeat;
-    background-position: -0px -112px;
-    cursor:pointer;
-    margin-left: -3px;
-    padding-right: 6px;
+.yui3-treenode-collapsed .yui3-treenode-content-toggle:before {
+    content: "►";
+    color: #ccc;
 }
-.yui3-treenode-collapsed .yui3-treenode-content-toggle{
-    background-position: 0px -74px;
+
+.yui3-treenode-content-toggle:hover:before,
+.yui3-treenode-collapsed .yui3-treenode-content-toggle:hover:before {
+    color: #4E525E;
 }
-*/
+
 .yui3-treenode-content-icon,
 .yui3-treeleaf-content-icon {
     display:inline-block;
@@ -186,15 +178,13 @@
 .selected > div > .yui3-treeleaf-content-header,
 .selected > .yui3-treenode-content-header,
 .yui3-treeview-multiselect .sub-fully-selected > .yui3-treenode-content-header {
-    background-color: #b7cb90; /* #EDEDED; */
+    background-color: #d2e8ba; /* #b7cb90 #EDEDED; */
     box-shadow: 0px 0px 1px #afc18e; /* #6D6D6D; */
-    font-weight: bolder;
-    color: white;
 }
 
 .wegas-editor-variabletreeview .selected .yui3-treenode-content-icon,
 .wegas-editor-variabletreeview .selected .yui3-treeleaf-content-icon {
-    color: white; /* Normally: #4E525E; */
+    color: #4E525E;
 }
 
 /* Sub-items of selected items: */

@@ -604,7 +604,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 },
                 title: {
                     type: [NULL, STRING],
-                    index: -1,
+                    index: 0,
                     view: {
                         label: "Label",
                         description: "Displayed to players"
