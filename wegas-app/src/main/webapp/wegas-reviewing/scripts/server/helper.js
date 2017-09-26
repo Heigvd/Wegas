@@ -206,7 +206,6 @@ var ReviewHelper = (function() {
             evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
             evDescriptors = {}, tmp, key, expectedStatus = null, workDone,
             maxNumberOfValue = 0,
-            instanceFacade = lookupBean("VariableInstanceFacade"),
             maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
             aPlayer,
             monitoring = {
@@ -265,7 +264,7 @@ var ReviewHelper = (function() {
             pri = pris[team];
 
             if (team.getPlayers().size() > 0) {
-                aPlayer = instanceFacade.findAPlayer(pri);
+                aPlayer = pri.getOwner().getAnyLivePlayer();
             } else {
                 aPlayer = null;
             }
