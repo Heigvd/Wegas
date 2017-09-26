@@ -37,7 +37,7 @@ YUI.add('wegas-console', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
-                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: ' +
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script executed. Returned value: ' +
                             Y.JSON.stringify(e.response.entities[0]) +
                             "</div>");
                     }, this),
@@ -61,7 +61,7 @@ YUI.add('wegas-console', function(Y) {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
                         this.showMessage("success", "The impact has been successfully completed", 4000);
-                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: ' +
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script executed. Returned value: ' +
                             Y.JSON.stringify(e.response.entities[0]) +
                             "</div>");
                         if (!this.get("boundingBox").hasClass("wegas-editor-console")) {

@@ -52,17 +52,24 @@ YUI.add('wegas-layout-resizable', function(Y) {
             initializer: function() {
                 this.oldWidth = {};
                 this.handlers = [];
-                this.anims = {};
                 this.widgets = [];
-                var cfg = localStorage.getItem(this.WEGAS_EDITOR_LOCALSTORAGE_ID) || {};
-                if (typeof cfg === "string") {
-                    try {
-                        cfg = JSON.parse(cfg);
-                    } catch(e) {
-                        cfg = {};
+                if (this.get("left") === undefined && this.get("right") === undefined) {  // We are not opening the editor:
+                    this.set("left", { width: 0 });
+                    this.set("right", { width: 0 });
+                    var center = this.get("center");
+                    center.width = '100%';
+                    this.set("center", center);
+                } else {
+                    var cfg = localStorage.getItem(this.WEGAS_EDITOR_LOCALSTORAGE_ID) || {};
+                    if (typeof cfg === "string") {
+                        try {
+                            cfg = JSON.parse(cfg);
+                        } catch (e) {
+                            cfg = {};
+                        }
                     }
+                    this.editorCfg = cfg;
                 }
-                this.editorCfg = cfg;
             },
             /**
              * @function
@@ -239,7 +246,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     target = this.getPosition(position),
                     cfg = this.get(position);
 
-                if (cfg) {                                                          // If there is a provided configuration
+                if (cfg && cfg.children) {                                                          // If there is a provided configuration
                     var windowWidth = window.innerWidth || document.documentElement.clientWidth;
                     if (this.editorCfg) {                                           // Or settings stored in the browser's localStorage ?
                         if (position === "left" && this.editorCfg.leftWidth) {
@@ -375,19 +382,19 @@ YUI.add('wegas-layout-resizable', function(Y) {
             ATTRS: {
                 left: {},
                 /**
-                 * Configuration and childrens of the left section.
+                 * Configuration and children of the left section.
                  */
                 right: {},
                 /**
-                 * Configuration and childrens of the right section.
+                 * Configuration and children of the right section.
                  */
                 top: {},
                 /**
-                 * Configuration and childrens of the top section.
+                 * Configuration and children of the top section.
                  */
                 bottom: {},
                 /**
-                 * Configuration and childrens of the bottom section.
+                 * Configuration and children of the bottom section.
                  */
                 center: {},
                 /**

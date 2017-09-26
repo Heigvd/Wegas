@@ -13,7 +13,6 @@ YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
     var RemoveTabView,
-        TabDocker,
         Plugin = Y.Plugin, Wegas = Y.Wegas,
         CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
         TabView, Tab, RemoveTab;
@@ -123,6 +122,7 @@ YUI.add('wegas-tabview', function(Y) {
          * References to tabs
          */
         tabs: {},
+
         /**
          * Return A tab from tabview selected by id.
          * @function
@@ -424,6 +424,7 @@ YUI.add('wegas-tabview', function(Y) {
 
         // Public method used in games to display messages in the correct editor column.
         // Returns the widget corresponding to #centerTabView or #rightTabView depending on user preferences.
+        // Returns null if no suitable tabView is found.
         getPreviewTabView: function() {
             // Try to make this work even if the Preview tab is not yet rendered:
             var previewTabView = this.getNonEditorTabViewId();
@@ -686,6 +687,10 @@ YUI.add('wegas-tabview', function(Y) {
             tab.get(BOUNDINGBOX).append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
             // Unhide the tabView closing button and the first entry "Attributes" in the plus-menu:
             var tabView = tab.get("tabSelector");
+            if (!tabView) {
+                // The tab is not yet being rendered, it's only the instantiation of the plugin...
+                return;
+            }
             var cross = Y.Widget.getByNode(tabView).get(CONTENTBOX).one('.wegas-removeTabview');
             if (cross) {
                 cross.show();
@@ -777,40 +782,6 @@ YUI.add('wegas-tabview', function(Y) {
     Plugin.Hideable = Hideable;
 
     /**
-     * Remove host tab and creates a button to restore it.
-     * @deprecated
-     */
-    TabDocker = function() {
-        TabDocker.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(TabDocker, Removeable, {
-        onRemoveClick: function(e) {
-            var host = this.get("host"), parent = host.get("parent"),
-                cfg = host.toObject(), label = host.get("label"),
-                button = (new Y.Wegas.Button({
-                    label: label
-                })).render(Y.one(this.get("dockTarget")));
-            //get old children config
-            cfg.children = host.get("children");
-            button.on("click", function() {
-                parent.add(cfg).item(0).set('selected', 1).plug(TabDocker);
-                this.destroy();
-            });
-            this.get("host").remove().destroy();
-            e.stopPropagation();
-        }
-    }, {
-        NS: "docker",
-        NAME: "TabDocker",
-        ATTRS: {
-            dockTarget: {
-                value: ".wegas-layout-hd"
-            }
-        }
-    });
-    Plugin.TabDocker = TabDocker;
-
-    /**
      * Plugin to toggle visibility of a tab
      *
      * @name Y.Plugin.LayoutToggleTab
@@ -868,51 +839,6 @@ YUI.add('wegas-tabview', function(Y) {
     };
 
     /**
-     * Plugin for an empty tabview
-     *
-     * @name Y.Plugin.EmptyTab
-     * @extends Y.Plugin.Base
-     * @class plugin with an empty tab
-     * @constructor
-     */
-    //    var EmptyTab = function() {
-    //        EmptyTab.superclass.constructor.apply(this, arguments);
-    //    };
-    //    Y.extend(EmptyTab, Plugin.Base, {
-    //        /** @lends Y.Wegas.EmptyTab# */
-    //
-    //        // *** Private fields *** //
-    //        /**
-    //         * @function
-    //         * @private
-    //         */
-    //        initializer: function() {
-    //            var noItem;
-    //            this.onceAfterHostEvent("render", function() {
-    //                Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
-    //            });
-    //            this.afterHostEvent("removeChild", function() {
-    //                if (this.get("host").isEmpty()) {
-    //                    Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
-    //                }
-    //            });
-    //            this.onHostEvent("addChild", function() {
-    //                noItem = Y.one("#rightTabView .wegas-noItem");
-    //                if (noItem) {
-    //                    noItem.remove();
-    //                }
-    //                if (this.get("host").isEmpty()) {
-    //                    Wegas.app.widget.showPosition("right");
-    //                }
-    //            });
-    //        }
-    //    }, {
-    //        NS: "EmptyTab",
-    //        NAME: "EmptyTab"
-    //    });
-    //    Plugin.EmptyTab = EmptyTab;
-
-    /**
      * Plugin add a tab for remove tabview
      *
      * @name Y.Plugin.Removetab
@@ -927,7 +853,7 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<div class="wegas-removeTabview fa fa-times" title="Close %name% column"></div>', // fa-chevron-left
+        ADD_TEMPLATE: '<div class="wegas-removeTabview fa fa-times" title="Close %name% column"></div>',
         /**
          * @function
          * @private
@@ -1103,21 +1029,27 @@ YUI.add('wegas-tabview', function(Y) {
         },
         addExtraTabs: function() {
             var tabs = this.get("extraTabs"), addTab = function(cfg) {
-                var target = Wegas.TabView.getPreviewTabView(),
-                    t = target.add(cfg, target.size() - 1).item(0),
-                    menu1 = Y.Widget.getByNode("#centerTabView .wegas-plus-tab").hasPlugin("menu"),
-                    menu2 = Y.Widget.getByNode("#rightTabView .wegas-plus-tab").hasPlugin("menu"),
-                    menuCfg = {
-                        type: "OpenTabButton",
-                        label: cfg.label,
-                        tabSelector: "#centerTabView",
-                        cssClass: "wegas-editor-menu-separator-above",
-                        wchildren: cfg.children
-                    };
-                menu1.add(menuCfg);
-                menuCfg.tabSelector = "#rightTabView";
-                menu2.add(menuCfg);
-                t.plug(Hideable);
+                var target = Wegas.TabView.getPreviewTabView();
+                if (target) {
+                    var t = target.add(cfg, target.size() - 1).item(0),
+                        // Complete the 'plus' menus:
+                        menu1 = Y.Widget.getByNode("#centerTabView .wegas-plus-tab").hasPlugin("menu"),
+                        menu2 = Y.Widget.getByNode("#rightTabView .wegas-plus-tab").hasPlugin("menu"),
+                        menuCfg = {
+                            type: "OpenTabButton",
+                            label: cfg.label,
+                            tabSelector: "#centerTabView",
+                            cssClass: "wegas-editor-menu-separator-above",
+                            wchildren: cfg.children
+                        };
+                    menu1.add(menuCfg);
+                    menuCfg.tabSelector = "#rightTabView";
+                    menu2.add(menuCfg);
+                    t.plug(Hideable);
+                } else {
+                    // This is not the scenario editor, just add the given tab to the center tabView:
+                    Y.Widget.getByNode("#centerTabView").add(cfg);
+                }
             };
             for (var i = 0; i < tabs.length; i += 1) {
                 Y.Wegas.Widget.use(tabs[i], Y.bind(addTab, this, tabs[i]));
