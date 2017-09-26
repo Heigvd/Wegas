@@ -339,6 +339,11 @@ YUI().use(function(Y) {
                 path: "js/plugin/wegas-injector-min.js",
                 ws_provides: "Injector"
             },
+            "wegas-eventlogger": {
+                path: "js/plugin/wegas-eventlogger-min.js",
+                requires: "wegas-plugin",
+                ws_provides: ["EventLogger"]
+            },
             "wegas-lockmanager": {
                 path: "js/plugin/wegas-lockmanager-min.js",
                 requires: "wegas-plugin",

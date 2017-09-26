@@ -75,7 +75,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
         onEntityDeletion: function(data) {
             this._before();
             Y.later(0, this, function() {
-                var datasource, entities, entity, i;
+                var datasource, entities, entity, i, collector = {};
                 entities = Y.JSON.parse(data).deletedEntities;
                 for (i = 0; i < entities.length; i += 1) {
                     datasource = this.getDatasourceFromClassName(entities[i]["@class"]);
@@ -85,13 +85,15 @@ YUI.add('wegas-websocketlistener', function(Y) {
                         // destroyed descriptor may have already been deleted from 
                         // the cache while updating its parent...
                         // -> Avoid deleting notfound entities
-                        datasource.cache.updateCache("DELETE", entity, false);
+                        datasource.cache.updateCache("DELETE", entity, collector);
                     } else {
                         // Send the corresponding delete "event"
                         entity = Y.Wegas.Editable.revive(entities[i]);
                         datasource.fire("delete", {"entity": entity});
                     }
                 }
+
+                Y.Wegas.Facade.Variable.sendEventsFromCollector(collector);
                 this._after();
             });
         },

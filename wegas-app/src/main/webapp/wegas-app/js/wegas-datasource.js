@@ -199,7 +199,7 @@ YUI.add('wegas-datasource', function(Y) {
         },
         sendEventsFromCollector: function(collector) {
 
-            var eventName, i, ds, dsid, events, updatedDs = [];
+            var eventName, i, ds, dsid, events, updatedDs = {};
 
             collector = collector || {};
             for (dsid in collector) {
@@ -208,13 +208,30 @@ YUI.add('wegas-datasource', function(Y) {
                     events = collector[dsid].events;
                     for (eventName in events) {
                         if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
-                            updatedDs.push(ds);
+                            updatedDs[dsid] = ds;
                             for (i in events[eventName]) {
                                 ds.fire(eventName, events[eventName][i]);
                             }
                         }
                     }
                 }
+            }
+
+            /*
+             * HACK4backwardcompat...
+             * Since Descriptor and Instance datasources became two different DS,
+             * the global update event is sent by different datasource depending on 
+             * updated objects... 
+             * 
+             * Old stuff may still listen to descriptor DS event despiste 
+             * the targeted object is an instance... 
+             * 
+             * Quick'n'ugly fix : make sure to send Variable event if Instance ds has been updated
+             * 
+             * -> PLEASE USE updatedDescriptor and instanceDescriptor events when applicable
+             */
+            if (updatedDs.hasOwnProperty(Y.Wegas.Facade.Instance._yuid)) {
+                updatedDs[Y.Wegas.Facade.Variable._yuid] = Y.Wegas.Facade.Variable;
             }
             for (dsid in updatedDs) {
                 updatedDs[dsid].sendUpdateEvent();
@@ -969,11 +986,11 @@ YUI.add('wegas-datasource', function(Y) {
                     on: {
                         success: Y.bind(function(tId, e) {
                             Y.log("Item moved", "info", "Wegas.VariableTreeView");
-                            this.get(HOST).fire(GLOBAL_UPDATE_EVENT);
-                            // TODO -> Send  updatedDescriptor events
+                            // this.get(HOST).fire(GLOBAL_UPDATE_EVENT); // already fired by updateCache!
                         }, this),
                         failure: Y.bind(function(entity, parentEntity) {
                             Y.log("Error moving item", "error");
+                            // Rollback move since TV was too optimistic
                             if (parentEntity.get("@class") === "GameModel" || entity.getParent().get("@class") === "GameModel") {
                                 this.get(HOST).fire("rootUpdate");
                             } else {
@@ -1032,23 +1049,6 @@ YUI.add('wegas-datasource', function(Y) {
                 indexOn = indexes[i];
                 this._indexes[indexOn] = {};
             }
-
-            /*
-             * HACK4backwardcompat...
-             * Since Descriptor and Instance datasources became two different DS,
-             * the global update event is sent by different datasource according
-             * to updated objects... 
-             * 
-             * Old stuff may still listen to descriptor DS event despiste 
-             * the targeted object is an instance... 
-             * 
-             * Quick'n'ugly fix : resend instance update events through descriptor DS
-             * 
-             * -> PLEASE USE updatedDescriptor and instanceDescriptor events when applicable
-             */
-            this.get(HOST).on(GLOBAL_UPDATE_EVENT, function(e) {
-                Y.Wegas.Facade.Variable.fire(GLOBAL_UPDATE_EVENT, e);
-            });
 
             this.on("CustomEvent", function(e) { // TODO MOVE SOMEWHERE...
                 Y.Wegas.Facade.Variable.fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
@@ -1113,6 +1113,10 @@ YUI.add('wegas-datasource', function(Y) {
                 //Delete is DELETE, no need to check versions
                 if (scope) {
                     if (scope.variableInstances[scopeKey]) {
+
+                        eventsCollector[dsid].events["delete"] = eventsCollector[dsid].events["delete"] || [];
+                        eventsCollector[dsid].events["delete"].push({"entity": scope.variableInstances[scopeKey]});
+
                         delete scope.variableInstances[scopeKey];
                     }
                     if (Object.getOwnPropertyNames(scope.variableInstances).length === 0) {
@@ -1122,8 +1126,8 @@ YUI.add('wegas-datasource', function(Y) {
                             scope = this.getCache().splice(index, 1)[0];
                             this.deleteFromIndexes(scope);
                         }
-
                     }
+
                 }
                 return true;
             } else {
