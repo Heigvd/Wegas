@@ -33,7 +33,7 @@ setDefaultWidgets({
     flatvariableselect: FlatVariableSelect,
     hashlist: HashlistView,
     hidden: HiddenView,
-    html: html,
+    html,
     keychoice: KeyChoice,
     number: StringView,
     object: ObjectView,

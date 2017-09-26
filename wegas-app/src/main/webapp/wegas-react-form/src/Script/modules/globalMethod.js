@@ -99,10 +99,10 @@ export function genChoices(type = 'getter') {
  * Get a schema for a given method.
  * @param {string} member
  * @param {string} method
- * @returns {{label:string,
-            arguments:[],
-            className:string=,
-            returns:string=}} the schema
+ * @returns {{label?:string,
+            arguments:AST[],
+            className?:string,
+            returns?:string} | undefined} the schema
  */
 export function methodDescriptor(member, method) {
     return (

@@ -9,12 +9,12 @@ import {
     genChoices,
     extractMethod,
     buildMethod,
-    getMethodDescriptor
+    methodDescriptor,
 } from './method';
 import { valueToType } from './args';
 import {
     genChoices as genGlobalChoices,
-    methodDescriptor
+    methodDescriptor as globalMethodDescriptor,
 } from './globalMethod';
 import JSEditor from '../Views/asyncJSEditor';
 import { containerStyle } from '../Views/conditionImpactStyle';
@@ -27,24 +27,24 @@ const errorStyle = css({
     fontSize: '12px',
     paddingLeft: '40px',
     paddingTop: '3px',
-    marginBottom: '-3px'
+    marginBottom: '-3px',
 });
 
 const newLineStyle = css({
     display: 'block',
-    marginLeft: '30px'
+    marginLeft: '30px',
 });
 
 const upgradeSchema = (varSchema, methodType = 'getter') => {
     const ret = {
-        ...varSchema
+        ...varSchema,
     };
     ret.view = {
         ...ret.view,
         selectable: function selectable(item) {
             return genChoices(item, methodType).length;
         },
-        additional: genGlobalChoices(methodType)
+        additional: genGlobalChoices(methodType),
     };
     return ret;
 };
@@ -64,7 +64,7 @@ class Impact extends React.Component {
             method,
             member,
             args,
-            methodSchem: methodSchema(props.view.method, variable, props.type)
+            methodSchem: methodSchema(props.view.method, variable, props.type),
         };
         this.handleVariableChange = this.handleVariableChange.bind(this);
     }
@@ -79,8 +79,14 @@ class Impact extends React.Component {
                 return 'Unhandled';
             }
             if (this.state.global) {
-                if (!methodDescriptor(this.state.member, this.state.method)) {
-                    return `No global ${this.state.member}.${this.state.method}`;
+                if (
+                    !globalMethodDescriptor(
+                        this.state.member,
+                        this.state.method
+                    )
+                ) {
+                    return `No global ${this.state.member}.${this.state
+                        .method}`;
                 }
             }
             if (this.state.variable && !varExist(this.state.variable)) {
@@ -97,11 +103,11 @@ class Impact extends React.Component {
         ) {
             this.setState({
                 // method does not exist in method's schema, remove it
-                method: undefined
+                method: undefined,
             });
         } else if (this.state.variable && this.state.method) {
             try {
-                const mergedArgs = getMethodDescriptor(
+                const mergedArgs = methodDescriptor(
                     this.state.variable,
                     this.state.method
                 ).arguments.map(
@@ -109,7 +115,7 @@ class Impact extends React.Component {
                 );
                 this.setState(
                     {
-                        args: mergedArgs
+                        args: mergedArgs,
                     },
                     this.props.onChange(
                         buildMethod(this.state, this.props.type)
@@ -129,7 +135,7 @@ class Impact extends React.Component {
         if (v !== undefined && v.indexOf('.') > -1) {
             // global
             const split = v.split('.');
-            const mergedArgs = methodDescriptor(
+            const mergedArgs = globalMethodDescriptor(
                 split[0],
                 split[1]
             ).arguments.map(
@@ -141,7 +147,7 @@ class Impact extends React.Component {
                     member: split[0],
                     method: split[1],
                     args: mergedArgs,
-                    variable: undefined
+                    variable: undefined,
                 }),
                 this.checkGlobalMethod
             );
@@ -156,7 +162,7 @@ class Impact extends React.Component {
                     global: false,
                     variable: v,
                     methodSchem,
-                    member: undefined
+                    member: undefined,
                 };
             }, this.checkVariableMethod);
         }
@@ -192,13 +198,15 @@ class Impact extends React.Component {
                 <Form
                     schema={upgradeSchema(variableSchema(view.variable), type)}
                     value={
-                        this.state.global
-                            ? `${this.state.member}.${this.state.method}`
-                            : this.state.variable
+                        this.state.global ? (
+                            `${this.state.member}.${this.state.method}`
+                        ) : (
+                            this.state.variable
+                        )
                     }
                     onChange={this.handleVariableChange}
                 />
-            </div>
+            </div>,
         ];
         if (this.state.variable) {
             const schema = this.state.methodSchem;
@@ -211,7 +219,7 @@ class Impact extends React.Component {
                             onChange={v =>
                                 this.setState(
                                     {
-                                        method: v
+                                        method: v,
                                     },
                                     this.checkVariableMethod
                                 )}
@@ -222,13 +230,16 @@ class Impact extends React.Component {
         }
         if (this.state.method && this.state.variable) {
             const { variable, method, args } = this.state;
-            const methodDesc = getMethodDescriptor(variable, method);
+            const methodDesc = methodDescriptor(variable, method);
             const argsDescr = (methodDesc && methodDesc.arguments) || [];
             child = child.concat(
                 argsDescr.map((argDescr, i) => (
                     <span
                         key={i}
-                        className={classNames({[newLineStyle.toString()]:  argDescr.view && argDescr.view.label })}
+                        className={classNames({
+                            [newLineStyle.toString()]:
+                                argDescr.view && argDescr.view.label,
+                        })}
                     >
                         <ArgForm
                             schema={argDescr}
@@ -247,7 +258,7 @@ class Impact extends React.Component {
         }
         if (this.state.member && this.state.method) {
             const { member, method, args } = this.state;
-            const methodDesc = methodDescriptor(member, method);
+            const methodDesc = globalMethodDescriptor(member, method);
             const argsDescr = (methodDesc && methodDesc.arguments) || [];
             child = child.concat(
                 argsDescr.map((argDescr, i) => (
@@ -270,22 +281,18 @@ class Impact extends React.Component {
                 ))
             );
         }
-        return (
-            <span className={containerStyle}>
-                {child}
-            </span>
-        );
+        return <span className={containerStyle}>{child}</span>;
     }
 }
 Impact.propTypes = {
     node: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     view: PropTypes.object,
-    type: PropTypes.oneOf(['getter', 'condition'])
+    type: PropTypes.oneOf(['getter', 'condition']),
 };
 Impact.defaultProps = {
     node: undefined,
     view: {},
-    type: 'getter'
+    type: 'getter',
 };
 export default Impact;

@@ -36,10 +36,10 @@ function parsed(Comp) {
     }
     Parsed.propTypes = {
         value: PropTypes.string.isRequired,
-        onChange: PropTypes.func
+        onChange: PropTypes.func,
     };
     Parsed.defaultProps = {
-        value: ''
+        value: '',
     };
     return Parsed;
 }

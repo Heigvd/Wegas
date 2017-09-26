@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { types } from 'recast';
-import isMatch from 'lodash/isMatch';
+import isMatch from 'lodash-es/isMatch';
 import SelectView from '../../Views/select';
 import { getY } from '../../index';
 import { isVariable, extractVar, build } from './Variable';
@@ -16,7 +16,7 @@ function methodDescriptor(variable, method) {
             .find('name', variable)
             .getMethodCfgs()[method];
     } catch (e) {
-        return null;
+        return undefined;
     }
 }
 
@@ -36,16 +36,11 @@ function genChoices(variable, type) {
         )
         .map(v => ({
             value: v,
-            label: methods[v].label || v
+            label: methods[v].label || v,
         }));
 }
-function getMethodDescriptor(variable, method) {
-    return Y.Wegas.Facade.Variable.cache.find('name', variable).getMethodCfgs()[
-        method
-    ];
-}
 function handleArgs(variable, method, args, onChange) {
-    const methodDescr = getMethodDescriptor(variable, method);
+    const methodDescr = methodDescriptor(variable, method);
     return handleMethodArgs(methodDescr, args, onChange, variable);
 }
 // Replace with select with if it stays in this shape
@@ -56,7 +51,7 @@ function MethodView({ value, onChange, view }) {
 MethodView.propTypes = {
     value: PropTypes.string,
     view: PropTypes.object,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
 };
 const methodSchema = (view, variable, type) => {
     if (variable === undefined) {
@@ -67,16 +62,16 @@ const methodSchema = (view, variable, type) => {
         return null;
     }
     // Don't show meaningless menus with only one entry (typically getValue() for variables in conditions):
-    const hidden = (choices.length === 1 && type === 'condition');
+    const hidden = choices.length === 1 && type === 'condition';
     return {
         type: 'string',
         required: true,
         value: choices[0].value,
         view: Object.assign({}, view, {
             type: MethodView,
-            hidden: hidden,
-            choices
-        })
+            hidden,
+            choices,
+        }),
     };
 };
 const buildMethod = (v, type) => {
@@ -95,23 +90,28 @@ const isGlobalMethod = node =>
     isMatch(node, {
         type: 'CallExpression',
         callee: {
-            type: 'MemberExpression'
-        }
+            type: 'MemberExpression',
+        },
     });
 const isVarMethod = node =>
     isMatch(node, {
         type: 'CallExpression',
         callee: {
-            type: 'MemberExpression'
-        }
+            type: 'MemberExpression',
+        },
     }) && isVariable(node.callee.object);
+/**
+ * extract method informations
+ * @param {AST} node any AST to visit.
+ * @returns {{global:boolean, variable?:string, method?:string, member?:string, args:AST[]}}
+ */
 const extractMethod = node => {
     const ret = {
         global: false,
         variable: undefined,
         method: undefined,
         member: undefined,
-        args: []
+        args: [],
     };
     visit(node, {
         visitCallExpression: function visitCallExpression(path) {
@@ -137,7 +137,7 @@ const extractMethod = node => {
                 this.traverse(path);
             }
             return false;
-        }
+        },
     });
     return ret;
 };
@@ -149,5 +149,4 @@ export {
     extractMethod,
     buildMethod,
     handleArgs,
-    getMethodDescriptor
 };
