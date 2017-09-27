@@ -16,6 +16,7 @@ const marginStyle = css({
     fontSize: '13px',
     minHeight: '45px',
     maxHeight: '500px',
+    minWidth: '50px',
     overflow: 'auto',
     color: 'darkslategrey',
     backgroundColor: 'white',

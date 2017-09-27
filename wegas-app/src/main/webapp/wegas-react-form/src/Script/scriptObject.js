@@ -14,10 +14,19 @@ const labelStyle = css(FormStyles.labelStyle, {
     verticalAlign: '2px',
     display: 'inline-block',
 });
-const orangeFont = css({ color: 'orange' });
+const warnStyle = css({
+    color: 'orange',
+    verticalAlign: '+2px',
+    padding: '10px',    // Create plenty of space for facilitating the hover
+    marginLeft: '-5px',
+    marginRight: '-5px'
+});
 const containerStyle = css({
     marginTop: '15px',
     maxWidth: '100%',
+    '& > div' : {
+        display: 'inline',  // Have the "view source" icon displayed to the right of the section title
+    }
 });
 function renderLabel(label) {
     if (label) {
@@ -40,7 +49,7 @@ function scriptObject(Comp) {
                 {renderLabel(view.label)}
                 {warn.length ? (
                     <span
-                        {...orangeFont}
+                        {...warnStyle}
                         className="fa fa-warning"
                         title={warn}
                     />

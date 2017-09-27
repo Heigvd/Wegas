@@ -303,7 +303,7 @@ YUI.add('wegas-entity', function(Y) {
                     view: {
                         type: 'textarea',
                         className: 'wegas-comments',
-                        placeholder: 'Comments'
+                        placeholder: 'Optional comments'
                 }
             },
             canView: {
