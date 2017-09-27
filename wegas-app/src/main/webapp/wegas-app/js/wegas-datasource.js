@@ -318,23 +318,7 @@ YUI.add('wegas-datasource', function(Y) {
             });
         },
         __showMessage: function(level, message) {
-            var node;
-            if (Y.Widget) {
-                node = Y.Widget.getByNode(".wegas-login-page") ||
-                    (Y.Widget.getByNode("#centerTabView") &&
-                        Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                    Y.Widget.getByNode(".wegas-playerview");
-            }
-
-            if (node) {
-                node.showMessage(level, message);
-            } else {
-                if (Y.Wegas.Panel) {
-                    Y.Wegas.Panel.alert(message);
-                } else {
-                    window.alert(message);
-                }
-            }
+            Wegas.Alerts.showMessage(level, message);
         },
         _beforeDefDataFn: function(e) {
             var response, data = e.data && (e.data.responseText || e.data),
@@ -545,7 +529,7 @@ YUI.add('wegas-datasource', function(Y) {
                     newAttrs = needle.getAttrs();
 
                     /*
-                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor 
+                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor
                      * if newAttrs.version attrs is missing, it means entity is not versioned -> update in all case
                      * otherwise, only update if newAttrs is not older
                      */
@@ -553,7 +537,7 @@ YUI.add('wegas-datasource', function(Y) {
                         entity.setAttrs(newAttrs);
 
                         if (this.oldIds) { // VD ONLY
-                            // 
+                            //
                             // NEW ENTITY IN PARENT
 
                             // oldIds is filled by VarDescCache.post when adding a variable as
@@ -928,14 +912,14 @@ YUI.add('wegas-datasource', function(Y) {
             }
         },
         /*
-         * Use to propagate root descriptor orderd changes 
-         * 
+         * Use to propagate root descriptor orderd changes
+         *
          * on:
          *  - new root descriptor
          *  - descriptor moved from root
          *  - descriptor moved to root
          *  - root descriptor new order (moved from and to root)
-         *  
+         *
          * Never call to reflect a delection
          * @param {type} newRootDescriptors
          * @returns {undefined}
@@ -944,7 +928,7 @@ YUI.add('wegas-datasource', function(Y) {
             var items = newRootDescriptors.get("items"), i, j, item,
                 fromSub, cId,
                 localCache = this.getCache();
-            // detect 
+            // detect
             for (i in items) {
                 cId = items[i].get("id");
 
@@ -968,7 +952,7 @@ YUI.add('wegas-datasource', function(Y) {
                             localCache.splice(i, 0, item);
                         } else {
                             Y.log("NEW DESC:" + items[i].get("label"));
-                            //new descriptor 
+                            //new descriptor
                             this.updateCache(POST, items[i], true);
                         }
                     }
@@ -1155,13 +1139,13 @@ YUI.add('wegas-datasource', function(Y) {
              * HACK4backwardcompat...
              * Since Descriptor and Instance datasources became two different DS,
              * the global update event is sent by different datasource according
-             * to updated objects... 
-             * 
-             * Old stuff may still listen to descriptor DS event despiste 
-             * the targeted object is an instance... 
-             * 
+             * to updated objects...
+             *
+             * Old stuff may still listen to descriptor DS event despiste
+             * the targeted object is an instance...
+             *
              * Quick'n'ugly fix : resend instance update events through descriptor DS
-             * 
+             *
              * -> PLEASE USE updatedDescriptor and instanceDescriptor events when applicable
              */
             this.get(HOST).on(GLOBAL_UPDATE_EVENT, function(e) {
@@ -1252,7 +1236,7 @@ YUI.add('wegas-datasource', function(Y) {
                 if (scope.variableInstances[scopeKey]) {
 
                     /*
-                     * Updated instance already exists in the cache, due to pusher 
+                     * Updated instance already exists in the cache, due to pusher
                      * asynchronoussness, make sure not overwritting up-to-date instance
                      */
                     if (entity.get("version") >= scope.variableInstances[scopeKey].get("version")) {
