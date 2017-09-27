@@ -12,13 +12,14 @@ interface IViewSrcProps {
 
 const iconStyle = css({
     label: 'ViewSrc-iconStyle',
-    'cursor': 'pointer',
-    'verticalAlign': '1px',
-    'padding': '4px',
-    'border': '1px solid lightgray',
-    'borderRadius': '50%',
-    'position': 'relative',
-    'top': '-8px',
+    cursor: 'pointer',
+    verticalAlign: '4px',
+    padding: '2px',
+    border: '1px solid lightgray',
+    borderRadius: '50%',
+    position: 'relative',
+    marginLeft: '5px',
+    fontSize: '10px',
     ':hover': {
         background: 'lightgray',
     },

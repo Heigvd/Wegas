@@ -8,7 +8,7 @@ const { visit } = types;
  * All Validators must match
  * @param {boolean} initValue init value
  * @param {(...args:*[]) => boolean} fn function which should throw on validation error.
- * Explicitely return true to stop validation.
+ * Explicitly return true to stop validation.
  */
 function combineValidators(...fn) {
     return function g(...args) {
@@ -23,12 +23,12 @@ function combineValidators(...fn) {
 function constantValidator(argument, descr) {
     if (descr.const) {
         if (argument.type === 'Identifier' && argument.name !== descr.const) {
-            throw Error(`does not match it's value of ${descr.const}`);
+            throw Error(`does not match its value of ${descr.const}`);
         } else if (
             argument.type === 'Literal' &&
             argument.value !== descr.const
         ) {
-            throw Error(`does not match it's value of '${descr.const}'`);
+            throw Error(`does not match its value of '${descr.const}'`);
         }
     }
     return true;
@@ -47,7 +47,7 @@ function requiredCheck(argument, descr) {
             throw Error('is required');
         }
     }
-    return argument === undefined;
+    return argument === undefined || argument.name === 'undefined' && argument.type === 'Identifier';
 }
 const validators = {
     identifier: combineValidators(
@@ -131,7 +131,7 @@ function check(code) {
                         } catch (e) {
                             errors.push(
                                 `${descr.member ||
-                                    descr.variable}.${descr.method}'s argument[${i}] ${e.message}`
+                                    descr.variable}.${descr.method}: parameter ${a.view && a.view.label ? a.view.label : '#' + i} ${e.message}`
                             );
                         }
                     }

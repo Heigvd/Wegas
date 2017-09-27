@@ -38,7 +38,6 @@ const IMPACT = {
                 {
                     type: 'string',
                     required: true,
-                    view: { placeholder: 'Event name ?' }
                 }
             ]
         },
@@ -72,7 +71,6 @@ const IMPACT = {
                 {
                     type: 'string',
                     required: true,
-                    view: { placeholder: 'Event name ?' }
                 }
             ]
         }

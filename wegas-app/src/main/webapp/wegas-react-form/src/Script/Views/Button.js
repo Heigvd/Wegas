@@ -13,6 +13,7 @@ const trashcan = css({
 });
 const addStatement = css({
     textAlign: 'center',
+    margin: '10px 0 20px',
     ':hover': { backgroundColor: 'lightgrey' }
 });
 const container = css({ display: 'inline-block' });

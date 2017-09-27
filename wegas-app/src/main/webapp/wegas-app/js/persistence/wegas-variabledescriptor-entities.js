@@ -1407,30 +1407,30 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         },
         {
         ATTRS: {
-                '@class': {
-                    value: 'InboxDescriptor'
+            '@class': {
+                value: 'InboxDescriptor'
             },
             capped: {
                 value: false,
-                    type: BOOLEAN,
-                    view: {
-                        label: 'Limit to one message',
-                        description: 'Each new message ejects the previous one',
-                        className: 'wegas-advanced-feature'
+                type: BOOLEAN,
+                view: {
+                    label: 'Limit to one message',
+                    description: 'Each new message ejects the previous one',
+                    className: 'wegas-advanced-feature'
                 }
             },
             defaultInstance: {
                 properties: {
-                        '@class': {
+                    '@class': {
                         type: STRING,
-                            value: 'InboxInstance',
-                            view: {
-                                type: HIDDEN
+                        value: 'InboxInstance',
+                        view: {
+                            type: HIDDEN
                         }
                     },
                     id: IDATTRDEF,
-                        version: VERSION_ATTR_DEF,
-                        descriptorId: IDATTRDEF
+                    version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF
                 }
             }
         },
@@ -1507,7 +1507,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     arguments: [
                         SELFARG,
                         {
-                        type: STRING,
+                            type: STRING,
                             view: { label: 'From', layout: 'long' }
                         },
                         {
@@ -1530,7 +1530,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             view: {
                                 label: 'Token',
                                 className: 'wegas-advanced-feature',
-                                description: 'Like a message identifier, may be used to reference the message within FSM/Trigger condition'
+                                description: 'Message identifier used to reference the message within FSM/Trigger conditions'
                             }
                         },
                         {
