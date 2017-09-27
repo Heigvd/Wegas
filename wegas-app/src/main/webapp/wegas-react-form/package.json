@@ -30,7 +30,7 @@
     "react-color": "^2.13.8",
     "react-dom": "^16.0.0",
     "react-tinymce": "^0.6.0",
-    "react-widgets": "^4.0.2",
+    "react-widgets": "^3.5.0",
     "recast": "^0.12.6"
   },
   "devDependencies": {
