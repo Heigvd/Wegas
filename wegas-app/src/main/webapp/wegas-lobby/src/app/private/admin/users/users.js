@@ -88,15 +88,6 @@ angular.module('private.admin.users', [
                     playerGroup = nbGroups - 1;
                 // First we copy all groups except Players:
                 ctrl.groups = source.slice(0, playerGroup);
-                for (var i = 0; i < playerGroup; i++) {
-                    var gId = source[i].id;
-                    /*
-                    ctrl.groupTransient[gId] = {
-                        isExpanded: gId.isExpanded,
-                        realSize: gId.realSize
-                    };
-                    */
-                }
                 var remaining = maxItemsDisplayed - nbFixedItems(source);
                 if (remaining < 0){
                     remaining = source[playerGroup].users.length;
@@ -108,14 +99,7 @@ angular.module('private.admin.users', [
                         name: srcPlayers.name,
                         users: srcPlayers.users.slice(0, remaining)
                     };
-                /*
-                ctrl.groupTransient[srcPlayers.id] = {
-                    isExpanded: srcPlayers.isExpanded,
-                    realSize: srcPlayers.realSize
-                };
-                */
                 ctrl.groups.push(newPlayers);
-
                 prevSource = source;
             }
         }
@@ -256,8 +240,9 @@ angular.module('private.admin.users', [
                 if (isFiltering){
                     isFiltering = false;
                     for (var i = 0; i < rawGroups.length; i++){
-                        ctrl.groupTransient[i].isExpanded = false;
-                        //rawGroups[i].isExpanded = false;
+                        var id = rawGroups[i].id;
+                        ctrl.groupTransient[id].isExpanded = false;
+                        ctrl.groupTransient[id].realSize = rawGroups[i].users.length;
                     }
                     initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching
                 }
@@ -411,7 +396,7 @@ angular.module('private.admin.users', [
             if (e.currentScope.currentRole === "ADMIN") {
                 var list = ctrl.groups;
                 if (list && list.length > 0 && // It seems that ctrl.groups is not always accessible from here.
-                    list[list.length-1].isExpanded) { // No need to extend if the "Players" group is not expanded.
+                    ctrl.groupTransient[list[list.length-1].id].isExpanded) { // No need to extend if the "Players" group is not expanded.
                     extendDisplayedItems();
                     if ( ! $rootScope.$$phase) {
                         $scope.$apply();

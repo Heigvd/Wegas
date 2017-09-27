@@ -215,11 +215,6 @@ angular.module('wegas.models.groups', [])
         model.updateGroup = function(group) {
             var deferred = $q.defer();
             var url = "rest/Role/" + group.id;
-            if (group.realSize || group.isExpanded) {
-                Y.log("*******  groups-model.js : There are still extraneous properties, group = " + group.name);
-            }
-            delete group.realSize;
-            delete group.isExpanded;
             $http.put(ServiceURL + url, group, {
                 "headers": {
                     "managed-mode": "true"
