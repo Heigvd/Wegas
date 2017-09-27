@@ -16,7 +16,6 @@
   "author": "CiGit",
   "license": "MIT",
   "dependencies": {
-    "async-reactor": "^1.2.1",
     "brace": "^0.10.0",
     "classnames": "^2.2.5",
     "core-js": "^2.5.1",

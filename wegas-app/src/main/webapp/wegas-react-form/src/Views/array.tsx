@@ -5,74 +5,80 @@ import commonView from '../HOC/commonView';
 import IconButton from '../Components/IconButton';
 import { AddOptionButton } from '../Script/Views/Button';
 import Menu from '../Components/Menu';
-import { WidgetProps } from "jsoninput/typings/types";
-import { Cover } from "../Components/Cover";
+import { WidgetProps } from 'jsoninput/typings/types';
+import { Cover } from '../Components/Cover';
 
 const arrayStyle = css({
-    display: 'inline'
+    display: 'inline',
 });
 
-const hiddenStyle = css({
+const transparentStyle = css({
     opacity: 0,
     fontSize: '18px',
 });
 
 const listElementContainerStyle = css({
     clear: 'both',
-    ':first-of-type' : {
-        marginTop: '10px'
+    ':first-of-type': {
+        marginTop: '10px',
     },
     ':hover span': {
         opacity: 1,
-        transition: 'opacity 2s'
-    }
+        transition: 'opacity 2s',
+    },
 });
 
 const listElementStyle = css({
     // Reduce vertical space between array elements:
     '& div': {
-        marginTop: 0
-    }
+        marginTop: 0,
+    },
 });
 
 const inlinePlusStyle = css({
     fontSize: '18px',
-    verticalAlign: '-1px'
+    verticalAlign: '-1px',
 });
 
-const optionLabelStyle = css(
-    FormStyles.labelStyle,
-    {
-        fontSize: FormStyles.labelBigFontSize,
-        paddingRight: '5px',
-        verticalAlign: '1px'
-    }
-);
+const optionLabelStyle = css(FormStyles.labelStyle, {
+    fontSize: FormStyles.labelBigFontSize,
+    paddingRight: '5px',
+    verticalAlign: '1px',
+});
 
 interface IArrayProps {
     view: {
-        choices?: {}[],
-        tooltip?: string,
-    }
+        choices?: {}[];
+        tooltip?: string;
+    };
 }
 
-
-class Adder extends React.Component<WidgetProps.ArrayProps & IArrayProps, { open: boolean }> {
+class Adder extends React.Component<
+    WidgetProps.ArrayProps & IArrayProps,
+    { open: boolean }
+> {
     constructor(props: WidgetProps.ArrayProps & IArrayProps) {
         super(props);
         this.state = {
-            open: false
-        }
+            open: false,
+        };
     }
     render() {
         if (Array.isArray(this.props.view.choices)) {
-            return (this.state.open ?
-                <Cover onClick={() => this.setState({ open: false })} zIndex={100}>
+            return this.state.open ? (
+                <Cover
+                    onClick={() => this.setState({ open: false })}
+                    zIndex={100}
+                >
                     <Menu
                         menu={this.props.view.choices}
-                        onChange={(value: {}) => this.setState({ open: false }, () => this.props.onChildAdd(value))} />
+                        onChange={(value: {}) =>
+                            this.setState({ open: false }, () =>
+                                this.props.onChildAdd(value)
+                            )}
+                    />
                 </Cover>
-                :
+            ) : (
                 <AddOptionButton
                     className={`${inlinePlusStyle}`}
                     icon="fa fa-plus-circle"
@@ -83,14 +89,16 @@ class Adder extends React.Component<WidgetProps.ArrayProps & IArrayProps, { open
                 />
             );
         }
-        return <AddOptionButton
-            className={`${inlinePlusStyle}`}
-            icon="fa fa-plus-circle"
-            onClick={() => this.props.onChildAdd()}
-            tooltip={this.props.view.tooltip}
-            label={this.props.view.label}
-            labelClassName={`${optionLabelStyle}`}
-        />;
+        return (
+            <AddOptionButton
+                className={`${inlinePlusStyle}`}
+                icon="fa fa-plus-circle"
+                onClick={() => this.props.onChildAdd()}
+                tooltip={this.props.view.tooltip}
+                label={this.props.view.label}
+                labelClassName={`${optionLabelStyle}`}
+            />
+        );
     }
 }
 function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
@@ -100,18 +108,16 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
     function renderChild(child: React.ReactChild, index: number) {
         return (
             <div className={listElementContainerStyle.toString()}>
-                <span className={listElementStyle.toString()}>
-                    {child}
-                </span>
-                <span className={hiddenStyle.toString()}>
-                    {minItems < valueLength && !disabled
-                        ? <IconButton
+                <span className={listElementStyle.toString()}>{child}</span>
+                <span className={transparentStyle.toString()}>
+                    {minItems < valueLength && !disabled ? (
+                        <IconButton
                             icon="fa fa-trash"
                             onClick={() => props.onChildRemove(index)}
                             tooltip="Delete this group"
                             grey
                         />
-                        : null}
+                    ) : null}
                 </span>
             </div>
         );
@@ -121,14 +127,13 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
 
     return (
         <div className={arrayStyle.toString()}>
-            {maxItems > valueLength && !disabled
-                ? <Adder {...props} />
-                : <label
-                    className={FormStyles.biggerLabelStyle.toString()}
-                  >
+            {maxItems > valueLength && !disabled ? (
+                <Adder {...props} />
+            ) : (
+                <label className={FormStyles.biggerLabelStyle.toString()}>
                     {props.view.label}
                 </label>
-            }
+            )}
             {children}
         </div>
     );

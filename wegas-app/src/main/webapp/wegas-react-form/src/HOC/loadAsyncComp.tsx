@@ -30,7 +30,7 @@ const SimpleLoader = () => <div {...loaderStyle} />;
  * @param Err Optional component to show on error
  */
 function asyncComp<P>(
-    asyncCallback: () => Promise<React.ComponentType<P>>,
+    asyncCallback: (props: P) => Promise<React.ComponentType<P>>,
     Loader: React.ComponentType = SimpleLoader,
     Err: React.ComponentType = () => <div />
 ) {
@@ -44,7 +44,7 @@ function asyncComp<P>(
             this.state = { Comp: Loader };
         }
         componentWillMount() {
-            asyncCallback()
+            asyncCallback(this.props)
                 .then(Comp => {
                     if (!this.unmount) {
                         this.setState({ Comp });
