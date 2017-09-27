@@ -129,9 +129,10 @@ YUI.add('wegas-object-entities', function(Y) {
                 label: "set property",
                 arguments: [SELFARG, {
                     view: { label: NAME },
+                    required: true,
                     type: STRING
                 }, {
-                    view: { label: NAME },
+                    view: { label: VALUE },
                     type: STRING
                 }]
             }

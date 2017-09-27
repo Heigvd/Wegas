@@ -375,7 +375,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 },
                 view: {
                     type: 'scriptcondition',
-                    label: 'Condition'
+                    label: 'Conditions'
                 }
             },
             version: VERSION_ATTR_DEF,
@@ -390,7 +390,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     }
                 },
                 view: {
-                    label: 'Impact',
+                    label: 'Impacts',
                     type: SCRIPT
                 }
             },
@@ -499,7 +499,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     },
                     view: {
                         type: 'scriptcondition',
-                        label: 'Condition'
+                        label: 'Conditions'
                     }
                 },
                 postTriggerEvent: {
@@ -519,7 +519,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     index: 4,
                     view: {
                         type: SCRIPT,
-                        label: 'Impact'
+                        label: 'Impacts'
                     }
                 },
                 states: {

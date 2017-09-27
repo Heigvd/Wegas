@@ -13,8 +13,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     "use strict";
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "Name",
         SELF = "self", BOOLEAN = "boolean", NUMBER = "number", OBJECT = "object",
-        HTML = "html", VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
-        GROUP = "group", LIST = "list", SELECT = "select", KEY = "key", NULLSTRING = ["null", STRING],
+        HTML = "html", VALUE = "Value", HASHLIST = "hashlist", COMBINE = "combine",
+        GROUP = "group", LIST = "list", SELECT = "select", KEY = "Key", NULLSTRING = ["null", STRING],
         SELFARG = {
             type: 'identifier',
             value: 'self',
@@ -296,17 +296,21 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             addAtConfidence: {
                 label: "Add to confidence",
                     arguments: [
-                        SELFARG, {
-                        type: STRING,
-                        value: 1
+                        SELFARG,
+                        {
+                            type: STRING,
+                            required: true,
+                            value: "1"
                     }]
             },
             setConfidence: {
                 label: "Set confidence",
                     arguments: [
-                        SELFARG, {
-                        type: STRING,
-                        value: 1
+                        SELFARG,
+                        {
+                            type: STRING,
+                            required: true,
+                            value: "1"
                     }]
             },
             getNumberInstanceProperty: {
@@ -336,11 +340,13 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     arguments: [
                         SELFARG, {
                         type: STRING,
+                            required: true,
                             view: {
                                 label: KEY
                             }
                     }, {
                         type: STRING,
+                            required: true,
                             view: { label: VALUE }
                     }]
             },
@@ -348,7 +354,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Set property",
                     arguments: [SELFARG,
                         {
-                        type: STRING,
+                            type: STRING,
+                            required: true,
                             view: {
                                 label: KEY
                             }
@@ -365,6 +372,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     arguments: [
                         SELFARG, {
                         type: NUMBER,
+                            required: true,
                             view: { label: "Period" }
                     }, {
                             type: BOOLEAN,
@@ -398,7 +406,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Add to salary",
                     arguments: [SELFARG,
                         {
-                        type: STRING,
+                            type: STRING,
+                            required: true,
                             value: "1"
                     }]
             },
@@ -406,7 +415,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Set salary",
                     arguments: [
                         SELFARG, {
-                        type: STRING,
+                            type: STRING,
+                            required: true,
                             value: "1"
                     }]
             },
@@ -419,7 +429,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Add to experience",
                     arguments: [
                         SELFARG, {
-                        type: STRING,
+                            type: STRING,
+                            required: true,
                             value: "1"
                     }]
             },
@@ -427,7 +438,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Set experience",
                     arguments: [
                         SELFARG, {
-                        type: STRING,
+                            type: STRING,
+                            required: true,
                             value: "1"
                     }]
             },
@@ -440,7 +452,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Add to leadership level",
                     arguments: [
                         SELFARG, {
-                        type: STRING,
+                            type: STRING,
+                            required: true,
                             value: "1"
                     }]
             },
@@ -448,7 +461,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 label: "Set leadership level",
                     arguments: [
                         SELFARG, {
-                        type: STRING,
+                            type: STRING,
+                            required: true,
                             value: "1"
                     }]
             }
