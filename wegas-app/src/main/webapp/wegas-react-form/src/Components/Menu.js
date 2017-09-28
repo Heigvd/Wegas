@@ -9,16 +9,16 @@ const MENU_STYLE = css({
     display: 'inline-block',
     backgroundColor: 'white',
     userSelect: 'none',
-    cursor: 'default'
+    cursor: 'default',
 });
-
+const rightPadding = css({
+    paddingRight: '2em',
+});
 function genItems(o, i) {
     const hasSubMenu = Array.isArray(o.children);
     if (hasSubMenu) {
         const key = o.value || i;
-        const titleRight = (<span>{o.label}
-                                <i className="fa fa-caret-right pull-right" style={{marginLeft:'25px'}}></i>
-                            </span>);
+        const titleRight = <span {...rightPadding}>{o.label}</span>;
         return (
             <SubMenu key={JSON.stringify(key)} title={titleRight}>
                 {o.children.map(genItems)}
@@ -49,9 +49,9 @@ WMenu.propTypes = {
             label: PropTypes.string.isRequired,
             value: PropTypes.any,
             disabled: PropTypes.bool,
-            children: PropTypes.array
+            children: PropTypes.array,
         })
     ).isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
 };
 export default WMenu;
