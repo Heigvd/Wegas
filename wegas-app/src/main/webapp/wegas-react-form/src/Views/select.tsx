@@ -5,22 +5,22 @@ import commonView from '../HOC/commonView';
 import { css } from 'glamor';
 import classNames from 'classnames';
 
-type choice = {
+interface Choice {
     value: {};
     label?: string;
     disabled?: boolean;
     view?: {
-        cssClass?: string
-    },
-    children?: choice[];
-};
-type choices = (string | choice)[];
+        cssClass?: string;
+    };
+    children?: Choice[];
+}
+type Choices = (string | Choice)[];
 interface ISelectProps {
     id: string;
     value?: {};
     onChange: (value: string) => void;
     view: {
-        choices: (string | choice)[];
+        choices: (string | Choice)[];
         hidden?: boolean;
     };
 }
@@ -29,7 +29,7 @@ interface IAsyncSelectProps {
     value?: {};
     onChange: (value: string) => void;
     view: {
-        choices: (() => Promise<choices>) | choices;
+        choices: (() => Promise<Choices>) | Choices;
         [propName: string]: {};
     };
 }
@@ -38,21 +38,21 @@ const selectStyle = css({
     padding: '2px',
     borderRadius: '3px',
     border: '1px solid lightgray',
-    width: '130px'
+    width: '130px',
 });
 
 const hiddenStyle = css({
     label: 'select-hiddenStyle',
-    display: 'none'
+    display: 'none',
 });
 
 const selectContainerStyle = css({
     '& label': {
-        fontSize: '100%'
-    }
+        fontSize: '100%',
+    },
 });
 
-function genItems(o: string | choice, i: number) {
+function genItems(o: string | Choice, i: number) {
     if (typeof o !== 'object') {
         return (
             <option key={`k-${o}`} value={o}>
@@ -75,7 +75,7 @@ function genItems(o: string | choice, i: number) {
 const title = {
     label: '- please select -',
     value: undefined,
-    disabled: true
+    disabled: true,
 };
 
 function SelectView(props: ISelectProps) {
@@ -84,8 +84,8 @@ function SelectView(props: ISelectProps) {
     ) {
         props.onChange(JSON.parse(event.target.value));
     };
-    const choices: (choice | string)[] = props.view.choices || [];
-    const menuItems = ([title] as (choice | string | typeof title)[])
+    const choices: (Choice | string)[] = props.view.choices || [];
+    const menuItems = ([title] as (Choice | string | typeof title)[])
         .concat(choices)
         .map(genItems);
     const hidden = props.view.hidden ? `${hiddenStyle}` : '';
@@ -105,7 +105,7 @@ function Sel({ view }: IAsyncSelectProps) {
     const { choices } = view;
     if (typeof choices === 'function') {
         return Promise.resolve(choices()).then(ch => ({
-            view: { ...view, choices: ch }
+            view: { ...view, choices: ch },
         }));
     }
     return arguments[0];

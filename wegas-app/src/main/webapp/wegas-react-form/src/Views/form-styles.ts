@@ -1,7 +1,7 @@
 import { css } from 'glamor';
 
+// tslint:disable-next-line:no-namespace
 export namespace FormStyles {
-
     export const defaultEditorWidth: string = '30em';
     export const textInputWidth: string = '30em';
     export const textareaWidth: string = '30em';
@@ -13,26 +13,19 @@ export namespace FormStyles {
 
     export const unselectable = css({
         userSelect: 'none',
-        cursor: 'default'
+        cursor: 'default',
     });
 
-    export const labelStyle = css(
-        FormStyles.unselectable,
-        {
-            fontSize: FormStyles.labelFontSize,
-            color: FormStyles.labelColor,
-            fontFamily: FormStyles.labelFontFamily,
-        }
-    );
+    export const labelStyle = css(FormStyles.unselectable, {
+        fontSize: FormStyles.labelFontSize,
+        color: FormStyles.labelColor,
+        fontFamily: FormStyles.labelFontFamily,
+    });
 
-    export const biggerLabelStyle = css(
-        FormStyles.labelStyle,
-        {
-            fontSize: '115%',
-            marginBottom: '3px'
-        }
-    );
-
+    export const biggerLabelStyle = css(FormStyles.labelStyle, {
+        fontSize: '115%',
+        marginBottom: '3px',
+    });
 }
 
 export default FormStyles;

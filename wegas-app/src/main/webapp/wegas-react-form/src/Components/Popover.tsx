@@ -6,7 +6,10 @@ interface IPopoverProps {
 }
 class Popover extends React.Component<IPopoverProps> {
     static defaultProps: Partial<IPopoverProps> = {
-        onClickOutside: function noop() {},
+        onClickOutside: function noop() {
+            /* Do nothing */
+        },
+        show: false,
     };
 
     container: HTMLSpanElement | null;
@@ -51,7 +54,13 @@ class Popover extends React.Component<IPopoverProps> {
                     }}
                     style={{ position: 'relative', display: 'inline-block' }}
                 >
-                    <div style={{ position: 'absolute', zIndex: 1000, top: '4px' }}>
+                    <div
+                        style={{
+                            position: 'absolute',
+                            zIndex: 1000,
+                            top: '4px',
+                        }}
+                    >
                         {this.props.children}
                     </div>
                 </div>
@@ -60,8 +69,4 @@ class Popover extends React.Component<IPopoverProps> {
         return null;
     }
 }
-Popover.defaultProps = {
-    onClickOutside: function noop() {},
-    show: false,
-};
 export default Popover;

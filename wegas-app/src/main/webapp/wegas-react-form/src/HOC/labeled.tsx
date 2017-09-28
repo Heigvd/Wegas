@@ -3,13 +3,13 @@ import { css } from 'glamor';
 import FormStyles from '../Views/form-styles';
 
 const prefixedLabelStyle = css(FormStyles.biggerLabelStyle, {
-    display: 'block'
+    display: 'block',
 });
 
 const labelTextStyle = css({
     // Leave some space between label (if any) and following widget:
     paddingRight: '8px',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
 });
 
 interface ILabelProps {
@@ -41,7 +41,10 @@ export default function labeled<P extends { id: string }>(
                 return (
                     <div className={cssContainer}>
                         <Comp id={this.id} {...props} />
-                        <label htmlFor={this.id} {...FormStyles.biggerLabelStyle}>
+                        <label
+                            htmlFor={this.id}
+                            {...FormStyles.biggerLabelStyle}
+                        >
                             {props.view.label}
                         </label>
                     </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { css } from 'glamor';
 
-type Props = {
+interface Props {
     icon: string;
     onClick: () => void;
     label?: string;
@@ -14,33 +14,33 @@ type Props = {
     className?: string;
     prefixedLabel?: boolean;
     labelClassName?: string;
-    stackedOnIcon?: string;         // For FontAwesome stacking feature, name/code of background icon
-    stackedOnClassName?: string;    // Idem, className of background icon
+    stackedOnIcon?: string; // For FontAwesome stacking feature, name/code of background icon
+    stackedOnClassName?: string; // Idem, className of background icon
 }
 const shapeStyle = css({
     width: 'auto',
-    //minWidth: '16px',
+    // minWidth: '16px',
     height: '16px',
     textAlign: 'center',
     display: 'inline-block',
     cursor: 'pointer',
     color: 'gray',
     ':hover': {
-        color: 'black'
-    }
+        color: 'black',
+    },
 });
 
 const labelStyle = css({
-    marginLeft: '0.35em'
+    marginLeft: '0.35em',
 });
 
 const disabledStyle = css({
     color: 'black',
-    backgroundColor: 'darkslategrey'
+    backgroundColor: 'darkslategrey',
 });
 
 const opacityStyle = css({
-    opacity: 0
+    opacity: 0,
 });
 
 const grayStyle = css({
@@ -50,13 +50,21 @@ const grayStyle = css({
     backgroundColor: 'white',
     backgroundOpacity: 0,
     ':hover': {
-        backgroundOpacity: 1
-    }
+        backgroundOpacity: 1,
+    },
 });
 
 function renderLabel(label?: string, labelClassName?: string) {
     if (label) {
-        return <span className={labelClassName ? labelClassName : labelStyle.toString()}>{label}</span>;
+        return (
+            <span
+                className={
+                    labelClassName ? labelClassName : labelStyle.toString()
+                }
+            >
+                {label}
+            </span>
+        );
     }
     return null;
 }
@@ -70,11 +78,7 @@ function renderIcon(icon: string, stackedOnIcon?: string) {
             </span>
         );
     } else {
-        return (
-            <span
-                className={classNames(icon)}
-            />
-        );
+        return <span className={classNames(icon)} />;
     }
 }
 
@@ -90,7 +94,7 @@ function IconButton({
     label,
     prefixedLabel,
     labelClassName,
-    stackedOnIcon
+    stackedOnIcon,
 }: Props) {
     return (
         <span
@@ -98,11 +102,15 @@ function IconButton({
             className={classNames(className, `${shapeStyle}`, {
                 [`${disabledStyle}`]: disabled,
                 [`${opacityStyle}`]: opacity,
-                [`${grayStyle}`]: grey
+                [`${grayStyle}`]: grey,
             })}
             title={tooltip}
         >
-            {label && prefixedLabel==true ? renderLabel(label, labelClassName) : ''}
+            {label && prefixedLabel === true ? (
+                renderLabel(label, labelClassName)
+            ) : (
+                ''
+            )}
             {renderIcon(icon, stackedOnIcon)}
             {label && !prefixedLabel ? renderLabel(label, labelClassName) : ''}
         </span>

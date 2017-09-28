@@ -7,59 +7,57 @@ const containerStyle = css({
     label: 'commonView-containerStyle',
     position: 'relative',
     marginTop: '0.8em',
-    maxWidth: '600px'
+    maxWidth: '600px',
 });
 
 const extraShortStyle = css({
-    maxWidth: '5em'
+    maxWidth: '5em',
 });
 
 const shortStyle = css({
-    maxWidth: '10em'
+    maxWidth: '10em',
 });
 
 const shortInlineStyle = css(
     {
         display: 'inline-block',
         marginRight: '4em',
-        verticalAlign: 'top'
+        verticalAlign: 'top',
     },
     shortStyle
 );
 
-const shortNumberStyle = css(
-    {
-        label: 'commonView shortNumberStyle',
-        width: '75px'
-    }
-);
+const shortNumberStyle = css({
+    label: 'commonView shortNumberStyle',
+    width: '75px',
+});
 
 const longStyle = css({
-    maxWidth: FormStyles.defaultEditorWidth
+    maxWidth: FormStyles.defaultEditorWidth,
 });
 
 const infoStyle = css(FormStyles.unselectable, {
     color: '#99a6b2',
     fontSize: '10px',
-    fontStyle: 'italic'
+    fontStyle: 'italic',
 });
 
 const errorStyle = css({
     color: 'darkorange',
     fontSize: '75%',
     fontStyle: 'italic',
-    float: 'left'
+    float: 'left',
 });
 
 // Used e.g. inside "Choices" (answers to questions):
 const borderTopStyle = css({
     borderTop: '2px solid #6a95b6',
     paddingTop: '1em',
-    width: FormStyles.defaultEditorWidth
+    width: FormStyles.defaultEditorWidth,
 });
 
 const indentStyle = css({
-    marginLeft: '22px !important'
+    marginLeft: '22px !important',
 });
 
 interface ICommonViewProps {
@@ -82,14 +80,11 @@ export default function commonView<E>(
 ): React.SFC<E & ICommonViewProps> {
     function CommonView(props: E & ICommonViewProps) {
         const { errorMessage = [], view = {} } = props;
-        const errors = errorMessage.map(v =>
-            <span key={v}>
-                {v}
-            </span>
-        );
-        const layout = view.layout,
-              schema = props.schema;
-        const isLiteralNumberInput = layout === undefined && schema && schema.type === 'number';
+        const errors = errorMessage.map(v => <span key={v}>{v}</span>);
+        const layout = view.layout;
+        const schema = props.schema;
+        const isLiteralNumberInput =
+            layout === undefined && schema && schema.type === 'number';
         return (
             <div
                 className={classNames(view.className, `${containerStyle}`, {
@@ -99,17 +94,13 @@ export default function commonView<E>(
                     [`${longStyle}`]: layout === 'long',
                     [`${extraShortStyle}`]: layout === 'extraShort',
                     [`${borderTopStyle}`]: view.borderTop,
-                    [`${indentStyle}`]: view.indent
+                    [`${indentStyle}`]: view.indent,
                 })}
                 style={view.style}
             >
                 <Comp {...props} />
-                <div className={infoStyle.toString()}>
-                    {view.description}
-                </div>
-                <div className={errorStyle.toString()}>
-                    {errors}
-                </div>
+                <div className={infoStyle.toString()}>{view.description}</div>
+                <div className={errorStyle.toString()}>{errors}</div>
             </div>
         );
     }

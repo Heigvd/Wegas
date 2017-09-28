@@ -9,7 +9,7 @@ const coverStyle = css({
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0
+    bottom: 0,
 });
 
 interface Props {
@@ -23,9 +23,7 @@ export function Cover(props: Props) {
     return (
         <div {...css({ position: 'relative', zIndex: props.zIndex })}>
             <div {...coverStyle} onClick={props.onClick} />
-            <div {...absolute}>
-                {props.children}
-            </div>
+            <div {...absolute}>{props.children}</div>
         </div>
     );
 }
