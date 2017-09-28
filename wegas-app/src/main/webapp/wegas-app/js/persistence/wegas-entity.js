@@ -157,7 +157,13 @@ YUI.add("wegas-entity", function(Y) {
                 value: {},
                 _inputex: {
                     required: false,
-                    fields: [{
+                    fields: [
+                        {
+                            name: "guestAllowed",
+                            type: "boolean",
+                            label: "Guest allowed ?"
+                        },
+                        {
                             name: "freeForAll",
                             type: "radio",
                             label: "Game is played",

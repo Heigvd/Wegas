@@ -9,13 +9,15 @@ angular.module('private.player.join.directives', [])
             controller: 'PlayerSessionJoinController as playerSessionJoinCtrl'
         };
     }).controller('PlayerSessionJoinController',
-    function PlayerSessionJoinController($q, $rootScope, $scope, $stateParams, $translate, $interval, SessionsModel,
+    function PlayerSessionJoinController($q, $rootScope, $scope, $controller, $stateParams, $translate, $interval, SessionsModel,
         TeamsModel, Flash) {
         /* Assure access to ctrl. */
         "use strict";
         var ctrl = this,
             REFRESH_DELAY = 5000,
             refresher = null,
+            // make sure player controller exists since playerController listen to pusher
+            playerController = $controller('PlayerController', {$scope: $scope}),
             findSessionToJoin = function() {
                 SessionsModel.findSessionToJoin($stateParams.token).then(function(response) {
                     if (response.isErroneous()) {
