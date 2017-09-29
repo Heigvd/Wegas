@@ -15,7 +15,6 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.EntityRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;

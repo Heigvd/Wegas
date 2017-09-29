@@ -7,10 +7,8 @@
  */
 package com.wegas.reviewing.persistence;
 
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 
@@ -18,7 +16,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
