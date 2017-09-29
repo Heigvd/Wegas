@@ -111,10 +111,34 @@
 /*
  * Orchestrator
  */
+.wegas-review-orchestrator {
+    width:100%;
+    height:100%;
+}
 
+.wegas-review-orchestrator-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
 .wegas-review-orchestrator-content > div{
     margin-left:20px;
+}
+
+.wegas-review-orchestrator .summary .top-header{
+    height: 200px;
+    border-bottom: 1px solid #cccaca;
+    overflow-y: auto;
+}
+
+.wegas-review-orchestrator .summary .content{
+    top: 210px;
+    left: 20px;
+    overflow-y: auto;
+    bottom: 0;
+    right: 0;
+    position: absolute;
 }
 
 .wegas-review-orchestrator,
@@ -123,7 +147,7 @@
     color: #212121;
 }
 
-.wegas-review-orchestrator .summary > div {
+.wegas-review-orchestrator .summary > .content > div {
     clear: both;
     margin-top:10px;
     margin-bottom:10px;
@@ -145,14 +169,20 @@
 }
 
 .wegas-review-orchestrator .header h2 {
+    padding-bottom: 10px;
     left: 0;
     display: inline-block;
 }
 
 .wegas-review-orchestrator .header .refresh {
-    right :0;
-    position: absolute;
+    /*right :0;*/
+    /*position: absolute;*/
     cursor: pointer;
+}
+
+
+.wegas-review-orchestrator .header .refresh .yui3-button {
+    color: #8c8c8c;
 }
 
 .wegas-review-orchestrator .control-panel {
@@ -168,10 +198,12 @@
 .wegas-review-orchestrator .properties .include-evicted {
     margin:10px;
     cursor: default;
+    color: #888;
 }
 
 .wegas-review-orchestrator .properties .include-evicted.enabled {
     cursor: pointer;
+    color: #212121;
 }
 
 .wegas-review-orchestrator .properties .include-evicted .checkbox {
@@ -208,10 +240,21 @@
     text-align: center;
 }
 
+.wegas-review-orchestrator .control-panel .state.past {
+    /*background-color: hsl(16, 83%, 58%);*/
+    /*color: #FFFDFD;*/
+}
+
 .wegas-review-orchestrator .control-panel .state.current {
     background-color: hsl(16, 83%, 58%);
     color: #FFFDFD;
 }
+
+.wegas-review-orchestrator .control-panel .state.future {
+    background-color: #e3e3e3;
+    color: #212121;
+}
+
 .wegas-review-orchestrator .control-panel .state h7{
     display:block;
     line-height: 1.5em;
@@ -227,7 +270,7 @@
     border: 1px solid #999;
     padding: 5px 10px 10px;
     height: 100%;
-    color: #999;
+    color: #808080;
 }
 
 .wegas-review-orchestrator .control-panel .transition {
@@ -313,6 +356,10 @@
     text-align:center;
 }
 
+/*.wegas-review-orchestrator .charts .ct-labels *:nth-child(2n) span.ct-horizontal {
+    margin-top: 12px;
+}*/
+
 .wegas-review-orchestrator .charts .comments {
     clear: both;
 }
@@ -336,8 +383,8 @@
 }
 
 .wegas-review-orchestrator .ct-label.ct-horizontal {
-    transform-origin: 0% 50%;
-    transform: translateY(50px) rotate(-45deg);
+    /*transform-origin: 0% 50%;*/
+    /*transform: translateY(50px) rotate(-45deg);*/
     font-size: 0.7em;
 }
 
@@ -480,5 +527,5 @@
 .wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-line,
 .wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-point,
 .wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-slice-donut {
-    stroke: #ed6a3b;
+    stroke: #446d71;
 }
