@@ -102,7 +102,7 @@ gulp.task("compress-js", ["submodule"], function () {
         .pipe(gulp.dest("target/Wegas"));
 });
 gulp.task('npm install', function () {
-    return gulp.src('target/Wegas/*/package.json').pipe(require("gulp-install")({npm:'--only=dev'}))
+    return gulp.src('target/Wegas/*/package.json').pipe(require("gulp-install")({npm:'--production=false'}))
 })
 gulp.task('clear', function (done) {
     "use strict";
