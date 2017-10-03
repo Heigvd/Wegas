@@ -262,7 +262,6 @@ var ReviewHelper = (function() {
             team = teams.get(t);
             teamId = new Long(team.getId());
             pri = pris[team];
-            print("Team status: " + pri.getReviewState().ordinal() + " -> " + pri.getReviewState().toString());
             if (!expectedStatus || pri.getReviewState().ordinal() > expectedStatus.ordinal()) {
                 expectedStatus = pri.getReviewState();
             }
@@ -321,22 +320,18 @@ var ReviewHelper = (function() {
                                         tmp[evK].push(ev.getValue());
                                         evaluationsValues[evK].push(ev.getValue());
                                         workDone = workDone && ev.getValue();
-                                        print(" - Still done ?" + workDone);
                                     }
                                 }
                             case "NOTIFIED":
                             case "REVIEWED":
                                 // Reviewer work
                                 /*workDone = true;
-                                print("Assume toReview work done");
                                 evs = Java.from(review.getFeedback());
                                 for (k in evs) {
                                     if (evs.hasOwnProperty(k)) {
                                         workDone = workDone && evs[k].getValue();
-                                        print(" - Still done ?" + workDone);
                                     }
                                 }
-                                print("eventually done ?" + workDone);
                                 if (!workDone) {
                                     //nbRDone -= 1;
                                 }*/
@@ -374,17 +369,14 @@ var ReviewHelper = (function() {
                             case "CLOSED":
                                 nbRComClosed += 1;
                             case "COMPLETED":
-                                print("Assume commenter work done");
                                 workDone = true;
 
                                 evs = Java.from(review.getComments());
                                 for (k in evs) {
                                     if (evs.hasOwnProperty(k)) {
                                         workDone = workDone && evs[k].getValue();
-                                        print(" - Still done ?" + workDone);
                                     }
                                 }
-                                print("Eventually done ?" + workDone);
                                 if (true || workDone) {
                                     nbRCom += 1;
                                 }
