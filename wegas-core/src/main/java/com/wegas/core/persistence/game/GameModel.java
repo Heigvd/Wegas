@@ -510,6 +510,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     @Override
+    @JsonIgnore
     public Player getAnyLivePlayer() {
         for (Game g : this.getGames()) {
             return g.getAnyLivePlayer();
