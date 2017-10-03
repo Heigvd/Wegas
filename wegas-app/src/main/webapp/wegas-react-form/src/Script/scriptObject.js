@@ -17,16 +17,16 @@ const labelStyle = css(FormStyles.labelStyle, {
 const warnStyle = css({
     color: 'orange',
     verticalAlign: '+2px',
-    padding: '10px',    // Create plenty of space for facilitating the hover
+    padding: '10px', // Create plenty of space for facilitating the hover
     marginLeft: '-5px',
-    marginRight: '-5px'
+    marginRight: '-5px',
 });
 const containerStyle = css({
     marginTop: '15px',
     maxWidth: '100%',
-    '& > div' : {
-        display: 'inline',  // Have the "view source" icon displayed to the right of the section title
-    }
+    '& > div': {
+        display: 'inline', // Have the "view source" icon displayed to the right of the section title
+    },
 });
 function renderLabel(label) {
     if (label) {
@@ -43,7 +43,14 @@ function scriptObject(Comp) {
     function ScriptObject(props) {
         const { value, onChange, view } = props;
         const val = value || { content: '' };
-        const warn = validator(val.content).join('\n');
+        let warn;
+        try {
+            warn = validator(val.content).join('\n');
+        } catch (e) {
+            // There was an error. certainly a parse error.
+            // It's handled elsewhere
+            warn = '';
+        }
         return (
             <div className={containerStyle}>
                 {renderLabel(view.label)}
