@@ -1,7 +1,7 @@
 import jsonFetch from './wegasFetch';
 
 const PUBLIC = 'Public';
-const EDITOR_EXTENDED = 'Editor';
+const EDITOR_EXTENDED = 'Export';
 
 function basePath(view = PUBLIC) {
     return `/rest/${view}/GameModel/`;

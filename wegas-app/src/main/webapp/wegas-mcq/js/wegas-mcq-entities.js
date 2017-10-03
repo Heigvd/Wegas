@@ -43,20 +43,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 value: "QuestionDescriptor"
             },
-            items: {
-                type: ARRAY,
-                value: [],
-                "transient": true,
-                _inputex: {
-                    _type: HIDDEN
-                },
-                setter: function(val) {
-                    for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
-                        val[i].parentDescriptor = this;
-                    }
-                    return val;
-                }
-            },
             title: {
                 type: STRING,
                 optional: true,

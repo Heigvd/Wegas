@@ -67,6 +67,7 @@ public class VariableDescriptorController {
 
     /**
      * @param gameModelId
+     *
      * @return all root level variable descriptors
      */
     @GET
@@ -75,7 +76,9 @@ public class VariableDescriptorController {
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
-        return gameModel.getChildVariableDescriptors();
+
+        // Return all variable descriptors
+        return gameModel.getVariableDescriptors();
     }
 
     @POST
@@ -84,7 +87,7 @@ public class VariableDescriptorController {
         Collection<VariableDescriptor> descriptors = new ArrayList<>();
         for (Long id : ids) {
             VariableDescriptor desc = variableDescriptorFacade.find(id);
-            if (userFacade.hasPermission(desc.getGameModel().getChannel())){
+            if (userFacade.hasPermission(desc.getGameModel().getChannel())) {
                 descriptors.add(desc);
             }
         }
@@ -93,6 +96,7 @@ public class VariableDescriptorController {
 
     /**
      * @param entityId
+     *
      * @return variable descriptor with the given id
      */
     @GET
@@ -110,6 +114,7 @@ public class VariableDescriptorController {
      *
      * @param gameModelId the game model
      * @param entity      the new descriptor
+     *
      * @return the new variable descriptor
      */
     @POST
@@ -128,12 +133,12 @@ public class VariableDescriptorController {
      *
      * @param entityId the parent descriptor id
      * @param entity   the new descriptor
-     * @return the up to date parent descriptor container containing the new
-     *         descriptor
+     *
+     * @return the new descriptor
      */
     @POST
     @Path("{variableDescriptorId : [1-9][0-9]*}")
-    public DescriptorListI createChild(@PathParam("variableDescriptorId") Long entityId, VariableDescriptor entity) {
+    public VariableDescriptor createChild(@PathParam("variableDescriptorId") Long entityId, VariableDescriptor entity) {
 
         SecurityUtils.getSubject().
                 checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
@@ -148,12 +153,12 @@ public class VariableDescriptorController {
      * @param gameModelId
      * @param entityName  parent entity, identified by its name
      * @param entity      Entity to add
-     * @return the up to date parent descriptor container containing the new
-     *         descriptor
+     *
+     * @return the new descriptor
      */
     @POST
     @Path("{variableDescriptorName : [_a-zA-Z][_a-zA-Z0-9]*}")
-    public DescriptorListI createChild(@PathParam("gameModelId") Long gameModelId,
+    public VariableDescriptor createChild(@PathParam("gameModelId") Long gameModelId,
             @PathParam("variableDescriptorName") String entityName, VariableDescriptor entity) {
 
         try {
@@ -176,6 +181,7 @@ public class VariableDescriptorController {
     /**
      * @param entityId
      * @param entity
+     *
      * @return up to date entity
      */
     @PUT
@@ -206,6 +212,7 @@ public class VariableDescriptorController {
      * @param index
      */
     @PUT
+    
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
             @PathParam("parentDescriptorId") Long parentDescriptorId,
@@ -220,7 +227,9 @@ public class VariableDescriptorController {
      * Make a descriptor copy that will stands at the same level
      *
      * @param entityId
+     *
      * @return the new descriptor
+     *
      * @throws IOException
      */
     @POST
@@ -230,26 +239,13 @@ public class VariableDescriptorController {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
         VariableDescriptor duplicate = variableDescriptorFacade.duplicate(entityId);
 
-        DescriptorListI parent = variableDescriptorFacade.find(entityId).getParent();
-        if (parent instanceof VariableDescriptor) {
-            /*
-             * If the duplicated var is in a list descriptor, return the whole 
-             * list so the editor will be updated 
-             */
-            return (VariableDescriptor) parent;
-        } else {
-            /* 
-             * Otherwise, the duplicate is at root level
-             * @fixme we shall not make such a difference... 
-             * Find a way to return the whole gamemodel rootlevel descriptors !
-             */
-            return duplicate;
-        }
+        return duplicate;
     }
 
     /**
      *
      * @param entityId
+     *
      * @return up to date descriptor container which contains sorted children
      */
     @GET
@@ -261,6 +257,7 @@ public class VariableDescriptorController {
 
     /**
      * @param entityId
+     *
      * @return just deleted descriptor
      */
     @DELETE
@@ -278,6 +275,7 @@ public class VariableDescriptorController {
      * Resets all the variables of a given game model
      *
      * @param gameModelId game model id
+     *
      * @return HTTP 200 OK
      */
     @GET
@@ -294,6 +292,7 @@ public class VariableDescriptorController {
      *
      * @param gameModelId
      * @param criteria
+     *
      * @return list of descriptor id matching criteria
      */
     @POST
@@ -315,6 +314,7 @@ public class VariableDescriptorController {
      *
      * @param gameModelId
      * @param criteria
+     *
      * @return list of descriptor id matching all criterias
      */
     @POST

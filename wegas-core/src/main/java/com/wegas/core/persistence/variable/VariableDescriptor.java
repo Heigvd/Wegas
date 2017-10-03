@@ -336,6 +336,19 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     @JsonView(Views.IndexI.class)
+    public String getParentDescriptorType() {
+        if (this.getRootGameModel() != null) {
+            return "GameModel";
+        } else {
+            return "VariableDescriptor";
+        }
+    }
+
+    public void setParentDescriptorType(String type) {
+        // nothing to do
+    }
+
+    @JsonView(Views.IndexI.class)
     public Long getParentDescriptorId() {
         try {
             return this.getParent().getId();
