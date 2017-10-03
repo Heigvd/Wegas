@@ -27,15 +27,20 @@ module.exports = {
         ignored: ["src/**/src/**", "**/node_modules/**"]
     },
     "server": false,
-    "proxy": "http://localhost:8080/",
+    "proxy": "http://localhost:8080/Wegas/",
     "port": 3000,
     "middleware": [
-        // function (req, res, next) {
-        //     req.url = req.url.replace(/Wegas\/(?!lib\/|.*min\.js$)(?=.*\.js$)/, "");
-        //     req.url = req.url.replace(/Wegas\/(?!lib\/|.*min\.css$)(?=.*\.css(\?.*)?$)/, "");
-        //     next();
-        // },
-        require("serve-static")("src/main/webapp")
+        // remove /Wegas prefix
+        function (req, res, next) {
+            req.url = req.url.replace(/^\/Wegas/, "");
+            next();
+        },
+        require("serve-static")("src/main/webapp"),
+        // restore /Wegas prefix
+        function (req, res, next) {
+            req.url = "/Wegas" + req.url;
+            next();
+        }
     ],
     "serveStatic": [],
     "ghostMode": {
