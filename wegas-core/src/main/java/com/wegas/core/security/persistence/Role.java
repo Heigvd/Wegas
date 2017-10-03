@@ -32,7 +32,7 @@ import org.eclipse.persistence.config.QueryHints;
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
             })
 })
-public class Role extends AbstractEntity {
+public class Role extends AbstractEntity implements PermissionOwner {
 
     private static final long serialVersionUID = 1L;
 
@@ -150,15 +150,17 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     * @return all role permissions
+     * {@inheritDoc}
      */
+    @Override
     public List<Permission> getPermissions() {
         return permissions;
     }
 
     /**
-     * @param permissions
+     * {@inheritDoc}
      */
+    @Override
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
         for (Permission p : this.permissions) {
@@ -167,49 +169,15 @@ public class Role extends AbstractEntity {
     }
 
     /**
-     * @param permission
-     *
-     * @return true if the permission has successfully been added
+     * {@inheritDoc}
      */
-    public boolean addPermission(String permission) {
-        return this.addPermission(new Permission(permission));
-    }
-
-    /**
-     * @param permission
-     *
-     * @return true if the permission has successfully been added
-     */
+    @Override
     public boolean addPermission(Permission permission) {
-        if (!this.permissions.contains(permission)) {
+        if (!this.hasPermission(permission)) {
             permission.setRole(this);
             return this.permissions.add(permission);
-        } else {
-            return false;
         }
-    }
-
-    /**
-     * @param permission
-     *
-     * @return true if the permission has successfully been removed
-     */
-    public boolean removePermission(String permission) {
-        return this.removePermission(new Permission(permission));
-    }
-
-    public boolean removePermission(Permission permission) {
-        Permission currPerm;
-        boolean returnVal = false;
-        Iterator<Permission> it = this.permissions.iterator();
-        while (it.hasNext()) {
-            currPerm = it.next();
-            if (currPerm.equals(permission)) {
-                it.remove();
-                returnVal = true;
-            }
-        }
-        return returnVal;
+        return false;
     }
 
     /**

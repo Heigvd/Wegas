@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
@@ -20,6 +21,8 @@ import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,9 +78,16 @@ public class PlayerFacade extends BaseFacade<Player> {
     public Player joinTeamAndCommit(Long teamId, Long userId, String playerName) {
         logger.info("Adding user {} to team {}", userId, teamId);
 
-        Player player = new Player();
         Team team = teamFacade.find(teamId);
 
+        AbstractAccount currentAccount = userFacade.getCurrentAccount();
+        // current user is logged as guest and guest are not allowed
+        if (currentAccount != null && !team.getGame().getGameModel().getProperties().getGuestAllowed() && currentAccount instanceof GuestJpaAccount) {
+            throw WegasErrorMessage.error("Access denied : guest not allowed");
+        }
+        
+        Player player = new Player();
+        
         if (userId != null) {
             User user = userFacade.find(userId);
             user.getPlayers().add(player);

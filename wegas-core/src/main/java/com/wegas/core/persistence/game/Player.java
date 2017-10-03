@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.security.ejb.UserFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,6 +47,8 @@ import com.wegas.core.persistence.InstanceOwner;
     @Index(columnList = "parentteam_id")
 })
 public class Player extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
+
+    private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -258,8 +263,13 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * @return id of the game the player is linked to
      */
     @JsonIgnore
-    public long getGameId() {
-        return this.getTeam().getGame().getId();
+    public Long getGameId() {
+        if (this.getTeam() != null) {
+            if (this.getGame() != null) {
+                return this.getTeam().getGame().getId();
+            }
+        }
+        return null;
     }
 
     /**
@@ -368,6 +378,16 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         return pl;
     }
 
+    @Override
+    @JsonIgnore
+    public Player getAnyLivePlayer() {
+        if (this.getStatus().equals(Status.LIVE)) {
+            return this;
+        } else {
+            return null;
+        }
+    }
+
     /**
      *
      * @param privateInstances
@@ -407,8 +427,14 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
         if (this.getUser() != null) {
-            User theUser = beans.getUserFacade().find(this.getUserId());
+            UserFacade userFacade = beans.getUserFacade();
+            User theUser = userFacade.find(this.getUserId());
             if (theUser != null) {
+                if (this.getGameId() != null) {
+                    userFacade.deletePermissions(theUser, "Game:View:g" + this.getGameId());
+                } else {
+                    logger.error("ORHAN PERMISSION");
+                }
                 theUser.getPlayers().remove(this);
             }
         }

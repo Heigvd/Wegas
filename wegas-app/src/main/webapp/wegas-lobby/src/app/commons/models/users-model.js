@@ -253,11 +253,8 @@ angular.module('wegas.models.users', [])
 
                                     if (user.roles) {
                                         for (var i = 0; i < user.roles.length; i++) {
-                                            var role = user.roles[i];
-                                            // Additional attributes created in user admin code:
-                                            delete role.users;
-                                            delete role.isExpanded;
-                                            delete role.realSize;
+                                            // Additional attribute created in user admin code:
+                                            delete user.roles[i].users;
                                         }
                                     }
 

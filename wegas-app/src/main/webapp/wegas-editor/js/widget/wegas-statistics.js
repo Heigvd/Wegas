@@ -32,10 +32,10 @@ YUI.add("wegas-statistics", function(Y) {
         },
         Promise = Y.Promise, // remove me to use native promise
         getPath = function(entity) {
-            var title = entity.getEditorLabel(), parent = entity.parentDescriptor;
-            while (parent) {
+            var title = entity.getEditorLabel(), parent = entity.getParent();
+            while (parent instanceof Y.Wegas.persistence.VariableDescriptor) {
                 title = parent.getEditorLabel() + " \u21E8 " + title;
-                parent = parent.parentDescriptor;
+                parent = parent.getParent();
             }
             return title;
         }, getLogID = function(gm) {

@@ -95,9 +95,10 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> imple
             for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
                 for (AbstractEntity entity : entry.getValue()) {
                     if (entity instanceof VariableInstance) {
-                        try {
-                            player = variableInstanceFacade.findAPlayer((VariableInstance) entity);
-                        } catch (NoPlayerException ex) {
+                        VariableInstance vi = (VariableInstance) entity;
+                        InstanceOwner owner = vi.getOwner();
+                        if (owner !=null){
+                            player = owner.getAnyLivePlayer();
                         }
                         break;
                     }

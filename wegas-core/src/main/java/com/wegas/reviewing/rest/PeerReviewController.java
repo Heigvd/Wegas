@@ -14,6 +14,8 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -34,6 +36,7 @@ import javax.ws.rs.core.Response;
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Stateless
+
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/PeerReviewController/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -72,25 +75,28 @@ public class PeerReviewController {
      * @param rId      ID of the review indicating whom the variable to review
      *                 belongs
      * @param playerId
+     *
      * @return the variable instance to review
      */
     @GET
+    
     @Path("/{reviewDescriptorId : [1-9][0-9]*}/ToReview/{reviewId : [1-9][0-9]*}/{playerId: [1-9][0-9]*}")
     public VariableInstance getInstanceToReview(
             @PathParam("reviewDescriptorId") Long prdId,
             @PathParam("reviewId") Long rId,
             @PathParam("playerId") Long playerId) {
 
-        try {
-            Player player = playerFacade.find(playerId);
-            Review review = reviewFacade.findReview(rId);
-            PeerReviewInstance authorInstance = review.getAuthor();
+        Player player = playerFacade.find(playerId);
+        Review review = reviewFacade.findReview(rId);
+        PeerReviewInstance authorInstance = review.getAuthor();
 
-            PeerReviewDescriptor prd = (PeerReviewDescriptor) authorInstance.getDescriptor();
-            VariableDescriptor toReview = prd.getToReview();
+        PeerReviewDescriptor prd = (PeerReviewDescriptor) authorInstance.getDescriptor();
+        VariableDescriptor toReview = prd.getToReview();
 
-            return instanceFacade.findInstance(toReview, authorInstance);
-        } catch (NoPlayerException ex) {
+        VariableInstance instance = toReview.findInstance(authorInstance);
+        if (instance != null) {
+            return instance;
+        } else {
             throw WegasErrorMessage.error("Unable to find a player");
         }
     }
@@ -102,6 +108,7 @@ public class PeerReviewController {
      * @param playerId id of the player who submit
      * @param prdId    the peer review descriptor containing the variable to
      *                 submit
+     *
      * @return Standard HTTP OK
      */
     @POST
@@ -140,6 +147,7 @@ public class PeerReviewController {
      * Save a review posted by a player.
      *
      * @param other review to save
+     *
      * @return updated PeerReviewInstance
      */
     @POST
@@ -160,6 +168,7 @@ public class PeerReviewController {
      *
      * @param review   review to submit
      * @param playerId
+     *
      * @return peerReviewInstance with up to date reviews
      */
     @POST
@@ -213,11 +222,12 @@ public class PeerReviewController {
 
     private void commit(List<PeerReviewInstance> instances) {
         for (PeerReviewInstance pri : instances) {
-            try {
-                Player findAPlayer = instanceFacade.findAPlayer(pri);
-                requestFacade.commit(findAPlayer);
-                //requestFacade.runStateMachines(findAPlayer);
-            } catch (NoPlayerException ex) {
+            InstanceOwner owner = pri.getOwner();
+            if (owner != null) {
+                Player p = owner.getAnyLivePlayer();
+                if (p != null) {
+                    requestFacade.commit(p);
+                }
             }
         }
         requestFacade.flushClear();

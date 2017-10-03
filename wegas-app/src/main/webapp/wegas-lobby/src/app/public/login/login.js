@@ -28,7 +28,7 @@ angular.module('public.login', [])
                             "managed-mode": "true"
                         }
                     })
-                    .success(function (data) {
+                    .success(function(data) {
                         if (data !== undefined) {
                             return deferred.resolve(data);
                         } else {
@@ -40,7 +40,7 @@ angular.module('public.login', [])
                         deferred.resolve();
                         return;
                     })
-                    .error(function (data) {
+                    .error(function(data) {
                         if (data.events !== undefined) {
                             console.log("WEGAS LOBBY : Could not obtain AAI config data");
                             console.log(data.events);
@@ -49,9 +49,10 @@ angular.module('public.login', [])
                         return;
                     });
                 return deferred.promise;
-            };
+            }
+            ;
 
-            getAaiConfig().then(function(config){
+            getAaiConfig().then(function(config) {
                 $scope.showAaiLogin = config.showButton;
                 $scope.aaiLoginUrl = config.loginUrl;
             });
@@ -68,7 +69,7 @@ angular.module('public.login', [])
                         recoverPasswordDiv.style.display = 'none';
                         if (this.agreeCbx === false) {
                             console.log("WEGAS LOBBY : User has not yet agreed to the terms of use");
-                            $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function (message) {
+                            $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function(message) {
                                 Flash.danger(message);
                             });
                             return;
@@ -79,10 +80,12 @@ angular.module('public.login', [])
                         this.agreeCbx = false;
                     }
                     Auth.login(this.username, this.password, this.agreeCbx).then(function(response) {
+                        var redirect, custom;
+
                         if (response.isErroneous()) {
                             response.flash();
-                            var custom = response.getCustom();
-                            if (custom && custom.agreed===false){
+                            custom = response.getCustom();
+                            if (custom && custom.agreed === false) {
                                 ctx.agreeCbx = false;
                                 agreeDiv.style.display = 'block';
                                 recoverPasswordDiv.style.display = 'none';
@@ -94,14 +97,22 @@ angular.module('public.login', [])
                             TeamsModel.clearCache();
                             SessionsModel.clearCache();
                             ScenariosModel.clearCache();
-                            // Pre-load sessions and scenarios into local cache to speed up display:
-                            Auth.getAuthenticatedUser().then(function(user) {
-                                if (user.isAdmin || (user.isScenarist && user.isTrainer)) {
-                                    SessionsModel.getSessions("LIVE");
-                                    ScenariosModel.getScenarios("LIVE");
-                                }
-                            });
-                            $state.go('wegas');
+
+
+                            redirect = window.WegasHelper.getQueryStringParameter("redirect");
+
+                            if (redirect) {
+                                window.location.href = window.ServiceURL + decodeURIComponent(redirect);
+                            } else {
+                                // Pre-load sessions and scenarios into local cache to speed up display:
+                                Auth.getAuthenticatedUser().then(function(user) {
+                                    if (user.isAdmin || (user.isScenarist && user.isTrainer)) {
+                                        SessionsModel.getSessions("LIVE");
+                                        ScenariosModel.getScenarios("LIVE");
+                                    }
+                                });
+                                $state.go('wegas');
+                            }
                         }
                     });
                 } else {

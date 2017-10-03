@@ -126,7 +126,7 @@ angular.module('wegas.models.sessions', [])
                 var deferred = $q.defer(),
                     gameModelSetted = false,
                     scenarioBeforeChange = sessionBeforeChange.gameModel,
-                    properties = ["scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID"];
+                    properties = ["scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID", "guestAllowed"];
                 if (scenarioBeforeChange.properties.freeForAll !== sessionInfos.individual) {
                     sessionBeforeChange.properties.freeForAll = sessionInfos.individual;
                     scenarioBeforeChange.properties.freeForAll = sessionInfos.individual;

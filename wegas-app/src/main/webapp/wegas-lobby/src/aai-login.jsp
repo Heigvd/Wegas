@@ -37,6 +37,11 @@
     c.setHttpOnly(true);
     response.addCookie(c);
 
+    String redirectTo = request.getParameter("redirect");
+    if (redirectTo != null){
+        target += "?redirect=" + redirectTo;
+    }
+
     response.sendRedirect(target);
 
     // Everything below gets skipped when the above redirect is active !!!

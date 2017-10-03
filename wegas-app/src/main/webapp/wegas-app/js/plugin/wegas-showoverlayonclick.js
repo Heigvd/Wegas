@@ -9,7 +9,7 @@
 /**
  *
  * @fileoverview
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Maxence 
  */
 /*global YUI*/
 YUI.add("wegas-showoverlayonclick", function(Y) {

@@ -228,7 +228,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
     public QuestionInstance getQuestionInstanceFromReply(Reply reply) throws NoPlayerException {
         QuestionDescriptor findDescriptor = ((ChoiceDescriptor) reply.getChoiceInstance().findDescriptor()).getQuestion();
-        return (QuestionInstance) variableInstanceFacade.findInstance(findDescriptor, reply.getChoiceInstance());
+        return findDescriptor.findInstance(reply.getChoiceInstance());
     }
 
     /**

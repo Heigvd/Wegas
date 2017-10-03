@@ -107,25 +107,6 @@ public class Permission extends AbstractEntity {
         }
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            return true;
-        } else {
-            return (obj != null
-                    && obj instanceof Permission
-                    && this.value.equals(((Permission) obj).getValue()));
-        }
-
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 61 * hash + Objects.hashCode(this.value);
-        return hash;
-    }
-
     /**
      * @return the inducedPermission
      *         public String getInducedPermission() {

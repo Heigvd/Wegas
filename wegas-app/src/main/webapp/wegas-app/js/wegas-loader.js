@@ -50,8 +50,11 @@ YUI().use(function(Y) {
              */
             "wegas-app": {
                 requires: ["base", "plugin", "array-extras", "timers",
-                    "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro", "wegas-i18n",
-                    "wegas-keyframescss", "wegas-lockmanager"]
+                    "wegas-alerts", "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro",
+                    "wegas-i18n", "wegas-keyframescss", "wegas-lockmanager"]
+            },
+            "wegas-alerts":{
+                requires:["widget"]
             },
             "wegas-keyframescss": {
                 type: CSS
@@ -338,6 +341,11 @@ YUI().use(function(Y) {
             "wegas-injector": {
                 path: "js/plugin/wegas-injector-min.js",
                 ws_provides: "Injector"
+            },
+            "wegas-eventlogger": {
+                path: "js/plugin/wegas-eventlogger-min.js",
+                requires: "wegas-plugin",
+                ws_provides: ["EventLogger"]
             },
             "wegas-lockmanager": {
                 path: "js/plugin/wegas-lockmanager-min.js",
@@ -854,7 +862,7 @@ YUI().use(function(Y) {
             },
             "wegas-mcq-view": {
                 requires: ["wegas-gallery", "wegas-mcq-viewcss", "wegas-mcq-printcss",
-                    "wegas-mcq-entities", "wegas-i18n-mcq"],
+                    "wegas-mcq-entities", "wegas-i18n-mcq", "wegas-alerts"],
                 ws_provides: "MCQView"
             },
             "wegas-mcq-viewcss": {

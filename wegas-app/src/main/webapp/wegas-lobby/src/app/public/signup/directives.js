@@ -12,13 +12,13 @@ angular.module('public.signup.directives', [])
     // Directive for auto-focus
     .directive('focus', function($timeout) {
         return {
-            scope : {
-                trigger : '=focus'
+            scope: {
+                trigger: '=focus'
             },
-            link : function(scope, element) {
+            link: function(scope, element) {
                 scope.$watch('trigger', function(value) {
                     //console.log('element=',element[0],'  value=',value);
-                    if (value === "true" || value===true) {
+                    if (value === "true" || value === true) {
                         $timeout(function() {
                             element[0].focus();
                         }, 2000);
@@ -45,7 +45,7 @@ angular.module('public.signup.directives', [])
         ctrl.checkEmailInUsername = function() {
             var username = ctrl.newUser.username.trim();
             if (username.indexOf('@') != -1) {
-                return (username==ctrl.newUser.email.trim());
+                return (username == ctrl.newUser.email.trim());
             } else {
                 return true;
             }
@@ -55,45 +55,55 @@ angular.module('public.signup.directives', [])
             var field = document.getElementById(fieldName);
             field.focus();
             field.style.borderColor = "red";
-            $timeout(function(){ field.style.borderColor = ""; }, 5000);
+            $timeout(function() {
+                field.style.borderColor = "";
+            }, 5000);
         }
 
         function highlightText(fieldName) {
             var field = document.getElementById(fieldName);
             field.style.color = "red";
             field.style.fontWeight = "bold";
-            $timeout(function(){
+            $timeout(function() {
                 field.style.color = "";
                 field.style.fontWeight = "";
             }, 5000);
         }
 
+        function isValueValid(value, minLength) {
+            return value && value.length >= minLength;
+        }
+
         ctrl.signup = function() {
-            if (ctrl.newUser.username && ctrl.newUser.username.length > 0) {
-                if (ctrl.newUser.email && ctrl.newUser.email.length > 0) {
-                    if (ctrl.checkEmailInUsername()){
-                        if (ctrl.newUser.p1 && ctrl.newUser.p1.length >= 3) {
+            if (isValueValid(ctrl.newUser.username, 1)) {
+                if (isValueValid(ctrl.newUser.email, 1)) {
+                    if (ctrl.checkEmailInUsername()) {
+                        if (isValueValid(ctrl.newUser.p1, 3)) {
                             if (ctrl.newUser.p1 === ctrl.newUser.p2) {
-                                if (ctrl.newUser.firstname && ctrl.newUser.firstname.length > 0 && ctrl.newUser.lastname &&
-                                    ctrl.newUser.lastname.length > 0) {
+                                if (isValueValid(ctrl.newUser.firstname, 1) && isValueValid(ctrl.newUser.lastname, 1)) {
                                     if (ctrl.newUser.agree) {
+
                                         Auth.signup(ctrl.newUser.email,
                                             ctrl.newUser.username,
                                             ctrl.newUser.p1,
                                             ctrl.newUser.firstname,
                                             ctrl.newUser.lastname,
-                                            ctrl.newUser.agree).then(function (response) {
+                                            ctrl.newUser.agree).then(function(response) {
                                             if (response.isErroneous()) {
                                                 response.flash();
                                                 var msg = response.custom.messageId;
                                                 if (msg.indexOf("EMAIL") >= 0) {
                                                     highlightField('email');
-                                                } else if (msg.indexOf("USERNAME") >= 0){
+                                                } else if (msg.indexOf("USERNAME") >= 0) {
                                                     highlightField('username');
                                                 }
                                             } else {
+
+
+
                                                 // Automatic login after successful registration:
-                                                Auth.login(ctrl.newUser.username, ctrl.newUser.p1).then(function (response2) {
+                                                Auth.login(ctrl.newUser.username, ctrl.newUser.p1).then(function(response2) {
+                                                    var redirect;
                                                     if (response2.isErroneous()) {
                                                         response2.flash();
                                                     } else {
@@ -102,18 +112,21 @@ angular.module('public.signup.directives', [])
                                                         TeamsModel.clearCache();
                                                         SessionsModel.clearCache();
                                                         ScenariosModel.clearCache();
-                                                        // Pre-load teams into local cache to speed up first login:
-                                                        TeamsModel.getTeams().then(function () {
-                                                            // Don't leave this page until the cache is pre-populated:
-                                                            $scope.close();
-                                                        });
-                                                        // Browser redirect is done in signup.js
-                                                    }
+
+
+                                                            // Pre-load teams into local cache to speed up first login:
+                                                            TeamsModel.getTeams().then(function() {
+                                                                // Don't leave this page until the cache is pre-populated:
+                                                                $scope.close();
+                                                            });
+                                                            // Browser redirect is done in signup.js
+                                                        }
+                                                    
                                                 });
                                             }
                                         });
                                     } else {
-                                        $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function (message) {
+                                        $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function(message) {
                                             Flash.danger(message);
                                         });
                                         highlightText('agreeLabel');
@@ -123,39 +136,39 @@ angular.module('public.signup.directives', [])
                                         highlightField('lastname');
                                     else
                                         highlightField('firstname');
-                                    $translate('CREATE-ACCOUNT-FLASH-WRONG-NAME').then(function (message) {
+                                    $translate('CREATE-ACCOUNT-FLASH-WRONG-NAME').then(function(message) {
                                         Flash.danger(message);
                                     });
                                 }
                             } else {
                                 highlightField('password2');
-                                $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS2').then(function (message) {
+                                $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS2').then(function(message) {
                                     Flash.danger(message);
                                 });
                             }
                         } else {
                             highlightField('password1');
-                            $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS').then(function (message) {
+                            $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS').then(function(message) {
                                 Flash.danger(message);
                             });
                         }
                     } else {
                         highlightField('username');
-                        $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL-IN-USERNAME').then(function (message) {
+                        $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL-IN-USERNAME').then(function(message) {
                             Flash.danger(message);
                         });
                     }
                 } else {
                     highlightField('email');
-                    $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL').then(function (message) {
+                    $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL').then(function(message) {
                         Flash.danger(message);
                     });
                 }
             } else {
                 highlightField('username');
-                $translate('CREATE-ACCOUNT-FLASH-WRONG-USERNAME').then(function (message) {
+                $translate('CREATE-ACCOUNT-FLASH-WRONG-USERNAME').then(function(message) {
                     Flash.danger(message);
                 });
             }
         };
-});
+    });

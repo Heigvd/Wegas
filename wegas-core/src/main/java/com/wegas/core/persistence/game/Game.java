@@ -242,10 +242,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @JsonIgnore
     public Player getAnyLivePlayer() {
         for (Team t : this.getTeams()) {
-            Player p = t.getAnyLivePlayer();
-            if (p != null) {
-                return p;
-            }
+            return t.getAnyLivePlayer();
         }
         return null;
     }

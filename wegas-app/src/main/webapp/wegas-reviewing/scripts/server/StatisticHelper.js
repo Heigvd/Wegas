@@ -14,12 +14,15 @@
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-/*global Variable, gameModel, print, Java, javax, com, Infinity*/
+/*global Variable, gameModel, print, Java, javax, com, Infinity, NaN*/
 var StatisticHelper = (function() {
     "use strict";
 
     function isNumber(x) {
-        return typeof x === "number" && x !== Infinity && x !== -Infinity;
+        if (x instanceof  Java.type("java.lang.Number")) {
+            x = x.doubleValue();
+        }
+        return (typeof x === "number" || x instanceof  Java.type("java.lang.Number")) && x !== Infinity && x !== -Infinity;
     }
 
     /*
@@ -40,21 +43,14 @@ var StatisticHelper = (function() {
     function getNumericStatistics(values, min, max, numberOfClass) {
         var i, histogram = [], k,
             mean, median, sd, effectiveValues,
-            sortedValues, x, classSize;
+            clMin,
+            sortedValues, x, classSize, fullRangeWidth;
 
         effectiveValues = [];
         for (i = 0; i < values.length; i += 1) {
             if (isNumber(values[i])) {
                 effectiveValues.push(values[i]);
             }
-        }
-
-        if (!isNumber(numberOfClass)) {
-            numberOfClass = 5;
-            if (effectiveValues.length > 100) {
-                numberOfClass = 20;
-            }
-
         }
 
         if (!isNumber(min)) { // if min not provided, determine it from distribution
@@ -71,12 +67,27 @@ var StatisticHelper = (function() {
             max = Math.max(max, Math.max.apply(null, effectiveValues));
         }
 
-        classSize = (max - min) / (numberOfClass - 1);
+        fullRangeWidth = max - min;
+
+        if (!isNumber(numberOfClass)) {
+            numberOfClass = (fullRangeWidth < 10 ? Math.floor(fullRangeWidth) + 1 : 10);
+                if (effectiveValues.length > 100) { // ??
+                numberOfClass = 20;
+            }
+        }
+
+        classSize = fullRangeWidth / (numberOfClass);
+
+
+
 
         for (i = 0; i < numberOfClass; i += 1) {
+            clMin = min + i * classSize;
             histogram.push({
-                min: min + Math.max(0, (i - 0.5)) * classSize,
-                max: Math.min(max, min + (i + 0.5) * classSize),
+                min: clMin,
+                max: clMin + classSize,
+                maxValue: NaN,
+                minValue: NaN,
                 count: 0
             });
         }
@@ -85,6 +96,8 @@ var StatisticHelper = (function() {
         for (i = 0; i < effectiveValues.length; i += 1) {
             for (k = 0; k <= numberOfClass; k += 1) {
                 if (effectiveValues[i] < histogram[k].max || k === numberOfClass - 1) {
+                    histogram[k].minValue = Math.min(histogram[k].minValue || Infinity, effectiveValues[i]);
+                    histogram[k].maxValue = Math.max(histogram[k].maxValue || -Infinity, effectiveValues[i]);
                     break;
                 }
             }

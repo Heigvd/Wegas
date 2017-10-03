@@ -128,7 +128,6 @@ angular.module('private.player.directives', [])
             var i, t, j, p,
                 updated = false;
 
-            console.log("DEC");
             for (i in ctrl.teams) {
                 if (ctrl.teams.hasOwnProperty(i)) {
                     t = ctrl.teams[i];
@@ -145,7 +144,7 @@ angular.module('private.player.directives', [])
 
                                 p.alreadyWaited = 100 - (100 * p.queueSize / p.initialQueueSize);
                                 p.alreadyWaited = p.alreadyWaited.toFixed(2);
-                                
+
                                 p.timeToWait = (p.queueSize * (p.queueSizeTime - p.initialQueueSizeTime) / (p.initialQueueSize - p.queueSize)) / 1000;
                                 p.timeToWait = Math.floor(p.timeToWait);
                                 updated = true;
@@ -161,13 +160,17 @@ angular.module('private.player.directives', [])
 
         });
 
-        $rootScope.$on('wegaspusher:team-update', function(e, team) {
-            console.log("RECEIVE TEAM UPDATE");
+        ctrl.detachTeamListener = $rootScope.$on('wegaspusher:team-update', function(e, team) {
             TeamsModel.cacheTeam(team);
 
             if (!$rootScope.$$phase) {
                 $scope.$apply();
             }
+        });
+
+        // When leaving, remove the team-update listener
+        $scope.$on("$destroy", function() {
+            ctrl.detachTeamListener();
         });
 
         /* Initialize datas */

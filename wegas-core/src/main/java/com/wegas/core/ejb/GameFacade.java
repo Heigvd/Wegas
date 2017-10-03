@@ -19,6 +19,9 @@ import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.GameAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import org.slf4j.LoggerFactory;
 
@@ -545,6 +548,12 @@ public class GameFacade extends BaseFacade<Game> {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Team createAndCommit(Long gameId, Team t) {
         Game g = this.find(gameId);
+
+        AbstractAccount currentAccount = userFacade.getCurrentAccount();
+        // current user is logged as guest and guest are not allowed
+        if (currentAccount != null && !g.getGameModel().getProperties().getGuestAllowed() && currentAccount instanceof GuestJpaAccount) {
+            throw WegasErrorMessage.error("Access denied : guest not allowed");
+        }
 
         // @Hack If user is on a game account, use it as team name
         if (userFacade.getCurrentUser().getMainAccount() instanceof GameAccount) {

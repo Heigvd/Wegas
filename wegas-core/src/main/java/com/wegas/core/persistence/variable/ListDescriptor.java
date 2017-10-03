@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.game.GameModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +92,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      * @return the variableDescriptors
      */
     @Override
+    @JsonView(Views.ExportI.class)
     public List<VariableDescriptor> getItems() {
         return this.items;
     }
