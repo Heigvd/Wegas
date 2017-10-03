@@ -223,16 +223,16 @@ YUI.add('wegas-entity', function(Y) {
             type: ARRAY,
             value: [],
             "transient": true,
-            _inputex: {
-                _type: HIDDEN
+            view: {
+                type: HIDDEN
             }
         },
         items: {
             type: ARRAY,
             value: [],
             "transient": true,
-            _inputex: {
-                _type: HIDDEN
+            view: {
+                type: HIDDEN
             },
             /*
              * one would use setter, but more complicated to keep up to date

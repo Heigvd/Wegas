@@ -15,7 +15,7 @@ function genChoices(items, level, maxLevel, classFilter, selectable) {
     const enableFolder = classFilter.indexOf('ListDescriptor') > -1;
     let ret = [];
     if (level <= maxLevel) {
-        items.forEach((i) => {
+        items.forEach(i => {
             if (i.get('@class') === 'ListDescriptor') {
                 const newItems = genChoices(
                     i.get('items'),
@@ -29,15 +29,20 @@ function genChoices(items, level, maxLevel, classFilter, selectable) {
                         label: genSpaces(level) + i.get('label'),
                         value: i.get('name'),
                         children: newItems,
-                        disabled: !enableFolder || (selectable && selectable.indexOf(level) === -1)
+                        disabled:
+                            !enableFolder ||
+                            (selectable && selectable.indexOf(level) === -1),
                     });
                     ret = ret.concat(newItems);
                 }
-            } else if (!classFilter.length || classFilter.indexOf(i.get('@class')) !== -1) {
+            } else if (
+                !classFilter.length ||
+                classFilter.indexOf(i.get('@class')) !== -1
+            ) {
                 ret.push({
                     label: genSpaces(level) + i.get('label'),
                     value: i.get('name'),
-                    disabled: selectable && selectable.indexOf(level) === -1
+                    disabled: selectable && selectable.indexOf(level) === -1,
                 });
             }
         });
@@ -52,7 +57,8 @@ function FlatVariableSelect({
         selectableLevels,
         ...restView
     } = {},
-    ...rest }) {
+    ...rest
+}) {
     const filter = Array.isArray(classFilter) ? classFilter : [classFilter];
     const Y = getY();
     let items;
@@ -60,19 +66,30 @@ function FlatVariableSelect({
         if (!Array.isArray(root)) {
             items = [Y.Wegas.Facade.Variable.cache.find('name', root)];
         } else {
-            items = root.map(item => Y.Wegas.Facade.Variable.cache.find('name', item));
+            items = root.map(item =>
+                Y.Wegas.Facade.Variable.cache.find('name', item)
+            );
         }
     } else {
-        items = Y.Wegas.Facade.Variable.data;
+        items = Y.Wegas.Facade.GameModel.cache
+            .getCurrentGameModel()
+            .get('items');
     }
     return (
         <Select
             {...rest}
             view={{
                 ...restView,
-                choices: genChoices(items, 0, maxLevel, filter, selectableLevels)
+                choices: genChoices(
+                    items,
+                    0,
+                    maxLevel,
+                    filter,
+                    selectableLevels
+                ),
             }}
-        />);
+        />
+    );
 }
 FlatVariableSelect.propTypes = {
     view: PropTypes.shape({
@@ -80,9 +97,9 @@ FlatVariableSelect.propTypes = {
         root: PropTypes.string,
         classFilter: PropTypes.oneOfType([
             PropTypes.arrayOf(PropTypes.string),
-            PropTypes.string
+            PropTypes.string,
         ]),
-        selectableLevels: PropTypes.arrayOf(PropTypes.number)
-    }).isRequired
+        selectableLevels: PropTypes.arrayOf(PropTypes.number),
+    }).isRequired,
 };
 export default FlatVariableSelect;

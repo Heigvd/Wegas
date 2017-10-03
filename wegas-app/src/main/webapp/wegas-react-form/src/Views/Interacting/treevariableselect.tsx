@@ -3,23 +3,23 @@ import classnames from 'classnames';
 import Popover from '../../Components/Popover';
 import TreeSelect from '../../Components/tree/TreeSelect';
 import { getY } from '../../index';
-import { WidgetProps } from "jsoninput/typings/types";
-import { css } from "glamor";
+import { WidgetProps } from 'jsoninput/typings/types';
+import { css } from 'glamor';
 
-const separatorCss = css({ borderTop: "solid 1px" });
+const separatorCss = css({ borderTop: 'solid 1px' });
 
 const containerCss = css({
     label: 'treevariableselect-containerCss',
     color: '#6A95B6',
     display: 'inline-block',
     marginTop: '0.75em',
-    paddingLeft: '4px'
+    paddingLeft: '4px',
 });
 
 const iconCss = css({
     label: 'treevariableselect-iconCss',
     color: 'black',
-    fontSize: '85%'
+    fontSize: '85%',
 });
 
 const treeCss = css({
@@ -28,13 +28,13 @@ const treeCss = css({
     backgroundColor: 'white',
     boxShadow: '0 2px 5px black',
     borderRadius: '3px',
-    width: 'auto'
+    width: 'auto',
 });
 
 const selectorLinkCss = css({
     label: 'treevariableselect-selectorLinkCss',
     position: 'relative',
-    marginRight: '1em'
+    marginRight: '1em',
 });
 
 const pathCss = css({
@@ -42,16 +42,15 @@ const pathCss = css({
     position: 'absolute',
     fontSize: '75%',
     whiteSpace: 'nowrap',
-    bottom: '125%'
+    bottom: '125%',
 });
 
 const labelCss = css({
     label: 'treevariableselect-labelCss',
-    color: 'black'
+    color: 'black',
 });
 
-
-type Item = {
+interface Item {
     label: string;
     value?: string;
     className?: string;
@@ -70,7 +69,7 @@ interface ITreeSelectProps extends WidgetProps.BaseProps {
 
     value?: string;
 }
-const variableFacade = getY().Wegas.Facade.Variable;
+const GameModelDS = getY().Wegas.Facade.GameModel.cache;
 function defaultTrue() {
     return true;
 }
@@ -89,8 +88,7 @@ function labelIconForVariable(name?: string) {
     if (target) {
         return (
             <span className={`${labelCss}`}>
-                <span className={`${target.getIconCss()} ${iconCss}`} />
-                {' '}
+                <span className={`${target.getIconCss()} ${iconCss}`} />{' '}
                 {target.getEditorLabel()}
             </span>
         );
@@ -122,20 +120,31 @@ function genVarItems(
     classFilter: string[]
 ): Item[] {
     function mapItem(item: Y.BaseCore) {
-        const child = item.get('items') ?
-            genVarItems(item.get('items'), selectableFn, classFilter) : undefined;
+        const child = item.get('items')
+            ? genVarItems(item.get('items'), selectableFn, classFilter)
+            : undefined;
         let select = selectableFn(item);
-        if (classFilter.length > 0 && !classFilter.includes(item.get('@class'))) {
+        if (
+            classFilter.length > 0 &&
+            !classFilter.includes(item.get('@class'))
+        ) {
             select = false;
         }
         return {
             label: item.get('label'),
             value: select ? item.get('name') : undefined,
-            items: child
+            items: child,
         };
     }
-    return items.map(mapItem)
-        .filter(i => !(i.value === undefined && (i.items === undefined || i.items.length === 0)));
+    return items
+        .map(mapItem)
+        .filter(
+            i =>
+                !(
+                    i.value === undefined &&
+                    (i.items === undefined || i.items.length === 0)
+                )
+        );
 }
 /**
  * @returns {Array} items generated from variable and additional
@@ -143,26 +152,35 @@ function genVarItems(
 function genItems(props: ITreeSelectProps) {
     const add = Array.isArray(props.view.additional)
         ? props.view.additional.map((i, index) => ({
-            ...i,
-            className: classnames(i.className, { [separatorCss.toString()]: index === 0 })
-        }))
+              ...i,
+              className: classnames(i.className, {
+                  [separatorCss.toString()]: index === 0,
+              }),
+          }))
         : [];
     return genVarItems(
-        variableFacade.data.concat(),
+        GameModelDS.getCurrentGameModel()
+            .get('items')
+            .concat(),
         props.view.selectable,
         normalizeClassFilter(props.view.classFilter)
     ).concat(add);
 }
-class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: string, searching: boolean }> {
+class TreeVariableSelect extends React.Component<
+    ITreeSelectProps,
+    { search: string; searching: boolean }
+> {
     public static defaultProps = {
-        value: ''
+        value: '',
     };
     items: Item[];
     constructor(props: ITreeSelectProps) {
         super(props);
         this.state = {
-            search: labelForVariable(props.value) || this.labelForAdditional(props.value),
-            searching: !props.value
+            search:
+                labelForVariable(props.value) ||
+                this.labelForAdditional(props.value),
+            searching: !props.value,
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
         this.items = genItems(props);
@@ -171,7 +189,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
         this.setState(
             {
                 searching: false,
-                search: labelForVariable(v) || this.labelForAdditional(v)
+                search: labelForVariable(v) || this.labelForAdditional(v),
             },
             () => this.props.onChange(v)
         );
@@ -209,8 +227,9 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
                     onClickOutside={() =>
                         this.setState({
                             searching: false,
-                            search: labelForVariable(this.props.value) ||
-                            this.labelForAdditional(this.props.value) // Reset search
+                            search:
+                                labelForVariable(this.props.value) ||
+                                this.labelForAdditional(this.props.value), // Reset search
                         })}
                 >
                     <input
@@ -223,7 +242,7 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
                         type="search"
                         onChange={ev =>
                             this.setState({
-                                search: ev.target.value
+                                search: ev.target.value,
                             })}
                     />
                     <div className={`${treeCss}`}>
@@ -240,11 +259,14 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
                     tabIndex={0}
                     onFocus={() =>
                         this.setState({
-                            searching: true
+                            searching: true,
                         })}
                     className={`${selectorLinkCss}`}
                 >
-                    <div className={`${pathCss}`} title="Folder containing this variable">
+                    <div
+                        className={`${pathCss}`}
+                        title="Folder containing this variable"
+                    >
                         {buildPath(this.props.value)}
                     </div>
                     {labelIconForVariable(this.props.value) ||
@@ -255,6 +277,5 @@ class TreeVariableSelect extends React.Component<ITreeSelectProps, { search: str
         );
     }
 }
-
 
 export default TreeVariableSelect;

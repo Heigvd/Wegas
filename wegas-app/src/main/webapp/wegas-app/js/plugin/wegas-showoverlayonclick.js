@@ -142,25 +142,23 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
             },
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Variable"
                 }
             },
             theWidget: {
+                type:"object",
                 value: {
                     "type": "InboxList"
                 },
+                properties:{
+                    type:{
+                        type: "string"
+                    }
+                },
                 getter: function(v) {
                     return Y.JSON.parse(Y.JSON.stringify(v));
-                },
-                _inputex: {
-                    _type: "group",
-                    fields: [{
-                            type: "string",
-                            name: "type",
-                            label: "Type"
-                        }]
                 }
             },
             widgetAttr: {
@@ -177,8 +175,8 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
         ATTRS: {
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Overlay Inbox"
                 }
             },
@@ -189,14 +187,16 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
                     template: "clean",
                     chronological: false
                 },
-                _inputex: {
+                view: {
                     type: "hidden"
                 }
             },
             widgetAttr: {
                 "transient": "true",
                 value: "variable",
-                type: "hidden"
+                view: {
+                    type: "hidden"
+                }
             }
 
         },
