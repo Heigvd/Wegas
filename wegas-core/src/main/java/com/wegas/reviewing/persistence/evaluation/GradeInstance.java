@@ -51,7 +51,7 @@ public class GradeInstance extends EvaluationInstance {
             GradeDescriptor desc = (GradeDescriptor) this.getDescriptor();
             if ((desc.getMaxValue() != null && value > desc.getMaxValue())
                     || (desc.getMinValue() != null && value < desc.getMinValue())) {
-                throw new WegasOutOfBoundException(desc.getMinValue().doubleValue(), desc.getMaxValue().doubleValue(), value, desc.getName());
+                throw new WegasOutOfBoundException(desc.getMinValue().doubleValue(), desc.getMaxValue().doubleValue(), value, desc.getName(), desc.getName());
             }
         }
 

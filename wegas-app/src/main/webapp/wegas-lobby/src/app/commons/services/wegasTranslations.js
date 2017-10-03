@@ -1085,6 +1085,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Log ID",
                             'fr': "Log ID"
                         },
+                        'PRIVATE-SCENARIOS-GUEST-ALLOWED-LABEL-CHECKBOX': {
+                            'en': "Guests allowed",
+                            'fr': "Invités authorisés"
+                        },
                         'PRIVATE-SCENARIOS-SERVER-SCRIPT-LABEL-INPUT': {
                             'en': "Server script",
                             'fr': "Script serveur"

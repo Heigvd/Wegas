@@ -174,15 +174,46 @@ public class RequestManager {
         }
     }
 
-    public void addEntity(String audience, AbstractEntity updated, Map<String, List<AbstractEntity>> container) {
-        if (!container.containsKey(audience)) {
-            container.put(audience, new ArrayList<>());
+    public boolean contains(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
+        for (List<AbstractEntity> entities : container.values()) {
+            if (entities.contains(entity)) {
+                return true;
+            }
         }
-        List<AbstractEntity> entities = container.get(audience);
-        if (entities.contains(updated)) {
-            entities.remove(updated);
+        return false;
+    }
+
+    private void removeEntityFromContainer(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
+        for (List<AbstractEntity> entities : container.values()) {
+            if (entities.contains(entity)) {
+                logger.debug("remove {}", entity);
+                entities.remove(entity);
+            }
         }
-        entities.add(updated);
+    }
+
+    public void addEntity(String audience, AbstractEntity entity, Map<String, List<AbstractEntity>> container) {
+
+        boolean add = true;
+        if (container == destroyedEntities) {
+            removeEntityFromContainer(updatedEntities, entity);
+        } else if (container == updatedEntities) {
+            if (contains(destroyedEntities, entity)) {
+                add = false;
+            }
+        }
+
+        if (add) {
+            if (!container.containsKey(audience)) {
+                container.put(audience, new ArrayList<>());
+            }
+            // make sure to add up to date entity
+            List<AbstractEntity> entities = container.get(audience);
+            if (entities.contains(entity)) {
+                entities.remove(entity);
+            }
+            entities.add(entity);
+        }
     }
 
     /**
@@ -628,6 +659,7 @@ public class RequestManager {
 
     /**
      * @param millis
+     *
      * @throws java.lang.InterruptedException
      */
     public void pleaseWait(long millis) throws InterruptedException {

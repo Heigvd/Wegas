@@ -28,7 +28,7 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                     },
                     commenting: {
                         title: "Commentaires",
-                        description: "Les auteurs prennent connaissance des avis de leurs pairs.<br /><br /><i>Ils commentent ces avis</i>"
+                        description: "Les auteurs prennent connaissance des avis de leurs pairs<br /><br /><i>Ils commentent ces avis</i>"
                     },
                     completed: {
                         title: "Terminé",

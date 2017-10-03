@@ -106,7 +106,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
         getNodes: function() {
             var ds = this.get(DATASOURCE),
                 selector = this.get("dataSelector"),
-                entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll();
+                entities = (selector) ? ds.cache.findAll(selector.key, selector.val) : ds.cache.findAll();
 
             return this.genTreeViewElements(entities);
         },

@@ -9,9 +9,11 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.Entity;
@@ -108,18 +110,8 @@ public class QuestionInstance extends VariableInstance {
 
     @JsonIgnore
     public List<Reply> getReplies() {
-        List<Reply> replies = new ArrayList<>();
-        QuestionDescriptor qD = (QuestionDescriptor) this.findDescriptor();
-
-        for (ChoiceDescriptor cd : qD.getItems()) {
-            if (this.isDefaultInstance()) {
-                replies.addAll(cd.getDefaultInstance().getReplies());
-            } else {
-                replies.addAll(cd.getInstance().getReplies());
-            }
-        }
-
-        return replies;
+        InstanceOwner owner = this.getOwner();
+        return this.getReplies(owner != null ? owner.getAnyLivePlayer() : null);
     }
 
     public void setReplies(List<Reply> replies) {

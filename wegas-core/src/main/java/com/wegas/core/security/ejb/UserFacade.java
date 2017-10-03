@@ -140,6 +140,20 @@ public class UserFacade extends BaseFacade<User> {
         }
     }
 
+
+
+    /**
+     * @return a User entity, based on the shiro login state
+     */
+    public AbstractAccount getCurrentAccount() {
+        final Subject subject = SecurityUtils.getSubject();
+
+        if (subject.isRemembered() || subject.isAuthenticated()) {
+            return accountFacade.find((Long) subject.getPrincipal());
+        }
+        throw new WegasNotFoundException("Unable to find an account");
+    }
+
     /**
      * @return a User entity, based on the shiro login state
      */
@@ -544,7 +558,7 @@ public class UserFacade extends BaseFacade<User> {
             if (acc != null) {
                 acc.setPassword(newPassword);
                 acc.setPasswordHex(null);                                           //force JPA update
-                emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain", true);
+                emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain; charset=utf-8", true);
             }
         } catch (WegasNoResultException | MessagingException ex) {
             logger.error("Error while sending new password for email: " + email, ex);
@@ -564,7 +578,7 @@ public class UserFacade extends BaseFacade<User> {
             AbstractAccount mainAccount = rP.getUser().getMainAccount();
             if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
                 try {
-                    emailFacade.send(mainAccount.getEmail(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
+                    emailFacade.send(mainAccount.getEmail(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html; charset=utf-8", true);
                 } catch (MessagingException e) {
                     nbExceptions++;
                 }
@@ -572,7 +586,7 @@ public class UserFacade extends BaseFacade<User> {
         }
         try {
             // Send a last message directly to the sender as a confirmation copy
-            emailFacade.send(email.getReplyTo(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html", true);
+            emailFacade.send(email.getReplyTo(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html; charset=utf-8", true);
         } catch (MessagingException e) {
             nbExceptions++;
         }

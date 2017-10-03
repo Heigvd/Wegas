@@ -24,7 +24,7 @@ i18nTable.en = {
     median: "Median",
     sd: "standard deviation",
     overview: "Overview",
-    status: "Status",
+    editionStatus: "Edit",
     reviewDoneTitle: "Feddbacks Done",
     commentsDoneTitle: "Comments Done",
     reviewDone: "Feddbacks Done",

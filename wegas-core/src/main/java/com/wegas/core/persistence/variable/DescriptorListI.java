@@ -7,6 +7,9 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.rest.util.Views;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,6 +25,18 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      * @return the variableDescriptors
      */
     List<T> getItems();
+
+    @JsonView(Views.IndexI.class)
+    default List<Long> getItemsIds() {
+        List<Long> ids =new LinkedList<>();
+        for (T t : this.getItems()){
+            ids.add(t.getId());
+        }
+        return ids;
+    }
+
+    default void setItemsIds(List<Long> itemsIds){
+    }
 
     /**
      * @param items

@@ -487,10 +487,10 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Print Variables',
                                     value: { fn: 'PrintActionPlugin' }
-                                }, {
-                                    label: "Show Inbox Overlay",
+                                            }, {
+                                                label: "Show Inbox Overlay",
                                     value:{fn: "ShowInboxListOnClick"}
-                                }
+                                            }
                                         ]
                         },
                         {
@@ -549,7 +549,11 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Lock',
                                     value: { fn: 'Lockable' }
-                                }
+                                },{
+                                                type: BUTTON,
+                                                label: "Event Logger",
+                                                data: "EventLogger"
+                                            }
                             ]
                                     }
                     ]
@@ -567,7 +571,7 @@ YUI.add('wegas-widget', function(Y) {
                                         },
                     view: {
                         type: 'plugin'
-                                            }
+                                    }
                 }
             }
         },

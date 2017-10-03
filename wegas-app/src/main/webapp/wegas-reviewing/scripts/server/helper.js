@@ -133,6 +133,18 @@ var ReviewHelper = (function() {
         o.cell.addClass("status-" + o.data.color);
     }
 
+    function colorizeDone(o) {
+        o.cell.setHTML("<span>" + o.value + "</span>");
+        o.cell.addClass("status-" + o.data.done_color);
+    }
+
+    function colorizeComments(o) {
+        o.cell.setHTML("<span>" + o.value + "</span>");
+        o.cell.addClass("status-" + o.data.comments_color);
+    }
+
+
+
     function formatToFixed2(o) {
         if (o.value !== undefined && o.value !== null) {
             return o.value.toFixed(2);
@@ -206,7 +218,6 @@ var ReviewHelper = (function() {
             evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
             evDescriptors = {}, tmp, key, expectedStatus = null, workDone,
             maxNumberOfValue = 0,
-            instanceFacade = lookupBean("VariableInstanceFacade"),
             maxNumberOfReview = Math.min(prd.getMaxNumberOfReview(), teams.size() - 2), // Assume team scoped review. !~_~! 
             aPlayer,
             monitoring = {
@@ -214,9 +225,9 @@ var ReviewHelper = (function() {
                     overview: [{
                             title: I18n.t("overview"),
                             items: [
-                                {id: "status", label: I18n.t("status"), formatter: null, nodeFormatter: colorize, allowHTML: true},
-                                {id: "done", label: I18n.t("reviewDoneTitle"), formatter: null},
-                                {id: "commented", label: I18n.t("commentsDoneTitle"), formatter: null}
+                                {id: "status", label: I18n.t("editionStatus"), formatter: null, nodeFormatter: colorize, allowHTML: true},
+                                {id: "done", label: I18n.t("reviewDoneTitle"), formatter: null, nodeFormatter: colorizeDone, allowHTML: true},
+                                {id: "commented", label: I18n.t("commentsDoneTitle"), formatter: null, nodeFormatter: colorizeComments, allowHTML: true}
                             ]
                         }
                     ],
@@ -251,7 +262,6 @@ var ReviewHelper = (function() {
             team = teams.get(t);
             teamId = new Long(team.getId());
             pri = pris[team];
-            print("Team status: " + pri.getReviewState().ordinal() + " -> " + pri.getReviewState().toString());
             if (!expectedStatus || pri.getReviewState().ordinal() > expectedStatus.ordinal()) {
                 expectedStatus = pri.getReviewState();
             }
@@ -265,7 +275,7 @@ var ReviewHelper = (function() {
             pri = pris[team];
 
             if (team.getPlayers().size() > 0) {
-                aPlayer = instanceFacade.findAPlayer(pri);
+                aPlayer = pri.getOwner().getAnyLivePlayer();
             } else {
                 aPlayer = null;
             }
@@ -310,25 +320,21 @@ var ReviewHelper = (function() {
                                         tmp[evK].push(ev.getValue());
                                         evaluationsValues[evK].push(ev.getValue());
                                         workDone = workDone && ev.getValue();
-                                        print(" - Still done ?" + workDone);
                                     }
                                 }
                             case "NOTIFIED":
                             case "REVIEWED":
                                 // Reviewer work
-                                workDone = true;
-                                print("Assume toReview work done");
+                                /*workDone = true;
                                 evs = Java.from(review.getFeedback());
                                 for (k in evs) {
                                     if (evs.hasOwnProperty(k)) {
                                         workDone = workDone && evs[k].getValue();
-                                        print(" - Still done ?" + workDone);
                                     }
                                 }
-                                print("eventually done ?" + workDone);
                                 if (!workDone) {
-                                    nbRDone -= 1;
-                                }
+                                    //nbRDone -= 1;
+                                }*/
                                 break;
                             default:
                                 break;
@@ -342,8 +348,10 @@ var ReviewHelper = (function() {
                     pri.getReviewState().toString() === "NOTIFIED" ||
                     pri.getReviewState().toString() === "COMPLETED") {
                     entry.overview.done = nbRDone + " / " + nbRTot;
+                    entry.overview.done_color = (nbRDone / nbRTot < 1 ? 'orange' : 'green');
                 } else {
                     entry.overview.done = nbRDone + " / " + maxNumberOfReview;
+                    entry.overview.done_color = 'grey';
                 }
                 for (evK in tmp) {
                     mergeEvSummary(entry.comments, tmp[evK], evDescriptors[evK]);
@@ -361,18 +369,15 @@ var ReviewHelper = (function() {
                             case "CLOSED":
                                 nbRComClosed += 1;
                             case "COMPLETED":
-                                print("Assume commenter work done");
                                 workDone = true;
 
                                 evs = Java.from(review.getComments());
                                 for (k in evs) {
                                     if (evs.hasOwnProperty(k)) {
                                         workDone = workDone && evs[k].getValue();
-                                        print(" - Still done ?" + workDone);
                                     }
                                 }
-                                print("Eventually done ?" + workDone);
-                                if (workDone) {
+                                if (true || workDone) {
                                     nbRCom += 1;
                                 }
                             case "NOTIFIED":
@@ -398,13 +403,20 @@ var ReviewHelper = (function() {
 
                 //entry.overview.commented = nbRCom + " / " + (nbRComTotal > 0 ? nbRComTotal : maxNumberOfReview);
                 entry.overview.commented = nbRCom + " / " + nbRComTotal;
+                if (nbRComTotal > 0) {
+                    entry.overview.comments_color = (nbRCom / nbRComTotal < 1 ? 'orange' : 'green');
+                }
                 for (evK in tmp) {
                     mergeEvSummary(entry.reviews, tmp[evK], evDescriptors[evK]);
                 }
 
                 // Set status
-                if (!pri.getReviewState().equals(expectedStatus) ||
-                    pri.getReviewState().toString() === "EVICTED") {
+                if (pri.getReviewState().toString() === "EVICTED"  //explicitly evicted
+                    || (
+                        !pri.getReviewState().equals(expectedStatus)  // or not in the same phase as most advanced teams
+                        && !(pri.getReviewState().toString() === "NOT_STARTED" //not that NS and SUBM. status stands in the same phase !
+                            && expectedStatus.toString() === "SUBMITTED"))
+                    ) {
                     entry.overview.color = "red";
                     entry.overview.internal_status = "evicted";
                     entry.overview.status = I18n.t("evicted");
@@ -412,26 +424,26 @@ var ReviewHelper = (function() {
                 } else if (pri.getReviewState().toString() === "COMPLETED") {
                     entry.overview.color = "green";
                     entry.overview.internal_status = "closed";
-                    entry.overview.status = I18n.t("closed");
+                    entry.overview.status = I18n.t("ready");
                 } else if (pri.getReviewState().toString() === "NOTIFIED") {
                     if (nbRComTotal === nbRCom) {
                         entry.overview.color = "green";
                         entry.overview.internal_status = "completed";
-                        entry.overview.status = I18n.t("completed");
+                        entry.overview.status = I18n.t("ready");
                     } else {
-                        entry.overview.color = "orange";
+                        entry.overview.color = "green";
                         entry.overview.internal_status = "commenting";
-                        entry.overview.status = I18n.t("commenting");
+                        entry.overview.status = I18n.t("ready");
                     }
                 } else if (pri.getReviewState().toString() === "DISPATCHED") {
                     if (nbRTot === nbRDone) {
                         entry.overview.color = "green";
                         entry.overview.internal_status = "done";
-                        entry.overview.status = I18n.t("reviewDone");
+                        entry.overview.status = I18n.t("ready");
                     } else {
-                        entry.overview.color = "orange";
+                        entry.overview.color = "green";
                         entry.overview.internal_status = "reviewing";
-                        entry.overview.status = I18n.t("reviewing");
+                        entry.overview.status = I18n.t("ready");
                     }
                 } else if (pri.getReviewState().toString() === "NOT_STARTED") {
                     entry.overview.color = "orange";

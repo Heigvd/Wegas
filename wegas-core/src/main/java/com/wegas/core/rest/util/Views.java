@@ -37,6 +37,12 @@ public class Views {
     }
 
     /**
+     * TO be included in exports
+     */
+    public interface ExportI {
+    }
+
+    /**
      * Provides VariableDescriptor instances
      */
     public interface InstanceI {
@@ -72,7 +78,7 @@ public class Views {
     /**
      * Do not include ids nor VariableInstances, Export usage
      */
-    public static class Export implements EditorI, ExtendedI {
+    public static class Export implements EditorI, ExtendedI, ExportI {
     }
 
 }

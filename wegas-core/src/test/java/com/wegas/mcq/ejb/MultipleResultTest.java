@@ -16,11 +16,11 @@ import com.wegas.mcq.persistence.*;
 import java.util.logging.Level;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
+import org.junit.Assert;
 
 /**
  *

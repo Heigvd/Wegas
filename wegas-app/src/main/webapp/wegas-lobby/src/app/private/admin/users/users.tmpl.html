@@ -23,7 +23,7 @@
              illustration="ICON_grey_group_wif"
              ng-click="adminUsersCtrl.toggleExpansion(group)"></div>
         <div class="card__description card__description--one-line">
-            <div class="line line--primary">{{group.name}} ({{group.realSize}})</div>
+            <div class="line line--primary">{{group.name}} ({{adminUsersCtrl.groupTransient[group.id].realSize}})</div>
         </div>
         <div class="card__actions">
             <a class="button button--small button--round button--default-reverse button--label-off button--mail"
@@ -42,7 +42,7 @@
         </div>
 
 
-        <div ng-if="group.isExpanded"
+        <div ng-if="adminUsersCtrl.groupTransient[group.id].isExpanded"
              class="card--group-users-list">
         <div class="card card--player-mini"
              ng-repeat="user in group.users"

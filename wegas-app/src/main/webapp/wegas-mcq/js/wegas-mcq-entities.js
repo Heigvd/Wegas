@@ -53,20 +53,6 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 type: STRING,
                 value: "QuestionDescriptor"
             },
-            items: {
-                type: ARRAY,
-                value: [],
-                "transient": true,
-                view: {
-                    type: HIDDEN
-                },
-                setter: function (val) {
-                    for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
-                        val[i].parentDescriptor = this;
-                    }
-                    return val;
-                }
-            },
             title: {
                 type: NULLSTRING,
                 optional: true,
@@ -632,7 +618,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 visible: function (val, formVal) {
                                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentDescriptorId);
                                     return parent ? parent.get("cbx") : false;
-                                },
+                            },
                                 view: {
                                     label: "Impact on variables when ignored",
                                     type: SCRIPT
@@ -1007,7 +993,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 view: {
                     type: HIDDEN
                 }
-                },
+            },
             files: {
                 type: ARRAY,
                 view: {

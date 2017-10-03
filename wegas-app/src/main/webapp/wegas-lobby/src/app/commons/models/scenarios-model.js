@@ -107,7 +107,7 @@ angular.module('wegas.models.scenarios', [])
                 var deferred = $q.defer(),
                     scenarioSetted = false,
                     newGameModel = JSON.parse(JSON.stringify(scenarioBeforeChange)),
-                    properties = ["scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID"];
+                    properties = ["scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID", "guestAllowed"];
 
                 if (newGameModel.name !== infos.name) {
                     newGameModel.name = infos.name;

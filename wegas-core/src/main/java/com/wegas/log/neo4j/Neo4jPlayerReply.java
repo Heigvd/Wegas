@@ -16,9 +16,7 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
-import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -26,6 +24,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * This class contains all the methods used to add, modify or delete graphs

@@ -263,7 +263,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         },
         sortInputex: function(fields) {
             var order = [];
-            Y.Array.each(Wegas.Facade.Variable.data, function(item) {
+            Y.Array.each(Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items"), function(item) {
                 if (item.flatten) {
                     Y.Array.each(item.flatten(), function(i) {
                         order.push(i.get("name"));

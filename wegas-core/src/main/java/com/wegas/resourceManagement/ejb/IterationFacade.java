@@ -16,7 +16,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownInstance;
@@ -130,7 +129,7 @@ public class IterationFacade extends BaseFacade<Iteration> {
                         VariableDescriptor find = variableDescriptorFacade.find(gameModel, taskName);
                         if (find instanceof TaskDescriptor) {
                             TaskDescriptor theTask = (TaskDescriptor) find;
-                            TaskInstance taskInstance = (TaskInstance) variableInstanceFacade.findInstance(theTask, burndownInstance);
+                            TaskInstance taskInstance = theTask.findInstance(burndownInstance);
 
                             tasks.add(taskInstance);
 

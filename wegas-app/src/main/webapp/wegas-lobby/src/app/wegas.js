@@ -11,6 +11,23 @@ window.Storage.prototype.getObject = function(key) {
     return value && JSON.parse(value);
 };
 
+/* 
+ * erk...
+ */
+window.WegasHelper = {
+    getQueryStringParameter: function(name) {
+        var qs = window.location.search.replace("?", "").split("&"), i, value = null, param;
+        for (i in qs) {
+            if (qs.hasOwnProperty(i)) {
+                param = qs[i].split("=");
+                if (param[0] === name) {
+                    return param[1];
+                }
+            }
+        }
+    }
+};
+
 angular.module('Wegas', [
     'flash',
     'ui.router',
@@ -43,7 +60,7 @@ angular.module('Wegas', [
                     }
                 }
             })
-        ;
+            ;
         $urlRouterProvider.otherwise('/');
 
         $translateProvider.translations('en', WegasTranslationsProvider.getTranslations('en'));

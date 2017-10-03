@@ -20,7 +20,7 @@ import java.util.List;
 public interface InstanceOwner {
 
     /**
-     * 
+     *
      * @return instance owner must have an id
      */
     public Long getId();
@@ -39,6 +39,13 @@ public interface InstanceOwner {
      * @return all players who have access to the owner instances
      */
     public List<Player> getPlayers();
+
+    /**
+     * Get any player involved
+     *
+     * @return a (LIVE) player who have access to all owner's instances
+     */
+    public Player getAnyLivePlayer();
 
     /**
      * Return instances that belongs to this target only

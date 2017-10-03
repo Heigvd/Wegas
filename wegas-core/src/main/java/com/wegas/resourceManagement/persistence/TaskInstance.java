@@ -115,7 +115,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
     @JsonProperty
     public void setDuration(double duration) {
         if (duration < 0.0) {
-            throw new WegasOutOfBoundException(0.0, null, duration, "duration");
+            throw new WegasOutOfBoundException(0.0, null, duration, "duration", "duration");
         } else {
             this.duration = duration;
         }

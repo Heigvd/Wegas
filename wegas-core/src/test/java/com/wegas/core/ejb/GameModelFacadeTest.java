@@ -8,13 +8,13 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.*;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.NamingException;
 import java.util.function.Function;
+import org.junit.Assert;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -71,8 +71,10 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         gameModelFacade.create(gameModel);
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
-        // Edit this gam
-        GameModel gm2 = gameModelFacade.update(gameModel.getId(), new GameModel(GAMENAME2));
+        GameModel gameModel1 = new GameModel(GAMENAME2);
+        gameModel1.getProperties().setGuestAllowed(true);
+        // Change Name and guestAllowed properties
+        GameModel gm2 = gameModelFacade.update(gameModel.getId(), gameModel1);
         Assert.assertEquals(GAMENAME2, gm2.getName());
 
         // Create a game, a team and a player
@@ -110,6 +112,7 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         final int size = gameModelFacade.findAll().size();
 
         GameModel gameModel = new GameModel("TESTGM");
+        gameModel.getProperties().setGuestAllowed(true);
         gameModelFacade.create(gameModel);
 
         Game g = new Game("TESTGAME", "xxx");

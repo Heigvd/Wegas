@@ -31,7 +31,8 @@ angular.module('private.trainer.settings.directives', [
             clientScriptUri: false,
             cssUri: false,
             pagesUri: false,
-            logID: false
+            logID: false,
+            guestAllowed: false
         };
         ctrl.infos = {
             baseUrl: $location.protocol() + "://" + location.host + location.pathname,
@@ -49,7 +50,8 @@ angular.module('private.trainer.settings.directives', [
             clientScriptUri: "",
             cssUri: "",
             pagesUri: "",
-            logID: ""
+            logID: "",
+            guestAllowed: false
         };
         ctrl.tabs = initTabs();
 
@@ -79,6 +81,7 @@ angular.module('private.trainer.settings.directives', [
                     ctrl.infos.cssUri = ctrl.session.gameModel.properties.cssUri;
                     ctrl.infos.pagesUri = ctrl.session.gameModel.properties.pagesUri;
                     ctrl.infos.logID = ctrl.session.gameModel.properties.logID;
+                    ctrl.infos.guestAllowed = ctrl.session.gameModel.properties.guestAllowed;
                 }
             });
         };
@@ -113,11 +116,14 @@ angular.module('private.trainer.settings.directives', [
                     case "logID":
                         ctrl.hasChanges.logID = (ctrl.session.gameModel.properties.logID !== changes);
                         break;
+                    case "guestAllowed":
+                        ctrl.hasChanges.guestAllowed = (ctrl.session.gameModel.properties.guestAllowed !== changes);
+                        break;
                 }
                 ctrl.hasChanges.all = ctrl.hasChanges.name ||
                     ctrl.hasChanges.token || ctrl.hasChanges.comments || ctrl.hasChanges.individual ||
                     ctrl.hasChanges.scriptUri || ctrl.hasChanges.clientScriptUri || ctrl.hasChanges.cssUri ||
-                    ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID;
+                    ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID || ctrl.hasChanges.guestAllowed;
             }
         };
 
@@ -141,7 +147,7 @@ angular.module('private.trainer.settings.directives', [
             $scope.close();
         };
 
-        var properties = ["name", "comments", "individual", "scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID"];
+        var properties = ["name", "comments", "individual", "scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID", "guestAllowed"];
 
         _.each(properties, function(el, index) {
             $scope.$watch(function() {

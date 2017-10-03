@@ -53,8 +53,8 @@ public class Message extends NamedEntity implements DatedEntity {
     private String token;
 
     @Lob
-    @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     private String body;
     /**
      * real world time for sorting purpose

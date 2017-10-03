@@ -236,6 +236,35 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         return (VariableInstance) super.clone();
     }
 
+    /**
+     * Return the effective owner of the instance, null for default instances
+     *
+     * @return
+     */
+    @JsonIgnore
+    public InstanceOwner getOwner() {
+        if (isDefaultInstance()) {
+            return null;
+        } else {
+            if (this.getTeam() != null) {
+                return this.getTeam();
+            } else if (this.getPlayer() != null) {
+                return this.getPlayer();
+            } else if (this.getGame() != null) {
+                return this.getGame();
+            } else {
+                //return this.getGameModel();
+                return this.findDescriptor().getGameModel();
+            }
+        }
+    }
+
+    /**
+     *
+     * Same as getOwner but return the gameModel for default instances
+     *
+     * @return
+     */
     @JsonIgnore
     public InstanceOwner getBroadcastTarget() {
         if (this.getTeam() != null) {

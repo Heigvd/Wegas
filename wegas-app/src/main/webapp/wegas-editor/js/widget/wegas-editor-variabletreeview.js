@@ -202,7 +202,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 this.handlers.push(ds.after("updatedDescriptor", this.updateDescriptor, this));
                 this.handlers.push(instanceDs.after("updatedInstance", this.updateInstance, this));
                 //this.handlers.push(instanceDs.after("addedInstance", this.updateInstance, this));
-                this.handlers.push(ds.after("added", this.addEntity, this));
+                //this.handlers.push(ds.after("added", this.addEntity, this));
                 this.handlers.push(ds.after("delete", this.deleteEntity, this));
                 this.handlers.push(Y.after("edit-entity:edit", function(e) {
                     var cur = this.treeView.find(function(item) {
@@ -230,6 +230,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this._timer.destroy();
             this.treeView.destroy();
         },
+        getNodes: function() {
+            var ds = this.get(DATASOURCE),
+                selector = this.get("dataSelector"),
+                entities = (selector) ? ds.cache.findAll(selector.key, selector.val) : Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items");
+
+            return this.genTreeViewElements(entities);
+        },
         findNode: function(entity) {
             return this.treeView.find(function(item) {
                 if (item.get("data") && item.get("data").entity.get("id") === entity.get("id")) {
@@ -245,11 +252,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             var entity = e.entity,
                 parent = e.parent,
                 parentNode;
-            if (parent) {
+            if (parent && parent instanceof Y.Wegas.persistence.VariableDescriptor) {
                 parentNode = this.findNode(parent);
                 parentNode.add(this.genTreeViewElement(entity));
                 parentNode.expand();
             } else {
+                // parent is the gameModel -> add at root level !
                 this.treeView.add(this.genTreeViewElement(entity));
             }
             this.currentSelection = e.entity.get("id");
@@ -304,7 +312,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 advancedClass = text.indexOf("_") === 0 ? "wegas-advanced-feature" : "";
             if (entity.get("items")) {
                 collapsed = collapsed && !Y.Array.find(entity.get("items"), function(e) {
-                    return this.currentSelection === e.get(ID);
+                    return e && this.currentSelection === e.get(ID);
                 }, this);
             }
 
@@ -579,6 +587,9 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             //                } else {
             //                    this._timer.timeOut();
             //                }
+        }
+    }, {
+        ATTRS: {
         }
     });
     Wegas.VariableTreeView = VariableTreeView;

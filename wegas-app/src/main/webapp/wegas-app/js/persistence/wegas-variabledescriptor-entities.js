@@ -147,7 +147,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 if (!this.constructor.prototype[key] && i.localEval) {
                     this.constructor.prototype[key] = i.localEval;
                 }
-                    },
+        },
                     this
                 );
         },
@@ -224,7 +224,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         })
                     );
             });
-                this.get('scope').setInstance(player, promise);
+            this.get("scope").setInstance(player, promise);
+        },
+        getParent: function() {
+            return Y.Wegas.Facade.Variable.cache.findParentDescriptor(this);
         }
         },
         {
@@ -232,8 +235,17 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             version: VERSION_ATTR_DEF,
             parentDescriptorId: {
                 type: NUMBER,
+                "transient": true,
                     view: {
                         type: HIDDEN
+                }
+            },
+            parentDescriptorType: {
+                type: STRING,
+                optional: true,
+                "transient": true,
+                _inputex: {
+                    _type: HIDDEN
                 }
             },
             comments: {
@@ -331,8 +343,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         }
                                 ]
                     }
-                }
                     }
+                }
             },
             defaultInstance: {
                     value: {},
@@ -346,7 +358,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     type: 'EditEntityButton'
                 },
                 {
-                    type: BUTTON,
+                type: BUTTON,
                     label: 'Search for usages',
                     plugins: [
                         {
@@ -355,7 +367,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     ]
                 },
                 {
-                    type: BUTTON,
+                type: BUTTON,
                     label: 'Copy',
                     plugins: [
                         {
@@ -844,12 +856,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                 : -Infinity;
                         if (max < formVal.defaultInstance.value) {
                             errors.push('Maximum is less than default value');
-                        }
+                    }
                         if (max < min) {
                             errors.push('Maximum is less than minimum');
                         }
                         return errors.join(', ');
-                    },
+                },
                     view: {
                         label: 'Maximum',
                         layout: 'shortInline'
@@ -905,18 +917,18 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     errors.push(
                                         'Default value is greater than maximum'
                                     );
-                                }
+                            }
                                 if (val < min) {
                                     errors.push(
                                         'Default value is less than minimum'
                                     );
-                            }
+                        }
                                 return errors.join(', ');
                             },
                             view: {
                                 label: 'Default value',
                                 layout: 'shortInline'
-                        }
+                    }
                         },
                         history: {
                             type: ARRAY,
@@ -925,7 +937,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                 label: 'History'
                     }
                 }
-                    }
+                }
                 }
             },
             /**
@@ -1000,33 +1012,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         }
     );
 
-    persistence.VariableContainer = function() {};
-    Y.mix(persistence.VariableContainer.prototype, {
-        /**
-         * Extend clone to add transient childs
-         */
-        clone: function() {
-            var object = Wegas.Editable.prototype.clone.call(this), i;
-            object.items = [];
-            for (i in this.get(ITEMS)) {
-                if (this.get(ITEMS).hasOwnProperty(i)) {
-                    object.items.push(this.get(ITEMS)[i].clone());
-                }
-            }
-            return object;
-        },
-        /**
-         *
-         * @param {type} i
-         * @returns {Y.Wegas.persistence.VariableDescriptor}
-         */
-        item: function(i) {
-            return this.get('items')[i];
-        },
-        size: function() {
-            return this.get('items').length;
-        }
-    });
     /**
      * ListDescriptor mapper
      */
@@ -1074,25 +1059,19 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         getChildByKey: function(key, value, directChildOnly) {
             var needle,
                 filterFn = function(it) {
+                    var children;
                     if (it.get(key) === value) {
                         needle = it;
                         return false;
-                        } else if (
-                            Y.Wegas.Facade.Variable.cache.getChildren(it)
-                        ) {
-                        if (!directChildOnly) {
-                                return Y.Array.every(
-                                    Y.Wegas.Facade.Variable.cache.getChildren(
-                                        it
-                                    ),
-                                    filterFn
-                                );
-                        } else {
-                            return true;
-                        }
                     } else {
+                        children = it.get("items");
+                        if (children) {
+                        if (!directChildOnly) {
+                                return Y.Array.every(children, filterFn);
+                            }
+                        }
+                        }
                         return true;
-                    }
                 };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
@@ -1114,19 +1093,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         ATTRS: {
                 '@class': {
                     value: 'ListDescriptor'
-            },
-            items: {
-                type: ARRAY,
-                value: [],
-                    transient: true,
-                setter: function(val) {
-                    var i;
-                        for (i = 0; i < val.length; i = i + 1) {
-                            // We set up a back reference to the parent
-                        val[i].parentDescriptor = this;
-                    }
-                    return val;
-                }
             },
             /**
              * The currently selected element based on current ListInstance.
@@ -1507,23 +1473,23 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     arguments: [
                         SELFARG,
                         {
-                            type: STRING,
+                        type: STRING,
                             view: { label: 'From', layout: 'long' }
                         },
                         {
-                            type: STRING,
+                        type: STRING,
                             value: '',
                             view: { label: 'Date' }
                         },
                         {
-                            type: STRING,
+                        type: STRING,
                             view: { label: 'Subject' },
-                            required: true
+                        required: true
                         },
                         {
                             type: STRING,
                             view: { type: HTML, label: 'Body' },
-                            required: true
+                        required: true
                         },
                         {
                             type: STRING,
@@ -1537,7 +1503,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             type: 'array',
                             view: { label: 'Attachments'},
                             items: {
-                                type: STRING,
+                        type: STRING,
                                 required: true,
                                 view: {
                                     type: 'wegasurl',

@@ -101,8 +101,8 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     private Integer maxNumberOfReviewer;
 
-    @Basic(fetch = FetchType.LAZY)
     @Lob
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     private String description;
 
     /**
