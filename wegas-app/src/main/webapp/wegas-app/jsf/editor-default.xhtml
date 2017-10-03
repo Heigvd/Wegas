@@ -10,7 +10,12 @@
         <ui:define name="head">
 
             <!-- Page styles -->
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            <ui:fragment rendered="#{requestController.debugMode()}">
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
+            </ui:fragment>
+            <ui:fragment rendered="#{!requestController.debugMode()}">
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            </ui:fragment>
 
             <!-- Stylesheets from current game model style library -->
             <style type="text/css">#{editorGameController.styleSheets}</style>
@@ -79,11 +84,11 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.pagesUri != ''}">
                                  */
                                 source: "#{editorGameController.currentGameModel.properties.pagesUri}",
-                                    /* THIS IS NOT A COMMENT
-                                     * </ui:fragment>
-                                     */
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
 
-                                    initialFullRequest: '<ui:insert name="pageUri">/wegas-app/db/wegas-editor-layout.json</ui:insert>',
+                                initialFullRequest: '<ui:insert name="pageUri">/wegas-app/db/wegas-editor-layout.json</ui:insert>',
                                 //initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
                                 //initialRequest 'EditorLayout',
                                 plugins: [{

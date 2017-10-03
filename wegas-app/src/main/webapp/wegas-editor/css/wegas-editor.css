@@ -117,6 +117,10 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     overflow: auto;
 }
 
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader{
+    height: inherit;
+}
+
 /* Toolbar styles */
 .wegas-hastoolbar {
     position: relative;

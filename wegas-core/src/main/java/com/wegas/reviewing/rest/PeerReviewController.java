@@ -13,7 +13,6 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;

@@ -61,7 +61,7 @@ YUI.add("wegas-text-input", function(Y) {
             }
 
             if (this.get("readonly.evaluated")) {
-                CB.one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
+                CB.one(".wegas-text-input-editor").setContent("<div class=\"readonly wegas-template-content\">" + this.getInitialContent() + "</div>");
             } else {
                 Y.once("domready", function() {
                     //this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
@@ -168,7 +168,7 @@ YUI.add("wegas-text-input", function(Y) {
         setContent: function() {
 
             if (this.get("readonly.evaluated")) {
-                this.get("contentBox").one(".wegas-text-input-editor").setContent("<div class=\"readonly\">" + this.getInitialContent() + "</div>");
+                this.get("contentBox").one(".wegas-text-input-editor").setContent("<div class=\"readonly wegas-template-content\">" + this.getInitialContent() + "</div>");
             } else {
                 Y.later(500, this, function() {
                     var content = this.getInitialContent();

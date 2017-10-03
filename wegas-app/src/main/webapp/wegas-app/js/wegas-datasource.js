@@ -351,23 +351,7 @@ YUI.add('wegas-datasource', function(Y) {
             }
         },
         __showMessage: function(level, message) {
-            var node;
-            if (Y.Widget) {
-                node = Y.Widget.getByNode(".wegas-login-page") ||
-                    (Y.Widget.getByNode("#centerTabView") &&
-                        Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                    Y.Widget.getByNode(".wegas-playerview");
-            }
-
-            if (node) {
-                node.showMessage(level, message);
-            } else {
-                if (Y.Wegas.Panel) {
-                    Y.Wegas.Panel.alert(message);
-                } else {
-                    window.alert(message);
-                }
-            }
+            Wegas.Alerts.showMessage(level, message);
         },
         _beforeDefDataFn: function(e) {
             var response, data = e.data && (e.data.responseText || e.data),
@@ -566,7 +550,7 @@ YUI.add('wegas-datasource', function(Y) {
                     newAttrs = entity.getAttrs();
 
                     /*
-                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor 
+                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor
                      * if newAttrs.version attrs is missing, it means entity is not versioned -> update in all case
                      * otherwise, only update if newAttrs is not older
                      */
@@ -1145,7 +1129,7 @@ YUI.add('wegas-datasource', function(Y) {
                 if (scope.variableInstances[scopeKey]) {
 
                     /*
-                     * Updated instance already exists in the cache, due to pusher 
+                     * Updated instance already exists in the cache, due to pusher
                      * asynchronoussness, make sure not overwritting up-to-date instance
                      */
                     if (entity.get("version") >= scope.variableInstances[scopeKey].get("version")) {

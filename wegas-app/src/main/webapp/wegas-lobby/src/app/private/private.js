@@ -83,6 +83,7 @@ angular.module('private', [
         if(user === null){
             $state.go("wegas.public");
         } else {
+            console.log("starting Pusher");
             WegasPusher.start();
             var config = localStorage.getObject("wegas-config");
             if (config.users[user.email]) {

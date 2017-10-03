@@ -15,6 +15,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,9 +35,9 @@ import org.apache.shiro.SecurityUtils;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@ManagedBean(name = "gameController")
+@ManagedBean(name = "waitController")
 @RequestScoped
-public class GameController extends AbstractGameController {
+public class WaitingController extends AbstractGameController {
 
     /**
      *
@@ -63,11 +64,32 @@ public class GameController extends AbstractGameController {
      */
     @EJB
     private GameModelFacade gameModelFacade;
+
+    /**
+     * to retrive player position in the queue
+     */
+    @Inject
+    private PopulatorFacade populatorFacade;
+
     /**
      *
      */
     @Inject
     ErrorController errorController;
+
+    /**
+     * Get the current user
+     * 
+     * @return 
+     */
+    public User getCurrentUser(){
+        return userFacade.getCurrentUser();
+    }
+
+
+    public String getCurrentUserEmail(){
+        return this.getCurrentUser().getMainAccount().getEmail();
+    }
 
     /**
      *
@@ -108,11 +130,7 @@ public class GameController extends AbstractGameController {
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.dispatch("The game you are looking for could not be found.");
         } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
-            try {
-                externalContext.dispatch("/wegas-app/jsf/error/waiting.xhtml");
-            } catch (IOException ex) {
-                Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            currentPlayer.setQueueSize(populatorFacade.getQueue().indexOf(currentPlayer) + 1);
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
                 && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {
             try {

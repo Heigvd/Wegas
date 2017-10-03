@@ -214,7 +214,6 @@ angular.module('wegas.models.groups', [])
 
         model.updateGroup = function(group) {
             var deferred = $q.defer();
-
             var url = "rest/Role/" + group.id;
             $http.put(ServiceURL + url, group, {
                 "headers": {

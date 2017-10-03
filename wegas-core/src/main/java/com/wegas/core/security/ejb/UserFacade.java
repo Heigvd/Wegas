@@ -140,6 +140,20 @@ public class UserFacade extends BaseFacade<User> {
         }
     }
 
+
+
+    /**
+     * @return a User entity, based on the shiro login state
+     */
+    public AbstractAccount getCurrentAccount() {
+        final Subject subject = SecurityUtils.getSubject();
+
+        if (subject.isRemembered() || subject.isAuthenticated()) {
+            return accountFacade.find((Long) subject.getPrincipal());
+        }
+        throw new WegasNotFoundException("Unable to find an account");
+    }
+
     /**
      * @return a User entity, based on the shiro login state
      */
