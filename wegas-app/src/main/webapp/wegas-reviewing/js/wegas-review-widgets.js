@@ -81,7 +81,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 visible: false
             }).render(this.get("contentBox"));
 
-            this.detailsOverlay.get("contentBox").addClass("wegas-review-orchestrator--popup-overlay");
+            this.detailsOverlay.get("contentBox").addClass("wegas-review-orchestrator--popup-overlay").addClass("wegas-template-content")
 
         },
         countByStatus: function(instances) {
@@ -404,6 +404,10 @@ YUI.add("wegas-review-widgets", function(Y) {
                 states[i].removeClass("future");
             }
 
+            this.get(CONTENTBOX).one(".transition.start-review span").removeClass("active");
+            this.get(CONTENTBOX).one(".transition.close-review span").removeClass("active");
+            this.get(CONTENTBOX).one(".transition.close-comment span").removeClass("active");
+
             this.get(CONTENTBOX).one(".properties .include-evicted").removeClass("enabled");
 
             switch (globalStatus) {
@@ -432,7 +436,6 @@ YUI.add("wegas-review-widgets", function(Y) {
                     states[3].addClass("future");
                     break;
                 case "CLOSED":
-
                     states[0].addClass("past");
                     states[1].addClass("past");
                     states[2].addClass("past");
@@ -441,7 +444,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 case "N/A":
                     this.get(CONTENTBOX).one(".transition.start-review span").addClass("active");
                     this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
-                    this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
+                    this.get(CONTENTBOX).one(".transition.close-comment span").addClass("active");
                     break;
             }
 
@@ -477,7 +480,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         syncSummary: function() {
             var data = this._monitoredData,
-                evalSummary,
+                evalSummary, maxY,
                 node, prd;
 
             prd = this.get("variable.evaluated");
@@ -489,8 +492,29 @@ YUI.add("wegas-review-widgets", function(Y) {
             node.append("<div class=\"feedback\"><h2>" + I18n.t("review.orchestrator.charts").capitalize() + " " + I18n.t("review.orchestrator.reviews") + "</h2></div>");
             node.append("<div class=\"comments\"><h2>" + I18n.t("review.orchestrator.charts").capitalize() + " " + I18n.t("review.orchestrator.comments") + "</h2></div>");
 
-            this.buildCharts(prd.get("feedback").get("evaluations"), node.one(".feedback"), evalSummary);
-            this.buildCharts(prd.get("fbComments").get("evaluations"), node.one(".comments"), evalSummary);
+            maxY = this.getMaxY([prd.get("feedback").get("evaluations"), prd.get("fbComments").get("evaluations")], evalSummary);
+            this.buildCharts(prd.get("feedback").get("evaluations"), node.one(".feedback"), evalSummary, maxY);
+            this.buildCharts(prd.get("fbComments").get("evaluations"), node.one(".comments"), evalSummary, maxY);
+        },
+        getMaxY: function(reviews, summary) {
+            var i, j, k, evals, evD, data, maxY = 0;
+            for (j in reviews) {
+                evals = reviews[j];
+                for (i in evals) {
+                    evD = evals[i];
+                    data = summary[evD.get("id")].get("val");
+                    if (evD.get("@class") === "GradeDescriptor") {
+                        for (k in data.histogram) {
+                            maxY = Math.max(maxY, data.histogram[k].count);
+                        }
+                    } else if (evD.get("@class") === "CategorizedEvaluationDescriptor") {
+                        for (k in data.histogram) {
+                            maxY = Math.max(maxY, data.histogram[k]);
+                        }
+                    }
+                }
+            }
+            return maxY;
         },
         createGradeChart: function(klass, summary, descriptor, maxY) {
             var min, max, data, options, i, bar,
@@ -514,6 +538,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 width: 400,
                 height: 250,
                 axisY: {
+                    onlyInteger: true,
                     high: maxY
                 }
             };
@@ -551,6 +576,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 width: 400,
                 height: 250,
                 axisY: {
+                    onlyInteger: true,
                     high: maxY
                 }
             };
@@ -565,22 +591,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             nD = nD || 2;
             return Y.Lang.isNumber(value) ? value.toFixed(nD) : "n/a";
         },
-        buildCharts: function(evals, node, summary) {
-            var i, evD, klass, data, k, maxY = 0;/*math,*/
-
-            for (i in evals) {
-                evD = evals[i];
-                data = summary[evD.get("id")].get("val");
-                if (evD.get("@class") === "GradeDescriptor") {
-                    for (k in data.histogram) {
-                        maxY = Math.max(maxY, data.histogram[k].count);
-                    }
-                } else if (evD.get("@class") === "CategorizedEvaluationDescriptor") {
-                    for (k in data.histogram) {
-                        maxY = Math.max(maxY, data.histogram[k]);
-                    }
-                }
-            }
+        buildCharts: function(evals, node, summary, maxY) {
+            var i, evD, klass, data, k;
 
             for (i in evals) {
                 evD = evals[i];
@@ -1130,7 +1142,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             + "    <div class=\"toReview\">"
             + "      <div class=\"subtitle\"></div>"
             + "      <div class=\"description\"></div>"
-            + "      <div class=\"content\"></div>"
+            + "      <div class=\"content wegas-template-content\"></div>"
             + "    </div>"
             + "  </div>"
             + "  <div class=\"container\">"
@@ -1513,19 +1525,27 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         renderUI: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"),
-                CB = this.get("contentBox");
+                CB = this.get("contentBox"), min, max;
             this.evId = ev.get("id");
             CB.one(".wegas-review-evaluation-label").setContent(desc.get("name"));
             CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
 
             if (!this.get("readonly")) {
                 //this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", ev.get("value"));
-                if (Y.Lang.isNumber(desc.get("minValue")) && Y.Lang.isNumber(desc.get("maxValue"))) {
+                min = desc.get("minValue");
+                max = desc.get("maxValue");
+                if (Y.Lang.isNumber(min) && Y.Lang.isNumber(max)) {
+                    if (max - min < 10){
+                        this.get(CONTENTBOX).addClass("small-range-grade");
+                    }
+
                     this.xSlider = new Y.Slider({
-                        min: desc.get("minValue"),
-                        max: desc.get("maxValue"),
+                        min: min,
+                        max: max,
                         value: +ev.get("value")
                     }).render(this.get(CONTENTBOX).one(".wegas-review-grade-instance-slider"));
+                    this.get(CONTENTBOX).one(".wegas-review-grade-instance-slider .yui3-slider-rail-cap-left").setAttribute("data-value", min);
+                    this.get(CONTENTBOX).one(".wegas-review-grade-instance-slider .yui3-slider-rail-cap-right").setAttribute("data-value", max);
                 }
                 //} else {
                 //    this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container").setContent('<p>' +
@@ -1546,6 +1566,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (!this.get("readonly")) {
                 this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", value);
                 if (this.xSlider) {
+                    this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", value || "");
                     this.xSlider.set("value", value);
                 }
             } else {
@@ -1616,6 +1637,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 value = this.xSlider.get("value");
 
             if (this.updateValue(value)) {
+                this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", value || "");
                 input.set("value", value);
             }
         },
@@ -1632,6 +1654,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.timer = null;
                 if (this.updateValue(value)) {
                     if (this.xSlider) {
+                        this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", value || "");
                         this.xSlider.set("value", +value);
                     }
                 }
