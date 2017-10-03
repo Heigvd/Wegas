@@ -31,7 +31,7 @@ public class TextEvaluationInstance extends EvaluationInstance {
      * the evaluation itself
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @Column(name = "evaluationvalue")
     @WegasEntityProperty
     private String value;

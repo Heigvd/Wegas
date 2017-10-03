@@ -557,6 +557,10 @@ YUI.add("wegas-widget", function(Y) {
                                                 type: BUTTON,
                                                 label: "Unread count",
                                                 data: "UnreadCount"
+                                            },{
+                                                type: BUTTON,
+                                                label: "Event Logger",
+                                                data: "EventLogger"
                                             }, {
                                                 type: BUTTON,
                                                 label: "Lock",

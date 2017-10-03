@@ -28,7 +28,7 @@ i18nTable.fr = {
     median: "Médiane",
     sd: "écart-type",
     overview: "Aperçu",
-    status: "État",
+    editionStatus: "Édition",
     reviewDoneTitle: "Feedbacks terminés",
     commentsDoneTitle: "Commentaires Terminés",
     reviewDone: "Terminé",

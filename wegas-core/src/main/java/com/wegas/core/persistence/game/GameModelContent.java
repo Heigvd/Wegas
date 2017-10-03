@@ -66,7 +66,7 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
      *
      */
     @Lob
-    @Basic(optional = false, fetch = FetchType.LAZY)
+    @Basic(optional = false, fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@Column(columnDefinition = "text")
     //@JsonView({Views.Export.class})
     @WegasEntityProperty

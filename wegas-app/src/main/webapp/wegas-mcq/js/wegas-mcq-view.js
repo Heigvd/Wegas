@@ -73,10 +73,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.showOverlay();
 
             this.catchConflict = Y.Wegas.Facade.Variable.on("WegasConflictException", function(e) {
-                var node = (Y.Widget.getByNode("#centerTabView") &&
-                    Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                    Y.Widget.getByNode(".wegas-playerview");
-                node.showMessage("warn", Y.Wegas.I18n.t('mcq.conflict'));
+                Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.conflict'));
                 e.halt();
             });
         },
@@ -447,9 +444,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                      * Each item contains its choiceDescriptor and the answer to display.
                      * The answer to display is either the normal answer or the ignorationAnswer,
                      * according to the reply "ignored" attribute.
-                     * 
+                     *
                      * Does not includes ignored replies with no ignorationAnswet
-                     * 
+                     *
                      */
                     var j, repliesToDisplay = [],
                         toDisplay,
@@ -486,7 +483,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     }
 
                     /**
-                     * Step two : build markup 
+                     * Step two : build markup
                      */
                     ret.push('<div class="mcq-replies-section">');
                     ret.push('<div class="mcq-replies-title">', (repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');

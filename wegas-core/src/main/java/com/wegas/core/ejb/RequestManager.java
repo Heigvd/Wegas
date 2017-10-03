@@ -188,66 +188,20 @@ public class RequestManager {
     private void removeEntityFromContainer(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
         for (List<AbstractEntity> entities : container.values()) {
             if (entities.contains(entity)) {
+                logger.debug("remove {}", entity);
                 entities.remove(entity);
             }
         }
     }
 
-    private void removeChildrenFromContainer(Map<String, List<AbstractEntity>> container, DescriptorListI list) {
-        // remove all  children which are already registered
-        List<VariableDescriptor> queue = new LinkedList<>();
-        queue.addAll(list.getItems());
-
-        while (queue.size() > 0) {
-            VariableDescriptor child = queue.remove(0);
-            this.removeEntityFromContainer(container, child);
-            if (child instanceof DescriptorListI) {
-                queue.addAll(((DescriptorListI) child).getItems());
-            }
-        }
-    }
-
-    private boolean isAnyParentInContainer(Map<String, List<AbstractEntity>> container, VariableDescriptor vd) {
-        boolean exists = false;
-        while (vd != null && !exists) {
-            if (contains(container, vd)) {
-                exists = true;
-            } else {
-                DescriptorListI parent = vd.getParentOrNull();
-                if (parent instanceof VariableDescriptor) {
-                    vd = (VariableDescriptor) parent;
-                } else {
-                    vd = null;
-                }
-            }
-        }
-        return exists;
-    }
-
     public void addEntity(String audience, AbstractEntity entity, Map<String, List<AbstractEntity>> container) {
+
         boolean add = true;
-
-        if (entity instanceof VariableDescriptor) {
-            VariableDescriptor vd = (VariableDescriptor) entity;
-
-            if (vd instanceof DescriptorListI) {
-                this.removeChildrenFromContainer(container, (DescriptorListI) vd);
-            }
-
-            if (this.isAnyParentInContainer(container, vd)) {
-                // No need to add a descriptor if its parent is already registered
+        if (container == destroyedEntities) {
+            removeEntityFromContainer(updatedEntities, entity);
+        } else if (container == updatedEntities) {
+            if (contains(destroyedEntities, entity)) {
                 add = false;
-            }
-
-            if (container == destroyedEntities) {
-                if (vd instanceof DescriptorListI) {
-                    removeChildrenFromContainer(updatedEntities, (DescriptorListI) vd);
-                }
-                removeEntityFromContainer(updatedEntities, vd);
-            } else if (container == updatedEntities) {
-                if (isAnyParentInContainer(destroyedEntities, vd)){
-                    add = false;
-                }
             }
         }
 
@@ -255,6 +209,7 @@ public class RequestManager {
             if (!container.containsKey(audience)) {
                 container.put(audience, new ArrayList<>());
             }
+            // make sure to add up to date entity
             List<AbstractEntity> entities = container.get(audience);
             if (entities.contains(entity)) {
                 entities.remove(entity);

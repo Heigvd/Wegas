@@ -197,6 +197,46 @@ YUI.add('wegas-datasource', function(Y) {
             }
             Wegas.DataSource.superclass.plug.call(this, Plugin, config);
         },
+        sendEventsFromCollector: function(collector) {
+
+            var eventName, i, ds, dsid, events, updatedDs = {};
+
+            collector = collector || {};
+            for (dsid in collector) {
+                if (collector.hasOwnProperty(dsid)) {
+                    ds = collector[dsid].ds;
+                    events = collector[dsid].events;
+                    for (eventName in events) {
+                        if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
+                            updatedDs[dsid] = ds;
+                            for (i in events[eventName]) {
+                                ds.fire(eventName, events[eventName][i]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            /*
+             * HACK4backwardcompat...
+             * Since Descriptor and Instance datasources became two different DS,
+             * the global update event is sent by different datasource depending on 
+             * updated objects... 
+             * 
+             * Old stuff may still listen to descriptor DS event despiste 
+             * the targeted object is an instance... 
+             * 
+             * Quick'n'ugly fix : make sure to send Variable event if Instance ds has been updated
+             * 
+             * -> PLEASE USE updatedDescriptor and instanceDescriptor events when applicable
+             */
+            if (updatedDs.hasOwnProperty(Y.Wegas.Facade.Instance._yuid)) {
+                updatedDs[Y.Wegas.Facade.Variable._yuid] = Y.Wegas.Facade.Variable;
+            }
+            for (dsid in updatedDs) {
+                updatedDs[dsid].sendUpdateEvent();
+            }
+        },
         sendUpdateEvent: function() {
             this.fire(GLOBAL_UPDATE_EVENT);
         },
@@ -301,40 +341,17 @@ YUI.add('wegas-datasource', function(Y) {
 
             // Handle Websocket updated entities
             this.on("EntityUpdatedEvent", function(e) {
-                var i, entities = e.updatedEntities, ds, updatedDs = [];
-                for (i = 0; i < entities.length; i += 1) { // Update the cache with the entities contained in the reply
-                    //this.updated = this.updateCache(POST, entities[i]) || this.updated;
-                    ds = this.updateCache(POST, entities[i]);
-                    if (updatedDs.indexOf(ds) < 0) {
-                        updatedDs.push(ds);
-                    }
-                }
 
-                if (!(e.cfg && e.cfg.updateEvent === false) && updatedDs.length > 0) {
-                    while (ds = updatedDs.pop()) {
-                        ds.fire(GLOBAL_UPDATE_EVENT, e);
-                    }
-                }
             });
         },
+        updateEntities: function(entities, collector) {
+            var i, ds;
+            for (i = 0; i < entities.length; i += 1) {
+                this.updateCache(POST, entities[i], collector);
+            }
+        },
         __showMessage: function(level, message) {
-            var node;
-            if (Y.Widget) {
-                node = Y.Widget.getByNode(".wegas-login-page") ||
-                    (Y.Widget.getByNode("#centerTabView") &&
-                        Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                    Y.Widget.getByNode(".wegas-playerview");
-            }
-
-            if (node) {
-                node.showMessage(level, message);
-            } else {
-                if (Y.Wegas.Panel) {
-                    Y.Wegas.Panel.alert(message);
-                } else {
-                    window.alert(message);
-                }
-            }
+            Wegas.Alerts.showMessage(level, message);
         },
         _beforeDefDataFn: function(e) {
             var response, data = e.data && (e.data.responseText || e.data),
@@ -379,19 +396,17 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         onResponseRevived: function(e) {
-            var i, entity, method, evtPayload, response = e.serverResponse,
-                toUpdate = !e.cfg || e.cfg.updateCache !== false, ds, updatedDs = [];
-
-            this.updated = false;
+            var i, entity, evtPayload, response = e.serverResponse,
+                toUpdate = !e.cfg || e.cfg.updateCache !== false, collector = {};
 
             if (Lang.isArray(response)) { // Non-managed response: we apply the operation for each object in the returned array
                 if (toUpdate) { // No Update ? No-update...
                     if (!e.error) { // If there was an server error, do not update the cache
                         for (i = 0; i < response.length; i += 1) {
-                            this.updated = this.updateCache(e.cfg.method, response[i], !e.cfg.initialRequest) ||
-                                this.updated;
+                            // ICI
+                            this.updateCache(e.cfg.method, response[i], collector);
                         }
-                        return; // ??? this.updated ???
+                        return;
                     }
                 }
             } else if (response instanceof Y.Wegas.persistence.ManagedResponse) { // Managed-Mode ManagedResponse
@@ -401,11 +416,7 @@ YUI.add('wegas-datasource', function(Y) {
                         for (i = 0; i < response.get("deletedEntities").length; i += 1) { // Update the cache with the Entities in the reply body
                             entity = response.get("deletedEntities")[i];
                             if (Lang.isObject(entity)) {
-                                //method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
-                                ds = this.updateCache(DELETE, entity, !e.cfg || !e.cfg.initialRequest);
-                                if (updatedDs.indexOf(ds) < 0) {
-                                    updatedDs.push(ds);
-                                }
+                                this.updateCache(DELETE, entity, collector);
                             }
                         }
                     }
@@ -414,10 +425,7 @@ YUI.add('wegas-datasource', function(Y) {
                         for (i = 0; i < response.get("updatedEntities").length; i += 1) { // Update the cache with the Entities in the reply body
                             entity = response.get("updatedEntities")[i];
                             if (Lang.isObject(entity)) {
-                                ds = this.updateCache(POST, entity, !e.cfg || !e.cfg.initialRequest);
-                                if (updatedDs.indexOf(ds) < 0) {
-                                    updatedDs.push(ds);
-                                }
+                                this.updateCache(POST, entity, collector);
                             }
                         }
                     }
@@ -436,10 +444,8 @@ YUI.add('wegas-datasource', function(Y) {
 
             if (!e.error) { // If there was an server error, do not update the cache
                 if (toUpdate) { // No Update ? No-update...
-                    if ((!e.cfg || e.cfg.updateEvent !== false) && (updatedDs.length > 0 || (e.cfg && e.cfg.initialRequest))) {
-                        while (ds = updatedDs.pop()) {
-                            ds.fire(GLOBAL_UPDATE_EVENT, e);
-                        }
+                    if (!e.cfg || !e.cfg.initialRequest) {
+                        this.get(HOST).sendEventsFromCollector(collector);
                     }
                 }
             }
@@ -513,97 +519,69 @@ YUI.add('wegas-datasource', function(Y) {
          *  @param {page} entity The entity to update in the cache
          *  @return {Boolean} `true` if object could be located and method applied
          */
-        updateCache: function(method, entity, updateEvent) {
-            var ds = this.get(HOST);
+        updateCache: function(method, entity, eventsCollector) {
+            var ds = this.get(HOST), dsid = ds._yuid, inCacheEntity;
+            eventsCollector = eventsCollector || {};
+
+            eventsCollector[dsid] = eventsCollector[dsid] || {ds: ds, events: {}};
+
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.WegasCache");
+
+            inCacheEntity = this.find(ID, entity.get("id"));
             if (method === DELETE) {
-                if (this.find(ID, entity.get("id"), Y.bind(function(entity, needle) {
-                    var parent = this.findParentDescriptor(entity), // VD only !!!!!!!!!
-                        children, index;
-                    if (parent) {
-                        children = this.getChildren(parent);
-                    } else {
-                        children = this.getCache();
-                    }
-                    index = children.indexOf(entity);
+                if (inCacheEntity) {
+                    var cache, index;
+                    cache = this.getCache();
+                    index = cache.indexOf(inCacheEntity);
 
                     if (index >= 0) {
-                        children.splice(index, 1);
-                        this.deleteFromIndexes(entity);
-                        ds.fire("delete", {"entity": entity});
+                        cache.splice(index, 1);
+                        this.deleteFromIndexes(inCacheEntity);
+                        eventsCollector[dsid].events["delete"] = eventsCollector[dsid].events["delete"] || [];
+                        eventsCollector[dsid].events["delete"].push({"entity": inCacheEntity});
                     }
                     return true;
-                }, this))) {
-                    return ds;
-                } else {
-                    return null;
                 }
             } else {
-                if (this.find(ID, entity, Y.bind(function(entity, needle) {
-                    var oldAttrs, newAttrs, newEntity;
-                    oldAttrs = entity.getAttrs();
-                    newAttrs = needle.getAttrs();
+                // 
+                if (inCacheEntity) {
+                    var oldAttrs, newAttrs;
+                    oldAttrs = inCacheEntity.getAttrs();
+                    newAttrs = entity.getAttrs();
 
                     /*
-                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor 
+                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor
                      * if newAttrs.version attrs is missing, it means entity is not versioned -> update in all case
                      * otherwise, only update if newAttrs is not older
                      */
                     if (!newAttrs.version || newAttrs.version >= oldAttrs.version) {
-                        entity.setAttrs(newAttrs);
+                        inCacheEntity.setAttrs(newAttrs);
 
-                        if (this.oldIds) { // VD ONLY
-                            // 
-                            // NEW ENTITY IN PARENT
-
-                            // oldIds is filled by VarDescCache.post when adding a variable as
-                            // a child. oldIds contains new variable siblings ids
-
-                            // Since return entity is not the new one but its parent,
-                            // this statement search an entity with an unknown id (ie not in oldIds) within
-                            // the parent items (ie children).
-                            newEntity = Y.Array.find(entity.get("items"), function(i) {
-                                return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
-                            }, this);
-
-
-                            // Index the new Entity and its children
-                            this.insertIntoIndexes(newEntity);
-
-                            this.get(HOST).fire("added", {// New entity as children
-                                entity: newEntity,
-                                parent: entity
-                            });
-                            this.oldIds = null;
-                        } else {
-                            this.updateIndexes(oldAttrs, newAttrs); // OK
-                            // Update Entity (anywhere)
-                            if (entity instanceof Wegas.persistence.VariableDescriptor) {
-                                this.get(HOST).fire("updatedDescriptor", {
-                                    entity: entity
-                                });
-                            }
+                        this.updateIndexes(oldAttrs, newAttrs); // OK
+                        // Update Entity (anywhere)
+                        if (inCacheEntity instanceof Wegas.persistence.VariableDescriptor) {
+                            eventsCollector[dsid].events.updatedDescriptor = eventsCollector[dsid].events.updatedDescriptor || [];
+                            eventsCollector[dsid].events.updatedDescriptor.push({"entity": inCacheEntity});
                         }
                     }
                     return true;
-                }, this))) {
-                    return ds;
-                }
+                } else {
 
-                // FALLBACK: new root level entity
-                this.addToCache(entity); // In case we still have not found anything
+                    // New entitiy
+                    this.addToCache(entity); // In case we still have not found anything
 
-                // Index the new entity and its children
-                this.insertIntoIndexes(entity);
+                    // Index the new entity and its children
+                    this.insertIntoIndexes(entity);
 
-                if (updateEvent) {
-                    this.get(HOST).fire("added", {// New Entity  (no parent)
+                    eventsCollector[dsid].events.added = eventsCollector[dsid].events.added || [];
+                    eventsCollector[dsid].events.added.push({
                         entity: entity,
-                        parent: null
+                        parent: entity instanceof Wegas.persistence.VariableDescriptor ? entity.getParent() : null
                     });
+                    return true;
                 }
-                return ds;
             }
+            return false;
         },
         /**
          * @function
@@ -732,7 +710,7 @@ YUI.add('wegas-datasource', function(Y) {
             doFind.call(this, this.getCache());
             return ret;
         },
-        getChildren: function(entity) {
+        _getChildren: function(entity) {
             return null;
         },
         /**
@@ -743,7 +721,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         walkEntity: function(entity, callback) {
-            var children = this.getChildren(entity);
+            var children = this._getChildren(entity);
             if (children) {
                 return callback.call(this, children);
             }
@@ -912,10 +890,8 @@ YUI.add('wegas-datasource', function(Y) {
                 return "/" + data.id;
             }
         },
-        getChildren: function(entity) {
-            if (entity.get && entity.get(ITEMS)) {
-                return entity.get(ITEMS);
-            }
+        _getChildren: function(entity) {
+            // iternal storage is flat
             return null;
         },
         /**
@@ -927,83 +903,23 @@ YUI.add('wegas-datasource', function(Y) {
                 this.updateCache("DELETE", cache[0]);
             }
         },
-        /*
-         * Use to propagate root descriptor orderd changes 
-         * 
-         * on:
-         *  - new root descriptor
-         *  - descriptor moved from root
-         *  - descriptor moved to root
-         *  - root descriptor new order (moved from and to root)
-         *  
-         * Never call to reflect a delection
-         * @param {type} newRootDescriptors
-         * @returns {undefined}
-         */
-        mergeRoot: function(newRootDescriptors) {
-            var items = newRootDescriptors.get("items"), i, j, item,
-                fromSub, cId,
-                localCache = this.getCache();
-            // detect 
-            for (i in items) {
-                cId = items[i].get("id");
+        updateCache: function(method, entity, eventsCollector) {
+            if (entity instanceof Wegas.persistence.GameModel) {
+                var gm, ds, dsid;
+                ds = this.get("host");
+                dsid = ds._yuid;
 
-                // look for items[i] within localCache
-                for (j = 0; j < localCache.length; j++) {
-                    if (localCache[j].get("id") === cId) {
-                        break;
-                    }
-                }
-                if (j !== i) {
-                    if (j < localCache.length) {
-                        // moved from root to root
-                        item = localCache.splice(j, 1)[0];
-                        Y.log("MOVED ROOT:" + item.get("label"));
-                        localCache.splice(i, 0, item);
-                    } else {
-                        item = this.find(ID, cId);
-                        if (item) {
-                            //moved from sub dir
-                            Y.log("MOVED FROM SUBDIR :" + item.get("label"));
-                            localCache.splice(i, 0, item);
-                        } else {
-                            Y.log("NEW DESC:" + items[i].get("label"));
-                            //new descriptor 
-                            this.updateCache(POST, items[i], true);
-                        }
-                    }
-                }
-            }
+                gm = Y.Wegas.Facade.GameModel.cache.find("id", entity.get("id"));
+                gm.set("itemsIds", entity.get("itemsIds"));
 
-            for (i in localCache) {
-                cId = localCache[i].get("id");
-                for (j = 0; j < items.length; j++) {
-                    if (items[j].get("id") === cId) {
-                        break;
-                    }
-                }
-                if (j >= items.length) {
-                    // Moved within subdir
-                    localCache.splice(j, 1)[0];
-                    Y.log("MOVED IN SUBDIR");
-                }
-            }
+                eventsCollector = eventsCollector || {};
+                eventsCollector[dsid] = eventsCollector[dsid] || {ds: ds, events: {}};
 
-            this.get(HOST).fire("rootUpdate");
-        },
-        updateCache: function(method, entity) {
-            if (entity instanceof Wegas.persistence.RootDescriptors) {
-                this.mergeRoot(entity);
-                //debugger;
-                /*var items = entity.get("items"), i;
-                 this._clearAll();
-                 for (i in items) {
-                 this.updateCache(method, items[i], true);
-                 }
-                 */
+                eventsCollector[dsid].events["rootUpdate"] = [{}];
+
                 return Y.Wegas.Facade.Variable;
             } else if (entity instanceof Wegas.persistence.VariableInstance) {
-                return Y.Wegas.Facade.Instance.cache.updateCache(method, entity);
+                return Y.Wegas.Facade.Instance.cache.updateCache(method, entity, eventsCollector);
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
                 return VariableDescriptorCache.superclass.updateCache.apply(this, arguments);
             }
@@ -1020,12 +936,6 @@ YUI.add('wegas-datasource', function(Y) {
             }
         },
         duplicateObject: function(entity, cfg) {
-            var parent = this.findParentDescriptor(entity);
-            if (parent) {
-                this.oldIds = Y.Array.map(parent.get(ITEMS), function(i) {
-                    return i.get(ID);
-                });
-            }
             this.sendRequest(Y.mix({
                 request: this.generateRequest(entity.toObject()) + "/Duplicate/",
                 cfg: {
@@ -1034,15 +944,8 @@ YUI.add('wegas-datasource', function(Y) {
             }, cfg));
         },
         post: function(data, parent, callback) {
-            var request = "";
-            if (parent) {
-                this.oldIds = Y.Array.map(parent.get(ITEMS), function(i) {
-                    return i.get(ID);
-                });
-                request = "/" + parent.get(ID);
-            }
             this.sendRequest({
-                request: request,
+                request: parent ? "/" + parent.get(ID) : "",
                 cfg: {
                     method: POST,
                     data: data
@@ -1051,54 +954,34 @@ YUI.add('wegas-datasource', function(Y) {
             });
         },
         findParentDescriptor: function(entity) {
-            return this.find("id", entity.get("parentDescriptorId"));
+            if (entity.get("parentDescriptorType") === "GameModel") {
+                return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentDescriptorId"));
+            } else {
+                return this.find("id", entity.get("parentDescriptorId"));
+            }
         },
         move: function(entity, parentEntity, index, localOnly) {
-            var request,
-                host = this.get(HOST),
-                oParentEntity = this.findParentDescriptor(entity),
-                tArray;
-
-            tArray = (oParentEntity) ?
-                oParentEntity.get(ITEMS) : this.getCache(); // Remove the item from it's existing position in the cache
-
-            Y.log("Moving cache object from position " + Y.Array.indexOf(tArray, entity) + " to position " + index,
-                "log",
-                "Wegas.VariableTreeView");
-
-            tArray.splice(Y.Array.indexOf(tArray, entity), 1);
-            if (oParentEntity) {
-                oParentEntity.set(ITEMS, tArray);
-            }
-
-            tArray = (parentEntity) ?
-                parentEntity.get(ITEMS) : this.getCache();
-            tArray.splice(index, 0, entity); // Place the entity at the new position
-
-            if (parentEntity) { // Dropped on a list descriptor
-                parentEntity.set(ITEMS, tArray);
-                entity.parentDescriptor = parentEntity;
-                request = "/" + entity.get(ID) + "/Move/" + parentEntity.get(ID) + "/" + index;
-            } else { // Dropped at root level
-                entity.parentDescriptor = null;
-                request = "/" + entity.get(ID) + "/Move/" + index;
-            }
             if (!localOnly) {
-                host.sendRequest({
-                    request: request,
+                this.get(HOST).sendRequest({
+                    request: "/" + entity.get(ID) + "/Move/" + (parentEntity ? parentEntity.get(ID) + "/" : "") + index,
                     cfg: {
                         method: PUT
                     },
                     on: {
                         success: Y.bind(function(tId, e) {
                             Y.log("Item moved", "info", "Wegas.VariableTreeView");
-                            this.get(HOST).fire(GLOBAL_UPDATE_EVENT);
-                            // TODO -> Send  updatedDescriptor events
+                            // this.get(HOST).fire(GLOBAL_UPDATE_EVENT); // already fired by updateCache!
                         }, this),
-                        failure: function(tId, e) {
-                            //@todo Reset the whole treeview
+                        failure: Y.bind(function(entity, parentEntity) {
                             Y.log("Error moving item", "error");
-                        }
+                            // Rollback move since TV was too optimistic
+                            if (parentEntity.get("@class") === "GameModel" || entity.getParent().get("@class") === "GameModel") {
+                                this.get(HOST).fire("rootUpdate");
+                            } else {
+                                this.get(HOST).fire("updatedDescriptor", {entity: parentEntity});
+                                this.get(HOST).fire("updatedDescriptor", {entity: entity.getParent()});
+                            }
+                        }, this, entity, parentEntity)
                     }
                 });
             }
@@ -1151,28 +1034,11 @@ YUI.add('wegas-datasource', function(Y) {
                 this._indexes[indexOn] = {};
             }
 
-            /*
-             * HACK4backwardcompat...
-             * Since Descriptor and Instance datasources became two different DS,
-             * the global update event is sent by different datasource according
-             * to updated objects... 
-             * 
-             * Old stuff may still listen to descriptor DS event despiste 
-             * the targeted object is an instance... 
-             * 
-             * Quick'n'ugly fix : resend instance update events through descriptor DS
-             * 
-             * -> PLEASE USE updatedDescriptor and instanceDescriptor events when applicable
-             */
-            this.get(HOST).on(GLOBAL_UPDATE_EVENT, function(e) {
-                Y.Wegas.Facade.Variable.fire(GLOBAL_UPDATE_EVENT, e);
-            });
-
             this.on("CustomEvent", function(e) { // TODO MOVE SOMEWHERE...
                 Y.Wegas.Facade.Variable.fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
             });
         },
-        getChildren: function(entity) {
+        _getChildren: function(entity) {
             if (entity["@class"] === "Scope") {
                 var k, values = [];
                 for (k in entity.variableInstances) {
@@ -1213,17 +1079,28 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @function
          */
-        updateCache: function(method, entity) {
-            var scope, scopeKey, descriptorId, index;
+        updateCache: function(method, entity, eventsCollector) {
+
+            var scope, scopeKey, descriptorId, index, ds, dsid;
+            ds = this.get("host");
+            dsid = ds._yuid;
             descriptorId = +entity.get("descriptorId");
             scopeKey = +entity.get("scopeKey");
             scope = this.find("descriptorId", descriptorId);
+            eventsCollector = eventsCollector || {};
+
+            eventsCollector[dsid] = eventsCollector[dsid] || {ds: ds, events: {}};
+
 
 
             if (method === DELETE) {
                 //Delete is DELETE, no need to check versions
                 if (scope) {
                     if (scope.variableInstances[scopeKey]) {
+
+                        eventsCollector[dsid].events["delete"] = eventsCollector[dsid].events["delete"] || [];
+                        eventsCollector[dsid].events["delete"].push({"entity": scope.variableInstances[scopeKey]});
+
                         delete scope.variableInstances[scopeKey];
                     }
                     if (Object.getOwnPropertyNames(scope.variableInstances).length === 0) {
@@ -1233,10 +1110,10 @@ YUI.add('wegas-datasource', function(Y) {
                             scope = this.getCache().splice(index, 1)[0];
                             this.deleteFromIndexes(scope);
                         }
-
                     }
+
                 }
-                return this.get(HOST);
+                return true;
             } else {
                 if (!scope) {
                     scope = {
@@ -1252,23 +1129,26 @@ YUI.add('wegas-datasource', function(Y) {
                 if (scope.variableInstances[scopeKey]) {
 
                     /*
-                     * Updated instance already exists in the cache, due to pusher 
+                     * Updated instance already exists in the cache, due to pusher
                      * asynchronoussness, make sure not overwritting up-to-date instance
                      */
                     if (entity.get("version") >= scope.variableInstances[scopeKey].get("version")) {
                         scope.variableInstances[scopeKey].setAttrs(entity.getAttrs());
-                        Y.Wegas.Facade.Instance.fire("updatedInstance", {// Variable instance updated
+                        eventsCollector[dsid].events.updatedInstance = eventsCollector[dsid].events.updatedInstance || [];
+                        eventsCollector[dsid].events.updatedInstance.push({
                             entity: entity
                         });
                     }
                 } else {
                     // Entity not yet known, no version to compare
                     scope.variableInstances[scopeKey] = entity;
-                    Y.Wegas.Facade.Instance.fire("updatedInstance", {
+
+                    eventsCollector[dsid].events.updatedInstance = eventsCollector[dsid].events.updatedInstance || [];
+                    eventsCollector[dsid].events.updatedInstance.push({
                         entity: entity
                     });
                 }
-                return this.get(HOST);
+                return true;
             }
             return false;
         }
@@ -1336,7 +1216,7 @@ YUI.add('wegas-datasource', function(Y) {
      */
 
     GameCache = Y.Base.create("wegas-gamecache", WegasCache, [], {
-        getChildren: function(entity) {
+        _getChildren: function(entity) {
             if (entity instanceof Wegas.persistence.Game) {
                 return entity.get("teams");
             }
@@ -1466,7 +1346,7 @@ YUI.add('wegas-datasource', function(Y) {
      *  @constructor
      */
     UserCache = Y.Base.create("wegas-cache", WegasCache, [], {
-        getChildren: function(entity) {
+        _getChildren: function(entity) {
             if (entity.get("accounts")) {
                 return entity.get("accounts");
             }

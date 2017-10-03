@@ -72,6 +72,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @NotNull
     @Basic(optional = false)
+    
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     @WegasEntityProperty
     private String token;
@@ -138,6 +139,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @Enumerated(value = EnumType.STRING)
+    
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -217,12 +219,22 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      * @return all players from all teams
      */
     @JsonIgnore
+    @Override
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>();
         for (Team t : this.getTeams()) {
             players.addAll(t.getPlayers());
         }
         return players;
+    }
+
+    @Override
+    @JsonIgnore
+    public Player getAnyLivePlayer() {
+        for (Team t : this.getTeams()) {
+            return t.getAnyLivePlayer();
+        }
+        return null;
     }
 
     /**

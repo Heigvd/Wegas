@@ -50,7 +50,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @JsonView(Views.ExtendedI.class)
     @WegasEntityProperty
     private String description;
@@ -236,6 +236,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @return the variableDescriptors
      */
     @Override
+    @JsonView(Views.ExportI.class)
     public List<ChoiceDescriptor> getItems() {
         return items;
     }

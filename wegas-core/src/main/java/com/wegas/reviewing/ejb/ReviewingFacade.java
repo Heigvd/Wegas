@@ -15,7 +15,6 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.EntityRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -259,8 +258,9 @@ public class ReviewingFacade {
             VariableDescriptor toReview = prd.getToReview();
             for (Iterator<PeerReviewInstance> it = pris.iterator(); it.hasNext();) {
                 PeerReviewInstance pri = it.next();
-                try {
-                    VariableInstance toReviewInstance = variableInstanceFacade.findInstance(toReview, pri);
+                VariableInstance toReviewInstance = toReview.findInstance(pri);
+                if (toReviewInstance != null) {
+
                     boolean reject = false;
 
                     if (pri.getReviewState() == PeerReviewDescriptor.ReviewingState.COMPLETED
@@ -287,8 +287,6 @@ public class ReviewingFacade {
                         evicted.add(pri);
                         it.remove();
                     }
-                } catch (NoPlayerException ex) {
-                    // Evict
                 }
             }
             numberOfReview = Math.min(prd.getMaxNumberOfReview(), pris.size() - 1);

@@ -20,7 +20,6 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
-import com.wegas.core.persistence.variable.RootDescriptors;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -50,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -109,13 +109,15 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     }
 
     /**
-     * @param gameModel
-     * @param list
-     * @param entity
+     * Create a new descriptor in a DescriptorListI
      *
-     * @return Parent descriptor container which contains the new child
+     * @param gameModel the gameModel
+     * @param list      new descriptor parent
+     * @param entity    new descriptor to create
+     *
+     * @return the new descriptor
      */
-    public DescriptorListI createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
+    public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
 
         List<String> usedNames = this.findDistinctNames(gameModel);
         List<String> usedLabels = this.findDistinctLabels(list);
@@ -138,24 +140,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         if (list instanceof GameModel) {
             this.propagateRootVariableDescriptors((GameModel) list);
         }
-        return list;
+        return entity;
     }
 
     public void propagateRootVariableDescriptors(GameModel gameModel) {
-        RootDescriptors rd = new RootDescriptors();
-        rd.setId(gameModel.getId());
-        rd.setItems(gameModel.getItems());
-
-        List<AbstractEntity> entities = new ArrayList<>();
-
-        entities.add(rd);
-
-        Map<String, List<AbstractEntity>> map = new HashMap();
-
-        map.put(gameModel.getChannel(), entities);
-
-        requestManager.addUpdatedEntities(map);
-
+        // In the future, GameModel should implements Broadcastable, but canEdit bug needs to be fixed first
+        Map<String, List<AbstractEntity>> entities = new HashMap<>();
+        List<AbstractEntity> l = new LinkedList<>();
+        l.add(gameModel);
+        entities.put(gameModel.getChannel(), l);
+        requestManager.addUpdatedEntities(entities);
     }
 
     /**
@@ -261,7 +255,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return
      */
-    public DescriptorListI createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
+    public VariableDescriptor createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
         VariableDescriptor find = this.find(variableDescriptorId);
         return this.createChild(find.getGameModel(), (DescriptorListI) find, entity);
     }

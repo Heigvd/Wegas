@@ -1,6 +1,6 @@
 angular.module('autologin', [
-        'wegas.models.sessions'
-    ])
+    'wegas.models.sessions'
+])
     .config(function($stateProvider) {
         "use strict";
         $stateProvider
@@ -18,14 +18,10 @@ angular.module('autologin', [
         function AutologinCtrl(Auth, Flash, $scope, $state, $stateParams, TeamsModel, SessionsModel, $translate) {
             "use strict";
 
-            $translate('COMMONS-TEAMS-GUEST-JOINING').then(function(message) {
-                $scope.message = message;
-            });
-
             var errorRedirect = function(response) {
-                    response.flash();
-                    $state.go("wegas");
-                },
+                response.flash();
+                $state.go("wegas");
+            },
                 joinIndividualSession = function(session) {
                     TeamsModel.joinIndividually(session).then(function(response) {
                         if (!response.isErroneous()) {
@@ -54,17 +50,26 @@ angular.module('autologin', [
                             });
                         } else {
                             session = responseToken.data;
-                            Auth.loginAsGuest().then(function(responseAuth) {
-                                if (!responseAuth.isErroneous()) {
-                                    if (session.properties.freeForAll) {
-                                        joinIndividualSession(session);
+                            if (session.properties.guestAllowed) {
+
+                                $translate('COMMONS-TEAMS-GUEST-JOINING').then(function(message) {
+                                    $scope.message = message;
+                                });
+
+                                Auth.loginAsGuest().then(function(responseAuth) {
+                                    if (!responseAuth.isErroneous()) {
+                                        if (session.properties.freeForAll) {
+                                            joinIndividualSession(session);
+                                        } else {
+                                            $state.go("wegas.private.join", {'token': $stateParams.token});
+                                        }
                                     } else {
-                                        $state.go("wegas.private.join", {'token': $stateParams.token});
+                                        errorRedirect(responseToken);
                                     }
-                                } else {
-                                    errorRedirect(responseToken);
-                                }
-                            });
+                                });
+                            } else {
+                                window.location.href = window.ServiceURL + "?redirect=" + encodeURIComponent("#/play/" + session.token);
+                            }
                         }
                     });
                 } else {

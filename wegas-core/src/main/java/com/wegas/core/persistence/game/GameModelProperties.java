@@ -39,6 +39,10 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
+    private Boolean guestAllowed = false;
+    /**
+     *
+     */
     @JsonView({Views.ExtendedI.class})
     @WegasEntityProperty
     private String pagesUri = "";
@@ -92,7 +96,27 @@ public class GameModelProperties implements Serializable, Mergeable {
     }
 
     /**
-     * @return the freeForAll
+     *
+     * @return whether or not a guest is allowed to create or join a team within this gameModel
+     */
+    public Boolean getGuestAllowed() {
+        return guestAllowed;
+    }
+
+    /*
+     * Allow or forbid guest to create or join team
+     *
+     * @param guestAllowed is a guest allowed to create or join a team ?
+     */
+    public void setGuestAllowed(Boolean guestAllowed) {
+        this.guestAllowed = guestAllowed;
+    }
+
+    /**
+     * Is the game designed to be played individually (freeForAll = true) or played as a team (freeForAll =false)
+     * "FreeForAll" iz bad wording...
+     *
+     * @return the freeForAll true if the game is designed to be played alone
      */
     public Boolean getFreeForAll() {
         return freeForAll;

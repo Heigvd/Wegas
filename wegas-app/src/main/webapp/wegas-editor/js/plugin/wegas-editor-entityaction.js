@@ -540,27 +540,12 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         showAddForm: function(entity, parentData) {
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.showEditForm(entity, Y.bind(function(newVal) {
-                //@Hack since the server return the parent list,
-                // and we have no way to identify the newly created descriptor
-                // we need to look for the one that was not there before
-                var dataSource = this.get(DATASOURCE), idBack = [];
-                Y.Array.each(parentData.get("items"), function(e) {
-                    idBack.push(e.get(ID));
-                });
+                var dataSource = this.get(DATASOURCE);
                 dataSource.cache.post(newVal, parentData, {
                     success: Y.bind(function(e) {
                         EditEntityAction.hideEditFormOverlay();
 
                         var entity = e.response.entity, button;
-                        if (Wegas.persistence.VariableDescriptor && // If entity is loaded
-                            entity instanceof Wegas.persistence.VariableDescriptor &&
-                            entity.get("items")) {                           // If the parent list of the edited item was returned,
-                            entity = Y.Array.find(entity.get("items"), function(e) {// need to look up for the edited entity
-                                return Y.Array.indexOf(idBack, e.get(ID)) === -1;
-                            });
-                        }
-                        //EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
-
 
                         var button = Wegas.Widget.create(entity.getMenuCfg({dataSource: dataSource})[0]);
                         button.render().fire("click");
@@ -599,11 +584,6 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         var entity = e.response.entity;
-                        if (Wegas.persistence.VariableDescriptor && // If entity is loaded
-                            entity instanceof Wegas.persistence.VariableDescriptor &&
-                            entity.get("items")) {                           // If the parent list of the edited item was returned,
-                            entity = entity.get("items")[entity.get("items").length - 1]; //select last item.
-                        }
                         EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
                         this.hideOverlay();
                     }, this),

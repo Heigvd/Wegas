@@ -367,6 +367,19 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     }
 
     @JsonView(Views.IndexI.class)
+    public String getParentDescriptorType() {
+        if (this.getRootGameModel() != null) {
+            return "GameModel";
+        } else {
+            return "VariableDescriptor";
+        }
+    }
+
+    public void setParentDescriptorType(String type) {
+        // nothing to do
+    }
+
+    @JsonView(Views.IndexI.class)
     public Long getParentDescriptorId() {
         try {
             return this.getParent().getId();
@@ -393,6 +406,37 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Override
     public Long getId() {
         return id;
+    }
+
+    /**
+     * Retrieve an instance which stands in the same scope as given variableInstance
+     *
+     * @param variableInstance
+     *
+     * @return
+     *
+     */
+    @JsonIgnore
+    public T findInstance(VariableInstance variableInstance) {
+
+        // if the given VariableInstance is a default instance, return the descripto default instance
+        if (variableInstance.isDefaultInstance()) {
+            return this.getDefaultInstance();
+        }
+
+        AbstractScope iScope = variableInstance.getScope();
+
+        if (iScope instanceof PlayerScope) {
+            return (T) scope.getVariableInstance(variableInstance.getPlayer());
+        } else if (iScope instanceof TeamScope) {
+            return (T) scope.getVariableInstance(variableInstance.getTeam());
+        } else if (iScope instanceof GameScope) {
+            return (T) scope.getVariableInstance(variableInstance.getGame());
+        } else if (iScope instanceof GameModelScope) {
+            return (T) scope.getVariableInstance(variableInstance.getGameModel());
+        }
+
+        return null;
     }
 
     /**
@@ -597,7 +641,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         this.beans = beanjection;
     }
 
-    private VariableDescriptorFacade getVariableDescriptorFacade() {
+    private VariableDescriptorFacade getVariableDescriptorFacade() { // SEE UPDATE SCOPE IN MERGE
         if (this.beans != null && this.beans.getVariableDescriptorFacade() != null) {
             return this.beans.getVariableDescriptorFacade();
         } else if (this.variableDescriptorFacade == null) {

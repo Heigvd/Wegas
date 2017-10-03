@@ -82,6 +82,7 @@ public class AbstractEJBTest {
     public void createGameModel() {
         gameModel = new GameModel();                                            // Create a game model
         gameModel.setName("test-gamemodel");
+        gameModel.getProperties().setGuestAllowed(true);
         gameModelFacade.create(gameModel);                                      // Commit the game model
 
         game = new Game();                                                      // Create a game

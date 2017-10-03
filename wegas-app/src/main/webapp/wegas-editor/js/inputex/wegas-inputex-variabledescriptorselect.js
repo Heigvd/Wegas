@@ -130,11 +130,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             if (currentEntity) {
                 this.currentEntity = currentEntity; // Keeps a reference to the current entity
                 entityStack.push(currentEntity);
-                while (currentEntity.parentDescriptor) { // Add the current entity hierarchy
-                    /* this._renderSelectConfig(currentEntity.parentDescriptor,
-                     currentEntity, currentEntity.parentDescriptor.get("items"));*/
 
-                    currentEntity = currentEntity.parentDescriptor;
+                while (currentEntity.get("parentDescriptorType") !== "GameModel") { // Add the current entity hierarchy
+                    currentEntity = currentEntity.getParent();
                     entityStack.push(currentEntity);
 
                 }
@@ -174,9 +172,13 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          */
         _renderSelectConfig: function(currentEntity) {
             var ret = [],
-                entity = currentEntity ? currentEntity.parentDescriptor : null,
-                items = entity ?
-                entity.get("items") : Wegas.Facade.Variable.cache.findAll();
+                entity = currentEntity ? currentEntity.getParent() : Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
+                items = entity.get("items");
+
+            if (entity instanceof Y.Wegas.persistence.GameModel) {
+                entity = null;
+            }
+
             ret.push(this.generateSelectConfig(entity, currentEntity, items));
             Y.Array.each(ret, this.addField, this);
         },
@@ -954,12 +956,12 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 if (!Y.Lang.isArray(options.root)) {
                     items = [Y.Wegas.Facade.Variable.cache.find("name", this.options.root)];
                 } else {
-                    items = Y.Array.map(this.options.root, function(item){
+                    items = Y.Array.map(this.options.root, function(item) {
                         return Y.Wegas.Facade.Variable.cache.find("name", item);
                     }, this);
                 }
             } else {
-                items = Wegas.Facade.Variable.data;
+                items = Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items");
             }
 
             if (options.selectableLevels) {

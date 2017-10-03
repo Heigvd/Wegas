@@ -105,9 +105,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @Column(name="maxNumberOfReviewer")
     private Integer maxNumberOfReview;
 
-    @Basic(fetch = FetchType.LAZY)
     @Lob
     @WegasEntityProperty
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     private String description;
 
     /**
