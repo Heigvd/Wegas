@@ -66,24 +66,24 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         PlayerFacade pf = lookupBy(PlayerFacade.class);
 
         // Create a game model
-        GameModel gameModel = new GameModel(GAMENAME);
+        GameModel gm = new GameModel(GAMENAME);
         final int size = gameModelFacade.findAll().size();
-        gameModelFacade.create(gameModel);
+        gameModelFacade.create(gm);
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
-        gameModel.setName(GAMENAME2);
+        gm.setName(GAMENAME2);
 
 
         // Edit this gam
-        GameModel gameModel1 = new GameModel(GAMENAME2);
-        gameModel1.getProperties().setGuestAllowed(true);
+        gm.getProperties().setGuestAllowed(true);
+        gm.setName(GAMENAME2);
         // Change Name and guestAllowed properties
-        GameModel gm2 = gameModelFacade.update(gameModel.getId(), gameModel1);
+        GameModel gm2 = gameModelFacade.update(gm.getId(), gm);
         Assert.assertEquals(GAMENAME2, gm2.getName());
         
 
         // Create a game, a team and a player
         Game g = new Game(NAME, TOKEN);
-        gf.create(gameModel.getId(), g);
+        gf.create(gm.getId(), g);
 
         Game g2 = gf.findByToken(TOKEN);
         Assert.assertEquals(NAME, g2.getName());

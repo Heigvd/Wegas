@@ -39,6 +39,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean guestAllowed = false;
     /**
      *

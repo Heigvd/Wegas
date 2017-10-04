@@ -25,7 +25,6 @@ import com.wegas.core.persistence.game.GameModel.GmType;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.RootDescriptors;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.IOException;
 import java.lang.reflect.Method;
