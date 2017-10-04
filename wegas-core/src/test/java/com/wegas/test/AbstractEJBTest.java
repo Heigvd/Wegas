@@ -106,6 +106,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         login(scenarist);
         gameModel = new GameModel();
         gameModel.setName("test-gamemodel");
+        gameModel.getProperties().setGuestAllowed(true);
         gameModelFacade.create(gameModel);
         gameModel = gameModelFacade.find(gameModel.getId());
 

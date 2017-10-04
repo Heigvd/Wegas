@@ -421,7 +421,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findByGameModelId(Long gameModelId) throws WegasNoResultException {
-        Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId");
+        Query getByGameId = getEntityManager().createQuery("SELECT p FROM Player p WHERE p.team.gameTeams.game.gameModel.id = :gameModelId");
         getByGameId.setParameter("gameModelId", gameModelId);
         try {
             return (Player) getByGameId.setMaxResults(1).getSingleResult();

@@ -303,58 +303,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * @param userId
-     *
-     * @return all non deleted games the given user plays in
-     */
-    public List<Game> findRegisteredGames(final Long userId) {
-        final Query getByGameId = getEntityManager().createQuery("SELECT g, p FROM Game g "
-                + "LEFT JOIN g.teams t LEFT JOIN  t.players p "
-                + "WHERE t.game.id = g.id AND p.team.id = t.id "
-                + "AND p.user.id = :userId AND "
-                + "(g.status = com.wegas.core.persistence.game.Game.Status.LIVE OR g.status = com.wegas.core.persistence.game.Game.Status.BIN) "
-                + "ORDER BY p.joinTime ASC", Game.class)
-                .setParameter("userId", userId);
-
-        return this.findRegisterdGames(getByGameId);
-    }
-
-    /**
-     * @param userId
-     * @param gameModelId
-     *
-     * @return all LIVE games of the given GameModel the given user plays in
-     */
-    public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
-        final Query getByGameId = getEntityManager().createQuery("SELECT g, p FROM Game g "
-                + "LEFT JOIN g.teams t LEFT JOIN  t.players p "
-                + "WHERE t.game.id = g.id AND p.team.id = t.id AND p.user.id = :userId AND g.gameModel.id = :gameModelId "
-                + "AND g.status = com.wegas.core.persistence.game.Game.Status.LIVE "
-                + "ORDER BY p.joinTime ASC", Game.class)
-                .setParameter("userId", userId)
-                .setParameter("gameModelId", gameModelId);
-
-        return this.findRegisterdGames(getByGameId);
-    }
-
-    /**
-     * @param q
-     *
-     * @return Game query result plus createdTime hack
-     */
-    private List<Game> findRegisterdGames(final Query q) {
-        final List<Game> games = new ArrayList<>();
-        for (Object ret : q.getResultList()) {                                // @hack Replace created time by player joined time
-            final Object[] r = (Object[]) ret;
-            final Game game = (Game) r[0];
-            this.getEntityManager().detach(game);
-            game.setCreatedTime(((Player) r[1]).getJoinTime());
-            games.add(game);
-        }
-        return games;
-    }
-
-    /**
      * Filter out the debug team
      *
      * @param game
