@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Player.findPlayerByGameModelIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.game.gameModel = :gameModelId"),
-    @NamedQuery(name = "Player.findPlayerByGameIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.game.id = :gameId"),
+    @NamedQuery(name = "Player.findPlayerByGameModelIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.gameModel.id = :gameModelId"),
+    @NamedQuery(name = "Player.findPlayerByGameIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.id = :gameId"),
     @NamedQuery(name = "Player.findPlayerByTeamIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId"),
     @NamedQuery(name = "Player.findToPopulate", query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
