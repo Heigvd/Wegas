@@ -27,6 +27,8 @@ import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -45,6 +47,8 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
     @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO")
 })
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner {
+
+    private static final Logger logger = LoggerFactory.getLogger(GameModel.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -779,7 +783,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
                 }
 
             } catch (RepositoryException ex) {
-                System.err.println("Failed to create repository for GameModel " + this.id);
+                logger.error("Failed to create repository for GameModel " + this.id);
             }
         }
 
