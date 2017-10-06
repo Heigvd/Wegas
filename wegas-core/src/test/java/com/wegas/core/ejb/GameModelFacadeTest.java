@@ -31,25 +31,25 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         final String SCRIPTNAME = "defaultScript";
         final String SCRIPTCONTENT = "test";
 
-        GameModel gameModel = new GameModel();
-        gameModel.setName(name);
-        gameModel.getClientScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
-        gameModel.getScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
-        gameModel.getCssLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
-        gameModel.getProperties().setPagesUri(SCRIPTCONTENT);
+        GameModel myGameModel = new GameModel();
+        myGameModel.setName(name);
+        myGameModel.getClientScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        myGameModel.getScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        myGameModel.getCssLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        myGameModel.getProperties().setPagesUri(SCRIPTCONTENT);
 
         final int size = gameModelFacade.findAll().size();
-        gameModelFacade.create(gameModel);
+        gameModelFacade.create(myGameModel);
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
-        gameModel = gameModelFacade.find(gameModel.getId());
-        Assert.assertEquals(name, gameModel.getName());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScript(SCRIPTNAME).getContent());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getProperties().getPagesUri());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getCss(SCRIPTNAME).getContent());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getScript(SCRIPTNAME).getContent());
+        myGameModel = gameModelFacade.find(myGameModel.getId());
+        Assert.assertEquals(name, myGameModel.getName());
+        Assert.assertEquals(SCRIPTCONTENT, myGameModel.getClientScript(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, myGameModel.getProperties().getPagesUri());
+        Assert.assertEquals(SCRIPTCONTENT, myGameModel.getCss(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, myGameModel.getScript(SCRIPTNAME).getContent());
 
-        gameModelFacade.remove(gameModel.getId());
+        gameModelFacade.remove(myGameModel.getId());
         Assert.assertEquals(size, gameModelFacade.findAll().size());
     }
 
@@ -60,10 +60,6 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         final String GAMENAME2 = "test-gamemodel2";
         final String NAME = "test-game";
         final String TOKEN = "token-for-testGame";
-
-        GameFacade gf = lookupBy(GameFacade.class);
-        TeamFacade tf = lookupBy(TeamFacade.class);
-        PlayerFacade pf = lookupBy(PlayerFacade.class);
 
         // Create a game model
         GameModel gm = new GameModel(GAMENAME);
@@ -83,21 +79,21 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         // Create a game, a team and a player
         Game g = new Game(NAME, TOKEN);
-        gf.create(gm.getId(), g);
+        gameFacade.create(gm.getId(), g);
 
-        Game g2 = gf.findByToken(TOKEN);
+        Game g2 = gameFacade.findByToken(TOKEN);
         Assert.assertEquals(NAME, g2.getName());
 
         Team t = new Team();
         t.setName("test-team");
-        tf.create(g.getId(), t);
+        teamFacade.create(g.getId(), t);
         Assert.assertNotNull(t.getId());
 
-        Player p = gf.joinTeam(t.getId(), "John A. Player");
+        Player p = gameFacade.joinTeam(t.getId(), "John A. Player");
 
         Assert.assertNotNull(p.getId());
 
-        gameModelFacade.remove(gameModel.getId());
+        gameModelFacade.remove(gm.getId());
         Assert.assertEquals(size, gameModelFacade.findAll().size());
     }
 
@@ -111,21 +107,20 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         };
 
         GameFacade gf = lookupBy(GameFacade.class);
-        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
 
         final int size = gameModelFacade.findAll().size();
 
-        GameModel gameModel = new GameModel("TESTGM");
-        gameModel.getProperties().setGuestAllowed(true);
-        gameModelFacade.create(gameModel);
+        GameModel myGameModel = new GameModel("TESTGM");
+        myGameModel.getProperties().setGuestAllowed(true);
+        gameModelFacade.create(myGameModel);
 
         Game g = new Game("TESTGAME", "xxx");
-        gf.create(gameModel.getId(), g);
+        gf.create(myGameModel.getId(), g);
         Team t1 = new Team();
         Team t2 = new Team();
         t1.setName("test-team");
         t2.setName("test-team");
-        final Function<Team, Runnable> runCreateTeam = (Team team) -> () -> teamFacade.create(g.getId(), team);
+        final Function<Team, Runnable> runCreateTeam = (Team t) -> () -> teamFacade.create(g.getId(), t);
 
         final Thread thread1 = TestHelper.start(runCreateTeam.apply(t1), handler);
         final Thread thread2 = TestHelper.start(runCreateTeam.apply(t2), handler);
@@ -135,22 +130,21 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         //Assert.assertFalse(t1.getName().equals(t2.getName()));
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
-        gameModelFacade.remove(gameModel.getId());
+        gameModelFacade.remove(myGameModel.getId());
         Assert.assertEquals(size, gameModelFacade.findAll().size());
     }
 
     @Test
     public void createMultipleTeam_seq() throws NamingException, InterruptedException {
         GameFacade gf = lookupBy(GameFacade.class);
-        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
 
         final int size = gameModelFacade.findAll().size();
 
-        GameModel gameModel = new GameModel("TESTGM");
-        gameModelFacade.create(gameModel);
+        GameModel myGameModel = new GameModel("TESTGM");
+        gameModelFacade.create(myGameModel);
 
         Game g = new Game("TESTGAME", "xxx");
-        gf.create(gameModel.getId(), g);
+        gf.create(myGameModel.getId(), g);
         Team t1 = new Team();
         Team t2 = new Team();
         t1.setName("test-team");
@@ -166,7 +160,7 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
-        gameModelFacade.remove(gameModel.getId());
+        gameModelFacade.remove(myGameModel.getId());
         Assert.assertEquals(size, gameModelFacade.findAll().size());
     }
 }
