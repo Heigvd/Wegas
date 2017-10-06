@@ -71,7 +71,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
     static {
         reflections = new Reflections("com.wegas");
-          /*
+         /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
@@ -433,7 +433,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         theModel.setCssLibrary(cssLibrary);
     }
 
-    private void createPages(GameModel theModel, String... pages) throws IOException {
+    private void setPagesFromStrings(GameModel theModel, String... pages) throws IOException {
         Map<String, JsonNode> gmPages = theModel.getPages();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -453,7 +453,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
             String pageName = page.getKey();
             sb.append("  ").append(pageName).append("\n").append(page.getValue()).append("\n");
         }
-        logger.info("Pages: {}", sb);
+        logger.error("Pages: {}", sb);
     }
 
     @Test
@@ -463,12 +463,12 @@ public class MergeFacadeTest extends AbstractEJBTest {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
 
-        this.createPages(gameModel1, "{\"type\": \"AbsoluteLayout\", \"children\": []}", "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}");
+        this.setPagesFromStrings(gameModel1, "{\"type\": \"AbsoluteLayout\", \"children\": []}", "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}");
         gameModelFacade.createWithDebugGame(gameModel1);
 
         GameModel gameModel2 = new GameModel();
         gameModel2.setName("gamemodel #2");
-        this.createPages(gameModel2, "{\"type\": \"AbsoluteLayout\", \"children\": []}", "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}", "{\"type\": \"AbsoluteLayout\", \"children\": []}");
+        this.setPagesFromStrings(gameModel2, "{\"type\": \"AbsoluteLayout\", \"children\": []}", "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}", "{\"type\": \"AbsoluteLayout\", \"children\": []}");
         gameModelFacade.createWithDebugGame(gameModel2);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
@@ -490,6 +490,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
+
         printPages(model);
         printPages(gameModel1);
         printPages(gameModel2);
@@ -497,9 +498,8 @@ public class MergeFacadeTest extends AbstractEJBTest {
         /**
          * Update pages
          */
+        this.setPagesFromStrings(model, "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}", "{\"type\": \"AbsoluteLayout\", \"children\": []}");
         model = gameModelFacade.merge(model);
-
-        gameModel1 = gameModelFacade.merge(gameModel1);
 
         /**
          * Update gameModel properties
