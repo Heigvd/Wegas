@@ -68,5 +68,11 @@ public @interface WegasEntityProperty {
      */
     Class<? extends WegasCallback> callback() default EmptyCallback.class;
 
+    /**
+     * Under which visibility the OVERRIDE mode will be preserved ?
+     * If the current visibility is not in this list, OVERRIDE is degraded to UPDATE
+     *
+     * @return list of visibility for which OVERRIDE mode is allowed to be propagated
+     */
     public ModelScoped.Visibility[] cascadeOverride() default {ModelScoped.Visibility.INTERNAL, ModelScoped.Visibility.PROTECTED};
 }

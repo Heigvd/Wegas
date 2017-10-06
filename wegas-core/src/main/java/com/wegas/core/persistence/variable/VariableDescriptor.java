@@ -142,6 +142,11 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     private String comments;
 
     /**
+     *
+     * The default instance for this variable.
+     * <p>
+     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the descriptor is protected
+     * <p>
      * Here we cannot use type T, otherwise jpa won't handle the db ref
      * correctly
      */

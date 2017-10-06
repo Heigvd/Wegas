@@ -317,8 +317,8 @@ public class MergeFacade {
                     scenario.setRefId(model.getRefId());
                 }
 
-                /**
-                 * filter pages
+                /*
+                 * override scenearios pages
                  */
                 Map<String, JsonNode> pages = reference.getPages();
                 for (GameModel scenario : scenarios) {
@@ -499,6 +499,9 @@ public class MergeFacade {
                 reference.setModel(gameModel);
                 gameModelFacade.create(reference);
 
+                // flush to force pages to be stored
+                gameModelFacade.flush();
+
                 this.integrateScenario(gameModel, gameModel.getImplementations());
 
             } else {
@@ -516,7 +519,7 @@ public class MergeFacade {
                         //scenario.propagateGameModel();
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
                         gameModelFacade.reset(scenario);
-                        
+
                         // HACK!!! TODO refactor propagation  (do not embed children within parents, but only ids)
                         variableDescriptorFacade.propagateRootVariableDescriptors(scenario);
                     }
