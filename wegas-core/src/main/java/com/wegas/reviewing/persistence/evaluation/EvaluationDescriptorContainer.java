@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
@@ -41,6 +42,14 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @JsonView(Views.IndexI.class)
     private Long id;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "feedback")
+    private PeerReviewDescriptor feedbacked;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "fbComments")
+    private PeerReviewDescriptor commented;
+
     /**
      * List of evaluations
      */
@@ -55,6 +64,35 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
      */
     public EvaluationDescriptorContainer() {
         super();
+    }
+
+    public PeerReviewDescriptor getFeedbacked() {
+        return feedbacked;
+    }
+
+    public void setFeedbacked(PeerReviewDescriptor feedbacked) {
+        this.feedbacked = feedbacked;
+    }
+
+    public PeerReviewDescriptor getCommented() {
+        return commented;
+    }
+
+    public void setCommented(PeerReviewDescriptor commented) {
+        this.commented = commented;
+    }
+
+    @JsonView(Views.IndexI.class)
+    public Long getParentDescriptorId() {
+        if (feedbacked != null) {
+            return feedbacked.getId();
+        } else if (commented != null) {
+            return commented.getId();
+        }
+        return null;
+    }
+
+    public void setParentDescriptorId(Long id) {
     }
 
     /**
@@ -73,7 +111,7 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
      */
     public void setEvaluations(List<EvaluationDescriptor> evaluations) {
         this.evaluations = evaluations;
-        for (EvaluationDescriptor ev : evaluations){
+        for (EvaluationDescriptor ev : evaluations) {
             ev.setContainer(this);
         }
     }

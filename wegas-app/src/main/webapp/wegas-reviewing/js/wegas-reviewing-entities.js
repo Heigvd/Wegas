@@ -264,6 +264,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * EvaluationDescriptor
      */
     persistence.EvaluationDescriptorContainer = Y.Base.create("EvaluationDescriptorContainer", persistence.Entity, [], {
+        getParentDescriptor: function() {
+            return Wegas.Facade.Variable.cache.findById(this.get("parentDescriptorId"));
+        }
     }, {
         EDITORNAME: "Evaluations",
         ATTRS: {
@@ -279,6 +282,13 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 _inputex: {
                     _type: HIDDEN,
                     index: 1
+                }
+            },
+            parentDescriptorId: {
+                type: NUMBER,
+                optional: true,
+                _inputex: {
+                    _type: HIDDEN
                 }
             }
         },
@@ -326,6 +336,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * EvaluationDescriptor
      */
     persistence.EvaluationDescriptor = Y.Base.create("EvaluationDescriptor", persistence.Entity, [], {
+        getParentDescriptor: function() {
+            return Wegas.Facade.Variable.cache.findById(this.get("parentDescriptorId"));
+        }
     }, {
         ATTRS: {
             "@class": {
@@ -346,7 +359,15 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                         height: '50px'
                     }
                 }
-            }/*,
+            },
+            parentDescriptorId: {
+                type: NUMBER,
+                optional: true,
+                _inputex: {
+                    _type: HIDDEN
+                }
+            }
+            /*,
              container: {
              type: "EvaluationDescriptorContainer",
              optional: true,

@@ -102,7 +102,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.index = index;
     }
 
-
     /**
      * Return the name of the evaluation
      *
@@ -162,6 +161,21 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      */
     public void setContainer(EvaluationDescriptorContainer container) {
         this.container = container;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    @JsonView(Views.IndexI.class)
+    public Long getParentDescriptorId() {
+        if (this.getContainer() != null) {
+            return this.getContainer().getParentDescriptorId();
+        }
+        return null;
+    }
+
+    public void setParentDescriptorId(Long id){
     }
 
     @JsonIgnore

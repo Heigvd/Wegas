@@ -138,12 +138,8 @@ YUI.add('wegas-editable', function(Y) {
                     } else if (this._isInstanceOf(entity, Y.Wegas.persistence.Result)) {
                         // Choice descriptor visibility
                         return entity.getChoiceDescriptor().get("visibility")
-                    } else if (this._isInstanceOf(entity, Y.Wegas.persistence.EvaluationDescriptorContainer)) {
-                        // PeerReviewDescriptor visibility
-                        debugger;
-                    } else if (this._isInstanceOf(entity, Y.Wegas.persistence.EvaluationDescriptor)) {
-                        // PeerReviewDescriptor visibility
-                        debugger;
+                    } else if (this._isInstanceOf(entity, Y.Wegas.persistence.EvaluationDescriptorContainer) || this._isInstanceOf(entity, Y.Wegas.persistence.EvaluationDescriptor)) {
+                        return entity.getParentDescriptor().get("visibility");
                     }
                 }
             }

@@ -102,7 +102,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * <p>
      */
     @WegasEntityProperty
-    @Column(name="maxNumberOfReviewer")
+    @Column(name = "maxNumberOfReviewer")
     private Integer maxNumberOfReview;
 
     @Lob
@@ -129,7 +129,6 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @NotNull
     @WegasEntityProperty
     private EvaluationDescriptorContainer fbComments;
-
 
     /**
      * Return the variable that will be reviewed
@@ -231,6 +230,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public void setFeedback(EvaluationDescriptorContainer feedback) {
         this.feedback = feedback;
+        if (feedback != null) {
+            feedback.setFeedbacked(this);
+        }
     }
 
     /**
@@ -250,6 +252,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public void setFbComments(EvaluationDescriptorContainer fbComments) {
         this.fbComments = fbComments;
+        if (fbComments != null) {
+            fbComments.setFeedbacked(this);
+        }
     }
 
     /*
