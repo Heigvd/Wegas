@@ -213,7 +213,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             },
             visibility: {
                 type: STRING,
-                value: "PRIVATE",
+                valueFn: function() {
+                    return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
+                },
                 choices: [{
                         value: "INTERNAL",
                         label: "Internal"
