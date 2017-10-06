@@ -22,6 +22,11 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         BUTTON = "Button",
         VALUE = "value",
         TEXT = "text",
+        INTERNAL = "INTERNAL",
+        PROTECTED = "PROTECTED",
+        INHERITED = "INHERITED",
+        PRIVATE = "PRIVATE",
+        NONE = "NONE",
         HTML = "html", AVAILABLE_TYPES, OPTIONAL_AVAILABLE_TYPES,
         Wegas = Y.Wegas,
         persistence = Wegas.persistence,
@@ -221,7 +226,11 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     }, {
                         value: "PRIVATE",
                         label: "Private"
-                    }]
+                    }],
+                _inputex: {
+                    maxWritableVisibility: NONE,
+                    wrapperClassName: "wegas-advanced-feature"
+                }
             },
             comments: {
                 type: STRING,
@@ -252,6 +261,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     label: "Script alias",
                     index: -1,
                     //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    maxWritableVisibility: PRIVATE,
                     description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
                 },
                 validator: function(s) {
@@ -310,6 +320,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 value: null,
                 validator: function(o) {
                     return o instanceof persistence.VariableInstance;
+                },
+                _inputex: {
+                    maxWritableVisibility: "PROTECTED"
                 }
             }
         },
@@ -826,7 +839,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             }
         }
     });
-    
+
     /**
      * ListDescriptor mapper
      */
