@@ -1616,6 +1616,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "sync online user list",
                             'fr': "synchroniser la liste des utilisateurs connectés"
                         },
+                        'ADMIN-WHO-REQUESTRELOAD-BTN': {
+                            'en': "Request user to reload the page",
+                            'fr': "Demxmander aux utilisateurs de recharger leur page"
+                        },
                         'ADMIN-WHO-SINGULAR-TITLE': {
                             'en': "connected user",
                             'fr': "utilisateur connecté"

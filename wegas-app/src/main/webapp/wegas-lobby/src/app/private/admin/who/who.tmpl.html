@@ -6,6 +6,13 @@
      ng-click="adminWhoCtrl.sync()">
     <span class="button__label">{{'ADMIN-WHO-SYNC-BTN'| translate}}</span>
 </div>
+
+<div class="button button--small button--round button--default-reverse button--label-off button--power-off" style="margin: 22px 0 -10px;"
+     title="Request client reload"
+     ng-click="adminWhoCtrl.requestClientReload()">
+    <span class="button__label">{{'ADMIN-WHO-REQUESTRELOAD-BTN'| translate}}</span>
+</div>
+
 <div ng-if="!adminWhoCtrl.loading"
      class="view__list" style="height: calc( 100% - 75px );">
     <div ng-repeat="role in adminWhoCtrl.roles| orderBy:'id'"
