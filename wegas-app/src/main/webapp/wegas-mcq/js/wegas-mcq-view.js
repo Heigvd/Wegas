@@ -230,23 +230,34 @@ YUI.add('wegas-mcq-view', function(Y) {
          * @description fetch question and displays it
          */
         genQuestion: function(question) {
-            this.dataSource.cache.getWithView(question, "Extended", {// Retrieve the question/choice description from the server
-                on: {
-                    success: Y.bind(function(e) {
-                        if (this.get("destroyed"))
-                            return;
-                        var question = e.response.entity;
-                        this.genMarkup(question);
-                        if (question.get("pictures").length > 0) {
-                            this.gallery = new Wegas.util.FileLibraryGallery({
-                                selectedHeight: 150,
-                                selectedWidth: 235,
-                                gallery: Y.clone(question.get("pictures"))
-                            }).render(this.get(CONTENTBOX).one(".description"));
-                        }
-                    }, this)
-                }
-            });
+            if (this.get("destroyed"))
+                return;
+            this.genMarkup(question);
+            if (question.get("pictures").length > 0) {
+                this.gallery = new Wegas.util.FileLibraryGallery({
+                    selectedHeight: 150,
+                    selectedWidth: 235,
+                    gallery: Y.clone(question.get("pictures"))
+                }).render(this.get(CONTENTBOX).one(".description"));
+            }
+            /*
+             this.dataSource.cache.getWithView(question, "Extended", {// Retrieve the question/choice description from the server
+             on: {
+             success: Y.bind(function(e) {
+             if (this.get("destroyed"))
+             return;
+             var question = e.response.entity;
+             this.genMarkup(question);
+             if (question.get("pictures").length > 0) {
+             this.gallery = new Wegas.util.FileLibraryGallery({
+             selectedHeight: 150,
+             selectedWidth: 235,
+             gallery: Y.clone(question.get("pictures"))
+             }).render(this.get(CONTENTBOX).one(".description"));
+             }
+             }, this)
+             }
+             });*/
         },
         genMarkup: function(question) {
             var i, ret,
