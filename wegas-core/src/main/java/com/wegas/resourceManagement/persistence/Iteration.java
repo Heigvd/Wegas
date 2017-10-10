@@ -46,7 +46,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         COMPLETED
     };
 
-    @JsonIgnore
+    //@JsonIgnore
     @Transient
     @WegasEntityProperty
     private List<String> taskNames;
