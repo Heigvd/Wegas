@@ -328,57 +328,68 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Export",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                    type: "PrintButton",
-                                    label: "Html"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Html (Players document)",
-                                    mode: "player"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf",
-                                    outputType: "pdf"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf (Players document)",
-                                    outputType: "pdf",
-                                    mode: "player"
-                                }, {
-                                    type: "OpenEntityButton",
-                                    label: "Json",
-                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
-                                }]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: "EditEntityButton"
+                }
+            },
+            copyBtn: {
+                index: 10,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: BUTTON,
+                    label: "Copy",
+                    plugins: [{
+                            fn: "DuplicateEntityAction"
+                        }]
+                }
+            },
+            deleteBtn: {
+                index:20,
+                maxVisibility: "PRIVATE", // only visible for private variables
+                cfg: {
+                    type: "DeleteEntityButton"
+                }
+            },
+            exportBtn: {
+                index: 30,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: BUTTON,
+                    label: "Export",
+                    plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                children: [{
+                                        type: "PrintButton",
+                                        label: "Html"
+                                    }, {
+                                        type: "PrintButton",
+                                        label: "Html (Players document)",
+                                        mode: "player"
+                                    }, {
+                                        type: "PrintButton",
+                                        label: "Pdf",
+                                        outputType: "pdf"
+                                    }, {
+                                        type: "PrintButton",
+                                        label: "Pdf (Players document)",
+                                        outputType: "pdf",
+                                        mode: "player"
+                                    }, {
+                                        type: "OpenEntityButton",
+                                        label: "Json",
+                                        url: "rest/Export/GameModel/VariableDescriptor/{id}"
+                                    }]
+                            }
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "More",
-                cssClass: "wegas-advanced-feature",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: []
-                        }
-                    }]
+                    ]
+                }
             }
-        ]
+        }
     });
     /**
      * Scope mapper
@@ -514,9 +525,15 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                maxisibility: "INTERNAL",
+                cfg: {
+                    type: "EditEntityButton"
+                }
+            }
+        }
     });
     /**
      * Meant to augment primitive Descriptors (Number, Text, String) with some functions
@@ -841,7 +858,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             }
         }
     });
-
     /**
      * ListDescriptor mapper
      */
@@ -959,154 +975,115 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             }
         },
         EDITORNAME: "Folder",
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Add",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                    type: "AddEntityChildButton",
-                                    label: "Number",
-                                    targetClass: "NumberDescriptor"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Text",
-                                    targetClass: "TextDescriptor"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Folder",
-                                    targetClass: "ListDescriptor"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Question",
-                                    targetClass: "QuestionDescriptor"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Trigger",
-                                    targetClass: "TriggerDescriptor"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "State machine",
-                                    targetClass: "FSMDescriptor" /*,
-                                     cfg: {
-                                     states: {
-                                     1: {
-                                     "@class": "State"
-                                     }
-                                     }
-                                     }*/
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Inbox",
-                                    targetClass: "InboxDescriptor"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "String",
-                                    targetClass: "StringDescriptor"
-                                        //cssClass: "wegas-advanced-feature"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Boolean",
-                                    targetClass: "BooleanDescriptor",
-                                    cssClass: "wegas-advanced-feature"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Object",
-                                    targetClass: "ObjectDescriptor",
-                                    cssClass: "wegas-advanced-feature"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Dialogue",
-                                    targetClass: "DialogueDescriptor" /*,
-                                     cfg: {
-                                     states: {
-                                     1: {
-                                     "@class": "DialogueState"
-                                     }
-                                     }
-                                     }*/
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Resource",
-                                    targetClass: "ResourceDescriptor",
-                                    cssClass: "wegas-advanced-feature"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Task",
-                                    targetClass: "TaskDescriptor",
-                                    cssClass: "wegas-advanced-feature"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Peer Review",
-                                    targetClass: "PeerReviewDescriptor",
-                                    cssClass: "wegas-advanced-feature"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Burndown",
-                                    targetClass: "BurndownDescriptor",
-                                    cssClass: "wegas-advanced-feature"
-                                }
-                            ]
+        EDITMENU: {
+            addBtn: {
+                index: 1,
+                cfg: {
+
+                    type: BUTTON,
+                    label: "Add",
+                    plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                children: [{
+                                        type: "AddEntityChildButton",
+                                        label: "Number",
+                                        targetClass: "NumberDescriptor"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Text",
+                                        targetClass: "TextDescriptor"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Folder",
+                                        targetClass: "ListDescriptor"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Question",
+                                        targetClass: "QuestionDescriptor"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Trigger",
+                                        targetClass: "TriggerDescriptor"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "State machine",
+                                        targetClass: "FSMDescriptor" /*,
+                                         cfg: {
+                                         states: {
+                                         1: {
+                                         "@class": "State"
+                                         }
+                                         }
+                                         }*/
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Inbox",
+                                        targetClass: "InboxDescriptor"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "String",
+                                        targetClass: "StringDescriptor"
+                                            //cssClass: "wegas-advanced-feature"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Boolean",
+                                        targetClass: "BooleanDescriptor",
+                                        cssClass: "wegas-advanced-feature"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Object",
+                                        targetClass: "ObjectDescriptor",
+                                        cssClass: "wegas-advanced-feature"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Dialogue",
+                                        targetClass: "DialogueDescriptor" /*,
+                                         cfg: {
+                                         states: {
+                                         1: {
+                                         "@class": "DialogueState"
+                                         }
+                                         }
+                                         }*/
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Resource",
+                                        targetClass: "ResourceDescriptor",
+                                        cssClass: "wegas-advanced-feature"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Task",
+                                        targetClass: "TaskDescriptor",
+                                        cssClass: "wegas-advanced-feature"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Peer Review",
+                                        targetClass: "PeerReviewDescriptor",
+                                        cssClass: "wegas-advanced-feature"
+                                    }, {
+                                        type: "AddEntityChildButton",
+                                        label: "Burndown",
+                                        targetClass: "BurndownDescriptor",
+                                        cssClass: "wegas-advanced-feature"
+                                    }
+                                ]
+                            }
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: '<span class="wegas-icon wegas-icon-sort"></span>Sort',
-                plugins: [{
-                        fn: "SortEntityAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Export",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                    type: "PrintButton",
-                                    label: "Html"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Html (Players document)",
-                                    mode: "player"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf",
-                                    outputType: "pdf"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf (Players document)",
-                                    outputType: "pdf",
-                                    mode: "player"
-                                }, {
-                                    type: "OpenEntityButton",
-                                    label: "Json",
-                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
-                                }]
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "More",
-                cssClass: "wegas-advanced-feature",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: []
-                        }
-                    }]
+                    ]
+                }
+            },
+            sortBtn: {
+                index: 2,
+                cfg: {
+                    type: BUTTON,
+                    label: '<span class="wegas-icon wegas-icon-sort"></span>Sort',
+                    plugins: [{
+                            fn: "SortEntityAction"
+                        }]
+                }
             }
-        ]
+        }
     });
     /*
      * ListInstance mapper

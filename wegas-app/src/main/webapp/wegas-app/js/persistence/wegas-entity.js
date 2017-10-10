@@ -71,8 +71,16 @@ YUI.add("wegas-entity", function(Y) {
         },
         /**
          *  Defines edition menu to be used in editor
+         *  ex:
+         editBtn: {
+         index: -1,
+         maxVisibility: "INTERNAL", // button will be visible up to this visibility, unspecified means INHERITED
+         cfg: {
+         buttonConfigHere : {}
+         }
+         },
          */
-        EDITMENU: [],
+        EDITMENU: {},
         /**
          * Defines methods available in wysiwyge script editor
          */
@@ -276,7 +284,7 @@ YUI.add("wegas-entity", function(Y) {
                     index: 100
                 }
             },
-            type :{
+            type: {
                 type: STRING
             },
             canView: {
@@ -297,8 +305,7 @@ YUI.add("wegas-entity", function(Y) {
             createdByName: {
                 "transient": true
             }
-        },
-        EDITMENU: []
+        }
     });
 
 
@@ -445,8 +452,7 @@ YUI.add("wegas-entity", function(Y) {
                     return count;
                 }
             }
-        },
-        EDITMENU: []
+        }
     });
     persistence.DebugGame = persistence.Game;
 
@@ -520,8 +526,7 @@ YUI.add("wegas-entity", function(Y) {
                 }
             },
             gameId: IDATTRDEF
-        },
-        EDITMENU: []
+        }
     });
     /**
      *
@@ -555,8 +560,7 @@ YUI.add("wegas-entity", function(Y) {
             status: {
                 "transient": true
             }
-        },
-        EDITMENU: []
+        }
     });
 
     /**
@@ -625,12 +629,21 @@ YUI.add("wegas-entity", function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Edit group"
-            }, {
-                type: "DeleteEntityButton"
-            }]
+        NEW_EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton",
+                    label: "Edit group"
+                }
+            },
+            deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: "DeleteEntityButton"
+                }
+            }
+        }
     });
 
     /**
@@ -747,12 +760,21 @@ YUI.add("wegas-entity", function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Edit user"
-            }, {
-                type: "DeleteEntityButton"
-            }]
+        NEW_EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton",
+                    label: "Edit user"
+                }
+            },
+            deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: "DeleteEntityButton"
+                }
+            }
+        }
     });
 
     /**
@@ -835,9 +857,21 @@ YUI.add("wegas-entity", function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: "DeleteEntityButton"
-            }]
+        NEW_EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton",
+                    label: "Edit user"
+                }
+            },
+            deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: "DeleteEntityButton"
+                }
+            }
+        }
     });
 
 
@@ -858,8 +892,20 @@ YUI.add("wegas-entity", function(Y) {
                 value: []
             }
         },
-        EDITMENU: [{
-                type: "DeleteEntityButton"
-            }]
+        NEW_EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton",
+                    label: "Edit user"
+                }
+            },
+            deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: "DeleteEntityButton"
+                }
+            }
+        }
     });
 });

@@ -128,17 +128,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }],
         /**
          * WYSIWYG editor
          */
@@ -292,45 +281,56 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Grade",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            targetClass: "GradeDescriptor",
-                            method: "POST",
-                            attributeKey: "evaluations",
-                            showEditionAfterRequest: true
+        EDITMENU: {
+            addGradeBtn: {
+                index: 1,
+                cfg: {
+                    type: BUTTON,
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Grade",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                targetClass: "GradeDescriptor",
+                                method: "POST",
+                                attributeKey: "evaluations",
+                                showEditionAfterRequest: true
+                            }
+                        }]
+                }
+            }, addTextBtn: {
+                index: 2,
+                cfg: {
+                    type: BUTTON,
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Text",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                targetClass: "TextEvaluationDescriptor",
+                                method: "POST",
+                                attributeKey: "evaluations",
+                                showEditionAfterRequest: true
+                            }
+                        }]
+                }
+            },
+            addCategBtn: {
+                index: 3,
+                cfg: {
+                    type: BUTTON,
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Categorization",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                targetClass: "CategorizedEvaluationDescriptor",
+                                method: "POST",
+                                attributeKey: "evaluations",
+                                showEditionAfterRequest: true
+                            }
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Text",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            targetClass: "TextEvaluationDescriptor",
-                            method: "POST",
-                            attributeKey: "evaluations",
-                            showEditionAfterRequest: true
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Categorization",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            targetClass: "CategorizedEvaluationDescriptor",
-                            method: "POST",
-                            attributeKey: "evaluations",
-                            showEditionAfterRequest: true
-                        }
-                    }]
-            }]
+                    ]
+                }
+            }
+        }
     });
     /**
      * EvaluationDescriptor
@@ -376,37 +376,49 @@ YUI.add('wegas-reviewing-entities', function(Y) {
              }
              }*/
         },
-        EDITMENU: [{
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            attributeKey: "evaluations"
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "copy",
-                            attributeKey: "evaluations"
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Delete",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "delete",
-                            attributeKey: "evaluations"
-                        }
-                    }]
-            }]
-
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: BUTTON,
+                    label: "Edit",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                attributeKey: "evaluations"
+                            }
+                        }]
+                }
+            },
+            copyBtn: {
+                index: 10,
+                cfg: {
+                    type: BUTTON,
+                    label: "Copy",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                method: "copy",
+                                attributeKey: "evaluations"
+                            }
+                        }]
+                }
+            },
+            deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: BUTTON,
+                    label: "Delete",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                method: "delete",
+                                attributeKey: "evaluations"
+                            }
+                        }]
+                }
+            }
+        }
     });
     /**
      * TextEvaluationDescriptor

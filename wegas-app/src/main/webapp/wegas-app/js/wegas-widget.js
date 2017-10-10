@@ -157,25 +157,37 @@ YUI.add("wegas-widget", function(Y) {
         /**
          *  Defines edition menu to be used in editor
          */
-        EDITMENU: [{
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                        fn: "EditWidgetAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateWidgetAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Delete",
-                plugins: [{
-                        fn: "DeleteWidgetAction"
-                    }]
-            }],
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: BUTTON,
+                    label: "Edit",
+                    plugins: [{
+                            fn: "EditWidgetAction"
+                        }]
+                }
+            },
+            copyBtn: {
+                index: 20,
+                cfg: {
+                    type: BUTTON,
+                    label: "Copy",
+                    plugins: [{
+                            fn: "DuplicateWidgetAction"
+                        }]
+                }
+            }, deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: BUTTON,
+                    label: "Delete",
+                    plugins: [{
+                            fn: "DeleteWidgetAction"
+                        }]
+                }
+            }
+        },
         /**
          * @field
          * @static
@@ -557,7 +569,7 @@ YUI.add("wegas-widget", function(Y) {
                                                 type: BUTTON,
                                                 label: "Unread count",
                                                 data: "UnreadCount"
-                                            },{
+                                            }, {
                                                 type: BUTTON,
                                                 label: "Event Logger",
                                                 data: "EventLogger"
@@ -658,6 +670,7 @@ YUI.add("wegas-widget", function(Y) {
         },
         _buildCfg: {
             aggregates: ["EDITMENU"]
+            /*statics: ["EDITMENU"]*/
         }
     });
     Wegas.Widget = Widget;

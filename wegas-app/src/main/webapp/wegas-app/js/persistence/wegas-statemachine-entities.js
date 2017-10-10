@@ -201,50 +201,18 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITORNAME: "State Machine",
-        EDITMENU: [{
-                type: "EditEntityButton",
-                plugins: [{
-                        fn: "EditFSMAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Export",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                    type: "PrintButton",
-                                    label: "Html"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Html (Players document)",
-                                    mode: "player"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf",
-                                    outputType: "pdf"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf (Players document)",
-                                    outputType: "pdf",
-                                    mode: "player"
-                                }, {
-                                    type: "OpenEntityButton",
-                                    label: "Json",
-                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
-                                }]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton",
+                    plugins: [{
+                            fn: "EditFSMAction"
                         }
-                    }]
+                    ]
+                }
             }
-        ],
+        },
         METHODS: {
             enable: {
                 label: "activate",
@@ -454,17 +422,14 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 "transient": true
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton"
+                }
+            }
+        }
     });
     /*
      * TriggerInstance Entity
@@ -554,26 +519,23 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITORNAME: "Dialog",
-        EDITMENU: [{
-                type: "EditEntityButton",
-                plugins: [{
-                        fn: "EditFSMAction",
-                        cfg: {
-                            viewerCfg: {
-                                availableStates: [/*"State",*/ "DialogueState"],
-                                availableTransitions: [/*"Transition",*/ "DialogueTransition"]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton",
+                    plugins: [{
+                            fn: "EditFSMAction",
+                            cfg: {
+                                viewerCfg: {
+                                    availableStates: [/*"State",*/ "DialogueState"],
+                                    availableTransitions: [/*"Transition",*/ "DialogueTransition"]
+                                }
                             }
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }]
+                        }]
+                }
+            }
+        }
     });
 
     /**

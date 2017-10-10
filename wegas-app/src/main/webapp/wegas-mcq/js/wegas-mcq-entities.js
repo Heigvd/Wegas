@@ -126,44 +126,42 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                    type: BUTTON,
-                                    label: "Standard",
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "SingleResultChoiceDescriptor"
+        EDITMENU: {
+            addBtn: {
+                index: 1,
+                cfg: {
+                    type: BUTTON,
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
+                    plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                children: [{
+                                        type: BUTTON,
+                                        label: "Standard",
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "SingleResultChoiceDescriptor"
+                                                }
+                                            }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: "Conditional results",
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "ChoiceDescriptor"
+                                                }
                                             }
-                                        }]
-                                }, {
-                                    type: BUTTON,
-                                    label: "Conditional results",
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "ChoiceDescriptor"
-                                            }
-                                        }]
-                                }]
+                                        ]
+                                    }
+                                ]
+                            }
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }],
+                    ]
+                }
+            }
+        },
         /**
          * Defines methods available in wysiwyge script editor
          */
@@ -369,29 +367,25 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 }
             },
-            EDITMENU: [{
-                    type: "EditEntityButton"
-                }, {
-                    type: BUTTON,
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
-                    plugins: [{
-                            fn: "EditEntityArrayFieldAction",
-                            cfg: {
-                                targetClass: "Result",
-                                method: "POST",
-                                attributeKey: "results",
-                                showEditionAfterRequest: true
+            EDITMENU: {
+                addBtn: {
+                    index: 1,
+                    cfg: {
+                        type: BUTTON,
+                        label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
+                        plugins: [{
+                                fn: "EditEntityArrayFieldAction",
+                                cfg: {
+                                    targetClass: "Result",
+                                    method: "POST",
+                                    attributeKey: "results",
+                                    showEditionAfterRequest: true
+                                }
                             }
-                        }]
-                }, {
-                    type: BUTTON,
-                    label: "Copy",
-                    plugins: [{
-                            fn: "DuplicateEntityAction"
-                        }]
-                }, {
-                    type: "DeleteEntityButton"
-                }],
+                        ]
+                    }
+                }
+            },
             METHODS: {
                 activate: {
                     arguments: [{
@@ -646,17 +640,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             },
             EDITORNAME: "Choice",
-            EDITMENU: [{
-                    type: "EditEntityButton"
-                }, {
-                    type: BUTTON,
-                    label: "Copy",
-                    plugins: [{
-                            fn: "DuplicateEntityAction"
-                        }]
-                }, {
-                    type: "DeleteEntityButton"
-                }],
+            EDITMENU: {
+                addBtn: null // force addBtn to null
+            },
             METHODS: {
                 activate: {
                     arguments: [{
@@ -819,36 +805,49 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            attributeKey: "results"
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "copy",
-                            attributeKey: "results"
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Delete",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "delete",
-                            attributeKey: "results"
-                        }
-                    }]
-            }]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: BUTTON,
+                    label: "Edit",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                attributeKey: "results"
+                            }
+                        }]
+                }
+            },
+            copyBtn: {
+                index: 10,
+                cfg: {
+                    type: BUTTON,
+                    label: "Copy",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                method: "copy",
+                                attributeKey: "results"
+                            }
+                        }]
+                }
+            },
+            deleteBtn: {
+                index: 20,
+                cfg: {
+                    type: BUTTON,
+                    label: "Delete",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                method: "delete",
+                                attributeKey: "results"
+                            }
+                        }]
+                }
+            }
+        }
     });
     /**
      * MCQ ChoiceInstance mapper

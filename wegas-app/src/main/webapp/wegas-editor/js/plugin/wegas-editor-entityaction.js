@@ -1,3 +1,4 @@
+
 /*
  * Wegas
  * http://wegas.albasim.ch
@@ -866,7 +867,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
          */
         initializer: function() {
             this.plug(Plugin.WidgetMenu, {
-                children: Y.Array.map(Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children,
+                children: Y.Array.map(Wegas.persistence.ListDescriptor.EDITMENU["addBtn"].cfg.plugins[0].cfg.children,
                     function(o) {
                         return Y.mix({
                             type: "NewEntityButton"

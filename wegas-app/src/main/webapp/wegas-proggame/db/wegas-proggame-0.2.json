@@ -5900,7 +5900,7 @@
         "default": {
             "@class": "GameModelContent",
             "contentType": null,
-            "content": "Y.use(\"wegas-layout\", function(Y) {\r\n    Y.Wegas.Layout.EDITMENU = Y.clone(Y.Wegas.Layout.EDITMENU);\r\n    Y.Wegas.Layout.EDITMENU[1].plugins[0].cfg.children.push({\r\n        type: \"Button\",\r\n        label: \"ProgGame Level\",\r\n        plugins: [{\r\n                fn: \"AddChildWidgetAction\",\r\n                cfg: {\r\n                    childType: \"ProgGameLevel\"\r\n                }\r\n            }\r\n        ]\r\n    });\r\n});"
+            "content": "Y.use(\"wegas-layout\", function(Y) {\r\n    Y.Wegas.Layout.EDITMENU = Y.clone(Y.Wegas.Layout.EDITMENU);\r\n    Y.Wegas.Layout.EDITMENU[\"addBtn\"].cfg.plugins[0].cfg.children.push({\r\n        type: \"Button\",\r\n        label: \"ProgGame Level\",\r\n        plugins: [{\r\n                fn: \"AddChildWidgetAction\",\r\n                cfg: {\r\n                    childType: \"ProgGameLevel\"\r\n                }\r\n            }\r\n        ]\r\n    });\r\n});"
         }
     },
     "properties": {

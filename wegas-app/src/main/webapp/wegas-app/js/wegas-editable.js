@@ -145,7 +145,7 @@ YUI.add('wegas-editable', function(Y) {
             }
             return defaultVisibility;
         },
-        _getMode: function(defaultMode, visibility, maxWritableVisibility) {
+        _getMode: function(defaultMode, visibility, maxVisibility) {
             var visibilities = ["NONE", "PRIVATE", "INHERITED", "PROTECTED", "INTERNAL"],
                 maxVisibility;
             switch (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type")) {
@@ -160,7 +160,7 @@ YUI.add('wegas-editable', function(Y) {
 
 
             if (visibility) {
-                maxVisibility = maxWritableVisibility || "INHERITED";
+                maxVisibility = maxVisibility || "INHERITED";
                 Y.log("Visibilities: " + visibility + " <-> " + maxVisibility);
                 return (visibilities.indexOf(maxVisibility) >= visibilities.indexOf(visibility) ?
                     "EDITABLE" : "READONLY");
@@ -217,10 +217,23 @@ YUI.add('wegas-editable', function(Y) {
          * @returns {Array}
          */
         getMenuCfg: function(data) {
-            var menu = this.getStatic("EDITMENU", true)[0] || []; // And if no form is defined we return the default one defined in the entity
+            var menus = this.getStatic("EDITMENU", true),
+                menu = this._aggregateMenuConfig(menus),
+                visibility;
 
             menu = Y.JSON.parse(Y.JSON.stringify(menu)); // CLONE
 
+            visibility = this._getVisibility(this, "PRIVATE");
+
+            // filter unhauthoried buttons
+            menu = menu.filter(function(item) {
+                return this._getMode("EDITABLE", visibility, item.maxVisibility) === "EDITABLE";
+            }, this);
+
+            // only keep configs
+            menu = menu.map(function(item) {
+                return item.cfg;
+            });
 
             data = data || {};
             data.entity = data.entity || this;
@@ -228,6 +241,49 @@ YUI.add('wegas-editable', function(Y) {
             Editable.mixMenuCfg(menu, data);
             return menu;
         },
+
+        _aggregateMenuConfig: function(menus) {
+            var aggMenu = {},
+                menu,
+                key,
+                button,
+                i;
+
+            for (i in menus) {
+                if (menus.hasOwnProperty(i)) {
+                    menu = menus[i];
+                    for (key in menu) {
+                        if (menu.hasOwnProperty(key)) {
+                            button = menu[key];
+                            if (!aggMenu.hasOwnProperty(key)) {
+                                aggMenu[key] = button;
+                            }
+                        }
+                    }
+                }
+            }
+
+            menu = [];
+            for (key in aggMenu) {
+                if (aggMenu.hasOwnProperty(key) && aggMenu[key] ) {
+                    menu.push(aggMenu[key]);
+                }
+            }
+            menu.sort(function(a, b) {
+                var ia, ib;
+                ia = a.index || 0;
+                ib = b.index || 0;
+                if (ia < ib) {
+                    return -1;
+                } else if (ia === ib) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            });
+            return menu;
+        },
+
         /**
          * Returns the edition menu associated to this object, to be used a an wysiwyg editor.
          * @function
