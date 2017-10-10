@@ -12,6 +12,7 @@ import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
@@ -130,7 +131,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
                 } else {
                     logger.debug("REJECT {}: SAME_ENTITY_ONLY FAILED {} ->  {}", this, targetEntity, entity);
                 }
-            } catch (Exception ex) {
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 throw new RuntimeException(ex);
             }
         }
