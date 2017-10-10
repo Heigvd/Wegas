@@ -53,7 +53,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     private String description;
     /**
      *
@@ -83,7 +83,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     @ElementCollection
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
     private List<String> pictures = new ArrayList<>();
 
