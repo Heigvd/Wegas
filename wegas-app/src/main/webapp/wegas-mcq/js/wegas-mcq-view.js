@@ -125,11 +125,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         // Prevent validation of questions with no checked answers:
                         if (receiver.get("cbx") && instance.get("replies").length === 0) {
                             this.onFailure();
-                            if (Y.Wegas.Panel) {
-                                Y.Wegas.Panel.alert(Y.Wegas.I18n.t('mcq.noReply'));
-                            } else {
-                                window.alert(Y.Wegas.I18n.t('mcq.noReply'));
-                            }
+                            Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.noReply'));
                             return;
                         }
                         this.dataSource.sendRequest({
