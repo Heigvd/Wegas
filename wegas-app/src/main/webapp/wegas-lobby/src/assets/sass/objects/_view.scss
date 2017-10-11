@@ -226,13 +226,49 @@
             width: 50%;
             max-width: 320px;
 
-            @media screen and (max-width: 519px) {
+            @media screen and (max-width: 800px) {
                 clear: both;
                 width: 100%;
                 float: left;
                 margin: 4px 0 12px 0px;
             }
         }
+
+        .view__options {
+            padding:40px 15px 15px 0;
+            float:right;
+            text-transform: uppercase;
+            font-size: 12px;
+            cursor: pointer;
+            color: #888;
+
+            &:hover {
+                color: #000;
+
+                .checkbox:before {
+                    color: #000;
+                }
+            }
+
+            .checkbox:before {
+                content:"\f096";
+                font-family: FontAwesome;
+                color: #888;
+                padding-right: 3px;
+            }
+
+            .checkbox.selected:before {
+                content:"\f046";
+            }
+
+            @media screen and (max-width: 1015px) {
+                clear: both;
+                width: 100%;
+                float: left;
+                padding-top: 15px;
+            }
+        }
+
         .view__list {
             @include make-xs-column(12);
             height: calc(100% - 90px);
@@ -340,13 +376,37 @@
             width: 50%;
             max-width: 320px;
 
-            @media screen and (max-width: 519px) {
+            @media screen and (max-width: 750px) {
                 clear: both;
                 width: 100%;
                 float: left;
                 margin: 4px 0 12px 0px;
             }
         }
+
+        .view__options {
+            padding: 40px 15px 15px 0;
+            float: right;
+            text-transform: uppercase;
+            font-size: 12px;
+            cursor: pointer;
+
+            label {
+                color: #999;
+            }
+
+            label:hover {
+                color: #333;
+            }
+
+            @media screen and (max-width: 980px) {
+                clear: both;
+                width: 100%;
+                float: left;
+                padding-top: 15px;
+            }
+        }
+
         .view__list {
             @include make-xs-column(12);
             height: calc(100% - 90px);

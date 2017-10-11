@@ -19,6 +19,15 @@
             />
         </div>
     </div>
+    <div ng-if="user.isAdmin" class="view__options"
+         title="{{'TRAINER-INDEX-ME-FIRST-TOOLTIP' | translate}}"
+         ng-click="trainerIndexCtrl.toggleMeFirst();"
+         ng-init="trainerIndexCtrl.initMeFirst();"
+    >
+        <span class="checkbox" id="mefirst">
+        </span>
+        {{'TRAINER-INDEX-ME-FIRST-TITLE' | translate}}
+    </div>
 	<div
 		ng-if="(!trainerIndexCtrl.loading && trainerIndexCtrl.sessions.length)"
 		ng-class="{true:'view__list--with-archive', false:''}[trainerIndexCtrl.nbArchives > 0]"
@@ -30,6 +39,8 @@
 		edit-access="trainerIndexCtrl.editAccess"
         filterSessions="trainerIndexCtrl.filterSessions"
         sessions="trainerIndexCtrl.sessions"
+        user="trainerIndexCtrl.user"
+        username="trainerIndexCtrl.username"
 		trainer-sessions-list
         repeat-auto-load >
 	</div>

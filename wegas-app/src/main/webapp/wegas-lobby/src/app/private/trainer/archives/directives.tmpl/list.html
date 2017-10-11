@@ -18,7 +18,7 @@
             <div class="line line--primary">{{session.name}}</div>
             <div class="line">{{'COMMONS-DATE' | translate: {date: session.createdTime} }}</div>
             <div class="line">{{'TRAINER-CARD-DETAILS-SCENARIO' | translate}}:&nbsp;{{session.gameModelName}}</div>
-            <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments}}</div>
+            <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optional">{{session.gameModel.comments}}</div>
         </div>
         <div class="card__actions">
             <a
