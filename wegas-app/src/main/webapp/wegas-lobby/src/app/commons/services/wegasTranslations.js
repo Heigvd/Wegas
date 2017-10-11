@@ -1018,7 +1018,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Cliquer ici pour sélectionner le lien"
                         },
                         'PRIVATE-MODALE-TABS-ADVANCED-WARNING': {
-                            'en': "Warning! Update these values only if you know what you do",
+                            'en': "Warning! Update these values only if you know what you are doing",
                             'fr': "Attention! Ne modifier les paramètres avancés qu'en connaissance de cause"
                         },
                         'PRIVATE-MODALE-SETTINGS-NOT-SAVED-WARNING': {
@@ -1087,7 +1087,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         'PRIVATE-SCENARIOS-GUEST-ALLOWED-LABEL-CHECKBOX': {
                             'en': "Guests allowed",
-                            'fr': "Invités authorisés"
+                            'fr': "Invités autorisés"
                         },
                         'PRIVATE-SCENARIOS-SERVER-SCRIPT-LABEL-INPUT': {
                             'en': "Server script",
@@ -1278,6 +1278,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Add " + keywords.session.singular.en,
                             'fr': "Créer une " + keywords.session.singular.fr
                         },
+                        'TRAINER-INDEX-ME-FIRST-TITLE': {
+                            'en': "List my " + keywords.session.plural.en + " first",
+                            'fr': "Lister mes " + keywords.session.plural.fr + " en premier"
+                        },
+                        'TRAINER-INDEX-ME-FIRST-TOOLTIP': {
+                            'en': startSentence(keywords.session.plural.en) + " are always ordered by creation date, optionally starting with my own",
+                            'fr': "Les " + keywords.session.plural.fr + " sont ordonnées par date de création, en option avec les miennes en premier"
+                        },
                         'TRAINER-INDEX-ADD-NAME-INPUT': {
                             'en': startSentence(keywords.session.singular.en) + " name",
                             'fr': "Nom de la " + keywords.session.singular.fr
@@ -1313,6 +1321,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'TRAINER-CARD-DETAILS-SCENARIO': {
                             'en': startSentence(keywords.scenario.singular.en),
                             'fr': startSentence(keywords.scenario.singular.fr)
+                        },
+                        'TRAINER-CARD-DETAILS-CREATED-ON': {
+                            'en': "Created on ",
+                            'fr': "Créée le "
+                        },
+                        'TRAINER-CARD-DETAILS-CREATED-BY': {
+                            'en': " by ",
+                            'fr': " par "
                         },
                         'TRAINER-CARD-ACCESS-CLOSE': {
                             'en': "Closed to new " + keywords.player.plural.en,
@@ -1426,6 +1442,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "New " + keywords.scenario.singular.en,
                             'fr': "Nouveau " + keywords.scenario.singular.fr
                         },
+                        'SCENARIST-INDEX-ME-FIRST-TITLE': {
+                            'en': "List my " + keywords.scenario.plural.en + " first",
+                            'fr': "Lister mes " + keywords.scenario.plural.fr + " en premier"
+                        },
+                        'SCENARIST-INDEX-ME-FIRST-TOOLTIP': {
+                            'en': startSentence(keywords.scenario.plural.en) + " are always ordered by creation date, optionally starting with my own",
+                            'fr': "Les " + keywords.scenario.plural.fr + " sont ordonnés par date de création, en option avec les miens en premier"
+                        },
                         'SCENARIST-INDEX-ADD-NAME-INPUT': {
                             'en': startSentence(keywords.scenario.singular.en) + " name",
                             'fr': "Nom du " + keywords.scenario.singular.fr
@@ -1503,6 +1527,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'SCENARIST-CARD-EDIT-BTN': {
                             'en': "Edit " + keywords.scenario.singular.en,
                             'fr': "Modifier le " + keywords.scenario.singular.fr
+                        },
+                        'SCENARIST-CARD-CREATED-ON': {
+                            'en': "Created on ",
+                            'fr': "Créé le "
+                        },
+                        'SCENARIST-CARD-CREATED-BY': {
+                            'en': " by ",
+                            'fr': " par "
                         },
                         'SCENARIST-MODALE-USERS-TITLE': {
                             'en': "Co-" + keywords.scenarist.plural.en,

@@ -22,6 +22,15 @@
             />
         </div>
     </div>
+    <div ng-if="user.isAdmin" class="view__options"
+         title="{{'SCENARIST-INDEX-ME-FIRST-TOOLTIP' | translate}}"
+         ng-click="scenaristIndexCtrl.toggleMeFirst();"
+         ng-init="scenaristIndexCtrl.initMeFirst();"
+    >
+        <span class="checkbox" id="mefirst">
+        </span>
+        {{'SCENARIST-INDEX-ME-FIRST-TITLE' | translate}}
+    </div>
 	<div
 		ng-if="(!scenaristIndexCtrl.loading && scenaristIndexCtrl.scenarios.length)"
 		ng-class="{true:'view__list--with-archive', false:''}[scenaristIndexCtrl.nbArchives > 0]"
@@ -33,6 +42,8 @@
 		archive="scenaristIndexCtrl.archiveScenario"
         duplicate="scenaristIndexCtrl.duplicate"
         duplicating="scenaristIndexCtrl.duplicating"
+        user="scenaristIndexCtrl.user"
+        username="scenaristIndexCtrl.username"
 		scenarist-scenarios-list
         repeat-auto-load >
 	</div>

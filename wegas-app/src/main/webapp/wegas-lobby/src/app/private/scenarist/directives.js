@@ -1,7 +1,7 @@
 angular.module('private.scenarist.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
-    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, $window, ScenariosModel, $timeout, $filter) {
+    .controller('ScenaristIndexController', function ScenaristIndexController($q, $scope, $rootScope, $window, ScenariosModel, $timeout, $filter, Auth, UsersModel) {
         "use strict";
         var ctrl = this;
         $rootScope.currentRole = "SCENARIST";
@@ -10,6 +10,9 @@ angular.module('private.scenarist.directives', [
         ctrl.search = '';
         ctrl.scenarios = [];
         ctrl.nbArchives = 0;
+        ctrl.user = {};
+        ctrl.username = '';
+        ctrl.mefirst = false;
 
         var MENU_HEIGHT = 50,
             SEARCH_FIELD_HEIGHT = 72,
@@ -85,6 +88,50 @@ angular.module('private.scenarist.directives', [
             };
 
         /*
+        ** Updates the listing when the user has clicked on the "My scenarios first" checkbox,
+        ** and also during initial page rendering.
+         */
+        ctrl.setMeFirst = function(mefirst, updateDisplay) {
+            if (mefirst === undefined) return;
+            ctrl.mefirst = mefirst;
+            // Update the checkbox in the UI:
+            var cbx = $('#mefirst');
+            if (cbx.length > 0) {
+                if (mefirst) {
+                    cbx.addClass("selected");
+                } else {
+                    cbx.removeClass("selected");
+                }
+            }
+            isFiltering = false;
+            ctrl.updateScenarios(updateDisplay);
+        }
+
+        // Updates the listing when the user has clicked on the "My scenarios first" checkbox.
+        ctrl.toggleMeFirst = function() {
+            ctrl.setMeFirst(!ctrl.mefirst);
+            var config = localStorage.getObject("wegas-config");
+            config.commons.myScenariosFirst = ctrl.mefirst;
+            localStorage.setObject("wegas-config", config);
+        }
+
+        ctrl.initMeFirst = function() {
+            if (ctrl.user) {
+                if (ctrl.user.isAdmin) {
+                    if (ctrl.username.length > 0) {
+                        // Load the "My scenarios first" preference, defaulting to true:
+                        var config = localStorage.getObject("wegas-config"),
+                            mefirst = config.commons && config.commons.myScenariosFirst !== false;
+                        ctrl.setMeFirst(mefirst, true);
+                    } // else: ignore as long as required information is missing
+                } else {
+                    // Initialization for non-admin users:
+                    ctrl.setMeFirst(false, true);
+                }
+            }
+        }
+
+        /*
          ** Filters rawScenarios according to the given search string and puts the result in ctrl.scenarios.
          ** Hypotheses on input array rawScenarios :
          ** 1. It contains only scenarios with attribute 'canEdit' = true.
@@ -116,7 +163,7 @@ angular.module('private.scenarist.directives', [
             }
         };
 
-        // Called when a scenario is modified, added or removed:
+        // Called when a scenario is modified, reordered, added or removed:
         ctrl.updateScenarios = function(updateDisplay) {
             var hideScrollbarDuringInitialRender = (ctrl.scenarios.length === 0);
             if (hideScrollbarDuringInitialRender) {
@@ -125,8 +172,17 @@ angular.module('private.scenarist.directives', [
             ctrl.scenarios = rawScenarios = [];
             ctrl.loading = true;
             ScenariosModel.getScenarios('LIVE').then(function(response) {
-                rawScenarios = $filter('filter')(response.data, { canEdit: true } ) || [];
-                rawScenarios = $filter('orderBy')(rawScenarios, 'createdTime', true) || [];
+                rawScenarios = $filter('filter')(response.data, {canEdit: true}) || [];
+                if (ctrl.mefirst && ctrl.username.length > 0) {
+                    // Prepare a list where "my" scenarios appear first (ordered by creation date, like the rest):
+                    var myScenarios = $filter('filter')(rawScenarios, {createdByName: ctrl.username}) || [],
+                        otherScenarios = $filter('filter')(rawScenarios, {createdByName: '!' + ctrl.username}) || [];
+                    myScenarios = $filter('orderBy')(myScenarios, 'createdTime', true) || [];
+                    otherScenarios = $filter('orderBy')(otherScenarios, 'createdTime', true) || [];
+                    rawScenarios = myScenarios.concat(otherScenarios);
+                } else {
+                    rawScenarios = $filter('orderBy')(rawScenarios, 'createdTime', true) || [];
+                }
                 // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
                 if (searchField) {
@@ -228,9 +284,27 @@ angular.module('private.scenarist.directives', [
             //$(window).off("resize.doResize");
         });
 
+        // Find out if the current user has admin rights and what his "friendly" username is.
+        Auth.getAuthenticatedUser().then(function(user) {
+            if (user !== false) {
+                ctrl.user = user;
+                if (user.isAdmin) {
+                    UsersModel.getFullUser(user.id).then(function (response) {
+                        if (response.isErroneous()) {
+                            response.flash();
+                        } else {
+                            ctrl.username = response.data.name;
+                        }
+                        // The init routine needs the admin username for filtering
+                        ctrl.initMeFirst();
+                    })
+                } else {
+                    ctrl.initMeFirst();
+                }
+            }
+        });
 
-        ctrl.updateScenarios(true);
-
+        // Finally, load info about archived scenarios:
         ScenariosModel.countArchivedScenarios().then(function(response) {
             ctrl.nbArchives = response.data;
         });
@@ -315,7 +389,10 @@ angular.module('private.scenarist.directives', [
                 archive: '=',
                 search: '=',
                 duplicate: '=',
-                duplicating: '='
+                duplicating: '=',
+                user: '=',
+                username: '=',
+                mefirst: '='
             }
         };
     })
@@ -327,7 +404,9 @@ angular.module('private.scenarist.directives', [
                 scenario: '=',
                 archive: '=',
                 duplicate: '=',
-                duplicating: '='
+                duplicating: '=',
+                user: '=',
+                username: '='
             },
             link: function(scope) {
                 scope.ServiceURL = window.ServiceURL;
