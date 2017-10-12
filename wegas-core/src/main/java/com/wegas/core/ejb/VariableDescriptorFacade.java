@@ -277,6 +277,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     @Override
     public void remove(VariableDescriptor entity) {
+        GameModel rootGameModel = entity.getRootGameModel();
+        if (rootGameModel != null) {
+            this.propagateRootVariableDescriptors(rootGameModel);
+        }
+
         this.preDestroy(entity.getGameModel(), entity);
         entity.getParent().remove(entity);
 
