@@ -104,7 +104,7 @@ import com.wegas.core.persistence.InstanceOwner;
     @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
-@MappedSuperclass
+//@MappedSuperclass
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable, AcceptInjection {
 
     private static final long serialVersionUID = 1L;

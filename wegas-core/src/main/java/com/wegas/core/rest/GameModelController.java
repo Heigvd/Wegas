@@ -12,7 +12,6 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

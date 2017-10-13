@@ -182,6 +182,7 @@ angular.module('private.trainer.directives', [
             ctrl.sessions = rawSessions = [];
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
+
                 rawSessions = $filter('filter')(response.data, { gameModel: { canView: true }} ) || [];
                 if (ctrl.mefirst && ctrl.username.length > 0) {
                     // Prepare a list where "my" sessions appear first (ordered by creation date, like the rest):

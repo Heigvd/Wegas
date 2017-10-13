@@ -21,8 +21,8 @@ public interface Broadcastable {
      * get all entities that should be propagated when this has been
      * created/updated/deleted, sorted by audience
      *
-     * key identifier may be: private-GameModel-<ID>, private-Game-<ID>, private-Team-<ID> or
-     * private-Player-<ID>
+     * key identifier may be: private-GameModel-ID, private-Game-ID, private-Team-ID or
+     * private-Player-ID
      *
      * @return map of touched entities
      */
