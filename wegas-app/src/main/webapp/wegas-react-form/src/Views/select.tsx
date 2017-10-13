@@ -9,6 +9,7 @@ interface Choice {
     value: {};
     label?: string;
     disabled?: boolean;
+    selected?: boolean;
     view?: {
         cssClass?: string;
     };
@@ -60,12 +61,13 @@ function genItems(o: string | Choice, i: number) {
             </option>
         );
     }
-    const { label = o.value, value, disabled } = o;
+    const { label = o.value, value, disabled, selected } = o;
     return (
         <option
             key={`k-${value}`}
             value={JSON.stringify(value)}
             disabled={disabled}
+            selected={selected}
         >
             {label}
         </option>
@@ -74,7 +76,7 @@ function genItems(o: string | Choice, i: number) {
 
 const title = {
     label: '- please select -',
-    value: undefined,
+    selected: true,
     disabled: true,
 };
 
@@ -89,11 +91,12 @@ function SelectView(props: ISelectProps) {
         .concat(choices)
         .map(genItems);
     const hidden = props.view.hidden ? `${hiddenStyle}` : '';
+    const value = JSON.stringify(props.value);
     return (
         <select
             id={props.id}
             className={classNames(`${selectStyle}`, hidden)}
-            value={JSON.stringify(props.value)}
+            value={value}
             onChange={onChange}
         >
             {menuItems}
