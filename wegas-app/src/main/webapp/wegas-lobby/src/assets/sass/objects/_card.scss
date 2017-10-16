@@ -50,9 +50,13 @@
                 font-weight:500;
             }
 
-
-            &.line--optionnal{
+            &.line--optional{
                 font-style:italic;
+            }
+
+            .highlighted{
+                font-style:italic;
+                font-weight:500;
             }
         }
 
@@ -237,7 +241,7 @@
 
                 .progressbar_progress {
                     background-color:#7cddee;
-                    height: 100%; 
+                    height: 100%;
                 }
 
                 .progressbar_counter {

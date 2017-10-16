@@ -692,3 +692,43 @@ font {
 .locked {
     /*background-color: hotpink !important;*/
 }
+
+.wegas-notification-area {
+    position: fixed;
+    top: 5px;
+    right: 20px;
+    z-index: 999;
+}
+
+.wegas-editmode .wegas-notification-area,
+.wegas-hostmode .wegas-notification-area {
+    left: calc(50% - 125px);
+    right: auto;
+}
+
+.wegas-editmode .wegas-notification-area{
+    top: 3px;
+}
+.wegas-hostmode .wegas-notification-area {
+    top: 10px;
+}
+
+.wegas-notification-area .wegas-notification {
+    border: 1px solid;
+    border-radius: 3px;
+    padding: 16px;
+    background-color: #616161;
+    color: white;
+    animation: fadein 1s 1;
+    z-index: 999;
+    width: 250px;
+    text-align: center;
+}
+
+.wegas-notification-area .wegas-notification .wegas-notification-icon {
+}
+
+.wegas-notification-area .wegas-notification .wegas-notification-message {
+    width: calc(100% - 40px);
+    display: inline-block;
+}

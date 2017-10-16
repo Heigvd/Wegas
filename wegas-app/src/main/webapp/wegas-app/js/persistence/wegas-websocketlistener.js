@@ -66,7 +66,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
             } else if (payload.status === "READY") {
                 node.hideOverlay("maintenance");
             } else if (payload.status === "OUTDATED") {
-                node.showMessage("error", "Some of your data are outdated, please refresh the page");
+                //node.showMessage("error", "Some of your data are outdated, please refresh the page");
+                Y.Wegas.Alerts.showNotification("Some of your data are outdated, please <a href=\"#\" onClick=\"window.location.reload()\">reload</a> the page", {});
             } else {
                 node.showMessage("warn", "Unexcpected Error: Please refresh the page");
                 node.showOverlay("error");

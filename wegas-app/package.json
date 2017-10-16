@@ -8,7 +8,7 @@
     "build": "NODE_ENV=production gulp"
   },
   "devDependencies": {
-    "bower": "^1.7.7",
+    "bower": "^1.8.2",
     "browser-sync": "^2.12.8",
     "chalk": "~0.5.1",
     "del": "^1.2.1",

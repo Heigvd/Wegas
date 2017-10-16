@@ -29,10 +29,10 @@ gulp.task("setup-dev", function (cb) {
 gulp.task("submodule", ["npm install"], function () {
     "use strict";
     return gulp.src([
-        'target/Wegas/*/gulpfile.js'
-    ], {
-        read: false
-    })
+            'target/Wegas/*/gulpfile.js'
+        ], {
+            read: false
+        })
         .pipe(chug());
 });
 gulp.task("compress-css", ["submodule"], function () {
