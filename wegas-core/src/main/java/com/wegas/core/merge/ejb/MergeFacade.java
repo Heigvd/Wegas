@@ -519,9 +519,6 @@ public class MergeFacade {
                         //scenario.propagateGameModel();
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
                         gameModelFacade.reset(scenario);
-
-                        // HACK!!! TODO refactor propagation  (do not embed children within parents, but only ids)
-                        variableDescriptorFacade.propagateRootVariableDescriptors(scenario);
                     }
                 }
 
