@@ -13,6 +13,7 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.NoResultException;
 
 /**
@@ -37,7 +38,7 @@ public interface VariableDescriptorFacadeI {
      *
      * @return all gameModel descriptors
      */
-    List<VariableDescriptor> findAll(final Long gameModelId);
+    Set<VariableDescriptor> findAll(final Long gameModelId);
 
     /**
      * @param <T>
