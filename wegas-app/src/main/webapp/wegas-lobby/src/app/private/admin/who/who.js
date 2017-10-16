@@ -28,6 +28,10 @@ angular.module('private.admin.who', [
         // Each array entry has properties { id: integer, name: string }
         ctrl.roles = WegasPusher.getRoles();
 
+        ctrl.requestClientReload = function() {
+            WegasPusher.requestClientReload();
+        };
+
         ctrl.sync = function() {
             ctrl.syncing = true;
             var req = WegasPusher.syncMembers();

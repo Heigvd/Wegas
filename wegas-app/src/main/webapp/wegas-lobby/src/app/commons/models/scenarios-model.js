@@ -4,7 +4,7 @@ angular.module('wegas.models.scenarios', [])
         var model = this,
             ServiceURL = window.ServiceURL,
             getPath = function(status) {
-                return ServiceURL + "rest/Editor/GameModel/status/" + status;
+                return ServiceURL + "rest/Lobby/GameModel/status/" + status;
             },
             scenarios = {
                 cache: {},
@@ -87,7 +87,7 @@ angular.module('wegas.models.scenarios', [])
             setScenarioStatus = function(scenarioId, status) {
                 var deferred = $q.defer(),
                     scenario;
-                $http.put(ServiceURL + "rest/Editor/GameModel/" + scenarioId + "/status/" + status).success(function(data) {
+                $http.put(ServiceURL + "rest/Lobby/GameModel/" + scenarioId + "/status/" + status).success(function(data) {
                     for (var cacheName in scenarios.cache) {
                         scenario = scenarios.findScenario(cacheName, scenarioId);
                         if (scenario) {
@@ -134,7 +134,7 @@ angular.module('wegas.models.scenarios', [])
                 });
 
                 if (scenarioSetted) {
-                    var url = "rest/Public/GameModel/" + scenarioBeforeChange.id + "?view=Editor";
+                    var url = "rest/Public/GameModel/" + scenarioBeforeChange.id + "?view=Lobby";
                     $http.put(ServiceURL + url, newGameModel, {
                         "headers": {
                             "managed-mode": "true"
@@ -321,7 +321,7 @@ angular.module('wegas.models.scenarios', [])
 
             model.copyScenario = function(scenarioId) {
                 var deferred = $q.defer(),
-                    url = "rest/Editor/GameModel/" + scenarioId + "/Duplicate";
+                    url = "rest/Lobby/GameModel/" + scenarioId + "/Duplicate";
                 if (scenarioId) {
                     $http.post(ServiceURL + url, null, {
                         "headers": {
@@ -338,7 +338,7 @@ angular.module('wegas.models.scenarios', [])
 
             model.createFromJSON = function(file) {
                 var deferred = $q.defer(),
-                    url = "rest/Editor/GameModel",
+                    url = "rest/Lobby/GameModel",
                     fd = new FormData();
 
                 fd.append('file', file);

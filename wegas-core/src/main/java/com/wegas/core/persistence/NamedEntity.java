@@ -7,8 +7,6 @@
  */
 package com.wegas.core.persistence;
 
-import java.util.Objects;
-
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -44,26 +42,5 @@ public abstract class NamedEntity extends AbstractEntity {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "( " + getId() + ", " + getName() + ")";
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 37 * hash + Objects.hashCode(this.getName());
-        hash = 37 * hash + Objects.hashCode(this.getId());
-        return hash;
-    }
-
-    /**
-     * @param entity entity to compare to
-     * @return true if entity equals this
-     */
-    @Override
-    public boolean equals(Object entity) {
-        if (entity instanceof NamedEntity) {
-            return this.getName().equals(((NamedEntity) entity).getName()) && super.equals(entity);
-        } else {
-            return false;
-        }
     }
 }

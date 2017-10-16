@@ -8,7 +8,7 @@ angular.module('private.trainer.directives', [
             controller: "TrainerIndexController as trainerIndexCtrl"
         }
     })
-    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $window, $translate, SessionsModel, Flash, $timeout, $filter) {
+    .controller("TrainerIndexController", function TrainerIndexController($rootScope, $scope, $window, $translate, SessionsModel, Flash, $timeout, $filter, Auth, UsersModel) {
         "use strict";
         var ctrl = this;
         $rootScope.currentRole = "TRAINER";
@@ -16,6 +16,9 @@ angular.module('private.trainer.directives', [
         ctrl.search = "";
         ctrl.sessions = [];
         ctrl.nbArchives = 0;
+        ctrl.user = {};
+        ctrl.username = '';
+        ctrl.mefirst = false;
 
         var MENU_HEIGHT = 50,
             SEARCH_FIELD_HEIGHT = 72,
@@ -95,6 +98,50 @@ angular.module('private.trainer.directives', [
             };
 
         /*
+        ** Updates the listing when the user has clicked on the "My sessions first" checkbox,
+        ** and also during initial page rendering.
+        */
+        ctrl.setMeFirst = function(mefirst, updateDisplay) {
+            if (mefirst === undefined) return;
+            ctrl.mefirst = mefirst;
+            // Update the checkbox in the UI:
+            var cbx = $('#mefirst');
+            if (cbx.length > 0) {
+                if (mefirst) {
+                    cbx.addClass("selected");
+                } else {
+                    cbx.removeClass("selected");
+                }
+            }
+            isFiltering = false;
+            ctrl.updateSessions(updateDisplay);
+        }
+
+        // Updates the listing when the user has clicked on the "My sessions first" checkbox.
+        ctrl.toggleMeFirst = function() {
+            ctrl.setMeFirst(!ctrl.mefirst);
+            var config = localStorage.getObject("wegas-config");
+            config.commons.mySessionsFirst = ctrl.mefirst;
+            localStorage.setObject("wegas-config", config);
+        }
+
+        ctrl.initMeFirst = function() {
+            if (ctrl.user) {
+                if (ctrl.user.isAdmin) {
+                    if (ctrl.username.length > 0) {
+                        // Load the "My sessions first" preference, defaulting to true:
+                        var config = localStorage.getObject("wegas-config"),
+                            mefirst = config.commons && config.commons.mySessionsFirst !== false;
+                        ctrl.setMeFirst(mefirst, true);
+                    } // else: ignore as long as required information is missing
+                } else {
+                    // Initialization for non-admin users:
+                    ctrl.setMeFirst(false, true);
+                }
+            }
+        }
+
+        /*
         ** Filters rawSessions according to the given search string and puts the result in ctrl.sessions.
         ** Hypotheses on input array rawSessions:
         ** 1. It contains only scenarios with attribute canView = true (and implicitly where 'gameModel' is non-null).
@@ -126,7 +173,7 @@ angular.module('private.trainer.directives', [
             }
         };
 
-        // Called when a session is modified, added or removed:
+        // Called when a session is modified, reordered, added or removed:
         ctrl.updateSessions = function(extendDisplay) {
             var hideScrollbarDuringInitialRender = (rawSessions.length === 0);
             if (hideScrollbarDuringInitialRender) {
@@ -135,8 +182,18 @@ angular.module('private.trainer.directives', [
             ctrl.sessions = rawSessions = [];
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
+
                 rawSessions = $filter('filter')(response.data, { gameModel: { canView: true }} ) || [];
-                rawSessions = $filter('orderBy')(rawSessions, 'createdTime', true) || [];
+                if (ctrl.mefirst && ctrl.username.length > 0) {
+                    // Prepare a list where "my" sessions appear first (ordered by creation date, like the rest):
+                    var mySessions = $filter('filter')(rawSessions, {createdByName: ctrl.username}) || [],
+                        otherSessions = $filter('filter')(rawSessions, {createdByName: '!' + ctrl.username}) || [];
+                    mySessions = $filter('orderBy')(mySessions, 'createdTime', true) || [];
+                    otherSessions = $filter('orderBy')(otherSessions, 'createdTime', true) || [];
+                    rawSessions = mySessions.concat(otherSessions);
+                } else {
+                    rawSessions = $filter('orderBy')(rawSessions, 'createdTime', true) || [];
+                }
                 // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
                 if (searchField) {
@@ -225,8 +282,25 @@ angular.module('private.trainer.directives', [
             //$(window).off("resize.doResize");
         });
 
-
-        ctrl.updateSessions(true);
+        // Find out if the current user has admin rights and what his "friendly" username is.
+        Auth.getAuthenticatedUser().then(function(user) {
+            if (user !== false) {
+                ctrl.user = user;
+                if (user.isAdmin) {
+                    UsersModel.getFullUser(user.id).then(function (response) {
+                        if (response.isErroneous()) {
+                            response.flash();
+                        } else {
+                            ctrl.username = response.data.name;
+                        }
+                        // The init routine needs the admin username for filtering
+                        ctrl.initMeFirst();
+                    })
+                } else {
+                    ctrl.initMeFirst();
+                }
+            }
+        });
 
         SessionsModel.countArchivedSessions().then(function(response) {
             ctrl.nbArchives = response.data;
@@ -312,7 +386,10 @@ angular.module('private.trainer.directives', [
                 search: "=",
                 archive: "=",
                 editAccess: "=",
-                filterSessions: "="
+                filterSessions: "=",
+                user: '=',
+                username: '=',
+                mefirst: '='
             }
     };
     })
@@ -323,7 +400,9 @@ angular.module('private.trainer.directives', [
             scope: {
                 session: '=',
                 archive: "=",
-                editAccess: "="
+                editAccess: "=",
+                user: '=',
+                username: '='
             },
             link: function(scope, element, attrs) {
                 scope.open = true;

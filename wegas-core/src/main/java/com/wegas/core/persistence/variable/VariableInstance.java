@@ -42,6 +42,7 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import com.wegas.core.persistence.InstanceOwner;
+import org.eclipse.persistence.config.CacheUsage;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -53,8 +54,8 @@ import com.wegas.core.persistence.InstanceOwner;
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
-            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     )
     ,
@@ -62,8 +63,8 @@ import com.wegas.core.persistence.InstanceOwner;
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
-            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     )
     ,
@@ -71,8 +72,8 @@ import com.wegas.core.persistence.InstanceOwner;
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.game.id = :gameId AND vi.gameScope.id = :scopeId)",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
-            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     )
     ,

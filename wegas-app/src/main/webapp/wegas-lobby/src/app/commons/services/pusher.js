@@ -78,6 +78,10 @@ angular.module('wegas.service.pusher', [])
             return roles;
         };
 
+        service.requestClientReload = function() {
+            return $http.post(ServiceURL + "rest/Pusher/RequestClientReload");
+        };
+
         function initListening() {
             if (adminChannel) {
                 adminChannel.bind('online-users', function() {

@@ -8,13 +8,14 @@ angular.module('private.trainer.archives.directives', [])
             templateUrl: 'app/private/trainer/archives/directives.tmpl/index.html',
             controller: "TrainerArchivesIndexController as indexCtrl"
         };
-    }).controller("TrainerArchivesIndexController", function TrainerArchivesIndexController($timeout, $translate, $rootScope, $scope, $state, SessionsModel, Flash, $filter) {
+    }).controller("TrainerArchivesIndexController", function TrainerArchivesIndexController($timeout, $translate, $rootScope, $scope, $state, SessionsModel, Flash, $filter, Auth, UsersModel) {
     "use strict";
     var ctrl = this;
     ctrl.archives = [];
     ctrl.rawArchives = [];
     ctrl.search = "";
     ctrl.loading = true;
+    ctrl.username = '';
 
 
     /*
@@ -157,6 +158,19 @@ angular.module('private.trainer.archives.directives', [])
      }
      });*/
 
+    // Find out what the current user's "friendly" username is.
+    Auth.getAuthenticatedUser().then(function(user) {
+        if (user !== false) {
+            UsersModel.getFullUser(user.id).then(function (response) {
+                if (response.isErroneous()) {
+                    response.flash();
+                } else {
+                    ctrl.username = response.data.name;
+                }
+            })
+        }
+    });
+
     ctrl.updateSessions();
 })
     .directive('trainerSessionsArchivesList', function() {
@@ -171,6 +185,7 @@ angular.module('private.trainer.archives.directives', [])
                 details: "=",
                 users: "=",
                 loading: "=",
+                username: "="
             }
         };
     });

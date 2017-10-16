@@ -322,8 +322,8 @@ public class PageController {
 
         try (final Pages pages = new Pages(gameModelId)) {
             pages.deletePage(pageId);
-            return this.getIndex(gameModelId);
         }
+        return this.getIndex(gameModelId);
     }
 
     /**

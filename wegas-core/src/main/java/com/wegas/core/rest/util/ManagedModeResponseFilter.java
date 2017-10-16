@@ -23,7 +23,8 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -77,7 +78,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
              * unless they're registered within requestManager's updatedEntities
              */
             List updatedEntities;
-            List deletedEntities = new ArrayList<>();
+            List deletedEntities = new LinkedList<>();
 
             boolean rollbacked = false;
 
@@ -91,7 +92,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             if (response.getEntity() instanceof Exception || requestManager.getExceptionCounter() > 0 || response.getStatusInfo().getStatusCode() >= 400) {
 
                 // No Entities but register exception as event
-                updatedEntities = new ArrayList<>();
+                updatedEntities = new LinkedList<>();
                 WegasRuntimeException wrex;
 
                 if (response.getEntity() instanceof WegasRuntimeException) {
@@ -116,20 +117,21 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                 List entities;
 
-                if (response.getEntity() instanceof List) {
-                    entities = new ArrayList<>();
-                    for (Object o : (List) response.getEntity()) {
+
+                if (response.getEntity() instanceof Collection) {
+                    entities = new LinkedList<>();
+                    for (Object o : (Collection) response.getEntity()) {
                         entities.add(o);
                     }
                     //entities = (List<Object>) response.getEntity();
                 } else if (response.getEntity() instanceof ScriptObjectMirror
                         && ((ScriptObjectMirror) response.getEntity()).isArray()) {
-                    entities = new ArrayList(((ScriptObjectMirror) response.getEntity()).values());
+                    entities = new LinkedList(((ScriptObjectMirror) response.getEntity()).values());
                 } else if (response.getEntity() != null) {
-                    entities = new ArrayList<>();
+                    entities = new LinkedList<>();
                     entities.add(response.getEntity());
                 } else {
-                    entities = new ArrayList<>();
+                    entities = new LinkedList<>();
                 }
 
                 updatedEntities = entities;
