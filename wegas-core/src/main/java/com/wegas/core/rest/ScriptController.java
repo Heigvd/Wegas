@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -183,7 +184,7 @@ public class ScriptController {
     @Path("Test")
     public Map<Long, WegasScriptException> testGameModel(@PathParam("gameModelId") Long gameModelId) {
         //requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.TEST);
-        List<VariableDescriptor> findAll = variableDescriptorFacade.findAll(gameModelId);
+        Set<VariableDescriptor> findAll = variableDescriptorFacade.findAll(gameModelId);
         Player player = gmf.find(gameModelId).getPlayers().get(0);
         Map<Long, WegasScriptException> ret = new HashMap<>();
         findAll.stream().filter((descriptor) -> (descriptor instanceof Scripted))

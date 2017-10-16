@@ -42,6 +42,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import org.eclipse.persistence.config.CacheUsage;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -53,24 +54,24 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
-            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
     @NamedQuery(name = "VariableInstance.findTeamInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
-            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
     @NamedQuery(name = "VariableInstance.findGameInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.game.id = :gameId AND vi.gameScope.id = :scopeId)",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)//,
-            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
     @NamedQuery(name = "VariableInstance.findAllPlayerInstances",

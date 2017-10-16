@@ -14,7 +14,6 @@ import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -48,11 +47,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.Set;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -137,19 +135,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         list.addItem(entity);
         this.revive(gameModel, entity, true);
 
-        if (list instanceof GameModel) {
-            this.propagateRootVariableDescriptors((GameModel) list);
-        }
         return entity;
-    }
-
-    public void propagateRootVariableDescriptors(GameModel gameModel) {
-        // In the future, GameModel should implements Broadcastable, but canEdit bug needs to be fixed first
-        Map<String, List<AbstractEntity>> entities = new HashMap<>();
-        List<AbstractEntity> l = new LinkedList<>();
-        l.add(gameModel);
-        entities.put(gameModel.getChannel(), l);
-        requestManager.addUpdatedEntities(entities);
     }
 
     /**
@@ -306,6 +292,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     @Override
     public void remove(VariableDescriptor entity) {
+        GameModel rootGameModel = entity.getRootGameModel();
+
         this.preDestroy(entity.getGameModel(), entity);
         entity.getParent().remove(entity);
 
@@ -479,7 +467,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return all gameModel descriptors
      */
-    public List<VariableDescriptor> findAll(final Long gameModelId) {
+    public Set<VariableDescriptor> findAll(final Long gameModelId) {
         return gameModelFacade.find(gameModelId).getVariableDescriptors();
     }
 
@@ -515,13 +503,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final int index) {
         final VariableDescriptor vd = this.find(descriptorId);                  // Remove from the previous list
         DescriptorListI from = vd.getParent();
-        from.remove(vd);
+        
+        from.localRemove(vd);
         targetListDescriptor.addItem(index, vd);
-        if (from instanceof GameModel) {
-            this.propagateRootVariableDescriptors((GameModel) from);
-        } else if (targetListDescriptor instanceof GameModel) {
-            this.propagateRootVariableDescriptors((GameModel) targetListDescriptor);
-        }
     }
 
     /**

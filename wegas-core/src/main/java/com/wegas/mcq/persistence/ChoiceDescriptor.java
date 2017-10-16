@@ -68,7 +68,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      */
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @Lob
-    @JsonView(Views.ExtendedI.class)
     @WegasEntityProperty
     private String description;
 

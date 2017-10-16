@@ -77,10 +77,11 @@ public class EntityListener {
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
-            if (b instanceof Team || b instanceof Player || b instanceof VariableInstance) {
+            if (b instanceof Team || b instanceof Player || b instanceof VariableInstance || b instanceof VariableDescriptor) {
+                logger.debug("PropagateNew: {} :: {}", b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
                 requestManager.addUpdatedEntities(entities);
             } else {
-                logger.debug("Unhandled new broadcastable entity: " + b);
+                logger.debug("Unhandled new broadcastable entity: {}", b);
             }
         }
     }
@@ -89,15 +90,8 @@ public class EntityListener {
     void onPostUpdate(Object o) {
         if (o instanceof Broadcastable) {
             Broadcastable b = (Broadcastable) o;
-            if (b instanceof GameModel) {
-                /* Since a serialized gameModel differs according to whom request it...
-                 it's not possible to broadcast the new version -> Outdate it */
-
-                // GameModel is not broadcastable ...
-                /// requestManager.addOutofdateEntities(b.getEntities());
-            } else if (b instanceof AbstractEntity) {
-                logger.debug("PostUpdate {}", o);
-                logger.debug("Propagate: " + b.getClass().getSimpleName() + "::" + ((AbstractEntity) b).getId());
+            if (b instanceof AbstractEntity) {
+                logger.debug("PropagateUpdate: {} :: {}", b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
                 Map<String, List<AbstractEntity>> entities = b.getEntities();
                 requestManager.addUpdatedEntities(entities);
             }
@@ -111,11 +105,11 @@ public class EntityListener {
             Map<String, List<AbstractEntity>> entities = b.getEntities();
             if (entities != null) {
                 logger.debug("PreRemove {}", o);
-                if (b instanceof VariableDescriptor || b instanceof VariableInstance || b instanceof Game) {
-                    logger.debug(("#Entities: " + entities.size()));
+                if (b instanceof VariableDescriptor || b instanceof VariableInstance || b instanceof Game || b instanceof GameModel) {
+                    logger.debug("PropagateDestroy (#: {}): {} :: {}", entities.size(), b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
                     requestManager.addDestroyedEntities(entities);
                 } else if (b instanceof Team || b instanceof Player) {
-                    logger.debug(("#Entities: " + entities.size()));
+                    logger.debug("PropagateUpdateOnDestroy (#: {}): {} :: {}", entities.size(), b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
                     requestManager.addUpdatedEntities(entities);
                 } else {
                     logger.debug("Unhandled destroyed broadcastable entity: " + b);

@@ -39,7 +39,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     //@BatchFetch(BatchFetchType.IN)
-
     
     @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
     //@OrderBy("id")
@@ -132,31 +131,12 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         }
     }
 
-    /**
-     *
-     * @param item
-     */
     @Override
-    public void addItem(VariableDescriptor item) {
-        this.addItem(null, item);
-    }
-
-    @Override
-    public void addItem(Integer index, VariableDescriptor item) {
-        if (isAuthorized(item)) {
-            if (this.getGameModel() != null) {
-                this.getGameModel().addToVariableDescriptors(item);
-            }
-            if (!this.getItems().contains(item)) {
-                if (index != null) {
-                    this.getItems().add(index, item);
-                } else {
-                    this.getItems().add(item);
-                }
-            }
-            item.setParentList(this);
+    public void setChildParent(VariableDescriptor child) {
+        if (isAuthorized(child)) {
+            child.setParentList(this);
         } else {
-            throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
+            throw WegasErrorMessage.error(child.getClass().getSimpleName() + " not allowed in this folder");
         }
     }
 
@@ -174,26 +154,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     private boolean isAuthorized(VariableDescriptor child) {
         return this.isAuthorized(child.getClass().getSimpleName());
-    }
-
-    /**
-     *
-     * @param index
-     *
-     * @return
-     */
-    @Override
-    public VariableDescriptor item(int index) {
-        return this.getItems().get(index);
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public int size() {
-        return this.getItems().size();
     }
 
     /**
@@ -232,19 +192,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
             }
         }
         return acc;
-    }
-
-    /**
-     *
-     * @param item
-     *
-     * @return
-     */
-    @Override
-    public boolean remove(VariableDescriptor item) {
-        item.setParentList(null);
-        this.getGameModel().removeFromVariableDescriptors(item);
-        return this.getItems().remove(item);
     }
 
     /*@PrePersist
