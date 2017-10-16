@@ -649,6 +649,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     @Schedule(hour = "4", dayOfMonth = "Last Sat")
+    //@Schedule(minute = "4/10")
     public void removeGameModels() {
         List<GameModel> byStatus = this.findByStatus(Status.DELETE);
         for (GameModel gm : byStatus) {

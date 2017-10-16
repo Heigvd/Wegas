@@ -744,6 +744,7 @@ public class UserFacade extends BaseFacade<User> {
      * Remove old idle guests
      */
     @Schedule(hour = "4", minute = "12")
+    //@Schedule(minute = "7/10")
     public void removeIdleGuests() {
         ILock lock = hzInstance.getLock("UserFacade.Schedule");
 

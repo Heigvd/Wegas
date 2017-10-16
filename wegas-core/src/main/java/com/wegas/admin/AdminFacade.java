@@ -151,6 +151,7 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
     }
 
     @Schedule(hour = "4", dayOfMonth = "Last Sun")
+    //@Schedule(minute = "0/10")
     public void deleteGames() {
         ILock lock = hzInstance.getLock("AdminFacade.Schedule");
         if (lock.tryLock()) {
