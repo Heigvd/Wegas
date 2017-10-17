@@ -905,19 +905,36 @@ YUI.add('wegas-datasource', function(Y) {
         },
         updateCache: function(method, entity, eventsCollector) {
             if (entity instanceof Wegas.persistence.GameModel) {
-                var gm, ds, dsid;
+                var gm, ds, dsid, i, oldIds, newIds, newRoot = false;
                 ds = this.get("host");
                 dsid = ds._yuid;
 
                 gm = Y.Wegas.Facade.GameModel.cache.find("id", entity.get("id"));
-                gm.set("itemsIds", entity.get("itemsIds"));
 
-                eventsCollector = eventsCollector || {};
-                eventsCollector[dsid] = eventsCollector[dsid] || {ds: ds, events: {}};
+                oldIds = gm.get("itemsIds");
+                newIds = entity.get("itemsIds");
 
-                eventsCollector[dsid].events["rootUpdate"] = [{}];
+                if (oldIds.length === newIds.length) {
+                    for (i in oldIds) {
+                        if (oldIds[i] !== newIds[i]) {
+                            newRoot = true;
+                            break;
+                        }
+                    }
+                } else {
+                    newRoot = true;
+                }
+                if (newRoot) {
+                    gm.set("itemsIds", entity.get("itemsIds"));
 
-                return Y.Wegas.Facade.Variable;
+                    eventsCollector = eventsCollector || {};
+                    eventsCollector[dsid] = eventsCollector[dsid] || {ds: ds, events: {}};
+
+                    eventsCollector[dsid].events["rootUpdate"] = [{}];
+                    return Y.Wegas.Facade.Variable;
+                } else {
+                    return false;
+                }
             } else if (entity instanceof Wegas.persistence.VariableInstance) {
                 return Y.Wegas.Facade.Instance.cache.updateCache(method, entity, eventsCollector);
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {

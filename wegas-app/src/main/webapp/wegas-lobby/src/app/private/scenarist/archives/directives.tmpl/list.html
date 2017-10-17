@@ -14,7 +14,11 @@
         <div class="card__description"
              ng-class="  {true:'card__description--two-lines', false:'card__description--three-lines'}[scenario.comments == null || scenario.comments == '']" >
             <div class="line line--primary">{{scenario.name}}</div>
-            <div class="line">{{'COMMONS-DATE' | translate: {date: scenario.createdTime} }}</div>
+            <div class="line">{{'SCENARIST-CARD-CREATED-ON' | translate}} {{'COMMONS-DATE' | translate: {date: scenario.createdTime} }}
+                <span>{{'SCENARIST-CARD-CREATED-BY' | translate}}
+                    <span ng-class="{true:'highlighted'}[scenario.createdByName !== username]">{{scenario.createdByName}}</span>
+                </span>
+            </div>
             <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optional">{{scenario.comments}}</div>
         </div>
         <div class="card__actions">

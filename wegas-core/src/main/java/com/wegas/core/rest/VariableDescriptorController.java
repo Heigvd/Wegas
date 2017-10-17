@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -31,7 +30,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -300,8 +301,8 @@ public class VariableDescriptorController {
     @Consumes(MediaType.TEXT_PLAIN)
     public List<Long> idsContains(@PathParam("gameModelId") Long gameModelId, String criteria) {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        List<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
-        List<Long> matches = new ArrayList<>();
+        Set<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
+        List<Long> matches = new LinkedList<>();
         for (VariableDescriptor d : vars) {
             if (d.contains(criteria)) {
                 matches.add(d.getId());
@@ -322,8 +323,8 @@ public class VariableDescriptorController {
     @Consumes(MediaType.TEXT_PLAIN)
     public List<Long> idsContainsAll(@PathParam("gameModelId") Long gameModelId, String criteria) {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        List<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
-        List<Long> matches = new ArrayList<>();
+        Set<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
+        List<Long> matches = new LinkedList<>();
         List<String> criterias = new ArrayList<>(Arrays.asList(criteria.trim().split("[ ,]+")));
         criterias.remove("");
         for (VariableDescriptor d : vars) {

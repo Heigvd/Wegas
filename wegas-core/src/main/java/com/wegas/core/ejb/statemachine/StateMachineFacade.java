@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import com.wegas.core.persistence.InstanceOwner;
+import java.util.Set;
 
 /**
  * Run state machines.
@@ -125,7 +126,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     }
 
     private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {
-        final List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        final Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         final List<StateMachineDescriptor> stateMachineDescriptors = new ArrayList<>();
         for (VariableDescriptor vd : variableDescriptors) {
             if (vd instanceof StateMachineDescriptor) {
