@@ -16,6 +16,7 @@
         var CurrentGM =
             #{editorGameController.currentGameModel.toJsonWithView("Editor")};
         var CurrentGame = #{editorGameController.currentGame.toJsonWithView("Editor")};
+        var CurrentPlayerId = #{editorGameController.currentPlayer.id};
     </script>
     <ui:fragment rendered="#{requestController.debugMode()}">
         <script type="application/javascript" src="/dist/manifest.js"/>
