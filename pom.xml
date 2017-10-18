@@ -356,9 +356,9 @@
 
             <!-- Postgresql Driver -->
             <dependency>
-                <groupId>postgresql</groupId>
+                <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>9.1-901-1.jdbc4</version>
+                <version>42.1.4</version>
                 <!--<scope>test</scope>-->
             </dependency>
             <!--ehcache
