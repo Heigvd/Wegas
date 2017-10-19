@@ -10,7 +10,11 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.persistence.User;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -62,12 +66,19 @@ public class RequestFacade {
      * @Inject
      * private Event<PlayerAction> playerActionEvent;
      */
-
     /**
      * @return the variableInstanceManager
      */
     public RequestManager getRequestManager() {
         return requestManager;
+    }
+
+    public void clearEntities() {
+        this.requestManager.clearEntities();
+    }
+
+    public User getCurrentUser() {
+        return requestManager.getCurrentUser();
     }
 
     /**
@@ -95,9 +106,13 @@ public class RequestFacade {
      * @param playerId
      */
     public void setPlayer(Long playerId) {
-        Player p = playerFacade.find(playerId);
-        //playerFacade.getEntityManager().detach(p);
-        this.requestManager.setPlayer(p);
+        if (playerId != null) {
+            Player p = playerFacade.find(playerId);
+            //playerFacade.getEntityManager().detach(p);
+            this.requestManager.setPlayer(p);
+        } else {
+            requestManager.setPlayer(null);
+        }
     }
 
     /**
@@ -205,4 +220,34 @@ public class RequestFacade {
         requestManager.getEntityManager().flush();
         requestManager.clear();
     }
+
+
+    /*
+     * RequestManager proxy 
+     * (allow to call CDI bean methods from a EJB context)
+     */
+    public boolean hasGameReadRight(final Game game) {
+        return requestManager.hasGameReadRight(game);
+    }
+
+    public boolean hasGameWriteRight(final Game game) {
+        return requestManager.hasGameWriteRight(game);
+    }
+
+    public boolean hasGameModelReadRight(final GameModel gameModel) {
+        return requestManager.hasGameModelReadRight(gameModel);
+    }
+
+    public boolean hasGameModelWriteRight(final GameModel gameModel) {
+        return requestManager.hasGameModelWriteRight(gameModel);
+    }
+
+    public boolean hasTeamRight(final Team team) {
+        return requestManager.hasTeamRight(team);
+    }
+
+    public boolean hasPlayerRight(final Player player) {
+        return requestManager.hasPlayerRight(player);
+    }
+
 }

@@ -101,10 +101,6 @@ public class EntityListener {
                 logger.debug("Unhandled new broadcastable entity: {}", b);
             }
         }
-
-        if (o instanceof Permission) {
-            requestManager.clearEffectivePermisssions();
-        }
     }
 
     @PostUpdate
@@ -126,10 +122,6 @@ public class EntityListener {
                 Map<String, List<AbstractEntity>> entities = b.getEntities();
                 requestManager.addUpdatedEntities(entities);
             }
-        }
-
-        if (o instanceof Permission) {
-            requestManager.clearEffectivePermisssions();
         }
     }
 
@@ -163,10 +155,6 @@ public class EntityListener {
         if (o instanceof AbstractEntity) {
             AbstractEntity ae = (AbstractEntity) o;
             ae.updateCacheOnDelete(getBeansjection());
-        }
-
-        if (o instanceof Permission) {
-            requestManager.clearEffectivePermisssions();
         }
     }
 

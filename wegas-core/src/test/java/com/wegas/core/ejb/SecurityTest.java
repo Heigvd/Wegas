@@ -8,14 +8,14 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.persistence.User;
+import com.wegas.test.AbstractEJBTest;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
@@ -91,8 +91,8 @@ public class SecurityTest extends AbstractEJBTest {
 
         scriptFacade.eval(player, new Script("JavaScript", script), null);
 
-        logger.error("CURRENT: {}", requestManager.getCurrentUser().getId() );
-        Assert.assertEquals(user.getUser(), requestManager.getCurrentUser()); // assert su has failed
+        logger.error("CURRENT: {}", requestFacade.getCurrentUser().getId() );
+        Assert.assertEquals(user.getUser(), requestFacade.getCurrentUser()); // assert su has failed
     }
 
     

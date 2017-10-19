@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -20,6 +19,7 @@ import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.persistence.User;
+import com.wegas.test.AbstractEJBTest;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -216,13 +216,13 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         for (WegasUser wu : users) {
             login(wu);
             Player p = wu.getUser().getPlayers().get(0);
-            Assert.assertTrue(requestManager.hasPlayerRight(p));
-            Assert.assertTrue(requestManager.hasTeamRight(p.getTeam()));
-            Assert.assertTrue(requestManager.hasGameReadRight(p.getGame()));
-            Assert.assertTrue(requestManager.hasGameModelReadRight(p.getGameModel()));
+            Assert.assertTrue(requestFacade.hasPlayerRight(p));
+            Assert.assertTrue(requestFacade.hasTeamRight(p.getTeam()));
+            Assert.assertTrue(requestFacade.hasGameReadRight(p.getGame()));
+            Assert.assertTrue(requestFacade.hasGameModelReadRight(p.getGameModel()));
 
-            Assert.assertFalse(requestManager.hasGameWriteRight(p.getGame()));
-            Assert.assertFalse(requestManager.hasGameModelWriteRight(p.getGameModel()));
+            Assert.assertFalse(requestFacade.hasGameWriteRight(p.getGame()));
+            Assert.assertFalse(requestFacade.hasGameModelWriteRight(p.getGameModel()));
         }
 
     }

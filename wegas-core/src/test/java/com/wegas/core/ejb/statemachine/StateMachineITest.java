@@ -7,8 +7,6 @@
  */
 package com.wegas.core.ejb.statemachine;
 
-import com.wegas.test.AbstractEJBTest;
-import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
@@ -21,12 +19,12 @@ import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import org.junit.Assert;
-import org.junit.Test;
-
-import javax.naming.NamingException;
+import com.wegas.test.AbstractEJBTest;
 import java.io.IOException;
 import java.sql.SQLException;
+import javax.naming.NamingException;
+import org.junit.Assert;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,7 +177,7 @@ public class StateMachineITest extends AbstractEJBTest {
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
         NumberInstance p0Instance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer);
         p0Instance.setValue(50);
-        requestManager.setPlayer(null);
+        requestFacade.setPlayer(null);
         variableInstanceFacade.update(p0Instance.getId(), p0Instance); // Triggers rf.commit -> StateMachine check
 
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
@@ -209,11 +207,11 @@ public class StateMachineITest extends AbstractEJBTest {
         gameModelFacade.reset(scenario.getId());
 
         Assert.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
-        requestManager.setPlayer(null);
+        requestFacade.setPlayer(null);
 
         scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value = 10"), null);
-        requestManager.setPlayer(null);
-        requestManager.setPlayer(player);
+        requestFacade.setPlayer(null);
+        requestFacade.setPlayer(player.getId());
         requestFacade.commit();
         Assert.assertEquals(10, ((NumberInstance) variableInstanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
         Assert.assertEquals(10, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
@@ -273,7 +271,7 @@ public class StateMachineITest extends AbstractEJBTest {
         Assert.assertEquals(5, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
 
         //Set again
-        requestManager.setPlayer(null);
+        requestFacade.setPlayer(null);
         NumberInstance testInstance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), player);
         testInstance.setValue(0);
         variableInstanceFacade.update(testInstance.getId(), testInstance);

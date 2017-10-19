@@ -17,20 +17,25 @@ import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.aai.AaiRealm;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestRealm;
+import com.wegas.core.security.jparealm.JpaRealm;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import jdk.nashorn.api.scripting.ScriptUtils;
-import jdk.nashorn.internal.runtime.ScriptObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
@@ -40,22 +45,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
+import jdk.nashorn.api.scripting.ScriptUtils;
+import jdk.nashorn.internal.runtime.ScriptObject;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
-import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.game.DebugGame;
-import com.wegas.core.security.aai.AaiRealm;
-import com.wegas.core.security.guest.GuestRealm;
-import com.wegas.core.security.jparealm.JpaRealm;
-import com.wegas.core.security.persistence.Permission;
-import com.wegas.core.security.persistence.Role;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -299,11 +298,16 @@ public class RequestManager implements RequestManagerI {
         }
 
         if (this.currentUser != null) {
-            //return this.currentUser;
-            //if (!this.getEntityManager().contains(this.currentUser)){
-                
-            //}
-            return userFacade.find(this.currentUser.getId());
+            // if there is an entityManager and if the currentUser is not managed -> get a managed one
+            try {
+                if (this.em != null && !this.em.contains(this.currentUser)) {
+                    this.currentUser = userFacade.find(this.currentUser.getId());
+                    this.clearEffectivePermisssions();
+                }
+            } catch (NullPointerException npe) {
+                // thrown when ran withoud EJBcontext
+            }
+            return this.currentUser;
         } else {
             return null;
         }
@@ -346,6 +350,12 @@ public class RequestManager implements RequestManagerI {
 
     public StateMachineEventCounter getEventCounter() {
         return eventCounter;
+    }
+
+    public void clearEntities() {
+        this.clearUpdatedEntities();
+        this.clearDestroyedEntities();
+        this.clearOutdatedEntities();
     }
 
     /**
@@ -812,12 +822,37 @@ public class RequestManager implements RequestManagerI {
         return effectiveDBPermissions;
     }
 
+    private boolean hasRole(String roleName) {
+        return this.getEffectiveRoles().contains(roleName);
+    }
+
+    private boolean isPermitted(String permission) {
+        String[] pSplit = permission.split(":");
+
+        if (pSplit.length == 3) {
+            Collection<String> perms = this.getEffectiveDBPermissions();
+
+            for (String p : perms) {
+                String[] split = p.split(":");
+                if (split.length == 3) {
+                    if (split[0].equals(pSplit[0])
+                            && (split[1].equals("*") || split[1].contains(pSplit[1])) // Not so happy with "contains" -> DO a f*ckin good regex to handle all cases
+                            && (split[2].equals("*") || split[2].equals(pSplit[2]))) {
+                        return true;
+                    }
+
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean hasDirectGameModelEditPermission(Subject subject, GameModel gameModel) {
-        return subject.isPermitted("GameModel:Edit:gm" + gameModel.getId());
+        return this.isPermitted("GameModel:Edit:gm" + gameModel.getId());
     }
 
     private boolean hasDirectGameEditPermission(Subject subject, Game game) {
-        return subject.isPermitted("Game:Edit:g" + game.getId());
+        return this.isPermitted("Game:Edit:g" + game.getId());
     }
 
     private boolean hasGamePermission(Subject subject, Game game, boolean superPermission) {
@@ -859,17 +894,13 @@ public class RequestManager implements RequestManagerI {
             if (superPermission) {
                 return hasDirectGameModelEditPermission(subject, gameModel);
             } else {
-                if (this.hasRole("Trainer") && subject.isPermitted("GameModel:Instantiate:gm" + id)) {
+                if (this.hasRole("Trainer") && this.isPermitted("GameModel:Instantiate:gm" + id)) {
                     //For trainer, instantiate means read
                     return true;
                 }
-                return subject.isPermitted("GameModel:View:gm" + id);
+                return this.isPermitted("GameModel:View:gm" + id);
             }
         }
-    }
-
-    private boolean hasRole(String roleName) {
-        return this.getEffectiveRoles().contains(roleName);
     }
 
     /**
@@ -1051,18 +1082,16 @@ public class RequestManager implements RequestManagerI {
     }
 
     public boolean canRestoreGameModel(final GameModel gameModel) {
-        Subject s = SecurityUtils.getSubject();
         String id = "gm" + gameModel.getId();
-        return s.isPermitted("GameModel:View:" + id)
-                || s.isPermitted("GameModel:Edit" + id)
-                || s.isPermitted("GameModel:Instantiate:" + id)
-                || s.isPermitted("GameModel:Duplicate:" + id);
+        return this.isPermitted("GameModel:View:" + id)
+                || this.isPermitted("GameModel:Edit" + id)
+                || this.isPermitted("GameModel:Instantiate:" + id)
+                || this.isPermitted("GameModel:Duplicate:" + id);
     }
 
     public boolean canDeleteGameModel(final GameModel gameModel) {
-        Subject s = SecurityUtils.getSubject();
         String id = "gm" + gameModel.getId();
-        return s.isPermitted("GameModel:Delete:" + id);
+        return this.isPermitted("GameModel:Delete:" + id);
     }
 
 

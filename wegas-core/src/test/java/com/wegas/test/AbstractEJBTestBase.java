@@ -15,7 +15,6 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.TeamFacade;
@@ -24,6 +23,7 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.jcr.SessionManager;
 import com.wegas.core.rest.GameController;
 import com.wegas.core.rest.GameModelController;
 import com.wegas.core.rest.PlayerController;
@@ -47,12 +47,8 @@ import com.wegas.resourceManagement.ejb.ResourceFacade;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ejb.embeddable.EJBContainer;
+import javax.jcr.RepositoryException;
 import javax.mail.internet.AddressException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -60,12 +56,26 @@ import javax.sql.DataSource;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.rules.TestName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class AbstractEJBTestBase {
+
+    @Rule
+    public TestName name = new TestName();
+
+    private long initTime;
+
+    private long startTime;
 
     // *** Static *** //
     protected static final Logger logger = LoggerFactory.getLogger(AbstractEJBTestBase.class);
@@ -107,18 +117,18 @@ public class AbstractEJBTestBase {
     protected static ResourceFacade resourceFacade;
 
     protected static RequestFacade requestFacade;
-    protected static RequestManager requestManager;
+    //protected static RequestManager requestManager;
 
     protected static ObjectMapper jsonMapper;
 
     /**
      * Initial
      */
-    protected static Role admins;
-    protected static Role scenarists;
-    protected static Role trainers;
+    protected Role admins;
+    protected Role scenarists;
+    protected Role trainers;
 
-    protected static WegasUser admin;
+    protected WegasUser admin;
 
     public static void setUpFacades(String rootPath) throws NamingException {
         jsonMapper = JacksonMapperProvider.getMapper();
@@ -161,7 +171,13 @@ public class AbstractEJBTestBase {
             resourceFacade = ResourceFacade.lookup();
 
             requestFacade = RequestFacade.lookup();
-            requestManager = requestFacade.getRequestManager();
+
+            try {
+                // init JCR resitory
+                SessionManager.getSession();
+            } catch (RepositoryException ex) {
+                logger.error("JCR MAJOR ISSUE");
+            }
         }
 
     }
@@ -176,13 +192,12 @@ public class AbstractEJBTestBase {
      */
     @Before
     public void resetDb() throws NamingException, SQLException, WegasNoResultException {
+        this.startTime = System.currentTimeMillis();
         TestHelper.emptyDBTables();
         TestHelper.wipeEmCache();
-        requestManager.setPlayer(null);
+        requestFacade.setPlayer(null);
 
-        requestManager.clearUpdatedEntities();
-        requestManager.clearDestroyedEntities();
-        requestManager.clearOutdatedEntities();
+        requestFacade.clearEntities();
 
         //requestManager.clearPermissions();
         TestHelper.wipeEmCache();
@@ -210,6 +225,17 @@ public class AbstractEJBTestBase {
         trainers = roleFacade.findByName("Trainer");
         admin = new WegasUser(userFacade.find(1l), "root", "1234");
         login(admin);
+        this.initTime = System.currentTimeMillis();
+    }
+
+    @After
+    public void afterTest() {
+        long now = System.currentTimeMillis();
+        logger.error("TEST {} DURATION: total: {} ms; init: {} ms; test: {} ms",
+                name.getMethodName(),
+                now - this.startTime,
+                this.initTime - this.startTime,
+                now - this.initTime);
     }
 
     public static void logout() {

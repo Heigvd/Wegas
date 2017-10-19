@@ -7,7 +7,6 @@
  */
 package com.wegas.test;
 
-import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -15,7 +14,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import java.io.IOException;
 import java.sql.SQLException;
-import javax.ejb.EJB;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +141,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         login(user22);
         player22 = gameFacade.joinTeam(team2.getId(), user22.getId());
         login(admin);
-        requestManager.setPlayer(player);
+        requestFacade.setPlayer(player.getId());
     }
 
     public void reseAndSetUpDB() throws NamingException, WegasNoResultException, WegasNoResultException, SQLException, IOException {
