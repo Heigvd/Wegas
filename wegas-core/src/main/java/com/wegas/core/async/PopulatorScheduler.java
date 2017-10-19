@@ -88,6 +88,7 @@ public class PopulatorScheduler {
                 try {
                     logger.info("Wait to re-sycn call");
                     Integer get = scheduleCreation.get();
+                    logger.info ("re-sync done {}", get);
                 } catch (Exception ex) {
                     logger.info("EX: ", ex);
                 }

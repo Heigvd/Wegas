@@ -51,8 +51,11 @@ import javax.naming.NamingException;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.*;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.mail.internet.AddressException;
+import javax.persistence.Query;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 
@@ -90,22 +93,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      */
     @EJB
-    private TeamFacade teamFacade;
-
-    /**
-     *
-     */
-    @EJB
     private GameFacade gameFacade;
-
-    @Inject
-    private RequestManager requestManager;
-
-    /**
-     *
-     */
-    @Inject
-    private GameModelFacade gameModelFacade;
 
     /**
      *
@@ -230,8 +218,6 @@ public class UserFacade extends BaseFacade<User> {
         }
     }
 
-
-
     /**
      * @return a User entity, based on the shiro login state
      */
@@ -344,7 +330,7 @@ public class UserFacade extends BaseFacade<User> {
             player.setUser(null);
         }
 
-        for (Team team : entity.getTeams()){
+        for (Team team : entity.getTeams()) {
             team.setCreatedBy(null);
         }
 
@@ -566,20 +552,52 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     public List<Role> findRoles(User user) {
-        TypedQuery<Role> queryRoles = getEntityManager().createNamedQuery("Roles.findByUser", Role.class);
-        queryRoles.setParameter("userId", user.getId());
+        if (user != null) {
+            TypedQuery<Role> queryRoles = getEntityManager().createNamedQuery("Roles.findByUser", Role.class);
+            queryRoles.setParameter("userId", user.getId());
+            return queryRoles.getResultList();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public List<Role> findRolesTransactional(Long userId) {
+        return this.findRoles(this.find(userId));
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public List<String> findRoles_native(User user) {
+        Query queryRoles = getEntityManager().createNamedQuery("Roles.findByUser_native", Role.class);
+        queryRoles.setParameter(1, user.getId());
         return queryRoles.getResultList();
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public List<Permission> findAllUserPermissionsTransactional(Long userId) {
+        return this.findAllUserPermissions(this.find(userId));
+    }
+
     public List<Permission> findAllUserPermissions(User user) {
-        List<Permission> perms = new ArrayList<>();
+        if (user != null) {
+            List<Permission> perms = new ArrayList<>();
 
-        for (Role role : this.findRoles(user)) {
-            perms.addAll(role.getPermissions());
+            for (Role role : this.findRoles(user)) {
+                perms.addAll(role.getPermissions());
+            }
+            perms.addAll(user.getPermissions());
+
+            return perms;
+        } else {
+            return new ArrayList<>();
         }
-        perms.addAll(user.getPermissions());
+    }
 
-        return perms;
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public List<String> findAllUserPermissions_NATIVEJPA(User user) {
+        Query query = getEntityManager().createNamedQuery("Permission.findByUser_native");
+        query.setParameter(1, user.getId());
+        return query.getResultList();
     }
 
     public List<Permission> findAllUserPermissions_JPA(User user) {

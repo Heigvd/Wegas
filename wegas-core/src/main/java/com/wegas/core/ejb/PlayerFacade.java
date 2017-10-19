@@ -71,9 +71,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     @EJB
     private UserFacade userFacade;
 
-    @Inject
-    private RequestManager requestManager;
-
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Player joinTeamAndCommit(Long teamId, Long userId, String playerName) {
         logger.info("Adding user {} to team {}", userId, teamId);
@@ -93,7 +90,6 @@ public class PlayerFacade extends BaseFacade<Player> {
             user.getPlayers().add(player);
             player.setUser(user);
             player.setName(user.getName());
-            gameFacade.addRights(user, team.getGame());
         } else {
             if (playerName != null) {
                 player.setName(playerName);

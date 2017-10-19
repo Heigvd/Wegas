@@ -32,6 +32,9 @@ import org.eclipse.persistence.config.QueryHints;
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
             })
 })
+@NamedNativeQueries({
+    @NamedNativeQuery(name = "Roles.findByUser_native", query = "SELECT roles.name FROM roles JOIN users_roles on users_roles.roles_id = roles.id WHERE users_roles.users_id = ?1")
+})
 public class Role extends AbstractEntity implements PermissionOwner {
 
     private static final long serialVersionUID = 1L;

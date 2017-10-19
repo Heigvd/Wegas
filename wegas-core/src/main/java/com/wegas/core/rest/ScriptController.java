@@ -14,6 +14,7 @@ import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
@@ -29,7 +30,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,7 +132,8 @@ public class ScriptController {
         script.setContent(((HashMap<String, String>) multiplayerScripts.get("script")).get("content"));
         ArrayList<Object> results = new ArrayList<>();
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gmf.find(gameModelId);
+        requestFacade.getRequestManager().assertUpdateRight(gm);
 
         VariableDescriptor context;
         if (variableDescritptorId != null && variableDescritptorId > 0) {

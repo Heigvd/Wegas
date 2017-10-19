@@ -7,16 +7,15 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.IOException;
 import java.util.List;
-import javax.inject.Inject;
-import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,25 +23,12 @@ import javax.persistence.criteria.Root;
  * Wegas, to be extended.
  *
  * @param <T> AbstractEntity subclass to template this facade
+ *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFacade<T> {
+public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstractFacade implements AbstractFacade<T> {
 
-    @Inject
-    private RequestManager requestManager;
-
-    /*
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
-     */
-    /**
-     * get the entity manager
-     *
-     * @return the wegasPU entityManager
-     */
-    protected EntityManager getEntityManager() {
-        return requestManager.getEntityManager();
-    }
+    private static final Logger logger = LoggerFactory.getLogger(BaseFacade.class);
 
     /**
      * the Class the facade manage
@@ -96,6 +82,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      *
      * @param entityId
      * @param entity
+     *
      * @return the very updated entity
      */
     @Override
@@ -109,6 +96,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      * Merge the given entity
      *
      * @param entity
+     *
      * @return the merged entity
      */
     public T merge(final T entity) {
@@ -122,6 +110,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      * serializing it back.
      *
      * @param entityId
+     *
      * @throws IOException
      * @return a copy of entity identified by entityId
      */
@@ -148,6 +137,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      * find T instance by id
      *
      * @param entityId id to look for
+     *
      * @return entity matching given id
      */
     @Override
@@ -171,7 +161,9 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      * Just like findAll but paginate the output
      *
      * @param range int array containing two elements... it's quite ugly...
+     *
      * @return all entities matching the range filter
+     *
      * @deprecated
      */
     @Override
@@ -205,7 +197,9 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     /**
      *
      * @param ic
+     *
      * @return
+     *
      * @throws Exception
      */
     /*@AroundInvoke

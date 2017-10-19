@@ -60,7 +60,7 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
  */
 @Stateless
 @LocalBean
-public class ScriptFacade {
+public class ScriptFacade extends WegasAbstractFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacade.class);
 
@@ -84,7 +84,7 @@ public class ScriptFacade {
     private static final Map<String, CompiledScript> staticCache = new Helper.LRUCache<>(100);
 
     /*
-    Initialize noSuchProperty
+     * Initialize noSuchProperty and other nashorn stuff
      */
     static {
         //engine = new ScriptEngineManager().getEngineByName("JavaScript");
@@ -141,7 +141,6 @@ public class ScriptFacade {
     @Inject
     private IterationFacade iterationFacade;
 
-
     @Inject
     private QuestionDescriptorFacade questionDescriptorFacade;
 
@@ -162,15 +161,6 @@ public class ScriptFacade {
      */
     @EJB
     private DelayedScriptEventFacade delayedEvent;
-
-    /**
-     * 
-     */
-    /**
-     *
-     */
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *
@@ -199,19 +189,18 @@ public class ScriptFacade {
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
 
         putBinding(bindings, "GameModelFacade", GameModelFacadeI.class, gameModelFacade);
-        
+
         putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
         putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
         putBinding(bindings, "Instance", VariableInstanceFacadeI.class, variableInstanceFacade);
-        
+
         putBinding(bindings, "ResourceFacade", ResourceFacadeI.class, resourceFacade);
         putBinding(bindings, "IterationFacade", IterationFacadeI.class, iterationFacade);
-        
+
         putBinding(bindings, "QuestionFacade", QuestionDescriptorFacadeI.class, questionDescriptorFacade);
         putBinding(bindings, "StateMachineFacade", StateMachineFacadeI.class, stateMachineFacade);
         putBinding(bindings, "ReviewingFacade", ReviewingFacadeI.class, reviewingFacade);
-        
-        
+
         putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
         putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
         putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
@@ -235,7 +224,7 @@ public class ScriptFacade {
         }
         this.injectStaticScript(ctx, player.getGameModel());
 
-        for (GameModelContent script :player.getGameModel().getScriptLibraryList()){
+        for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
             try {
                 engine.eval(script.getContent(), ctx);

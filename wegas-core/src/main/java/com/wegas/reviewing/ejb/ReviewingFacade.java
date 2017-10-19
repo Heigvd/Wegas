@@ -10,7 +10,6 @@ package com.wegas.reviewing.ejb;
 import com.wegas.core.Helper;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.EntityRevivedEvent;
@@ -41,11 +40,11 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.wegas.core.api.ReviewingFacadeI;
+import com.wegas.core.ejb.WegasAbstractFacade;
 
 /**
  *
@@ -57,15 +56,10 @@ import com.wegas.core.api.ReviewingFacadeI;
  */
 @Stateless
 @LocalBean
-public class ReviewingFacade implements ReviewingFacadeI{
+public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFacadeI{
 
     static final private Logger logger = LoggerFactory.getLogger(ReviewingFacade.class);
 
-    /**
-     * The so called wegasPU persistenceContext
-     *
-     * @PersistenceContext(unitName = "wegasPU") private EntityManager em;
-     */
     /**
      * Default Constructor
      */
@@ -88,12 +82,6 @@ public class ReviewingFacade implements ReviewingFacadeI{
     private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
-     * request-scoped Request Manager
-     */
-    @Inject
-    private RequestManager requestManager;
-
-    /**
      * Get a Review by id
      *
      * @param entityId the reviewID
@@ -101,7 +89,7 @@ public class ReviewingFacade implements ReviewingFacadeI{
      * @return the corresponding review or null
      */
     public Review findReview(final Long entityId) {
-        return requestManager.getEntityManager().find(Review.class, entityId);
+        return this.getEntityManager().find(Review.class, entityId);
     }
 
     /**
@@ -112,7 +100,7 @@ public class ReviewingFacade implements ReviewingFacadeI{
      * @return the evaluation instance or null
      */
     public EvaluationInstance findEvaluationInstance(Long evId) {
-        return requestManager.getEntityManager().find(EvaluationInstance.class, evId);
+        return this.getEntityManager().find(EvaluationInstance.class, evId);
     }
 
     /**
@@ -123,7 +111,7 @@ public class ReviewingFacade implements ReviewingFacadeI{
      * @return the evaluation descriptor or null
      */
     public EvaluationDescriptor findEvaluationDescriptor(Long evId) {
-        return requestManager.getEntityManager().find(EvaluationDescriptor.class, evId);
+        return this.getEntityManager().find(EvaluationDescriptor.class, evId);
     }
 
     /**
@@ -186,7 +174,7 @@ public class ReviewingFacade implements ReviewingFacadeI{
             ei.setCommentsReview(r);
             r.getComments().add(ei);
         }
-        requestManager.getEntityManager().persist(r);
+        this.getEntityManager().persist(r);
         return r;
     }
 
@@ -418,7 +406,7 @@ public class ReviewingFacade implements ReviewingFacadeI{
             mergeEvaluations(other.getFeedback());
         }
 
-        requestManager.getEntityManager().merge(review);
+        this.getEntityManager().merge(review);
         return review;
     }
 
@@ -455,7 +443,7 @@ public class ReviewingFacade implements ReviewingFacadeI{
      * @return the submitted review
      */
     public Review submitReview(Long reviewId, Player player) {
-        return this.submitReview(requestManager.getEntityManager().find(Review.class, reviewId), player);
+        return this.submitReview(this.getEntityManager().find(Review.class, reviewId), player);
     }
 
     /**

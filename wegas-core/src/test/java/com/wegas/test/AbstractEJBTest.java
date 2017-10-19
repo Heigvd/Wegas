@@ -7,6 +7,7 @@
  */
 package com.wegas.test;
 
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -14,6 +15,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import java.io.IOException;
 import java.sql.SQLException;
+import javax.ejb.EJB;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,25 +37,25 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     /**
      * A LIVE gameModel
      */
-    protected static GameModel gameModel;
+    protected GameModel gameModel;
     /**
      * A PLAY gameModel
      */
-    protected static GameModel scenario;
+    protected GameModel scenario;
     /**
      * a game based on scenario
      */
-    protected static Game game;
-    protected static Team team;
-    protected static Player player;
-    protected static Team team2;
-    protected static Player player21;
-    protected static Player player22;
+    protected Game game;
+    protected Team team;
+    protected Player player;
+    protected Team team2;
+    protected Player player21;
+    protected Player player22;
 
-    protected static WegasUser scenarist;
-    protected static WegasUser trainer;
-    protected static WegasUser user;
-    protected static WegasUser guest;
+    protected WegasUser scenarist;
+    protected WegasUser trainer;
+    protected WegasUser user;
+    protected WegasUser guest;
 
     protected WegasUser user11;
     protected WegasUser user21;
@@ -71,7 +73,7 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
-
+    
     @Before
     public final void setUp() throws NamingException, WegasNoResultException, SQLException, IOException {
 
@@ -82,10 +84,10 @@ public abstract class AbstractEJBTest extends AbstractEJBTestBase {
         user = AbstractEJBTest.signup("user@local");
 
         user11 = AbstractEJBTest.signup("user11@local");
-        
+
         user21 = AbstractEJBTest.signup("user21@local");
         user22 = AbstractEJBTest.signup("user22@local");
-        
+
         user31 = AbstractEJBTest.signup("user31@local");
         user32 = AbstractEJBTest.signup("user32@local");
         user33 = AbstractEJBTest.signup("user33@local");

@@ -11,7 +11,6 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadConcern;
-import com.mongodb.client.MongoDatabase;
 import com.wegas.core.Helper;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;

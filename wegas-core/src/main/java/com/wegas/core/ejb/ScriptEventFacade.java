@@ -21,7 +21,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import java.util.Collection;
 import javax.script.ScriptContext;
 
@@ -29,7 +28,7 @@ import javax.script.ScriptContext;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @RequestScoped
-public class ScriptEventFacade implements ScriptEventFacadeI {
+public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEventFacadeI {
 
     /**
      *
@@ -48,11 +47,6 @@ public class ScriptEventFacade implements ScriptEventFacadeI {
      */
     @EJB
     private ScriptFacade scriptFacace;
-    /**
-     *
-     */
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *

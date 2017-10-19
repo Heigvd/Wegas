@@ -35,23 +35,17 @@ import org.slf4j.LoggerFactory;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameModel", value = GameModel.class)
-    ,
-    @JsonSubTypes.Type(name = "Game", value = Game.class)
-    ,
-    @JsonSubTypes.Type(name = "Player", value = Player.class)
-    ,
-    @JsonSubTypes.Type(name = "Team", value = Team.class)
-    ,
-    @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class)
-    ,
+    @JsonSubTypes.Type(name = "GameModel", value = GameModel.class),
+    @JsonSubTypes.Type(name = "Game", value = Game.class),
+    @JsonSubTypes.Type(name = "Player", value = Player.class),
+    @JsonSubTypes.Type(name = "Team", value = Team.class),
+    @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class),
     @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class)
 })
-
 /**
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg ChoiceDescriptor and result).
  * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
- * 
+ * <p>
  * INVALIDATE OBJECT FIX DirectCollectionMapping NPE
  */
 @MappedSuperclass
@@ -99,6 +93,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * have the id and being instances of the same class
      *
      * @param object entity to compare to
+     *
      * @return true if object equals this, false otherwise
      */
     @Override
@@ -143,7 +138,9 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Duplicate an entity by using Jackson Mapper and provided view
      *
      * @param view
+     *
      * @return copy of this
+     *
      * @throws IOException
      */
     public AbstractEntity duplicate(Class view) throws IOException {
@@ -161,6 +158,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Same as duplicate(Views.Export)
      *
      * @return copy of this
+     *
      * @throws IOException
      */
     public AbstractEntity duplicate() throws IOException {
@@ -171,6 +169,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Serialize to JSON
      *
      * @return JSON String representing this
+     *
      * @throws IOException
      */
     public String toJson() throws IOException {
@@ -182,7 +181,9 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Serialize to JSON with view
      *
      * @param view the view to use to export this
+     *
      * @return JSON String representing this
+     *
      * @throws IOException
      */
     public String toJson(Class view) throws IOException {
@@ -202,7 +203,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
     /**
      * Default behaviour is to do nothing
-     *
+     * <p>
      * Overriding this method may helps to maintain cache integrity after
      * cascaded entity deletion
      *
@@ -245,10 +246,11 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     }
 
     /**
-     * MUST BE PACKAGE PROTECTED !!! 
-     * @param persisted 
+     * MUST BE PACKAGE PROTECTED !!!
+     *
+     * @param persisted
      */
-    void setPersisted(boolean persisted) {
+    public void setPersisted(boolean persisted) {
         this.persisted = persisted;
     }
 }

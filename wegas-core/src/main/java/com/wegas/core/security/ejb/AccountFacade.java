@@ -21,7 +21,6 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +59,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     @EJB
     private UserFacade userFacade;
-
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *

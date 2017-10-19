@@ -756,16 +756,4 @@ public class UpdateController {
 
         return players;
     }
-
-    @POST
-    @Path("RecoverRights")
-    public String recoverRights() {
-        List<Player> players = this.getPlayerWithoutPermissions();
-        for (Player p : players) {
-            logger.error("Player: {}", p);
-            User user = p.getUser();
-            gameFacade.addRights(user, p.getGame());
-        }
-        return "OK";
-    }
 }

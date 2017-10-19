@@ -9,14 +9,9 @@ package com.wegas.core.ejb;
 
 import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
-import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.persistence.User;
 import java.io.IOException;
-import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slf4j.Logger;

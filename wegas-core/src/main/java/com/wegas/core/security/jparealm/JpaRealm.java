@@ -10,6 +10,8 @@ package com.wegas.core.security.jparealm;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -19,6 +21,8 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;
 import org.apache.shiro.authc.*;
@@ -73,13 +77,33 @@ public class JpaRealm extends AuthorizingRealm {
         }
     }
 
-    @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        try {
-            SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+    private SimpleAuthorizationInfo newWay(PrincipalCollection principals) {
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
+        RequestManager rManager = RequestFacade.lookup().getRequestManager();
+
+        for (String roleName : rManager.getEffectiveRoles()) {
+            info.addRole(roleName);
+        }
+
+        /**
+         * Load permissions from DB
+         */
+        for (String p : rManager.getEffectiveDBPermissions()) {
+            info.addStringPermission(p);
+        }
+
+        return info;
+    }
+
+    private SimpleAuthorizationInfo oldWay(PrincipalCollection principals) {
+        SimpleAuthorizationInfo info = null;
+        try {
             AbstractAccount account = accountFacade().find((Long) principals.getPrimaryPrincipal());
             if (account != null) {
+
+                info = new SimpleAuthorizationInfo();
+
                 UserFacade userFacade = UserFacade.lookup();
                 User user = account.getUser();
                 for (Role role : userFacade.findRoles(user)) {
@@ -91,16 +115,25 @@ public class JpaRealm extends AuthorizingRealm {
                     if (this.isLive(p)) {
                         //logger.error("accept permission: {}", p.getValue());
                         addPermissions(info, p);
-                    //} else {
+                        //} else {
                         //logger.error("reject permission: {}", p.getValue());
                     }
                 }
             }
+        } catch (NamingException ex) {
+        }
+        return info;
+    }
+
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        try {
+
+            SimpleAuthorizationInfo info = this.newWay(principals);
+
             return info;
         } catch (EJBException e) {
-            return null;
-        } catch (NamingException ex) {
-            logger.error("Unable to find AocountFacade EJB", ex);
+            Helper.printWegasStackTrace(e);
             return null;
         }
     }

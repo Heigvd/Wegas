@@ -529,13 +529,13 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
 
     @Override
     public String getRequieredReadPermission() {
-        if (this.getAccess() == GameAccess.OPEN) {
+        //if (this.getAccess() == GameAccess.OPEN) {
             // Everybody can read an open game
-            return null;
-        } else {
+            //return null;
+        //} else {
             // Only authorised people can read this game
             return this.getChannel();
-        }
+        //}
     }
 
     @Override

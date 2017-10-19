@@ -21,7 +21,6 @@ import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.ejb.RequestManager;
 import javax.inject.Inject;
@@ -57,7 +56,6 @@ public class GameModelController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public GameModel create(GameModel gm) {
-        SecurityUtils.getSubject().checkPermission("GameModel:Create");
         gameModelFacade.createWithDebugGame(gm);
 
         return gm;
@@ -100,8 +98,6 @@ public class GameModelController {
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + templateGameModelId);
 
         GameModel gm = gameModelFacade.setDefaultInstancesFromPlayer(templateGameModelId, playerId);
         gameModelFacade.reset(gm);
@@ -146,8 +142,6 @@ public class GameModelController {
     public GameModel upload(@FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws IOException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Create");
-
         ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
         GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
 
@@ -166,9 +160,6 @@ public class GameModelController {
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")                   // @hack force utf-8 charset
     @Path("{entityId : [1-9][0-9]*}")
     public GameModel get(@PathParam("entityId") Long entityId) {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + entityId);
-
         return gameModelFacade.find(entityId);
     }
 
@@ -189,9 +180,6 @@ public class GameModelController {
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public GameModel update(@PathParam("entityId") Long entityId, GameModel entity) {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + entityId);
-
         return gameModelFacade.update(entityId, entity);
     }
 
@@ -229,7 +217,6 @@ public class GameModelController {
     @PUT
     @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
     public GameModel changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final GameModel.Status status) {
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + entityId);
         GameModel gm = gameModelFacade.find(entityId);
         switch (status) {
             case LIVE:

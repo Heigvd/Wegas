@@ -14,6 +14,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -50,13 +51,9 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class ResourceFacade implements ResourceFacadeI {
+public class ResourceFacade extends WegasAbstractFacade implements ResourceFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
-
-    private EntityManager getEntityManager() {
-        return requestManager.getEntityManager();
-    }
 
     /**
      *
@@ -84,15 +81,13 @@ public class ResourceFacade implements ResourceFacadeI {
     @Inject
     private ScriptEventFacade scriptEvent;
 
-    @Inject
-    private RequestManager requestManager;
-
     /**
      *
      * @param id
      *
      * @return occupation identified by id
      */
+    @Override
     public Occupation findOccupation(Long id) {
         return getEntityManager().find(Occupation.class, id);
     }
@@ -113,10 +108,12 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @return assignment identified by id
      */
+    @Override
     public Assignment findAssignment(Long id) {
         return getEntityManager().find(Assignment.class, id);
     }
 
+    @Override
     public WRequirement findRequirement(Long id) {
         return getEntityManager().find(WRequirement.class, id);
     }
@@ -130,6 +127,7 @@ public class ResourceFacade implements ResourceFacadeI {
      * @return the assignment id resource is assigned to the task, null
      *         otherwise
      */
+    @Override
     public Assignment findAssignment(Long resourceId, Long taskInstanceId) {
         EntityManager em = getEntityManager();
         TypedQuery<Assignment> query = em.createNamedQuery("Assignment.findByResourceInstanceIdAndTaskInstanceId", Assignment.class).
@@ -157,6 +155,7 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @return the new assignment
      */
+    @Override
     public Assignment assign(Long resourceInstanceId, Long taskInstanceId) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
         TaskInstance taskInstance = (TaskInstance) variableInstanceFacade.find(taskInstanceId);
@@ -176,6 +175,7 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @return assigned resource containing assignment in the new order
      */
+    @Override
     public ResourceInstance moveAssignment(final Long assignmentId, final int index) {
         final Assignment assignment = this.findAssignment(assignmentId);
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
@@ -191,6 +191,7 @@ public class ResourceFacade implements ResourceFacadeI {
      * @return the resource instance who was assigned, with the updated list of
      *         assignments
      */
+    @Override
     public ResourceInstance removeAssignment(final Long assignmentId) {
         final Assignment assignment = this.getEntityManager().find(Assignment.class, assignmentId);
         return this.removeAssignment(assignment);
@@ -204,6 +205,7 @@ public class ResourceFacade implements ResourceFacadeI {
      * @return the resource instance who was assigned, with the updated list of
      *         assignments
      */
+    @Override
     public ResourceInstance removeAssignment(Assignment assignment) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
         TaskInstance taskInstance = (TaskInstance) variableInstanceFacade.find(assignment.getTaskInstance().getId());
@@ -225,6 +227,7 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @return the new activity
      */
+    @Override
     public Activity createActivity(Long resourceInstanceId, Long taskInstanceId) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
         TaskInstance taskInstance = (TaskInstance) variableInstanceFacade.find(taskInstanceId);
@@ -246,6 +249,7 @@ public class ResourceFacade implements ResourceFacadeI {
      * @param activity
      * @param newReq
      */
+    @Override
     public void changeActivityReq(Activity activity, WRequirement newReq) {
         WRequirement oldReq = activity.getRequirement();
         if (oldReq != null) {
@@ -258,6 +262,7 @@ public class ResourceFacade implements ResourceFacadeI {
      * @param activityId
      * @param newReqId
      */
+    @Override
     public void changeActivityReq(Long activityId, Long newReqId) {
         this.changeActivityReq(this.findActivity(activityId), this.findRequirement(newReqId));
     }
@@ -304,6 +309,7 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @param occupationId
      */
+    @Override
     public void removeOccupation(Long occupationId) {
         Occupation occupation = this.findOccupation(occupationId);
         occupation.getResourceInstance().removeOccupation(occupation);
@@ -319,6 +325,7 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @return the taskInstance, which contains the new planning
      */
+    @Override
     public TaskInstance plan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         List<Integer> plannedPeriods = ti.getPlannification();
@@ -342,6 +349,7 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @return the taskInstance, which contains the new planning
      */
+    @Override
     public TaskInstance plan(Long playerId, Long taskInstanceId, Integer period) {
         Player player = playerFacade.find(playerId);
         requestManager.lock("TaskPlan-" + taskInstanceId);
@@ -356,6 +364,7 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @return the taskInstance, which contains the new planning
      */
+    @Override
     public TaskInstance unplan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().remove(period);
@@ -375,6 +384,7 @@ public class ResourceFacade implements ResourceFacadeI {
      *
      * @return the taskInstance, which contains the new planning
      */
+    @Override
     public TaskInstance unplan(Long playerId, Long taskInstanceId, Integer period) {
         Player player = playerFacade.find(playerId);
         requestManager.lock("TaskPlan-" + taskInstanceId);

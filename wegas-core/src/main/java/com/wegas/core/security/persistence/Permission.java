@@ -15,7 +15,6 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
-import java.util.Objects;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
@@ -38,6 +37,9 @@ import org.slf4j.LoggerFactory;
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
             })
 })
+@NamedNativeQueries({
+    @NamedNativeQuery(name = "Permission.findByUser_native", query = "SELECT permissions FROM permission LEFT JOIN users_roles ON users_roles.roles_id = permission.role_id WHERE users_roles.users_id = ?1 OR permission.user_id = ?1")
+})
 @Table(
         indexes = {
             @Index(columnList = "role_id"),
@@ -49,7 +51,7 @@ public class Permission extends AbstractEntity {
     private static final long serialVersionUID = 1L;
 
     public static final Logger logger = LoggerFactory.getLogger(Permission.class);
-    
+
     /**
      *
      */
@@ -198,6 +200,7 @@ public class Permission extends AbstractEntity {
             switch (split[0]) {
                 case "GameModel":
                     if (isPermId(perm)) {
+                        // One should have super right on the gameModel the permission give access to
                         GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
                         if (gameModel != null) {
                             return gameModel.getRequieredUpdatePermission();
@@ -205,13 +208,10 @@ public class Permission extends AbstractEntity {
                     }
                 case "Game":
                     if (isPermId(perm)) {
+                        // One should have super right on the game the permission give access to
                         Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
                         if (game != null) {
-                            if (game.isPersisted()) {
-                                return "W-" + game.getChannel();
-                            } else {
-                                return null;
-                            }
+                            return "W-" + game.getChannel();
                         }
                     }
             }

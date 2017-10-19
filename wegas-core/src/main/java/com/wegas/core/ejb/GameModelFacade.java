@@ -84,15 +84,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
 
-    /**
-     *
-     */
-    @EJB
-    private FileController fileController;
-
-    @EJB
-    private HistoryController historyController;
-
     @Inject
     private PlayerFacade playerFacade;
 
@@ -101,9 +92,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     
     @Inject
     private GameFacade gameFacade;
-
-    @Inject
-    private RequestManager requestManager;
 
     @Inject
     private StateMachineFacade stateMachineFacade;
@@ -143,7 +131,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @param gameModel
      * @param context
-     * @param create
      */
     public void createAndRevivePrivateInstance(GameModel gameModel, InstanceOwner context) {
         this.createInstances(gameModel, context);

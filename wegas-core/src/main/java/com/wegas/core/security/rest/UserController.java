@@ -10,6 +10,7 @@ package com.wegas.core.security.rest;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
@@ -85,6 +86,9 @@ public class UserController {
      */
     @EJB
     private GameFacade gameFacade;
+    
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
@@ -816,11 +820,10 @@ public class UserController {
             @PathParam("accountId") Long accountId) {
 
         User coTrainer = accountFacade.find(accountId).getUser();
-        //TODO assert coTrainer is a Trainer...
 
-        String thePermission = "Game:Edit:g" + gameId;
-        // Assert current user has edit right on the game
-        SecurityUtils.getSubject().checkPermission(thePermission);
+        //TODO assert coTrainer is a Trainer...
+        Game game = gameFacade.find(gameId);
+        requestManager.assertUpdateRight(game);
 
         userFacade.addTrainerToGame(coTrainer.getId(), gameId);
     }
@@ -832,9 +835,9 @@ public class UserController {
 
         User coTrainer = accountFacade.find(accountId).getUser();
 
-        String thePermission = "Game:Edit:g" + gameId;
-        // Assert current user has edit right on the game
-        SecurityUtils.getSubject().checkPermission(thePermission);
+        Game game = gameFacade.find(gameId);
+        requestManager.assertUpdateRight(game);
+
         userFacade.removeTrainer(gameId, coTrainer); // TODO
     }
 
@@ -855,10 +858,8 @@ public class UserController {
 
         User user = accountFacade.find(accountId).getUser();
 
-        String editPermission = "GameModel:Edit:gm" + gameModelId;
-
-        // Assert current user has edit right on the gameModel
-        SecurityUtils.getSubject().checkPermission(editPermission);
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
 
         userFacade.grantGameModelPermissionToUser(user.getId(), gameModelId, permission);
     }
@@ -870,10 +871,9 @@ public class UserController {
 
         User coScenarist = accountFacade.find(accountId).getUser();
 
-        String editPermission = "GameModel:Edit:gm" + gameModelId;
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
 
-        // Assert current user has edit right on the gameModel
-        SecurityUtils.getSubject().checkPermission(editPermission);
         userFacade.removeScenarist(gameModelId, coScenarist);
     }
 

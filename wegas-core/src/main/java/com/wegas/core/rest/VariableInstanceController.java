@@ -22,7 +22,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -110,8 +109,6 @@ public class VariableInstanceController {
         // @fixme Is this method still in use?
 
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
-
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + vd.getGameModelId());
 
         List<VariableInstance> instances = new ArrayList<>();
 

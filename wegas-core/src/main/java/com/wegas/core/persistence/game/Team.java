@@ -387,7 +387,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
 
     @Override
     public String getRequieredReadPermission() {
-        return null;
+        return this.getChannel();
     }
 
     @Override
@@ -398,14 +398,14 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
          *
          * A player shouldn't be authorized to join a team by itself.
          * A player should be able to create a team and a team member should be able 
-         * to invite others player within the team. Such behaviour allow to set an updatePermission
+         * to invite other players in the team. Such behaviour allow to set an updatePermission
          */
-        return null;
-        //return this.getChannel();
+        return this.getChannel();
     }
 
     @Override
     public String getRequieredCreatePermission() {
+        // Anybody can create a team, but not anybody can add such a new team to an existing game
         return null;
     }
 

@@ -101,6 +101,7 @@ public class GameController {
      */
     @POST
     public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws IOException {
+        // Special instantiate permission is not handled by automatic permission system
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.publishAndCreate(gameModelId, game);
@@ -127,6 +128,7 @@ public class GameController {
     @Path("ShadowCreate")
     @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
+        // Special instantiate permission is not handled by automatic permission system
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.create(gameModelId, entity);
@@ -162,25 +164,6 @@ public class GameController {
         requestManager.assertGameTrainer(entity);
 
         return gameFacade.update(entityId, entity);
-    }
-
-    /**
-     * Due to strange unpredictable bug, some users might not have rights to
-     * view the game. This method check if all player within the game have the
-     * correct rights and create them if it's not the case
-     *
-     * @param gameId id of the game one want to recover players rights
-     *
-     * @return the game
-     */
-    @PUT
-    @Path("{gameId: [1-9][0-9]*}/recoverRights")
-    @Deprecated
-    public Game recoverRights(@PathParam("gameId") Long gameId) {
-        Game game = gameFacade.find(gameId);
-        requestManager.assertGameTrainer(game);
-        gameFacade.recoverRights(game);
-        return game;
     }
 
     /**
@@ -336,7 +319,8 @@ public class GameController {
     @Path("{gameId : [1-9][0-9]*}/Reset")
     public Response reset(@PathParam("gameId") Long gameId) {
 
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
+        Game game = gameFacade.find(gameId);
+        requestManager.assertUpdateRight(game);
 
         gameFacade.reset(gameId);
         return Response.ok().build();

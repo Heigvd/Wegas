@@ -12,7 +12,6 @@ import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -42,7 +41,8 @@ import java.util.Set;
  */
 @Stateless
 @LocalBean
-public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> implements  StateMachineFacadeI {
+public class StateMachineFacade extends WegasAbstractFacade implements  StateMachineFacadeI {
+//public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> implements  StateMachineFacadeI {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
 
@@ -58,27 +58,10 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> imple
     private PlayerFacade playerFacade;
 
     @EJB
-    private VariableInstanceFacade variableInstanceFacade;
-
-    @EJB
     private ScriptFacade scriptManager;
 
     @Inject
-    private RequestManager requestManager;
-
-    @Inject
     private ScriptEventFacade scriptEvent;
-
-    /**
-     * Manage internal event transition.
-     */
-    //private InternalStateMachineEventCounter stateMachineEventsCounter;
-    /**
-     *
-     */
-    public StateMachineFacade() {
-        super(StateMachineDescriptor.class);
-    }
 
     public Transition findTransition(Long transitionId) {
         return getEntityManager().find(Transition.class, transitionId);
@@ -294,16 +277,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> imple
             }
         }
         return stateMachineInstance;
-    }
-
-    @Override
-    public void create(StateMachineDescriptor entity) {
-        variableDescriptorFacade.create(entity);
-    }
-
-    @Override
-    public void remove(StateMachineDescriptor entity) {
-        variableDescriptorFacade.remove(entity);
     }
 
     /**

@@ -108,10 +108,10 @@ public class TeamFacade extends BaseFacade<Team> {
         Game game = entity.getGame();
         game = gameFacade.find(game.getId());
         game.addTeam(entity);
+        entity.setStatus(Status.LIVE);
 
         getEntityManager().persist(entity);
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
-        entity.setStatus(Status.LIVE);
     }
 
     public List<Team> findTeamsToPopulate() {

@@ -73,9 +73,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     private Event<DescriptorRevivedEvent> descriptorRevivedEvent;
 
     @Inject
-    private RequestManager requestManager;
-
-    @Inject
     private Event<InstanceRevivedEvent> instanceRevivedEvent;
 
     /**

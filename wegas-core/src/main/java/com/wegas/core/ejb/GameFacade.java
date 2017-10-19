@@ -20,8 +20,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.Permission;
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +30,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,20 +62,11 @@ public class GameFacade extends BaseFacade<Game> {
     @Inject
     private Event<PreEntityRemoved<Game>> gameRemovedEvent;
 
-    @EJB
-    private RequestFacade requestFacade;
-
     /**
      *
      */
     @EJB
     private GameModelFacade gameModelFacade;
-
-    /**
-     *
-     */
-    @EJB
-    private RoleFacade roleFacade;
 
     /**
      *
@@ -94,9 +82,6 @@ public class GameFacade extends BaseFacade<Game> {
      */
     @EJB
     private UserFacade userFacade;
-
-    @Inject
-    private RequestManager requestManager;
 
     @Inject
     private PopulatorScheduler populatorScheduler;
@@ -353,8 +338,8 @@ public class GameFacade extends BaseFacade<Game> {
                         dgm.setCanDuplicate(gmPerm.contains("Duplicate") || gmPerm.contains("*"));
                         dgm.setCanInstantiate(gmPerm.contains("Instantiate") || gmPerm.contains("*"));
                     } else {
-                        dgm.setCanView(Boolean.FALSE);
-                        dgm.setCanEdit(Boolean.FALSE);
+                        dgm.setCanView(Boolean.TRUE);
+                        dgm.setCanEdit(Boolean.TRUE);
                         dgm.setCanDuplicate(Boolean.FALSE);
                         dgm.setCanInstantiate(Boolean.FALSE);
                     }
@@ -398,35 +383,6 @@ public class GameFacade extends BaseFacade<Game> {
         Long id = requestManager.getCurrentUser().getId();
         logger.info("Adding user {} to team {}", id, teamId);
         return this.joinTeam(teamId, id, playerName);
-    }
-
-    /**
-     * Player right: View on Game and GameModel Player right: View on Game and
-     * GameModel
-     *
-     * @param user
-     * @param game
-     */
-    @Deprecated
-    public void addRights(User user, Game game) {
-        /*
-        userFacade.addUserPermission(
-                user,
-                "Game:View:g" + game.getId(), // Add "View" right on game,
-                "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
-        */
-    }
-
-    @Deprecated
-    public void recoverRights(Game game) {
-        for (Team team : game.getTeams()) {
-            for (Player player : team.getPlayers()) {
-                User user = player.getUser();
-                if (user != null) {
-                    this.addRights(user, game);
-                }
-            }
-        }
     }
 
     /**

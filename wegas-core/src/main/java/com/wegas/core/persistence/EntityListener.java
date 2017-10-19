@@ -19,6 +19,7 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
@@ -82,7 +83,7 @@ public class EntityListener {
     @PostPersist
     void onPostPersist(Object o) {
         if (o instanceof AbstractEntity) {
-
+            logger.debug("PostPersist {} , {}", o, ((AbstractEntity) o).isPersisted());
             if (requestManager != null) {
                 requestManager.assertCreateRight((AbstractEntity) o);
             } else {
@@ -100,12 +101,17 @@ public class EntityListener {
                 logger.debug("Unhandled new broadcastable entity: {}", b);
             }
         }
+
+        if (o instanceof Permission) {
+            requestManager.clearEffectivePermisssions();
+        }
     }
 
     @PostUpdate
     void onPostUpdate(Object o) {
 
         if (o instanceof AbstractEntity) {
+            logger.debug("PostUpdate {} , {}", o, ((AbstractEntity) o).isPersisted());
             if (requestManager != null) {
                 requestManager.assertUpdateRight((AbstractEntity) o);
             } else {
@@ -122,6 +128,9 @@ public class EntityListener {
             }
         }
 
+        if (o instanceof Permission) {
+            requestManager.clearEffectivePermisssions();
+        }
     }
 
     @PreRemove
@@ -155,17 +164,23 @@ public class EntityListener {
             AbstractEntity ae = (AbstractEntity) o;
             ae.updateCacheOnDelete(getBeansjection());
         }
+
+        if (o instanceof Permission) {
+            requestManager.clearEffectivePermisssions();
+        }
     }
 
     @PostLoad
     void onPostLoad(Object o) {
         if (o instanceof AbstractEntity) {
+            logger.debug("PostLoad {}  -> true", o);
             ((AbstractEntity) o).setPersisted(true);
-            /*if (requestManager != null) {
+            if (requestManager != null) {
+                //requestManager.postponeAssertReadRight((AbstractEntity) o);
                 requestManager.assertReadRight((AbstractEntity) o);
             } else {
                 logger.error("PostLOAD NO SECURITY FACADE");
-            }*/
+            }
         }
 
         if (o instanceof AcceptInjection) {

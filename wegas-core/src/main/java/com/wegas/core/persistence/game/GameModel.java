@@ -828,8 +828,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public String getRequieredReadPermission() {
-        return null;
-        //return this.getChannel();
+        //if (this.getStatus().equals(Status.PLAY)) {
+            // the game model is tighlty bound to a game
+            //return this.getGames().get(0).getRequieredReadPermission();
+        //} else {
+            return this.getChannel();
+        //}
     }
 
     @Override
