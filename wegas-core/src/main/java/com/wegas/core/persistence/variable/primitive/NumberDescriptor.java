@@ -40,7 +40,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      *
      */
     @Column(columnDefinition = "integer default 20")
-    private Integer historySize;
+    private Integer historySize = 20;
 
     /**
      *
