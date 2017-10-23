@@ -7,31 +7,29 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.AbstractEJBTest;
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import org.junit.Test;
+import javax.ejb.EJB;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class GameControllerTest extends AbstractEJBTest {
+public class GameControllerTest extends AbstractArquillianTest {
+
+    @EJB
+    private GameController gameController;
+
+    @EJB
+    private PlayerController playerController;
 
     @Test
     public void joinIndividually() throws Exception {
-        final GameController gameController = lookupBy(GameController.class);
-        final GameFacade gameFacade = lookupBy(GameFacade.class);
-        final VariableDescriptorFacade variableDescriptorFacade = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade variableInstanceFacade = lookupBy(VariableInstanceFacade.class);
-        final PlayerController playerController = lookupBy(PlayerController.class);
-
         gameModel.getProperties().setFreeForAll(true);
         gameModelFacade.update(gameModel.getId(), gameModel);
 

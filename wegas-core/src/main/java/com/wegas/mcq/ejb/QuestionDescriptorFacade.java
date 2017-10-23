@@ -16,22 +16,22 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -78,6 +78,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     @Inject
     private VariableInstanceFacade variableInstanceFacade;
+
+    @Inject
+    private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
      * Find a result identified by the given name belonging to the given
@@ -194,7 +197,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     private Reply createReply(Long choiceId, Player player, Long startTime) {
-        ChoiceDescriptor choice = (ChoiceDescriptor) VariableDescriptorFacade.lookup().find(choiceId);
+        ChoiceDescriptor choice = (ChoiceDescriptor) variableDescriptorFacade.find(choiceId);
         ChoiceInstance choiceInstance = choice.getInstance(player);
 
         QuestionDescriptor questionDescriptor = choice.getQuestion();
@@ -369,7 +372,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         //}
         return reply;
     }
-
+    
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public Reply TX_selectAndValidateChoice(Long choiceId, Long playerId) {
+        return this.selectAndValidateChoice(choiceId, playerId);
+    }
     /**
      *
      * @param player player who wants to cancel the reply
@@ -434,6 +441,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     public void validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
+        ChoiceInstance instance = choiceDescriptor.getInstance(player);
+        instance.setActive(false);
         validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
         if (validateReply.getIgnored()) {

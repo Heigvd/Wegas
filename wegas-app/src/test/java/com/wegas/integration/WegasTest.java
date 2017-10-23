@@ -70,6 +70,9 @@ public class WegasTest {
         baseURL = runtime.getBaseUrl();
         JWebUnit.setBaseUrl(baseURL);
 
+        HttpGet setSynchronous = new HttpGet(baseURL + "/rest/Utils/SetPopulatingSynchronous");
+        HttpResponse execute = client.execute(setSynchronous);
+
         login();
         loadArtos();
     }

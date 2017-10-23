@@ -8,18 +8,19 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.*;
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.util.function.Function;
+import javax.naming.NamingException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
-import java.util.function.Function;
-import org.junit.Assert;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class GameModelFacadeTest extends AbstractEJBTest {
+//@ArquillianSuiteDeployment
+public class GameModelFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelFacadeTest.class);
     private int nbFail = 0;
@@ -61,10 +62,6 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         final String NAME = "test-game";
         final String TOKEN = "token-for-testGame";
 
-        GameFacade gf = lookupBy(GameFacade.class);
-        TeamFacade tf = lookupBy(TeamFacade.class);
-        PlayerFacade pf = lookupBy(PlayerFacade.class);
-
         // Create a game model
         GameModel gameModel = new GameModel(GAMENAME);
         final int size = gameModelFacade.findAll().size();
@@ -79,17 +76,17 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         // Create a game, a team and a player
         Game g = new Game(NAME, TOKEN);
-        gf.create(gameModel.getId(), g);
+        gameFacade.create(gameModel.getId(), g);
 
-        Game g2 = gf.findByToken(TOKEN);
+        Game g2 = gameFacade.findByToken(TOKEN);
         Assert.assertEquals(NAME, g2.getName());
 
         Team t = new Team();
         t.setName("test-team");
-        tf.create(g.getId(), t);
+        teamFacade.create(g.getId(), t);
         Assert.assertNotNull(t.getId());
 
-        Player p = gf.joinTeam(t.getId(), "John A. Player");
+        Player p = gameFacade.joinTeam(t.getId(), "John A. Player");
 
         Assert.assertNotNull(p.getId());
 
@@ -106,9 +103,6 @@ public class GameModelFacadeTest extends AbstractEJBTest {
             nbFail++;
         };
 
-        GameFacade gf = lookupBy(GameFacade.class);
-        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
-
         final int size = gameModelFacade.findAll().size();
 
         GameModel gameModel = new GameModel("TESTGM");
@@ -116,12 +110,12 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         gameModelFacade.create(gameModel);
 
         Game g = new Game("TESTGAME", "xxx");
-        gf.create(gameModel.getId(), g);
+        gameFacade.create(gameModel.getId(), g);
         Team t1 = new Team();
         Team t2 = new Team();
         t1.setName("test-team");
         t2.setName("test-team");
-        final Function<Team, Runnable> runCreateTeam = (Team team) -> () -> teamFacade.create(g.getId(), team);
+        final Function<Team, Runnable> runCreateTeam = (Team t) -> () -> teamFacade.create(g.getId(), t);
 
         final Thread thread1 = TestHelper.start(runCreateTeam.apply(t1), handler);
         final Thread thread2 = TestHelper.start(runCreateTeam.apply(t2), handler);
@@ -137,16 +131,13 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
     @Test
     public void createMultipleTeam_seq() throws NamingException, InterruptedException {
-        GameFacade gf = lookupBy(GameFacade.class);
-        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
-
         final int size = gameModelFacade.findAll().size();
 
         GameModel gameModel = new GameModel("TESTGM");
         gameModelFacade.create(gameModel);
 
         Game g = new Game("TESTGAME", "xxx");
-        gf.create(gameModel.getId(), g);
+        gameFacade.create(gameModel.getId(), g);
         Team t1 = new Team();
         Team t2 = new Team();
         t1.setName("test-team");

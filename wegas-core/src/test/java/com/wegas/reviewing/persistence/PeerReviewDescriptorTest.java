@@ -9,10 +9,7 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.wegas.core.ejb.AbstractEJBTest;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.TeamFacade;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -25,11 +22,10 @@ import com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor;
 import java.io.IOException;
 import java.util.List;
 import javax.naming.NamingException;
-
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,20 +33,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public class PeerReviewDescriptorTest extends AbstractEJBTest {
+public class PeerReviewDescriptorTest extends AbstractArquillianTest {
 
-    private static TeamFacade teamFacade;
-    private static PlayerFacade playerFacade;
     private static final Logger logger = LoggerFactory.getLogger(PeerReviewDescriptorTest.class);
-
-    static {
-        try {
-            teamFacade = lookupBy(TeamFacade.class);
-            playerFacade = lookupBy(PlayerFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Lookup error", ex);
-        }
-    }
 
     ObjectMapper mapper;
     ObjectWriter exportMapper;
@@ -80,7 +65,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         toBeReviewed = new NumberDescriptor(VAR_NAME);
         toBeReviewed.setDefaultInstance(new NumberInstance(0));
 
-        descriptorFacade.create(gameModel.getId(), toBeReviewed);
+        variableDescriptorFacade.create(gameModel.getId(), toBeReviewed);
 
         initial = new PeerReviewDescriptor();
         initial.setName("myReview");
@@ -125,7 +110,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
 
         f2evaluations.add(grade2);
 
-        descriptorFacade.create(gameModel.getId(), initial);
+        variableDescriptorFacade.create(gameModel.getId(), initial);
     }
 
     @After
@@ -146,7 +131,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
      */
     @Test
     public void testSerialise() throws IOException {
-        RequestFacade.lookup().setPlayer(player.getId());
+        requestFacade.setPlayer(player.getId());
 
         String json = exportMapper.writeValueAsString(initial);
 
@@ -166,7 +151,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         String json = "{ \"@class\": \"PeerReviewDescriptor\", \"id\": \"\", \"label\": \"rr\", \"toReviewName\": \"x\", \"name\": \"\", \"maxNumberOfReview\": 3, \"feedback\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"fbComments\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"defaultInstance\": { \"@class\": \"PeerReviewInstance\", \"id\": \"\" }, \"comments\": \"\", \"scope\": { \"@class\": \"TeamScope\", \"broadcastScope\": \"TeamScope\" } }";
 
         PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
-        descriptorFacade.create(gameModel.getId(), read);
+        variableDescriptorFacade.create(gameModel.getId(), read);
 
         String json2 = exportMapper.writeValueAsString(read);
     }
@@ -180,7 +165,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         merged.setFeedback(new EvaluationDescriptorContainer());
         merged.setFbComments(new EvaluationDescriptorContainer());
 
-        descriptorFacade.create(gameModel.getId(), merged);
+        variableDescriptorFacade.create(gameModel.getId(), merged);
 
         //logger.warn("Initial: " + exportMapper.writeValueAsString(initial));
         merged.merge(initial);

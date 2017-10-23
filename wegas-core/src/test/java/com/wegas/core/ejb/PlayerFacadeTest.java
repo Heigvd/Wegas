@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -18,13 +19,10 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import java.util.List;
-import javax.naming.NamingException;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,22 +31,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class PlayerFacadeTest extends AbstractEJBTest {
+public class PlayerFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PlayerFacadeTest.class);
-
-    private static GameFacade gameFacade;
-    private static TeamFacade teamFacade;
-    private static UserFacade userFacade;
-    private static PlayerFacade playerFacade;
-
-    @BeforeClass
-    public static void init() throws NamingException {
-        gameFacade = lookupBy(GameFacade.class);
-        teamFacade = lookupBy(TeamFacade.class);
-        playerFacade = lookupBy(PlayerFacade.class);
-        userFacade = lookupBy(UserFacade.class);
-    }
 
     /**
      * Test registeredGames
@@ -140,10 +125,10 @@ public class PlayerFacadeTest extends AbstractEJBTest {
 
         logger.error("CREATE NEW DESCRIPTORS");
 
-        descriptorFacade.create(gameModel.getId(), gmScoped);
-        descriptorFacade.create(gameModel.getId(), gScoped);
-        descriptorFacade.create(gameModel.getId(), tScoped);
-        descriptorFacade.create(gameModel.getId(), pScoped);
+        variableDescriptorFacade.create(gameModel.getId(), gmScoped);
+        variableDescriptorFacade.create(gameModel.getId(), gScoped);
+        variableDescriptorFacade.create(gameModel.getId(), tScoped);
+        variableDescriptorFacade.create(gameModel.getId(), pScoped);
 
         List<VariableInstance> instances = playerFacade.getInstances(player.getId());
 

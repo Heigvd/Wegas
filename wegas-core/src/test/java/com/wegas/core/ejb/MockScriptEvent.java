@@ -7,14 +7,11 @@
  */
 package com.wegas.core.ejb;
 
-import javax.enterprise.inject.Specializes;
-import javax.inject.Singleton;
-
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@Specializes
-@Singleton
-public class MockScriptEvent extends ScriptEventFacade{  
-}
+//@Specializes
+//@Singleton
+//public class MockScriptEvent extends ScriptEventFacade{  
+//}

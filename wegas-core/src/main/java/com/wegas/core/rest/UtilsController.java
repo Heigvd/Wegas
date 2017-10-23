@@ -14,7 +14,6 @@ import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.HelperBean;
 import fish.payara.micro.cdi.Outbound;
-import java.util.Set;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -143,20 +142,36 @@ public class UtilsController {
         return sb.toString();
     }
 
+    @GET
+    @Path("SetPopulatingSynchronous")
+    @RequiresRoles("Administrator")
+    public String setPopulatingSynchronous() {
+        populatorScheduler.setBroadcast(false);
+        populatorScheduler.setAsync(false);
+        return "Populating Process is now synchronous";
+    }
+
+    @GET
+    @Path("SetPopulatingAsynchronous")
+    @RequiresRoles("Administrator")
+    public String setPopulatingAsynchronous() {
+        populatorScheduler.setBroadcast(true);
+        populatorScheduler.setAsync(true);
+        return "Populating Process is now asynchronous";
+    }
 
     @GET
     @Path("StartPopulating")
     @RequiresRoles("Administrator")
-    public String startPopulating(){
+    public String startPopulating() {
         populatorScheduler.startAll();
         return "STARTED";
     }
 
-
     @GET
     @Path("StopPopulating")
     @RequiresRoles("Administrator")
-    public String stopPopulating(){
+    public String stopPopulating() {
         populatorScheduler.stopAll();
         return "STOPPED";
     }
@@ -164,7 +179,7 @@ public class UtilsController {
     @GET
     @Path("AbortPopulating")
     @RequiresRoles("Administrator")
-    public String abortPopulating(){
+    public String abortPopulating() {
         populatorScheduler.abortAll();
         return "STOPPED";
     }

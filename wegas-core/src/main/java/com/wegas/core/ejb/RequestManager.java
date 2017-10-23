@@ -14,17 +14,16 @@ import com.wegas.core.event.client.ExceptionEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import jdk.nashorn.api.scripting.ScriptUtils;
-import jdk.nashorn.internal.runtime.ScriptObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
@@ -35,10 +34,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-import com.wegas.core.persistence.InstanceOwner;
+import jdk.nashorn.api.scripting.ScriptUtils;
+import jdk.nashorn.internal.runtime.ScriptObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //import javax.annotation.PostConstruct;
 /**

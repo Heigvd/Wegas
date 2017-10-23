@@ -7,25 +7,26 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.wegas.core.ejb.AbstractEJBTest;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.rest.GameController;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
+import javax.ejb.EJB;
 import org.junit.Test;
 
 /**
  *
  * @author maxence (maxence.laurent at gmail.com)
  */
-public class RemoveGuestTest extends AbstractEJBTest {
+public class RemoveGuestTest extends AbstractArquillianTest {
+
+    @EJB
+    private GameController gameController;
 
     @Test(expected = WegasNotFoundException.class)
     public void removeIdles() throws Exception {
-        final GameController gameController = lookupBy(GameController.class);
-        final UserFacade userFacade = lookupBy(UserFacade.class);
-        final AccountFacade accountFacade = lookupBy(AccountFacade.class);
 
         gameModel.getProperties().setFreeForAll(true);
         gameModelFacade.update(gameModel.getId(), gameModel);

@@ -7,11 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.wegas.core.Helper;
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.TestHelper;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -21,13 +17,10 @@ import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJBException;
-import javax.ejb.embeddable.EJBContainer;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,67 +28,21 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Yannick Lagger
  */
-public class UserFacadeTest {
+public class UserFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(UserFacadeTest.class);
 
-    private static GameModelFacade gameModelFacade;
+    private AbstractAccount abstractAccount;
 
-    private static GameFacade gameFacade;
+    private User u;
 
-    private static UserFacade userFacade;
-
-    private static RoleFacade roleFacade;
-
-    private static AccountFacade accountFacade;
-
-    private static AbstractAccount abstractAccount;
-
-    private static User u;
-
-    private static EJBContainer container;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        container = TestHelper.getEJBContainer();
-        userFacade = Helper.lookupBy(container.getContext(), UserFacade.class);
-        roleFacade = Helper.lookupBy(container.getContext(), RoleFacade.class);
-        accountFacade = Helper.lookupBy(container.getContext(), AccountFacade.class);
-
-        gameModelFacade = GameModelFacade.lookup();
-
-        gameFacade = GameFacade.lookup();
-
-        u = userFacade.guestLogin();
-        abstractAccount = u.getMainAccount();
-        RequestFacade.lookup().getRequestManager().setCurrentUser(u);
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        userFacade.remove(u.getId());
-        TestHelper.closeContainer();
-    }
-
-    /*private GameModel gameModel;
-    private Game game;
-     */
     @Before
     public void setUp() {
-        // Login as u !
+        u = userFacade.guestLogin();
+        abstractAccount = u.getMainAccount();
+
         Subject subject = SecurityUtils.getSubject();
         subject.login(new GuestToken(u.getMainAccount().getId()));
-        /*
-        gameModel = new GameModel();
-        gameModelFacade.create(gameModel);
-
-        game = new Game();
-        game.setName("aGame");
-        game.setToken("aGameToken");
-        game.setAccess(Game.GameAccess.OPEN);
-
-        gameFacade.create(gameModel.getId(), game);
-         */
     }
 
     /**
@@ -106,7 +53,8 @@ public class UserFacadeTest {
 
         // findAll()
         List<User> users = userFacade.findAll();
-        Assert.assertEquals(u, users.get(0));
+
+        Assert.assertTrue(users.contains(u));
 
         // find
         Assert.assertEquals(u, userFacade.find(u.getId()));
@@ -194,9 +142,10 @@ public class UserFacadeTest {
 
     @Test
     public void testIdleGuestRemoval() {
+        int nbUser = userFacade.findAll().size();
         userFacade.guestLogin();                                                // Log in as guest
 
-        Assert.assertEquals(2, userFacade.findAll().size());                    // Assert creation
+        Assert.assertEquals(nbUser + 1, userFacade.findAll().size());                    // Assert creation
 
         User user = userFacade.getCurrentUser();                                // Set created time to 3 month ago
         Calendar calendar = Calendar.getInstance();
@@ -207,7 +156,7 @@ public class UserFacadeTest {
 
         userFacade.removeIdleGuests();                                          // Run idle guest account removal
 
-        Assert.assertEquals(1, userFacade.findAll().size());                    // Assert removal succes
+        Assert.assertEquals(nbUser, userFacade.findAll().size());                    // Assert removal succes
     }
 
     @Test

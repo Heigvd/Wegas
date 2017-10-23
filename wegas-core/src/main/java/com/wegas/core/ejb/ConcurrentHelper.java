@@ -9,18 +9,17 @@ package com.wegas.core.ejb;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.cache.Cache;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import javax.cache.Cache;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Internal Mechanism
@@ -107,7 +106,7 @@ public class ConcurrentHelper {
     //@Lock(LockType.READ)
     public boolean tryLock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        //logger.error("try to lock " + token + " as " + effectiveToken);
+        logger.error("try to lock " + token + " as " + effectiveToken);
 
         boolean r = false;
         this.mainLock();
@@ -146,11 +145,12 @@ public class ConcurrentHelper {
      * thread.
      *
      * @param token lock identifier
+     * @param audience
      */
     //@Lock(LockType.READ)
     public void lock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        //logger.error("LOCK " + token + " for " + audience);
+        logger.error("LOCK " + token + " for " + audience);
 
         RefCounterLock lock;
         this.mainLock();
@@ -183,7 +183,7 @@ public class ConcurrentHelper {
      */
     private void unlock(RefCounterLock lock, String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        //logger.error("UNLOCK: " + lock);
+        logger.error("UNLOCK: " + lock);
         this.getLock(lock).unlock();
         //logger.error("UNLOCKED");
         lock.counter--;
