@@ -17,6 +17,12 @@
             #{editorGameController.currentGameModel.toJsonWithView("Editor")};
         var CurrentGame = #{editorGameController.currentGame.toJsonWithView("Editor")};
         var CurrentPlayerId = #{editorGameController.currentPlayer.id};
+        var CurrentTeamId = #{editorGameController.currentPlayer.team.id}
+        var PusherApp = {
+            authEndpoint: API_ENDPOINT + "Pusher/auth",
+            applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}",
+            cluster: "#{editorGameController.getWegasProperty('pusher.cluster')}"
+        }
     </script>
     <ui:fragment rendered="#{requestController.debugMode()}">
         <script type="application/javascript" src="/dist/manifest.js"/>
