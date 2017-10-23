@@ -73,12 +73,6 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-jcr</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -102,12 +96,6 @@
         <dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>json-patch</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!--<dependency>
@@ -127,11 +115,11 @@
 
 
         <!-- Test -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
 
 
         <dependency>
@@ -152,11 +140,18 @@
             <scope>test</scope>
         </dependency>
 
-        <!--<dependency>
+        <dependency>
             <groupId>org.eu.ingwar.tools</groupId>
             <artifactId>arquillian-suite-extension</artifactId>
             <scope>test</scope>
-        </dependency>-->
+            <exclusions>
+                <exclusion>
+                    <!-- deprecated ...-->
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -295,9 +290,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
 
                 <configuration>
-                    <systemPropertyVariables>
-                        <fish.payara.classloading.delegate>false</fish.payara.classloading.delegate>
-                    </systemPropertyVariables>
                     <systemProperties>
                         <arquillian.launch>glassfish-embedded</arquillian.launch>
                     </systemProperties>

@@ -29,6 +29,7 @@ import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.File;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import org.apache.shiro.SecurityUtils;
@@ -117,13 +118,19 @@ public abstract class AbstractArquillianTest {
         //war.addPackages(true, "com.wegas");
         //war.addAsDirectory("target/embed-classes/");
         //war.addAsResource("./src/test/resources/META-INF/persistence.xml", "META-INF/persistence.xml");
-        logger.error("MyWegasArchive: {}", war.toString(true));
+        //logger.error("MyWegasArchive: {}", war.toString(true));
 
         String clusterNameKey = "wegas.hazelcast.clustername";
         String clusterName = "hz_wegas_test_cluster_" + Helper.genToken(5);
         System.setProperty(clusterNameKey, clusterName);
 
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
+
+        /* Log Levels */
+        java.util.logging.Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("javax.enterprise.system").setLevel(Level.SEVERE);
+        java.util.logging.Logger.getLogger("fish.payara.nucleus.healthcheck").setLevel(Level.SEVERE);
+        org.glassfish.ejb.LogFacade.getLogger().setLevel(Level.SEVERE);
 
         return war;
     }

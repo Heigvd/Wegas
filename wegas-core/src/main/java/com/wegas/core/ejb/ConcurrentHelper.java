@@ -106,7 +106,7 @@ public class ConcurrentHelper {
     //@Lock(LockType.READ)
     public boolean tryLock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        logger.error("try to lock " + token + " as " + effectiveToken);
+        //logger.error("try to lock " + token + " as " + effectiveToken);
 
         boolean r = false;
         this.mainLock();
@@ -150,7 +150,7 @@ public class ConcurrentHelper {
     //@Lock(LockType.READ)
     public void lock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        logger.error("LOCK " + token + " for " + audience);
+        //logger.error("LOCK " + token + " for " + audience);
 
         RefCounterLock lock;
         this.mainLock();
@@ -183,7 +183,7 @@ public class ConcurrentHelper {
      */
     private void unlock(RefCounterLock lock, String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        logger.error("UNLOCK: " + lock);
+        //logger.error("UNLOCK: " + lock);
         this.getLock(lock).unlock();
         //logger.error("UNLOCKED");
         lock.counter--;

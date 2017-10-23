@@ -11,6 +11,7 @@ import com.wegas.core.persistence.game.*;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.function.Function;
 import javax.naming.NamingException;
+import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-//@ArquillianSuiteDeployment
+@ArquillianSuiteDeployment
 public class GameModelFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelFacadeTest.class);
