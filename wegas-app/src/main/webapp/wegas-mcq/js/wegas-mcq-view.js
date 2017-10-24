@@ -45,7 +45,7 @@ YUI.add('wegas-mcq-view', function(Y) {
              * Reference to each used Event handlers
              */
             this.handlers = [];
-            this.on("disabledChange", this.syncUI, this);
+            this.after("disabledChange", this.syncUI, this);
             this.plugLockable();
         },
         plugLockable: function() {

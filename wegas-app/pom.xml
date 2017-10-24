@@ -192,12 +192,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <scope>test</scope>
-            <type>jar</type>
-        </dependency>
         <!--<dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
