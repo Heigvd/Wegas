@@ -14,7 +14,6 @@ import fish.payara.micro.cdi.Outbound;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -22,7 +21,6 @@ import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.slf4j.Logger;
@@ -42,8 +40,8 @@ public class PopulatorScheduler {
 
     protected static final String EVENT_NAME = "Wegas_Populator_Event";
 
-    protected static boolean async = true;
-    protected static boolean broadcast = true;
+    private static boolean async = true;
+    private static boolean broadcast = true;
 
     protected static enum PopulatingCommand {
         START_ONE,
@@ -167,7 +165,6 @@ public class PopulatorScheduler {
                 Integer get = future.get();
                 logger.info(" * Got {}", get);
             } catch (Exception ex) {
-                java.util.logging.Logger.getLogger(PopulatorScheduler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -186,7 +183,6 @@ public class PopulatorScheduler {
                 Integer get = future.get();
                 logger.info(" * Got {}", get);
             } catch (Exception ex) {
-                java.util.logging.Logger.getLogger(PopulatorScheduler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -210,6 +206,6 @@ public class PopulatorScheduler {
     }
 
     public void setBroadcast(boolean broadcast) {
-        PopulatorScheduler.broadcast= broadcast;
+        PopulatorScheduler.broadcast = broadcast;
     }
 }

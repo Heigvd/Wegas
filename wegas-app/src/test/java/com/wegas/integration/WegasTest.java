@@ -25,16 +25,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-//import net.sourceforge.jwebunit.api.IElement;
-//import net.sourceforge.jwebunit.junit.JWebUnit;
-//import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.codehaus.jettison.json.JSONException;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +42,9 @@ import org.slf4j.LoggerFactory;
  * @author maxence
  */
 public class WegasTest {
+
+    @Rule
+    public TestName name = new TestName();
 
     private static final String WEGAS_ROOT_DIR = "../wegas-app/";
 
@@ -65,20 +67,20 @@ public class WegasTest {
 
         try {
             runtime = Wegas.boot("wegas_test", "localhost", null, true, 8280);
-            //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
+               //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
 
-            client = new WegasRESTClient(runtime.getBaseUrl());
+               client = new WegasRESTClient(runtime.getBaseUrl());
 
-            scenarist = client.signup("scenarist@local", "1234");
-            trainer = client.signup("trainer@local", "1234");
-            user = client.signup("user@local", "1234");
+               scenarist = client.signup("scenarist@local", "1234");
+               trainer = client.signup("trainer@local", "1234");
+               user = client.signup("user@local", "1234");
 
-            root = client.getAuthInfo("root@root.com", "1234");
-            root.setUserId(1l);
+               root = client.getAuthInfo("root@root.com", "1234");
+               root.setUserId(1l);
 
-            client.login(root);
-            grantRights();
-            logger.error("SETUP COMPLETED");
+               client.login(root);
+               grantRights();
+               logger.error("SETUP COMPLETED");
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(WegasTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (GlassFishException ex) {
@@ -86,7 +88,7 @@ public class WegasTest {
         }
     }
 
-    @AfterClass
+        @AfterClass
     public static void tearDownClass() throws Exception {
         logger.error("AfterCLASS");
         Wegas.shutdown(runtime);
@@ -94,11 +96,12 @@ public class WegasTest {
 
     @Before
     public void setUp() throws IOException, JSONException {
+        logger.error("TEST {}", name.getMethodName());
         logger.error("LOGIN as root");
         client.login(root);
         client.get("/rest/Utils/SetPopulatingSynchronous");
         loadArtos();
-    }
+}
 
     private static void grantRights() throws IOException {
         Map<String, Role> roles = client.getRoles();
@@ -148,7 +151,7 @@ public class WegasTest {
         // Get
         Assert.assertEquals(2, gameModels.size()); // artos +empty
 
-        //create a game 
+        //create a game
         Game myGame = client.postJSON_asString("/rest/GameModel/" + artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"ArtosGame\"}", Game.class);
         String token = myGame.getToken();
 

@@ -7,19 +7,18 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.naming.NamingException;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  *
  * @author maxence
  */
-public class ScopeTest extends AbstractEJBTest {
+public class ScopeTest extends AbstractArquillianTest {
 
     @Test
     public void createVariableTest() throws NamingException {

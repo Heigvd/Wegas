@@ -7,12 +7,12 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.wegas.test.AbstractEJBTestBase;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJBException;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Yannick Lagger
  */
-public class UserFacadeTest extends AbstractEJBTestBase {
+public class UserFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(UserFacadeTest.class);
 
@@ -52,7 +52,7 @@ public class UserFacadeTest extends AbstractEJBTestBase {
         role2 = new Role(ROLE_2);
         roleFacade.create(role2);
 
-        u = AbstractEJBTestBase.signup(EMAIL);
+        u = this.signup(EMAIL);
         login(u);
         abstractAccount = (JpaAccount) u.getUser().getMainAccount();
 
@@ -176,9 +176,10 @@ public class UserFacadeTest extends AbstractEJBTestBase {
 
     @Test
     public void testIdleGuestRemoval() {
+        int nbUser = userFacade.findAll().size();
         userFacade.guestLogin();                                                // Log in as guest
 
-        Assert.assertEquals(3, userFacade.findAll().size()); // Admin, u and currentGuest
+        Assert.assertEquals(nbUser + 1, userFacade.findAll().size());                    // Assert creation
 
         User user = userFacade.getCurrentUser();                                // Set created time to 3 month ago
         Calendar calendar = Calendar.getInstance();
@@ -189,7 +190,7 @@ public class UserFacadeTest extends AbstractEJBTestBase {
 
         userFacade.removeIdleGuests();                                          // Run idle guest account removal
 
-        Assert.assertEquals(2, userFacade.findAll().size());                    // Assert removal succes
+        Assert.assertEquals(nbUser, userFacade.findAll().size());                    // Assert removal succes
     }
 
     @Test

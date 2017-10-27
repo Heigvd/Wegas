@@ -101,7 +101,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //    public void testIndex() throws Exception {
 //        System.out.println("index");
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        Collection expResult = null;
 //        Collection result = instance.index();
 //        assertEquals(expResult, result);
@@ -118,7 +117,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        System.out.println("get");
 //        Long entityId = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        AbstractEntity expResult = null;
 //        AbstractEntity result = instance.get(entityId);
 //        assertEquals(expResult, result);
@@ -135,7 +133,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        System.out.println("create");
 //        AbstractEntity entity = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        AbstractEntity expResult = null;
 //        AbstractEntity result = instance.create(entity);
 //        assertEquals(expResult, result);
@@ -153,7 +150,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        Long entityId = null;
 //        AbstractEntity entity = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        AbstractEntity expResult = null;
 //        AbstractEntity result = instance.update(entityId, entity);
 //        assertEquals(expResult, result);
@@ -170,7 +166,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        System.out.println("delete");
 //        Long entityId = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        AbstractEntity expResult = null;
 //        AbstractEntity result = instance.delete(entityId);
 //        assertEquals(expResult, result);
@@ -187,7 +182,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        System.out.println("getWidgets");
 //        Long gameModelId = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        List expResult = null;
 //        List result = instance.getWidgets(gameModelId);
 //        assertEquals(expResult, result);

@@ -66,7 +66,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext cr) throws IOException {
-        //RequestFacade rmf = RequestFacade.lookup();
         RequestManager requestManager = requestFacade.getRequestManager();
 
         requestManager.setSocketId(cr.getHeaderString("managed-mode"));
@@ -167,7 +166,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
         @Override
         public ObjectWriter modify(EndpointConfigBase<?> ecb, MultivaluedMap<String, Object> mm, Object o, ObjectWriter writer, JsonGenerator jg) throws IOException {
-            //Class view = RequestFacade.lookup().getView();
             return writer.withView(view);
         }
     }

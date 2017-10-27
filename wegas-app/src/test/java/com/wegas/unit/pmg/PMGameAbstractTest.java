@@ -7,7 +7,7 @@
  */
 package com.wegas.unit.pmg;
 
-import com.wegas.unit.AbstractEJBContainerTest;
+import com.wegas.utils.AbstractTest;
 import java.io.IOException;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.After;
@@ -19,7 +19,7 @@ import org.junit.Before;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //abstract public class PMGameAbstractTest extends AbstractEmbeddedGlassfishTest {
-abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
+abstract public class PMGameAbstractTest extends AbstractTest {
 
     public static final String SCRIPTROOT = "src/main/webapp/wegas-private/wegas-pmg/scripts/";
 

@@ -121,7 +121,7 @@ public class Wegas {
 
         String root = ".";
 
-        File domainConfig = new File(root + "/src/test/glassfish/domains/domain1/config/domain.xml");
+        File domainConfig = new File(root + "/src/test/resources/domain_integration.xml");
         File tmpDomainConfig = File.createTempFile("domain", "xml");
         FileUtils.copyFile(domainConfig, tmpDomainConfig);
 
@@ -157,13 +157,15 @@ public class Wegas {
 
     public static void shutdown(WegasRuntime runtime) throws GlassFishException {
         logger.error("Wegas is shutting down now !");
-        GlassFish payara = runtime.getPayara();
-        if (payara != null) {
-            String appName = runtime.getAppName();
-            payara.getDeployer().undeploy(appName);
-            payara.stop();
-        }
+        if (runtime != null) {
+            GlassFish payara = runtime.getPayara();
+            if (payara != null) {
+                String appName = runtime.getAppName();
+                payara.getDeployer().undeploy(appName);
+                payara.stop();
+            }
         runtime.getDomainConfig().delete();
+        }
     }
 
 }

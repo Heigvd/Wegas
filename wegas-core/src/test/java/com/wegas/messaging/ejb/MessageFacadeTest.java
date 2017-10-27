@@ -7,7 +7,6 @@
  */
 package com.wegas.messaging.ejb;
 
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -16,24 +15,31 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import com.wegas.core.rest.ScriptController;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.util.ArrayList;
+import javax.ejb.EJB;
+import javax.naming.NamingException;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
-import java.util.ArrayList;
-
-import static org.junit.Assert.*;
-
 /**
  * @author Benjamin
  */
-public class MessageFacadeTest extends AbstractEJBTest {
+public class MessageFacadeTest extends AbstractArquillianTest {
 
     protected static final Logger logger = LoggerFactory.getLogger(MessageFacadeTest.class);
+
+    @EJB
+    private MessageFacade messageFacade;
+
+    @EJB
+    private ScriptController scriptController;
 
     /**
      * Test of listener method, of class MessageFacade.
@@ -172,7 +178,6 @@ public class MessageFacadeTest extends AbstractEJBTest {
     @Test
     public void testInboxSendTrigger() throws NamingException {
         logger.info("send inbox trigger");
-        // Lookup Ejb's
 
         // Create a inbox descriptor
         InboxDescriptor inbox = new InboxDescriptor();
@@ -236,8 +241,6 @@ public class MessageFacadeTest extends AbstractEJBTest {
     @Test
     public void testTriggeredMessage() throws NamingException {
         logger.info("send inbox trigger");
-        // Lookup Ejb's
-
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));

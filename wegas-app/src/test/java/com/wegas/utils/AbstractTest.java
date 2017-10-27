@@ -5,9 +5,8 @@
  * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.unit;
+package com.wegas.utils;
 
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
@@ -15,45 +14,35 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.rest.ScriptController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.test.AbstractEJBTestBase;
-import com.wegas.utils.TestHelper;
+import com.wegas.test.arquillian.AbstractArquillianTestBase;
 import java.io.IOException;
-
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.NamingException;
+import javax.ejb.EJB;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author Cyril Junod (cyril.junod at gmail.com)
+ *
+ * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public abstract class AbstractEJBContainerTest extends AbstractEJBTestBase {
+public abstract class AbstractTest extends AbstractArquillianTestBase {
 
-    private static EJBContainer container;
+    private static final Logger logger = LoggerFactory.getLogger(AbstractTest.class);
 
-    protected GameModel gameModel;
-    protected Player player;
+    @EJB
+    protected ScriptController scriptController;
 
-    @BeforeClass
-    public static void setUpClass() throws NamingException {
-        AbstractEJBTestBase.setUpFacades("../wegas-core/");
-    }
-
-    protected <T> T lookup(Class<T> className) {
-        try {
-            return Helper.lookupBy(container.getContext(), className, className);
-        } catch (NamingException ex) {
-            return null;
-        }
-    }
+    private GameModel gameModel;
+    private Player player;
 
     protected final void checkNumber(String name, double expectedValue) throws WegasNoResultException {
         this.checkNumber(name, expectedValue, name);
     }
 
     protected final void checkNumber(String name, double expectedValue, String errorMessage) throws WegasNoResultException {
-        Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) variableDescriptorFacade.find(getGameModel(), name)).getValue(player), 0.0);
+        Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) variableDescriptorFacade.find(gm, name)).getValue(player), 0.0);
     }
 
     protected final void createGameModelFromFile(String gameModelPath) throws IOException {
@@ -67,7 +56,9 @@ public abstract class AbstractEJBContainerTest extends AbstractEJBTestBase {
             if (injectScript == null) {
                 throw WegasErrorMessage.error("Injected Script doesn't exists [" + injectScriptPath + "]");
             }
-            gameModel.getScriptLibraryList().add(new GameModelContent(injectScriptPath, injectScript, "JavaScript"));
+            GameModelContent gameModelContent = new GameModelContent(injectScriptPath, injectScript, "JavaScript");
+            gameModelContent.setScriptlibrary_GameModel(gameModel);
+            gameModel.getScriptLibraryList().add(gameModelContent);
         }
 
         System.out.println("Create game model : " + gameModel.getName());
@@ -75,7 +66,7 @@ public abstract class AbstractEJBContainerTest extends AbstractEJBTestBase {
         Assert.assertNotNull(gameModel.getId()); //persisted
 
         this.gameModel = gameModel;
-        player = this.getGameModel().getPlayers().get(0);
+        player = this.gameModel.getPlayers().get(0);
     }
 
     protected final void createGameModelWithConcatenatedScript(GameModel gameModel, String... injectScriptsPath) throws IOException {
@@ -90,9 +81,12 @@ public abstract class AbstractEJBContainerTest extends AbstractEJBTestBase {
 
             scriptContent.append(injectScript);
         }
-        gameModel.getScriptLibraryList().add(new GameModelContent("concatenatedScripts", scriptContent.toString(), "JavaScript"));
+        GameModelContent gameModelContent = new GameModelContent("ConcatenatedScripts", scriptContent.toString(), "JavaScript");
+        gameModelContent.setScriptlibrary_GameModel(gameModel);
+        gameModel.getScriptLibraryList().add(gameModelContent);
 
-        System.out.println("Create game model : " + gameModel.getName());
+        logger.info("Create game model : " + gameModel.getName());
+
         gameModelFacade.createWithDebugGame(gameModel);
         Assert.assertNotNull(gameModel.getId()); //persisted
 
@@ -139,7 +133,7 @@ public abstract class AbstractEJBContainerTest extends AbstractEJBTestBase {
 
     protected Object evalScript(String script) {
         try {
-            return scriptController.run(getGameModel().getId(), this.player.getId(), null, new Script(script));
+            return scriptController.run(gameModel.getId(), this.player.getId(), null, new Script(script));
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

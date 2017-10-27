@@ -19,7 +19,7 @@ import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.persistence.User;
-import com.wegas.test.AbstractEJBTest;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class PlayerFacadeTest extends AbstractEJBTest {
+public class PlayerFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PlayerFacadeTest.class);
 
@@ -171,7 +171,7 @@ public class PlayerFacadeTest extends AbstractEJBTest {
     }
 
     private WegasUser createPlayer(Team t, int i, int j) {
-        WegasUser u = PlayerFacadeTest.signup("massive_player_" + i + "_" + j + "@local");
+        WegasUser u = this.signup("massive_player_" + i + "_" + j + "@local");
         login(u);
         gameFacade.joinTeam(t.getId(), u.getUsername());
         u.setUser(userFacade.find(u.getId()));

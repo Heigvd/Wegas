@@ -26,9 +26,13 @@ import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.mcq.persistence.QuestionDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -40,13 +44,8 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -481,7 +480,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final int index) {
         final VariableDescriptor vd = this.find(descriptorId);                  // Remove from the previous list
         DescriptorListI from = vd.getParent();
-        
+
         from.localRemove(vd);
         targetListDescriptor.addItem(index, vd);
     }
@@ -566,5 +565,4 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             return null;
         }
     }
-
 }

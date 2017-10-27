@@ -7,11 +7,13 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
+import com.wegas.core.rest.GameController;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
+import javax.ejb.EJB;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -21,9 +23,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class GameFacadeTest extends AbstractEJBTest {
+public class GameFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(GameFacadeTest.class);
+
+    @EJB
+    private GameController gameController;
 
     @Test
     public void testNames() throws Exception {

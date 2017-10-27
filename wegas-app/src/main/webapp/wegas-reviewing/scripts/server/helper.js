@@ -19,7 +19,6 @@ var ReviewHelper = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");
 
-
     /*
      * { 
      *  "type" : "GradeSummary",

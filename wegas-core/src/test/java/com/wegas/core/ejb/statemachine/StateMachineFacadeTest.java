@@ -7,8 +7,6 @@
  */
 package com.wegas.core.ejb.statemachine;
 
-import com.wegas.test.AbstractEJBTest;
-import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -18,23 +16,25 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.*;
+import static com.wegas.test.TestHelper.toList;
+import static com.wegas.test.TestHelper.toMap;
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.EJB;
+import javax.naming.NamingException;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.wegas.test.TestHelper.toList;
-import static com.wegas.test.TestHelper.toMap;
-import static org.junit.Assert.assertEquals;
-import org.junit.BeforeClass;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class StateMachineFacadeTest extends AbstractEJBTest {
+public class StateMachineFacadeTest extends AbstractArquillianTest {
+
+    @EJB
+    private StateMachineFacade stateMachineFacade;
 
     protected static final Logger logger = LoggerFactory.getLogger(StateMachineFacadeTest.class);
 
@@ -250,13 +250,12 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         /* player fire event twice */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
-        RequestFacade rf = RequestFacade.lookup();
-        rf.commit();
+        requestFacade.commit();
         assertEquals(INITIALVALUE + 5 + 10, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         /* player22 fire event only once */
         scriptFacade.eval(player22, new Script("JavaScript", "Event.fire('event');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(INITIALVALUE + 5, ((NumberInstance) variableInstanceFacade.find(number.getId(), player22)).getValue(), .1);
         // Clean up
         variableDescriptorFacade.remove(number.getId());
@@ -310,25 +309,23 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
             }
         }
 
-        RequestFacade rf = RequestFacade.lookup();
-
         /* player fire event  -> NO MOVE */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         gameModelFacade.reset(scenario.getId());
-        rf.getRequestManager().getEventCounter().clear();
+        requestFacade.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         gameModelFacade.reset(scenario.getId());
-        rf.getRequestManager().getEventCounter().clear();
+        requestFacade.getRequestManager().getEventCounter().clear();
         /* player fire event twice and event2 */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(11, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         // Clean up
@@ -393,32 +390,30 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
             }
         }
 
-        RequestFacade rf = RequestFacade.lookup();
-
         /* player fire event  -> NO MOVE */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         gameModelFacade.reset(scenario.getId());
-        rf.getRequestManager().getEventCounter().clear();
+        requestFacade.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         gameModelFacade.reset(scenario.getId());
-        rf.getRequestManager().getEventCounter().clear();
+        requestFacade.getRequestManager().getEventCounter().clear();
         /* player fire event twice and event2 */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event2');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(11, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         gameModelFacade.reset(scenario.getId());
-        rf.getRequestManager().getEventCounter().clear();
+        requestFacade.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 twice*/
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event2'); Event.fire('event2');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(101, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         // Clean up
@@ -481,32 +476,30 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
             }
         }
 
-        RequestFacade rf = RequestFacade.lookup();
-
         /* player fire event  -> NO MOVE */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         gameModelFacade.reset(scenario.getId());
-        rf.getRequestManager().getEventCounter().clear();
+        requestFacade.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event2');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         gameModelFacade.reset(scenario.getId());
-        rf.getRequestManager().getEventCounter().clear();
+        requestFacade.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(11, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         gameModelFacade.reset(scenario.getId());
-        rf.getRequestManager().getEventCounter().clear();
+        requestFacade.getRequestManager().getEventCounter().clear();
         /* player fire event and event2 */
         scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
-        rf.commit();
+        requestFacade.commit();
         assertEquals(101, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         // Clean up

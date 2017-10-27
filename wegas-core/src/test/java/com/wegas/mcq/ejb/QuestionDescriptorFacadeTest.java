@@ -7,24 +7,25 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.test.AbstractEJBTest;
-import com.wegas.test.TestHelper;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.mcq.persistence.*;
-import org.junit.Test;
-
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import javax.ejb.EJB;
 import javax.naming.NamingException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import org.junit.Test;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
+public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
+
+    @EJB
+    private QuestionDescriptorFacade questionDescriptorFacade;
 
     /**
      * Test of selectChoice method, of class QuestionController.
@@ -129,7 +130,8 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice.addResult(r);
         
         variableDescriptorFacade.createChild(question.getId(), choice);
-        TestHelper.wipeEmCache();
+        this.wipeEmCache();
+
         final Reply reply = questionDescriptorFacade.selectChoice(choice.getId(), player.getId());
         assertEquals(((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0, 0.0); // Nothing happened
         assertEquals(((QuestionInstance) variableInstanceFacade.find(question.getId(), player.getId())).getReplies().size(), 1);
@@ -235,7 +237,6 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testRemoveCurrentResult() throws NamingException {
-
         // Create a question descriptor
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
@@ -270,7 +271,6 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testChangeResultAndScope() throws NamingException {
-
         // Create a question descriptor
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());

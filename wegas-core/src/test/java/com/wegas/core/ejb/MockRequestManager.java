@@ -7,14 +7,11 @@
  */
 package com.wegas.core.ejb;
 
-import javax.enterprise.inject.Specializes;
-import javax.inject.Singleton;
-
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Specializes
-@Singleton
-public class MockRequestManager extends RequestManager {
-}
+//@Specializes
+//@Singleton
+//public class MockRequestManager extends RequestManager {
+//}

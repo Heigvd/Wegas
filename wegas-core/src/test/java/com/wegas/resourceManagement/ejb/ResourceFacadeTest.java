@@ -7,8 +7,6 @@
  */
 package com.wegas.resourceManagement.ejb;
 
-import com.wegas.test.AbstractEJBTest;
-import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
@@ -21,12 +19,13 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javax.ejb.EJB;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +35,15 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com), Benjamin Gerber
  * <ger.benjamin@gmail.com>
  */
-public class ResourceFacadeTest extends AbstractEJBTest {
+public class ResourceFacadeTest extends AbstractArquillianTest {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
+    
+    @EJB
+    private ResourceFacade resourceFacade;
+    
+    @EJB
+    private IterationFacade iterationFacade;
 
     @Test
     public void testAssignmentsCascadeFromTaskDescriptor() throws Exception {
@@ -107,7 +112,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testAssignment() throws NamingException {
-
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
@@ -235,9 +239,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testRemoveTask() throws NamingException {
-        final ResourceFacade resourceFacade = ResourceFacade.lookup();
-        final IterationFacade iterationFacade = IterationFacade.lookup();
-
         BurndownDescriptor bdown = new BurndownDescriptor();
         bdown.setDefaultInstance(new BurndownInstance());
         variableDescriptorFacade.create(scenario.getId(), bdown);
@@ -382,8 +383,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
     @Test
     public void testMergeIterations() throws NamingException {
 
-        IterationFacade iterationFacade = IterationFacade.lookup();
-
         BurndownDescriptor bdown = new BurndownDescriptor();
         bdown.setDefaultInstance(new BurndownInstance());
         variableDescriptorFacade.create(scenario.getId(), bdown);
@@ -392,12 +391,11 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task1);
 
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My second task");
         task2.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task1);
 
         Iteration it1 = new Iteration();
 
@@ -417,7 +415,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         /*
          * propagate to players
          */
-        gameModelFacade.reset(scenario.getId());
+        variableDescriptorFacade.create(scenario.getId(), task2);
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
@@ -568,21 +566,20 @@ public class ResourceFacadeTest extends AbstractEJBTest {
      * Remove Assignment Test. Script eval version
      */
     @Test
-    public void testRemoveAssignmentFromScript() throws NamingException {
+        gameModelFacade.reset(scenario.getId());
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setName("paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(scenario.getId(), res);
+    public void testRemoveAssignmentFromScript() {
 
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("task");
         task.setName("task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task);
-        String script = "var paul = Variable.find(gameModel, \"paul\");\n"
+        variableDescriptorFacade.create(scenario.getId(), res);
                 + "var paulI = paul.getInstance(self);\n"
                 + "var task = Variable.find(gameModel, \"task\");\n"
                 + "var taskI = task.getInstance(self);\n"
@@ -608,12 +605,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testCreateActivity_ResourceInstance_TaskDescriptor() throws Exception {
-
+        variableDescriptorFacade.create(scenario.getId(), task);
+        String script = "var paul = Variable.find(gameModel, \"paul\");\n"
         // Create a resource
         ResourceDescriptor resD = new ResourceDescriptor();
         resD.setLabel("Paul");
         resD.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(scenario.getId(), resD);
+
 
         // Create a task1
         TaskDescriptor taskD = new TaskDescriptor();
@@ -622,7 +620,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         WRequirement req = new WRequirement();
         req.setWork("carpenter");
         taskD.getDefaultInstance().addRequirement(req);
-        variableDescriptorFacade.create(scenario.getId(), taskD);
+        variableDescriptorFacade.create(scenario.getId(), resD);
 
         ResourceInstance resource = resD.getDefaultInstance();
         TaskInstance task = taskD.getDefaultInstance();
@@ -689,18 +687,18 @@ public class ResourceFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testCreateActivity() throws NamingException {
-
+        variableDescriptorFacade.create(scenario.getId(), taskD);
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(scenario.getId(), res);
+
 
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Assign activity between resource to task1
         resourceFacade.createActivity(res.getInstance(player).getId(), task.getInstance(player).getId());
@@ -719,12 +717,12 @@ public class ResourceFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testAddOccupation_ResourceInstance() throws Exception {
-
+        variableDescriptorFacade.create(scenario.getId(), task);
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(scenario.getId(), res);
+
 
         // Add occupation to a resource
         resourceFacade.addOccupation(res.getInstance(player).getId(), false, 1);
@@ -742,12 +740,12 @@ public class ResourceFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testAddOccupation() throws NamingException {
-
+        variableDescriptorFacade.create(scenario.getId(), res);
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(scenario.getId(), res);
+
 
         // add occupation between to a resource
         resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1);
@@ -799,12 +797,12 @@ public class ResourceFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testAddReservation() throws NamingException {
-
+        variableDescriptorFacade.create(scenario.getId(), res);
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(scenario.getId(), res);
+
 
         // reserve Paul for the 1.0 period
         resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1.0);
@@ -834,17 +832,17 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task1);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My task");
         task2.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task1);
 
         TaskDescriptor task3 = new TaskDescriptor();
         task3.setLabel("My task");
         task3.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task3);
+        variableDescriptorFacade.create(scenario.getId(), task2);
 
         // Assign resource to task1
         resourceFacade.assign(res.getInstance(player).getId(), task1.getInstance(player).getId());
@@ -870,7 +868,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testAddRequirements() throws NamingException {
-        // Create a task
+        variableDescriptorFacade.create(scenario.getId(), task3);
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         TaskInstance taskInstance = new TaskInstance();
@@ -884,7 +882,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         requirement.setWork("Carpenter");
         taskInstance.addRequirement(requirement);
 
-        variableDescriptorFacade.create(scenario.getId(), task);
+        // Create a task
 
         //test on work variable because if it match, requierements work.
         assertEquals(((TaskInstance) variableInstanceFacade.find(task.getInstance(player).getId())).getRequirements().get(0).getWork(),
@@ -896,10 +894,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testDuplicateTaskDescriptor() throws Exception {
-        // Create a task
-        TaskDescriptor task = new TaskDescriptor();
-        task.setLabel("My task");
-        task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
         // Create a second task
@@ -911,7 +905,11 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         taskInstance.setRequirements(requirements);
         task2.setDefaultInstance(taskInstance);
         task2.addPredecessor(task);
-        variableDescriptorFacade.create(scenario.getId(), task2);
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("My task");
+        task.setDefaultInstance(new TaskInstance());
+        variableDescriptorFacade.create(scenario.getId(), task);
         assertEquals("engineer", task2.getDefaultInstance().getRequirements().get(0).getWork());
 
         // and duplicate it
@@ -926,19 +924,13 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testAddPredecessors() throws Exception {
-
-        // Create a task
-        TaskDescriptor task = new TaskDescriptor();
-        task.setLabel("My task");
-        task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task2);
 
         // Create a second task
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My task2");
         task2.setDefaultInstance(new TaskInstance());
         task2.addPredecessor(task);
-        variableDescriptorFacade.create(scenario.getId(), task2);
 
         TaskDescriptor created = (TaskDescriptor) variableDescriptorFacade.find(task2.getId());
         assertEquals("My task", created.getPredecessor(0).getLabel());
@@ -948,7 +940,12 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         TaskDescriptor task3 = new TaskDescriptor();
         task3.setLabel("task3");
         task3.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task3);
+
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("My task");
+        task.setDefaultInstance(new TaskInstance());
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         // and duplicate it
         task2.getPredecessors().clear();
@@ -965,19 +962,14 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testRemovePredecessors() throws Exception {
-
-        // Create a task
-        TaskDescriptor task = new TaskDescriptor();
-        task.setLabel("My task");
-        task.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task);
+        variableDescriptorFacade.create(scenario.getId(), task2);
 
         // Create a second task
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My task2");
         task2.setDefaultInstance(new TaskInstance());
         task2.addPredecessor(task);
-        variableDescriptorFacade.create(scenario.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task3);
 
         TaskDescriptor created = (TaskDescriptor) variableDescriptorFacade.find(task2.getId());
         assertEquals("My task", created.getPredecessor(0).getLabel());
@@ -988,7 +980,12 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         task3.setLabel("task3");
         task3.setDefaultInstance(new TaskInstance());
         task3.addPredecessor(task2);
-        variableDescriptorFacade.create(scenario.getId(), task3);
+
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("My task");
+        task.setDefaultInstance(new TaskInstance());
+        variableDescriptorFacade.create(scenario.getId(), task);
 
         assertEquals("My task2", task3.getPredecessor(0).getLabel());
         assertEquals(1, task3.getPredecessors().size());
@@ -1004,25 +1001,22 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testAssignemntCascadedDeletion() throws NamingException {
-
+        variableDescriptorFacade.create(scenario.getId(), task2);
         // Create a resource
         ResourceDescriptor paul = new ResourceDescriptor();
         paul.setLabel("Paul");
         paul.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(scenario.getId(), paul);
+        variableDescriptorFacade.create(scenario.getId(), task3);
 
         // Create a resource
         ResourceDescriptor roger = new ResourceDescriptor();
         roger.setLabel("Roger");
         roger.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(scenario.getId(), roger);
 
         // Create a task
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(scenario.getId(), task1);
-        gameModelFacade.reset(scenario.getId());
 
         TaskInstance taskI = task1.getInstance(player);
         // Assign resource to task1
@@ -1065,3 +1059,4 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         assertEquals(0, rogerI.getAssignments().size());
     }
 }
+

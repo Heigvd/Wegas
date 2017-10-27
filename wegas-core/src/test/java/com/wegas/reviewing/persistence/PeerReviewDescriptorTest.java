@@ -9,10 +9,6 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.wegas.test.AbstractEJBTest;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -22,15 +18,15 @@ import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import com.wegas.reviewing.persistence.evaluation.GradeDescriptor;
 import com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
-
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public class PeerReviewDescriptorTest extends AbstractEJBTest {
+public class PeerReviewDescriptorTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PeerReviewDescriptorTest.class);
 
@@ -139,7 +135,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
      */
     @Test
     public void testSerialise() throws IOException {
-        RequestFacade.lookup().setPlayer(player.getId());
+        requestFacade.setPlayer(player.getId());
 
         String json = exportMapper.writeValueAsString(initial);
 

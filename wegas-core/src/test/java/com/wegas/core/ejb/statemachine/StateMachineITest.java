@@ -19,9 +19,8 @@ import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import com.wegas.test.AbstractEJBTest;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
-import java.sql.SQLException;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class StateMachineITest extends AbstractEJBTest {
+public class StateMachineITest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(StateMachineITest.class);
 
@@ -40,7 +39,7 @@ public class StateMachineITest extends AbstractEJBTest {
     private static final String TEAM4_TOKEN = "Team4Token";
 
     @Test
-    public void PlayerJoinTest() {
+    public void playerJoinTest() {
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("number");
         testNumber.setDefaultInstance(new NumberInstance(0));
@@ -277,25 +276,5 @@ public class StateMachineITest extends AbstractEJBTest {
         variableInstanceFacade.update(testInstance.getId(), testInstance);
         Assert.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
 
-    }
-
-    public void testChose() throws NamingException, NoSuchMethodException, IOException, WegasNoResultException, SQLException {
-        this.testEvent();
-
-        this.reseAndSetUpDB();
-
-        this.editorUpdate();
-
-        this.reseAndSetUpDB();
-
-        this.highScore();
-
-        this.reseAndSetUpDB();
-
-        this.duplicate();
-
-        this.reseAndSetUpDB();
-
-        this.disable();
     }
 }

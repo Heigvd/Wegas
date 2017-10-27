@@ -7,19 +7,26 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import org.junit.Test;
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import javax.ejb.EJB;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class GameControllerTest extends AbstractEJBTest {
+public class GameControllerTest extends AbstractArquillianTest {
+
+    @EJB
+    private GameController gameController;
+
+    @EJB
+    private PlayerController playerController;
 
     @Test
     public void joinIndividually() throws Exception {

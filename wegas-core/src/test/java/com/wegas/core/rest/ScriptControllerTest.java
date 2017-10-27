@@ -7,23 +7,27 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Map;
+import javax.ejb.EJB;
 import javax.naming.NamingException;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class ScriptControllerTest extends AbstractEJBTest {
+public class ScriptControllerTest extends AbstractArquillianTest {
+
+    @EJB
+    private ScriptController scriptController;
 
     /**
      * Test of testGameModel method, of class ScriptController.

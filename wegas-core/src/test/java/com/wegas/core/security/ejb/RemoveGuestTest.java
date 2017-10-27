@@ -7,9 +7,11 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.wegas.test.AbstractEJBTest;
+import com.wegas.core.rest.GameController;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Calendar;
+import javax.ejb.EJB;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +19,10 @@ import org.junit.Test;
  *
  * @author maxence (maxence.laurent at gmail.com)
  */
-public class RemoveGuestTest extends AbstractEJBTest {
+public class RemoveGuestTest extends AbstractArquillianTest {
+
+    @EJB
+    private GameController gameController;
 
     @Test
     public void removeIdles() throws Exception {

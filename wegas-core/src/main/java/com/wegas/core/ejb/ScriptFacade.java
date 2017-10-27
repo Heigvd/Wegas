@@ -7,15 +7,15 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.api.DelayedScriptEventFacadeI;
-import com.wegas.core.api.ScriptEventFacadeI;
 import com.wegas.core.Helper;
+import com.wegas.core.api.DelayedScriptEventFacadeI;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.api.IterationFacadeI;
 import com.wegas.core.api.QuestionDescriptorFacadeI;
 import com.wegas.core.api.RequestManagerI;
 import com.wegas.core.api.ResourceFacadeI;
 import com.wegas.core.api.ReviewingFacadeI;
+import com.wegas.core.api.ScriptEventFacadeI;
 import com.wegas.core.api.StateMachineFacadeI;
 import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.api.VariableInstanceFacadeI;
@@ -32,19 +32,12 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.reviewing.ejb.ReviewingFacade;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.script.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -53,7 +46,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.script.*;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -166,6 +167,21 @@ public class ScriptFacade extends WegasAbstractFacade {
      *
      */
     @Inject
+    private MessageFacade messageFacade;
+
+    @Inject
+    private UserFacade userFacade;
+
+    /**
+     *
+     */
+    @Inject
+    private RequestManager requestManager;
+
+    /**
+     *
+     */
+    @Inject
     Event<EngineInvocationEvent> engineInvocationEvent;
 
     public ScriptContext instantiateScriptContext(Player player, String language) {
@@ -201,14 +217,14 @@ public class ScriptFacade extends WegasAbstractFacade {
         putBinding(bindings, "StateMachineFacade", StateMachineFacadeI.class, stateMachineFacade);
         putBinding(bindings, "ReviewingFacade", ReviewingFacadeI.class, reviewingFacade);
 
+        putBinding(bindings, "MessageFacade", MessageFacadeI.class, messageFacade);
+
         putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
         putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
         putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
 
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
 
-        //bindings.put("Event", event);                                    // Inject the Event manager
-        //bindings.put("DelayedEvent", delayedEvent);
         bindings.remove("exit");
         bindings.remove("quit");
         bindings.remove("loadWithNewGlobal");

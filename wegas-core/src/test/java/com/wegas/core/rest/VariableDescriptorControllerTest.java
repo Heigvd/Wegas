@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -18,7 +17,9 @@ import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Result;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Arrays;
+import javax.ejb.EJB;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +28,10 @@ import org.junit.Test;
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class VariableDescriptorControllerTest extends AbstractEJBTest {
+public class VariableDescriptorControllerTest extends AbstractArquillianTest {
+
+    @EJB
+    private VariableDescriptorController variableDescriptorController;
 
     @Test
     public void testContains() throws NamingException {

@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -16,20 +15,21 @@ import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import javax.naming.NamingException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.junit.Assert;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class VariableDescriptorFacadeTest extends AbstractEJBTest {
+public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacadeTest.class);
 

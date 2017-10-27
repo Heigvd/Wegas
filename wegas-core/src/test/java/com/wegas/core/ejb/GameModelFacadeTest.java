@@ -10,18 +10,20 @@ package com.wegas.core.ejb;
 import com.wegas.test.TestHelper;
 import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.*;
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.util.function.Function;
+import javax.naming.NamingException;
+import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
-import java.util.function.Function;
-import org.junit.Assert;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class GameModelFacadeTest extends AbstractEJBTest {
+@ArquillianSuiteDeployment
+public class GameModelFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelFacadeTest.class);
     private int nbFail = 0;
@@ -116,7 +118,7 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         Team t2 = new Team();
         t1.setName("test-team");
         t2.setName("test-team");
-        final Function<Team, Runnable> runCreateTeam = (Team team) -> () -> teamFacade.create(g.getId(), team);
+        final Function<Team, Runnable> runCreateTeam = (Team t) -> () -> teamFacade.create(g.getId(), t);
 
         final Thread thread1 = TestHelper.start(runCreateTeam.apply(t1), handler);
         final Thread thread2 = TestHelper.start(runCreateTeam.apply(t2), handler);

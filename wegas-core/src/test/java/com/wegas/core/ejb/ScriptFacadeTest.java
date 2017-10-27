@@ -7,27 +7,31 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import javax.ejb.EJB;
 import javax.naming.NamingException;
 import javax.script.ScriptException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.junit.Assert;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class ScriptFacadeTest extends AbstractEJBTest {
+public class ScriptFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacadeTest.class);
+
+    @EJB
+    private ScriptCheck scriptCheck;
 
     @Test
     public void testEval() throws NamingException, WegasScriptException {
@@ -64,7 +68,6 @@ public class ScriptFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testBypassRandom() throws NamingException, WegasScriptException, ScriptException {
-
         Script rnd100 = new Script("JavaScript", "var sum = 0, i; for (i=0;i<100;i++){sum+= Math.random();} sum;");
 
         requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.STD);
@@ -94,5 +97,31 @@ public class ScriptFacadeTest extends AbstractEJBTest {
         System.out.println("R1: " + result);
         System.out.println("Ex: " + ex);
 
+    }
+
+    //@Test
+    public void benchmarkInjection() {
+        int i = 0;
+        long now, t;
+        long start = now = System.currentTimeMillis();
+        String script0 = "var x = 0;";
+        String script1 = "var ctx =  new javax.naming.InitialContext(); ctx.lookup('java:module/GameModelFacade').find(1);";
+
+        String script2 = "GameModelFacade.find(1);";
+
+
+        int tick = 10_000;
+
+        while(true){
+            i++;
+            requestManager.setCurrentScriptContext(null);
+            scriptFacade.eval(player, new Script("JavaScript", script0), null);
+            if (i % tick == 0) {
+                t = System.currentTimeMillis();
+                logger.error(" {}x: {}", tick, t - now);
+                now = t;
+            }
+        }
+        //logger.error("TOTAL DURATION: {}", System.currentTimeMillis() - start);
     }
 }
