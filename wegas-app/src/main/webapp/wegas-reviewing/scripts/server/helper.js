@@ -19,18 +19,6 @@ var ReviewHelper = (function() {
     "use strict";
     var Long = Java.type("java.lang.Long");
 
-    /**
-     * 
-     * @param {type} name bean name
-     * @returns {unresolved}
-     */
-    function lookupBean(name) {
-        "use strict";
-        var ctx = new javax.naming.InitialContext();
-        return ctx.lookup('java:module/' + name);
-    }
-
-
     /*
      * { 
      *  "type" : "GradeSummary",

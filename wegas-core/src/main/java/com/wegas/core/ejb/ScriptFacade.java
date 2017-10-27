@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.EngineInvocationEvent;
 import com.wegas.core.exception.WegasErrorMessageManager;
 import com.wegas.core.exception.client.WegasRuntimeException;
@@ -18,9 +19,12 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.reviewing.ejb.ReviewingFacade;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -137,6 +141,18 @@ public class ScriptFacade {
     @Inject
     private QuestionDescriptorFacade questionFacade;
 
+    @Inject
+    private MessageFacade messageFacade;
+
+    @Inject
+    private ReviewingFacade reviewingFacade;
+
+    @Inject
+    private UserFacade userFacade;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
+
     /**
      *
      */
@@ -176,6 +192,10 @@ public class ScriptFacade {
         bindings.put("ResourceFacade", resourceFacade);
         bindings.put("IterationFacade", iterationFacade);
         bindings.put("QuestionFacade", questionFacade);
+        bindings.put("MessageFacade", messageFacade);
+        bindings.put("ReviewingFacade", reviewingFacade);
+        bindings.put("UserFacade", userFacade);
+        bindings.put("StateMachineFacade", stateMachineFacade);
 
         bindings.remove("exit");
         bindings.remove("quit");
@@ -191,7 +211,7 @@ public class ScriptFacade {
         }
         this.injectStaticScript(ctx, player.getGameModel());
 
-        for (GameModelContent script :player.getGameModel().getScriptLibraryList()){
+        for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
             try {
                 engine.eval(script.getContent(), ctx);
