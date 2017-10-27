@@ -18,15 +18,9 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.script.*;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.resourceManagement.ejb.IterationFacade;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,6 +29,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.script.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -121,10 +123,19 @@ public class ScriptFacade {
     private DelayedScriptEventFacade delayedEvent;
 
     /**
-     * 
+     *
      */
     @Inject
-    private GameModelFacade  gameModelFacade;
+    private GameModelFacade gameModelFacade;
+
+    @Inject
+    private ResourceFacade resourceFacade;
+
+    @Inject
+    private IterationFacade iterationFacade;
+
+    @Inject
+    private QuestionDescriptorFacade questionFacade;
 
     /**
      *
@@ -162,10 +173,14 @@ public class ScriptFacade {
         bindings.put("DelayedEvent", delayedEvent);
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
 
+        bindings.put("ResourceFacade", resourceFacade);
+        bindings.put("IterationFacade", iterationFacade);
+        bindings.put("QuestionFacade", questionFacade);
+
         bindings.remove("exit");
         bindings.remove("quit");
         bindings.remove("loadWithNewGlobal");
-        
+
         event.detachAll();
         ScriptContext ctx = new SimpleScriptContext();
         ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
@@ -249,6 +264,7 @@ public class ScriptFacade {
      *
      * @param script
      * @param arguments
+     *
      * @return
      */
     private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -284,6 +300,7 @@ public class ScriptFacade {
      *
      * @param root
      * @param files
+     *
      * @return
      */
     private Collection<File> getJavaScriptsRecursively(String root, String[] files) {
@@ -327,6 +344,7 @@ public class ScriptFacade {
      * check if the given file is a minified version of an existing one
      *
      * @param file
+     *
      * @return
      */
     private boolean isMinifedDuplicata(File file) {
@@ -344,6 +362,7 @@ public class ScriptFacade {
      *
      * @param scripts
      * @param arguments
+     *
      * @return
      */
     private Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -375,6 +394,7 @@ public class ScriptFacade {
      * @param p
      * @param s
      * @param context
+     *
      * @return
      */
     public Object eval(Player p, Script s, VariableDescriptor context) throws WegasScriptException {
@@ -387,6 +407,7 @@ public class ScriptFacade {
      * @param player
      * @param s
      * @param arguments
+     *
      * @return
      */
     private Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -398,7 +419,9 @@ public class ScriptFacade {
      * @param playerId
      * @param s
      * @param context
+     *
      * @return
+     *
      * @throws WegasScriptException
      */
     public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException { // ICI CONTEXT

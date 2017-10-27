@@ -16,6 +16,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -33,7 +34,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +45,9 @@ import org.slf4j.LoggerFactory;
  * @author maxence
  */
 public class WegasTest {
+
+    @Rule
+    public TestName name = new TestName();
 
     private static final String WEGAS_ROOT_DIR = "../wegas-app/";
 
@@ -65,15 +71,21 @@ public class WegasTest {
 
     @Before
     public void setUp() throws IOException, JSONException {
+        logger.error("TEST {}", name.getMethodName());
+
         client = HttpClientBuilder.create().build();
 
         baseURL = runtime.getBaseUrl();
         JWebUnit.setBaseUrl(baseURL);
 
-        HttpGet setSynchronous = new HttpGet(baseURL + "/rest/Utils/SetPopulatingSynchronous");
-        HttpResponse execute = client.execute(setSynchronous);
-
         login();
+
+        
+        HttpGet setSynchronous = new HttpGet(baseURL + "/rest/Utils/SetPopulatingSynchronous");
+        HttpResponse response = client.execute(setSynchronous);
+        EntityUtils.consume(response.getEntity());
+        
+
         loadArtos();
     }
 
@@ -91,7 +103,7 @@ public class WegasTest {
         response = client.execute(clean); // remove from database
 
         EntityUtils.consume(response.getEntity());
-        
+
         client.execute(wipeEmCache);
         System.gc();
     }
@@ -167,9 +179,13 @@ public class WegasTest {
         post.setEntity(strEntity);
 
         HttpResponse response = client.execute(post);
+        
+        StatusLine statusLine = response.getStatusLine();
+        
+        String entityAsString = getEntityAsString(response.getEntity());
         Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
-        return getEntityAsString(response.getEntity());
+        return entityAsString;
     }
 
     private String postJSONFromFile(String url, String jsonFile) throws IOException {

@@ -7,13 +7,13 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.ejb.EJB;
 import javax.naming.NamingException;
 import javax.script.ScriptException;
@@ -97,5 +97,31 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         System.out.println("R1: " + result);
         System.out.println("Ex: " + ex);
 
+    }
+
+    //@Test
+    public void benchmarkInjection() {
+        int i = 0;
+        long now, t;
+        long start = now = System.currentTimeMillis();
+        String script0 = "var x = 0;";
+        String script1 = "var ctx =  new javax.naming.InitialContext(); ctx.lookup('java:module/GameModelFacade').find(1);";
+
+        String script2 = "GameModelFacade.find(1);";
+
+
+        int tick = 10_000;
+
+        while(true){
+            i++;
+            requestManager.setCurrentScriptContext(null);
+            scriptFacade.eval(player, new Script("JavaScript", script0), null);
+            if (i % tick == 0) {
+                t = System.currentTimeMillis();
+                logger.error(" {}x: {}", tick, t - now);
+                now = t;
+            }
+        }
+        //logger.error("TOTAL DURATION: {}", System.currentTimeMillis() - start);
     }
 }

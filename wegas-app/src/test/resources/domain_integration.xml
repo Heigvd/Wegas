@@ -22,6 +22,20 @@
     </security-configurations>
     <system-applications />
     <resources>
+        <jdbc-connection-pool datasource-classname="org.postgresql.ds.PGSimpleDataSource" name="jdbc/wegas_dev_pool" res-type="javax.sql.DataSource">
+            <property name="user" value="user"></property>
+            <property name="password" value="1234"></property>
+            <property name="portNumber" value="5432"></property>
+            <property name="databaseName" value="wegas_test"></property>
+            <property name="serverName" value="localhost"></property>
+            <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_test"></property>
+            <property name="Password" value="1234"></property>
+            <property name="DatabaseName" value="wegas_test"></property>
+            <property name="User" value="user"></property>
+            <property name="driverClass" value="org.postgresql.Driver"></property>
+        </jdbc-connection-pool>
+        <jdbc-resource pool-name="jdbc/wegas_dev_pool" jndi-name="jdbc/wegas_dev"></jdbc-resource>
+
         <jdbc-resource ping="true" pool-name="__TimerPool" object-type="system-admin" jndi-name="jdbc/__TimerPool"></jdbc-resource>
         <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" name="__TimerPool" res-type="javax.sql.DataSource">
             <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/ejbtimer"></property>
@@ -44,6 +58,7 @@
             <application-ref ref="__admingui" virtual-servers="__asadmin"></application-ref>
             <resource-ref ref="jdbc/__TimerPool"></resource-ref>
             <resource-ref ref="jdbc/__default"></resource-ref>
+            <resource-ref ref="jdbc/wegas_dev"></resource-ref>
             <resource-ref ref="jms/__defaultConnectionFactory"></resource-ref>
             <resource-ref ref="concurrent/__defaultContextService"></resource-ref>
             <resource-ref ref="concurrent/__defaultManagedExecutorService"></resource-ref>
@@ -85,7 +100,7 @@
             <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" timeout-in-seconds="300">
                 <property name="xaresource-txn-timeout" value="300"/>
             </transaction-service>
-            <hazelcast-runtime-configuration cluster-group-name="WegasCore-Test-Cluster" enabled="true"></hazelcast-runtime-configuration>
+            <hazelcast-runtime-configuration cluster-group-name="WegasApp-TestCluster" enabled="true"></hazelcast-runtime-configuration>
             <ejb-container max-pool-size="128">
                 <ejb-timer-service />
             </ejb-container>

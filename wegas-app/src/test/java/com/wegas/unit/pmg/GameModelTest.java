@@ -7,7 +7,6 @@
  */
 package com.wegas.unit.pmg;
 
-import com.wegas.utils.TestHelper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -21,6 +20,7 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.rest.ScriptController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.utils.TestHelper;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,12 +29,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
-import junit.framework.Assert;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
