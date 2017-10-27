@@ -118,12 +118,4 @@ public class TestHelper {
         assert keys.size() == values.size();
         return keys.stream().collect(Collectors.toMap(Function.identity(), k -> values.get(keys.indexOf(k))));
     }
-
-    public static synchronized void closeContainer() {
-        //it closes itself on vm shutdown
-//        if (container != null) {
-//            container.close();
-//            container = null;
-//        }
-    }
 }

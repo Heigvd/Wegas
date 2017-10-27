@@ -7,9 +7,8 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.test.TestHelper;
-import com.wegas.test.AbstractEJBTest;
 import com.wegas.core.persistence.game.*;
+import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.function.Function;
 import javax.naming.NamingException;

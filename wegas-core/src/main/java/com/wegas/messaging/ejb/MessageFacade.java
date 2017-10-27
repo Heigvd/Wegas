@@ -16,14 +16,13 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -65,6 +64,9 @@ public class MessageFacade extends BaseFacade<Message> {
     public void send(Player p, Message msg) {
         p = playerFacade.find(p.getId());
         try {
+
+
+            //BURNTHATSHIT ASAP
             VariableDescriptor vd = variableDescriptorFacade.find(p.getGameModel(), "inbox");     // @WTF ???
             InboxInstance inbox = (InboxInstance) vd.getInstance(p);
             inbox.sendMessage(msg);
@@ -74,11 +76,7 @@ public class MessageFacade extends BaseFacade<Message> {
     }
 
     /**
-     * @param p
-     * @param subject
-     * @param body
-     * @param from
-     * @return sent message
+     * {@inheritDoc}
      */
     public Message send(Player p, String subject, String body, String from) {
         Message msg = new Message();

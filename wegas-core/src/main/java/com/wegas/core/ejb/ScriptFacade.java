@@ -34,7 +34,6 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
-import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.reviewing.ejb.ReviewingFacade;
@@ -163,12 +162,6 @@ public class ScriptFacade extends WegasAbstractFacade {
     @EJB
     private DelayedScriptEventFacade delayedEvent;
 
-    /**
-     *
-     */
-    @Inject
-    private MessageFacade messageFacade;
-
     @Inject
     private UserFacade userFacade;
 
@@ -216,8 +209,6 @@ public class ScriptFacade extends WegasAbstractFacade {
         putBinding(bindings, "QuestionFacade", QuestionDescriptorFacadeI.class, questionDescriptorFacade);
         putBinding(bindings, "StateMachineFacade", StateMachineFacadeI.class, stateMachineFacade);
         putBinding(bindings, "ReviewingFacade", ReviewingFacadeI.class, reviewingFacade);
-
-        putBinding(bindings, "MessageFacade", MessageFacadeI.class, messageFacade);
 
         putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
         putBinding(bindings, "Event", ScriptEventFacadeI.class, event);

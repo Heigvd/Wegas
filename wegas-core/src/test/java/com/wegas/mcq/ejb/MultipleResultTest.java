@@ -7,8 +7,8 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.TestHelper;
 import com.wegas.mcq.persistence.*;
+import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.test.mcq.Answerer;
 import java.util.function.Function;

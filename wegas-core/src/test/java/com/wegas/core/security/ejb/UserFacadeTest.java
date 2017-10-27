@@ -29,13 +29,13 @@ public class UserFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(UserFacadeTest.class);
 
-    private static JpaAccount abstractAccount;
+    private JpaAccount abstractAccount;
 
-    private static WegasUser u;
+    private WegasUser u;
 
-    private static Role role1;
+    private Role role1;
 
-    private static Role role2;
+    private Role role2;
 
     private static final String ROLE_1 = "Role_1";
 
@@ -71,7 +71,7 @@ public class UserFacadeTest extends AbstractArquillianTest {
         Assert.assertTrue(users.contains(u.getUser()));
         Assert.assertTrue(users.contains(admin.getUser()));
 
-        Assert.assertEquals(2l, users.size());
+        Assert.assertEquals(16l, users.size());
 
         // find
         Assert.assertEquals(u.getUser(), userFacade.find(u.getId()));

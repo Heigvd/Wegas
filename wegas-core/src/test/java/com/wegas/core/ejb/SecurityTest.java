@@ -11,7 +11,7 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.persistence.User;
-import com.wegas.test.AbstractEJBTest;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.junit.Assert;
@@ -21,7 +21,7 @@ import org.junit.Test;
  *
  * @author maxence
  */
-public class SecurityTest extends AbstractEJBTest {
+public class SecurityTest extends AbstractArquillianTest {
 
     @Test(expected = EJBException.class)
     public void testPrivilegeEscalation_autoGrantAdmin() throws WegasNoResultException {

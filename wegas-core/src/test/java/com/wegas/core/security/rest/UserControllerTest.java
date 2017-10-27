@@ -7,25 +7,19 @@
  */
 package com.wegas.core.security.rest;
 
-import com.wegas.core.Helper;
-import com.wegas.test.AbstractEJBTestBase;
-import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
-import javax.inject.Inject;
-import javax.naming.NamingException;
+import javax.ejb.EJB;
 import org.junit.Test;
 
 /**
  *
  * @author maxence
  */
-public class UserControllerTest extends AbstractEJBTestBase {
+public class UserControllerTest extends AbstractArquillianTest {
 
-    private final UserController userController;
-
-    public UserControllerTest() throws NamingException {
-        this.userController = Helper.lookupBy(UserController.class);
-    }
+    @EJB
+    private UserController userController;
 
     @Test
     public void signUpTest() throws IOException {

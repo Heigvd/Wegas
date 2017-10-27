@@ -42,7 +42,7 @@ public abstract class AbstractTest extends AbstractArquillianTestBase {
     }
 
     protected final void checkNumber(String name, double expectedValue, String errorMessage) throws WegasNoResultException {
-        Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) variableDescriptorFacade.find(gm, name)).getValue(player), 0.0);
+        Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) variableDescriptorFacade.find(gameModel, name)).getValue(player), 0.0);
     }
 
     protected final void createGameModelFromFile(String gameModelPath) throws IOException {
