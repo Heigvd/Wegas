@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.Properties;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
 import javax.mail.*;
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
@@ -112,18 +111,5 @@ public class EMailFacade {
     public void send(Player p, Message msg) throws MessagingException {
 
         this.send(p, "noreply@" + Helper.getWegasProperty("mail.default_domain"), msg.getSubject(), msg.getBody());
-    }
-
-    /**
-     *
-     * @param messageEvent
-     */
-    public void listener(@Observes MessageEvent messageEvent) {
-        // @fixme remove this hardcoded condition w/ some db values or at least a line in the prop file
-//        if (messageEvent.getType().equals("important")) {
-//            this.send("fx at red-agent.com", "admin@wegas.com",
-//                    messageEvent.getMessage().getSubject(),
-//                    messageEvent.getMessage().getBody());
-//        }
     }
 }
