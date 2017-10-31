@@ -84,8 +84,8 @@ angular.module('wegas.service.pusher', [])
 
         function initListening() {
             if (adminChannel) {
-                adminChannel.bind('online-users', function() {
-                    $rootScope.$emit('wegaspusher:update-members');
+                adminChannel.bind('online-users', function(data) {
+                    $rootScope.$emit('wegaspusher:update-members', data);
                 });
             }
             if (userChannel) {
