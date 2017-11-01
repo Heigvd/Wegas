@@ -12,16 +12,15 @@ import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import com.wegas.core.persistence.InstanceOwner;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

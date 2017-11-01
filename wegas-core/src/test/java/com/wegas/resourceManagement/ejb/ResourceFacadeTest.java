@@ -7,7 +7,6 @@
  */
 package com.wegas.resourceManagement.ejb;
 
-import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
@@ -20,10 +19,10 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.ejb.EJB;
-import javax.naming.NamingException;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -38,10 +37,10 @@ import org.slf4j.LoggerFactory;
 public class ResourceFacadeTest extends AbstractArquillianTest {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
-    
+
     @EJB
     private ResourceFacade resourceFacade;
-    
+
     @EJB
     private IterationFacade iterationFacade;
 
@@ -114,7 +113,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Test of assign method, of class ResourceFacade.
      */
     @Test
-    public void testAssignment() throws NamingException {
+    public void testAssignment() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
@@ -143,7 +142,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Remove Assignment Test
      */
     @Test
-    public void testRemoveAssignment() throws NamingException {
+    public void testRemoveAssignment() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
@@ -175,7 +174,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Remove Assignment Test
      */
     @Test
-    public void testMergeAssignment_Add() throws NamingException {
+    public void testMergeAssignment_Add() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
@@ -239,7 +238,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Remove Assignment Test
      */
     @Test
-    public void testRemoveTask() throws NamingException {
+    public void testRemoveTask() {
         BurndownDescriptor bdown = new BurndownDescriptor();
         bdown.setDefaultInstance(new BurndownInstance());
         variableDescriptorFacade.create(gameModel.getId(), bdown);
@@ -382,7 +381,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Remove Assignment Test
      */
     @Test
-    public void testMergeIterations() throws NamingException {
+    public void testMergeIterations() {
 
         BurndownDescriptor bdown = new BurndownDescriptor();
         bdown.setDefaultInstance(new BurndownInstance());
@@ -582,21 +581,19 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         task.setName("task");
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(gameModel.getId(), task);
-        String script = "var rF = new javax.naming.InitialContext().lookup('java:module/ResourceFacade');\n"
-                + "var paul = Variable.find(gameModel, \"paul\");\n"
+        String script = "var paul = Variable.find(gameModel, \"paul\");\n"
                 + "var paulI = paul.getInstance(self);\n"
                 + "var task = Variable.find(gameModel, \"task\");\n"
                 + "var taskI = task.getInstance(self);\n"
-                + "rF.assign(paulI.getId(), taskI.getId());\n";
+                + "ResourceFacade.assign(paulI.getId(), taskI.getId());\n";
 
         scriptFacade.eval(player, new Script("javascript", script), null);
 
-        String script2 = "var rF = new javax.naming.InitialContext().lookup('java:module/ResourceFacade');\n"
-                + "var paul = Variable.find(gameModel, \"paul\");\n"
+        String script2 = "var paul = Variable.find(gameModel, \"paul\");\n"
                 + "var paulI = paul.getInstance(self);\n"
                 + "var task = Variable.find(gameModel, \"task\");\n"
                 + "var taskI = task.getInstance(self);\n"
-                + "rF.removeAssignment(rF.findAssignment(paulI.getId(), taskI.getId()).getId());\n";
+                + "ResourceFacade.removeAssignment(ResourceFacade.findAssignment(paulI.getId(), taskI.getId()).getId());\n";
 
         scriptFacade.eval(player, new Script("javascript", script2), null);
 
@@ -689,7 +686,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Test of createActivity method, of class ResourceFacade.
      */
     @Test
-    public void testCreateActivity() throws NamingException {
+    public void testCreateActivity() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
@@ -740,7 +737,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Test of addOccupation method, of class ResourceFacade.
      */
     @Test
-    public void testAddOccupation() throws NamingException {
+    public void testAddOccupation() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
@@ -792,11 +789,10 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
     /**
      * Test ResourceFacade.addReservation
-     *
-     * @throws javax.naming.NamingException
+     * <p>
      */
     @Test
-    public void testAddReservation() throws NamingException {
+    public void testAddReservation() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
@@ -820,7 +816,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Test of moveAssignment method, of class ResourceFacade.
      */
     @Test
-    public void testMoveAssignment() throws NamingException {
+    public void testMoveAssignment() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
@@ -866,7 +862,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Test of requirements methods, of class resourceInstance
      */
     @Test
-    public void testAddRequirements() throws NamingException {
+    public void testAddRequirements() {
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
@@ -998,7 +994,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testAssignemntCascadedDeletion() throws NamingException {
+    public void testAssignemntCascadedDeletion() {
         // Create a resource
         ResourceDescriptor paul = new ResourceDescriptor();
         paul.setLabel("Paul");

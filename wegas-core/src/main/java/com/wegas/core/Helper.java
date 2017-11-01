@@ -16,12 +16,6 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,7 +25,12 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.text.StringEscapeUtils;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -86,29 +85,18 @@ public class Helper {
     }
 
     /**
-     * @param <T>
-     * @param context
-     * @param type
+     * To be used to make a JNDI lookup when there is no CDI context
      *
-     * @return looked-up EJB instance
+     * @param <T>  resource type
+     * @param jndiName resource name
+     * @param type resource type
      *
-     * @throws NamingException
-     */
-    public static <T> T lookupBy(Context context, Class<T> type) throws NamingException {
-        return lookupBy(context, type, type);
-    }
-
-    /**
-     * @param <T>
-     * @param type
-     * @param service
-     *
-     * @return looked-up EJB instance
+     * @return instance of the given type matching jndiName
      *
      * @throws NamingException
      */
-    public static <T> T lookupBy(Class<T> type, Class<?> service) throws NamingException {
-        return lookupBy(new InitialContext(), type, service);
+    public static <T> T jndiLookup(String jndiName, Class<T> type) throws NamingException {
+        return (T) new InitialContext().lookup(jndiName);
     }
 
     /**
@@ -120,7 +108,7 @@ public class Helper {
      * @throws NamingException
      */
     public static <T> T lookupBy(Class<T> type) throws NamingException {
-        return lookupBy(type, type);
+        return lookupBy(new InitialContext(), type, type);
     }
 
     /*
@@ -766,7 +754,6 @@ public class Helper {
             logger.error("No cluster (null)");
         }
     }
-
 
     public static void printWegasStackTrace(Throwable t) {
         StringBuilder sb = new StringBuilder(t.getClass().getName());

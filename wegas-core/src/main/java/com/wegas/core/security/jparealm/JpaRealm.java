@@ -7,7 +7,6 @@
  */
 package com.wegas.core.security.jparealm;
 
-import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -15,7 +14,6 @@ import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import javax.ejb.EJBException;
-import javax.naming.NamingException;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -42,29 +40,24 @@ public class JpaRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
+        AccountFacade accountFacade = AccountFacade.lookup();
         try {
-            AccountFacade accountFacade = accountFacade();
+            JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
+            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
+            info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
+            return info;
+
+        } catch (WegasNoResultException e) {                                         // Could not find correponding mail,
             try {
-                JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
+                JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
                 SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
                 info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
                 return info;
 
-            } catch (WegasNoResultException e) {                                         // Could not find correponding mail,
-                try {
-                    JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
-                    SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
-                    info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
-                    return info;
-
-                } catch (WegasNoResultException ex) {
-                    logger.error("Unable to find token", ex);
-                    return null;
-                }
+            } catch (WegasNoResultException ex) {
+                logger.error("Unable to find token", ex);
+                return null;
             }
-        } catch (NamingException ex) {
-            logger.error("Unable to find AccountFacade EJB", ex);
-            return null;
         }
     }
 
@@ -76,7 +69,7 @@ public class JpaRealm extends AuthorizingRealm {
 //                AbstractAccount account = accountFacade().find(accountId);
 //            }
 
-            AbstractAccount account = accountFacade().find((Long) principals.getPrimaryPrincipal());
+            AbstractAccount account = AccountFacade.lookup().find((Long) principals.getPrimaryPrincipal());
             User user = account.getUser();
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
             for (Role role : user.getRoles()) {
@@ -93,18 +86,7 @@ public class JpaRealm extends AuthorizingRealm {
             return info;
         } catch (EJBException e) {
             return null;
-        } catch (NamingException ex) {
-            logger.error("Unable to find AocountFacade EJB", ex);
-            return null;
         }
-    }
-
-    /**
-     *
-     * @return @throws NamingException
-     */
-    public AccountFacade accountFacade() throws NamingException {
-        return Helper.lookupBy(AccountFacade.class);
     }
 
     /**

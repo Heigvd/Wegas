@@ -256,7 +256,8 @@ public class UpdateController {
         if (!(vd.getScope() instanceof GameModelScope)) {
             EntityManager em = this.getEntityManager();
 
-            Collection<VariableInstance> values = vd.getScope().getVariableInstancesByKeyId().values();
+            Collection<VariableInstance> values = this.descriptorFacade.getInstances(vd).values();
+
             for (VariableInstance vi : values) {
                 em.remove(vi);
             }
@@ -599,8 +600,9 @@ public class UpdateController {
             /**
              * make sure each occupation exists for each resources
              */
-            Collection<ResourceInstance> resourceInstances = rd.getScope().getPrivateInstances().values();
-            for (ResourceInstance resourceInstance : resourceInstances) {
+            Collection<VariableInstance> resourceInstances = descriptorFacade.getInstances(rd).values();
+            for (VariableInstance vi : resourceInstances) {
+                ResourceInstance resourceInstance = (ResourceInstance) vi;
                 for (Entry<Long, List<Occupation>> entry : map.entrySet()) {
                     if (!hasOccupation(resourceInstance, entry.getKey().doubleValue())) {
                         resourceFacade.addOccupation(resourceInstance.getId(), false, entry.getKey());

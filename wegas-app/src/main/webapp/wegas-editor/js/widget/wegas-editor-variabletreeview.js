@@ -486,7 +486,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         genScopeTreeViewElements: function(el) {
             var children = [],
                 i, label, team, player, instance, iconFa,
-                instances; // = el.get("scope").get("variableInstances");
+                instances; 
             instances = Y.Wegas.Facade.Instance.cache.find("descriptorId", el.get("id")).variableInstances;
 
             for (i in instances) {

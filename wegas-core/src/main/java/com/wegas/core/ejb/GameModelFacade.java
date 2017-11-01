@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
@@ -17,35 +16,32 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.rest.FileController;
 import com.wegas.core.rest.HistoryController;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
+import java.util.*;
 import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
-import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
-import java.io.IOException;
-import java.util.*;
-import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.game.Team;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -186,11 +182,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         stateMachineFacade.runStateMachines(context);
     }
 
-    public void reviveScopeInstances(GameModel gameModel, AbstractScope aScope) {
-        aScope.propagateDefaultInstance(null, true);
+    public void reviveScopeInstances(GameModel gameModel, VariableDescriptor vd) {
+        vd.getScope().propagateDefaultInstance(null, true);
         this.getEntityManager().flush();
         // revive just propagated instances
-        for (VariableInstance vi : (Collection<VariableInstance>) aScope.getVariableInstances().values()) {
+        for (VariableInstance vi : (Collection<VariableInstance>) variableDescriptorFacade.getInstances(vd).values()) {
             instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
         }
     }
@@ -607,18 +603,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public final void nop(String msg) {
         // for JS breakpoints...
-    }
-
-    /**
-     * @return looked-up EJB
-     */
-    public static GameModelFacade lookup() {
-        try {
-            return Helper.lookupBy(GameModelFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Error retrieving gamemodelfacade", ex);
-            return null;
-        }
     }
 
     @Schedule(hour = "4", dayOfMonth = "Last Sat")

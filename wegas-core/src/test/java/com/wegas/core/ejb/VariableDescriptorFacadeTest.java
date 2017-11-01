@@ -7,16 +7,18 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import javax.naming.NamingException;
@@ -448,6 +450,8 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
 
         GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(gameModel.getId());
         DescriptorListI find = (DescriptorListI) variableDescriptorFacade.find(duplicateGm, LISTNAME1);
-        Assert.assertEquals(10.0, ((NumberInstance) ((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0).getScope().getVariableInstances().values().iterator().next()).getValue(), 0.0001);
+
+        Collection<VariableInstance> instances = variableDescriptorFacade.getInstances(((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0)).values();
+        Assert.assertEquals(10.0, ((NumberInstance) instances.iterator().next()).getValue(), 0.0001);
     }
 }

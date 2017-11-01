@@ -14,6 +14,7 @@ import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -31,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -160,7 +162,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         if (propagate) {
             AbstractScope scope = entity.getScope();
             scope.setBeanjection(new Beanjection(variableInstanceFacade));
-            gameModelFacade.reviveScopeInstances(gameModel, scope);
+            gameModelFacade.reviveScopeInstances(gameModel, entity);
         }
 
         gameModel.addToVariableDescriptors(entity);
@@ -186,7 +188,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     public void preDestroy(GameModel gameModel, VariableDescriptor entity) {
         gameModel.removeFromVariableDescriptors(entity);
 
-        Collection<VariableInstance> values = entity.getScope().getVariableInstances().values();
+        Collection<VariableInstance> values = this.getInstances(entity).values();
+
         for (VariableInstance vi : values) {
             variableInstanceFacade.remove(vi);
         }
@@ -530,20 +533,28 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         return variableDescriptor;
     }
 
+    public Map<? extends InstanceOwner, VariableInstance> getInstances(VariableDescriptor vd){
+        return variableInstanceFacade.getAllInstances(vd);
+    }
+
+    public Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd){
+        return variableInstanceFacade.getAllInstancesById(vd);
+    }
+
     /**
      *
      * @param vd
      * @param newScope
      */
     public void updateScope(VariableDescriptor vd, AbstractScope newScope) {
-        Collection<VariableInstance> values = vd.getScope().getVariableInstancesByKeyId().values();
+        Collection<VariableInstance> values = variableInstanceFacade.getAllInstances(vd).values();
         for (VariableInstance vi : values) {
             variableInstanceFacade.remove(vi);
         }
         vd.setScope(newScope);
         this.getEntityManager().persist(vd);
         vd = this.find(vd.getId());
-        gameModelFacade.reviveScopeInstances(vd.getGameModel(), vd.getScope());
+        gameModelFacade.reviveScopeInstances(vd.getGameModel(), vd);
     }
 
     /**

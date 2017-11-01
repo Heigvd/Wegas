@@ -8,7 +8,6 @@
 package com.wegas.reviewing.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -28,7 +27,9 @@ import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
@@ -42,7 +43,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,6 +123,15 @@ public class ReviewingFacade {
      */
     public EvaluationDescriptor findEvaluationDescriptor(Long evId) {
         return requestManager.getEntityManager().find(EvaluationDescriptor.class, evId);
+    }
+
+    /**
+     *
+     * @param prd
+     * @return
+     */
+    private List<PeerReviewInstance> getInstances(PeerReviewDescriptor prd){
+        return new ArrayList(variableDescriptorFacade.getInstances(prd).values());
     }
 
     /**
@@ -228,7 +237,7 @@ public class ReviewingFacade {
                     if (scope instanceof TeamScope) {
                         // 1 instance per team: evict empty team instances
                         TeamScope tScope = (TeamScope) scope;
-                        PeerReviewInstance instance = (PeerReviewInstance) tScope.getVariableInstances().get(team);
+                        PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getTeamInstance(tScope, team);
                         if (team.getPlayers().isEmpty() || team instanceof DebugTeam) {
                             // Discared instance
                             instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
@@ -240,7 +249,7 @@ public class ReviewingFacade {
                     } else { // PlayerScoped
                         // 1 instance per player: evict test player instance
                         for (Player p : team.getPlayers()) {
-                            PeerReviewInstance instance = prd.getInstance(p);
+                            PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getPlayerInstance((PlayerScope) scope, p);
                             if (team instanceof DebugTeam) {
                                 // Discared instance
                                 instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
@@ -462,7 +471,7 @@ public class ReviewingFacade {
      * @param prd the PeerReviewDescriptor
      */
     public List<PeerReviewInstance> notify(PeerReviewDescriptor prd) {
-        List<PeerReviewInstance> pris = new ArrayList(prd.getScope().getVariableInstances().values());
+        List<PeerReviewInstance> pris = this.getInstances(prd);
         List<PeerReviewInstance> touched = new ArrayList<>();
         for (PeerReviewInstance pri : pris) {
             if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.DISCARDED && pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
@@ -507,7 +516,7 @@ public class ReviewingFacade {
      * @return all peerReviewInstance that have been closed
      */
     public List<PeerReviewInstance> close(PeerReviewDescriptor prd) {
-        List<PeerReviewInstance> pris = new ArrayList(prd.getScope().getVariableInstances().values());
+        List<PeerReviewInstance> pris = this.getInstances(prd);
         List<PeerReviewInstance> touched = new ArrayList<>();
         for (PeerReviewInstance pri : pris) {
             if (pri.getReviewState() != PeerReviewDescriptor.ReviewingState.DISCARDED && pri.getReviewState() != PeerReviewDescriptor.ReviewingState.EVICTED) {
@@ -573,19 +582,6 @@ public class ReviewingFacade {
                 logger.error("Failed te revive ReviewDescriptor", ex);
                 reviewD.setToReview(null);
             }
-        }
-    }
-
-    /**
-     *
-     * @return Lookup-ed ReviewFacade EJB
-     */
-    public static ReviewingFacade lookup() {
-        try {
-            return Helper.lookupBy(ReviewingFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Error retrieving p2p facade", ex);
-            return null;
         }
     }
 }

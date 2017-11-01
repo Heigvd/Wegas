@@ -12,7 +12,6 @@ import com.wegas.core.Helper;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.apache.shiro.cache.CacheException;
 
@@ -22,12 +21,19 @@ import org.apache.shiro.cache.CacheException;
  */
 public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
 
-    private final String MAP_NAME = "hz_shiro_sessions";
+    private static final String MAP_NAME = "hz_shiro_sessions";
 
+    /**
+     * Since there is no CDI context here, we cannot @Inject HazelcastInstance or @Inject Cache<?, ?>
+     * This methods stands here to replace this behaviour
+     *
+     * @return the cache
+     *
+     * @throws NamingException fails to retrieve the hazelcast cast, major issue
+     */
     private Map<Object, Object> getCache() throws NamingException {
-        InitialContext ctx = new InitialContext();
-        HazelcastInstance hzInstance = (HazelcastInstance) ctx.lookup(Helper.getWegasProperty("hazelcast.jndi_name"));
-        return hzInstance.getMap(MAP_NAME);
+        HazelcastInstance hzInstance = Helper.jndiLookup(Helper.getWegasProperty("hazelcast.jndi_name"), HazelcastInstance.class);
+    return hzInstance.getMap(MAP_NAME);
     }
 
     @Override

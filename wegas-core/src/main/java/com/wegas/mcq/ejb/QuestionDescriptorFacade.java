@@ -27,7 +27,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
@@ -441,8 +440,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     public void validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
-        ChoiceInstance instance = choiceDescriptor.getInstance(player);
-        instance.setActive(false);
         validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
         if (validateReply.getIgnored()) {
@@ -609,18 +606,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             this.choice = null;
             this.question = null;
             this.player = null;
-        }
-    }
-
-    /**
-     * @return looked-up EJB
-     */
-    public static QuestionDescriptorFacade lookup() {
-        try {
-            return Helper.lookupBy(QuestionDescriptorFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Error retrieving var inst f", ex);
-            return null;
         }
     }
 }
