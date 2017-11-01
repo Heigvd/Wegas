@@ -8,6 +8,7 @@
 package com.wegas.core.rest.util;
 
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
+import com.wegas.core.security.rest.UserController;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
@@ -29,6 +30,9 @@ public class DynamicFilters implements DynamicFeature {
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
 
+        /**
+         * Cache Max Age Filter
+         */
         /*Test method level*/
         CacheMaxAge cma = resourceInfo.getResourceMethod().getAnnotation(CacheMaxAge.class);
         //NoCache nc = resourceInfo.getResourceMethod().getAnnotation(NoCache.class);
@@ -59,12 +63,21 @@ public class DynamicFilters implements DynamicFeature {
         }
 
 
+        /*
+         * Detect guest login
+         */
+        if (resourceInfo.getResourceClass().equals(UserController.class)
+                && resourceInfo.getResourceMethod().getName().equals("guestLogin")) {
+            context.register(new GuestTracker());
+        }
+
     }
 
     /**
      * Compute cache-control string based on annotations.
      *
      * @param cma
+     *
      * @return
      */
     private static String genCacheString(CacheMaxAge cma) {
