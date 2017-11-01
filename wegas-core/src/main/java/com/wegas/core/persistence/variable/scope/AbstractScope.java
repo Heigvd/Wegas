@@ -313,4 +313,8 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
         Helper.printWegasStackTrace(new Exception());
         return RequestFacade.lookup().getPlayer();
     }
+
+    @Override
+    public void merge(AbstractEntity other) {
+    }
 }

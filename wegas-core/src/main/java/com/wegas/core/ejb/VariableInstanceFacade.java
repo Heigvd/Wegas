@@ -17,6 +17,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
@@ -36,6 +37,7 @@ import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
@@ -615,6 +617,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     public final void nop(String msg) {
         // for JS breakpoints...
+    }
+
+    /**
+     * @return looked-up EJB
+     */
+    public static GameModelFacade lookup() {
+        try {
+            return Helper.lookupBy(GameModelFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving gamemodelfacade", ex);
+            return null;
+        }
     }
 
     @Schedule(hour = "4", dayOfMonth = "Last Sat")

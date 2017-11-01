@@ -33,6 +33,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import org.slf4j.LoggerFactory;
@@ -426,6 +427,15 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void reset(Long gameId) {
         this.reset(this.find(gameId));
+    }
+
+    public static GameFacade lookup() {
+        try {
+            return Helper.lookupBy(GameFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving game facade", ex);
+            return null;
+        }
     }
 
     /**
