@@ -7,8 +7,9 @@
  */
 package com.wegas.messaging.ejb;
 
-import com.wegas.test.arquillian.AbstractArquillianTest;
+import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -20,10 +21,13 @@ import com.wegas.core.rest.ScriptController;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
-import java.util.ArrayList;
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.naming.NamingException;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,39 +45,22 @@ public class MessageFacadeTest extends AbstractArquillianTest {
     @EJB
     private ScriptController scriptController;
 
-    /**
-     * Test of listener method, of class MessageFacade.
-     */
-    @Test
-    public void testListener() throws Exception {
-        logger.info("Test listener");
+    @EJB
+    private ScriptFacade scriptFacade;
 
-        // Create a inbox
-        InboxDescriptor inbox = new InboxDescriptor();
-        inbox.setName("inbox");
-        inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
+    private void exec(Player player,  String script) throws NamingException{
 
-        //send a message
-        MessageEvent me = new MessageEvent();
-        Message msg = new Message("from", "subject", "body");
-        me.setMessage(msg);
-        me.setPlayer(player);
-        messageFacade.listener(me);
-
-        //get inbox
-        VariableDescriptor vd = variableDescriptorFacade.find(player.getGameModel(), "inbox");
-        InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
-        assertEquals(msg, gettedInbox.getMessages().get(0));
-
-        variableDescriptorFacade.remove(inbox.getId());
+        final Script s = new Script();
+        s.setLanguage("JavaScript");
+        s.setContent(script);
+        scriptFacade.eval(player.getId(), s, null);
     }
 
     /**
-     * Test of send method, of class MessageFacade.
+     * Test of InboxDescriptor.sendMessage(*)
      */
     @Test
-    public void testSend_Player_Message() throws Exception {
+    public void testInboxDescriptor_SendMessage() throws Exception {
         logger.info("send(player, msg)");
 
         // Create a inbox
@@ -83,91 +70,26 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(gameModel.getId(), inbox);
 
         //send a message
-        Message msg = new Message("from", "subject", "body");
-        messageFacade.send(player, msg);
+        this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessage(self, \"from1\", \"subject\", \"body\");");
+        this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessageWithToken(self, \"from2\", \"subject\", \"body\", \"token\");");
+        this.exec(player, "Variable.find(gameModel, \"inbox\").sendDatedMessage(self, \"from3\", \"date\", \"subject\", \"body\");");
+
+        this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessage(self, \"from4\", \"subject\", \"body\", [\"att\"]);");
+        this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessage(self, \"from5\", \"date\", \"subject\", \"body\", \"token\", [\"att1\"]);");
+        this.exec(player, "Variable.find(gameModel, \"inbox\").sendDatedMessage(self, \"from6\", \"date\", \"subject\", \"body\", [\"att\"]);");
+
 
         //get inbox
         VariableDescriptor vd = variableDescriptorFacade.find(player.getGameModel(), "inbox");
         InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
-        assertEquals(msg, gettedInbox.getMessages().get(0));
+        List<Message> messages = gettedInbox.getSortedMessages();
 
-        variableDescriptorFacade.remove(inbox.getId());
-    }
-
-    /**
-     * Test of send method, of class MessageFacade.
-     */
-    @Test
-    public void testSend_4args() throws Exception {
-        logger.info("send(player, 4args)");
-
-        // Create a inbox
-        InboxDescriptor inbox = new InboxDescriptor();
-        inbox.setName("inbox");
-        inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
-
-        //send a message
-        Message msg = messageFacade.send(player, "from", "subject", "body");
-
-        //get inbox
-        VariableDescriptor vd = variableDescriptorFacade.find(player.getGameModel(), "inbox");
-        InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
-        assertEquals(msg, gettedInbox.getMessages().get(0));
-
-        variableDescriptorFacade.remove(inbox.getId());
-    }
-
-    /**
-     * Test of send method, of class MessageFacade.
-     */
-    @Test
-    public void testSend_5args() throws Exception {
-        logger.info("send(player), 5args");
-
-        // Create a inbox
-        InboxDescriptor inbox = new InboxDescriptor();
-        inbox.setName("inbox");
-        inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
-
-        //send a message
-        ArrayList<String> attachements = new ArrayList<>();
-        attachements.add("attachement1");
-        attachements.add("attachement2");
-        Message msg = messageFacade.send(player, "subject", "body", "from", attachements);
-
-        //get inbox
-        VariableDescriptor vd = variableDescriptorFacade.find(player.getGameModel(), "inbox");
-        InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
-        assertEquals(msg, gettedInbox.getMessages().get(0));
-        assertEquals("subject", gettedInbox.getMessages().get(0).getSubject());
-
-        variableDescriptorFacade.remove(inbox.getId());
-    }
-
-    @Test
-    public void testMultipleSendMessage() throws Exception {
-        logger.info("send(player, msg)");
-
-        // Create a inbox descriptor
-        InboxDescriptor inbox = new InboxDescriptor();
-        inbox.setName("inbox");
-        inbox.setDefaultInstance(new InboxInstance());
-        variableDescriptorFacade.create(gameModel.getId(), inbox);
-
-        // Send a message to each player
-        messageFacade.send(player, new Message("from", "subject", "body"));
-        messageFacade.send(player2, new Message("from", "subject", "body"));
-
-        // Test
-        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
-        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player2)).getMessages().size());
-        assertEquals(1, ((InboxInstance) requestFacade.getUpdatedEntities().get(team.getChannel()).get(0)).getMessages().size());
-        assertEquals(1, ((InboxInstance) requestFacade.getUpdatedEntities().get(team.getChannel()).get(0)).getMessages().size());
-        assertEquals(2, messageFacade.count()); // 2 messages in DB.
-        // Clean
-        variableDescriptorFacade.remove(inbox.getId());
+        assertEquals("from6", messages.get(0).getFrom());
+        assertEquals("from5", messages.get(1).getFrom());
+        assertEquals("from4", messages.get(2).getFrom());
+        assertEquals("from3", messages.get(3).getFrom());
+        assertEquals("from2", messages.get(4).getFrom());
+        assertEquals("from1", messages.get(5).getFrom());
     }
 
     /**
