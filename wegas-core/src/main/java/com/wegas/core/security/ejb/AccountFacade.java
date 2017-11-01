@@ -7,9 +7,9 @@
  */
 package com.wegas.core.security.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.event.client.WarningEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -21,21 +21,20 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -44,7 +43,7 @@ import java.util.*;
 @LocalBean
 public class AccountFacade extends BaseFacade<AbstractAccount> {
 
-    Logger logger = LoggerFactory.getLogger(AccountFacade.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountFacade.class);
 
     private static final int MAXRESULT = 30;
 
@@ -513,4 +512,15 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return returnValue;
     }
 
+    /**
+     * @return Looked-up EJB
+     */
+    public static AccountFacade lookup() {
+        try {
+            return Helper.lookupBy(AccountFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving account facade", ex);
+            return null;
+        }
+    }
 }

@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
@@ -26,20 +25,17 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.naming.NamingException;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.List;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -491,18 +487,6 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public void reset(Long playerId) {
         this.reset(this.find(playerId));
-    }
-
-    /**
-     * @return Looked-up EJB
-     */
-    public static PlayerFacade lookup() {
-        try {
-            return Helper.lookupBy(PlayerFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Error retrieving player facade", ex);
-            return null;
-        }
     }
 
     public Collection<String> getLocks(Long playerId) {

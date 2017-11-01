@@ -10,7 +10,9 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableInstanceFacadeI;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -118,6 +121,47 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             return query.getSingleResult();
         } catch (NoResultException ex) {
             return null;
+        }
+    }
+
+
+    /**
+     *
+     * @param instances
+     * @return
+     */
+    private Map<Long, VariableInstance> mapInstances(Map<? extends InstanceOwner, VariableInstance> instances) {
+        Map<Long, VariableInstance> mappedInstances = new HashMap<>();
+        for (Entry<? extends InstanceOwner, VariableInstance> entry : instances.entrySet()) {
+            // GameModelScope Hack (null key means id=0...)
+            mappedInstances.put((entry.getKey() != null ? entry.getKey().getId() : 0L), entry.getValue());
+        }
+        return mappedInstances;
+    }
+
+    public Map<Long, VariableInstance> getAllInstancesById(VariableDescriptor vd) {
+        return this.mapInstances(this.getAllInstances(vd));
+    }
+
+    /**
+     * get all instances
+     * @param vd
+     * @return
+     */
+    public Map<? extends InstanceOwner, VariableInstance> getAllInstances(VariableDescriptor vd) {
+        AbstractScope scope = vd.getScope();
+        if (scope instanceof TeamScope) {
+            return this.getAllTeamInstances((TeamScope) scope);
+        } else if (scope instanceof PlayerScope) {
+            return this.getAllPlayerInstances((PlayerScope) scope);
+        } else if (scope instanceof GameScope) {
+            return this.getAllGameInstances((GameScope) scope);
+        } else if (scope instanceof GameModelScope) {
+            HashMap<GameModel, VariableInstance> hashMap = new HashMap<GameModel, VariableInstance>();
+            hashMap.put(null, ((GameModelScope) scope).getVariableInstance());
+            return hashMap;
+        } else {
+            return new HashMap<>();
         }
     }
 

@@ -38,10 +38,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -502,18 +500,6 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * @return Looked-up EJB
-     */
-    public static ResourceFacade lookup() {
-        try {
-            return Helper.lookupBy(ResourceFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Error retrieving var inst f", ex);
-            return null;
         }
     }
 }

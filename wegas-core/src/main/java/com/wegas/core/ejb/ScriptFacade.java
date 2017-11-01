@@ -229,8 +229,16 @@ public class ScriptFacade extends WegasAbstractFacade {
         } catch (ScriptException e) {
             logger.error("noSuchProperty injection", e);
         }
+
+        /**
+         * Inject hard server scripts first
+         */
         this.injectStaticScript(ctx, player.getGameModel());
 
+        /**
+         * Then inject soft ones.
+         * It means a soft script may override methods defined in a hard coded one
+         */
         for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
             try {

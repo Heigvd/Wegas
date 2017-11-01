@@ -113,7 +113,7 @@ public class VariableInstanceController {
         List<VariableInstance> instances = new ArrayList<>();
 
         instances.addAll(
-                vd.getScope().getVariableInstances().values()
+                variableDescriptorFacade.getInstances(vd).values()
         );
 
         return instances;

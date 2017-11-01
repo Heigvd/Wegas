@@ -7,7 +7,6 @@
  */
 package com.wegas.messaging.ejb;
 
-import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -25,7 +24,9 @@ import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.naming.NamingException;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +37,6 @@ import org.slf4j.LoggerFactory;
 public class MessageFacadeTest extends AbstractArquillianTest {
 
     protected static final Logger logger = LoggerFactory.getLogger(MessageFacadeTest.class);
-
-    @EJB
-    private ScriptFacade scriptFacade;
 
     @EJB
     private ScriptController scriptController;

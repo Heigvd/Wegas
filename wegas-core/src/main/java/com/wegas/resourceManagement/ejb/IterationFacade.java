@@ -7,7 +7,6 @@
  */
 package com.wegas.resourceManagement.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.api.IterationFacadeI;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -29,7 +28,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,18 +149,6 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
                     iteration.setTasks(tasks);
                 }
             }
-        }
-    }
-
-    /**
-     * @return fetch IterationFacade EJB
-     */
-    public static IterationFacade lookup() {
-        try {
-            return Helper.lookupBy(IterationFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Error retrieving var desc facade", ex);
-            return null;
         }
     }
 }
