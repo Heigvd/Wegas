@@ -11,8 +11,7 @@ import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -30,7 +29,6 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -82,6 +80,9 @@ public class WaitingController extends AbstractGameController {
      */
     @Inject
     ErrorController errorController;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      * Get the current user
@@ -161,7 +162,7 @@ public class WaitingController extends AbstractGameController {
         } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
             currentPlayer.setQueueSize(populatorFacade.getQueue().indexOf(currentPlayer) + 1);
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
-                && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {
+                && !requestManager.hasPlayerRight(currentPlayer)) {
             try {
                 externalContext.dispatch("/wegas-app/jsf/error/accessdenied.xhtml");
             } catch (IOException ex) {
