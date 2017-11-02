@@ -10,10 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.persistence.User;
 import java.util.List;
 import java.util.Locale;
@@ -220,34 +217,4 @@ public class RequestFacade {
         requestManager.getEntityManager().flush();
         requestManager.clear();
     }
-
-
-    /*
-     * RequestManager proxy 
-     * (allow to call CDI bean methods from a EJB context)
-     */
-    public boolean hasGameReadRight(final Game game) {
-        return requestManager.hasGameReadRight(game);
-    }
-
-    public boolean hasGameWriteRight(final Game game) {
-        return requestManager.hasGameWriteRight(game);
-    }
-
-    public boolean hasGameModelReadRight(final GameModel gameModel) {
-        return requestManager.hasGameModelReadRight(gameModel);
-    }
-
-    public boolean hasGameModelWriteRight(final GameModel gameModel) {
-        return requestManager.hasGameModelWriteRight(gameModel);
-    }
-
-    public boolean hasTeamRight(final Team team) {
-        return requestManager.hasTeamRight(team);
-    }
-
-    public boolean hasPlayerRight(final Player player) {
-        return requestManager.hasPlayerRight(player);
-    }
-
 }
