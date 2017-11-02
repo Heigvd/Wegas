@@ -5,7 +5,7 @@
  * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb;
+package com.wegas.test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

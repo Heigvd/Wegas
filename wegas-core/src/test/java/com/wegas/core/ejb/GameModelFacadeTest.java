@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.test.TestHelper;
 import com.wegas.core.persistence.game.*;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.function.Function;

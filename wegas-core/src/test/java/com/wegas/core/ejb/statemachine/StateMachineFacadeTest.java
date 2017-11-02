@@ -8,8 +8,8 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import static com.wegas.core.ejb.TestHelper.toList;
-import static com.wegas.core.ejb.TestHelper.toMap;
+import static com.wegas.test.TestHelper.toList;
+import static com.wegas.test.TestHelper.toMap;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;

@@ -17,7 +17,7 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.ejb.TestHelper;
+import com.wegas.test.TestHelper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.security.ejb.AccountFacade;
