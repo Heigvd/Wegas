@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
@@ -16,17 +17,16 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -54,6 +54,9 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     @Inject
     private GameModelFacade gameModelFacade;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     /**
      * Get all account linked to team's players Account email addresses will be
@@ -86,8 +89,8 @@ public class TeamFacade extends BaseFacade<Team> {
         /**
          * Be sure the new team exists in database before populate it
          */
-        t = gameFacade.createAndCommit(gameId, t);
-        t = this.find(t.getId());
+        Long teamId = gameFacade.createAndCommit(gameId, t);
+        this.find(teamId);
         /**
          * the new thread must be able to retrieve the team to populate from database
          */
@@ -158,7 +161,7 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     public void reset(final Team team) {
         gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), team, false); // reset the team and all its players
-        gameModelFacade.runStateMachines(team);
+        stateMachineFacade.runStateMachines(team);
     }
 
     /**

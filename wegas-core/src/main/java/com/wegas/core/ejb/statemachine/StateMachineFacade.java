@@ -11,28 +11,26 @@ import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.*;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import com.wegas.core.persistence.InstanceOwner;
 import java.util.Set;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import org.slf4j.LoggerFactory;
 
 /**
  * Run state machines.
@@ -84,12 +82,14 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     }
 
     /**
-     * @param target
+     * Run stateMachine for all players within the given context
+     *
+     * @param context a gameModel, a game, a team or a player
      */
-    public void runStateMachines(InstanceOwner target) throws WegasScriptException {
+    public void runStateMachines(InstanceOwner context) throws WegasScriptException {
 
         List<Player> players;
-        if (target == null || target.getPlayers() == null) {
+        if (context == null || context.getPlayers() == null) {
             logger.error("No Player Provided...");
             Player player = null;
             for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
@@ -97,7 +97,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
                     if (entity instanceof VariableInstance) {
                         VariableInstance vi = (VariableInstance) entity;
                         InstanceOwner owner = vi.getOwner();
-                        if (owner !=null){
+                        if (owner != null) {
                             player = owner.getAnyLivePlayer();
                         }
                         break;
@@ -113,18 +113,24 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
             players = new ArrayList<>();
             players.add(player);
         } else {
-            players = target.getPlayers();
+            players = context.getPlayers();
         }
 
         logger.debug("Received Reset event");
-        
+
         //getEntityManager().flush();
-        
         for (Player player : players) {
             this.runForPlayer(player);
         }
     }
 
+    /**
+     * Get all stateMachine defined within the gameModel
+     *
+     * @param gameModel the gameModel we search state machine in
+     *
+     * @return all stateMachines which exists in gameModel
+     */
     private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {
         final Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         final List<StateMachineDescriptor> stateMachineDescriptors = new ArrayList<>();
