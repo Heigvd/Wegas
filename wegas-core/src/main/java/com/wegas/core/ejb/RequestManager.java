@@ -894,10 +894,14 @@ public class RequestManager implements RequestManagerI {
             if (superPermission) {
                 return hasDirectGameModelEditPermission(subject, gameModel);
             } else {
-                if (this.hasRole("Trainer") && this.isPermitted("GameModel:Instantiate:gm" + id)) {
+                if (this.hasRole("Scenarist") && (this.isPermitted("GameModel:Instantiate:gm" + id) || this.isPermitted("GameModel:Duplicate:gm" + id))) {
+                    //For scenarist, instantiate and duplicate means read
+                    return true;
+                } else if (this.hasRole("Trainer") && this.isPermitted("GameModel:Instantiate:gm" + id)) {
                     //For trainer, instantiate means read
                     return true;
                 }
+                // fallback: View means View
                 return this.isPermitted("GameModel:View:gm" + id);
             }
         }
