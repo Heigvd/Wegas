@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.async.PopulatorScheduler;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
@@ -52,6 +53,9 @@ public class TeamFacade extends BaseFacade<Team> {
     @Inject
     private GameModelFacade gameModelFacade;
 
+    @Inject
+    private StateMachineFacade stateMachineFacade;
+
     /**
      * Get all account linked to team's players Account email addresses will be
      * altered (by hiding some parts) so they can be publicly displayed
@@ -83,8 +87,8 @@ public class TeamFacade extends BaseFacade<Team> {
         /**
          * Be sure the new team exists in database before populate it
          */
-        t = gameFacade.createAndCommit(gameId, t);
-        t = this.find(t.getId());
+        Long teamId = gameFacade.createAndCommit(gameId, t);
+        this.find(teamId);
         /**
          * the new thread must be able to retrieve the team to populate from database
          */
@@ -155,7 +159,7 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     public void reset(final Team team) {
         gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), team, false); // reset the team and all its players
-        gameModelFacade.runStateMachines(team);
+        stateMachineFacade.runStateMachines(team);
     }
 
     /**

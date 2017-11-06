@@ -7,6 +7,8 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.async.PopulatorScheduler;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
@@ -44,7 +46,7 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class PlayerFacade extends BaseFacade<Player> {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(PlayerFacade.class);
 
     /**
@@ -52,7 +54,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @EJB
     private GameFacade gameFacade;
-    
+
     @EJB
     private TeamFacade teamFacade;
 
@@ -67,26 +69,46 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @EJB
     private UserFacade userFacade;
-    
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
+
     @Inject
     private RequestManager requestManager;
-    
+
+    /**
+     * Create a player linked to the user identified by userId(may be null) and join the team
+     * identified by teamId.
+     * <p>
+     * This method run within a new transaction, meaning the returned player has
+     * already been persisted and committed to database. Since it way done with its own
+     * entity manager, only the id of the new player is return to force caller to
+     * fetch it from its own entity manager;
+     * <p>
+     * This new player is not usable since its variablesInstances are create asynchronously.
+     * Caller should call {@link PopulatorScheduler#scheduleCreation()} to make sure
+     * its variables will be created in the near future
+     *
+     * @param teamId     id of the team to join
+     * @param userId     id the user to create a player for, may be null
+     * @param playerName common name for the new player
+     *
+     * @return brand new player id
+     */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Player joinTeamAndCommit(Long teamId, Long userId, String playerName) {
+    public Long joinTeamAndCommit(Long teamId, Long userId, String playerName) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
 
-
         Team team = teamFacade.find(teamId);
-
 
         AbstractAccount currentAccount = userFacade.getCurrentAccount();
         // current user is logged as guest and guest are not allowed
         if (currentAccount != null && !team.getGame().getGameModel().getProperties().getGuestAllowed() && currentAccount instanceof GuestJpaAccount) {
             throw WegasErrorMessage.error("Access denied : guest not allowed");
         }
-        
+
         Player player = new Player();
-        
+
         if (userId != null) {
             User user = userFacade.find(userId);
             user.getPlayers().add(player);
@@ -100,16 +122,15 @@ public class PlayerFacade extends BaseFacade<Player> {
                 player.setName("Some anonymous user");
             }
         }
-        
+
         team.addPlayer(player);
         this.getEntityManager().persist(player);
 
-        return this.find(player.getId());
+        return player.getId();
     }
-    
 
     /**
-     * Look for a user player withing game
+     * Look for a user player within game
      *
      * @param gameId game id
      * @param userId user id
@@ -126,15 +147,22 @@ public class PlayerFacade extends BaseFacade<Player> {
             throw new WegasNoResultException("No player found");
         }
     }
-    
+
+    /**
+     * Return the list of player which haven't their variableinstances ready
+     *
+     * @return list of player which are queued for populating (not yet usable)
+     */
     public List<Player> findPlayersToPopulate() {
         TypedQuery<Player> query = this.getEntityManager().createNamedQuery("Player.findToPopulate", Player.class);
         return query.getResultList();
     }
 
     /**
-     * @param gameId
-     * @param userId
+     * Fetch the player owned by a user within a game or null if none exists.
+     *
+     * @param gameId id of the game
+     * @param userId id of the player
      *
      * @return the player owned by user linked to the game or null if not found
      */
@@ -152,10 +180,12 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * @param teamId
-     * @param userId
+     * Fetch the player owned by a user within a team or null if none exists.
      *
-     * @return the player owned by user who is member of the game
+     * @param teamId id of the team
+     * @param userId id of the user
+     *
+     * @return the player owned by user who is member of the team or null
      */
     public Player checkExistingPlayerInTeam(final Long teamId, final Long userId) {
         if (userId != null) {
@@ -170,24 +200,24 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * @param player
+     * Get all PlayerScoped variableinstances a player has access to.
+     * Including:
+     * <ul>
+     * <li> its own PlayerScoped instances</li>
+     * <li> PlayedScoped instances owned by any of its team partner if the instance broadcast scope is set to TeamScope</li>
+     * <li> PlayedScoped instances owned by any player is the game if the instance broadcast scope is set to GameScope</li>
+     * </ul>
      *
-     * @return all player instances
+     * @param player the player to fetch instances for
      *
-     * @deprecated please use {@link Player#getPrivateInstances() }
+     * @return all PlayerScoped instances the player has access to
      */
-    public List<VariableInstance> getAssociatedInstances(final Player player) {
-        return player.getPrivateInstances();
-        //final Query findPlayerInstance = getEntityManager().createNamedQuery("findPlayerInstances");
-        //return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
-    }
-    
     private List<VariableInstance> getPlayerInstances(Player player) {
         List<VariableInstance> result = new ArrayList<>();
-        
+
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
                 "VariableInstance.findPlayerInstance", VariableInstance.class);
-        
+
         for (VariableInstance instance : player.getPrivateInstances()) {
             PlayerScope scope = instance.getPlayerScope();
             query.setParameter("scopeId", scope.getId());
@@ -214,13 +244,25 @@ public class PlayerFacade extends BaseFacade<Player> {
         }
         return result;
     }
-    
+
+    /**
+     * Get all TeamScoped variableinstances a team has access to.
+     * Including:
+     * <ul>
+     * <li> the team own TeamScoped instances</li>
+     * <li> other TeamScoped instances owned by any other team is the game if the instance broadcast scope is set to GameScope</li>
+     * </ul>
+     *
+     * @param team the team to fetch instances for
+     *
+     * @return all TeamScoped instances the team has access to
+     */
     private List<VariableInstance> getTeamInstances(Team team) {
         List<VariableInstance> result = new ArrayList<>();
-        
+
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
                 "VariableInstance.findTeamInstance", VariableInstance.class);
-        
+
         for (VariableInstance instance : team.getPrivateInstances()) {
             TeamScope scope = instance.getTeamScope();
             query.setParameter("scopeId", scope.getId());
@@ -234,39 +276,50 @@ public class PlayerFacade extends BaseFacade<Player> {
             } else {
                 //TeamScope and PlayerScope -> only current team instance !
                 result.add(instance);
-                
+
             }
         }
         return result;
     }
-    
+
+    /**
+     * Get all GameScoped variableinstances a game has access to.
+     * Including:
+     * <ul>
+     * <li> the game own GameScoped instances</li>
+     * </ul>
+     *
+     * @param game the game to fetch instances for
+     *
+     * @return all instances owned by the game
+     */
     private List<VariableInstance> getGameInstances(Game game) {
         List<VariableInstance> result = new ArrayList<>();
-        
+
         for (VariableInstance instance : game.getPrivateInstances()) {
             result.add(instance);
         }
         return result;
     }
-    
+
+    /**
+     * Get all GameModelScoped variableinstances a gameModel owns
+     * Including:
+     * <ul>
+     * <li> the gameModel own GameModelScoped instances</li>
+     * </ul>
+     *
+     * @param gameModel the gameModel to fetch instances for
+     *
+     * @return all instances owned by the gameModel
+     */
     private List<VariableInstance> getGameModelInstances(GameModel gameModel) {
-        List<VariableInstance> result = new ArrayList<>();
-        /**
-         * Define a more straightforward way to fetch those instances !!! for
-         * (VariableDescriptor vd : gameModel.getVariableDescriptors()) { if
-         * (vd.getScope() instanceof GameModelScope) {
-         * result.add(vd.getScope().getInstance()); } }
-         */
-        
-        for (VariableInstance instance : gameModel.getPrivateInstances()) {
-            result.add(instance);
-        }
-        
-        return result;
+        return gameModel.getPrivateInstances();
     }
 
     /**
-     * Get all instances a player as access to
+     * Get all instances a player as access to, including those from others owners
+     * with a less specific broadcast scope
      *
      * @param playerId the player to get instances for
      *
@@ -277,15 +330,18 @@ public class PlayerFacade extends BaseFacade<Player> {
         Team team = player.getTeam();
         Game game = team.getGame();
         GameModel gameModel = game.getGameModel();
-        
+
         List<VariableInstance> instances = this.getPlayerInstances(player);
         instances.addAll(this.getTeamInstances(team));
         instances.addAll(this.getGameInstances(game));
         instances.addAll(this.getGameModelInstances(gameModel));
-        
+
         return instances;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void create(Player entity) {
         getEntityManager().persist(entity);
@@ -296,16 +352,15 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * @param player
+     * {@inheritDoc}
      */
     @Override
     public void remove(final Player player) {
-        //List<VariableInstance> instances = this.getAssociatedInstances(player);
         player.getTeam().getPlayers().remove(player);
         if (player.getUser() != null) {
             player.getUser().getPlayers().remove(player);
         }
-        
+
         this.getEntityManager().remove(player);
 
         //for (VariableInstance i : instances) {
@@ -314,7 +369,9 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * @param gameId
+     * Get all players in the game identified by gameId
+     *
+     * @param gameId id of the game
      *
      * @return all players in the game
      */
@@ -371,7 +428,9 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * @param gameModelId
+     * Get all player in the gameModel identified by gameModelId
+     *
+     * @param gameModelId id of the gameModel
      *
      * @return all players from all teams and all games from gameModel
      */
@@ -436,9 +495,11 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * @param g
+     * Find a player within the given game owned by the currentUser
      *
-     * @return currentUser player for given game
+     * @param g the game to find the player in
+     *
+     * @return player owned by the currentUser for the given game
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
@@ -447,7 +508,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     *
+     * Dummy constructor
      */
     public PlayerFacade() {
         super(Player.class);
@@ -460,7 +521,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public void reset(final Player player) {
         gameModelFacade.propagateAndReviveDefaultInstances(player.getGameModel(), player, false); // reset only this player instances
-        gameModelFacade.runStateMachines(player);
+        stateMachineFacade.runStateMachines(player);
     }
 
     /**
@@ -471,19 +532,26 @@ public class PlayerFacade extends BaseFacade<Player> {
     public void reset(Long playerId) {
         this.reset(this.find(playerId));
     }
-    
+
+    /**
+     * Get all locks linked to audiences a player is part of
+     *
+     * @param playerId id of the player to retrieve locks for
+     *
+     * @return list of locked token the given player have to take into account
+     */
     public Collection<String> getLocks(Long playerId) {
         Player player = this.find(playerId);
         Team team = player.getTeam();
         Game game = player.getGame();
         GameModel gameModel = game.getGameModel();
-        
+
         List<String> audiences = new ArrayList<>();
         audiences.add(player.getChannel());
         audiences.add(team.getChannel());
         audiences.add(game.getChannel());
         audiences.add(gameModel.getChannel());
-        
+
         return requestManager.getTokensByAudiences(audiences);
     }
 }

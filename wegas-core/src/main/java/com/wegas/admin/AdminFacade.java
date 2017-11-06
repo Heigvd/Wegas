@@ -10,23 +10,23 @@ package com.wegas.admin;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.admin.persistence.GameAdmin;
+import com.wegas.admin.persistence.GameAdmin.Status;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,10 +64,26 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
         return findByStatus(GameAdmin.Status.CHARGED, GameAdmin.Status.PROCESSED);
     }
 
+    /**
+     * Delete the game which is linked to the given gameAdmin
+     *
+     * @param gameAdmin the gameAdmin which is linked to the game to destroy
+     */
     public void deleteGame(GameAdmin gameAdmin) {
         Game game = gameAdmin.getGame();
         if (game != null) {
-            gameFacade.remove(game);
+            try {
+                logger.info("Delete {} game", game);
+                /*
+                 * Delete the game within a new transaction since it's a common
+                 * case to delete several games within the same request.
+                 * Isolate each deletion in a dedicated transaction avoid a
+                 * TX timeout exception
+                 */
+                gameFacade.removeTX(game.getId());
+            } catch (Exception ex) {
+                logger.error("ERROR WHILE DELETING GAME ({}): {}", game, ex);
+            }
         }
     }
 
@@ -85,6 +101,7 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
      * Get a gameAdmin by Game's id
      *
      * @param gameId game's id
+     *
      * @return GameAdmin found or null if none was found
      */
     public GameAdmin findByGame(final Long gameId) {
@@ -150,14 +167,22 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
         }
     }
 
-    @Schedule(hour = "4", dayOfMonth = "Last Sun")
+    /**
+     * CRON to delete games once the bin have been emptied. Note that only games
+     * which are marked as {@link Status#PROCESSED} will be destroyed.
+     * {@link Status#TODO} and {@link Status#CHARGED} ones will not be destroyed
+     * <p>
+     * This task is scheduled each Sunday at 1:30 am
+     */
+    @Schedule(hour = "1", minute = "30", dayOfWeek = "Sun")
     public void deleteGames() {
         ILock lock = hzInstance.getLock("AdminFacade.Schedule");
+        logger.info("deleteGames(): want to delete processed and deleted games");
         if (lock.tryLock()) {
             try {
-                TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
-                final List<GameAdmin> resultList = query.getResultList();
-                for (GameAdmin ga : resultList) {
+                final List<GameAdmin> toDelete = this.getGameToDelete();
+                logger.info("deleteGames(): got the lock, {} games to delete", toDelete.size());
+                for (GameAdmin ga : toDelete) {
                     this.deleteGame(ga);
                 }
                 // Flush to trigger EntityListener events before loosing RequestManager !
@@ -166,7 +191,19 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
                 lock.unlock();
                 lock.destroy();
             }
+        } else {
+            logger.info("Somebody else got the lock");
         }
+    }
+
+    /**
+     * Fetch the list of the games which are to be deleted. It means
+     *
+     * @return
+     */
+    public List<GameAdmin> getGameToDelete() {
+        TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
+        return query.getResultList();
     }
 
     @Override

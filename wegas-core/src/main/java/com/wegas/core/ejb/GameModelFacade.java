@@ -25,8 +25,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.FileController;
-import com.wegas.core.rest.HistoryController;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
@@ -79,15 +78,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
 
-    /**
-     *
-     */
-    @EJB
-    private FileController fileController;
-
-    @EJB
-    private HistoryController historyController;
-
     @EJB
     private PlayerFacade playerFacade;
 
@@ -104,12 +94,15 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     private StateMachineFacade stateMachineFacade;
 
     /**
-     *
+     * Dummy constructor
      */
     public GameModelFacade() {
         super(GameModel.class);
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public void create(final GameModel entity) {
 
@@ -133,26 +126,39 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public void propagateAndReviveDefaultInstances(GameModel gameModel, InstanceOwner context, boolean create) {
         this.propagateDefaultInstances(gameModel, context, create);
         this.getEntityManager().flush();
-        this.reviveInstances(gameModel, context);
+        this.reviveInstances(context);
     }
 
     /**
+     *
      * @param gameModel
      * @param context
-     * @param create
      */
     public void createAndRevivePrivateInstance(GameModel gameModel, InstanceOwner context) {
         this.createInstances(gameModel, context);
         this.getEntityManager().flush();
-        this.reviveInstances(gameModel, context);
+        this.reviveInstances(context);
     }
 
+    /**
+     * Create variable instances for owner (not for its children !)
+     *
+     * @param gameModel the game model which define variabledescriptors
+     * @param owner     owner to create instances for
+     */
     public void createInstances(GameModel gameModel, InstanceOwner owner) {
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
             vd.createInstances(owner);
         }
     }
 
+    /**
+     * Propagate default instance to instances owned
+     *
+     * @param gameModel
+     * @param context
+     * @param create
+     */
     public void propagateDefaultInstances(GameModel gameModel, InstanceOwner context, boolean create) {
         // Propagate default instances 
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
@@ -161,28 +167,36 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     }
 
-    public void revivePrivateInstances(GameModel gameModel, InstanceOwner target) {
-        for (VariableInstance vi : target.getPrivateInstances()){
+    /**
+     * Revive instances directly owned by the given owner by firing {@link InstanceRevivedEvent} for each instances
+     *
+     * @param owner owner to revive instances for
+     */
+    public void revivePrivateInstances(InstanceOwner owner) {
+        for (VariableInstance vi : owner.getPrivateInstances()) {
             instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
         }
     }
 
-    public void reviveInstances(GameModel gameModel, InstanceOwner context) {
-        //logger.error("REVIVE INSTANCES");
-        //Helper.printWegasStackTrace(new Exception());
-
+    /**
+     * Same as {@link #revivePrivateInstances(com.wegas.core.persistence.InstanceOwner) } but also revive instances owned by owner chilidren
+     *
+     * @param owner instances owner
+     */
+    public void reviveInstances(InstanceOwner owner) {
         // revive just propagated instances
-        for (VariableInstance vi : context.getAllInstances()) {
+        for (VariableInstance vi : owner.getAllInstances()) {
             instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
         }
     }
 
-    public void runStateMachines(InstanceOwner context) {
-        // Send reset envent to run state machines
-        stateMachineFacade.runStateMachines(context);
-    }
-
-    public void reviveScopeInstances(GameModel gameModel, VariableDescriptor vd) {
+    /**
+     * Reset instances with {@link AbstractScope#propagateDefaultInstance(com.wegas.core.persistence.InstanceOwner, boolean)
+     * and fire {@link InstanceRevivedEvent} for each reset instances
+     *
+     * @param vd the variable descriptor to reset the variable for
+     */
+    public void resetAndReviveScopeInstances(VariableDescriptor vd) {
         vd.getScope().propagateDefaultInstance(null, true);
         this.getEntityManager().flush();
         // revive just propagated instances
@@ -213,7 +227,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     * @param gm
+     * Same as {@link #create(com.wegas.core.persistence.game.GameModel) } but add a debug game to the gamemodel
+     *
+     * @param gm the gameModel to persist
      */
     public void createWithDebugGame(final GameModel gm) {
         this.create(gm);
@@ -469,7 +485,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         ///getEntityManager().flush();
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
-        this.runStateMachines(gameModel);
+        stateMachineFacade.runStateMachines(gameModel);
     }
 
     public void reset(final Game game) {

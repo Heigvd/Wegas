@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.async.PopulatorScheduler;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -19,7 +20,6 @@ import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
@@ -64,9 +64,6 @@ public class GameFacade extends BaseFacade<Game> {
     @Inject
     private Event<PreEntityRemoved<Game>> gameRemovedEvent;
 
-    @EJB
-    private RequestFacade requestFacade;
-
     /**
      *
      */
@@ -95,13 +92,13 @@ public class GameFacade extends BaseFacade<Game> {
     private UserFacade userFacade;
 
     @Inject
-    private RequestManager requestManager;
-
-    @Inject
     private PopulatorScheduler populatorScheduler;
 
     @Inject
     private PopulatorFacade populatorFacade;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     /**
      *
@@ -111,8 +108,15 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * @param gameModelId
-     * @param game
+     * Create (persist) a new game base on a gameModel identified by gameModelId.
+     * This gameModel will first been duplicated (to freeze it against original gameModel update)
+     * Then, the game will be attached to this duplicate.
+     * <p>
+     * The game will contains a DebugTeam, which contains itself a test player.
+     * This team/testPlayer will be immediately usable since theirs variableInstance are create synchronously.
+     *
+     * @param gameModelId id of the gameModel to create a new game for
+     * @param game        the game to persist
      *
      * @throws IOException
      */
@@ -127,6 +131,9 @@ public class GameFacade extends BaseFacade<Game> {
         userFacade.deletePermissions(userFacade.getCurrentUser(), "GameModel:%:gm" + gm.getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void create(final Game game) {
         this.create(game.getGameModel().getId(), game);
@@ -141,8 +148,13 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * @param gameModel
-     * @param game
+     * Persist a new game within the given gameModel
+     * <p>
+     * The game will contains a DebugTeam, which contains itself a test player.
+     * This team/testPlayer will be immediately usable since theirs variableInstance are create synchronously.
+     *
+     * @param gameModel the gameModel to add the game in
+     * @param game      the game to persist within the gameModel
      */
     private void create(final GameModel gameModel, final Game game) {
         final User currentUser = userFacade.getCurrentUser();
@@ -160,7 +172,7 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
 
         this.addDebugTeam(game);
-        gameModelFacade.runStateMachines(gameModel);
+        stateMachineFacade.runStateMachines(gameModel);
 
         //gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
         userFacade.addTrainerToGame(currentUser.getId(), game.getId());
@@ -226,6 +238,9 @@ public class GameFacade extends BaseFacade<Game> {
         return key;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Game update(final Long entityId, final Game entity) {
         String token = entity.getToken().toLowerCase().replace(" ", "-");
@@ -241,6 +256,9 @@ public class GameFacade extends BaseFacade<Game> {
         return super.update(entityId, entity);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(final Game entity) {
         gameRemovedEvent.fire(new PreEntityRemoved<>(entity));
@@ -255,6 +273,16 @@ public class GameFacade extends BaseFacade<Game> {
         }
 
         userFacade.deletePermissions(entity);
+    }
+
+    /**
+     * Same as {@link remove(java.lang.Long) } but within a brand new transaction
+     *
+     * @param gameId id of the game to remove
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void removeTX(Long gameId) {
+        this.remove(gameId);
     }
 
     /**
@@ -405,11 +433,21 @@ public class GameFacade extends BaseFacade<Game> {
         return game;
     }
 
+    /**
+     * Get all games with the given status which are accessible to the current user
+     *
+     * @param status {@link Game.Status#LIVE} {@link Game.Status#BIN} {@link Game.Status#DELETE}
+     *
+     * @return the list of all games which given status the current use has access to
+     */
     public Collection<Game> findByStatusAndUser(Game.Status status) {
         ArrayList<Game> games = new ArrayList<>();
         Map<Long, List<String>> gMatrix = new HashMap<>();
         Map<Long, List<String>> gmMatrix = new HashMap<>();
 
+        // Previous behaviour was to fetch all games from DB and then filter against user permissions
+        // it was time consuming
+        // New way is to fetch permissions first and extract games from this list
         String roleQuery = "SELECT p FROM Permission p WHERE "
                 + "(p.role.id in "
                 + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
@@ -449,6 +487,8 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
+     * Create a new player within a team for the user identified by userId
+     *
      * @param teamId
      * @param userId
      *
@@ -458,16 +498,33 @@ public class GameFacade extends BaseFacade<Game> {
         return this.joinTeam(teamId, userId, null);
     }
 
+    /**
+     * Create a new player within a team for the user identified by userId
+     *
+     * @param teamId     id of the team to join
+     * @param userId     id of the user to create a player for, may be null to create an anonymous player
+     * @param playerName common name of the player
+     *
+     * @return a new player, linked to a user, who just joined the team
+     */
     public Player joinTeam(Long teamId, Long userId, String playerName) {
-        Player player = playerFacade.joinTeamAndCommit(teamId, userId, playerName);
-
-        player = this.getEntityManager().merge(player);
+        Long playerId = playerFacade.joinTeamAndCommit(teamId, userId, playerName);
+        Player player = playerFacade.find(playerId);
         populatorScheduler.scheduleCreation();
         int indexOf = populatorFacade.getQueue().indexOf(player);
         player.setQueueSize(indexOf + 1);
         return player;
     }
 
+    /**
+     * Same as {@link #joinTeam(java.lang.Long, java.lang.Long, java.lang.String)} but anonymously.
+     * (for testing purpose)
+     *
+     * @param teamId     id of the team to join
+     * @param playerName common name of the player
+     *
+     * @return a new player anonymous player who just joined the team
+     */
     public Player joinTeam(Long teamId, String playerName) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         return this.joinTeam(teamId, null, playerName);
@@ -487,6 +544,11 @@ public class GameFacade extends BaseFacade<Game> {
                 "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
     }
 
+    /**
+     * Make sure each game member owns correct permission on the game
+     *
+     * @param game the game to fix the permissions for
+     */
     public void recoverRights(Game game) {
         for (Team team : game.getTeams()) {
             for (Player player : team.getPlayers()) {
@@ -532,7 +594,7 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void reset(final Game game) {
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), game, false);
-        gameModelFacade.runStateMachines(game);
+        stateMachineFacade.runStateMachines(game);
     }
 
     /**
@@ -551,10 +613,10 @@ public class GameFacade extends BaseFacade<Game> {
      * @param gameId
      * @param t
      *
-     * @return
+     * @return id of the brand new team
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Team createAndCommit(Long gameId, Team t) {
+    public Long createAndCommit(Long gameId, Team t) {
         Game g = this.find(gameId);
 
         AbstractAccount currentAccount = userFacade.getCurrentAccount();
@@ -563,16 +625,11 @@ public class GameFacade extends BaseFacade<Game> {
             throw WegasErrorMessage.error("Access denied : guest not allowed");
         }
 
-        // @Hack If user is on a game account, use it as team name
-        if (userFacade.getCurrentUser().getMainAccount() instanceof GameAccount) {
-            //&& t.getName() == null ) {
-            t.setName(((GameAccount) userFacade.getCurrentUser().getMainAccount()).getEmail());
-        }
         g.addTeam(t);
         g = this.find(gameId);
         this.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
         getEntityManager().persist(t);
 
-        return t;
+        return t.getId();
     }
 }

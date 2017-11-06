@@ -160,9 +160,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
         // @TODO find a smarter way to decide to propagate or not to propatate...
         if (propagate) {
-            AbstractScope scope = entity.getScope();
-            scope.setBeanjection(new Beanjection(variableInstanceFacade));
-            gameModelFacade.reviveScopeInstances(gameModel, entity);
+            entity.getScope().setBeanjection(new Beanjection(variableInstanceFacade));
+            gameModelFacade.resetAndReviveScopeInstances(entity);
         }
 
         gameModel.addToVariableDescriptors(entity);
@@ -554,7 +553,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         vd.setScope(newScope);
         this.getEntityManager().persist(vd);
         vd = this.find(vd.getId());
-        gameModelFacade.reviveScopeInstances(vd.getGameModel(), vd);
+        gameModelFacade.resetAndReviveScopeInstances(vd);
     }
 
     /**
