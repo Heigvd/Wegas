@@ -11,8 +11,15 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadConcern;
-import com.mongodb.client.MongoDatabase;
 import com.wegas.core.Helper;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import javax.annotation.PreDestroy;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.jcr.Repository;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.document.DocumentMK;
@@ -23,15 +30,6 @@ import org.apache.jackrabbit.oak.segment.file.FileStore;
 import org.apache.jackrabbit.oak.segment.file.FileStoreBuilder;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.PreDestroy;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.jcr.Repository;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Jackrabbit repository init

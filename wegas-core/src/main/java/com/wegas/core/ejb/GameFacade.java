@@ -20,7 +20,6 @@ import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
@@ -642,11 +641,6 @@ public class GameFacade extends BaseFacade<Game> {
             throw WegasErrorMessage.error("Access denied : guest not allowed");
         }
 
-        // @Hack If user is on a game account, use it as team name
-        if (userFacade.getCurrentUser().getMainAccount() instanceof GameAccount) {
-            //&& t.getName() == null ) {
-            t.setName(((GameAccount) userFacade.getCurrentUser().getMainAccount()).getEmail());
-        }
         g.addTeam(t);
         g = this.find(gameId);
         this.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
