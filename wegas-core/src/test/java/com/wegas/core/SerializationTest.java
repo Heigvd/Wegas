@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.event.client.ExceptionEvent;
-import com.wegas.core.event.client.WarningEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
@@ -44,7 +43,6 @@ import com.wegas.core.rest.util.ManagedResponse;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
@@ -72,9 +70,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -206,26 +204,21 @@ public class SerializationTest {
 
         FacebookAccount fbAccount = new FacebookAccount();
         GuestJpaAccount guAccount = new GuestJpaAccount();
-        GameAccount gaAccount = new GameAccount(game);
         JpaAccount jpaAccount = new JpaAccount();
 
         User fbUser = new User(fbAccount);
         User guUser = new User(guAccount);
-        User gaUser = new User(gaAccount);
         User jpaUser = new User(jpaAccount);
 
         Player fbPlayer = new Player("Facebook Player");
         Player guPlayer = new Player("Guest Player");
-        Player gaPlayer = new Player("Game Player");
         Player jpaPlayer = new Player("JPA Player");
 
         team1.addPlayer(fbPlayer);
         team1.addPlayer(guPlayer);
-        team1.addPlayer(gaPlayer);
         team1.addPlayer(jpaPlayer);
 
         fbUser.getPlayers().add(fbPlayer);
-        gaUser.getPlayers().add(gaPlayer);
         guUser.getPlayers().add(guPlayer);
         jpaUser.getPlayers().add(jpaPlayer);
 
@@ -238,7 +231,6 @@ public class SerializationTest {
         assertPropertyEquals(mapper.writeValueAsString(team1), "@class", "Team");
 
         assertPropertyEquals(mapper.writeValueAsString(fbAccount), "@class", "FacebookAccount");
-        assertPropertyEquals(mapper.writeValueAsString(gaAccount), "@class", "GameAccount");
         assertPropertyEquals(mapper.writeValueAsString(guAccount), "@class", "GuestJpaAccount");
         assertPropertyEquals(mapper.writeValueAsString(jpaAccount), "@class", "JpaAccount");
 
@@ -412,7 +404,6 @@ public class SerializationTest {
         ndPayload.setDefaultInstance(niPayload);
 
         CustomEvent custom = new CustomEvent("Dummy CustomEvent", payload);
-        WarningEvent warn = new WarningEvent("Warning Dummy Event", payload);
 
         List<WegasRuntimeException> exceptions = new ArrayList<>();
         exceptions.add(new WegasOutOfBoundException(0.0, 10.0, 15.0, ndPayload.getLabel(), ndPayload.getLabel()));
@@ -432,7 +423,6 @@ public class SerializationTest {
 
         ManagedResponse managedResponse = new ManagedResponse();
         managedResponse.getEvents().add(custom);
-        managedResponse.getEvents().add(warn);
         managedResponse.getEvents().add(ex);
         managedResponse.getEvents().add(update);
 

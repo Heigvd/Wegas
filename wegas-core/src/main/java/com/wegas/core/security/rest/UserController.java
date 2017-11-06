@@ -28,16 +28,8 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.UnauthorizedException;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
+import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -49,8 +41,15 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.*;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -276,37 +275,6 @@ public class UserController {
             throw new UnauthorizedException();
         }
         return accountFacade.getAutoCompleteByRoles(value, rolesList);
-    }
-
-    /**
-     * @param values
-     *
-     * @return dunno
-     *
-     * @deprecated
-     */
-    @GET
-    @Deprecated
-    @Path("FindAccountsByEmailValues")
-    public List<Map> findAccountsByEmailValues(@QueryParam("values") List<String> values) {
-        return accountFacade.findAccountsByEmailValues(values);
-    }
-
-    /**
-     * @param values
-     *
-     * @return dunno
-     *
-     * @deprecated
-     */
-    @GET
-    @Deprecated
-    @Path("FindAccountsByName")
-    public List<AbstractAccount> findAccountsByName(@QueryParam("values") List<String> values) {
-        if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
-            throw new UnauthorizedException();
-        }
-        return accountFacade.findAccountsByName(values);
     }
 
     /**

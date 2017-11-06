@@ -26,10 +26,11 @@ import java.io.Serializable;
     @JsonSubTypes.Type(value = EntityUpdatedEvent.class),
     @JsonSubTypes.Type(value = EntityDestroyedEvent.class),
     @JsonSubTypes.Type(value = OutdatedEntitiesEvent.class),
-    @JsonSubTypes.Type(value = ExceptionEvent.class),
-    @JsonSubTypes.Type(value = WarningEvent.class)
+    @JsonSubTypes.Type(value = ExceptionEvent.class)
 })
 abstract public class ClientEvent implements Serializable {
+
+    private static final long serialVersionUID = -3358736311025273367L;
 
     /**
      *

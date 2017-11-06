@@ -13,6 +13,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
@@ -97,6 +98,9 @@ public class UpdateController {
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     /**
      * @return Some String encoded HTML
@@ -547,7 +551,7 @@ public class UpdateController {
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
             gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true); // restart missing debugTeam
-            gameModelFacade.runStateMachines(dt);
+            stateMachineFacade.runStateMachines(dt);
             this.getEntityManager().flush();
             if (++counter == 25) {
                 break;

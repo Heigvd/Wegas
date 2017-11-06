@@ -7,10 +7,10 @@
  */
 package com.wegas.core.async;
 
-import com.wegas.core.ejb.*;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.ejb.*;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
@@ -19,19 +19,18 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Resource;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.inject.Inject;
 import javax.transaction.UserTransaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Maxence
@@ -51,6 +50,9 @@ public class PopulatorFacade extends WegasAbstractFacade {
 
     @Inject
     private WebsocketFacade websocketFacade;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     /**
      *
@@ -134,7 +136,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
             player.setStatus(Status.LIVE);
 
             this.flush();
-            gameModelFacade.runStateMachines(player);
+            stateMachineFacade.runStateMachines(player);
             utx.commit();
             websocketFacade.propagateNewPlayer(player);
 

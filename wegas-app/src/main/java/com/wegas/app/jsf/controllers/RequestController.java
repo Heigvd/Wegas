@@ -10,7 +10,6 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
@@ -63,26 +62,6 @@ public class RequestController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         if (this.lang != null) { // If a language parameter is provided, it overrides the Accept-Language header
             context.getViewRoot().setLocale(new Locale(this.lang));
-        }
-        try {
-            /*
-             GameAccount, be a good boy, please go to your game page.
-             */
-            if (this.getCurrentUser().getMainAccount() instanceof GameAccount) {
-                try {
-                    HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-                    String query = (request.getServletPath() != null) ? request.getServletPath() : "";
-                    query += (request.getQueryString() != null) ? "?" + request.getQueryString() : "";
-                    String goTo = "/game.html?token=" + ((GameAccount) this.getCurrentUser().getMainAccount()).getToken();
-                    if (query == null ? goTo != null : !query.equals(goTo)) {
-                        context.getExternalContext().redirect(request.getContextPath() + goTo);
-                    }
-                } catch (IOException ex) {
-                    //page not found.
-                }
-
-            }
-        } catch (WegasNotFoundException ex) {// no user
         }
     }
 

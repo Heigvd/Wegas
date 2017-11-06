@@ -10,7 +10,6 @@ package com.wegas.core.security.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.event.client.WarningEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
@@ -310,86 +309,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * @param name
-     * @param withEmail
-     *
-     * @return all accounts matching name, excluding guest accounts
-     */
-    public List<AbstractAccount> findByNameOrEmail(String name, boolean withEmail) {
-        ArrayList<AbstractAccount> accounts = new ArrayList<>();
-        String splidedName[] = name.split(" ");
-        for (int i = 0; i < splidedName.length; i++) {
-            StringBuilder firstnameBuilder = new StringBuilder();
-            StringBuilder lastnameBuilder = new StringBuilder();
-            String firstname, lastname;
-            for (int ii = 0; ii <= i; ii++) {
-                firstnameBuilder.append(splidedName[ii]).append(" ");
-            }
-            firstname = normalizeName(firstnameBuilder.toString());
-            if (i < splidedName.length - 1) {
-                for (int ii = i + 1; ii < splidedName.length; ii++) {
-                    lastnameBuilder.append(splidedName[ii]).append(" ");
-                }
-            }
-            lastname = normalizeName(lastnameBuilder.toString());
-            List<AbstractAccount> tempAccount = this.findByNameOrEmailQuery("name", firstname, lastname);
-            accounts = this.compareExistingAccount(tempAccount, accounts);
-            tempAccount = this.findByNameOrEmailQuery("name", lastname, firstname);
-            accounts = this.compareExistingAccount(tempAccount, accounts);
-            if (withEmail && splidedName.length == 1) {
-                tempAccount = this.findByNameOrEmailQuery("email", splidedName[i], null);
-                accounts = this.compareExistingAccount(tempAccount, accounts);
-            }
-        }
-        return accounts;
-    }
-
-    private String normalizeName(String name) {
-        if (name.equals("")) {
-            return "%";
-        } else {
-            return name.substring(0, name.length() - 1);
-        }
-    }
-
-    // Relies on named queries that exclude guest accounts
-    private List<AbstractAccount> findByNameOrEmailQuery(final String type, String value1, String value2) {
-
-        final TypedQuery<AbstractAccount> query;
-
-        //CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        //CriteriaQuery cq = cb.createQuery();
-        //Root<JpaAccount> account = cq.from(JpaAccount.class);
-        switch (type) {
-            case "name":
-                query = getEntityManager().createNamedQuery("AbstractAccount.findByFullName", AbstractAccount.class);
-                query.setParameter("firstname", value1);
-                query.setParameter("lastname", value2);
-                break;
-            case "email":
-                query = getEntityManager().createNamedQuery("AbstractAccount.findByEmail", AbstractAccount.class);
-                query.setParameter("email", value1);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unexpected parameter " + type);
-        }
-        //Query q = getEntityManager().createQuery(cq);
-        //q.setMaxResults(MAXRESULT);
-        query.setMaxResults(MAXRESULT);
-        return query.getResultList();
-        //return (List<AbstractAccount>) q.getResultList();
-    }
-
-    private ArrayList<AbstractAccount> compareExistingAccount(List<AbstractAccount> tempAccount, ArrayList<AbstractAccount> accounts) {
-        for (AbstractAccount tempAccount1 : tempAccount) {
-            if (!accounts.contains(tempAccount1)) {
-                accounts.add(tempAccount1);
-            }
-        }
-        return accounts;
-    }
-
-    /**
      * @param team
      *
      * @return all users who have a player registered in the given team
@@ -447,7 +366,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         ArrayList<String> roles = (ArrayList<String>) rolesList.get("rolesList");
 
         List<AbstractAccount> returnValue = new ArrayList<>();
-        //for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
         for (AbstractAccount a : findByNameEmailOrUsername(value)) {
             boolean hasRole = userFacade.hasRoles(roles, new ArrayList<>(a.getRoles()));
             if (hasRole) {
@@ -456,59 +374,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 returnValue.add(a);
             }
         }
-        return returnValue;
-    }
-
-    /**
-     * @param values
-     *
-     * @return bag of scrap (excluding guest accounts)
-     *
-     * @deprecated
-     */
-    public List<Map> findAccountsByEmailValues(List<String> values) {
-        List<Map> returnValue = new ArrayList<>();
-        List<String> notValidValue = new ArrayList<>();
-        for (String value : values) {
-            try {
-                Map<String, Object> account = new HashMap<>();
-                AbstractAccount a = findByEmail(value.trim());
-                if (a.getFirstname() != null && a.getLastname() != null) {
-                    account.put("label", a.getFirstname() + " " + a.getLastname());
-                } else {
-                    account.put("label", a.getEmail());
-                }
-                account.put("value", a.getId());
-                returnValue.add(account);
-            } catch (WegasNoResultException e2) {
-                notValidValue.add(value);
-            }
-        }
-        requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
-        return returnValue;
-    }
-
-    /**
-     * piece of scrap
-     *
-     * @deprecated
-     * @param values
-     *
-     * @return AbstractAccounts (excluding guests) and some strange event...
-     */
-    public List<AbstractAccount> findAccountsByName(List<String> values) {
-        List<AbstractAccount> returnValue = new ArrayList<>();
-        List<String> notValidValue = new ArrayList<>();
-        for (int i = 0; i < values.size(); i++) {
-            String s = values.get(i);
-            List<AbstractAccount> temps = findByNameOrEmail(s, false);
-            if (temps.size() == 1) {
-                returnValue.addAll(temps);
-            } else {
-                notValidValue.add(s);
-            }
-        }
-        requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
         return returnValue;
     }
 

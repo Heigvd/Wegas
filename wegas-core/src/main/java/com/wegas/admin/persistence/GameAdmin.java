@@ -18,13 +18,12 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.persistence.Role;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.*;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -33,7 +32,7 @@ import java.util.List;
 @NamedQueries({
     @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId"),
     @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC"),
-    @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status != com.wegas.admin.persistence.GameAdmin.Status.TODO AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
+    @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameAdmin extends AbstractEntity {
@@ -308,17 +307,21 @@ public class GameAdmin extends AbstractEntity {
         return prevTeamCount;
     }
 
-    public enum Status {
+    /**
+     * GameAdmin status
+     * {@
+     */
+    public static enum Status {
         /**
-         * Initial status
+         * Initial status, not yet processed
          */
         TODO,
         /**
-         *
+         * Processed means processed but not charged (test games, etc)
          */
         PROCESSED,
         /**
-         *
+         * Real world games which have been charged
          */
         CHARGED
     }

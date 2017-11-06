@@ -12,15 +12,13 @@ import java.util.Map;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.springframework.util.StringUtils;
 
 /**
  *
  * https://github.com/PE-INTERNATIONAL/org.eclipse.persistence.logging.slf4j/blob/master/README.md
- *
+ * <p>
  * <p>
  * This is a wrapper class for SLF4J. It is used when messages need to be logged
  * through SLF4J.
@@ -78,6 +76,8 @@ import org.slf4j.LoggerFactory;
 public class Slf4jSessionLogger extends AbstractSessionLog {
 
     public static final String ECLIPSELINK_NAMESPACE = "org.eclipse.persistence.logging";
+
+    private static final Map<String, Logger> LOGGERS = new HashMap<>();
 
     private Map<Integer, LogLevel> mapLevels;
 
@@ -169,7 +169,19 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
      * INTERNAL: Return the Logger for the given category
      */
     private Logger getLogger(String category) {
-        return LoggerFactory.getLogger(ECLIPSELINK_NAMESPACE + "." + category);
+        String loggerName;
+        if (category != null) {
+            loggerName= ECLIPSELINK_NAMESPACE + "." + category;
+        } else {
+            loggerName = ECLIPSELINK_NAMESPACE + ".default";
+        }
+        Logger logger = LOGGERS.get(loggerName);
+        if (logger == null){
+            logger = LoggerFactory.getLogger(loggerName);
+            LOGGERS.put(loggerName, logger);
+        }
+
+        return logger;
     }
 
     /**
