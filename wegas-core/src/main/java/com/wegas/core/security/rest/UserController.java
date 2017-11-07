@@ -686,7 +686,7 @@ public class UserController {
     @GET
     @Path("Current")
     public User getCurrentUser() {
-        return userFacade.getCurrentUser();
+        return userFacade.getCurrentUserOrNull();
     }
 
     /**

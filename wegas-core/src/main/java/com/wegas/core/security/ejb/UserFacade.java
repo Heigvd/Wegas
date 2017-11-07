@@ -12,10 +12,7 @@ import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
@@ -35,29 +32,28 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.messaging.ejb.EMailFacade;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.crypto.RandomNumberGenerator;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.subject.Subject;
-import org.slf4j.LoggerFactory;
-
+import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.naming.NamingException;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
-import java.util.*;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.naming.NamingException;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -231,30 +227,24 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @return a User entity, based on the shiro login state public User
-     *         getCurrentUser() { User currentUser =
-     *         this.getCurrentUserOrNull(); if (currentUser == null) { throw new
-     *         WegasNotFoundException("Unable to find user"); } return
-     *         currentUser; }
-     */
-    /**
-     * @return a User entity, based on the shiro login state public User
-     *         getCurrentUserOrNull() { User currentUser =
-     *         requestManager.getCurrentUser(); if (currentUser != null) {
-     *         currentUser = this.find(currentUser.getId()); }
-     *
-     * return currentUser; }
-     */
-    /**
      * @return a User entity, based on the shiro login state
      */
-    public User getCurrentUser() {
+    public User getCurrentUser() throws WegasNotFoundException {
         User currentUser = requestManager.getCurrentUser();
         if (currentUser != null) {
             return currentUser;
         } else {
             throw new WegasNotFoundException("Unable to find user");
         }
+    }
+
+
+    /**
+     * Same as {@link #getCurrentUser() } but return null rather than throwing an exception
+     * @return the current user or null if current subject is not authenticated
+     */
+    public User getCurrentUserOrNull() {
+        return requestManager.getCurrentUser();
     }
 
 
