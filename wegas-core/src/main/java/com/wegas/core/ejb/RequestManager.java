@@ -41,6 +41,7 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.script.ScriptContext;
@@ -822,11 +823,21 @@ public class RequestManager implements RequestManagerI {
         return effectiveDBPermissions;
     }
 
-    private boolean hasRole(String roleName) {
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public boolean hasRole(String roleName) {
         return this.getEffectiveRoles().contains(roleName);
     }
 
-    private boolean isPermitted(String permission) {
+    public void checkPermission(String permission){
+        if (!isPermitted(permission)){
+            throw new WegasAccessDenied(null, null, permission, currentUser);
+        }
+    }
+
+    public boolean isPermitted(String permission) {
         String[] pSplit = permission.split(":");
 
         if (pSplit.length == 3) {
@@ -998,7 +1009,12 @@ public class RequestManager implements RequestManagerI {
     }
 
     private boolean userHasPermission(String permissions, String type, AbstractEntity entity) {
+        // null means no permission required
         if (permissions != null) {
+            /*
+             * not null value means at least one permission from the list.
+             * Hence, empty string "" means forbidden, even for admin
+             */
             String perms[] = this.split(permissions);
             for (String perm : perms) {
                 if (this.hasPermission(perm)) {
@@ -1065,6 +1081,10 @@ public class RequestManager implements RequestManagerI {
         return this.hasPermission(game.getChannel());
     }
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
     public boolean hasGameWriteRight(final Game game) {
         return this.hasPermission("W-" + game.getChannel());
     }
@@ -1073,6 +1093,10 @@ public class RequestManager implements RequestManagerI {
         return this.hasPermission(gameModel.getChannel());
     }
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
     public boolean hasGameModelWriteRight(final GameModel gameModel) {
         return this.hasPermission("W-" + gameModel.getChannel());
     }
@@ -1108,6 +1132,11 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * Does the current user have read right on the game model
+     *
+     * @param gameModel gameModel to check right against
+     */
     public void assertCanReadGameModel(final GameModel gameModel) {
         if (!hasGameModelReadRight(gameModel)) {
             throw new WegasAccessDenied(gameModel, "Read", gameModel.getChannel(), this.getCurrentUser());
@@ -1160,6 +1189,20 @@ public class RequestManager implements RequestManagerI {
             this.getCurrentUser();
         } catch (Exception ex) {
             logger.error("EX: ", ex);
+        }
+    }
+
+    /**
+     * CDI Lookup
+     * Used by GameModel#can{Edit,View,Instantiate,Duplicate} pieces of shit
+     *
+     * @return
+     */
+    public static RequestManager lookup() {
+        try {
+            return Helper.lookupBy(RequestManager.class);
+        } catch (NamingException ex) {
+            return null;
         }
     }
 }

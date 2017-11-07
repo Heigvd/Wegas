@@ -7,14 +7,14 @@
  */
 package com.wegas.core.security.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import javax.persistence.*;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
@@ -61,11 +61,6 @@ public class Permission extends AbstractEntity {
     /**
      *
      */
-    @Basic
-    //private String inducedPermission;
-    /**
-     *
-     */
     @Id
     @GeneratedValue
     private Long id;
@@ -109,20 +104,6 @@ public class Permission extends AbstractEntity {
         }
     }
 
-    /**
-     * @return the inducedPermission
-     *         public String getInducedPermission() {
-     *         return inducedPermission;
-     *         }
-     */
-    /**
-     * @param inducedPermission the inducedPermission to set
-     */
-    /*
-    public void setInducedPermission(String inducedPermission) {
-        this.inducedPermission = inducedPermission;
-    }
-     */
     /**
      * @return the value
      */

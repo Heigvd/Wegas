@@ -19,12 +19,13 @@ import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
-import org.apache.shiro.SecurityUtils;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
+import java.io.*;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipOutputStream;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -34,13 +35,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.io.*;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipOutputStream;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -72,6 +70,8 @@ public class FileController {
     private GameModelFacade gameModelFacade;
 
     private ContentConnector getContentConnector(long gameModelId) throws RepositoryException {
+        // find the gameModel to check readRight
+        gameModelFacade.find(gameModelId);
         return ContentConnector.getFilesConnector(gameModelId);
     }
 
@@ -165,9 +165,6 @@ public class FileController {
 
             fileDescriptor = DescriptorFactory.getDescriptor(name, connector);
 
-            GameModel gameModel = gameModelFacade.find(gameModelId);
-            requestManager.assertCanReadGameModel(gameModel);
-
             if (fileDescriptor instanceof FileDescriptor) {
                 FileDescriptor fileD = (FileDescriptor) fileDescriptor;
                 Date lastModified = fileD.getDataLastModified().getTime();
@@ -235,9 +232,6 @@ public class FileController {
     @Path("meta{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractContentDescriptor getMeta(@PathParam("gameModelId") Long gameModelId, @PathParam("absolutePath") String name) {
-
-        // find gm to assert read right
-        GameModel gameModel = gameModelFacade.find(gameModelId);
 
         try (final ContentConnector connector = this.getContentConnector(gameModelId)) {
             return DescriptorFactory.getDescriptor(name, connector);
@@ -477,7 +471,7 @@ public class FileController {
     @Path("destruct")
     public void deleteWorkspace(@PathParam("gameModelId") Long gameModelId) {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Delete:gm" + gameModelId);
+        requestManager.checkPermission("GameModel:Delete:gm" + gameModelId);
 
         try (final ContentConnector fileManager = this.getContentConnector(gameModelId)) {
             fileManager.deleteRoot();

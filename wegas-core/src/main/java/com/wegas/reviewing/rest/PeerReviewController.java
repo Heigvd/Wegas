@@ -7,19 +7,14 @@
  */
 package com.wegas.reviewing.rest;
 
-import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
@@ -36,7 +31,6 @@ import javax.ws.rs.core.Response;
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Stateless
-
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/PeerReviewController/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -176,7 +170,7 @@ public class PeerReviewController {
     public PeerReviewInstance submitReview(Review review, @PathParam("playerId") Long playerId) {
         Player player = playerFacade.find(playerId);
         Review submitedReview = reviewFacade.submitReview(review, player);
-        requestFacade.commit(); // Player scoped
+        requestFacade.commit(player); // Player scoped
         return reviewFacade.getPeerReviewInstanceFromReview(submitedReview, player);
     }
 

@@ -8,23 +8,23 @@
 package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.io.Serializable;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wegas.core.persistence.variable.Beanjection;
-import javax.persistence.Transient;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.slf4j.LoggerFactory;
@@ -223,6 +223,16 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Comma-separated list of permission, only one is required to grand the permission
+     * <p>
+     * <ul>
+     * <li>null means no special permission required</li>
+     * <li>empty string "" means completely forbidden</li>
+     * </ul>
+     *
+     * @return
+     */
     @JsonIgnore
     public String getRequieredCreatePermission() {
         return this.getRequieredUpdatePermission();

@@ -7,10 +7,10 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
+import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -540,10 +540,18 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return variableDescriptor;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Map<? extends InstanceOwner, VariableInstance> getInstances(VariableDescriptor vd){
         return variableInstanceFacade.getAllInstances(vd);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd){
         return variableInstanceFacade.getAllInstancesById(vd);
     }

@@ -107,11 +107,16 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public void create(final GameModel entity) {
 
         getEntityManager().persist(entity);
-
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
         userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
+
+        // HACK (since those values are inferred from permission, but permissions are ignored until effective commit...)
+        entity.setCanView(true);
+        entity.setCanEdit(true);
+        entity.setCanDuplicate(true);
+        entity.setCanInstantiate(true);
 
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));

@@ -14,9 +14,8 @@ import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
-
-import javax.persistence.*;
 import java.util.*;
+import javax.persistence.*;
 
 /**
  * A review is linked to two PeerReviewInstnace : the one who reviews and the
@@ -45,12 +44,35 @@ public class Review extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Review state:<ul>
+     * <li>{@link #DISPATCHED}</li>
+     * <li>{@link #REVIEWED}</li>
+     * <li>{@link #NOTIFIED}</li>
+     * <li>{@link #COMPLETED}</li>
+     * <li>{@link #CLOSED}</li>
+     * </ul>
+     */
     public enum ReviewState {
-
+        /**
+         * Initial state : reviewer is revewing
+         */
         DISPATCHED,
+        /**
+         * Just reviewed (no longer editable by reviewer, not yet viewable by author)
+         */
         REVIEWED,
+        /**
+         * Author acquaint themself with the review and can comment it
+         */
         NOTIFIED,
+        /**
+         * Author's comment is over
+         */
         COMPLETED,
+        /**
+         * Reviewer acquaint thenself with author's comment
+         */
         CLOSED
     }
 
@@ -62,8 +84,15 @@ public class Review extends AbstractEntity implements DatedEntity {
     @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
 
+    /**
+     * Current review state
+     */
     @Enumerated(value = EnumType.STRING)
     private ReviewState reviewState;
+
+    @JsonIgnore
+    @Transient
+    private ReviewState initialState;
 
     /**
      * the PeerReviewInstance that belongs to the reviewer
@@ -128,6 +157,11 @@ public class Review extends AbstractEntity implements DatedEntity {
      * @param state
      */
     public void setReviewState(ReviewState state) {
+        if (initialState == null) {
+            // Keep a transient initial state to check permission against
+            // such a transient  field will be reinitialised for each
+            this.initialState = this.reviewState;
+        }
         this.reviewState = state;
     }
 
@@ -226,16 +260,22 @@ public class Review extends AbstractEntity implements DatedEntity {
 
     @Override
     public String getRequieredUpdatePermission() {
-        switch (this.getReviewState()) {
+        ReviewState effState;
+        effState = initialState != null ? initialState : getReviewState();
+
+        switch (effState) {
             case DISPATCHED:
+                // Only reviewer has edit right
                 return this.getReviewer().getRequieredUpdatePermission();
             case NOTIFIED:
+                // Only author has edit right
                 return this.getAuthor().getRequieredUpdatePermission();
             case REVIEWED:
             case COMPLETED:
             case CLOSED:
             default:
-                return "";
+                // only trainer or scenaris with write one the game model
+                return this.getReviewer().findDescriptor().getGameModel().getRequieredUpdatePermission();
         }
     }
 

@@ -635,7 +635,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: HTML,
                         value: "",
                         scriptType: STRING,
-                        required: true
+                        required: false
                     }]
             },
             getValue: {

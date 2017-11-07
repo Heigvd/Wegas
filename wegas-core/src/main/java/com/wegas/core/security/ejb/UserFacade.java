@@ -228,6 +228,8 @@ public class UserFacade extends BaseFacade<User> {
 
     /**
      * @return a User entity, based on the shiro login state
+     *
+     * @throws WegasNotFoundException no current user
      */
     public User getCurrentUser() throws WegasNotFoundException {
         User currentUser = requestManager.getCurrentUser();
@@ -457,36 +459,6 @@ public class UserFacade extends BaseFacade<User> {
         //return user.addPermission(this.generatePermisssion(permission));
     }
 
-    /**
-     *
-     * @param user
-     * @param permission
-     * @param inducedPermission
-     *
-     * @return true if the permission has successfully been added
-     */
-    /*public boolean addUserPermission(final User user, final String permission, final String inducedPermission) {
-        Permission p = new Permission(permission, inducedPermission);
-        return user.addPermission(p);
-    }*/
-    /**
-     * Generate a Permission based on its string representation
-     *
-     * @param permissionStr string representation of the permission
-     *
-     * @return the generated permission
-     */
-    /*private Permission generatePermisssion(final String permissionStr) {
-        final Permission p = new Permission(permissionStr);
-        final String splitedPermission[] = permissionStr.split(":");
-
-        if (splitedPermission[0].equals(Game.class.getSimpleName())) {
-            final Long gameId = Long.parseLong(splitedPermission[2].substring(1));
-            final Game g = gameFacade.find(gameId);
-            p.setInducedPermission("GameModel:View:gm" + g.getGameModelId());   // grant view access on its parent game model
-        }
-        return p;
-    }*/
     /**
      * @param instance
      *

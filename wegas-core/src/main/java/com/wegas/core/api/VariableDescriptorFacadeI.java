@@ -8,11 +8,14 @@
 package com.wegas.core.api;
 
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.persistence.NoResultException;
 
@@ -102,11 +105,37 @@ public interface VariableDescriptorFacadeI {
      *
      * @return the parent descriptor
      *
-     * @throws WegasNoResultException if the desciptor is at root-level
+     * @throws WegasNoResultException if the descriptor is at root-level
      * @deprecated use {@link VariableDescriptor#getParentList()}
      */
     ListDescriptor findParentListDescriptor(final VariableDescriptor item) throws WegasNoResultException;
 
+    /**
+     * get all VariableInstances but the default one, mapped by their respective owner
+     *
+     * @param vd the descriptor to fetch instances from
+     *
+     * @return all vd instances, mapped by their owner
+     */
+    Map<? extends InstanceOwner, VariableInstance> getInstances(VariableDescriptor vd);
+
+    /**
+     * Same as {@link #getInstances(com.wegas.core.persistence.variable.VariableDescriptor) but map by owner id
+     *
+     * @param vd the descriptor to fetch instances from
+     *
+     * @return all vd instances, mapped by their owner id
+     */
+    Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd);
+
+    /**
+     * is the given name in use within the gameModel ?
+     *
+     * @param gameModel
+     * @param name
+     *
+     * @return
+     */
     boolean hasVariable(final GameModel gameModel, final String name);
 
 }

@@ -295,8 +295,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         if (canView != null) {
             return canView;
         } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.id);
+            Helper.printWegasStackTrace(new Exception());
+            return true; // by design, non readable gameModel will throws an exception
         }
     }
 
@@ -309,6 +309,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             return canEdit;
         } else {
             // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            Helper.printWegasStackTrace(new Exception());
             return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
         }
     }
@@ -322,6 +323,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             return canDuplicate;
         } else {
             // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            Helper.printWegasStackTrace(new Exception());
             return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
         }
     }
@@ -335,6 +337,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             return canInstantiate;
         } else {
             // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            Helper.printWegasStackTrace(new Exception());
             return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
         }
     }
@@ -832,12 +835,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public String getRequieredReadPermission() {
-        //if (this.getStatus().equals(Status.PLAY)) {
-            // the game model is tighlty bound to a game
-            //return this.getGames().get(0).getRequieredReadPermission();
-        //} else {
             return this.getChannel();
-        //}
     }
 
     @Override

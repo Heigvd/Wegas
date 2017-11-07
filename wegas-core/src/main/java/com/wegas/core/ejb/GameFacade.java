@@ -161,6 +161,14 @@ public class GameFacade extends BaseFacade<Game> {
          */
         userFacade.addTrainerToGame(currentUser.getId(), game.getId());
 
+        /*
+         * HACK: erk
+         */
+        gameModel.setCanView(true);
+        gameModel.setCanEdit(true);
+        gameModel.setCanDuplicate(false);
+        gameModel.setCanInstantiate(false);
+
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
 
         this.addDebugTeam(game);

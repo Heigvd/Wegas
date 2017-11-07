@@ -7,10 +7,20 @@
  */
 package com.wegas.core.api;
 
+import com.wegas.core.persistence.variable.VariableInstance;
+
 /**
  *
  * @author maxence
  */
 public interface VariableInstanceFacadeI {
 
+    /**
+     * Retrieve a variableInstance by id
+     *
+     * @param id
+     *
+     * @return
+     */
+    public VariableInstance find(Long id);
 }
