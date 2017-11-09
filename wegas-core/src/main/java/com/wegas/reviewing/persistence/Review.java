@@ -274,7 +274,8 @@ public class Review extends AbstractEntity implements DatedEntity {
             case COMPLETED:
             case CLOSED:
             default:
-                // only trainer or scenaris with write one the game model
+                // only trainer or scenarist with write right on ethe game model
+                // should be checked against the game, but it's quite equals
                 return this.getReviewer().findDescriptor().getGameModel().getRequieredUpdatePermission();
         }
     }

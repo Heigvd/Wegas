@@ -19,12 +19,12 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javax.persistence.*;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -36,6 +36,7 @@ import java.util.List;
             @Index(columnList = "statemachine_id")
         }
 )
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
@@ -102,6 +103,11 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     public State() {
     }
 
+    /**
+     * Get the stateMachineDescriptor which defines this state
+     *
+     * @return this state's parent
+     */
     public StateMachineDescriptor getStateMachine() {
         return stateMachine;
     }
@@ -256,7 +262,9 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     /**
      * Compare transition by index
      */
-    private static class ComparatorImpl implements Comparator<Transition> {
+    private static class ComparatorImpl implements Comparator<Transition>, Serializable {
+
+        private static final long serialVersionUID = -6452488638539643500L;
 
         public ComparatorImpl() {
         }

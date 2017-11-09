@@ -10,9 +10,9 @@ package com.wegas.core.persistence.variable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -28,21 +28,19 @@ import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.*;
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.OptimisticLocking;
+import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
-import com.wegas.core.persistence.InstanceOwner;
-import org.eclipse.persistence.config.CacheUsage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -57,8 +55,7 @@ import org.eclipse.persistence.config.CacheUsage;
                 @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
-    )
-    ,
+    ),
     @NamedQuery(name = "VariableInstance.findTeamInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
@@ -66,8 +63,7 @@ import org.eclipse.persistence.config.CacheUsage;
                 @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
-    )
-    ,
+    ),
     @NamedQuery(name = "VariableInstance.findGameInstance",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.game.id = :gameId AND vi.gameScope.id = :scopeId)",
@@ -75,28 +71,23 @@ import org.eclipse.persistence.config.CacheUsage;
                 @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
-    )
-    ,
+    ),
     @NamedQuery(name = "VariableInstance.findAllPlayerInstances",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.playerScope.id = :scopeId)"
-    )
-    ,
+    ),
     @NamedQuery(name = "VariableInstance.findAllTeamInstances",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.teamScope.id = :scopeId)"
-    )
-    ,
+    ),
     @NamedQuery(name = "VariableInstance.findAllGameInstances",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.gameScope.id = :scopeId)"
     )
 })
 @CacheIndexes(value = {
-    @CacheIndex(columnNames = {"GAMESCOPE_ID", "GAMEVARIABLEINSTANCES_KEY"})
-    ,
-    @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAMVARIABLEINSTANCES_KEY"})
-    ,
+    @CacheIndex(columnNames = {"GAMESCOPE_ID", "GAMEVARIABLEINSTANCES_KEY"}),
+    @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAMVARIABLEINSTANCES_KEY"}),
     @CacheIndex(columnNames = {"PLAYERSCOPE_ID", "VARIABLEINSTANCES_KEY"})
 })
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
@@ -107,46 +98,30 @@ import org.eclipse.persistence.config.CacheUsage;
  })*/
 /* JPA2.1 (GlassFish4) Indexes */
 @Table(indexes = {
-    @Index(columnList = "gamescope_id")
-    ,
-    @Index(columnList = "teamscope_id")
-    ,
-    @Index(columnList = "playerscope_id")
-    ,
-    @Index(columnList = "variableinstances_key")
-    ,
-    @Index(columnList = "teamvariableinstances_key")
-    ,
+    @Index(columnList = "gamescope_id"),
+    @Index(columnList = "teamscope_id"),
+    @Index(columnList = "playerscope_id"),
+    @Index(columnList = "variableinstances_key"),
+    @Index(columnList = "teamvariableinstances_key"),
     @Index(columnList = "gamevariableinstances_key")
 })
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "BooleanInstance", value = BooleanInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class)
-    ,
-    @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class)
-    ,
+    @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
+    @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class),
+    @JsonSubTypes.Type(name = "BooleanInstance", value = BooleanInstance.class),
+    @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
+    @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
+    @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
+    @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class),
+
+    @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
+    @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class),
+    @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
+    @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
+    @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
+    @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
+
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 @OptimisticLocking(cascade = true)
@@ -306,6 +281,11 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         }
     }
 
+    /**
+     * Get the channel to broadcast this instance on, according to scope and broadcast scope
+     *
+     * @return
+     */
     @JsonIgnore
     public String getAudience() {
         if (this.getTeam() != null) {
@@ -655,21 +635,12 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @Override
-    public String getRequieredCreatePermission() {
-        if (this.getScope() == null) {
-            //Default instance
-            return this.getDefaultDescriptor().getRequieredCreatePermission();
-        } else {
-            InstanceOwner owner = this.getBroadcastTarget();
-            return owner.getChannel();
-        }
-    }
-
-    @Override
     public String getRequieredUpdatePermission() {
         if (this.getScope() == null) {
+            // Default Instance is only editable with edit permission on Descriptor
             return this.getDefaultDescriptor().getRequieredUpdatePermission();
         } else {
+            // GameModelScopeInstance just required GameModel:View
             return this.getBroadcastTarget().getChannel();
         }
     }
@@ -679,7 +650,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         if (this.getScope() != null) {
             return this.getAudience();
         } else {
-            return this.getDefaultDescriptor().getGameModel().getChannel();
+            return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
         }
     }
 }

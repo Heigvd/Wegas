@@ -38,6 +38,7 @@ import org.apache.shiro.SecurityUtils;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
+    @NamedQuery(name = "GameModel.findIdById", query = "SELECT gm.id FROM GameModel gm WHERE gm.id = :gameModelId"),
     @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC"),
     @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
@@ -685,7 +686,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public Map<String, JsonNode> getPages() {
         // do not even try to fetch pages from repository if the gamemodel define a pagesURI
-        if (Helper.isNullOrEmpty(getProperties().getPagesUri()))  {
+        if (Helper.isNullOrEmpty(getProperties().getPagesUri())) {
             try (final Pages pagesDAO = new Pages(this.id)) {
                 return pagesDAO.getPagesContent();
             } catch (RepositoryException ex) {
@@ -835,7 +836,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public String getRequieredReadPermission() {
-            return this.getChannel();
+        return this.getChannel();
     }
 
     @Override

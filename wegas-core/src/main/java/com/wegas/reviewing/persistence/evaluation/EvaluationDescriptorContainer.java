@@ -15,13 +15,12 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple wrapper to group several evaluation descriptor
@@ -118,6 +117,11 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
         }
     }
 
+    /**
+     * back reference to PeerReviewDescriptor through FbPRD or CommentsPRD
+     *
+     * @return
+     */
     private PeerReviewDescriptor getEffectiveDescriptor() {
         if (this.getFbPeerReviewDescriptor() != null) {
             return this.getFbPeerReviewDescriptor();
