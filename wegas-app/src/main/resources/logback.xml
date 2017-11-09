@@ -18,6 +18,7 @@
     <logger name="org.apache" level="WARN"/>
     <logger name="com.wegas.core" level="WARN"/>
     <logger name="com.wegas.admin.AdminFacade" level="INFO"/> <!-- log scheduled deletion -->
+    <logger name="com.wegas.core.ejb.GameModelFacade" level="INFO"/> <!-- log scheduled deletion -->
     <logger name="com.wegas.core.rest.util" level="INFO"/>
     <logger name="com.wegas.core.ejb.RequestManager" level="INFO"/>
     <logger name="com.wegas.core.ejb.ApplicationLifecycle" level="INFO"/>
