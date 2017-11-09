@@ -19,22 +19,20 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Permission;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.reviewing.ejb.ReviewingFacade;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
-import javax.persistence.PreRemove;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
 import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -83,7 +81,7 @@ public class EntityListener {
     @PostPersist
     void onPostPersist(Object o) {
         if (o instanceof AbstractEntity) {
-            logger.debug("PostPersist {} , {}", o, ((AbstractEntity) o).isPersisted());
+            logger.debug("PostPersist {}", o);
             if (requestManager != null) {
                 requestManager.assertCreateRight((AbstractEntity) o);
             } else {
@@ -107,7 +105,7 @@ public class EntityListener {
     void onPostUpdate(Object o) {
 
         if (o instanceof AbstractEntity) {
-            logger.debug("PostUpdate {} , {}", o, ((AbstractEntity) o).isPersisted());
+            logger.debug("PostUpdate {}", o);
             if (requestManager != null) {
                 requestManager.assertUpdateRight((AbstractEntity) o);
             } else {
@@ -161,10 +159,9 @@ public class EntityListener {
     @PostLoad
     void onPostLoad(Object o) {
         if (o instanceof AbstractEntity) {
-            logger.debug("PostLoad {}  -> true", o);
+            logger.debug("PostLoad {}", o);
             ((AbstractEntity) o).setPersisted(true);
             if (requestManager != null) {
-                //requestManager.postponeAssertReadRight((AbstractEntity) o);
                 requestManager.assertReadRight((AbstractEntity) o);
             } else {
                 logger.error("PostLOAD NO SECURITY FACADE");

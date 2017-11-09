@@ -7,6 +7,8 @@
  */
 package com.wegas.core.rest;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
 import com.wegas.core.Helper;
@@ -21,9 +23,11 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author CiGit
@@ -141,21 +145,34 @@ public class UtilsController {
         return sb.toString();
     }
 
+    @GET
+    @Path("SetLoggerLevel/{className: .*}/{level: .*}")
+    @RequiresRoles("Administrator")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String setLoggerLevel(@PathParam("className") String className, @PathParam("level") String level) {
+        try {
+            Class<?> loadClass = Thread.currentThread().getContextClassLoader().loadClass(className);
+            Logger logger = (Logger) LoggerFactory.getLogger(loadClass);
+            logger.setLevel(Level.valueOf(level));
+            return logger.getLevel().toString();
+        } catch (ClassNotFoundException ex) {
+            return "Class " + className + " Not Found";
+        }
+    }
 
     @GET
     @Path("SetPopulatingSynchronous")
     @RequiresRoles("Administrator")
-    public String setPopulatingSynchronous(){
+    public String setPopulatingSynchronous() {
         populatorScheduler.setBroadcast(false);
         populatorScheduler.setAsync(false);
         return "Populating Process is now synchronous";
     }
 
-
     @GET
     @Path("SetPopulatingAsynchronous")
     @RequiresRoles("Administrator")
-    public String setPopulatingAsynchronous(){
+    public String setPopulatingAsynchronous() {
         populatorScheduler.setBroadcast(true);
         populatorScheduler.setAsync(true);
         return "Populating Process is now asynchronous";
