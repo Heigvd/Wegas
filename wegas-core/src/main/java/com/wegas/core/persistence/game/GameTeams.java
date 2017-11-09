@@ -78,11 +78,12 @@ public class GameTeams extends AbstractEntity {
 
     @Override
     public String getRequieredUpdatePermission() {
-        /*
-         * OPEN game -> null
-         * CLOSE game -> game
-         */
-        return game.getRequieredReadPermission();
+        switch (game.getAccess()) {
+            case OPEN:
+                return null; // everybody can register en new team
+            default:
+                return game.getRequieredUpdatePermission();
+        }
     }
 
     @Override

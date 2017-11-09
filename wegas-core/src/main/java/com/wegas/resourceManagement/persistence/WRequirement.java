@@ -8,7 +8,9 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -25,9 +28,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import javax.persistence.Index;
 
 /**
  *
@@ -335,16 +335,6 @@ public class WRequirement extends AbstractEntity {
         }
     }
 
-    @Override
-    public String getRequieredCreatePermission() {
-        return this.getTaskInstance().getRequieredCreatePermission();
-    }
-
-    @Override
-    public String getRequieredDeletePermission() {
-        return this.getTaskInstance().getRequieredDeletePermission();
-    }
-    
     @Override
     public String getRequieredUpdatePermission() {
         return this.getTaskInstance().getRequieredUpdatePermission();

@@ -7,14 +7,13 @@
  */
 package com.wegas.resourceManagement.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.rest.util.Views;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import java.io.Serializable;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
+import javax.persistence.*;
 
 /**
  *
@@ -169,17 +168,6 @@ public class Occupation extends AbstractEntity {
         this.description = description;
     }
 
- 
-    @Override
-    public String getRequieredCreatePermission() {
-        return this.getResourceInstance().getRequieredCreatePermission();
-    }
-
-    @Override
-    public String getRequieredDeletePermission() {
-        return this.getResourceInstance().getRequieredDeletePermission();
-    }
-    
     @Override
     public String getRequieredUpdatePermission() {
         return this.getResourceInstance().getRequieredUpdatePermission();

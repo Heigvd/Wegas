@@ -289,11 +289,6 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     @Override
-    public String getRequieredCreatePermission() {
-        return this.getVariableDescriptor().getRequieredCreatePermission();
-    }
-
-    @Override
     public String getRequieredUpdatePermission() {
         return this.getVariableDescriptor().getGameModel().getRequieredUpdatePermission();
     }

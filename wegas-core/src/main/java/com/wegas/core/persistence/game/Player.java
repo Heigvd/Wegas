@@ -7,26 +7,26 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.security.aai.AaiAccount;
-import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.User;
-import java.util.Date;
-import java.util.Objects;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.Helper;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.aai.AaiAccount;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.security.ejb.UserFacade;
+import java.util.Objects;
+import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -459,7 +459,9 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     @Override
     public String getRequieredReadPermission() {
-        return this.getTeam().getChannel();
+        // ?? strange, should be either this.getChannel() to have a very incognito mode
+        // but, with broadcastScope, should be GameModel.Read, nope ? TBT
+        return this.getTeam().getRequieredReadPermission();
     }
     
     @Override

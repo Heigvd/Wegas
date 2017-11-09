@@ -41,6 +41,7 @@ import javax.validation.constraints.Pattern;
 )
 @NamedQueries({
     @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+    @NamedQuery(name = "Game.findIdById", query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId"),
     @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
@@ -69,7 +70,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @NotNull
     @Basic(optional = false)
-    
+
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     private String token;
 
@@ -127,7 +128,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @Enumerated(value = EnumType.STRING)
-    
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -182,7 +183,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     }
 
     public GameTeams getGameTeams() {
-        if (gameTeams == null){
+        if (gameTeams == null) {
             this.setGameTeams(new GameTeams());
         }
         return gameTeams;
@@ -523,13 +524,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
 
     @Override
     public String getRequieredReadPermission() {
-        //if (this.getAccess() == GameAccess.OPEN) {
-            // Everybody can read an open game
-            //return null;
-        //} else {
-            // Only authorised people can read this game
-            return this.getChannel();
-        //}
+        return this.getChannel();
     }
 
     @Override
@@ -540,8 +535,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
 
     @Override
     public String getRequieredDeletePermission() {
-        // Game owner only
-        return "W-" + this.getChannel();
+        return Role.ADMIN_PERM;
     }
-
 }

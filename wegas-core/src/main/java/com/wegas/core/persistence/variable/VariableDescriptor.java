@@ -638,12 +638,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     @Override
-    public String getRequieredDeletePermission() {
-        return "W-" + this.getGameModel().getChannel();
-    }
-
-    @Override
     public String getRequieredUpdatePermission() {
-        return "W-" + this.getGameModel().getChannel();
+        return this.getGameModel().getRequieredUpdatePermission();
     }
 }

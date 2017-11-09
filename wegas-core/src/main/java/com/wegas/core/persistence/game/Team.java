@@ -427,9 +427,4 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         // Anybody can create a team, but not anybody can add such a new team to an existing game
         return null;
     }
-
-    @Override
-    public String getRequieredDeletePermission() {
-        return this.getChannel();
-    }
 }

@@ -8,14 +8,14 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.rest.util.Views;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.rest.util.Views;
+import javax.persistence.*;
 
 /**
  *
@@ -272,15 +272,5 @@ public class Activity extends AbstractAssignement {
         }
 
         super.updateCacheOnDelete(beans);
-    }
-
-    @Override
-    public String getRequieredUpdatePermission() {
-        return this.getResourceInstance().getRequieredUpdatePermission();
-    }
-
-    @Override
-    public String getRequieredReadPermission() {
-        return this.getResourceInstance().getRequieredReadPermission();
     }
 }

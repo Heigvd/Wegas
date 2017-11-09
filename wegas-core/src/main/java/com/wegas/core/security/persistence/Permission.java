@@ -192,7 +192,7 @@ public class Permission extends AbstractEntity {
                         // One should have super right on the game the permission give access to
                         Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
                         if (game != null) {
-                            return "W-" + game.getChannel();
+                            return game.getRequieredUpdatePermission();
                         }
                     }
             }
