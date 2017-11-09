@@ -7,14 +7,9 @@
  */
 package com.wegas.core.security.util;
 
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import java.util.Collection;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  *
@@ -30,14 +25,16 @@ public class OnlineUser implements Serializable {
     private final Date connectionDate;
     private final Long userId;
     private final Long mainAccountId;
+    private final Long highestRole;
 
-    public OnlineUser(User user) {
+    public OnlineUser(User user, long highestRole) {
         this.fullname = user.getName();
         this.username = user.getMainAccount().getUsername();
         this.email = user.getMainAccount().getEmail();
         this.connectionDate = new Date();
         this.userId = user.getId();
         this.mainAccountId = user.getMainAccount().getId();
+        this.highestRole = highestRole;
     }
 
     public String getFullname() {
@@ -64,43 +61,7 @@ public class OnlineUser implements Serializable {
         return mainAccountId;
     }
 
-    /**
-     * @param user
-     * @param compareRoles
-     * @return true if user is member of at least on of the listed roles
-     */
-    private static boolean hasAnyRoles(User user, String... compareRoles) {
-        Collection<Role> roles = user.getRoles();
-        Iterator<Role> rIt = roles.iterator();
-        while (rIt.hasNext()) {
-            Role role = rIt.next();
-            for (String r : compareRoles) {
-                if (role.getName().toUpperCase().equals(r.toUpperCase())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 0 means Admin, 1 Scenarist or Trainer, 2 Player and 3, Guest;
-     *
-     * @return
-     */
-    public int getHighestRole() {
-        User user = UserFacade.lookup().find(userId);
-        if (OnlineUser.hasAnyRoles(user, "Administrator")) {
-            return 0;
-        } else if (OnlineUser.hasAnyRoles(user, "Scenarist", "Trainer")) {
-            return 1;
-        } else {
-            // Registeered Player or guest ?
-            if (user.getMainAccount() instanceof GuestJpaAccount) {
-                return 3;
-            } else {
-                return 2;
-            }
-        }
+    public Long getHighestRole(){
+        return highestRole;
     }
 }
