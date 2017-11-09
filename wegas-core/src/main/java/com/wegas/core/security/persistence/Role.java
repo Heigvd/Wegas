@@ -11,9 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
-
-import javax.persistence.*;
 import java.util.*;
+import javax.persistence.*;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -239,11 +238,6 @@ public class Role extends AbstractEntity implements PermissionOwner {
     @Override
     public String toString() {
         return "Role(" + this.id + ", " + this.name + ")";
-    }
-
-    @Override
-    public String getRequieredCreatePermission() {
-        return null;
     }
 
     @Override
