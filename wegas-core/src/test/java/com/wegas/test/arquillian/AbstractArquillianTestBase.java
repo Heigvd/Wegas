@@ -114,18 +114,18 @@ public abstract class AbstractArquillianTestBase {
 
     protected User guest;
 
+    @Rule
+    public TestName name = new TestName();
+
+    protected long initTime;
+
+    private long startTime;
+
     static {
         String clusterNameKey = "wegas.hazelcast.clustername";
         String clusterName = "hz_wegas_test_cluster_" + Helper.genToken(5);
         System.setProperty(clusterNameKey, clusterName);
     }
-
-    @Rule
-    public TestName name = new TestName();
-
-    private long initTime;
-
-    private long startTime;
 
     protected Role admins;
     protected Role scenarists;
@@ -172,6 +172,7 @@ public abstract class AbstractArquillianTestBase {
      */
     @Before
     public void init() {
+        this.startTime = System.currentTimeMillis();
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
         TestHelper.cleanData();
 
@@ -226,7 +227,6 @@ public abstract class AbstractArquillianTestBase {
 
         this.admin = new WegasUser(userFacade.find(1l), "root", "1234");
         login(admin);
-        this.initTime = System.currentTimeMillis();
 
     }
 

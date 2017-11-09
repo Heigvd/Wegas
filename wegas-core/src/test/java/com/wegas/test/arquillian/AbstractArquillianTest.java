@@ -141,6 +141,7 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestBase 
         player22 = gameFacade.joinTeam(team2.getId(), user22.getId());
         login(admin);
         requestFacade.setPlayer(player.getId());
+        this.initTime = System.currentTimeMillis();
     }
 
     public void reseAndSetUpDB() throws SQLException, NamingException, WegasNoResultException, IOException {
