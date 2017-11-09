@@ -69,5 +69,6 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestBase 
         player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
 
         requestFacade.setPlayer(player.getId());
+        this.initTime = System.currentTimeMillis();
     }
 }

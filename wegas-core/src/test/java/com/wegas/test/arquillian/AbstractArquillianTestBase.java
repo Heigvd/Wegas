@@ -17,13 +17,13 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.test.TestHelper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import com.wegas.test.TestHelper;
 import java.io.File;
 import java.util.logging.Level;
 import javax.ejb.EJB;
@@ -37,6 +37,8 @@ import org.jboss.shrinkwrap.api.importer.ExplodedImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +96,13 @@ public abstract class AbstractArquillianTestBase {
 
     protected User guest;
 
+    @Rule
+    public TestName name = new TestName();
+
+    protected long initTime;
+
+    private long startTime;
+
     static {
         String clusterNameKey = "wegas.hazelcast.clustername";
         String clusterName = "hz_wegas_test_cluster_" + Helper.genToken(5);
@@ -128,6 +137,7 @@ public abstract class AbstractArquillianTestBase {
 
     @Before
     public void init() {
+        this.startTime = System.currentTimeMillis();
         this.setSynchronous();
 
         guest = userFacade.guestLogin();
@@ -136,6 +146,13 @@ public abstract class AbstractArquillianTestBase {
 
     @After
     public void clean() {
+        long now = System.currentTimeMillis();
+        logger.error("TEST {} DURATION: total: {} ms; init: {} ms; test: {} ms",
+                name.getMethodName(),
+                now - this.startTime,
+                this.initTime - this.startTime,
+                now - this.initTime);
+
         requestManager.setPlayer(null);
         requestManager.clearUpdatedEntities();
         requestManager.clearDestroyedEntities();
