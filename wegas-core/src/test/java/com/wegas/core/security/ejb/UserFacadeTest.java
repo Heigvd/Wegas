@@ -116,8 +116,6 @@ public class UserFacadeTest extends AbstractArquillianTest {
         Assert.assertTrue(r.getPermissions().isEmpty());
     }
 
-
-
     @Test
     public void testRoleUpdate() throws Exception {
         login(admin);
@@ -177,20 +175,23 @@ public class UserFacadeTest extends AbstractArquillianTest {
     @Test
     public void testIdleGuestRemoval() {
         int nbUser = userFacade.findAll().size();
-        userFacade.guestLogin();                                                // Log in as guest
 
-        Assert.assertEquals(nbUser + 1, userFacade.findAll().size());                    // Assert creation
+        userFacade.guestLogin();
+        Assert.assertEquals(nbUser + 1, userFacade.findAll().size());
 
-        User user = userFacade.getCurrentUser();                                // Set created time to 3 month ago
+        // Since guests are removed only oif they were create more than three month ago,
+        // override this guest createdTime
+        User newGuestUser = userFacade.getCurrentUser();
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 13);
-        AbstractAccount account = user.getMainAccount();
+        AbstractAccount account = newGuestUser.getMainAccount();
         account.setCreatedTime(calendar.getTime());
         accountFacade.merge(account);
 
-        userFacade.removeIdleGuests();                                          // Run idle guest account removal
+        login(admin);
+        userFacade.removeIdleGuests();
 
-        Assert.assertEquals(nbUser, userFacade.findAll().size());                    // Assert removal succes
+        Assert.assertEquals(nbUser, userFacade.findAll().size());
     }
 
     @Test

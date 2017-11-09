@@ -171,9 +171,14 @@ public abstract class AbstractArquillianTestBase {
      * Initial db content as defined by Liquibase Changelogs
      */
     @Before
-    public void init() throws SQLException, NamingException, WegasNoResultException {
+    public void init() {
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
         TestHelper.cleanData();
+
+        requestManager.setPlayer(null);
+        requestManager.clearEntities();
+        helperBean.wipeCache();
+
         this.setSynchronous();
 
         this.startTime = System.currentTimeMillis();
@@ -186,8 +191,13 @@ public abstract class AbstractArquillianTestBase {
         //requestManager.clearPermissions();
         this.wipeEmCache();
         userFacade.logout();
+        DataSource ds;
+        try {
+            ds = (DataSource) new InitialContext().lookup("jdbc/wegas_dev");
+        } catch (NamingException ex) {
+            throw WegasErrorMessage.error("No jdbc/wegas_dev !!!");
+        }
 
-        DataSource ds = (DataSource) new InitialContext().lookup("jdbc/wegas_dev");
         try (Connection connection = ds.getConnection("user", "1234");
                 Statement statement = connection.createStatement()) {
             String setupQuery = "";
@@ -202,11 +212,18 @@ public abstract class AbstractArquillianTestBase {
             setupQuery += "INSERT INTO users_roles (users_id, roles_id) VALUES (1, 1);";
             setupQuery += "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';";
             statement.execute(setupQuery);
+        } catch (SQLException ex) {
+            throw WegasErrorMessage.error("SQL Initialisation failed !");
         }
 
-        this.admins = roleFacade.findByName("Administrator");
-        this.scenarists = roleFacade.findByName("Scenarist");
-        this.trainers = roleFacade.findByName("Trainer");
+        try {
+            this.admins = roleFacade.findByName("Administrator");
+            this.scenarists = roleFacade.findByName("Scenarist");
+            this.trainers = roleFacade.findByName("Trainer");
+        } catch (WegasNoResultException ex) {
+            throw WegasErrorMessage.error("Fails to fetch role");
+        }
+
         this.admin = new WegasUser(userFacade.find(1l), "root", "1234");
         login(admin);
         this.initTime = System.currentTimeMillis();
@@ -223,9 +240,7 @@ public abstract class AbstractArquillianTestBase {
                 now - this.initTime);
 
         requestManager.setPlayer(null);
-        requestManager.clearUpdatedEntities();
-        requestManager.clearDestroyedEntities();
-        requestManager.clearOutdatedEntities();
+        requestManager.clearEntities();
         helperBean.wipeCache();
     }
 

@@ -1130,48 +1130,60 @@ public class RequestManager implements RequestManagerI {
     /**
      * Become superuser
      */
-    public void su() {
-        this.su(1l);
+    public User su() {
+        return this.su(1l);
     }
 
     /**
      * Log-in with a different account
      *
      * @param accountId
+     *
+     * @return new currentUser
      */
-    public void su(Long accountId) {
+    public User su(Long accountId) {
         try {
             Subject subject = SecurityUtils.getSubject();
 
-            subject.checkRole("Administrator");
-
-
-            if (subject.isRunAs()) {
-                subject.releaseRunAs();
+            if (subject.getPrincipal() != null) {
+                logger.debug("SU: User {} SU to {}", subject.getPrincipal(), accountId);
+                if (this.isAdmin()) {
+                    // The subject exists and is an authenticated admin
+                    // -> Shiro runAs
+                    //subject.checkRole("Administrator");
+                    if (subject.isRunAs()) {
+                        subject.releaseRunAs();
+                    }
+                    SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
+                    subject.runAs(newSubject);
+                    return this.getCurrentUser();
+                } else {
+                    throw WegasErrorMessage.error("Su is forbidden !");
+                }
             }
-            logger.error("SU: User {} SU to {}", subject.getPrincipal(), accountId);
-            // The subject exists
-            SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
-            subject.runAs(newSubject);
-        } catch (Exception ex) {
-            // The subject does not exists -> create from strach and bind
-            Collection<Realm> realms = new ArrayList<>();
-            realms.add(new JpaRealm());
-            realms.add(new AaiRealm());
-            realms.add(new GuestRealm());
-
-            SecurityUtils.setSecurityManager(new DefaultSecurityManager(realms));
-
-            Subject.Builder b = new Subject.Builder();
-            SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
-            b.authenticated(true).principals(newSubject);
-
-            Subject buildSubject = b.buildSubject();
-            ThreadContext.bind(buildSubject);
-
-            logger.debug("SU: No-User SU to {}", buildSubject.getPrincipal());
+        } catch (IllegalStateException | NullPointerException ex) {
+            // runAs faild
+            Helper.printWegasStackTrace(ex);
         }
-        this.getCurrentUser();
+
+        // The subject does not exists -> create from strach and bind
+        Collection<Realm> realms = new ArrayList<>();
+        realms.add(new JpaRealm());
+        realms.add(new AaiRealm());
+        realms.add(new GuestRealm());
+
+        SecurityUtils.setSecurityManager(new DefaultSecurityManager(realms));
+
+        Subject.Builder b = new Subject.Builder();
+        SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
+        b.authenticated(true).principals(newSubject);
+
+        Subject buildSubject = b.buildSubject();
+        logger.debug("SU: No-User SU to {}", buildSubject.getPrincipal());
+
+        ThreadContext.bind(buildSubject);
+
+        return this.getCurrentUser();
     }
 
     public void releaseSu() {
