@@ -175,25 +175,29 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
      * This task is scheduled each Sunday at 1:30 am
      */
     @Schedule(hour = "1", minute = "30", dayOfWeek = "Sun")
-    //@Schedule(minute = "0/10")
     public void deleteGames() {
-        ILock lock = hzInstance.getLock("AdminFacade.Schedule");
-        logger.info("deleteGames(): want to delete processed and deleted games");
-        if (lock.tryLock()) {
-            try {
-                final List<GameAdmin> toDelete = this.getGameToDelete();
-                logger.info("deleteGames(): got the lock, {} games to delete", toDelete.size());
-                for (GameAdmin ga : toDelete) {
-                    this.deleteGame(ga);
+        requestManager.su();
+        try {
+            ILock lock = hzInstance.getLock("AdminFacade.Schedule");
+            logger.info("deleteGames(): want to delete processed and deleted games");
+            if (lock.tryLock()) {
+                try {
+                    final List<GameAdmin> toDelete = this.getGameToDelete();
+                    logger.info("deleteGames(): got the lock, {} games to delete", toDelete.size());
+                    for (GameAdmin ga : toDelete) {
+                        this.deleteGame(ga);
+                    }
+                    // Flush to trigger EntityListener events before loosing RequestManager !
+                    getEntityManager().flush();
+                } finally {
+                    lock.unlock();
+                    lock.destroy();
                 }
-                // Flush to trigger EntityListener events before loosing RequestManager !
-                getEntityManager().flush();
-            } finally {
-                lock.unlock();
-                lock.destroy();
+            } else {
+                logger.info("Somebody else got the lock");
             }
-        } else {
-            logger.info("Somebody else got the lock");
+        } finally {
+            requestManager.releaseSu();
         }
     }
 

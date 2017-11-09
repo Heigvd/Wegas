@@ -148,8 +148,6 @@ public class RequestManager implements RequestManagerI {
     private Collection<String> effectiveDBPermissions;
     private Collection<String> effectiveRoles;
 
-    private Deque<AbstractEntity> readPermissionsToCheck = new LinkedList<>();
-
     /**
      * Map TOKEN -> Audience
      */
@@ -172,14 +170,14 @@ public class RequestManager implements RequestManagerI {
 
     private static int logIndent = 0;
 
-    private static void log(String msg, int level) {
-        if (level < 5) {
+    private static void log(String msg, Object... args) {
+        if (logger.isTraceEnabled()) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < logIndent; i++) {
                 sb.append("  ");
             }
             sb.append(msg);
-            logger.error(sb.toString());
+            logger.trace(sb.toString(), (Object[]) args);
         }
     }
 
@@ -775,8 +773,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     public void clearPermissions() {
-        log("CLEAR PERMISSIONS", 5);
-        log("*********************************************************", 5);
+        log("CLEAR PERMISSIONS");
+        log("*********************************************************");
         this.grantedPermissions.clear();
         this.clearEffectivePermisssions();
     }
@@ -831,8 +829,8 @@ public class RequestManager implements RequestManagerI {
         return this.getEffectiveRoles().contains(roleName);
     }
 
-    public void checkPermission(String permission){
-        if (!isPermitted(permission)){
+    public void checkPermission(String permission) {
+        if (!isPermitted(permission)) {
             throw new WegasAccessDenied(null, null, permission, currentUser);
         }
     }
@@ -858,22 +856,23 @@ public class RequestManager implements RequestManagerI {
         return false;
     }
 
-    private boolean hasDirectGameModelEditPermission(Subject subject, GameModel gameModel) {
+    private boolean hasDirectGameModelEditPermission(GameModel gameModel) {
         return this.isPermitted("GameModel:Edit:gm" + gameModel.getId());
     }
 
-    private boolean hasDirectGameEditPermission(Subject subject, Game game) {
+    private boolean hasDirectGameEditPermission(Game game) {
         return this.isPermitted("Game:Edit:g" + game.getId());
     }
 
-    private boolean hasGamePermission(Subject subject, Game game, boolean superPermission) {
+    private boolean hasGamePermission(Game game, boolean superPermission) {
 
         if (game instanceof DebugGame) {
             // when checked against a DebugGame, must have scenarist rights
-            return this.hasGameModelPermission(subject, game.getGameModel(), superPermission);
+            return this.hasGameModelPermission(game.getGameModel(), superPermission);
         } else {
-            return !game.isPersisted() || this.hasDirectGameEditPermission(subject, game) //has edit right on  the game
-                    || this.hasDirectGameModelEditPermission(subject, game.getGameModel()) // or edit right on the game model
+            return !(game.isPersisted() || gameFacade.isPersisted(game.getId())) // game is a new one (only exists wihin this very transaction)
+                    || this.hasDirectGameEditPermission(game) //has edit right on  the game
+                    || this.hasDirectGameModelEditPermission(game.getGameModel()) // or edit right on the game model
                     || (!superPermission
                     && ( // OR if no super permission is required. either: 
                     game.getAccess().equals(Game.GameAccess.OPEN) // the game is open and hence, must be readable to everyone
@@ -882,8 +881,8 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    private boolean hasGameModelPermission(Subject subject, GameModel gameModel, boolean superPermission) {
-        if (!gameModel.isPersisted() || hasDirectGameModelEditPermission(subject, gameModel)) {
+    private boolean hasGameModelPermission(GameModel gameModel, boolean superPermission) {
+        if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) || hasDirectGameModelEditPermission(gameModel)) {
             return true;
         } else if (gameModel.getStatus().equals(GameModel.Status.PLAY)) {
             /**
@@ -891,7 +890,7 @@ public class RequestManager implements RequestManagerI {
              */
             for (Game game : gameModel.getGames()) {
                 // has permission to at least on game of the game model ?
-                if (this.hasGamePermission(subject, game, superPermission)) {
+                if (this.hasGamePermission(game, superPermission)) {
                     return true;
                 }
             }
@@ -903,7 +902,7 @@ public class RequestManager implements RequestManagerI {
 
             long id = gameModel.getId();
             if (superPermission) {
-                return hasDirectGameModelEditPermission(subject, gameModel);
+                return hasDirectGameModelEditPermission(gameModel);
             } else {
                 if (this.hasRole("Scenarist") && (this.isPermitted("GameModel:Instantiate:gm" + id) || this.isPermitted("GameModel:Duplicate:gm" + id))) {
                     //For scenarist, instantiate and duplicate means read
@@ -928,7 +927,6 @@ public class RequestManager implements RequestManagerI {
      * @return true if current user has access to
      */
     private boolean hasPermission(String type, String arg, boolean superPermission) {
-        Subject subject = SecurityUtils.getSubject();
         //Make sure to have up to date user
         this.getCurrentUser();
 
@@ -942,23 +940,24 @@ public class RequestManager implements RequestManagerI {
             if ("GameModel".equals(type)) {
 
                 GameModel gameModel = gameModelFacade.find(id);
-                return this.hasGameModelPermission(subject, gameModel, superPermission);
+                return this.hasGameModelPermission(gameModel, superPermission);
             } else if ("Game".equals(type)) {
                 Game game = gameFacade.find(id);
-                return this.hasGamePermission(subject, game, superPermission);
+                return this.hasGamePermission(game, superPermission);
             } else if ("Team".equals(type)) {
 
                 Team team = teamFacade.find(id);
 
-                return currentUser != null && team != null
-                        && (playerFacade.isInTeam(team.getId(), currentUser.getId()) // Current logged User is linked to a player who's member of the team 
+                return team != null && ((currentUser != null && (playerFacade.isInTeam(team.getId(), currentUser.getId()) // Current logged User is linked to a player who's member of the team
                         || currentUser.equals(team.getCreatedBy()) // or current user is the team creator
-                        || this.hasGamePermission(subject, team.getGame(), false)); // or current user has edit right one the game
+                        )
+                        || this.hasGamePermission(team.getGame(), false))); // or read right one the game
+
             } else if ("Player".equals(type)) {
                 Player player = playerFacade.find(id);
 
                 // Current player belongs to current user || current user is the teacher or scenarist (test user)
-                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || this.hasGamePermission(subject, player.getGame(), true));
+                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || this.hasGamePermission(player.getGame(), true));
             } else if ("User".equals(type)) {
                 User find = userFacade.find(id);
                 return currentUser != null && currentUser.equals(find);
@@ -980,7 +979,7 @@ public class RequestManager implements RequestManagerI {
             channel = channel.replaceFirst("private-", "");
 
             if (grantedPermissions.contains(channel)) {
-                log(" WAS ALREADY GRANTED", 5);
+                log(" WAS ALREADY GRANTED");
                 return true;
             } else {
 
@@ -996,14 +995,14 @@ public class RequestManager implements RequestManagerI {
 
                 if (split.length == 2) {
                     if (hasPermission(split[0], split[1], superPermission)) {
-                        log(" >>> GRANT: " + channel, 5);
+                        log(" >>> GRANT: {}", channel);
                         grantedPermissions.add(channel);
                     }
                 }
                 return grantedPermissions.contains(channel);
             }
         } else {
-            log(" EMPTYCHANNEL", 5);
+            log(" EMPTYCHANNEL");
             return true;
         }
     }
@@ -1023,17 +1022,17 @@ public class RequestManager implements RequestManagerI {
             }
             return false;
         }
-        log("NO PERMISSIONS REQUIERED", 5);
+        log("NO PERMISSIONS REQUIERED");
         return true;
     }
 
     private void assertUserHasPermission(String permissions, String type, AbstractEntity entity) {
-        log("HAS  PERMISSION: " + type + " / " + permissions + " / " + entity, 5);
+        log("HAS  PERMISSION: {} / {} / {}", type, permissions, entity);
         logIndent++;
         if (!userHasPermission(permissions, type, entity)) {
             String msg = type + " Permission Denied (" + permissions + ") for user " + this.getCurrentUser() + " on entity " + entity;
             Helper.printWegasStackTrace(new Exception(msg));
-            log(msg, 5);
+            log(msg);
             throw new WegasAccessDenied(entity, type, permissions, this.getCurrentUser());
         }
         logIndent--;
@@ -1053,21 +1052,6 @@ public class RequestManager implements RequestManagerI {
 
     public void assertDeleteRight(AbstractEntity entity) {
         this.assertUserHasPermission(entity.getRequieredDeletePermission(), "Delete", entity);
-    }
-
-    public void postponeAssertReadRight(AbstractEntity entity) {
-        if (!this.readPermissionsToCheck.contains(entity)) {
-            logger.error("POSTPONE READ {}", entity);
-            this.readPermissionsToCheck.add(entity);
-        }
-    }
-
-    public void processPostponed() {
-        while (!readPermissionsToCheck.isEmpty()) {
-            AbstractEntity pop = readPermissionsToCheck.pop();
-            logger.error("ASSERT POSTPONED READ {}", pop);
-            this.assertReadRight(pop);
-        }
     }
 
     /*
@@ -1143,15 +1127,29 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * Become superuser
+     */
     public void su() {
         this.su(1l);
     }
 
+    /**
+     * Log-in with a different account
+     *
+     * @param accountId
+     */
     public void su(Long accountId) {
         try {
             Subject subject = SecurityUtils.getSubject();
 
-            logger.debug("SU: User {} SU to {}", subject.getPrincipal(), accountId);
+            subject.checkRole("Administrator");
+
+
+            if (subject.isRunAs()) {
+                subject.releaseRunAs();
+            }
+            logger.error("SU: User {} SU to {}", subject.getPrincipal(), accountId);
             // The subject exists
             SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
             subject.runAs(newSubject);

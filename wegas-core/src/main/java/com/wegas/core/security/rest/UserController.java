@@ -46,7 +46,6 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -432,14 +431,7 @@ public class UserController {
     @POST
     @Path("Be/{accountId: [1-9][0-9]*}")
     public void runAs(@PathParam("accountId") Long accountId) {
-        Subject oSubject = SecurityUtils.getSubject();
-
-        if (oSubject.isRunAs()) {
-            oSubject.releaseRunAs(); //@TODO: check shiro version > 1.2.1 (SHIRO-380)
-        }
-        oSubject.checkRole("Administrator");
-        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm"); // NB: this also seems to work with AaiAccounts ...
-        oSubject.runAs(subject);
+        requestManager.su(accountId);
     }
 
     /**

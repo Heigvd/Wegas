@@ -7,6 +7,8 @@
  */
 package com.wegas.core.ejb;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -86,18 +88,31 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     @Inject
     private TeamFacade teamFacade;
-    
+
     @Inject
     private GameFacade gameFacade;
 
     @Inject
     private StateMachineFacade stateMachineFacade;
 
+    @Inject
+    private HazelcastInstance hzInstance;
+
     /**
      * Dummy constructor
      */
     public GameModelFacade() {
         super(GameModel.class);
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public boolean isPersisted(final Long gameModelId) {
+        try {
+            getEntityManager().createNamedQuery("GameModel.findIdById").setParameter("gameModelId", gameModelId).getSingleResult();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     /**
@@ -665,12 +680,28 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     @Schedule(hour = "4", dayOfMonth = "Last Sat")
-    //@Schedule(minute = "4/10")
     public void removeGameModels() {
-        List<GameModel> byStatus = this.findByStatus(Status.DELETE);
-        for (GameModel gm : byStatus) {
-            this.remove(gm);
+        requestManager.su();
+        try {
+            ILock lock = hzInstance.getLock("GameModelFacade.Schedule");
+            logger.info("deleteGameModels(): want to delete gameModels");
+            if (lock.tryLock()) {
+                try {
+                    List<GameModel> byStatus = this.findByStatus(Status.DELETE);
+                    for (GameModel gm : byStatus) {
+                        this.remove(gm);
+                    }
+                    this.getEntityManager().flush();
+                } finally {
+                    lock.unlock();
+                    lock.destroy();
+                }
+            } else {
+                logger.info("somebody else got the lock...");
+            }
+
+        } finally {
+            requestManager.releaseSu();
         }
-        this.getEntityManager().flush();
     }
 }

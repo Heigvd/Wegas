@@ -12,15 +12,14 @@ import com.wegas.core.event.internal.DelayedEventPayload;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
-import javax.ejb.*;
-import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Resource;
+import javax.ejb.*;
+import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -50,33 +49,39 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
     public void timeout(Timer timer) {
         Serializable info = timer.getInfo();
         if (info instanceof DelayedEventPayload) {
-            RequestManager rm = requestFacade.getRequestManager();
-            rm.setEnv(RequestManager.RequestEnvironment.INTERNAL);
             DelayedEventPayload payload = (DelayedEventPayload) info;
-            rm.setMethod("DELAYED EVENT");
-            rm.setPath(payload.getEventName());
-            Player p = playerFacade.find(payload.getPlayerId());
+            RequestManager rm = requestFacade.getRequestManager();
+            rm.su(payload.getAccountId());
+            try {
 
-            // fire Script (ie base mechanism and static server script eval)
-            scriptEventFacade.fire(p, payload.getEventName());
-            // force FSM evaluation and make sur EntityManager has flush
-            requestFacade.commit(p);
+                rm.setEnv(RequestManager.RequestEnvironment.INTERNAL);
+                rm.setMethod("DELAYED EVENT");
+                rm.setPath(payload.getEventName());
+                Player p = playerFacade.find(payload.getPlayerId());
 
-            rm.markManagermentStartTime();
-            /*
+                // fire Script (ie base mechanism and static server script eval)
+                scriptEventFacade.fire(p, payload.getEventName());
+                // force FSM evaluation and make sur EntityManager has flush
+                requestFacade.commit(p);
+
+                rm.markManagermentStartTime();
+                /*
              * ManagedModeResponseFilter mock-up.
              * To propagate instances through websockets
-             */
-            Map<String, List<AbstractEntity>> updatedEntities = requestFacade.getUpdatedEntities();
-            Map<String, List<AbstractEntity>> destroyedEntities = requestFacade.getDestroyedEntities();
-            Map<String, List<AbstractEntity>> outdatedEntities = requestFacade.getOutdatedEntities();
+                 */
+                Map<String, List<AbstractEntity>> updatedEntities = requestFacade.getUpdatedEntities();
+                Map<String, List<AbstractEntity>> destroyedEntities = requestFacade.getDestroyedEntities();
+                Map<String, List<AbstractEntity>> outdatedEntities = requestFacade.getOutdatedEntities();
 
-            if (!(updatedEntities.isEmpty() && destroyedEntities.isEmpty() && outdatedEntities.isEmpty())) {
-                rm.markPropagationStartTime();
-                websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities, null);
-                rm.markPropagationEndTime();
+                if (!(updatedEntities.isEmpty() && destroyedEntities.isEmpty() && outdatedEntities.isEmpty())) {
+                    rm.markPropagationStartTime();
+                    websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities, null);
+                    rm.markPropagationEndTime();
+                }
+                rm.markSerialisationStartTime();
+            } finally {
+                rm.releaseSu();
             }
-            rm.markSerialisationStartTime();
         } else {
             logger.error("UNREADABLE INFO");
         }
@@ -89,12 +94,14 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
      */
     @Override
     public void delayedFire(long minutes, long seconds, String eventName) {
-        RequestManager.RequestEnvironment env = requestFacade.getRequestManager().getEnv();
+        RequestManager requestManager = requestFacade.getRequestManager();
+        RequestManager.RequestEnvironment env = requestManager.getEnv();
         if (env == RequestManager.RequestEnvironment.STD) {
             // Using second will prevent too short timer (not very usefull and may stress up the server...)
             long duration = (minutes * 60 + seconds) * 1000;
             try {
-                timerService.createTimer(duration, new DelayedEventPayload(requestFacade.getPlayer().getId(), eventName));
+                timerService.createTimer(duration, new DelayedEventPayload(requestFacade.getPlayer().getId(),
+                        requestManager.getCurrentUser().getMainAccount().getId(), eventName));
             } catch (IllegalArgumentException ex) {
                 throw WegasErrorMessage.error("Timer duration is not valid");
             }

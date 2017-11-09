@@ -97,6 +97,16 @@ public class GameFacade extends BaseFacade<Game> {
         super(Game.class);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public boolean isPersisted(final Long gameId) {
+        try {
+            getEntityManager().createNamedQuery("Game.findIdById").setParameter("gameId", gameId).getSingleResult();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
     /**
      * Create (persist) a new game base on a gameModel identified by gameModelId.
      * This gameModel will first been duplicated (to freeze it against original gameModel update)
