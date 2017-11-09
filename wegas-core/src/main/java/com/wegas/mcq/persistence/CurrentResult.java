@@ -10,7 +10,6 @@ package com.wegas.mcq.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.*;
 
 /**
@@ -20,7 +19,7 @@ import javax.persistence.*;
 @Table(name = "MCQCurrentResult", indexes = {
     @Index(columnList = "result_id")
 })
-public class CurrentResult extends AbstractEntity  {
+public class CurrentResult extends AbstractEntity implements ResultFrontierLandEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -49,15 +48,11 @@ public class CurrentResult extends AbstractEntity  {
         return id;
     }
 
-    public void add(ChoiceInstance choiceInstance){
+    public void add(ChoiceInstance choiceInstance) {
         choiceInstances.add(choiceInstance);
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
-        return null;
-    }
-
     public Result getResult() {
         return result;
     }
@@ -66,7 +61,7 @@ public class CurrentResult extends AbstractEntity  {
         this.result = result;
     }
 
-    public boolean remove(ChoiceInstance choiceInstance){
+    public boolean remove(ChoiceInstance choiceInstance) {
         return choiceInstances.remove(choiceInstance);
     }
 

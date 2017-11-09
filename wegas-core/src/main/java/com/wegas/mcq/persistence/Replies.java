@@ -10,7 +10,6 @@ package com.wegas.mcq.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.*;
 
 /**
@@ -20,7 +19,7 @@ import javax.persistence.*;
 @Table(name = "MCQReplies", indexes = {
     @Index(columnList = "result_id")
 })
-public class Replies extends AbstractEntity  {
+public class Replies extends AbstractEntity implements ResultFrontierLandEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -36,19 +35,13 @@ public class Replies extends AbstractEntity  {
     @OneToMany(mappedBy = "replies", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Reply> replies = new ArrayList<>();
 
-
     @Override
     public Long getId() {
         return id;
     }
 
-    public void add(Reply reply){
+    public void add(Reply reply) {
         replies.add(reply);
-    }
-
-    @Override
-    public String getRequieredUpdatePermission() {
-        return null;
     }
 
     public Result getResult() {
@@ -59,7 +52,7 @@ public class Replies extends AbstractEntity  {
         this.result = result;
     }
 
-    public void remove(Reply reply){
+    public void remove(Reply reply) {
         replies.remove(reply);
     }
 
@@ -67,6 +60,6 @@ public class Replies extends AbstractEntity  {
     public void merge(AbstractEntity other) {
         // this method is never called
         // everything is done within Reply and Result classes
-        throw new UnsupportedOperationException("Unreachable statement."); 
+        throw new UnsupportedOperationException("Unreachable statement.");
     }
 }
