@@ -356,7 +356,7 @@ public class PageController {
             JsonNode patches = (new ObjectMapper()).readTree(patch);
             page.patch(patches);
             pages.store(page);
-            return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
+            return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", pageId).build();
         }
     }
