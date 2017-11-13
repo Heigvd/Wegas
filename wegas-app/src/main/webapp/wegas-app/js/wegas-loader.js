@@ -269,6 +269,10 @@ YUI().use(function(Y) {
             "wegas-tabviewcss": {
                 type: CSS
             },
+            "wegas-bscopeinspector": {
+                path: "js/widget/wegas-bscopeinspector-min.js",
+                ws_provides: "BScopeInspector"
+            },
             "wegas-gaugedisplay": {
                 path: "js/widget/wegas-gaugedisplay-min.js",
                 requires: ["gauge", "wegas-templatecss"],
