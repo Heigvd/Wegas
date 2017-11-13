@@ -49,6 +49,7 @@ import javax.ws.rs.core.Response;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.SimplePrincipalCollection;
@@ -1129,6 +1130,7 @@ public class RequestManager implements RequestManagerI {
 
     /**
      * Become superuser
+     * @return
      */
     public User su() {
         return this.su(1l);
@@ -1146,7 +1148,7 @@ public class RequestManager implements RequestManagerI {
             Subject subject = SecurityUtils.getSubject();
 
             if (subject.getPrincipal() != null) {
-                logger.debug("SU: User {} SU to {}", subject.getPrincipal(), accountId);
+                logger.warn("SU: User {} SU to {}", subject.getPrincipal(), accountId);
                 if (this.isAdmin()) {
                     // The subject exists and is an authenticated admin
                     // -> Shiro runAs
@@ -1161,7 +1163,7 @@ public class RequestManager implements RequestManagerI {
                     throw WegasErrorMessage.error("Su is forbidden !");
                 }
             }
-        } catch (IllegalStateException | NullPointerException ex) {
+        } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException  ex){
             // runAs faild
             Helper.printWegasStackTrace(ex);
         }
@@ -1179,7 +1181,7 @@ public class RequestManager implements RequestManagerI {
         b.authenticated(true).principals(newSubject);
 
         Subject buildSubject = b.buildSubject();
-        logger.debug("SU: No-User SU to {}", buildSubject.getPrincipal());
+        logger.warn("SU: No-User SU to {}, {}", buildSubject.getPrincipal(), Thread.currentThread());
 
         ThreadContext.bind(buildSubject);
 
@@ -1190,10 +1192,10 @@ public class RequestManager implements RequestManagerI {
         try {
             Subject subject = SecurityUtils.getSubject();
             if (subject.isRunAs()) {
-                logger.debug("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
+                logger.warn("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
                 subject.releaseRunAs();
             } else {
-                logger.debug("Su-Exit LOGOUT");
+                logger.warn("Su-Exit LOGOUT");
                 subject.logout();
             }
             this.getCurrentUser();

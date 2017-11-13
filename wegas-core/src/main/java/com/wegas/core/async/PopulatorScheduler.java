@@ -88,7 +88,7 @@ public class PopulatorScheduler {
                     Integer get = scheduleCreation.get();
                     logger.info ("re-sync done {}", get);
                 } catch (Exception ex) {
-                    logger.info("EX: ", ex);
+                    logger.error("Synchronous Creation Error: ", ex);
                 }
             }
         }
