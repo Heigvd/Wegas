@@ -12,7 +12,7 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import com.wegas.test.arquillian.AbstractArquillianTest;
+import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJBException;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Yannick Lagger
  */
-public class UserFacadeTest extends AbstractArquillianTest {
+public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
     private static final Logger logger = LoggerFactory.getLogger(UserFacadeTest.class);
 
@@ -71,7 +71,7 @@ public class UserFacadeTest extends AbstractArquillianTest {
         Assert.assertTrue(users.contains(u.getUser()));
         Assert.assertTrue(users.contains(admin.getUser()));
 
-        Assert.assertEquals(16l, users.size());
+        Assert.assertEquals(2l, users.size()); // admin + u
 
         // find
         Assert.assertEquals(u.getUser(), userFacade.find(u.getId()));

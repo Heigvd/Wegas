@@ -91,6 +91,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
      */
     @Test
     public void testInboxSendTrigger() throws NamingException {
+        this.createSecondTeam();
         logger.info("send inbox trigger");
 
         // Create a inbox descriptor

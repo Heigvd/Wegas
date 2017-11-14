@@ -40,6 +40,8 @@ public class StateMachineITest extends AbstractArquillianTest {
 
     @Test
     public void playerJoinTest() {
+        this.createSecondTeam();
+
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("number");
         testNumber.setDefaultInstance(new NumberInstance(0));
@@ -75,12 +77,16 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         team4.setGame(game);
 
+        WegasUser user31 = this.signup("user31@local");
         login(user31);
         teamFacade.create(game.getId(), team3);
+
+        WegasUser user41 = this.signup("user41@local");
         login(user41);
         teamFacade.create(game.getId(), team4);
 
 
+        WegasUser user11 = this.signup("user11@local");
         login(user11);
         Player testPlayer11 = gameFacade.joinTeam(team.getId(), "TestPlayer11");
         
@@ -108,7 +114,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         /*
          * add a player in not empty team then Reset, trigger will execute
          */
-
+        WegasUser user42 = this.signup("user42@local");
         login(user42);
         Player testPlayer42 = gameFacade.joinTeam(team4.getId(), "TestPlayer42");
 
@@ -126,6 +132,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
         
+        WegasUser user43 = this.signup("user43@local");
         login(user43);
         Player testPlayer43 = gameFacade.joinTeam(team4.getId(), "TestPlayer43");
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
@@ -144,12 +151,15 @@ public class StateMachineITest extends AbstractArquillianTest {
         gameModelFacade.reset(scenario.getId());
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
         
+        WegasUser user32 = this.signup("user32@local");
         login(user32);
         Player testPlayer32 = gameFacade.joinTeam(team3.getId(), "TestPlayer32");
 
+        WegasUser user33 = this.signup("user33@local");
         login(user33);
         Player testPlayer33 = gameFacade.joinTeam(team3.getId(), "TestPlayer33");
 
+        WegasUser user34 = this.signup("user34@local");
         login(user34);
         Player testPlayer34 = gameFacade.joinTeam(team3.getId(), "TestPlayer34");
 
@@ -170,6 +180,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         trigger.setDisableSelf(Boolean.FALSE);
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
+        WegasUser user31 = this.signup("user31@local");
         login(user31);
         Player testPlayer = gameFacade.joinTeam(team.getId(), "TestPlayer31");
 

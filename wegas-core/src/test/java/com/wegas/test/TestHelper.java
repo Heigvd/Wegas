@@ -35,10 +35,6 @@ public class TestHelper {
 
     private static final String PASSWORD = "1234";
 
-    public static void cleanData(){
-        TestHelper.emptyDBTables();
-    }
-
     public static void emptyDBTables() {
         String sql = "DO\n"
                 + "$func$\n"

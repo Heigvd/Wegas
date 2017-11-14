@@ -40,6 +40,7 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
      */
     @Test
     public void testRemovePlayer() throws Exception {
+        this.createSecondTeam();
         /**
          * Create a game as trainer
          */
@@ -115,6 +116,10 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
 
     //@Test
     public void getInstances() {
+
+
+        this.createSecondTeam();
+
         logger.error("Da TEST");
         TextDescriptor gmScoped = new TextDescriptor();
         gmScoped.setName("gmScoped");

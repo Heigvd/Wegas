@@ -32,4 +32,9 @@ public class ScopeTest extends AbstractArquillianTest {
         team.getPrivateInstances();
         assertEquals(1, team.getPrivateInstances().size());
     }
+
+    @Test
+    public void testBroadcast(){
+
+    }
 }

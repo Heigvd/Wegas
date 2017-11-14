@@ -271,6 +271,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testChangeResultAndScope() throws NamingException {
+        this.createSecondTeam();
         // Create a question descriptor
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());

@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author maxence
  */
-public abstract class AbstractArquillianTest extends AbstractArquillianTestBase {
+public abstract class AbstractArquillianTest extends AbstractArquillianTestMinimal {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractArquillianTest.class);
 
@@ -48,27 +48,19 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestBase 
     protected Game game;
     protected Team team;
     protected Player player;
-    protected Team team2;
-    protected Player player21;
-    protected Player player22;
 
     protected WegasUser scenarist;
     protected WegasUser trainer;
     protected WegasUser user;
     protected WegasUser guest;
 
-    protected WegasUser user11;
-    protected WegasUser user21;
-    protected WegasUser user22;
+    //
+    protected Team team2 = null;
+    protected Player player21 = null;
+    protected Player player22 = null;
 
-    protected WegasUser user31;
-    protected WegasUser user32;
-    protected WegasUser user33;
-    protected WegasUser user34;
-
-    protected WegasUser user41;
-    protected WegasUser user42;
-    protected WegasUser user43;
+    protected WegasUser user21 = null;
+    protected WegasUser user22 = null;
 
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
@@ -79,20 +71,6 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestBase 
         scenarist = this.signup("scenarist@local");
         trainer = this.signup("trainer@local");
         user = this.signup("user@local");
-
-        user11 = this.signup("user11@local");
-
-        user21 = this.signup("user21@local");
-        user22 = this.signup("user22@local");
-
-        user31 = this.signup("user31@local");
-        user32 = this.signup("user32@local");
-        user33 = this.signup("user33@local");
-        user34 = this.signup("user34@local");
-
-        user41 = this.signup("user41@local");
-        user43 = this.signup("user43@local");
-        user42 = this.signup("user42@local");
 
         login(admin);
         scenarist = addRoles(scenarist, scenarists);
@@ -128,20 +106,33 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestBase 
 
         player = gameFacade.joinTeam(team.getId(), user.getId());
 
+        login(admin);
+        requestFacade.setPlayer(player.getId());
+        this.initTime = System.currentTimeMillis();
+    }
+
+    /**
+     * Create a second team (team2).
+     * Create two users: user21 and 22.
+     * The team2 twice : player21, player22
+     */
+    protected void createSecondTeam() {
+        user21 = this.signup("user21@local");
+        user22 = this.signup("user22@local");
+        login(user21);
         team2 = new Team();
         team2.setName("test-team2");
 
         teamFacade.create(game.getId(), team2);
 
-        login(admin);
         login(user21);
         player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
 
         login(user22);
         player22 = gameFacade.joinTeam(team2.getId(), user22.getId());
+
         login(admin);
         requestFacade.setPlayer(player.getId());
-        this.initTime = System.currentTimeMillis();
     }
 
     public void reseAndSetUpDB() throws SQLException, NamingException, WegasNoResultException, IOException {

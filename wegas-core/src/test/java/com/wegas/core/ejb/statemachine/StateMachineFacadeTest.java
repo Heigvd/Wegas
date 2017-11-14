@@ -45,6 +45,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
      */
     @Test
     public void testTrigger() throws NamingException {
+        this.createSecondTeam();
         // rm.setPlayer(player.getId());  //uncomment to make the test fail ...
         // Create a number
         NumberDescriptor number = new NumberDescriptor();
@@ -84,6 +85,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
      */
     @Test
     public void testMultipleTrigger() throws NamingException {
+        this.createSecondTeam();
         final double INITIALVALUE = 5.0;
         final double INTERMEDIATEVALUE = 4.0;
         final double FINALVALUE = 3.0;
@@ -130,6 +132,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
      */
     @Test
     public void testPassingTransitions() throws NamingException {
+        this.createSecondTeam();
         Integer INITIALVALUE = 0;
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
@@ -203,6 +206,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testEventTransition() throws NamingException, WegasScriptException {
+        this.createSecondTeam();
         Integer INITIALVALUE = 0;
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");

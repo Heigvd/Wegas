@@ -94,7 +94,4 @@ public class SecurityTest extends AbstractArquillianTest {
         logger.error("CURRENT: {}", requestFacade.getCurrentUser().getId() );
         Assert.assertEquals(user.getUser(), requestFacade.getCurrentUser()); // assert su has failed
     }
-
-    
-
 }

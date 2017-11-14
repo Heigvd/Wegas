@@ -189,12 +189,6 @@
             <type>jar</type>
         </dependency>
 
-        <!-- TEST -->
-        <dependency>
-            <groupId>fish.payara.extras</groupId>
-            <artifactId>payara-embedded-all</artifactId>
-        </dependency>
-
         <!-- Postgresql Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -221,7 +215,6 @@
             <scope>test</scope>
         </dependency>
 
-<!--
         <dependency>
             <groupId>org.eu.ingwar.tools</groupId>
             <artifactId>arquillian-suite-extension</artifactId>
@@ -232,8 +225,14 @@
                     <artifactId>cdi-api</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>-->
+        </dependency>
 
+
+        <!-- TEST -->
+        <dependency>
+            <groupId>fish.payara.extras</groupId>
+            <artifactId>payara-embedded-all</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

@@ -7,11 +7,13 @@
  */
 package com.wegas.unit.pmg;
 
+import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.junit.Test;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
+@ArquillianSuiteDeployment
 public class PMGTest extends PMGameAbstractTest {
 
     @Test

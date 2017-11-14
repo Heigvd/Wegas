@@ -63,12 +63,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
+ * Test with minimal dataset: root user. Administrator, Scenarist, trainer roles
+ *
  * @author maxence
  */
 @RunWith(Arquillian.class)
-public abstract class AbstractArquillianTestBase {
+public abstract class AbstractArquillianTestMinimal {
 
-    protected static final Logger logger = LoggerFactory.getLogger(AbstractArquillianTestBase.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractArquillianTestMinimal.class);
 
     @EJB
     protected GameModelFacade gameModelFacade;
@@ -111,8 +113,6 @@ public abstract class AbstractArquillianTestBase {
 
     @Inject
     private PopulatorScheduler populatorScheduler;
-
-    protected User guest;
 
     @Rule
     public TestName name = new TestName();
@@ -174,7 +174,7 @@ public abstract class AbstractArquillianTestBase {
     public void init() {
         this.startTime = System.currentTimeMillis();
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
-        TestHelper.cleanData();
+        TestHelper.emptyDBTables();
 
         requestManager.setPlayer(null);
         requestManager.clearEntities();
@@ -183,7 +183,6 @@ public abstract class AbstractArquillianTestBase {
         this.setSynchronous();
 
         this.startTime = System.currentTimeMillis();
-        TestHelper.emptyDBTables();
         this.wipeEmCache();
         requestFacade.setPlayer(null);
 
@@ -228,6 +227,7 @@ public abstract class AbstractArquillianTestBase {
         this.admin = new WegasUser(userFacade.find(1l), "root", "1234");
         login(admin);
 
+        this.initTime = System.currentTimeMillis();
     }
 
     @After

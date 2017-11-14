@@ -12,6 +12,8 @@ import java.io.IOException;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.After;
 import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,6 +24,7 @@ import org.junit.Before;
 abstract public class PMGameAbstractTest extends AbstractTest {
 
     public static final String SCRIPTROOT = "src/main/webapp/wegas-private/wegas-pmg/scripts/";
+    private static final Logger logger = LoggerFactory.getLogger(PMGameAbstractTest.class);
 
     protected abstract String getGameModelPath();
 
@@ -49,6 +52,7 @@ abstract public class PMGameAbstractTest extends AbstractTest {
 
         //guestLogin();
         this.createGameModelFromFileWithScript(this.getGameModelPath(), scripts);
+        this.initTime = System.currentTimeMillis();
     }
 
     @After
