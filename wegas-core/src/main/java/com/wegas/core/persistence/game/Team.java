@@ -90,7 +90,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     @Enumerated(value = EnumType.STRING)
-    
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
     private Status status = Status.WAITING;
 
@@ -405,11 +405,6 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @Override
-    public String getRequieredReadPermission() {
-        return this.getChannel();
-    }
-
-    @Override
     public String getRequieredUpdatePermission() {
         /*
          * since a player should be able to join a team by itself
@@ -419,12 +414,26 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
          * A player should be able to create a team and a team member should be able 
          * to invite other players in the team. Such behaviour allow to set an updatePermission
          */
-        return this.getChannel();
+        return this.getAssociatedReadPermission();
     }
 
     @Override
     public String getRequieredCreatePermission() {
-        // Anybody can create a team, but not anybody can add such a new team to an existing game
-        return null;
+        switch (this.getGame().getAccess()) {
+            case OPEN:
+                return null; // everybody can register en new team
+            default:
+                return ""; // nobody can create
+        }
     }
-}
+
+    @Override
+    public String getAssociatedReadPermission() {
+        return "Team-Read-" + this.getId();
+    }
+
+    @Override
+    public String getAssociatedWritePermission() {
+        return "Team-Write-" + this.getId();
+    }
+                                   }

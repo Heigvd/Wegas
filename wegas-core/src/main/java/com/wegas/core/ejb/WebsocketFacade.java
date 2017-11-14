@@ -143,7 +143,7 @@ public class WebsocketFacade {
 
         for (AbstractEntity entity : entities) {
             if (entity instanceof GameModel) {
-                if (requestManager.hasGameModelReadRight((GameModel) entity)){
+                if (requestManager.hasGameModelReadRight((GameModel) entity)) {
                     channel = ((GameModel) entity).getChannel();
                 }
             } else if (entity instanceof Game) {
@@ -154,12 +154,12 @@ public class WebsocketFacade {
                 Team team = (Team) entity;
                 User user = userFacade.getCurrentUser();
 
-                if (requestManager.hasTeamRight(team)){
+                if (requestManager.hasTeamRight(team)) {
                     channel = ((Team) entity).getChannel();
                 }
             } else if (entity instanceof Player) {
                 Player player = (Player) entity;
-                if (requestManager.hasPlayerRight(player)){
+                if (requestManager.hasPlayerRight(player)) {
                     channel = ((Player) entity).getChannel();
                 }
             }
@@ -488,7 +488,7 @@ public class WebsocketFacade {
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
         }
         if (channel.startsWith("private")) {
-            boolean hasPermission = requestManager.hasPermission(channel);
+            boolean hasPermission = requestManager.hasChannelPermission(channel);
             if (hasPermission) {
                 return pusher.authenticate(socketId, channel);
             }
@@ -556,32 +556,38 @@ public class WebsocketFacade {
      * @return list a users who are online
      */
     public Collection<OnlineUser> getOnlineUsers() {
-        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
-        onlineUsersLock.lock();
-        try {
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-            if (onlineUsersUpToDate.get() == 0) {
-                initOnlineUsers();
+        if (pusher != null) {
+            ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+            onlineUsersLock.lock();
+            try {
+                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                if (onlineUsersUpToDate.get() == 0) {
+                    initOnlineUsers();
+                }
+                return this.getLocalOnlineUsers();
+            } finally {
+                onlineUsersLock.unlock();
             }
-            return this.getLocalOnlineUsers();
-        } finally {
-            onlineUsersLock.unlock();
+        } else {
+            return new ArrayList<>();
         }
     }
 
     public Collection<OnlineUser> getLocalOnlineUsers() {
         Collection<OnlineUser> ou = new ArrayList<>();
-        Iterator<Cache.Entry<Long, OnlineUser>> iterator = onlineUsers.iterator();
-        while (iterator.hasNext()) {
-            ou.add(iterator.next().getValue());
+        if (pusher != null) {
+            Iterator<Cache.Entry<Long, OnlineUser>> iterator = onlineUsers.iterator();
+            while (iterator.hasNext()) {
+                ou.add(iterator.next().getValue());
+            }
         }
         return ou;
     }
 
-
     /**
      * @param user
      * @param compareRoles
+     *
      * @return true if user is member of at least on of the listed roles
      */
     private static boolean hasAnyRoles(User user, String... compareRoles) {

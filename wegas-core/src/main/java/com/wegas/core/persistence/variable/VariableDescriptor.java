@@ -634,7 +634,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     @Override
     public String getRequieredReadPermission() {
-        return this.getGameModel().getChannel();
+        return this.getGameModel().getRequieredReadPermission();
     }
 
     @Override

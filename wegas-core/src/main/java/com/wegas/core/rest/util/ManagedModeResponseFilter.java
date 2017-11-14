@@ -14,21 +14,20 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.persistence.AbstractEntity;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.ext.Provider;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.inject.Inject;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.ext.Provider;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -150,7 +149,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                  */
                 for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
-                    if (requestManager.hasPermission(audience)) {
+                    if (requestManager.hasChannelPermission(audience)) {
                         for (AbstractEntity ae : entry.getValue()) {
                             if (!updatedEntities.contains(ae)) {
                                 updatedEntities.add(ae);
@@ -163,7 +162,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                  */
                 for (Entry<String, List<AbstractEntity>> entry : destroyedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
-                    if (requestManager.hasPermission(audience)) {
+                    if (requestManager.hasChannelPermission(audience)) {
                         for (AbstractEntity ae : entry.getValue()) {
                             if (!deletedEntities.contains(ae)) {
                                 deletedEntities.add(ae);

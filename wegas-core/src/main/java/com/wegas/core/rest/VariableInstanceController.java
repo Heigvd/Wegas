@@ -91,7 +91,8 @@ public class VariableInstanceController {
         for (Long id : ids) {
             VariableInstance instance = variableInstanceFacade.find(id);
 
-            if (requestManager.hasPermission(instance.getAudience())) {
+            // useless test ?
+            if (requestManager.hasPermission(instance.getRequieredReadPermission())) {
                 instances.add(instance);
             }
         }

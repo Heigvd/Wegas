@@ -36,6 +36,8 @@ import com.wegas.core.security.persistence.User;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
@@ -480,11 +482,10 @@ public class RequestManager implements RequestManagerI {
 
     private String getAudience(InstanceOwner target) {
         if (target != null) {
-            String channel = target.getChannel();
-            if (this.hasPermission(channel)) {
-                return channel;
+            if (this.hasPermission(target.getAssociatedReadPermission())) {
+                return target.getChannel();
             } else {
-                throw WegasErrorMessage.error("You don't have the right to lock " + channel);
+                throw WegasErrorMessage.error("You don't have the right to lock " + target);
             }
         }
         return null;
@@ -952,13 +953,13 @@ public class RequestManager implements RequestManagerI {
                 return team != null && ((currentUser != null && (playerFacade.isInTeam(team.getId(), currentUser.getId()) // Current logged User is linked to a player who's member of the team
                         || currentUser.equals(team.getCreatedBy()) // or current user is the team creator
                         )
-                        || this.hasGamePermission(team.getGame(), false))); // or read right one the game
+                        || this.hasGamePermission(team.getGame(), superPermission))); // or read (or write for superP) right one the game
 
             } else if ("Player".equals(type)) {
                 Player player = playerFacade.find(id);
 
                 // Current player belongs to current user || current user is the teacher or scenarist (test user)
-                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || this.hasGamePermission(player.getGame(), true));
+                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || this.hasGamePermission(player.getGame(), superPermission));
             } else if ("User".equals(type)) {
                 User find = userFacade.find(id);
                 return currentUser != null && currentUser.equals(find);
@@ -970,40 +971,29 @@ public class RequestManager implements RequestManagerI {
     /**
      * can current user subscribe to given channel ?
      *
-     * @param channel
+     * @param permission Role-<rolename> | ((User|Player|Team|Game|GameModel) - (Read | Write) - <entityId>)
      *
      * @return true if access granted
      */
-    public boolean hasPermission(String channel) {
-        if (channel != null) {
-            // remove "private-" from channel name if exists
-            channel = channel.replaceFirst("private-", "");
-
-            if (grantedPermissions.contains(channel)) {
+    public boolean hasPermission(String permission) {
+        if (permission != null) {
+            if (grantedPermissions.contains(permission)) {
                 log(" WAS ALREADY GRANTED");
                 return true;
             } else {
 
-                boolean superPermission = false;
+                String[] split = permission.split("-");
 
-                String effectiveChannel = channel;
-                if (effectiveChannel.startsWith("W-")) {
-                    effectiveChannel = effectiveChannel.replaceFirst("W-", "");
-                    superPermission = true;
-                }
-
-                String[] split = effectiveChannel.split("-");
-
-                if (split.length == 2) {
-                    if (hasPermission(split[0], split[1], superPermission)) {
-                        log(" >>> GRANT: {}", channel);
-                        grantedPermissions.add(channel);
+                if (split.length == 3) {
+                    if (hasPermission(split[0], split[2], split[1].contains("Write"))) {
+                        log(" >>> GRANT: {}", permission);
+                        grantedPermissions.add(permission);
                     }
                 }
-                return grantedPermissions.contains(channel);
+                return grantedPermissions.contains(permission);
             }
         } else {
-            log(" EMPTYCHANNEL");
+            log(" NULL PERMISSION");
             return true;
         }
     }
@@ -1063,7 +1053,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     public boolean hasGameReadRight(final Game game) {
-        return this.hasPermission(game.getChannel());
+        return this.hasPermission(game.getAssociatedReadPermission());
     }
 
     /**
@@ -1071,11 +1061,11 @@ public class RequestManager implements RequestManagerI {
      */
     @Override
     public boolean hasGameWriteRight(final Game game) {
-        return this.hasPermission("W-" + game.getChannel());
+        return this.hasPermission(game.getAssociatedWritePermission());
     }
 
     public boolean hasGameModelReadRight(final GameModel gameModel) {
-        return this.hasPermission(gameModel.getChannel());
+        return this.hasPermission(gameModel.getAssociatedReadPermission());
     }
 
     /**
@@ -1083,15 +1073,15 @@ public class RequestManager implements RequestManagerI {
      */
     @Override
     public boolean hasGameModelWriteRight(final GameModel gameModel) {
-        return this.hasPermission("W-" + gameModel.getChannel());
+        return this.hasPermission(gameModel.getAssociatedWritePermission());
     }
 
     public boolean hasTeamRight(final Team team) {
-        return this.hasPermission(team.getChannel());
+        return this.hasPermission(team.getAssociatedReadPermission());
     }
 
     public boolean hasPlayerRight(final Player player) {
-        return this.hasPermission(player.getChannel());
+        return this.hasPermission(player.getAssociatedReadPermission());
     }
 
     public boolean canRestoreGameModel(final GameModel gameModel) {
@@ -1105,6 +1095,18 @@ public class RequestManager implements RequestManagerI {
     public boolean canDeleteGameModel(final GameModel gameModel) {
         String id = "gm" + gameModel.getId();
         return this.isPermitted("GameModel:Delete:" + id);
+    }
+
+    public boolean hasChannelPermission(String channel) {
+        if (channel != null) {
+            Pattern p = Pattern.compile("^(private-)*([a-zA-Z]*)-([a-zA-Z0-9]*)$");
+
+            Matcher m = p.matcher(channel);
+            if (m.find()) {
+                return this.hasPermission(m.group(2), m.group(3), false);
+            }
+        }
+        return false;
     }
 
 
@@ -1130,6 +1132,7 @@ public class RequestManager implements RequestManagerI {
 
     /**
      * Become superuser
+     *
      * @return
      */
     public User su() {
@@ -1148,7 +1151,7 @@ public class RequestManager implements RequestManagerI {
             Subject subject = SecurityUtils.getSubject();
 
             if (subject.getPrincipal() != null) {
-                logger.warn("SU: User {} SU to {}", subject.getPrincipal(), accountId);
+                logger.info("SU: User {} SU to {}", subject.getPrincipal(), accountId);
                 if (this.isAdmin()) {
                     // The subject exists and is an authenticated admin
                     // -> Shiro runAs
@@ -1163,7 +1166,7 @@ public class RequestManager implements RequestManagerI {
                     throw WegasErrorMessage.error("Su is forbidden !");
                 }
             }
-        } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException  ex){
+        } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException ex) {
             // runAs faild
             Helper.printWegasStackTrace(ex);
         }
@@ -1181,7 +1184,7 @@ public class RequestManager implements RequestManagerI {
         b.authenticated(true).principals(newSubject);
 
         Subject buildSubject = b.buildSubject();
-        logger.warn("SU: No-User SU to {}, {}", buildSubject.getPrincipal(), Thread.currentThread());
+        logger.info("SU: No-User SU to {}, {}", buildSubject.getPrincipal(), Thread.currentThread());
 
         ThreadContext.bind(buildSubject);
 
@@ -1192,10 +1195,10 @@ public class RequestManager implements RequestManagerI {
         try {
             Subject subject = SecurityUtils.getSubject();
             if (subject.isRunAs()) {
-                logger.warn("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
+                logger.info("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
                 subject.releaseRunAs();
             } else {
-                logger.warn("Su-Exit LOGOUT");
+                logger.info("Su-Exit LOGOUT");
                 subject.logout();
             }
             this.getCurrentUser();

@@ -122,7 +122,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @Enumerated
-    private GameAccess access = GameAccess.CLOSE;
+    private GameAccess access = GameAccess.OPEN;
 
     /**
      *
@@ -519,12 +519,12 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
 
     @Override
     public String getRequieredUpdatePermission() {
-        return "W-" + this.getChannel();
+        return this.getAssociatedWritePermission();
     }
 
     @Override
     public String getRequieredReadPermission() {
-        return this.getChannel();
+        return this.getAssociatedReadPermission();
     }
 
     @Override
@@ -536,5 +536,15 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @Override
     public String getRequieredDeletePermission() {
         return Role.ADMIN_PERM;
+    }
+
+    @Override
+    public String getAssociatedReadPermission() {
+        return "Game-Read-" + this.getId();
+    }
+
+    @Override
+    public String getAssociatedWritePermission() {
+        return "Game-Write-" + this.getId();
     }
 }

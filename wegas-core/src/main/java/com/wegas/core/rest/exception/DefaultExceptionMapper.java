@@ -30,6 +30,7 @@ public class DefaultExceptionMapper extends AbstractExceptionMapper
      */
     @Override
     public Response toResponse(Exception exception) {
+        logger.error("DEFAULT EXCEPTION MAPPER");
         return processException(exception);
     }
 }

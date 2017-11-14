@@ -100,7 +100,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      *
      */
     @Enumerated(value = EnumType.STRING)
-    
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
     private Status status = Status.WAITING;
 
@@ -463,9 +463,25 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         // but, with broadcastScope, should be GameModel.Read, nope ? TBT
         return this.getTeam().getRequieredReadPermission();
     }
-    
+
     @Override
     public String getRequieredUpdatePermission() {
-        return this.getChannel();
+        return this.getAssociatedWritePermission();
+    }
+
+    @Override
+    public String getRequieredDeletePermission() {
+        // One must have the right to delete its own team from the game
+        return this.getGame().getGameTeams().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public String getAssociatedReadPermission() {
+        return "Player-Read-" + this.getId();
+    }
+
+    @Override
+    public String getAssociatedWritePermission() {
+        return "Player-Write-" + this.getId();
     }
 }

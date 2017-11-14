@@ -62,4 +62,20 @@ public interface InstanceOwner {
      */
     @JsonIgnore
     public List<VariableInstance> getAllInstances();
+
+    /**
+     * The permission which require read right to this instanceOwner
+     *
+     * @return
+     */
+    @JsonIgnore
+    public String getAssociatedReadPermission();
+
+    /**
+     * The permission to grant to give write right to this instanceOwner
+     *
+     * @return
+     */
+    @JsonIgnore
+    public String getAssociatedWritePermission();
 }

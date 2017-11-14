@@ -89,9 +89,9 @@ public class Helper {
     /**
      * To be used to make a JNDI lookup when there is no CDI context
      *
-     * @param <T>  resource type
+     * @param <T>      resource type
      * @param jndiName resource name
-     * @param type resource type
+     * @param type     resource type
      *
      * @return instance of the given type matching jndiName
      *
@@ -724,7 +724,8 @@ public class Helper {
         StringBuilder sb = new StringBuilder(t.getClass().getName());
         sb.append(" - ").append(t.getMessage());
         for (StackTraceElement elem : t.getStackTrace()) {
-            if (elem.getClassName().startsWith("com.wegas")) {
+            if (elem.getClassName().startsWith("com.wegas")
+                    || elem.getClassName().startsWith("jdk.nashorn")) {
                 sb.append("\n\tat ");
                 sb.append(elem);
             }
@@ -736,6 +737,7 @@ public class Helper {
      * Check if email is valid. (Only a string test)
      *
      * @param email
+     *
      * @throws javax.mail.internet.AddressException
      */
     public static void assertEmailPattern(String email) throws AddressException {

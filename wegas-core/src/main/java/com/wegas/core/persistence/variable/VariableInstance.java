@@ -288,26 +288,36 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @JsonIgnore
     public String getAudience() {
+        InstanceOwner audienceOwner = getAudienceOwner();
+        if (audienceOwner != null) {
+            return audienceOwner.getChannel();
+        } else {
+            return null;
+        }
+    }
+
+    @JsonIgnore
+    public InstanceOwner getAudienceOwner() {
         if (this.getTeam() != null) {
             if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
-                return this.getTeam().getGame().getChannel();
+                return this.getTeam().getGame();
             } else {
-                return this.getTeam().getChannel();
+                return this.getTeam();
             }
         } else if (this.getPlayer() != null) {
             if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
 
-                return this.getPlayer().getTeam().getChannel();
+                return this.getPlayer().getTeam();
             } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
-                return this.getPlayer().getGame().getChannel();
+                return this.getPlayer().getGame();
             } else {
-                return this.getPlayer().getChannel();
+                return this.getPlayer();
             }
         } else if (this.getGame() != null) {
-            return this.getGame().getChannel();
+            return this.getGame();
         } else if (this.gameModelScope != null) {
             // this.getGameModel().getChannel();
-            return this.getGameModelScope().getVariableDescriptor().getGameModel().getChannel();
+            return this.getGameModelScope().getVariableDescriptor().getGameModel();
         } else {
             // Default instance
             return null;
@@ -640,17 +650,23 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             // Default Instance is only editable with edit permission on Descriptor
             return this.getDefaultDescriptor().getRequieredUpdatePermission();
         } else {
-            // GameModelScopeInstance just required GameModel:View
-            return this.getBroadcastTarget().getChannel();
+
+            if (this.getTeamScope() != null || this.getPlayerScope() != null) {
+                return this.getBroadcastTarget().getAssociatedWritePermission();
+            } else if (this.getGameScope() != null || this.getGameModelScope() != null) {
+                return this.getBroadcastTarget().getAssociatedReadPermission();
+            }
         }
+
+        return "";
     }
 
     @Override
     public String getRequieredReadPermission() {
-        if (this.getScope() != null) {
-            return this.getAudience();
-        } else {
+        if (this.getScope() == null) {
             return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
+        } else {
+            return this.getAudienceOwner().getAssociatedReadPermission();
         }
     }
 }

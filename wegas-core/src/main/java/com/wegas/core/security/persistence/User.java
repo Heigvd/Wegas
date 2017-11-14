@@ -10,14 +10,12 @@ package com.wegas.core.security.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
 import java.util.*;
+import javax.persistence.*;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -237,7 +235,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
 
     @Override
     public String getRequieredUpdatePermission() {
-        return Helper.USER_CHANNEL_PREFIX + this.getId() + "," 
+        return "User-Write-" + this.getId() + ","
                 + Role.TRAINER_PERM; // why ? maybe to share game/gameModel
     }
 

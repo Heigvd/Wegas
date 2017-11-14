@@ -831,12 +831,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public String getRequieredUpdatePermission() {
-        return "W-" + this.getChannel();
+        return this.getAssociatedWritePermission();
     }
 
     @Override
     public String getRequieredReadPermission() {
-        return this.getChannel();
+        return this.getAssociatedReadPermission();
     }
 
     @Override
@@ -846,6 +846,16 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         } else {
             return Role.SCENARIST_PERM;
         }
+    }
+
+    @Override
+    public String getAssociatedReadPermission() {
+        return "GameModel-Read-" + this.getId();
+    }
+
+    @Override
+    public String getAssociatedWritePermission() {
+        return "GameModel-Write-" + this.getId();
     }
 
     /**

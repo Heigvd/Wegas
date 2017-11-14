@@ -10,13 +10,13 @@ package com.wegas.admin.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +38,8 @@ import org.codehaus.jettison.json.JSONException;
 public class GameAdmin extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
+    private static ObjectWriter ow = null;
 
     @Id
     @GeneratedValue
@@ -201,7 +203,12 @@ public class GameAdmin extends AbstractEntity {
     }
 
     // Small optimization for getTeams():
-    private static ObjectWriter ow = new ObjectMapper().writer();
+    private static ObjectWriter getObjectWriter() {
+        if (GameAdmin.ow == null) {
+            GameAdmin.ow = JacksonMapperProvider.getMapper().writer();
+        }
+        return GameAdmin.ow;
+    }
 
     public List<String> getTeams() {
         if (this.getGame() != null) {
@@ -210,7 +217,7 @@ public class GameAdmin extends AbstractEntity {
                 if (t.getClass() == Team.class) { // filter debugTeam
                     GameAdminTeam gaTeam = new GameAdminTeam(t);
                     try {
-                        teams.add(ow.writeValueAsString(gaTeam));
+                        teams.add(getObjectWriter().writeValueAsString(gaTeam));
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();
                     }
@@ -309,7 +316,9 @@ public class GameAdmin extends AbstractEntity {
 
     /**
      * GameAdmin status
-     * {@
+     * {
+     *
+     * @
      */
     public static enum Status {
         /**
