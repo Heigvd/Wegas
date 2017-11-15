@@ -190,6 +190,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      *
      * @return the updated reply
      */
+    @Override
     public Reply updateReply(Long replyId, Reply r) {
         final Reply oldEntity = this.findReply(replyId);
         oldEntity.merge(r);
@@ -244,7 +245,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         try {
             final Reply reply = this.getEntityManager().find(Reply.class, replyId);
             QuestionInstance questionInstance = this.getQuestionInstanceFromReply(reply);
-            requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
+            requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
             return this.internalCancelReply(reply);
         } catch (NoPlayerException ex) {
             throw WegasErrorMessage.error("NO PLAYER");
@@ -264,6 +265,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      *
      * @return new reply
      */
+    @Override
     public Reply ignoreChoice(Long choiceId, Player player) {
 
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
@@ -291,12 +293,13 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      *
      * @return the new reply
      */
+    @Override
     public Reply selectChoice(Long choiceId, Player player, Long startTime) {
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
         //getEntityManager().refresh(questionInstance);
         //requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
@@ -333,6 +336,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      *
      * @return the new reply
      */
+    @Override
     public Reply selectChoice(Long choiceId, Long playerId) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), (long) 0);
     }
@@ -344,6 +348,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      *
      * @return the new reply
      */
+    @Override
     public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
     }
@@ -358,6 +363,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      *
      * @return the new validated reply
      */
+    @Override
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) {
         Player player = playerFacade.find(playerId);
         Reply reply = this.selectChoice(choiceId, player, (long) 0);
@@ -429,6 +435,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      *
      * @return reply being canceled
      */
+    @Override
     public Reply cancelReply(Long playerId, Long replyId) {
         return this.cancelReplyTransactional(playerId, replyId);
     }
@@ -439,6 +446,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      *
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
+    @Override
     public void validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
         validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
@@ -469,6 +477,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param player
      * @param replyVariableInstanceId
      */
+    @Override
     public void validateReply(Player player, Long replyVariableInstanceId) {
         this.validateReply(player, getEntityManager().find(Reply.class, replyVariableInstanceId));
     }
@@ -477,6 +486,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param playerId
      * @param replyVariableInstanceId
      */
+    @Override
     public void validateReply(Long playerId, Long replyVariableInstanceId) {
         this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);
     }
@@ -491,6 +501,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      *
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
+    @Override
     public void validateQuestion(final QuestionInstance validateQuestion, final Player player) throws WegasRuntimeException {
 
         final QuestionDescriptor questionDescriptor = (QuestionDescriptor) validateQuestion.getDescriptor();
@@ -535,9 +546,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param questionInstanceId
      * @param player
      */
+    @Override
     public void validateQuestion(Long questionInstanceId, Player player) {
         QuestionInstance questionInstance = getEntityManager().find(QuestionInstance.class, questionInstanceId);
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
         this.validateQuestion(questionInstance, player);
     }
 

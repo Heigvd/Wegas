@@ -268,7 +268,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      * @return
      */
     @JsonIgnore
-    public InstanceOwner getBroadcastTarget() {
+    public InstanceOwner getEffectiveOwner() {
         if (this.getTeam() != null) {
             return this.getTeam();
         } else if (this.getPlayer() != null) {
@@ -288,7 +288,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @JsonIgnore
     public String getAudience() {
-        InstanceOwner audienceOwner = getAudienceOwner();
+        InstanceOwner audienceOwner = getBroadcastTarget();
         if (audienceOwner != null) {
             return audienceOwner.getChannel();
         } else {
@@ -297,7 +297,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @JsonIgnore
-    public InstanceOwner getAudienceOwner() {
+    public InstanceOwner getBroadcastTarget() {
         if (this.getTeam() != null) {
             if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
                 return this.getTeam().getGame();
@@ -650,11 +650,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             // Default Instance is only editable with edit permission on Descriptor
             return this.getDefaultDescriptor().getRequieredUpdatePermission();
         } else {
-
             if (this.getTeamScope() != null || this.getPlayerScope() != null) {
-                return this.getBroadcastTarget().getAssociatedWritePermission();
+                return this.getEffectiveOwner().getAssociatedWritePermission();
             } else if (this.getGameScope() != null || this.getGameModelScope() != null) {
-                return this.getBroadcastTarget().getAssociatedReadPermission();
+                return this.getEffectiveOwner().getAssociatedReadPermission();
             }
         }
 
@@ -666,7 +665,29 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         if (this.getScope() == null) {
             return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
         } else {
-            return this.getAudienceOwner().getAssociatedReadPermission();
+            if (this.getTeam() != null) {
+                if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
+                    return this.getTeam().getGame().getAssociatedReadPermission();
+                } else {
+                    return this.getTeam().getAssociatedWritePermission();
+                }
+            } else if (this.getPlayer() != null) {
+                if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
+                    return this.getPlayer().getTeam().getAssociatedWritePermission();
+                } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
+                    return this.getPlayer().getGame().getAssociatedReadPermission();
+                } else {
+                    return this.getPlayer().getAssociatedWritePermission();
+                }
+            } else if (this.getGame() != null) {
+                return this.getGame().getAssociatedReadPermission();
+            } else if (this.gameModelScope != null) {
+                // this.getGameModel().getChannel();
+                return this.getGameModelScope().getVariableDescriptor().getGameModel().getAssociatedReadPermission();
+            } else {
+                // Default instance
+                return null;
+            }
         }
     }
 }
