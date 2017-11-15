@@ -96,6 +96,8 @@ public class StateMachineITest extends AbstractArquillianTest {
         logger.error("Players: " + testPlayer11 + " : " + testPlayer41);
         NumberDescriptor number = (NumberDescriptor) variableDescriptorFacade.find(testNumber.getId());
         /* CONTEXT? */
+
+        login(trainer);
         Assert.assertEquals(FINAL_VALUE, number.getValue(testPlayer11), 0.0001);
         Assert.assertEquals(FINAL_VALUE, number.getValue(testPlayer41), 0.0001);
 
@@ -163,6 +165,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         login(user34);
         Player testPlayer34 = gameFacade.joinTeam(team3.getId(), "TestPlayer34");
 
+        login(trainer);
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
     }
 
