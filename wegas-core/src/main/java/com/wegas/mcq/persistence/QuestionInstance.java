@@ -9,20 +9,18 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -143,6 +141,13 @@ public class QuestionInstance extends VariableInstance {
      *
      */
     public void desactivate() {
+        this.deactivate();
+    }
+
+    /**
+     *
+     */
+    public void deactivate() {
         this.setActive(false);
     }
 

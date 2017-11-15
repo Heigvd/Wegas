@@ -10,7 +10,6 @@ package com.wegas.resourceManagement.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.api.ResourceFacadeI;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;

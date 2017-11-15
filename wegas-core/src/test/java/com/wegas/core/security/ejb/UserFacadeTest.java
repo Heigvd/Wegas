@@ -58,6 +58,7 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
         login(admin);
         addRoles(u, role1, role2);
+        requestManager.clearEntities();
     }
 
     /**

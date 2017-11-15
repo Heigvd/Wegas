@@ -228,6 +228,7 @@ public abstract class AbstractArquillianTestMinimal {
         login(admin);
 
         this.initTime = System.currentTimeMillis();
+        requestManager.clearEntities();
     }
 
     @After

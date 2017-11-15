@@ -94,19 +94,20 @@ public class ScriptFacade extends WegasAbstractFacade {
 
         CompiledScript compile = null;
         try {
-            compile = ((Compilable) engine).compile("(function(global){"
-                    + "var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
-                    + "Object.defineProperty(global, '__noSuchProperty__', {"
-                    + "value: function(prop){"
-                    + "try{"
-                    + "var ret = Variable.find(gameModel, prop).getInstance(self);"
-                    + "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
-                    + "return ret;" // Try to find a VariableDescriptor's instance for that given prop
-                    + "}catch(e){"
-                    + "return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
-                    + "}}"
-                    + "});"
-                    + "if (!Math._random) { Math._random = Math.random; Math.random = function random(){if (RequestManager.isTestEnv()) {return 0} else {return Math._random()} }}"
+            compile = ((Compilable) engine).compile(
+                    "(function(global){"
+                    + "  var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
+                    + "  Object.defineProperty(global, '__noSuchProperty__', {"
+                    + "    value: function(prop){"
+                    + "      try{"
+                    + "        var ret = Variable.find(gameModel, prop).getInstance(self);"
+                    + "        print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
+                    + "        return ret;" // Try to find a VariableDescriptor's instance for that given prop
+                    + "      }catch(e){"
+                    + "        return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
+                    + "    }}"
+                    + "  });"
+                    + "  if (!Math._random) { Math._random = Math.random; Math.random = function random(){if (RequestManager.isTestEnv()) {return 0} else {return Math._random()} }}"
                     + "})(this);"); // Run on Bindings
         } catch (ScriptException e) {
             logger.error("noSuchProperty script compilation failed", e);

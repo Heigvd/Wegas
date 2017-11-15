@@ -115,6 +115,7 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
         f2evaluations.add(grade2);
         feedbackComments.setEvaluations(f2evaluations);
         variableDescriptorFacade.create(scenario.getId(), initial);
+        requestManager.clearEntities();
     }
 
     @After

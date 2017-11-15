@@ -11,12 +11,10 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import java.util.Objects;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Objects;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Testing Triggers, class TriggerInstance and class TriggerDescriptor

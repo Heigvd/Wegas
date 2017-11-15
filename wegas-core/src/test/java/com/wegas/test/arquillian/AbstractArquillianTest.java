@@ -109,6 +109,7 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         login(admin);
         requestFacade.setPlayer(player.getId());
         this.initTime = System.currentTimeMillis();
+        requestManager.clearEntities();
     }
 
     /**

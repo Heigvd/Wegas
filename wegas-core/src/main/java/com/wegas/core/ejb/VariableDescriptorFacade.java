@@ -544,7 +544,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * {@inheritDoc}
      */
     @Override
-    public Map<? extends InstanceOwner, VariableInstance> getInstances(VariableDescriptor vd){
+    public Map<? extends InstanceOwner, VariableInstance> getInstances(VariableDescriptor vd) {
         return variableInstanceFacade.getAllInstances(vd);
     }
 
@@ -552,7 +552,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * {@inheritDoc}
      */
     @Override
-    public Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd){
+    public Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd) {
         return variableInstanceFacade.getAllInstancesById(vd);
     }
 
