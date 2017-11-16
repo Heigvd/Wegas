@@ -9,6 +9,7 @@ package com.wegas.reviewing.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.InstanceOwner;
@@ -22,6 +23,7 @@ import com.wegas.reviewing.persistence.Review;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,6 +33,7 @@ import javax.ws.rs.core.Response;
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Stateless
+
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/PeerReviewController/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -54,6 +57,9 @@ public class PeerReviewController {
     @EJB
     private PlayerFacade playerFacade;
 
+    @Inject
+    private VariableDescriptorFacade variableDescriptorFacade;
+
     /**
      * EJB Variable Instance Facade
      */
@@ -64,28 +70,37 @@ public class PeerReviewController {
      * Return the VariableInstance to review, according to given peer review
      * descriptor and given review
      *
-     * @param prdId    ID of the peer review descriptor which specify the
-     *                 variable to review
-     * @param rId      ID of the review indicating whom the variable to review
-     *                 belongs
-     * @param playerId
+     * @param prdId  ID of the peer review descriptor which specify the
+     *               variable to review
+     * @param rId    ID of the review indicating whom the variable to review
+     *               belongs
+     * @param selfId
      *
      * @return the variable instance to review
      */
     @GET
-    
+
     @Path("/{reviewDescriptorId : [1-9][0-9]*}/ToReview/{reviewId : [1-9][0-9]*}/{playerId: [1-9][0-9]*}")
     public VariableInstance getInstanceToReview(
             @PathParam("reviewDescriptorId") Long prdId,
             @PathParam("reviewId") Long rId,
-            @PathParam("playerId") Long playerId) {
+            @PathParam("playerId") Long selfId) {
 
-        Player player = playerFacade.find(playerId);
+        Player self = playerFacade.find(selfId);
         Review review = reviewFacade.findReview(rId);
         PeerReviewInstance authorInstance = review.getAuthor();
 
         PeerReviewDescriptor prd = (PeerReviewDescriptor) authorInstance.getDescriptor();
         VariableDescriptor toReview = prd.getToReview();
+
+        // since changing ToReview broadcast scope to GameScope is not a so good idea
+        // a special way to have right to read author variable instance is required...
+        // it's not very nice and looks like a ugly hack.... let's grant TEAM and PLAYER
+        // right (just for this request indeed)
+        Player oneOfTheAuthors = authorInstance.getOwner().getAnyLivePlayer();
+
+        requestFacade.getRequestManager().grant(oneOfTheAuthors.getAssociatedWritePermission());
+        requestFacade.getRequestManager().grant(oneOfTheAuthors.getTeam().getAssociatedWritePermission());
 
         VariableInstance instance = toReview.findInstance(authorInstance);
         if (instance != null) {

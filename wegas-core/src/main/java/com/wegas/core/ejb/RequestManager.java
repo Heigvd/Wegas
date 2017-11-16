@@ -980,7 +980,8 @@ public class RequestManager implements RequestManagerI {
                 if (hasRole("Administrator") || permission instanceof WegasMembership && this.isMemberOf((WegasMembership) permission)
                         || permission instanceof WegasEntityPermission && this.hasEntityPermission((WegasEntityPermission) permission)) {
                     log(" >>> GRANT: {}", permission);
-                    grantedPermissions.add(permission);
+                    this.grant(permission);
+                    return true;
                 }
                 return grantedPermissions.contains(permission);
             }
@@ -988,6 +989,10 @@ public class RequestManager implements RequestManagerI {
             log(" NULL PERMISSION");
             return true;
         }
+    }
+
+    /* private */ public void grant(WegasPermission perm) {
+        this.grantedPermissions.add(perm);
     }
 
     public boolean hasAnyPermission(Collection<WegasPermission> permissions) {
