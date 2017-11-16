@@ -10,6 +10,7 @@ package com.wegas.core.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.List;
 
 /**
@@ -69,7 +70,7 @@ public interface InstanceOwner {
      * @return
      */
     @JsonIgnore
-    public String getAssociatedReadPermission();
+    public WegasPermission getAssociatedReadPermission();
 
     /**
      * The permission to grant to give write right to this instanceOwner
@@ -77,5 +78,5 @@ public interface InstanceOwner {
      * @return
      */
     @JsonIgnore
-    public String getAssociatedWritePermission();
+    public WegasPermission getAssociatedWritePermission();
 }

@@ -77,9 +77,7 @@ public class VariableDescriptorController {
         Collection<VariableDescriptor> descriptors = new ArrayList<>();
         for (Long id : ids) {
             VariableDescriptor desc = variableDescriptorFacade.find(id);
-            if (requestManager.hasPermission(desc.getGameModel().getRequieredReadPermission())) {
-                descriptors.add(desc);
-            }
+            descriptors.add(desc);
         }
         return descriptors;
     }
@@ -186,7 +184,7 @@ public class VariableDescriptorController {
      * @param index
      */
     @PUT
-    
+
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
             @PathParam("parentDescriptorId") Long parentDescriptorId,
@@ -269,7 +267,7 @@ public class VariableDescriptorController {
     public List<Long> idsContains(@PathParam("gameModelId") Long gameModelId, String criteria) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        
+
         Set<VariableDescriptor> vars = gm.getVariableDescriptors();
         List<Long> matches = new ArrayList<>();
         for (VariableDescriptor d : vars) {
@@ -293,7 +291,7 @@ public class VariableDescriptorController {
     public List<Long> idsContainsAll(@PathParam("gameModelId") Long gameModelId, String criteria) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        
+
         Set<VariableDescriptor> vars = gm.getVariableDescriptors();
         List<Long> matches = new ArrayList<>();
         List<String> criterias = new ArrayList<>(Arrays.asList(criteria.trim().split("[ ,]+")));

@@ -21,8 +21,10 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
@@ -830,32 +832,32 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
-        return this.getAssociatedWritePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
     @Override
-    public String getRequieredReadPermission() {
-        return this.getAssociatedReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
     }
 
     @Override
-    public String getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission() {
         if (this.getStatus() == Status.PLAY) {
-            return Role.TRAINER_PERM;
+            return WegasMembership.TRAINER;
         } else {
-            return Role.SCENARIST_PERM;
+            return WegasMembership.SCENARIST;
         }
     }
 
     @Override
-    public String getAssociatedReadPermission() {
-        return "GameModel-Read-" + this.getId();
+    public WegasPermission getAssociatedReadPermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAMEMODEL);
     }
 
     @Override
-    public String getAssociatedWritePermission() {
-        return "GameModel-Write-" + this.getId();
+    public WegasPermission getAssociatedWritePermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
     }
 
     /**

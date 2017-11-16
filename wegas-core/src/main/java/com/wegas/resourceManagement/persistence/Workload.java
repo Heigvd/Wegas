@@ -12,8 +12,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasPermission;
 import java.io.Serializable;
+import java.util.Collection;
+import javax.persistence.*;
 
 /**
  * PMG Related !
@@ -120,12 +122,12 @@ public class Workload extends AbstractEntity implements Serializable {
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getIteration().getRequieredUpdatePermission();
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getIteration().getRequieredReadPermission();
     }
 }

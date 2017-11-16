@@ -18,11 +18,11 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
-import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.*;
 
 /**
@@ -32,7 +32,10 @@ import javax.persistence.*;
 @JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
     @Index(columnList = "choiceinstance_id"),
-    @Index(columnList = "replies_id")
+    @Index(columnList = "result_id")
+})
+@NamedQueries({
+    @NamedQuery(name = "Reply.findByResultId", query = "SELECT r FROM Reply r WHERE r.result.id = :resultId")
 })
 public class Reply extends AbstractEntity implements DatedEntity {
 
@@ -68,7 +71,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
      *
      */
     @ManyToOne(optional = false)
-    private Replies replies;
+    private Result result;
 
     @Transient
     private String resultName;
@@ -217,17 +220,16 @@ public class Reply extends AbstractEntity implements DatedEntity {
      */
     @JsonIgnore
     public Result getResult() {
-        return replies.getResult();
+        return result;
     }
 
     public void setResult(Result r) {
-        this.replies = r.getReplies();
+        this.result = r;
         this.setResultName(null);
         this.setChoiceName(null);
     }
 
     public String getAnswer() {
-        Result result = this.getResult();
         if (result != null) {
             return result.getAnswer();
         } else {
@@ -240,7 +242,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
     }
 
     public String getIgnorationAnswer() {
-        Result result = this.getResult();
         if (result != null) {
             return result.getIgnorationAnswer();
         } else {
@@ -253,7 +254,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
     }
 
     public List<String> getFiles() {
-        Result result = this.getResult();
         if (result != null) {
             return result.getFiles();
         } else {
@@ -265,18 +265,8 @@ public class Reply extends AbstractEntity implements DatedEntity {
         // Make Jackson happy
     }
 
-    @JsonIgnore
-    public Replies getReplies() {
-        return replies;
-    }
-
-    public void setReplies(Replies replies) {
-        this.replies = replies;
-    }
-
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
-        QuestionDescriptorFacade qF = beans.getQuestionDescriptorFacade();
         VariableInstanceFacade vif = beans.getVariableInstanceFacade();
         ChoiceInstance cInst = this.getChoiceInstance();
         if (cInst != null) {
@@ -286,7 +276,8 @@ public class Reply extends AbstractEntity implements DatedEntity {
             }
         }
 
-        /* FrontiedLand : TBR */
+        /*
+        QuestionDescriptorFacade qF = beans.getQuestionDescriptorFacade();
         Result theResult = this.getResult();
         if (theResult != null) {
             theResult = qF.findResult(theResult.getId());
@@ -294,17 +285,17 @@ public class Reply extends AbstractEntity implements DatedEntity {
                 theResult.removeReply(this);
             }
         }
-
+         */
         super.updateCacheOnDelete(beans);
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getChoiceInstance().getRequieredUpdatePermission();
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getChoiceInstance().getRequieredReadPermission();
     }
 }

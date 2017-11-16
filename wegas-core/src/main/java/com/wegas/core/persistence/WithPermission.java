@@ -8,6 +8,8 @@
 package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 
 /**
  *
@@ -26,15 +28,15 @@ public interface WithPermission {
      * @return
      */
     @JsonIgnore
-    String getRequieredCreatePermission();
+    Collection<WegasPermission> getRequieredCreatePermission();
 
     @JsonIgnore
-    String getRequieredDeletePermission();
+    Collection<WegasPermission> getRequieredDeletePermission();
 
     @JsonIgnore
-    String getRequieredReadPermission();
+    Collection<WegasPermission> getRequieredReadPermission();
 
     @JsonIgnore
-    String getRequieredUpdatePermission();
+    Collection<WegasPermission> getRequieredUpdatePermission();
 
 }

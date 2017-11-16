@@ -8,7 +8,9 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -67,17 +69,17 @@ public class GameTeams extends AbstractEntity {
     }
 
     @Override
-    public String getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission() {
         return game.getRequieredCreatePermission();
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return game.getRequieredReadPermission();
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         /* CASE one: a closed game prevent player to leave
         switch (game.getAccess()) {
             case OPEN:
@@ -91,7 +93,7 @@ public class GameTeams extends AbstractEntity {
     }
 
     @Override
-    public String getRequieredDeletePermission() {
+    public Collection<WegasPermission> getRequieredDeletePermission() {
         return game.getRequieredDeletePermission();
     }
 

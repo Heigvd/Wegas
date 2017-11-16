@@ -17,8 +17,10 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -294,13 +296,13 @@ public class GameAdmin extends AbstractEntity {
     }
 
     @Override
-    public String getRequieredCreatePermission() {
-        return Role.TRAINER_PERM;
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        return WegasMembership.TRAINER;
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
-        return Role.ADMIN_PERM;
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasMembership.ADMIN;
     }
 
     //

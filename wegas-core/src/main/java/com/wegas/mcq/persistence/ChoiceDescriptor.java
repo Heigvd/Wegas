@@ -7,26 +7,26 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.Helper;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.ListUtils.Updater;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.Scripted;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 
 /**
  *
@@ -114,10 +114,13 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                      * Since orphanRemoval does not trigger preRemove event,
                      * one should update bidirectional relation here in adition to Result.updateCacheOnDelete
                      */
-                    Result resultToRemove = (Result) entity;
-                    for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
-                        ci.setCurrentResult(null);
+                    if (entity instanceof Result) {
+                        Result resultToRemove = (Result) entity;
+                        resultToRemove.updateCacheOnDelete(beans);
                     }
+                    /*for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
+                        ci.setCurrentResult(null);
+                    }*/
                 }
             }));
 
@@ -175,15 +178,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     public void changeCurrentResult(ChoiceInstance choiceInstance, Result newCurrentResult) {
-        Result previousResult = choiceInstance.getCurrentResult();
-        if (previousResult != null) {
+        //Result previousResult = choiceInstance.getCurrentResult();
+        /*if (previousResult != null) {
             previousResult.removeChoiceInstance(choiceInstance);
-        }
+        }*/
 
-        if (newCurrentResult != null) {
+ /*if (newCurrentResult != null) {
             newCurrentResult.addChoiceInstance(choiceInstance);
-        }
-
+        }*/
         choiceInstance.setCurrentResult(newCurrentResult);
     }
 
@@ -260,6 +262,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * @param results the results to set
      */
     public void setResults(List<Result> results) {
+        if (results != null) {
+            for (Result r : results) {
+                r.setChoiceDescriptor(this);
+            }
+        }
         this.results = results;
     }
 

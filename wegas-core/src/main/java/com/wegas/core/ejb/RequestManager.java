@@ -33,6 +33,9 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -147,7 +150,7 @@ public class RequestManager implements RequestManagerI {
 
     private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
 
-    private Collection<String> grantedPermissions = new HashSet<>();
+    private Collection<WegasPermission> grantedPermissions = new HashSet<>();
     private Collection<String> effectiveDBPermissions;
     private Collection<String> effectiveRoles;
 
@@ -906,11 +909,9 @@ public class RequestManager implements RequestManagerI {
             if (superPermission) {
                 return hasDirectGameModelEditPermission(gameModel);
             } else {
-                if (this.hasRole("Scenarist") && (this.isPermitted("GameModel:Instantiate:gm" + id) || this.isPermitted("GameModel:Duplicate:gm" + id))) {
-                    //For scenarist, instantiate and duplicate means read
-                    return true;
-                } else if (this.hasRole("Trainer") && this.isPermitted("GameModel:Instantiate:gm" + id)) {
-                    //For trainer, instantiate means read
+                if ((this.hasRole("Trainer") || this.hasRole("Scenarist"))
+                        && (this.isPermitted("GameModel:Instantiate:gm" + id) || this.isPermitted("GameModel:Duplicate:gm" + id))) {
+                    //For scenarist and trainer, instantiate and duplicate means read
                     return true;
                 }
                 // fallback: View means View
@@ -928,67 +929,58 @@ public class RequestManager implements RequestManagerI {
      *
      * @return true if current user has access to
      */
-    private boolean hasPermission(String type, String arg, boolean superPermission) {
-        //Make sure to have up to date user
-        this.getCurrentUser();
-
-        if (this.hasRole("Administrator")) {
-            return true;
-        } else if ("Role".equals(type)) {
-            return this.hasRole(arg);
-        } else {
-            Long id = Long.parseLong(arg);
-
-            if ("GameModel".equals(type)) {
-
-                GameModel gameModel = gameModelFacade.find(id);
-                return this.hasGameModelPermission(gameModel, superPermission);
-            } else if ("Game".equals(type)) {
-                Game game = gameFacade.find(id);
-                return this.hasGamePermission(game, superPermission);
-            } else if ("Team".equals(type)) {
-
-                Team team = teamFacade.find(id);
-
+    private boolean hasEntityPermission(WegasEntityPermission perm) {
+        getCurrentUser();
+        switch (perm.getType()) {
+            case GAMEMODEL:
+                GameModel gameModel = gameModelFacade.find(perm.getId());
+                return this.hasGameModelPermission(gameModel, perm.getLevel() == WegasEntityPermission.Level.WRITE);
+            case GAME:
+                Game game = gameFacade.find(perm.getId());
+                return this.hasGamePermission(game, perm.getLevel() == WegasEntityPermission.Level.WRITE);
+            case TEAM:
+                Team team = teamFacade.find(perm.getId());
                 return team != null && ((currentUser != null && (playerFacade.isInTeam(team.getId(), currentUser.getId()) // Current logged User is linked to a player who's member of the team
                         || currentUser.equals(team.getCreatedBy()) // or current user is the team creator
                         )
-                        || this.hasGamePermission(team.getGame(), superPermission))); // or read (or write for superP) right one the game
-
-            } else if ("Player".equals(type)) {
-                Player player = playerFacade.find(id);
-
+                        || this.hasGamePermission(team.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE))); // or read (or write for superP) right one the game
+            case PLAYER:
+                Player player = playerFacade.find(perm.getId());
                 // Current player belongs to current user || current user is the teacher or scenarist (test user)
-                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || this.hasGamePermission(player.getGame(), superPermission));
-            } else if ("User".equals(type)) {
-                User find = userFacade.find(id);
+                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || this.hasGamePermission(player.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE));
+            case USER:
+                User find = userFacade.find(perm.getId());
                 return currentUser != null && currentUser.equals(find);
-            }
+            default:
+                return false;
         }
-        return false;
+    }
+
+    private boolean isMemberOf(WegasMembership perm) {
+        return this.hasRole(perm.getName());
     }
 
     /**
      * can current user subscribe to given channel ?
      *
-     * @param permission Role-<rolename> | ((User|Player|Team|Game|GameModel) - (Read | Write) - <entityId>)
+     *
+     * @param permission
      *
      * @return true if access granted
      */
-    public boolean hasPermission(String permission) {
+    public boolean hasPermission(WegasPermission permission) {
+
         if (permission != null) {
             if (grantedPermissions.contains(permission)) {
                 log(" WAS ALREADY GRANTED");
                 return true;
             } else {
 
-                String[] split = permission.split("-");
-
-                if (split.length == 3) {
-                    if (hasPermission(split[0], split[2], split[1].contains("Write"))) {
-                        log(" >>> GRANT: {}", permission);
-                        grantedPermissions.add(permission);
-                    }
+                this.getCurrentUser();
+                if (hasRole("Administrator") || permission instanceof WegasMembership && this.isMemberOf((WegasMembership) permission)
+                        || permission instanceof WegasEntityPermission && this.hasEntityPermission((WegasEntityPermission) permission)) {
+                    log(" >>> GRANT: {}", permission);
+                    grantedPermissions.add(permission);
                 }
                 return grantedPermissions.contains(permission);
             }
@@ -998,15 +990,14 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    private boolean userHasPermission(String permissions, String type, AbstractEntity entity) {
+    public boolean hasAnyPermission(Collection<WegasPermission> permissions) {
         // null means no permission required
         if (permissions != null) {
             /*
              * not null value means at least one permission from the list.
              * Hence, empty string "" means forbidden, even for admin
              */
-            String perms[] = this.split(permissions);
-            for (String perm : perms) {
+            for (WegasPermission perm : permissions) {
                 if (this.hasPermission(perm)) {
                     return true;
                 }
@@ -1017,14 +1008,14 @@ public class RequestManager implements RequestManagerI {
         return true;
     }
 
-    private void assertUserHasPermission(String permissions, String type, AbstractEntity entity) {
+    private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, AbstractEntity entity) {
         log("HAS  PERMISSION: {} / {} / {}", type, permissions, entity);
         logIndent++;
-        if (!userHasPermission(permissions, type, entity)) {
+        if (!hasAnyPermission(permissions)) {
             String msg = type + " Permission Denied (" + permissions + ") for user " + this.getCurrentUser() + " on entity " + entity;
             Helper.printWegasStackTrace(new Exception(msg));
             log(msg);
-            throw new WegasAccessDenied(entity, type, permissions, this.getCurrentUser());
+            throw new WegasAccessDenied(entity, type, msg, this.getCurrentUser());
         }
         logIndent--;
     }
@@ -1103,7 +1094,16 @@ public class RequestManager implements RequestManagerI {
 
             Matcher m = p.matcher(channel);
             if (m.find()) {
-                return this.hasPermission(m.group(2), m.group(3), false);
+                if (m.group(2).equals("Role")) {
+                    // e.g. private-Role-Administrator
+                    return this.isMemberOf(new WegasMembership(m.group(3)));
+                } else {
+                    return this.hasEntityPermission(
+                            new WegasEntityPermission(
+                                    Long.parseLong(m.group(3)),
+                                    WegasEntityPermission.Level.READ,
+                                    WegasEntityPermission.EntityType.valueOf(m.group(2).toUpperCase())));
+                }
             }
         }
         return false;
@@ -1151,7 +1151,7 @@ public class RequestManager implements RequestManagerI {
             Subject subject = SecurityUtils.getSubject();
 
             if (subject.getPrincipal() != null) {
-                logger.info("SU: User {} SU to {}", subject.getPrincipal(), accountId);
+                logger.error("SU: User {} SU to {}", subject.getPrincipal(), accountId);
                 if (this.isAdmin()) {
                     // The subject exists and is an authenticated admin
                     // -> Shiro runAs
@@ -1184,7 +1184,7 @@ public class RequestManager implements RequestManagerI {
         b.authenticated(true).principals(newSubject);
 
         Subject buildSubject = b.buildSubject();
-        logger.info("SU: No-User SU to {}, {}", buildSubject.getPrincipal(), Thread.currentThread());
+        logger.error("SU: No-User SU to {}, {}", buildSubject.getPrincipal(), Thread.currentThread());
 
         ThreadContext.bind(buildSubject);
 
@@ -1195,10 +1195,10 @@ public class RequestManager implements RequestManagerI {
         try {
             Subject subject = SecurityUtils.getSubject();
             if (subject.isRunAs()) {
-                logger.info("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
+                logger.error("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
                 subject.releaseRunAs();
             } else {
-                logger.info("Su-Exit LOGOUT");
+                logger.error("Su-Exit LOGOUT");
                 subject.logout();
             }
             this.getCurrentUser();
@@ -1213,9 +1213,11 @@ public class RequestManager implements RequestManagerI {
      *
      * @return
      */
-    public static RequestManager lookup() {
+    public static RequestManager
+            lookup() {
         try {
-            return Helper.lookupBy(RequestManager.class);
+            return Helper.lookupBy(RequestManager.class
+            );
         } catch (NamingException ex) {
             return null;
         }

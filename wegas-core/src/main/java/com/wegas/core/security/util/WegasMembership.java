@@ -7,25 +7,57 @@
  */
 package com.wegas.core.security.util;
 
+import java.util.Collection;
+import java.util.Objects;
+
 /**
  *
  * @author maxence
  */
 public class WegasMembership extends WegasPermission {
 
-    private final GroupName name;
+    private final String name;
 
-    public WegasMembership(GroupName name) {
+    public WegasMembership(String name) {
         this.name = name;
     }
 
-    public GroupName getName() {
+    public String getName() {
         return name;
     }
 
-    public static enum GroupName {
-        ADMINISTRATOR,
-        TRAINER,
-        SCENARIST
+    @Override
+    public String toString() {
+        return "MemberOf-" + getName();
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WegasMembership other = (WegasMembership) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
+    }
+
+
+    public static final Collection<WegasPermission> ADMIN = WegasPermission.getAsCollection(new WegasMembership("Administrator"));
+    public static final Collection<WegasPermission> TRAINER = WegasPermission.getAsCollection(new WegasMembership("Trainer"), new WegasMembership("Scenarist"));
+    public static final Collection<WegasPermission> SCENARIST = WegasPermission.getAsCollection(new WegasMembership("Scenarist"));
 }

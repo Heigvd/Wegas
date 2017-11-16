@@ -21,8 +21,10 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import org.eclipse.persistence.annotations.Cache;
@@ -235,19 +237,19 @@ public abstract class AbstractEntity implements Serializable, Cloneable, WithPer
      */
     @JsonIgnore
     @Override
-    public String getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission() {
         return this.getRequieredUpdatePermission();
     }
 
     @JsonIgnore
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getRequieredUpdatePermission();
     }
 
     @JsonIgnore
     @Override
-    public String getRequieredDeletePermission() {
+    public Collection<WegasPermission> getRequieredDeletePermission() {
         return this.getRequieredUpdatePermission();
     }
 

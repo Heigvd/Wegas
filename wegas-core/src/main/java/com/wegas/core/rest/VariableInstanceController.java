@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
+
 @Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -89,12 +90,7 @@ public class VariableInstanceController {
     public Collection<VariableInstance> getByIds(@PathParam("gameModelId") Long gameModelId, List<Long> ids) {
         Collection<VariableInstance> instances = new ArrayList<>();
         for (Long id : ids) {
-            VariableInstance instance = variableInstanceFacade.find(id);
-
-            // useless test ?
-            if (requestManager.hasPermission(instance.getRequieredReadPermission())) {
-                instances.add(instance);
-            }
+            instances.add(variableInstanceFacade.find(id));
         }
         return instances;
     }

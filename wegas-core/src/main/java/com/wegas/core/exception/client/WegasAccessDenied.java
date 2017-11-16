@@ -24,8 +24,8 @@ public class WegasAccessDenied extends WegasRuntimeException {
     private String mode;
     private User user;
 
-    public WegasAccessDenied(AbstractEntity entity, String mode, String permissions, User user) {
-        super(mode + " Permission Denied (" + permissions + ") for user " + user + " on entity " + entity);
+    public WegasAccessDenied(AbstractEntity entity, String mode, String msg, User user) {
+        super(msg);
         this.entity = entity;
         this.mode = mode;
         this.user = user;

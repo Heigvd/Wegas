@@ -22,6 +22,8 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -289,12 +291,12 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getVariableDescriptor().getGameModel().getRequieredUpdatePermission();
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getVariableDescriptor().getGameModel().getRequieredReadPermission();
     }
 

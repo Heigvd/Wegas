@@ -21,6 +21,7 @@ import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.messaging.persistence.InboxInstance;
@@ -29,6 +30,7 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -645,49 +647,51 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         if (this.getScope() == null) {
             // Default Instance is only editable with edit permission on Descriptor
             return this.getDefaultDescriptor().getRequieredUpdatePermission();
         } else {
             if (this.getTeamScope() != null || this.getPlayerScope() != null) {
-                return this.getEffectiveOwner().getAssociatedWritePermission();
+                return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedWritePermission());
             } else if (this.getGameScope() != null || this.getGameModelScope() != null) {
-                return this.getEffectiveOwner().getAssociatedReadPermission();
+                return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedReadPermission());
             }
         }
 
-        return "";
+        return WegasPermission.FORBIDDEN;
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         if (this.getScope() == null) {
             return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
         } else {
+            WegasPermission perm;
             if (this.getTeam() != null) {
                 if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
-                    return this.getTeam().getGame().getAssociatedReadPermission();
+                    perm = this.getTeam().getGame().getAssociatedReadPermission();
                 } else {
-                    return this.getTeam().getAssociatedWritePermission();
+                    perm = this.getTeam().getAssociatedWritePermission();
                 }
             } else if (this.getPlayer() != null) {
                 if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
-                    return this.getPlayer().getTeam().getAssociatedWritePermission();
+                    perm = this.getPlayer().getTeam().getAssociatedWritePermission();
                 } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
-                    return this.getPlayer().getGame().getAssociatedReadPermission();
+                    perm =  this.getPlayer().getGame().getAssociatedReadPermission();
                 } else {
-                    return this.getPlayer().getAssociatedWritePermission();
+                    perm = this.getPlayer().getAssociatedWritePermission();
                 }
             } else if (this.getGame() != null) {
-                return this.getGame().getAssociatedReadPermission();
+                perm = this.getGame().getAssociatedReadPermission();
             } else if (this.gameModelScope != null) {
                 // this.getGameModel().getChannel();
-                return this.getGameModelScope().getVariableDescriptor().getGameModel().getAssociatedReadPermission();
+                perm = this.getGameModelScope().getVariableDescriptor().getGameModel().getAssociatedReadPermission();
             } else {
                 // Default instance
                 return null;
             }
+            return WegasPermission.getAsCollection(perm);
         }
     }
 }

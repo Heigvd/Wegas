@@ -17,7 +17,9 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.*;
 
@@ -214,12 +216,12 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getState().getRequieredUpdatePermission();
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getState().getRequieredReadPermission();
     }
 }

@@ -16,6 +16,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
 import javax.persistence.*;
 
@@ -296,17 +297,17 @@ public abstract class AbstractAccount extends AbstractEntity {
     }
 
     @Override
-    public String getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission() {
         return null;
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getUser().getRequieredUpdatePermission();
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getUser().getRequieredReadPermission();
     }
 

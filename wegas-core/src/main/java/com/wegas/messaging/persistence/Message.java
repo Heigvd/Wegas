@@ -7,19 +7,21 @@
  */
 package com.wegas.messaging.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.NamedEntity;
-import com.wegas.core.rest.util.Views;
-import java.util.Date;
-import java.util.List;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.*;
 
 /**
  *
@@ -369,12 +371,12 @@ public class Message extends NamedEntity implements DatedEntity {
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getInboxInstance().getRequieredUpdatePermission();
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getInboxInstance().getRequieredReadPermission();
     }
 }

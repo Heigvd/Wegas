@@ -19,6 +19,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -132,6 +133,34 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     }
 
     /**
+     * Fetch all ChoiceInstance which have result as currentResult
+     *
+     * @param result
+     *
+     * @return
+     */
+    public Collection<ChoiceInstance> getChoiceInstancesByResult(Result result) {
+        TypedQuery<ChoiceInstance> query = this.getEntityManager().createNamedQuery("ChoiceInstance.findByResultId", ChoiceInstance.class);
+        query.setParameter("resultId", result.getId());
+
+        return query.getResultList();
+    }
+
+    /**
+     * Manually cascade result deletion to replies which references the result
+     *
+     * @param result
+     */
+    public void cascadeDelete(Result result) {
+        TypedQuery<Reply> query = this.getEntityManager().createNamedQuery("Reply.findByResultId", Reply.class);
+        query.setParameter("resultId", result.getId());
+        List<Reply> repliesToRemove = query.getResultList();
+        for (Reply r : repliesToRemove) {
+            this.getEntityManager().remove(r);
+        }
+    }
+
+    /**
      * @param event
      */
     public void instanceRevivedEvent(@Observes InstanceRevivedEvent event) {
@@ -164,7 +193,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             for (Reply r : choiceInstance.getReplies()) {
                 try {
                     Result result = findResult(choice, r.getResultName());
-                    result.addReply(r);
+                    //result.addReply(r);
                     r.setResult(result);
                 } catch (WegasNoResultException ex) {
                     logger.error("NO SUCH RESULT ! ");
@@ -222,7 +251,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             reply.setStartTime(startTime);
         }
         Result result = choice.getInstance(player).getResult();
-        result.addReply(reply);
+        //result.addReply(reply);
         reply.setResult(result);
         choiceInstance.addReply(reply);
         this.getEntityManager().persist(reply);
@@ -378,11 +407,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         //}
         return reply;
     }
-    
+
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Reply TX_selectAndValidateChoice(Long choiceId, Long playerId) {
         return this.selectAndValidateChoice(choiceId, playerId);
     }
+
     /**
      *
      * @param player player who wants to cancel the reply

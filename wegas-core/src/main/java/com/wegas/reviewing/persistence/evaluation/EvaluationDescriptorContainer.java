@@ -14,8 +14,10 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -131,12 +133,12 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getEffectiveDescriptor().getRequieredUpdatePermission();
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getEffectiveDescriptor().getRequieredReadPermission();
     }
 }

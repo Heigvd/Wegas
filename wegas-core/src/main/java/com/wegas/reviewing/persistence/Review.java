@@ -13,6 +13,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.*;
 import javax.persistence.*;
@@ -259,7 +260,7 @@ public class Review extends AbstractEntity implements DatedEntity {
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         ReviewState effState;
         effState = initialState != null ? initialState : getReviewState();
 
@@ -281,8 +282,10 @@ public class Review extends AbstractEntity implements DatedEntity {
     }
 
     @Override
-    public String getRequieredReadPermission() {
-        return this.getAuthor().getRequieredReadPermission() + "," + this.getReviewer().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        ArrayList<WegasPermission> p = new ArrayList<>(this.getAuthor().getRequieredReadPermission());
+        p.addAll(this.getReviewer().getRequieredReadPermission());
+        return p;
     }
 
     @Override

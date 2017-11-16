@@ -21,7 +21,10 @@ import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -453,35 +456,35 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     @Override
-    public String getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission() {
         return null;
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         // ?? strange, should be either this.getChannel() to have a very incognito mode
         // but, with broadcastScope, should be GameModel.Read, nope ? TBT
         return this.getTeam().getRequieredReadPermission();
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
-        return this.getAssociatedWritePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
     @Override
-    public String getRequieredDeletePermission() {
+    public Collection<WegasPermission> getRequieredDeletePermission() {
         // One must have the right to delete its own team from the game
         return this.getGame().getGameTeams().getRequieredUpdatePermission();
     }
 
     @Override
-    public String getAssociatedReadPermission() {
-        return "Player-Read-" + this.getId();
+    public WegasPermission getAssociatedReadPermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.PLAYER);
     }
 
     @Override
-    public String getAssociatedWritePermission() {
-        return "Player-Write-" + this.getId();
+    public WegasPermission getAssociatedWritePermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.PLAYER);
     }
 }

@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
 import javax.persistence.*;
 import org.eclipse.persistence.config.CacheUsage;
@@ -37,10 +39,6 @@ import org.eclipse.persistence.config.QueryHints;
 public class Role extends AbstractEntity implements PermissionOwner {
 
     private static final long serialVersionUID = 1L;
-
-    public static final String ADMIN_PERM = "Role-MemberOf-Administrator";
-    public static final String SCENARIST_PERM = "Role-MemberOf-Scenarist";
-    public static final String TRAINER_PERM = "Role-MemberOf-Trainer,Role-MemberOf-Scenarist";
 
     /**
      *
@@ -241,12 +239,12 @@ public class Role extends AbstractEntity implements PermissionOwner {
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
-        return Role.ADMIN_PERM;
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasMembership.ADMIN;
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return null;
     }
 }

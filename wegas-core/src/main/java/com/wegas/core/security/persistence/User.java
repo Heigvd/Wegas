@@ -14,6 +14,9 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
 import javax.persistence.*;
 
@@ -46,6 +49,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     private List<Player> players = new ArrayList<>();
 
     @JsonIgnore
+
     @OneToMany(mappedBy = "createdBy", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH} /*, orphanRemoval = true */)
     private List<Team> teams = new ArrayList<>();
 
@@ -234,18 +238,21 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
-        return "User-Write-" + this.getId() + ","
-                + Role.TRAINER_PERM; // why ? maybe to share game/gameModel
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        Collection<WegasPermission> p = WegasPermission.getAsCollection(
+                new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.USER)
+        );
+        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel
+        return p;
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return null;
     }
 
     @Override
-    public String getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission() {
         //Sign-Up
         return null;
     }

@@ -53,6 +53,7 @@ abstract public class PMGameAbstractTest extends AbstractTest {
         //guestLogin();
         this.createGameModelFromFileWithScript(this.getGameModelPath(), scripts);
         this.initTime = System.currentTimeMillis();
+        requestManager.clearEntities();
     }
 
     @After

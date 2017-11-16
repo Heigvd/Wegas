@@ -14,6 +14,9 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import javax.persistence.*;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
@@ -173,7 +176,7 @@ public class Permission extends AbstractEntity {
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         String[] split = this.getValue().split(":");
 
         if (split.length == 3) {
@@ -197,11 +200,11 @@ public class Permission extends AbstractEntity {
                     }
             }
         }
-        return Role.ADMIN_PERM;
+        return WegasMembership.ADMIN;
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return null;
     }
 }

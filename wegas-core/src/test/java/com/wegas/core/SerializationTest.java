@@ -67,7 +67,6 @@ import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.junit.After;
 import static org.junit.Assert.*;
@@ -269,7 +268,7 @@ public class SerializationTest {
         Reply reply = new Reply();
         choiceI.addReply(reply);
         reply.setChoiceInstance(choiceI);
-        result11.addReply(reply);
+        //result11.addReply(reply);
         reply.setResult(result11);
 
         assertPropertyEquals(mapper.writeValueAsString(questionD), "@class", "QuestionDescriptor");

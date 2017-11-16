@@ -7,6 +7,8 @@
  */
 package com.wegas.core.security.util;
 
+import java.util.Objects;
+
 /**
  *
  * @author maxence
@@ -33,6 +35,44 @@ public class WegasEntityPermission extends WegasPermission {
 
     public Level getLevel() {
         return level;
+    }
+
+    @Override
+    public String toString() {
+        return getType() + "-" + getLevel() + "-" + getId();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.id);
+        hash = 29 * hash + Objects.hashCode(this.level);
+        hash = 29 * hash + Objects.hashCode(this.type);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WegasEntityPermission other = (WegasEntityPermission) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (this.level != other.level) {
+            return false;
+        }
+        if (this.type != other.type) {
+            return false;
+        }
+        return true;
     }
 
     public static enum Level {

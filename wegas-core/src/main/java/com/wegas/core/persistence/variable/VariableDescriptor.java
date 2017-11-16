@@ -29,6 +29,7 @@ import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
@@ -38,6 +39,7 @@ import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +126,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     @JsonIgnore
     @Transient
-    private Beanjection beans;
+    protected Beanjection beans;
 
     /**
      *
@@ -620,6 +622,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.beans = beanjection;
     }
 
+
+
     private VariableDescriptorFacade getVariableDescriptorFacade() { // SEE UPDATE SCOPE IN MERGE
         if (this.beans != null && this.beans.getVariableDescriptorFacade() != null) {
             return this.beans.getVariableDescriptorFacade();
@@ -633,12 +637,12 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     @Override
-    public String getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getGameModel().getRequieredReadPermission();
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getGameModel().getRequieredUpdatePermission();
     }
 }

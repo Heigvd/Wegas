@@ -72,7 +72,7 @@ public class WebsocketFacade {
     private final Boolean maintainLocalListUpToDate;
 
     public final static String GLOBAL_CHANNEL = "global-channel";
-    public final static String ADMIN_CHANNEL = "private-Role-Admin";
+    public final static String ADMIN_CHANNEL = "private-Role-Administrator";
 
     public static final Pattern USER_CHANNEL_PATTERN = Pattern.compile(Helper.USER_CHANNEL_PREFIX + "(\\d+)");
     public static final Pattern PRIVATE_CHANNEL_PATTERN = Pattern.compile("private-(User|Player|Team|Game|GameModel)-(\\d+)");
@@ -488,8 +488,7 @@ public class WebsocketFacade {
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
         }
         if (channel.startsWith("private")) {
-            boolean hasPermission = requestManager.hasChannelPermission(channel);
-            if (hasPermission) {
+            if (requestManager.hasChannelPermission(channel)){
                 return pusher.authenticate(socketId, channel);
             }
         }

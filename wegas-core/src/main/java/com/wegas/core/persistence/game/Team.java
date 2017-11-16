@@ -16,7 +16,10 @@ import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -405,7 +408,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @Override
-    public String getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
         /*
          * since a player should be able to join a team by itself
          * restricting update permission is not possible.
@@ -414,26 +417,26 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
          * A player should be able to create a team and a team member should be able 
          * to invite other players in the team. Such behaviour allow to set an updatePermission
          */
-        return this.getAssociatedReadPermission();
+        return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
     }
 
     @Override
-    public String getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission() {
         switch (this.getGame().getAccess()) {
             case OPEN:
                 return null; // everybody can register en new team
             default:
-                return ""; // nobody can create
+                return WegasPermission.getAsCollection(); // nobody can create
         }
     }
 
     @Override
-    public String getAssociatedReadPermission() {
-        return "Team-Read-" + this.getId();
+    public WegasPermission getAssociatedReadPermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.TEAM);
     }
 
     @Override
-    public String getAssociatedWritePermission() {
-        return "Team-Write-" + this.getId();
+    public WegasPermission getAssociatedWritePermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.TEAM);
     }
-                                   }
+}
