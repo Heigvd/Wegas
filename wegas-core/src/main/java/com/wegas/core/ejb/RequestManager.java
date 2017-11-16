@@ -1156,7 +1156,7 @@ public class RequestManager implements RequestManagerI {
             Subject subject = SecurityUtils.getSubject();
 
             if (subject.getPrincipal() != null) {
-                logger.error("SU: User {} SU to {}", subject.getPrincipal(), accountId);
+                logger.info("SU: User {} SU to {}", subject.getPrincipal(), accountId);
                 if (this.isAdmin()) {
                     // The subject exists and is an authenticated admin
                     // -> Shiro runAs
@@ -1189,7 +1189,7 @@ public class RequestManager implements RequestManagerI {
         b.authenticated(true).principals(newSubject);
 
         Subject buildSubject = b.buildSubject();
-        logger.error("SU: No-User SU to {}, {}", buildSubject.getPrincipal(), Thread.currentThread());
+        logger.info("SU: No-User SU to {}, {}", buildSubject.getPrincipal(), Thread.currentThread());
 
         ThreadContext.bind(buildSubject);
 
@@ -1200,10 +1200,10 @@ public class RequestManager implements RequestManagerI {
         try {
             Subject subject = SecurityUtils.getSubject();
             if (subject.isRunAs()) {
-                logger.error("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
+                logger.info("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
                 subject.releaseRunAs();
             } else {
-                logger.error("Su-Exit LOGOUT");
+                logger.info("Su-Exit LOGOUT");
                 subject.logout();
             }
             this.getCurrentUser();
