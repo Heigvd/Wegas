@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta name="theme-color" content="#000000"/>
     <title>#{editorGameController.currentGameModel.name}</title>
+    <h:outputStylesheet>
+        html, body, #root {
+            margin: 0;
+            height: 100%;
+        }
+    </h:outputStylesheet>
     <link rel="icon" type="image/ico" href="../favicon.ico"/>
 </h:head>
 <h:body>
@@ -14,16 +20,15 @@
     <script type="application/javascript">
         var API_ENDPOINT = "#{request.contextPath}" + "/rest/";
         var CurrentUser = #{requestController.currentUser.toJsonWithView("Index")};
-        var CurrentGM =
-            #{editorGameController.currentGameModel.toJsonWithView("Editor")};
+        var CurrentGM = #{editorGameController.currentGameModel.toJsonWithView("Editor")};
         var CurrentGame = #{editorGameController.currentGame.toJsonWithView("Editor")};
         var CurrentPlayerId = #{editorGameController.currentPlayer.id};
-        var CurrentTeamId = #{editorGameController.currentPlayer.team.id}
+        var CurrentTeamId = #{editorGameController.currentPlayer.team.id};
         var PusherApp = {
             authEndpoint: API_ENDPOINT + "Pusher/auth",
             applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}",
             cluster: "#{editorGameController.getWegasProperty('pusher.cluster')}"
-        }
+        };
     </script>
     <ui:fragment rendered="#{requestController.debugMode()}">
         <script type="application/javascript" src="/dist/manifest.js"/>
