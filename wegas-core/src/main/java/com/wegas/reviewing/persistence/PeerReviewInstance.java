@@ -11,14 +11,15 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
-
+import com.wegas.core.security.util.WegasPermission;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
 
 /**
  * Instance of the PeerReviewDescriptor variable Author:<br />
@@ -133,5 +134,19 @@ public class PeerReviewInstance extends VariableInstance {
                 throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
             }
         }
+    }
+
+    private Collection<WegasPermission> super_getRequieredReadPermission() {
+        return super.getRequieredReadPermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        Collection<WegasPermission> ps = super.getRequieredReadPermission();
+        // reviewer also have right to read
+        for (Review r : getReviewed()) {
+            ps.addAll(r.getReviewer().super_getRequieredReadPermission()); // avoid infinite loop
+        }
+        return ps;
     }
 }
