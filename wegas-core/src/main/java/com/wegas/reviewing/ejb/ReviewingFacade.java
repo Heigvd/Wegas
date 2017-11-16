@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFacadeI{
+public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(ReviewingFacade.class);
 
@@ -117,9 +117,10 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     /**
      *
      * @param prd
+     *
      * @return
      */
-    private List<PeerReviewInstance> getInstances(PeerReviewDescriptor prd){
+    private List<PeerReviewInstance> getInstances(PeerReviewDescriptor prd) {
         return new ArrayList(variableDescriptorFacade.getInstances(prd).values());
     }
 
@@ -460,6 +461,8 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
      * Reviewing phase is over -> authors will be able to see feedbacks
      *
      * @param prd the PeerReviewDescriptor
+     *
+     * @return
      */
     public List<PeerReviewInstance> notify(PeerReviewDescriptor prd) {
         List<PeerReviewInstance> pris = this.getInstances(prd);
@@ -569,10 +572,34 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
                 VariableDescriptor toReview = variableDescriptorFacade.find(gameModel, toReviewName);
 
                 reviewD.setToReview(toReview);
+
+                assertScopesAreValid(reviewD);
             } catch (WegasNoResultException ex) {
                 logger.error("Failed te revive ReviewDescriptor", ex);
                 reviewD.setToReview(null);
             }
+        } else if (event.getEntity() instanceof PeerReviewInstance) {
+            PeerReviewInstance reviewI = (PeerReviewInstance) event.getEntity();
+            PeerReviewDescriptor prd = (PeerReviewDescriptor) reviewI.findDescriptor();
+            this.assertScopesAreValid(prd);
         }
+
+    }
+
+    private void assertScopesAreValid(PeerReviewDescriptor prd) {
+
+        VariableDescriptor toReview = prd.getToReview();
+
+        AbstractScope rScope = prd.getScope();
+        AbstractScope vScope = toReview.getScope();
+        if (rScope instanceof GameModelScope || rScope instanceof GameScope) {
+            throw WegasErrorMessage.error("GameModel/Game Scope is forbidden for " + prd);
+        }
+        if (rScope instanceof TeamScope) {
+            if (vScope instanceof PlayerScope) {
+                throw WegasErrorMessage.error("Reviewed variable " + toReview + " scope is too scpecific");
+            }
+        }
+
     }
 }
