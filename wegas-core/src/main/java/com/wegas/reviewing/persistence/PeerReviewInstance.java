@@ -10,6 +10,7 @@ package com.wegas.reviewing.persistence;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
@@ -134,6 +135,11 @@ public class PeerReviewInstance extends VariableInstance {
                 throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
             }
         }
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getReviewingFacade().revivePeerReviewInstance(this);
     }
 
     private Collection<WegasPermission> super_getRequieredReadPermission() {

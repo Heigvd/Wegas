@@ -16,12 +16,15 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,6 +42,9 @@ import org.eclipse.persistence.annotations.BatchFetchType;
 public class ChoiceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LoggerFactory.getLogger(ChoiceInstance.class);
+
     /**
      *
      */
@@ -174,7 +180,7 @@ public class ChoiceInstance extends VariableInstance {
                     if (previousResult != null) {
                         previousResult.removeChoiceInstance(this);
                     }
-                    */
+                     */
                     try {
                         Result newResult = choiceDesc.getResultByName(this.currentResultName);
                         this.setCurrentResult(newResult);
@@ -311,4 +317,8 @@ public class ChoiceInstance extends VariableInstance {
 
         super.updateCacheOnDelete(beans);
     }*/
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getQuestionDescriptorFacade().reviveChoiceInstance(this);
+    }
 }

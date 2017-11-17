@@ -14,11 +14,8 @@ import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
-import com.wegas.core.event.internal.DescriptorRevivedEvent;
-import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -34,7 +31,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -389,55 +385,53 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
 
     /**
      *
-     * @param event
-     *
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     * @param task
      */
-    public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) throws WegasNoResultException {
+    public void reviveTaskDescriptor(TaskDescriptor task) {
         logger.debug("Received DescriptorRevivedEvent event");
-        if (event.getEntity() instanceof TaskDescriptor) {
-            TaskDescriptor task = (TaskDescriptor) event.getEntity();
-            Double duration = task.getDefaultInstance().getDuration();
-            if (duration != null) {
-                // BACKWARD
-                task.getDefaultInstance().setProperty("duration", duration.toString());
-            }
+        Double duration = task.getDefaultInstance().getDuration();
+        if (duration != null) {
+            // BACKWARD
+            task.getDefaultInstance().setProperty("duration", duration.toString());
+        }
 
+        /**
+         * Transform task name into real TaskDescriptor
+         */
+        if (task.getImportedPredecessorNames() != null) {
             /**
-             * Transform task name into real TaskDescriptor
+             * New predecessor's names : be sure they're registered
              */
-            if (task.getImportedPredecessorNames() != null) {
-                /**
-                 * New predecessor's names : be sure they're registered
-                 */
-                for (String predecessorName : task.getImportedPredecessorNames()) {
-                    TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+            for (String predecessorName : task.getImportedPredecessorNames()) {
+                TaskDescriptor predecessor;
+                try {
+                    predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+
                     if (!task.getPredecessorNames().contains(predecessorName)) {
                         task.addPredecessor(predecessor);
                     }
+                } catch (WegasNoResultException ex) {
+                    throw WegasErrorMessage.error("Predecessor " + predecessorName + " not found");
                 }
-                /**
-                 * Old predecessor's names : make sure to remove oldies
-                 */
-                for (String predecessorName : task.getPredecessorNames()) {
+            }
+            /**
+             * Old predecessor's names : make sure to remove oldies
+             */
+            for (String predecessorName : task.getPredecessorNames()) {
+                try {
                     TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
                     if (!task.getImportedPredecessorNames().contains(predecessorName)) {
                         task.removePredecessor(predecessor);
                     }
+                } catch (WegasNoResultException ex) {
+                    throw WegasErrorMessage.error("Predecessor " + predecessorName + " not found");
                 }
             }
-            //this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
         }
+        //this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
     }
 
-    public void instanceRevivedListener(@Observes InstanceRevivedEvent event) throws WegasNoResultException, NoPlayerException {
-        if (event.getEntity() instanceof ResourceInstance) {
-            this.reviveResourceInstance((ResourceInstance) event.getEntity());
-        }
-    }
-
-    public void reviveResourceInstance(ResourceInstance resourceInstance) throws WegasNoResultException, NoPlayerException {
-
+    public void reviveResourceInstance(ResourceInstance resourceInstance) {
         if ((resourceInstance.getAssignments() != null && resourceInstance.getAssignments().size() > 0)
                 || (resourceInstance.getActivities() != null && resourceInstance.getActivities().size() > 0)) {
             ResourceDescriptor rd = (ResourceDescriptor) resourceInstance.findDescriptor();
@@ -446,30 +440,40 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
             for (Assignment assignment : resourceInstance.getAssignments()) {
                 String taskDescriptorName = assignment.getTaskDescriptorName();
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
-                    TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                    TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance);
-                    TaskInstance oldTaskInstance = assignment.getTaskInstance();
+                    TaskDescriptor newTaskDescriptor;
+                    try {
+                        newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
+                        TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance);
+                        TaskInstance oldTaskInstance = assignment.getTaskInstance();
 
-                    if (oldTaskInstance != null) {
-                        oldTaskInstance.removeAssignment(assignment);
+                        if (oldTaskInstance != null) {
+                            oldTaskInstance.removeAssignment(assignment);
+                        }
+                        assignment.setTaskInstance(newTaskInstance);
+                        newTaskInstance.addAssignment(assignment);
+
+                    } catch (WegasNoResultException ex) {
+                        throw WegasErrorMessage.error("Could not revive ResourceInstance's assignment on task {}, cause the task does not exists!", taskDescriptorName);
                     }
-                    assignment.setTaskInstance(newTaskInstance);
-                    newTaskInstance.addAssignment(assignment);
                 }
             }
 
             for (Activity activity : resourceInstance.getActivities()) {
                 String taskDescriptorName = activity.getTaskDescriptorName();
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
-                    TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                    TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance);
+                    try {
+                        TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
+                        TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance);
 
-                    TaskInstance oldTaskInstance = activity.getTaskInstance();
-                    if (oldTaskInstance != null) {
-                        oldTaskInstance.removeActivity(activity);
+                        TaskInstance oldTaskInstance = activity.getTaskInstance();
+                        if (oldTaskInstance != null) {
+                            oldTaskInstance.removeActivity(activity);
+                        }
+                        activity.setTaskInstance(newTaskInstance);
+                        newTaskInstance.addActivity(activity);
+                    } catch (WegasNoResultException ex) {
+                        throw WegasErrorMessage.error("Could not revive ResourceInstance's actity on task {}, cause the task does not exists!", taskDescriptorName);
                     }
-                    activity.setTaskInstance(newTaskInstance);
-                    newTaskInstance.addActivity(activity);
                 }
 
                 // Process req after the taskInstance

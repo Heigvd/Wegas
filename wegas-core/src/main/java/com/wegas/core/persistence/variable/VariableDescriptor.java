@@ -636,6 +636,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return this.variableDescriptorFacade;
     }
 
+    public void revive(Beanjection beans){
+    }
+
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getGameModel().getRequieredReadPermission();

@@ -379,4 +379,9 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
     public void setBeanjection(Beanjection beanjection) {
         this.beans = beanjection;
     }
+
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getResourceFacade().reviveResourceInstance(this);
+    }
 }

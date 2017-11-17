@@ -11,9 +11,7 @@ import com.wegas.core.api.IterationFacadeI;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -27,7 +25,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,25 +110,24 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
         getEntityManager().remove(entity);
     }
 
-    public void instanceRevivedListener(@Observes InstanceRevivedEvent event) throws WegasNoResultException, NoPlayerException {
-        if (event.getEntity() instanceof BurndownInstance) {
-            BurndownInstance burndownInstance = (BurndownInstance) event.getEntity();
-            BurndownDescriptor burndownDescriptor = (BurndownDescriptor) burndownInstance.findDescriptor();
+    public void reviveBurndownInstance(BurndownInstance burndownInstance) {
+        BurndownDescriptor burndownDescriptor = (BurndownDescriptor) burndownInstance.findDescriptor();
 
-            GameModel gameModel = burndownDescriptor.getGameModel();
+        GameModel gameModel = burndownDescriptor.getGameModel();
 
-            for (Iteration iteration : burndownInstance.getIterations()) {
-                if (iteration.getDeserialisedNames() != null) {
+        for (Iteration iteration : burndownInstance.getIterations()) {
+            if (iteration.getDeserialisedNames() != null) {
 
-                    /**
-                     * remove old references
-                     */
-                    for (TaskInstance instance : iteration.getTasks()) {
-                        instance.getIterations().remove(iteration);
-                    }
+                /**
+                 * remove old references
+                 */
+                for (TaskInstance instance : iteration.getTasks()) {
+                    instance.getIterations().remove(iteration);
+                }
 
-                    List<TaskInstance> tasks = new ArrayList<>();
-                    for (String taskName : iteration.getDeserialisedNames()) {
+                List<TaskInstance> tasks = new ArrayList<>();
+                for (String taskName : iteration.getDeserialisedNames()) {
+                    try {
                         VariableDescriptor find = variableDescriptorFacade.find(gameModel, taskName);
                         if (find instanceof TaskDescriptor) {
                             TaskDescriptor theTask = (TaskDescriptor) find;
@@ -142,12 +138,14 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
                         } else {
                             throw WegasErrorMessage.error("Incompatible type, TaskDescriptor expected but " + find.getClass().getSimpleName() + " found");
                         }
+                    } catch (WegasNoResultException ex) {
+                        throw WegasErrorMessage.error("Task " + taskName + " not found");
                     }
-                    /**
-                     * setup new references
-                     */
-                    iteration.setTasks(tasks);
                 }
+                /**
+                 * setup new references
+                 */
+                iteration.setTasks(tasks);
             }
         }
     }

@@ -13,7 +13,6 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
-import com.wegas.core.event.internal.EntityRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugTeam;
@@ -42,7 +41,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -560,30 +558,25 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
      * <p>
      * This is done by listening to EntityRevivedEvent
      *
-     * @param event
+     * @param reviewD
      */
-    public void descriptorRevivedEvent(@Observes EntityRevivedEvent event) {
-        if (event.getEntity() instanceof PeerReviewDescriptor) {
-            logger.debug("Received DescriptorRevivedEvent event");
-            PeerReviewDescriptor reviewD = (PeerReviewDescriptor) event.getEntity();
-            try {
-                String toReviewName = reviewD.getImportedToReviewName();
-                GameModel gameModel = reviewD.getGameModel();
-                VariableDescriptor toReview = variableDescriptorFacade.find(gameModel, toReviewName);
+    public void revivePeerReviewDescriptor(PeerReviewDescriptor reviewD) {
+        try {
+            String toReviewName = reviewD.getImportedToReviewName();
+            GameModel gameModel = reviewD.getGameModel();
+            VariableDescriptor toReview = variableDescriptorFacade.find(gameModel, toReviewName);
 
-                reviewD.setToReview(toReview);
+            reviewD.setToReview(toReview);
 
-                assertScopesAreValid(reviewD);
-            } catch (WegasNoResultException ex) {
-                logger.error("Failed te revive ReviewDescriptor", ex);
-                reviewD.setToReview(null);
-            }
-        } else if (event.getEntity() instanceof PeerReviewInstance) {
-            PeerReviewInstance reviewI = (PeerReviewInstance) event.getEntity();
-            PeerReviewDescriptor prd = (PeerReviewDescriptor) reviewI.findDescriptor();
-            this.assertScopesAreValid(prd);
+            assertScopesAreValid(reviewD);
+        } catch (WegasNoResultException ex) {
+            logger.error("Failed te revive ReviewDescriptor", ex);
+            reviewD.setToReview(null);
         }
+    }
 
+    public void revivePeerReviewInstance(PeerReviewInstance reviewI) {
+        this.assertScopesAreValid((PeerReviewDescriptor) reviewI.findDescriptor());
     }
 
     private void assertScopesAreValid(PeerReviewDescriptor prd) {

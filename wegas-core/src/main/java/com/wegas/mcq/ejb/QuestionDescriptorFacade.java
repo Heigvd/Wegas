@@ -10,7 +10,6 @@ package com.wegas.mcq.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.api.QuestionDescriptorFacadeI;
 import com.wegas.core.ejb.*;
-import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -27,7 +26,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -160,44 +158,36 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         }
     }
 
-    /**
-     * @param event
-     */
-    public void instanceRevivedEvent(@Observes InstanceRevivedEvent event) {
+    public void reviveChoiceInstance(ChoiceInstance choiceInstance) {
+        ChoiceDescriptor choice = (ChoiceDescriptor) choiceInstance.findDescriptor();
 
-        if (event.getEntity() instanceof ChoiceInstance) {
-            logger.info("Received DescriptorRevivedEvent event");
-            ChoiceInstance choiceInstance = (ChoiceInstance) event.getEntity();
-            ChoiceDescriptor choice = (ChoiceDescriptor) choiceInstance.findDescriptor();
-
-            if (choiceInstance.getCurrentResultName() != null && !choiceInstance.getCurrentResultName().isEmpty()) {
-                logger.info("ReviveResultByName");
-                try {
-                    Result cr = findResult(choice, choiceInstance.getCurrentResultName());
-                    choice.changeCurrentResult(choiceInstance, cr);
-                    //defaultInstance.setCurrentResult(cr);
-                } catch (WegasNoResultException ex) {
-                    choice.changeCurrentResult(choiceInstance, null);
-                    logger.error("No Such Result !!!");
-                }
-            } else if (choiceInstance.getCurrentResultIndex() != null
-                    && choiceInstance.getCurrentResultIndex() >= 0
-                    && choiceInstance.getCurrentResultIndex() < choice.getResults().size()) {
-                // Backward compat
-
-                logger.error(" !!!!  REVIVE RESULT BY INDEX !!!! (so 2013...)");
-                Result cr = choice.getResults().get(choiceInstance.getCurrentResultIndex());
-                //defaultInstance.setCurrentResult(cr);
+        if (choiceInstance.getCurrentResultName() != null && !choiceInstance.getCurrentResultName().isEmpty()) {
+            logger.info("ReviveResultByName");
+            try {
+                Result cr = findResult(choice, choiceInstance.getCurrentResultName());
                 choice.changeCurrentResult(choiceInstance, cr);
+                //defaultInstance.setCurrentResult(cr);
+            } catch (WegasNoResultException ex) {
+                choice.changeCurrentResult(choiceInstance, null);
+                logger.error("No Such Result !!!");
             }
-            for (Reply r : choiceInstance.getReplies()) {
-                try {
-                    Result result = findResult(choice, r.getResultName());
-                    //result.addReply(r);
-                    r.setResult(result);
-                } catch (WegasNoResultException ex) {
-                    logger.error("NO SUCH RESULT ! ");
-                }
+        } else if (choiceInstance.getCurrentResultIndex() != null
+                && choiceInstance.getCurrentResultIndex() >= 0
+                && choiceInstance.getCurrentResultIndex() < choice.getResults().size()) {
+            // Backward compat
+
+            logger.error(" !!!!  REVIVE RESULT BY INDEX !!!! (so 2013...)");
+            Result cr = choice.getResults().get(choiceInstance.getCurrentResultIndex());
+            //defaultInstance.setCurrentResult(cr);
+            choice.changeCurrentResult(choiceInstance, cr);
+        }
+        for (Reply r : choiceInstance.getReplies()) {
+            try {
+                Result result = findResult(choice, r.getResultName());
+                //result.addReply(r);
+                r.setResult(result);
+            } catch (WegasNoResultException ex) {
+                logger.error("NO SUCH RESULT ! ");
             }
         }
     }

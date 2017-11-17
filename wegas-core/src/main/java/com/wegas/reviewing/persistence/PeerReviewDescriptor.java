@@ -10,11 +10,12 @@ package com.wegas.reviewing.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -288,5 +289,10 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
 
     public void setIncludeEvicted(Boolean includeEvicted) {
         this.includeEvicted = includeEvicted;
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getReviewingFacade().revivePeerReviewDescriptor(this);
     }
 }

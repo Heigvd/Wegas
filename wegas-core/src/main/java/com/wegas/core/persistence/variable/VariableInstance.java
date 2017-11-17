@@ -630,6 +630,9 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         }
     }
 
+    public void revive(Beanjection beans) {
+    }
+
     /**
      *
      * @return string representation of the instance (class name, id, default or
@@ -678,7 +681,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
                 if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
                     perm = this.getPlayer().getTeam().getAssociatedWritePermission();
                 } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
-                    perm =  this.getPlayer().getGame().getAssociatedReadPermission();
+                    perm = this.getPlayer().getGame().getAssociatedReadPermission();
                 } else {
                     perm = this.getPlayer().getAssociatedWritePermission();
                 }

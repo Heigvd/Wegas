@@ -12,7 +12,6 @@ import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
-import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -68,9 +67,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     @Inject
     private Event<EntityCreated<GameModel>> createdGameModelEvent;
 
-    @Inject
-    private Event<InstanceRevivedEvent> instanceRevivedEvent;
-
     /**
      *
      */
@@ -82,6 +78,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+
+    @Inject
+    private VariableInstanceFacade variableInstanceFacade;
 
     @Inject
     private PlayerFacade playerFacade;
@@ -194,7 +193,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     public void revivePrivateInstances(InstanceOwner owner) {
         for (VariableInstance vi : owner.getPrivateInstances()) {
-            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+            variableInstanceFacade.reviveInstance(vi);
         }
     }
 
@@ -206,7 +205,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public void reviveInstances(InstanceOwner owner) {
         // revive just propagated instances
         for (VariableInstance vi : owner.getAllInstances()) {
-            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+            variableInstanceFacade.reviveInstance(vi);
         }
     }
 
@@ -221,7 +220,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         this.getEntityManager().flush();
         // revive just propagated instances
         for (VariableInstance vi : (Collection<VariableInstance>) variableDescriptorFacade.getInstances(vd).values()) {
-            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+            variableInstanceFacade.reviveInstance(vi);
         }
     }
 
@@ -276,7 +275,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
                 VariableInstance dest = vd.getDefaultInstance();
                 dest.merge(srcVi);
-                instanceRevivedEvent.fire(new InstanceRevivedEvent(dest));
+
+                variableInstanceFacade.reviveInstance(dest);
             }
             return toUpdate;
         } catch (WegasNoResultException ex) {

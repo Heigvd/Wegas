@@ -22,7 +22,6 @@ import com.wegas.core.api.VariableInstanceFacadeI;
 import com.wegas.core.ejb.nashorn.JavaObjectInvocationHandler;
 import com.wegas.core.ejb.nashorn.NHClassLoader;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
-import com.wegas.core.event.internal.EngineInvocationEvent;
 import com.wegas.core.exception.WegasErrorMessageManager;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -48,7 +47,6 @@ import java.util.Map.Entry;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.script.*;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
@@ -172,12 +170,6 @@ public class ScriptFacade extends WegasAbstractFacade {
     @Inject
     private RequestManager requestManager;
 
-    /**
-     *
-     */
-    @Inject
-    Event<EngineInvocationEvent> engineInvocationEvent;
-
     public ScriptContext instantiateScriptContext(Player player, String language) {
         final ScriptContext currentContext = requestManager.getCurrentScriptContext();
         if (currentContext == null) {
@@ -202,6 +194,7 @@ public class ScriptFacade extends WegasAbstractFacade {
 
         putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
         putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
+
         putBinding(bindings, "Instance", VariableInstanceFacadeI.class, variableInstanceFacade);
 
         putBinding(bindings, "ResourceFacade", ResourceFacadeI.class, resourceFacade);

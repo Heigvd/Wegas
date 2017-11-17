@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
-import com.wegas.core.event.internal.DescriptorRevivedEvent;
-import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.InstanceOwner;
@@ -26,7 +24,12 @@ import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.resourceManagement.ejb.IterationFacade;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.reviewing.ejb.ReviewingFacade;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +41,6 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
@@ -67,14 +69,35 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
 
-    /**
-     *
-     */
     @Inject
-    private Event<DescriptorRevivedEvent> descriptorRevivedEvent;
+    private ResourceFacade resourceFacade;
 
     @Inject
-    private Event<InstanceRevivedEvent> instanceRevivedEvent;
+    private IterationFacade iterationFacade;
+
+    @Inject
+    private ReviewingFacade reviewingFacade;
+
+    @Inject
+    private UserFacade userFacade;
+
+    @Inject
+    private TeamFacade teamFacade;
+
+    @Inject
+    private QuestionDescriptorFacade questionDescriptorFacade;
+
+    private Beanjection beans = null;
+
+    private Beanjection getBeans() {
+        if (beans == null) {
+            logger.error("INIT BEANS");
+            beans = new Beanjection(variableInstanceFacade, this,
+                    resourceFacade, iterationFacade,
+                    reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
+        }
+        return beans;
+    }
 
     /**
      *
@@ -153,8 +176,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
          */
         this.getEntityManager().flush();
 
-        descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
-        instanceRevivedEvent.fire(new InstanceRevivedEvent(entity.getDefaultInstance()));
+        this.reviveDescriptor(entity);
+        variableInstanceFacade.reviveInstance(entity.getDefaultInstance());
 
         // @TODO find a smarter way to decide to propagate or not to propatate...
         if (propagate) {
@@ -166,6 +189,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         if (entity instanceof DescriptorListI) {
             this.reviveItems(gameModel, (DescriptorListI) entity, propagate); // also revive children
         }
+    }
+
+    public void reviveDescriptor(VariableDescriptor vd) {
+        vd.revive(getBeans());
     }
 
     /**

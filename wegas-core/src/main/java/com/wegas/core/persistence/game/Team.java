@@ -426,8 +426,13 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
             case OPEN:
                 return null; // everybody can register en new team
             default:
-                return WegasPermission.getAsCollection(); // nobody can create
+                return WegasPermission.FORBIDDEN; // nobody can create
         }
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
     @Override
