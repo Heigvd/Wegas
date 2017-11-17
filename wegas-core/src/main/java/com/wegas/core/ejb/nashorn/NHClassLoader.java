@@ -20,6 +20,9 @@ public class NHClassLoader extends ClassLoader {
         "com.wegas.core.Helper",
         "javax.naming.InitialContext",
         "java.util.ResourceBundle",
+        "java.lang.System",
+        "java.lang.Thread",
+        "java.lang.Runtime",
         "org.apache.shiro"
     };
 

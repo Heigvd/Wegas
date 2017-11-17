@@ -83,7 +83,7 @@ public class SecurityTest extends AbstractArquillianTest {
     public void testSu() {
         login(user);
         String script = "try{";
-        
+
         script += "var subject = org.apache.shiro.SecurityUtils.getSubject();";
         script += "var token = new org.apache.shiro.subject.SimplePrincipalCollection(new java.lang.Long(1), 'jpaRealm');";
         script += "subject.runAs(token);";
@@ -91,7 +91,29 @@ public class SecurityTest extends AbstractArquillianTest {
 
         scriptFacade.eval(player, new Script("JavaScript", script), null);
 
-        logger.error("CURRENT: {}", requestFacade.getCurrentUser().getId() );
+        logger.error("CURRENT: {}", requestFacade.getCurrentUser().getId());
         Assert.assertEquals(user.getUser(), requestFacade.getCurrentUser()); // assert su has failed
+    }
+
+    @Test(expected = WegasScriptException.class)
+    public void testRuntime() {
+        login(user);
+        String script = "java.lang.Runtime.getRuntime().exec('ls /');";
+
+        scriptFacade.eval(player, new Script("JavaScript", script), null);
+    }
+
+    @Test(expected = WegasScriptException.class)
+    public void testSystem() {
+        login(user);
+        String script = "java.lang.System.getProperties();";
+        scriptFacade.eval(player, new Script("JavaScript", script), null);
+    }
+
+    @Test(expected = WegasScriptException.class)
+    public void testThread() {
+        login(user);
+        String script = "java.lang.Thread.currentThread().interrupt();";
+        scriptFacade.eval(player, new Script("JavaScript", script), null);
     }
 }
