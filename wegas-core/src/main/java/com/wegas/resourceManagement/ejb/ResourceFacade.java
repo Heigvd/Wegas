@@ -30,7 +30,6 @@ import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -39,7 +38,6 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -419,19 +417,6 @@ public class ResourceFacade {
                 }
             }
             //this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
-
-        } else if (event.getEntity() instanceof ResourceDescriptor) {
-            // BACKWARD COMPAT
-            ResourceInstance ri = (ResourceInstance) event.getEntity().getDefaultInstance();
-            Integer moral = ri.getMoral();
-            if (moral != null) {
-                ri.setProperty("motivation", moral.toString());
-            }
-            Map<String, Long> skills = ri.getDeserializedSkillsets();
-            if (skills != null && skills.size() > 0) {
-                Long level = (Long) skills.values().toArray()[0];
-                ri.setProperty("level", level.toString());
-            }
         }
     }
 

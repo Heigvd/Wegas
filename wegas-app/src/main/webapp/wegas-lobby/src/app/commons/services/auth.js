@@ -23,43 +23,47 @@ angular.module('wegas.service.auth', [
             getCurrentUser = function() {
                 var deferred = $q.defer();
                 $http.get(window.ServiceURL + "rest/User/Current?view=Editor").success(function(data) {
-                    var acct = data.accounts[0],
-                        isLocal = (acct["@class"] !== "AaiAccount");
-                    authenticatedUser = {
-                        id: data.id,
-                        accountId: acct.id,
-                        email: acct.email,
-                        username: acct.username,
-                        firstname: acct.firstname,
-                        lastname: acct.lastname,
-                        isTrainer: false,
-                        isScenarist: false,
-                        isAdmin: false,
-                        isGuest: !!_.find(data.accounts, {
-                                "@class": "GuestJpaAccount"
-                            }),
-                        agreedTime: acct.agreedTime,
-                        hasAgreed: !!acct.agreedTime,
-                        isLocalAccount: isLocal,
-                        homeOrg: acct.homeOrg || ""
-                    };
-                    if (authenticatedUser.isGuest) {
-                        authenticatedUser.hasAgreed = true; // Don't ask guests to agree to our terms
-                    }
-                    rights = data.accounts[0].roles;
-                    rights.forEach(function(elem) {
-                        switch (elem.name) {
-                            case "Trainer":
-                                authenticatedUser.isTrainer = true;
-                                break;
-                            case "Scenarist":
-                                authenticatedUser.isScenarist = true;
-                                break;
-                            case "Administrator":
-                                authenticatedUser.isAdmin = true;
-                                break;
+                    if (data){
+                        var acct = data.accounts[0],
+                            isLocal = (acct["@class"] !== "AaiAccount");
+                        authenticatedUser = {
+                            id: data.id,
+                            accountId: acct.id,
+                            email: acct.email,
+                            username: acct.username,
+                            firstname: acct.firstname,
+                            lastname: acct.lastname,
+                            isTrainer: false,
+                            isScenarist: false,
+                            isAdmin: false,
+                            isGuest: !!_.find(data.accounts, {
+                                    "@class": "GuestJpaAccount"
+                                }),
+                            agreedTime: acct.agreedTime,
+                            hasAgreed: !!acct.agreedTime,
+                            isLocalAccount: isLocal,
+                            homeOrg: acct.homeOrg || ""
+                        };
+                        if (authenticatedUser.isGuest) {
+                            authenticatedUser.hasAgreed = true; // Don't ask guests to agree to our terms
                         }
-                    });
+                        rights = data.accounts[0].roles;
+                        rights.forEach(function(elem) {
+                            switch (elem.name) {
+                                case "Trainer":
+                                    authenticatedUser.isTrainer = true;
+                                    break;
+                                case "Scenarist":
+                                    authenticatedUser.isScenarist = true;
+                                    break;
+                                case "Administrator":
+                                    authenticatedUser.isAdmin = true;
+                                    break;
+                            }
+                        });
+                    } else {
+                        authenticatedUser = null;
+                    }
                     deferred.resolve(authenticatedUser);
                 }).error(function(data) {
                     authenticatedUser = null;

@@ -620,17 +620,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             var node = e.node,
                 entity = node.get("data.entity"),
                 id = entity.get(ID);
-            if (entity instanceof Wegas.persistence.ListDescriptor) {
                 if (node.size() > 0) {
                     return;
                 }
-                node.add(this.get("host").genTreeViewElements(entity.get("items")));
-            } else if (entity instanceof Wegas.persistence.VariableDescriptor &&
-                !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
-
-                if (node.size() > 1) { /* @fixme @hack What if there is only 1 player in the game ? */
-                    return;
-                }
+            if (typeof entity.isAugmentedBy === 'function'
+                && entity.isAugmentedBy(Wegas.persistence.VariableContainer)) {
+                node.add(this.get('host').genTreeViewElements(entity.get('items')));
+            } else if (entity instanceof Wegas.persistence.VariableDescriptor 
+                    && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) {
                 node.destroyAll();
                 node.set("loading", true);
                 Wegas.Facade.Instance.sendRequest({

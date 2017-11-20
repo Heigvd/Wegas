@@ -92,8 +92,8 @@
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
         <!--<jersey.version>2.25.1</jersey.version>-->
         <jdk.version>1.8</jdk.version>
-        <payara.version>4.1.2.172</payara.version> <!-- payara-4.1.2.173 embedded-all fails to start bc ejb-timer-bug, wait for fix -->
-        <payara-api.version>4.1.2.172</payara-api.version>
+        <payara.version>4.1.2.173.0.1</payara.version>
+        <payara-api.version>4.1.2.173</payara-api.version>
         <junit.version>4.12</junit.version>
         <exec.plugin.version>1.2</exec.plugin.version>
         <jar.plugin.version>2.3.1</jar.plugin.version>
@@ -116,7 +116,7 @@
         <prometheus.version>0.0.23</prometheus.version>
 
         <jackson.scope>provided</jackson.scope>
-        <jackson.version>2.8.5</jackson.version> <!--payara 4.1.2.173 -> 2.8.8 -->
+        <jackson.version>2.8.8</jackson.version>
 
         <netbeans.hint.j2eeVersion>1.7</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
@@ -362,9 +362,9 @@
 
             <!-- Postgresql Driver -->
             <dependency>
-                <groupId>postgresql</groupId>
+                <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>9.1-901-1.jdbc4</version>
+                <version>42.1.4</version>
                 <!--<scope>test</scope>-->
             </dependency>
             <!--ehcache

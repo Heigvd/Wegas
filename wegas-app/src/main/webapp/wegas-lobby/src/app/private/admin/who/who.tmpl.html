@@ -28,8 +28,7 @@
                     <div class="card-fullname">{{ user.fullname}}</div>
                     <div class="card-be button button--small button--round button--default-reverse button--label-off button--play"
                          title="Impersonate !"
-                         ng-controller="AdminUsersCtrl as adminUsersCtrl"
-                         ng-click="adminUsersCtrl.beByAccountId(user.mainAccountId, user.fullname)">
+                         ng-click="adminWhoCtrl.beByAccountId(user.mainAccountId, user.fullname)">
                         <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}</span>
                     </div>
                     <div class="card-be button button--small button--round button--default-reverse button--label-off button--customize"

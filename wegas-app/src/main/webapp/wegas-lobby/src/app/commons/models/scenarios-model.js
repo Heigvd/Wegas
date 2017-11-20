@@ -134,7 +134,7 @@ angular.module('wegas.models.scenarios', [])
                 });
 
                 if (scenarioSetted) {
-                    var url = "rest/Public/GameModel/" + scenarioBeforeChange.id + "?view=Lobby";
+                    var url = "rest/Lobby/GameModel/" + scenarioBeforeChange.id;
                     $http.put(ServiceURL + url, newGameModel, {
                         "headers": {
                             "managed-mode": "true"
@@ -288,7 +288,7 @@ angular.module('wegas.models.scenarios', [])
             }
             model.createScenario = function(name, templateId) {
                 var deferred = $q.defer(),
-                    url = "rest/Public/GameModel/" + templateId;
+                    url = "rest/Lobby/GameModel/" + templateId;
                 if (name && templateId) {
                     if (name !== "") {
                         if (templateId !== 0) {
@@ -487,7 +487,7 @@ angular.module('wegas.models.scenarios', [])
 
         model.restoreVersionHistory = function(scenarioId, version) {
             var deferred = $q.defer(),
-                url = "rest/Public/GameModel/" + scenarioId + "/History/Restore/" + version;
+                url = "rest/Lobby/GameModel/" + scenarioId + "/History/Restore/" + version;
             $http.get(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"
