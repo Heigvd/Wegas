@@ -20,7 +20,7 @@ branches:
   - master
 env:
   global:
-  - NODE_VERSION=5.7 CC=clang CXX=clang++
+  - NODE_VERSION=8.4 CC=clang CXX=clang++
   - secure: IldKSO+pk6RwzzF8iZt0qwh3yx1v49FAis/vJgUIDNWwDVQhOm7T5aJ4MUmbrGZgOFr9cCvlAO4A6qolf2Zn1cipaHzpyGzg5vhVlN1SEYh/WYYm9bTrDS0LqG6xL1Kp+YJD8B48rteEFG7dAL9au9w8ipoTO+PW66CbcoxDR5o=
   #- secure: dc1+zvl7dLsaietPU2/s/MKyIopVry5BTS5sS6z+D2e50JH1zvhFoLD92UDJM0rs8zDWa4nzrwG0yYj8roDlVzCj+VJ+VMyQFspHtcHle109Uqo+V0Ac3BSfugkchbJfO2I545CiVXnJGR/SxOfiLPwPy7rRUU0YT34xyW5A8b0=
   #- secure: PHeQHurKoerHNWSRsORNIZd/nFFw5WqOCqYUj0VX1xCq+GdMNuPpe8UEln4/hFU53XVeSMEbF2Mjrs+5g6CoeeMw16VcUYJvpdZaty2dquyXZN7PVPROf1yaptEb4nxD2oiaQ2X0jQDSmF56sGxA15kA/EoYSLnGkA5eBv2wFfA=
