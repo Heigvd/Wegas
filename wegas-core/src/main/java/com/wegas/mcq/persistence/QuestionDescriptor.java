@@ -53,7 +53,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     private String description;
     /**
      *
@@ -83,7 +83,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     @ElementCollection
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
     private List<String> pictures = new ArrayList<>();
 
@@ -266,46 +266,11 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
 
     /**
      *
-     * @param index
-     * @return the iest choiceDescriptor
-     * @throws IndexOutOfBoundsException
-     */
-    @Override
-    public ChoiceDescriptor item(int index) {
-        return this.getItems().get(index);
-    }
-
-    /**
-     *
      * @param item
      */
     @Override
-    public void addItem(ChoiceDescriptor item) {
-        if (this.getGameModel() != null) {
-            this.getGameModel().addToVariableDescriptors(item);
-        }
-        this.getItems().add(item);
+    public void setChildParent(ChoiceDescriptor item) {
         item.setQuestion(this);
-    }
-
-    @Override
-    public void addItem(int index, ChoiceDescriptor item) {
-        if (this.getGameModel() != null) {
-            this.getGameModel().addToVariableDescriptors(item);
-        }
-        this.getItems().add(index, item);
-        item.setQuestion(this);
-    }
-
-    @Override
-    public int size() {
-        return this.getItems().size();
-    }
-
-    @Override
-    public boolean remove(ChoiceDescriptor item) {
-        this.getGameModel().removeFromVariableDescriptors(item);
-        return this.getItems().remove(item);
     }
 
     @Override

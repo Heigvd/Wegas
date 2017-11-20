@@ -169,4 +169,12 @@ public class WebsocketController {
     public void clearOnlineUsers() {
         websocketFacade.clearOnlineUsers();
     }
+
+    @POST
+    @Path("RequestClientReload")
+    @RequiresRoles("Administrator")
+    public void requestClientReload() {
+        websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.OUTDATED, null);
+    }
+
 }

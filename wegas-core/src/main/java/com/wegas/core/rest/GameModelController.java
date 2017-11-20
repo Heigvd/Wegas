@@ -12,7 +12,6 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -170,7 +169,7 @@ public class GameModelController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")                   // @hack force utf-8 charset
-    @Path("{entityId : [1-9][0-9]*}/{filename: .*}.json")                       // @hack allow to add a filename with *.json to have a nice file
+    @Path("{entityId : [1-9][0-9]*}/{filename: .*\\.json}")
     public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) {
         return Response.ok(this.get(entityId))
                 .header("Content-Disposition", "attachment; filename=" + filename).build();

@@ -78,10 +78,14 @@ angular.module('wegas.service.pusher', [])
             return roles;
         };
 
+        service.requestClientReload = function() {
+            return $http.post(ServiceURL + "rest/Pusher/RequestClientReload");
+        };
+
         function initListening() {
             if (adminChannel) {
-                adminChannel.bind('online-users', function() {
-                    $rootScope.$emit('wegaspusher:update-members');
+                adminChannel.bind('online-users', function(data) {
+                    $rootScope.$emit('wegaspusher:update-members', JSON.parse(data));
                 });
             }
             if (userChannel) {

@@ -13,6 +13,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
@@ -38,21 +39,6 @@ import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.resourceManagement.persistence.Occupation;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,14 +47,29 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -97,6 +98,9 @@ public class UpdateController {
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     /**
      * @return Some String encoded HTML
@@ -148,7 +152,7 @@ public class UpdateController {
     @GET
     @Path("UpdateScript/{gameModelId : ([1-9][0-9]*)}")
     public String script(@PathParam("gameModelId") Long gameModelId) {
-        List<VariableDescriptor> findAll = descriptorFacade.findAll(gameModelId);
+        Set<VariableDescriptor> findAll = descriptorFacade.findAll(gameModelId);
         List<String> keys = new ArrayList<>();
         List<String> values = new ArrayList<>();
         for (VariableDescriptor vd : findAll) {
@@ -270,7 +274,7 @@ public class UpdateController {
     }
 
     private String listDescriptorScope(GameModel gameModel) {
-        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -292,7 +296,7 @@ public class UpdateController {
     }
 
     private String rtsUpdateScope(GameModel gameModel) {
-        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -319,7 +323,7 @@ public class UpdateController {
     }
 
     private void updateListDescriptorScope(GameModel gameModel) {
-        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
 
         for (VariableDescriptor vd : variableDescriptors) {
             if (vd instanceof ListDescriptor) {
@@ -389,7 +393,7 @@ public class UpdateController {
     }
 
     private String rtsNewScope(GameModel gameModel) {
-        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -546,7 +550,7 @@ public class UpdateController {
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
             gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true); // restart missing debugTeam
-            gameModelFacade.runStateMachines(dt);
+            stateMachineFacade.runStateMachines(dt);
             this.getEntityManager().flush();
             if (++counter == 25) {
                 break;
