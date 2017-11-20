@@ -39,6 +39,12 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
+@Table(
+        indexes = {
+            @Index(columnList = "evaluationdescriptor_id"),
+            @Index(columnList = "commentsreview_id"),
+            @Index(columnList = "feedbackreview_id")
+        })
 public abstract class EvaluationInstance extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;

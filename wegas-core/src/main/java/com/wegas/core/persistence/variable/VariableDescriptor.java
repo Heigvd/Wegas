@@ -70,7 +70,9 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "defaultinstance_variableinstance_id"),
     @Index(columnList = "items_variabledescriptor_id"),
     @Index(columnList = "rootgamemodel_id"),
-    @Index(columnList = "dtype")
+    @Index(columnList = "gamemodel_gamemodelid"),
+    @Index(columnList = "dtype"),
+    @Index(columnList = "scope_id")
 })
 @NamedQueries({
     @NamedQuery(
@@ -622,8 +624,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.beans = beanjection;
     }
 
-
-
     private VariableDescriptorFacade getVariableDescriptorFacade() { // SEE UPDATE SCOPE IN MERGE
         if (this.beans != null && this.beans.getVariableDescriptorFacade() != null) {
             return this.beans.getVariableDescriptorFacade();
@@ -636,7 +636,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return this.variableDescriptorFacade;
     }
 
-    public void revive(Beanjection beans){
+    public void revive(Beanjection beans) {
     }
 
     @Override

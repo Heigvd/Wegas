@@ -36,6 +36,11 @@ import org.codehaus.jettison.json.JSONException;
     @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC"),
     @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 })
+@Table(
+        indexes = {
+            @Index(columnList = "game_game_id")
+        }
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameAdmin extends AbstractEntity {
 

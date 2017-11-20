@@ -22,9 +22,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
@@ -59,6 +61,13 @@ import javax.validation.constraints.NotNull;
  * @see PeerReviewInstance
  */
 @Entity
+@Table(
+        indexes = {
+            @Index(columnList = "fbcomments_id"),
+            @Index(columnList = "toreview_variabledescriptor_id"),
+            @Index(columnList = "feedback_id")
+        }
+)
 public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance> {
 
     private static final long serialVersionUID = 1L;

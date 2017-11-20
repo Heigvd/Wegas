@@ -105,7 +105,8 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "playerscope_id"),
     @Index(columnList = "variableinstances_key"),
     @Index(columnList = "teamvariableinstances_key"),
-    @Index(columnList = "gamevariableinstances_key")
+    @Index(columnList = "gamevariableinstances_key"),
+    @Index(columnList = "gamemodelvariableinstances_key")
 })
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {

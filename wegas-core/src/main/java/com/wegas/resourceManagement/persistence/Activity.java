@@ -24,7 +24,9 @@ import javax.persistence.*;
 @Entity
 
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id")
+    @Index(columnList = "variableinstance_id"),
+    @Index(columnList = "taskinstance_id"),
+    @Index(columnList = "wrequirement_id")
 })
 public class Activity extends AbstractAssignement {
 

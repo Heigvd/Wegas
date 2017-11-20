@@ -38,7 +38,8 @@ import javax.validation.constraints.Pattern;
             //    @UniqueConstraint(columnNames = {"name"}),
             @UniqueConstraint(columnNames = {"token"})},
         indexes = {
-            @Index(columnList = "gamemodelid")
+            @Index(columnList = "gamemodelid"),
+            @Index(columnList = "createdby_id")
         }
 )
 @NamedQueries({

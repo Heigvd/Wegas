@@ -46,6 +46,11 @@ import org.apache.shiro.SecurityUtils;
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
     @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")
 })
+@Table(
+        indexes = {
+            @Index(columnList = "createdby_id")
+        }
+)
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable {
 
     private static final long serialVersionUID = 1L;

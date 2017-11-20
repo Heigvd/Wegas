@@ -56,7 +56,7 @@
     </nodes>
     <configs>
         <config name="server-config">
-            <system-property name="JMS_PROVIDER_PORT" description="Port Number that JMS Service will listen for remote clients connection." value="7676"></system-property>
+            <system-property name="JMS_PROVIDER_PORT" description="Port Number that JMS Service will listen for remote clients connection." value="27676"></system-property>
             <http-service>
                 <access-log></access-log>
                 <virtual-server network-listeners="http-listener-1,http-listener-2" id="server"></virtual-server>
@@ -206,9 +206,9 @@
                     </protocol>
                 </protocols>
                 <network-listeners>
-                    <network-listener port="8080" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool"></network-listener>
-                    <network-listener port="8181" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
-                    <network-listener port="4848" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="admin-thread-pool"></network-listener>
+                    <network-listener port="28080" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool"></network-listener>
+                    <network-listener port="28181" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
+                    <network-listener port="24848" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="admin-thread-pool"></network-listener>
                 </network-listeners>
                 <transports>
                     <transport name="tcp"></transport>

@@ -35,7 +35,12 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(uniqueConstraints = {})
+@Table(
+        uniqueConstraints = {},
+        indexes= {
+            @Index(columnList = "container_id")
+        }
+)
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(value = TextEvaluationDescriptor.class),
     @JsonSubTypes.Type(value = CategorizedEvaluationDescriptor.class),

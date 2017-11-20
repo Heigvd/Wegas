@@ -53,7 +53,8 @@ import javax.validation.constraints.NotNull;
 @Table(
         uniqueConstraints = @UniqueConstraint(columnNames = {"name", "gameteams_id"}),
         indexes = {
-            @Index(columnList = "gameteams_id")
+            @Index(columnList = "gameteams_id"),
+            @Index(columnList = "createdby_id")
         }
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
