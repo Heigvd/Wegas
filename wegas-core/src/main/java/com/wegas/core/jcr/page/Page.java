@@ -14,11 +14,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.wegas.core.Helper;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import java.io.IOException;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -49,7 +48,6 @@ public class Page {
     public Page(String id, JsonNode content) {
         this.id = id;
         this.setContent(content);
-        this.extractAttrs();
     }
 
     /**
@@ -66,7 +64,6 @@ public class Page {
         if (n.hasProperty(INDEX_KEY)) {
             this.index = Helper.longToInt(n.getProperty(INDEX_KEY).getLong());
         }
-        this.injectAttrs();
     }
 
     /**
@@ -96,12 +93,20 @@ public class Page {
         return content;
     }
 
+    public JsonNode getContentWithMeta() {
+        ObjectNode content = this.content.deepCopy();
+        content.put("@name", this.name);
+        content.put("@index", this.index);
+        return content;
+    }
+
     /**
      * @param content
      */
     @JsonIgnore
     public final void setContent(JsonNode content) {
         this.content = content;
+        this.extractAttrs();
     }
 
     /**
@@ -112,6 +117,7 @@ public class Page {
     public final void setContent(String content) {
         try {
             this.content = mapper.readTree(content);
+            this.extractAttrs();
         } catch (IOException e) {
 
         }
@@ -149,18 +155,13 @@ public class Page {
         }
     }
 
-    @JsonIgnore
-    private void injectAttrs() {
-        ((ObjectNode) this.content).put("@name", this.name);
-        ((ObjectNode) this.content).put("@index", this.index);
-    }
 
     /**
      * @param patch RFC6902: patch Array
      */
     public void patch(JsonNode patch) throws IOException, JsonPatchException {
-        final JsonNode target = JsonPatch.fromJson(patch).apply(this.getContent());
-        logger.info("INPUT\n{}\nPATCH\n{}\nRESULT\n{}\n", this.content.toString(), patch, target.asText());
+        final JsonNode target = JsonPatch.fromJson(patch).apply(this.getContentWithMeta());
+        logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + target.asText());
         this.setContent(target);
     }
 
@@ -189,7 +190,7 @@ public class Page {
         return index;
     }
 
-    protected void setIndex(int index) {
+    public void setIndex(int index) {
         this.index = index;
     }
 }
