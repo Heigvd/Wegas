@@ -56,11 +56,12 @@
         <!--            <scope>compile</scope>-->
         <!--</dependency>-->
 
-        <!-- Liquibase -->
+        <!-- Liquibase 
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
+        -->
 
         <!-- Postgresql Driver -->
         <dependency>

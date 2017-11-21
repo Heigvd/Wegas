@@ -59,10 +59,46 @@
         </createIndex>
     </changeSet>
 
-
-        <!-- Indexes not managed by JPA -->
-    <!--<changeSet author="maxence" id="1511168017933-2">
-
-
-    </changeSet>-->
+    <changeSet author="maxence" id="1511168017933-2">
+                <createIndex indexName="index_categorizedevaluationdescriptor_categories_categorizedeva" tableName="categorizedevaluationdescriptor_categories">
+            <column name="categorizedevaluationdescriptor_id"/>
+        </createIndex>
+        <createIndex indexName="index_iteration_plannedworkloads_iteration_id" tableName="iteration_plannedworkloads">
+            <column name="iteration_id"/>
+        </createIndex>
+        <createIndex indexName="index_iteration_replannedworkloads_iteration" tableName="iteration_replannedworkloads">
+            <column name="iteration_id"/>
+        </createIndex>
+        <createIndex indexName="index_iteration_taskinstance_iteration_id" tableName="iteration_taskinstance">
+            <column name="iteration_id"/>
+        </createIndex>
+        <createIndex indexName="index_iteration_taskinstance_tasks_variableinstance_id" tableName="iteration_taskinstance">
+            <column name="tasks_variableinstance_id"/>
+        </createIndex>
+        <createIndex indexName="index_mcqresult_label_choicedescriptor_id" tableName="mcqresult">
+            <column name="label"/>
+            <column name="choicedescriptor_id"/>
+        </createIndex>
+        <createIndex indexName="index_mcqresult_name_choicedescriptor_id" tableName="mcqresult">
+            <column name="name"/>
+            <column name="choicedescriptor_id"/>
+        </createIndex>
+        <createIndex indexName="index_message_attachements_message_id" tableName="message_attachements">
+            <column name="message_id"/>
+        </createIndex>
+        <createIndex indexName="index_questiondescriptor_pictures_questiondescriptor_variablede" tableName="questiondescriptor_pictures">
+            <column name="questiondescriptor_variabledescriptor_id"/>
+        </createIndex>
+        <createIndex indexName="index_result_files_result_id" tableName="result_files">
+            <column name="result_id"/>
+        </createIndex>
+        <createIndex indexName="index_taskdescriptor_taskdescriptor_taskdescriptor_variabledesc" tableName="taskdescriptor_taskdescriptor">
+            <column name="taskdescriptor_variabledescriptor_id"/>
+            <column name="predecessors_variabledescriptor_id"/>
+        </createIndex>
+        <createIndex indexName="index_users_roles_roles_id_users_id" tableName="users_roles">
+            <column name="roles_id"/>
+            <column name="users_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
