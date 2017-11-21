@@ -770,13 +770,14 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    /**
-     * Security
+    /*
+     ---------------------------------------------------------------------------
+     | Security
+     ---------------------------------------------------------------------------
      */
-    private String[] split(String permissions) {
-        return permissions.split(",");
-    }
-
+    /**
+     * Clear all granted wegas permissions and clear effective roles/DBPermissions
+     */
     public void clearPermissions() {
         log("CLEAR PERMISSIONS");
         log("*********************************************************");
@@ -784,6 +785,9 @@ public class RequestManager implements RequestManagerI {
         this.clearEffectivePermisssions();
     }
 
+    /**
+     * Used to clear permission when changing the currentUser
+     */
     public void clearEffectivePermisssions() {
 
         if (this.effectiveRoles != null) {
@@ -797,6 +801,11 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * get all role which the currentUser was member before the beginning of this request
+     *
+     * @return list of role the user is member for sure (fully persisted membership)
+     */
     public Collection<String> getEffectiveRoles() {
         if (this.effectiveRoles == null) {
             User user = this.getCurrentUser();
@@ -812,6 +821,11 @@ public class RequestManager implements RequestManagerI {
         return effectiveRoles;
     }
 
+    /**
+     * get all shiro permission which were associated to the currentUser before the beginning of this request
+     *
+     * @return list of permission the user has for sure (fully persisted ones)
+     */
     public Collection<String> getEffectiveDBPermissions() {
         if (this.effectiveDBPermissions == null) {
             User user = this.getCurrentUser();
@@ -834,12 +848,25 @@ public class RequestManager implements RequestManagerI {
         return this.getEffectiveRoles().contains(roleName);
     }
 
+    /**
+     * Assert shiro permission
+     *
+     * @param permission
+     */
     public void checkPermission(String permission) {
         if (!isPermitted(permission)) {
             throw new WegasAccessDenied(null, null, permission, currentUser);
         }
     }
 
+    /**
+     * Replacement method for {@link Subject#isPermitted(java.lang.String)}
+     * This method is much faster than shiro one...
+     *
+     * @param permission
+     *
+     * @return
+     */
     public boolean isPermitted(String permission) {
         String[] pSplit = permission.split(":");
 
@@ -861,14 +888,49 @@ public class RequestManager implements RequestManagerI {
         return false;
     }
 
+    /**
+     * Has Current user Shiro Edit permission on gameModel ?
+     *
+     * @param gameModel the gameModel to check permission against
+     *
+     * @return true if the user has edit permission on the gameModel
+     */
     private boolean hasDirectGameModelEditPermission(GameModel gameModel) {
         return this.isPermitted("GameModel:Edit:gm" + gameModel.getId());
     }
 
+    /**
+     * Has Current user Shiro Edit permission on game ?
+     *
+     * @param game the game to check permission against
+     *
+     * @return true if the user has edit permission on the game
+     */
     private boolean hasDirectGameEditPermission(Game game) {
         return this.isPermitted("Game:Edit:g" + game.getId());
     }
 
+    /**
+     * Check if the currentUser has permission to read or write the given game.
+     * <p>
+     * A superPermission (write) is permitted if <ul>
+     * <li>user has super-permission on its gameModel</li>
+     * <li>OR the game is not yet persisted</li>
+     * <li>OR shiro EDIT permission on the game is permitted</li>
+     * </ul>
+     * <p/>
+     * A "normal" (readonly) permission is permitted if <ul>
+     * <li>any of the superPermission condition</li>
+     * <li>OR the game is a DebugGame and user has permission on its GameModel</li>
+     * <li>OR the game is OPEN</li>
+     * <li>OR user owns a player in the game</li>
+     * </ul>
+     *
+     * @param game            the game to check permission against
+     * @param superPermission true means scenarist/trainer right
+     *
+     * @return true if permitted
+     */
     private boolean hasGamePermission(Game game, boolean superPermission) {
 
         if (game instanceof DebugGame) {
@@ -886,7 +948,28 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * Check if the currentUser has permission to read or write the given gameModel.
+     * A superPermission (write) is permitted if <ul>
+     * <li>The game model is not yet persisted</li>
+     * <li>OR shiro EDIT permission on the gameModel is permitted</li>
+     * <li>OR the gameModel is a {@link PLAY} one and currentUser has superPermission on the underlying game</li>
+     * </ul>
+     * <p/>
+     * A "normal" (readonly) permission is permitted if <ul>
+     * <li>any of the superPermission condition</li>
+     * <li>OR the gameModel is a {@link PLAY} one and currentUser has read on the underlying game</li>
+     * <li>OR the currentUser is a trainer/scenarist and has shiro Instantiate or Duplicate permission</li>
+     * <li>OR the currentUser has shiro View permission</li>
+     * </ul>
+     *
+     * @param gameModel       the gameModel to check permission against
+     * @param superPermission true means trainer/scenarist right
+     *
+     * @return true if permitted
+     */
     private boolean hasGameModelPermission(GameModel gameModel, boolean superPermission) {
+        // not yet persisted means the gameModel is being created right kown
         if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) || hasDirectGameModelEditPermission(gameModel)) {
             return true;
         } else if (gameModel.getStatus().equals(GameModel.Status.PLAY)) {
@@ -904,11 +987,8 @@ public class RequestManager implements RequestManagerI {
             /**
              * GameModel permission against a true gameModel.
              */
-
             long id = gameModel.getId();
-            if (superPermission) {
-                return hasDirectGameModelEditPermission(gameModel);
-            } else {
+            if (!superPermission) {
                 if ((this.hasRole("Trainer") || this.hasRole("Scenarist"))
                         && (this.isPermitted("GameModel:Instantiate:gm" + id) || this.isPermitted("GameModel:Duplicate:gm" + id))) {
                     //For scenarist and trainer, instantiate and duplicate means read
@@ -916,6 +996,8 @@ public class RequestManager implements RequestManagerI {
                 }
                 // fallback: View means View
                 return this.isPermitted("GameModel:View:gm" + id);
+            } else {
+                return false;
             }
         }
     }
@@ -956,17 +1038,23 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * Returns {@code true} if currentUser membership to underlying role
+     *
+     * @param perm membership permission to check
+     *
+     * @return true if currentuser membership matches
+     */
     private boolean isMemberOf(WegasMembership perm) {
         return this.hasRole(perm.getName());
     }
 
     /**
-     * can current user subscribe to given channel ?
+     * Returns {@code true} if the currentUser owns the permission
      *
+     * @param permission permission to check
      *
-     * @param permission
-     *
-     * @return true if access granted
+     * @return true if the currentUser is permitted, false otherwise.
      */
     public boolean hasPermission(WegasPermission permission) {
 
@@ -995,6 +1083,13 @@ public class RequestManager implements RequestManagerI {
         this.grantedPermissions.add(perm);
     }
 
+    /**
+     * check if currentUser has at least one of the permission in permissions.
+     *
+     * @param permissions list of permissions, null means no permission required, empty list means forbidden
+     *
+     * @return truc if at least one permission from the list is permitted
+     */
     public boolean hasAnyPermission(Collection<WegasPermission> permissions) {
         // null means no permission required
         if (permissions != null) {
@@ -1013,7 +1108,16 @@ public class RequestManager implements RequestManagerI {
         return true;
     }
 
-    private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, AbstractEntity entity) {
+    /**
+     * Assert currentUser has at least one of the permission in permissions.
+     *
+     * @param permissions list of permissions, null means no permission required, empty list means forbidden
+     * @param type        some string for logging purpose
+     * @param entity      entity permissions are relatred to (logging purpose only)
+     *
+     * @throws WegasAccessDenied permissions is not null and no permission in permissions is permitted
+     */
+    private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, AbstractEntity entity) throws WegasAccessDenied {
         log("HAS  PERMISSION: {} / {} / {}", type, permissions, entity);
         logIndent++;
         if (!hasAnyPermission(permissions)) {
@@ -1025,18 +1129,46 @@ public class RequestManager implements RequestManagerI {
         logIndent--;
     }
 
+    /**
+     * Assert the current user has the required "Create" permission on an entity
+     *
+     * @param entity the entity to check the permission against
+     *
+     * @throws WegasAccessDenied currentUser do NOT have the permission
+     */
     public void assertCreateRight(AbstractEntity entity) {
         this.assertUserHasPermission(entity.getRequieredCreatePermission(), "Create", entity);
     }
 
+    /**
+     * Assert the current user has the required "read" permission on an entity
+     *
+     * @param entity the entity to check the permission against
+     *
+     * @throws WegasAccessDenied currentUser do NOT have the permission
+     */
     public void assertReadRight(AbstractEntity entity) {
         this.assertUserHasPermission(entity.getRequieredReadPermission(), "Read", entity);
     }
 
+    /**
+     * Assert the current user has the required "update" permission on an entity
+     *
+     * @param entity the entity to check the permission against
+     *
+     * @throws WegasAccessDenied currentUser do NOT have the permission
+     */
     public void assertUpdateRight(AbstractEntity entity) {
         this.assertUserHasPermission(entity.getRequieredUpdatePermission(), "Update", entity);
     }
 
+    /**
+     * Assert the current user has the required "delete" permission on an entity
+     *
+     * @param entity the entity to check the permission against
+     *
+     * @throws WegasAccessDenied currentUser do NOT have the permission
+     */
     public void assertDeleteRight(AbstractEntity entity) {
         this.assertUserHasPermission(entity.getRequieredDeletePermission(), "Delete", entity);
     }
@@ -1044,10 +1176,22 @@ public class RequestManager implements RequestManagerI {
     /*
      * Security Sugars
      */
+    /**
+     * Is the current user an administrator ?
+     *
+     * @return whether or not the currentUser is an administrator
+     */
     public boolean isAdmin() {
         return this.hasRole("Administrator");
     }
 
+    /**
+     * Can the currentUser read the given game ?
+     *
+     * @param game the game the currentUser want to read
+     *
+     * @return whether or not the currentUser can read the game
+     */
     public boolean hasGameReadRight(final Game game) {
         return this.hasPermission(game.getAssociatedReadPermission());
     }
@@ -1060,6 +1204,13 @@ public class RequestManager implements RequestManagerI {
         return this.hasPermission(game.getAssociatedWritePermission());
     }
 
+    /**
+     * Can the currentUser read the given gameModel ?
+     *
+     * @param gameModel the gameModel the currentUser want to read
+     *
+     * @return whether or not the currentUser can read the gameModel
+     */
     public boolean hasGameModelReadRight(final GameModel gameModel) {
         return this.hasPermission(gameModel.getAssociatedReadPermission());
     }
@@ -1072,14 +1223,35 @@ public class RequestManager implements RequestManagerI {
         return this.hasPermission(gameModel.getAssociatedWritePermission());
     }
 
+    /**
+     * Can the currentUser acts as a member of the given team
+     *
+     * @param team the team the currentUser want to use
+     *
+     * @return whether or not the currentUser can act as a player from the team
+     */
     public boolean hasTeamRight(final Team team) {
-        return this.hasPermission(team.getAssociatedReadPermission());
+        return this.hasPermission(team.getAssociatedWritePermission());
     }
 
+    /**
+     * Can the currentUser acts as the given player ?
+     *
+     * @param player the player the currentUser want to use
+     *
+     * @return whether or not the currentUser can act as the player
+     */
     public boolean hasPlayerRight(final Player player) {
-        return this.hasPermission(player.getAssociatedReadPermission());
+        return this.hasPermission(player.getAssociatedWritePermission());
     }
 
+    /**
+     * has the currentUser the right to restore the given gameModel from the bin
+     *
+     * @param gameModel the game model to restore
+     *
+     * @return whether or not the user can move gameModel from the bin
+     */
     public boolean canRestoreGameModel(final GameModel gameModel) {
         String id = "gm" + gameModel.getId();
         return this.isPermitted("GameModel:View:" + id)
@@ -1088,11 +1260,25 @@ public class RequestManager implements RequestManagerI {
                 || this.isPermitted("GameModel:Duplicate:" + id);
     }
 
+    /**
+     * has the currentUser the right to delete (ie move to BIN, empty from the bin) the given gameModel
+     *
+     * @param gameModel the gameModel the user want to move to the bin
+     *
+     * @return whether or not the user can move gameModel to the bin
+     */
     public boolean canDeleteGameModel(final GameModel gameModel) {
         String id = "gm" + gameModel.getId();
         return this.isPermitted("GameModel:Delete:" + id);
     }
 
+    /**
+     * Has the currentUser the right to listen to a channel
+     *
+     * @param channel the channel the user want to listen to
+     *
+     * @return true if the currentUser can listen to the channel
+     */
     public boolean hasChannelPermission(String channel) {
         if (channel != null) {
             Pattern p = Pattern.compile("^(private-)*([a-zA-Z]*)-([a-zA-Z0-9]*)$");
@@ -1116,22 +1302,26 @@ public class RequestManager implements RequestManagerI {
 
 
     /*
-     * Security Assertions
+     * Assert the current user have write right on the game
+
+     * @throw WegasAccessDenied
      */
     public void assertGameTrainer(final Game game) {
         if (!hasGameWriteRight(game)) {
-            throw new WegasAccessDenied(game, "Trainer", "W-" + game.getChannel(), this.getCurrentUser());
+            throw new WegasAccessDenied(game, "Trainer", game.getRequieredUpdatePermission().toString(), this.getCurrentUser());
         }
     }
 
     /**
-     * Does the current user have read right on the game model
+     * Assert the current user have read right on the game model
      *
      * @param gameModel gameModel to check right against
+     *
+     * @throw WegasAccessDenied
      */
     public void assertCanReadGameModel(final GameModel gameModel) {
         if (!hasGameModelReadRight(gameModel)) {
-            throw new WegasAccessDenied(gameModel, "Read", gameModel.getChannel(), this.getCurrentUser());
+            throw new WegasAccessDenied(gameModel, "Read", gameModel.getRequieredReadPermission().toString(), this.getCurrentUser());
         }
     }
 
@@ -1147,7 +1337,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * Log-in with a different account
      *
-     * @param accountId
+     * @param accountId account id to login as
      *
      * @return new currentUser
      */
@@ -1196,6 +1386,9 @@ public class RequestManager implements RequestManagerI {
         return this.getCurrentUser();
     }
 
+    /**
+     * exit() after su
+     */
     public void releaseSu() {
         try {
             Subject subject = SecurityUtils.getSubject();
