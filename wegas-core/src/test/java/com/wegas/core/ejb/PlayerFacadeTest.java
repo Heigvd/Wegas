@@ -11,6 +11,9 @@ import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.primitive.TextDescriptor;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.ArrayList;
@@ -130,6 +133,15 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
     public void testMassiveJoin() throws Exception {
         int nbTeam = 50;
         int nbPlayer = 10;
+
+        TextDescriptor pScoped = new TextDescriptor();
+        pScoped.setName("pScoped");
+        pScoped.setScope(new PlayerScope());
+        pScoped.setDefaultInstance(new TextInstance());
+
+        variableDescriptorFacade.create(gameModel.getId(), pScoped);
+
+
 
         login(trainer);
         Game g = new Game("game");
