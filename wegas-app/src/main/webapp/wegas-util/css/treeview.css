@@ -178,7 +178,7 @@
 .selected > div > .yui3-treeleaf-content-header,
 .selected > .yui3-treenode-content-header,
 .yui3-treeview-multiselect .sub-fully-selected > .yui3-treenode-content-header {
-    background-color: #d2e8ba; /* #b7cb90 #EDEDED; */
+    background-color: #A7CEF6; /* #D3ECF6 #EDEDED; */
     box-shadow: 0px 0px 1px #afc18e; /* #6D6D6D; */
 }
 

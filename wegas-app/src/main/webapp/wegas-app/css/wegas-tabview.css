@@ -36,7 +36,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background: #888686;
+    background: #A7CEF6;
     color: black;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -46,7 +46,7 @@
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab:hover .yui3-tab-label,
 .yui3-skin-sam .yui3-tab-label:hover,
 .yui3-skin-sam .yui3-tab-label:focus {
-    background: #5A5858;
+    background: #86BDF6;
 }
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab {
     width: 100%;
@@ -74,7 +74,7 @@
 .yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label,
 .yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label:focus,
 .yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label:hover {
-    background: #b7cb90;
+    background: #6AACF1;
     padding: 10px 0;
     color: white;
 }
@@ -178,7 +178,7 @@
     z-index: 24; /* Must be above editing panes */
     right: 0;
     top: 40px;
-    background: #b7cb90;
+    background: #6AACF1;
     color: white;
     cursor: pointer;
     padding: 3px 2px 3px 4px;

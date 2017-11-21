@@ -27,7 +27,7 @@
 }
 .yui3-skin-sam .host-switchmode.yui3-button-selected {
     background: white;
-    color: #03283A;
+    color: #6AACF1;
 }
  
 .yui3-skin-sam .wegas-editview {
@@ -57,7 +57,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 .wegas-comments {
     font-style: italic;
     margin-top: 25px !important;
-    border-top: solid 2px #b7cb90; /* New green theme, previous value: #4A8C9C; */
+    border-top: solid 2px #6AACF1;
     width: 30em;
 }
 
@@ -133,7 +133,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     bottom: 0px;
     width: 100%;
     overflow: hidden;
-    border-top: 4px solid #b7cb90 !important;
+    border-top: 4px solid #6AACF1 !important;
 }
 
 .yui3-skin-sam .wegas-layout-right .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
@@ -187,7 +187,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     font-size: 20px;
     top: 10px;
     margin-left: 10px;
-    background: #b7cb90;
+    background: #6AACF1;
     padding: 5px 0 0 0;
     color: white;
     border-radius: 10px 10px 0 0;
@@ -453,7 +453,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 }
 
 .yui3-skin-sam .wegas-layout-resizable .wegas-layout-column .yui3-resize-handle {
-    background: #b7cb90; /* New green background, previous value: #03283A; */
+    background: #6AACF1;
 }
 
 .wegas-layout-column > .wegas-list,
@@ -465,7 +465,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     top: 0;
     height: auto !important;
     bottom: 0;
-    /* border-top: 4px solid #b7cb90 !important; */
+    /* border-top: 4px solid #6AACF1 !important; */
 }
 
 .yui3-skin-sam .wegas-layout-column .yui3-tabview-list {
