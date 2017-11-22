@@ -7,8 +7,10 @@
  */
 package com.wegas.test;
 
+import com.wegas.core.exception.client.WegasErrorMessage;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -17,6 +19,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.ejb.embeddable.EJBContainer;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +60,72 @@ public class TestHelper {
             st.execute(sql);
         } catch (SQLException ex) {
             logger.error("Table reset (SQL: " + sql + ")", ex);
+        }
+    }
+
+    public static int getMissingIndexesCount() {
+        DataSource ds;
+        try {
+            ds = (DataSource) new InitialContext().lookup("jdbc/wegas_dev");
+        } catch (NamingException ex) {
+            throw WegasErrorMessage.error("No jdbc/wegas_dev !!!");
+        }
+
+        try (Connection connection = ds.getConnection("user", "1234");
+                Statement statement = connection.createStatement()) {
+            String createExtension = "CREATE EXTENSION IF NOT EXISTS intarray;";
+            statement.execute(createExtension);
+
+            String query = ""
+                    + "SELECT tablename, array_to_string(column_name_list, ',') AS fields, pg_index.indexrelid::regclass, 'CREATE INDEX index_' || relname || '_' ||\n"
+                    + "         array_to_string(column_name_list, '_') || ' on ' || tablename ||\n"
+                    + "         ' (' || array_to_string(column_name_list, ',') || ') ' AS create_query\n"
+                    + "FROM (\n"
+                    + "SELECT DISTINCT\n" // selection all attributes form constraints
+                    + "       tablename,\n"
+                    + "       array_agg(attname) AS column_name_list,\n"
+                    + "       array_agg(attnum) AS column_list\n"
+                    + "     FROM pg_attribute\n"
+                    + "          JOIN (SELECT tablename,\n"
+                    + "                 conname,\n"
+                    + "                 unnest(conkey) AS column_index\n"
+                    + "                FROM (\n"
+                    + "                   SELECT DISTINCT\n" // select all contraints
+                    + "                        conrelid::regclass as tablename,\n"
+                    + "                        conname,\n"
+                    + "                        conkey\n"
+                    + "                      FROM pg_constraint\n"
+                    + "                        JOIN pg_class ON pg_class.oid = conrelid\n"
+                    + "                        JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace\n"
+                    + "                      WHERE nspname !~ '^pg_' AND nspname <> 'information_schema'\n" // but internal ones
+                    + "                      ) fkey\n"
+                    + "               ) fkey\n"
+                    + "               ON fkey.tablename = pg_attribute.attrelid\n"
+                    + "                  AND fkey.column_index = pg_attribute.attnum\n"
+                    + "     GROUP BY tablename, conname\n"
+                    + "     ) AS candidate_index\n"
+                    + "JOIN pg_class ON pg_class.oid = candidate_index.tablename\n"
+                    + "LEFT JOIN pg_index ON pg_index.indrelid = tablename\n" // join indexes matching same attributes as the constraint
+                    + "                      AND array_to_string(sort(indkey), ' ') = array_to_string(sort(column_list), ' ')\n"
+                    + "WHERE indexrelid IS NULL;"; // finallay only keep contraints without indexes
+            ResultSet resultSet = statement.executeQuery(query);
+            int count = 0;
+
+            StringBuilder msg = new StringBuilder("Missing index(es):");
+
+            while (resultSet.next()) {
+                msg.append(System.lineSeparator()).append("  - ");
+                msg.append(resultSet.getString("tablename")).append(" / ").append(resultSet.getString("fields"));
+                msg.append(": ").append(resultSet.getString("create_query"));
+                count++;
+            }
+            if (count > 0) {
+                logger.error(msg.toString());
+            }
+            return count;
+        } catch (SQLException ex) {
+            logger.error("SQL Exception: {}", ex);
+            throw WegasErrorMessage.error("SQL Query error");
         }
     }
 

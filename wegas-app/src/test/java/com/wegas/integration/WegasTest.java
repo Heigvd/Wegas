@@ -18,6 +18,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.test.TestHelper;
 import com.wegas.utils.WegasRESTClient;
 import com.wegas.utils.WegasRESTClient.TestAuthenticationInformation;
 import java.io.IOException;
@@ -126,6 +127,11 @@ public class WegasTest {
     private void loadArtos() throws IOException, JSONException {
         logger.error("LOAD ARTOS");
         artos = client.postJSONFromFile("/rest/GameModel", "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json", GameModel.class);
+    }
+
+    @Test
+    public void testDatabaseIndexes(){
+        Assert.assertEquals("Some indexes are missing. Please create liquibase changesets. See log for details", 0, TestHelper.getMissingIndexesCount());
     }
 
     @Test
