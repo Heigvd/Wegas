@@ -58,6 +58,19 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
 
             this.toolbar.get("header").append(this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwygScript-viewsrc")
                 .append("Source"));
+
+            this.renderClearButton();
+        },
+        renderClearButton: function() {
+            this.toolbar.add(new Y.Wegas.Button({
+                label: "<span class=\"fa fa-eraser\"></span> Clear logs",
+                cssClass: "wegas-advanced-feature",
+                on: {
+                    click: Y.bind(function() {
+                        this.get("contentBox").one(".results").setHTML("");
+                    }, this)
+                }
+            }));
         },
         /**
          * @function

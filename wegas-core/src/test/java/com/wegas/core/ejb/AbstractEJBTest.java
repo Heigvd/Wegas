@@ -14,22 +14,29 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import javax.ejb.embeddable.EJBContainer;
+import javax.naming.NamingException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.NamingException;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class AbstractEJBTest {
+
+    @Rule
+    public TestName name = new TestName();
+
+    private long initTime;
+
+    private long startTime;
 
     // *** Static *** //
     private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
@@ -76,10 +83,11 @@ public class AbstractEJBTest {
      * Create a GameModel and a game with two teams (test-team and test-team2),
      * with, respectively, one and two players ("Player", "Player2", and
      * "Player21").
-     *
+     * <p>
      */
     @Before
     public void createGameModel() {
+        this.startTime = System.currentTimeMillis();
         gameModel = new GameModel();                                            // Create a game model
         gameModel.setName("test-gamemodel");
         gameModel.getProperties().setGuestAllowed(true);
@@ -111,10 +119,19 @@ public class AbstractEJBTest {
         player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
 
         RequestFacade.lookup().setPlayer(player.getId());
+
+        this.initTime = System.currentTimeMillis();
     }
 
     @After
     public void clear() throws NamingException {
+        long now = System.currentTimeMillis();
+        logger.error("TEST {} DURATION: total: {} ms; init: {} ms; test: {} ms",
+                name.getMethodName(),
+                now - this.startTime,
+                this.initTime - this.startTime,
+                now - this.initTime);
+
         TestHelper.wipeEmCache();
         RequestFacade rm = AbstractEJBTest.lookupBy(RequestFacade.class);
         rm.getRequestManager().setPlayer(null);

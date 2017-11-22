@@ -7,21 +7,18 @@
  */
 package com.wegas.resourceManagement.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.variable.Propertable;
-import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.variable.Propertable;
+import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 
 /**
  *
@@ -71,22 +68,12 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     @WegasEntityProperty
     private boolean active = true;
     /**
-     * @deprecated
-     */
-    @Transient
-    private Map<String, Long> skillsets;
-    /**
      *
      */
     @ElementCollection
     @JsonIgnore
     @WegasEntityProperty
     private List<VariableProperty> properties = new ArrayList<>();
-    /**
-     * @deprecated
-     */
-    @Transient
-    private Integer moral;
     /**
      *
      */
@@ -270,41 +257,6 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      */
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    /**
-     * @deprecated @return the skillset
-     */
-    @JsonIgnore
-    public Map<String, Long> getDeserializedSkillsets() {
-        return this.skillsets;
-    }
-
-    /**
-     * @deprecated @param skillsets
-     */
-    public void setSkillsets(Map<String, Long> skillsets) {
-        this.skillsets = skillsets;
-    }
-
-    /**
-     * @return the moral
-     *
-     * @deprecated
-     */
-    @JsonIgnore
-    public Integer getMoral() {
-        return this.moral;
-    }
-
-    /**
-     * @param moral the moral to set
-     *
-     * @deprecated
-     */
-    @JsonProperty
-    public void setMoral(int moral) {
-        this.moral = moral;
     }
 
     /**

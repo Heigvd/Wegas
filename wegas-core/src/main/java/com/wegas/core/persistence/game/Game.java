@@ -12,21 +12,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.User;
-
+import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
 import javax.validation.constraints.Pattern;
-import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -72,7 +70,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @NotNull
     @Basic(optional = false)
-    
+
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     @WegasEntityProperty
     private String token;
@@ -97,13 +95,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private User createdBy;
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore
-    private Set<GameAccount> gameAccounts;
 
     /**
      *
@@ -139,7 +130,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @Enumerated(value = EnumType.STRING)
-    
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -186,7 +177,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     public void preUpdate() {
         this.setUpdatedTime(new Date());
     }
-
 
     /**
      * @return the teams

@@ -27,24 +27,14 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.PusherChannelExistenceWebhook;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
 import com.wegas.core.security.util.SecurityHelper;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import io.prometheus.client.Gauge;
-import org.apache.shiro.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.cache.Cache;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -56,8 +46,19 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+import javax.cache.Cache;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -585,6 +586,46 @@ public class WebsocketFacade {
         return ou;
     }
 
+
+    /**
+     * @param user
+     * @param compareRoles
+     * @return true if user is member of at least on of the listed roles
+     */
+    private static boolean hasAnyRoles(User user, String... compareRoles) {
+        Set<Role> roles = user.getRoles();
+        Iterator<Role> rIt = roles.iterator();
+        while (rIt.hasNext()) {
+            Role role = rIt.next();
+            for (String r : compareRoles) {
+                if (role.getName().toUpperCase().equals(r.toUpperCase())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 0 means Admin, 1 Scenarist or Trainer, 2 Player and 3, Guest;
+     *
+     * @return
+     */
+    private int getHighestRole(User user) {
+        if (hasAnyRoles(user, "Administrator")) {
+            return 0;
+        } else if (hasAnyRoles(user, "Scenarist", "Trainer")) {
+            return 1;
+        } else {
+            // Registeered Player or guest ?
+            if (user.getMainAccount() instanceof GuestJpaAccount) {
+                return 3;
+            } else {
+                return 2;
+            }
+        }
+    }
+
     /**
      * Register user within internal onlineUser list
      *
@@ -592,7 +633,7 @@ public class WebsocketFacade {
      */
     private void registerUser(User user) {
         if (user != null && !onlineUsers.containsKey(user.getId())) {
-            onlineUsers.put(user.getId(), new OnlineUser(user));
+            onlineUsers.put(user.getId(), new OnlineUser(user, getHighestRole(user)));
 
             IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
             if (onlineUsersUpToDate.get() == 1) {

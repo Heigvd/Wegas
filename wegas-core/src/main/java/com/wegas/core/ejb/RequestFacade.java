@@ -52,7 +52,7 @@ public class RequestFacade {
      *
      */
     @EJB
-    private StateMachineFacade stateMachineRunner;
+    private StateMachineFacade stateMachineFacade;
 
     @Inject
     private GameModelFacade gameModelFacade;
@@ -121,10 +121,6 @@ public class RequestFacade {
         }
     }
 
-    public void runStateMachines(Player player) {
-        gameModelFacade.runStateMachines(player);
-    }
-
     /**
      *
      * @param player
@@ -139,7 +135,7 @@ public class RequestFacade {
         requestManager.getEntityManager().flush();
 
         if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
-            this.runStateMachines(player);
+            stateMachineFacade.runStateMachines(player);
             em.flush();
         }
     }

@@ -12,23 +12,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
-
-import javax.jcr.RepositoryException;
-import javax.persistence.*;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.jcr.RepositoryException;
+import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
-import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +92,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Enumerated(value = EnumType.STRING)
-    
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -727,9 +726,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return the pages
      */
     public Map<String, JsonNode> getPages() {
-        try (final Pages pagesDAO = new Pages(this.id)) {
-            return pagesDAO.getPagesContent();
-        } catch (RepositoryException ex) {
+        // do not even try to fetch pages from repository if the gamemodel define a pagesURI
+        if (Helper.isNullOrEmpty(getProperties().getPagesUri()))  {
+            try (final Pages pagesDAO = new Pages(this.id)) {
+                return pagesDAO.getPagesContent();
+            } catch (RepositoryException ex) {
+                return new HashMap<>();
+            }
+        } else {
             return new HashMap<>();
         }
     }

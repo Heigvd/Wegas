@@ -77,7 +77,7 @@ public class Pages implements AutoCloseable {
             Node n = (Node) it.next();
             Page p = new Page(n);
             //pageMap.put(p.getId().toString(),  p.getContent());
-            ret.put(p.getId(), p.getContent());
+            ret.put(p.getId(), p.getContentWithMeta());
         }
         //this.connector.close();
 
@@ -118,7 +118,7 @@ public class Pages implements AutoCloseable {
      * @throws RepositoryException
      */
     public void setMeta(Page page) throws RepositoryException {
-        Node n = this.connector.addChild(page.getId());
+        Node n = this.connector.getChild(page.getId());
         if (page.getName() != null) {
             n.setProperty(Page.NAME_KEY, page.getName());
         }

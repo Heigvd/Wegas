@@ -16,7 +16,7 @@ angular.module('private.admin.who', [
             });
     })
 
-    .controller('AdminWhoCtrl', function AdminWhoCtrl($state, $scope, $rootScope, Auth, WegasPusher, $timeout) {
+    .controller('AdminWhoCtrl', function AdminWhoCtrl($state, $scope, $http, $rootScope, Auth, WegasPusher, $timeout) {
         "use strict";
         var ctrl = this;
         ctrl.who = [];
@@ -53,15 +53,26 @@ angular.module('private.admin.who', [
             });
 
         };
-
+        ctrl.beByAccountId = function(accountId, name) {
+            if (!window.confirm("Reload to pretend to be \"" + name + "\"?")) {
+                return;
+            }
+            $http.post("rest/User/Be/" + accountId).success(function(result) {
+                window.location.reload();
+            });
+        };
         ctrl.getConnectionDate = function(user) {
             var d =new Date(user.connectionDate);
             return d.toLocaleString()
         };
 
-        $rootScope.$on('wegaspusher:update-members', function(e) {
+        $rootScope.$on('wegaspusher:update-members', function(e, data) {
             ctrl.message = "";
-            ctrl.updateWhoList();
+            ctrl.who = data;
+            if (!$rootScope.$$phase) {
+                $scope.$apply();
+            }
+            // ctrl.updateWhoList();
         });
 
         $rootScope.$on('wegaspusher:service-error', function(e, msg) {

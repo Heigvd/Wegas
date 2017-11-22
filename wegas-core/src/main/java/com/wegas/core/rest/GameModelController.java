@@ -7,27 +7,27 @@
  */
 package com.wegas.core.rest;
 
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataParam;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.merge.ejb.MergeFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wegas.core.merge.ejb.MergeFacade;
-import java.util.List;
-import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.subject.Subject;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,8 +230,7 @@ public class GameModelController {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8") // @hack force utf-8 charset
-    @Path("{entityId : [1-9][0-9]*}/{filename: .*}.json") // @hack allow to add a filename with *.json to have a nice file
+    @Path("{entityId : [1-9][0-9]*}/{filename: .*\\.json}")
     public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) {
         return Response.ok(this.get(entityId))
                 .header("Content-Disposition", "attachment; filename=" + filename).build();
