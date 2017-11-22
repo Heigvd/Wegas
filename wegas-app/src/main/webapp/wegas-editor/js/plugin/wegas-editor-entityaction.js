@@ -154,14 +154,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             }
                         }
                     });
-                    var tb = form.toolbar,
-                        sz = tb.size();
-                    if (sz > 1){
-                        // Remove any pre-existing buttons, except the "Save" button at position 0:
-                        for (var i = sz-1; i > 0; i--){
-                            tb.remove(i);
-                        }
-                    }
+                    
                     form.toolbar.add(menuItems);
                     //if (form.toolbar.item(0)) { form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px"); }
                     resolve(form);
@@ -237,8 +230,15 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             EditEntityAction.currentEntity = entity;
 
             var tab = EditEntityAction.getEditionTab(),
-                name = entity.getType().replace("Descriptor", "").replace("Instance", "");
-
+                name = entity.getType().replace("Descriptor", "").replace("Instance", ""),
+                tb = tab.form.toolbar,
+                    sz = tb.size();
+                if (sz > 1) {
+                    // Remove any pre-existing buttons, except the "Save" button at position 0:
+                    for (var i = sz - 1; i > 0; i--) {
+                        tb.remove(i);
+                    }
+                }
             if (!entity.get(ID) && !(entity instanceof Y.Widget)) {             // No id -> new entity
                 name = "New " + name.toLowerCase();
             }
