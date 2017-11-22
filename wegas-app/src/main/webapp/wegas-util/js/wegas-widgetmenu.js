@@ -192,9 +192,10 @@ YUI.add('wegas-widgetmenu', function(Y) {
      * @augments Y.WidgetParent
      * @augments Y.WidgetPositionConstrain
      */
-    Menu = Y.Base.create("menu", MenuBar,
-        [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetPositionConstrain, Y.WidgetStack], {
+    Menu = Y.Base.create("menu", Y.Widget,
+        [Y.WidgetParent, Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetPositionConstrain, Y.WidgetStack], {
             /** @lends Y.Wegas.Menu# */
+            CONTENT_TEMPLATE: null,
             // *** Lifecycle methods *** //
             initializer: function() {
                 this.publish("cancelMenuTimer", {
@@ -275,6 +276,9 @@ YUI.add('wegas-widgetmenu', function(Y) {
         {
             /** @lends Y.Wegas.Menu */
             ATTRS: {
+                defaultChildType: {
+                    value: Y.Wegas.Button
+                },
                 points: {
                     value: ["tl", "bl"]
                 },
