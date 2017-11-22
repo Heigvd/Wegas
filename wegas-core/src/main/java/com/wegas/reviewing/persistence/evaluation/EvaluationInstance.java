@@ -256,6 +256,12 @@ public abstract class EvaluationInstance extends AbstractEntity {
         return this.getEffectiveReview().getRequieredUpdatePermission();
     }
 
+    /*
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        return this.getEffectiveReview().getRequieredDeletePermission();
+    }*/
+
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getEffectiveReview().getRequieredReadPermission();

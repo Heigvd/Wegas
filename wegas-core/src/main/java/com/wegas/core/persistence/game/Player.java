@@ -472,11 +472,11 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
-    @Override
+    /*@Override
     public Collection<WegasPermission> getRequieredDeletePermission() {
         // One must have the right to delete its own team from the game
         return this.getGame().getGameTeams().getRequieredUpdatePermission();
-    }
+    }*/
 
     @Override
     public WegasPermission getAssociatedReadPermission() {

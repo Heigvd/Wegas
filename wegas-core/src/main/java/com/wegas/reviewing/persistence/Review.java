@@ -281,6 +281,17 @@ public class Review extends AbstractEntity implements DatedEntity {
         }
     }
 
+    /*
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        Collection<WegasPermission> p = new ArrayList<>();
+        p.addAll(getReviewer().getRequieredUpdatePermission());
+        p.addAll(getAuthor().getRequieredUpdatePermission());
+
+        return p;
+    }
+     */
+
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         ArrayList<WegasPermission> p = new ArrayList<>(this.getAuthor().getRequieredReadPermission());
