@@ -171,7 +171,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
     /**
      *
      */
-    MenuBar = Y.Base.create("menubar", Y.Widget, [Y.WidgetParent], {
+    MenuBar = Y.Base.create("menubar", Y.Widget, [Y.WidgetParent, Y.Wegas.Parent], {
         CONTENT_TEMPLATE: null
     }, {
         ATTRS: {
