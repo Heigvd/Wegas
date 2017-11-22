@@ -11,8 +11,13 @@ export default class ArgFrom extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            schema: argSchema(props.schema)
+            schema: argSchema(props.schema),
         };
+    }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.schema !== this.props.schema) {
+            this.setState({ schema: argSchema(nextProps.schema) });
+        }
     }
     shouldComponentUpdate(nextProps) {
         return (
@@ -26,17 +31,17 @@ export default class ArgFrom extends React.Component {
             )
         );
     }
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.schema !== this.props.schema) {
-            this.setState({ schema: argSchema(nextProps.schema) });
-        }
-    }
     render() {
         const { value, onChange } = this.props;
         const { schema } = this.state;
         // Reduce unary minus operator to a simple literal to make matching work:
         let negativeValue;
-        if (value && value.type === 'UnaryExpression' && value.operator === '-' && value.argument.type === 'Literal') {
+        if (
+            value &&
+            value.type === 'UnaryExpression' &&
+            value.operator === '-' &&
+            value.argument.type === 'Literal'
+        ) {
             negativeValue = b.literal(-value.argument.value);
         }
         const val = negativeValue || value || valueToType(undefined, schema);
@@ -58,5 +63,5 @@ export default class ArgFrom extends React.Component {
 ArgFrom.propTypes = {
     schema: PropTypes.object.isRequired,
     value: PropTypes.any,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
 };

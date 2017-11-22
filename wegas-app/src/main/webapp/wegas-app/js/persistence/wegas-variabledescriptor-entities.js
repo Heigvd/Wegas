@@ -1473,6 +1473,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         SELFARG,
                         {
                         type: STRING,
+                        required:true,
                             view: { label: 'From', layout: 'long' }
                         },
                         {
@@ -1500,6 +1501,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         },
                         {
                             type: 'array',
+                            value: [],
                             view: { label: 'Attachments'},
                             items: {
                         type: STRING,

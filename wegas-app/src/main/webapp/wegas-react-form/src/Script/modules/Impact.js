@@ -85,8 +85,9 @@ class Impact extends React.Component {
                         this.state.method
                     )
                 ) {
-                    return `No global ${this.state.member}.${this.state
-                        .method}`;
+                    return `No global ${this.state.member}.${
+                        this.state.method
+                    }`;
                 }
             }
             if (this.state.variable && !varExist(this.state.variable)) {
@@ -114,12 +115,13 @@ class Impact extends React.Component {
                     (v, i) => this.state.args[i] || valueToType(undefined, v)
                 );
                 this.setState(
-                    {
+                    () => ({
                         args: mergedArgs,
-                    },
-                    this.props.onChange(
-                        buildMethod(this.state, this.props.type)
-                    )
+                    }),
+                    () =>
+                        this.props.onChange(
+                            buildMethod(this.state, this.props.type)
+                        )
                 );
             } catch (e) {
                 console.error(e);
@@ -198,11 +200,9 @@ class Impact extends React.Component {
                 <Form
                     schema={upgradeSchema(variableSchema(view.variable), type)}
                     value={
-                        this.state.global ? (
-                            `${this.state.member}.${this.state.method}`
-                        ) : (
-                            this.state.variable
-                        )
+                        this.state.global
+                            ? `${this.state.member}.${this.state.method}`
+                            : this.state.variable
                     }
                     onChange={this.handleVariableChange}
                 />
@@ -222,7 +222,8 @@ class Impact extends React.Component {
                                         method: v,
                                     },
                                     this.checkVariableMethod
-                                )}
+                                )
+                            }
                         />
                     </div>
                 );
@@ -246,9 +247,15 @@ class Impact extends React.Component {
                             value={args[i]}
                             onChange={v => {
                                 this.setState(prevState => {
-                                    const prevArgs = prevState.args;
-                                    prevArgs[i] = v;
-                                    return { args: prevArgs };
+                                    const newArgs = prevState.args.map(
+                                        (a, j) => {
+                                            if (i === j) {
+                                                return v;
+                                            }
+                                            return a;
+                                        }
+                                    );
+                                    return { args: newArgs };
                                 }, this.checkVariableMethod);
                             }}
                         />
