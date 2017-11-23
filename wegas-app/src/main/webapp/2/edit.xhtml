@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:h="http://java.sun.com/jsf/html">
 <h:head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -30,15 +30,8 @@
             cluster: "#{editorGameController.getWegasProperty('pusher.cluster')}"
         };
     </script>
-    <ui:fragment rendered="#{requestController.debugMode()}">
-        <script type="application/javascript" src="/dist/manifest.js"/>
-        <script type="application/javascript" src="/dist/vendors.js"/>
-        <script type="application/javascript" src="/dist/editor.js"/>
-    </ui:fragment>
-    <ui:fragment rendered="#{!requestController.debugMode()}">
-        <script type="application/javascript" src="dist/manifest.js"/>
-        <script type="application/javascript" src="dist/vendors.js"/>
-        <script type="application/javascript" src="dist/editor.js"/>
-    </ui:fragment>
+    <script type="application/javascript" src="dist/manifest.js"/>
+    <script type="application/javascript" src="dist/vendors.js"/>
+    <script type="application/javascript" src="dist/editor.js"/>
 </h:body>
 </html>
