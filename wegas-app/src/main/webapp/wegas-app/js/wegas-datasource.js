@@ -498,8 +498,8 @@ YUI.add('wegas-datasource', function(Y) {
         },
         updateIndexes: function(oldAttrs, newAttrs) {
             var indexedKey, index, oldKey, newKey;
-            this.drop(this.getChildren(oldAttrs) || [])
-            this.insert(this.getChildren(newAttrs) || []);
+            this.drop(this._getChildren(oldAttrs) || []);
+            this.insert(this._getChildren(newAttrs) || []);
             for (indexedKey in this._indexes) {
                 if (this._indexes.hasOwnProperty(indexedKey)) {
                     index = this._indexes[indexedKey];
