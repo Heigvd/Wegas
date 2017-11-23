@@ -174,6 +174,14 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     }]
             }, {
                 type: "DeleteEntityButton"
+            },{
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }],
         /**
          * WYSIWYG editor

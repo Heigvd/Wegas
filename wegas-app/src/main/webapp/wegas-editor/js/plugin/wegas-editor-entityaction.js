@@ -104,8 +104,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             }
                         });
                     }),
-                        // Retrieve menu and remove the TWO first items (the "Save" button and "Search for usages")
-                        menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(2), function(i) {
+                        // Retrieve menu and remove the first items (the "Save" button)
+                        menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
                             return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
                         }),
                         allowedChildren;
@@ -151,6 +151,9 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 case "Export":
                                     i = EditEntityAction.stackedIcon(i, 'fa-download',  'Export');
                                     break;
+
+                                case "Search for usages":
+                                    i = EditEntityAction.stackedIcon(i, 'fa-compass', 'Find usage');
                             }
                         }
                     });
@@ -301,7 +304,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
             return tab.form;
         },
-        /*
+        /**
          * Adds icon, styling and tooltip to a button being created. Uses Font Awesome icons.
          *
          * @param menuItem the button being created
@@ -766,7 +769,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             var scriptAlias = this.get(ENTITY).get("name"),
                 searchField = Y.one('.wegas-filter-input input'),
                 searchBtn = Y.one('.wegas-filter-input button');
-            searchField.set("value", scriptAlias);
+            searchField.set('value', '"' + scriptAlias + '"');
             searchField.focus()
             YUI().use('node-event-simulate', function(Y) {
                 searchBtn.simulate("click");

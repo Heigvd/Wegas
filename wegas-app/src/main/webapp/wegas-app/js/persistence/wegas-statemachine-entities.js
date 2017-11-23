@@ -266,6 +266,14 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                         }]
                     }
                 }]
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }
             ],
             METHODS: {
@@ -536,6 +544,14 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 }]
             }, {
                 type: "DeleteEntityButton"
+            },{
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }]
         });
     /*
@@ -639,6 +655,14 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 }]
             }, {
                 type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }]
         });
 

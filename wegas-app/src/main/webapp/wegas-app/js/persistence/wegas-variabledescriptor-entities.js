@@ -359,15 +359,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 {
                 type: BUTTON,
-                    label: 'Search for usages',
-                    plugins: [
-                        {
-                            fn: 'SearchEntityAction'
-                        }
-                    ]
-                },
-                {
-                type: BUTTON,
                     label: 'Copy',
                     plugins: [
                         {
@@ -413,6 +404,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         }
                                 ]
                             }
+                        }
+                    ]
+                },
+                {
+                    type: BUTTON,
+                    label: 'Search for usages',
+                    plugins: [
+                        {
+                            fn: 'SearchEntityAction'
                         }
                     ]
                 },
@@ -1325,6 +1325,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         }
                                 ]
                             }
+                        }
+                    ]
+                },
+                {
+                    type: BUTTON,
+                    label: 'Search for usages',
+                    plugins: [
+                        {
+                            fn: 'SearchEntityAction'
                         }
                     ]
                 },

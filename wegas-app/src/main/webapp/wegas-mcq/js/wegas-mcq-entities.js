@@ -157,7 +157,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
         },
         EDITMENU: [{
                 type: "EditEntityButton"
-            }, {
+            },
+            {
                 type: BUTTON,
                 label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
                 plugins: [{
@@ -192,6 +193,14 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     }]
             }, {
                 type: "DeleteEntityButton"
+            },{
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }],
         /**
          * Defines methods available in wysiwyge script editor
@@ -385,7 +394,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             EDITMENU: [{
                     type: "EditEntityButton"
-                }, {
+                },
+                {
                     type: BUTTON,
                     label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
                     plugins: [{
@@ -405,6 +415,14 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         }]
                 }, {
                     type: "DeleteEntityButton"
+                }, {
+                    type: BUTTON,
+                    label: 'Search for usages',
+                    plugins: [
+                        {
+                            fn: 'SearchEntityAction'
+                        }
+                    ]
                 }],
             METHODS: {
                 activate: {
@@ -658,7 +676,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
             EDITORNAME: "Choice",
             EDITMENU: [{
                     type: "EditEntityButton"
-                }, {
+                },
+                {
                     type: BUTTON,
                     label: "Copy",
                     plugins: [{
@@ -666,6 +685,14 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         }]
                 }, {
                     type: "DeleteEntityButton"
+                }, {
+                    type: BUTTON,
+                    label: 'Search for usages',
+                    plugins: [
+                        {
+                            fn: 'SearchEntityAction'
+                        }
+                    ]
                 }],
             METHODS: {
                 activate: {
@@ -869,6 +896,14 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             attributeKey: "results"
                         }
                     }]
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }]
     });
     /**
