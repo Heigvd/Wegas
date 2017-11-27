@@ -70,39 +70,6 @@ module.exports = {
     module: {
         rules: [
             {
-                // react-tinymce uses APIs removed from React core, rewrite accesses to them
-                // with accesses to the modules that provide those APIs
-                // this can be removed once react-tinymce supports react 16.
-                test: /react-tinymce\/lib\/components\/TinyMCE.js$/,
-                enforce: 'pre',
-                use: [
-                    {
-                        loader: 'imports-loader',
-                        options: {
-                            __import_PropTypes: 'prop-types',
-                            __import_createClass: 'create-react-class',
-                        },
-                    },
-                    {
-                        loader: 'string-replace-loader',
-                        options: {
-                            multiple: [
-                                {
-                                    search: String.raw`_react2\['default'\].PropTypes`,
-                                    replace: '__import_PropTypes',
-                                    flags: 'g',
-                                },
-                                {
-                                    search: String.raw`_react2\['default'\].createClass`,
-                                    replace: '__import_createClass',
-                                    flags: 'g',
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-            {
                 test: /\.tsx?$/,
                 loader: 'awesome-typescript-loader',
                 exclude: /node_modules/,
