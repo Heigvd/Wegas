@@ -320,7 +320,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
                         //iconCSS: "wegas-icon-variabledescriptor wegas-icon-" + elClass.toLowerCase(),
                         iconCSS: entity.getIconCss(),
-                        cssClass: "wegas-editor-listitem " + advancedClass
+                        cssClass: "wegas-editor-listitem wegas-treeview-advanced-children" + advancedClass
                     };
                 case 'ListDescriptor':
                     node = {
@@ -509,6 +509,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 label: label,
                 selected: selected,
                 iconCSS: iconCss,
+                cssClass: 'wegas-advanced-feature',
                 data: {
                     entity: el
                 }

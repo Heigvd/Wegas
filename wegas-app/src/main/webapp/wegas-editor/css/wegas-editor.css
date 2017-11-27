@@ -78,6 +78,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
     font-style: italic;
 }
 
+.wegas-stdmode .wegas-treeview-advanced-children .yui3-treenode-content-toggle{
+    display: none
+}
 .editor-administrator-button,
 .wegas-rolerights-tab {
     display: none;
