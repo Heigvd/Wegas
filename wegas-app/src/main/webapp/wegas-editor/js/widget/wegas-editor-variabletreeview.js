@@ -82,36 +82,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 }
             });
             */
+            
             this._searchBttn = new Y.Button({
                 render: this.get("boundingBox").one(".wegas-filter-input"),
                 label: "<span title='Search in all fields'>Full</span>",
                 on: {
-                    click: Y.bind(function() {
-                        var btnBox = this._searchBttn.get("boundingBox");
-                        Y.Wegas.DataSource.abort(this.req);
-                        if (!this.searchVal) {
-                            var inputValue = Y.one(".wegas-filter-input input").get("value");
-                            if (inputValue === "") {
-                                return;
-                            } else {
-                                this.searchVal = inputValue;
-                                this.checkSearchField({
-                                    newVal: inputValue,
-                                    prevVal: ""
-                                }, true);
-                            }
-                        }
-                        btnBox.addClass("loading");
-                        this.req = Y.Wegas.Facade.Variable.cache.remoteSearch(this.searchVal, Y.bind(function(results) {
-                            btnBox.removeClass("loading");
-                            this.setAttrs({
-                                testFn: function(val) {
-                                    return val.indexOf(this.get("data.entity").get("id")) > -1;
-                                },
-                                searchVal: "--" + results.join("--")
-                            });
-                        }, this.treeView.filter), false /*Exact match*/);
-                    }, this)
+                    click: Y.bind(this.serverSearch, this)
                 }
             });
             this._timer.on("timeOut", function() {
@@ -564,6 +540,32 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 default:
             }
             return node;
+        },
+        serverSearch :function() {
+            var btnBox = this._searchBttn.get("boundingBox");
+            Y.Wegas.DataSource.abort(this.req);
+            if (!this.searchVal) {
+                var inputValue = Y.one(".wegas-filter-input input").get("value");
+                if (inputValue === "") {
+                    return;
+                } else {
+                    this.searchVal = inputValue;
+                    this.checkSearchField({
+                        newVal: inputValue,
+                        prevVal: ""
+                    }, true);
+                }
+            }
+            btnBox.addClass("loading");
+            this.req = Y.Wegas.Facade.Variable.cache.remoteSearch(this.searchVal, Y.bind(function(results) {
+                btnBox.removeClass("loading");
+                this.setAttrs({
+                    testFn: function(val) {
+                        return val.indexOf(this.get("data.entity").get("id")) > -1;
+                    },
+                    searchVal: "--" + results.join("--")
+                });
+            }, this.treeView.filter), false /*Exact match*/);
         },
         checkSearchField: function(e, noTimer) {
             //var arrSearch;

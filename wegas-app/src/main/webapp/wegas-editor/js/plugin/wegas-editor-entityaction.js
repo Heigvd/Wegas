@@ -760,20 +760,29 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
     /**
      * @class
-     * @name Y.Plugin.DuplicateEntityAction
+     * @name Y.Plugin.SearchEntityAction
      * @extends Y.Plugin.EntityAction
      * @constructor
      */
     SearchEntityAction = Y.Base.create("SearchEntityAction", EntityAction, [], {
         execute: function() {
-            var scriptAlias = this.get(ENTITY).get("name"),
+            var scriptAlias = this.get(ENTITY).get('name'),
                 searchField = Y.one('.wegas-filter-input input'),
-                searchBtn = Y.one('.wegas-filter-input button');
-            searchField.set('value', '"' + scriptAlias + '"');
-            searchField.focus()
-            YUI().use('node-event-simulate', function(Y) {
-                searchBtn.simulate("click");
-            });
+                searchBtn = Y.one('.wegas-filter-input button'),
+                currentSearch = searchField.get('value'),
+                searchValue = '"' + scriptAlias + '"';
+            if (currentSearch === searchValue) {
+                // Seems we are already searching for this entity. Removing search
+                searchField.set('value', '');
+                Y.Widget.getByNode(searchField).checkSearchField({
+                    prevVal: searchValue,
+                    newVal: ''
+                });
+            } else {
+                searchField.set('value', searchValue);
+                Y.Widget.getByNode(searchField).checkSearchField({ prevVal: currentSearch, newVal: searchValue }, true);
+                Y.Widget.getByNode(searchField).serverSearch();
+            }
         }
     }, {
         NS: "SearchEntityAction"
