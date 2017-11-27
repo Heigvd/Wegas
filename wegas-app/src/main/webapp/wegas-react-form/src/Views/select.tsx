@@ -56,25 +56,25 @@ const selectContainerStyle = css({
 function genItems(o: string | Choice, i: number) {
     if (typeof o !== 'object') {
         return (
-            <option key={`k-${o}`} value={o}>
+            <option key={`k-${o}`} value={JSON.stringify(o)}>
                 {o}
             </option>
         );
     }
-    const { label = o.value, value, disabled, selected } = o;
+    const { label = o.value, value, disabled } = o;
     return (
         <option
             key={`k-${value}`}
             value={JSON.stringify(value)}
             disabled={disabled}
-            selected={selected}
         >
             {label}
         </option>
     );
 }
 
-const title = {
+const title: Choice = {
+    value: '[[[default]]]',
     label: '- please select -',
     selected: true,
     disabled: true,
@@ -86,12 +86,12 @@ function SelectView(props: ISelectProps) {
     ) {
         props.onChange(JSON.parse(event.target.value));
     };
-    const choices: (Choice | string)[] = props.view.choices || [];
-    const menuItems = ([title] as (Choice | string | typeof title)[])
-        .concat(choices)
-        .map(genItems);
+    const choices: (Choice | string)[] = ([title] as (
+        | Choice
+        | string)[]).concat(props.view.choices || []);
+    const menuItems = choices.map(genItems);
     const hidden = props.view.hidden ? `${hiddenStyle}` : '';
-    const value = JSON.stringify(props.value);
+    const value = JSON.stringify(props.value) || JSON.stringify(title.value);
     return (
         <select
             id={props.id}

@@ -29,8 +29,8 @@
     "react-color": "^2.13.8",
     "react-dom": "^16.1.1",
     "react-tinymce": "^0.7.0",
-    "react-widgets": "^3.5.0",
-    "recast": "^0.12.9"
+    "react-widgets": "^4.1.1",
+    "recast": "^0.13.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.0",
