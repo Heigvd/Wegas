@@ -7,7 +7,7 @@ enum STATUS {
 }
 
 type PromiseProps<I, O> = (props: I) => Promise<O> | O;
-function promised<P, O>(Comp: React.ComponentClass<{}> | React.SFC<{}>) {
+function promised<P, O>(Comp: React.ComponentType<O>) {
     return (promising: PromiseProps<P, O>) => {
         interface IAsyncState {
             result?: O;

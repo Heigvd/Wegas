@@ -80,15 +80,12 @@ interface IValue {
     cfg: { [key: string]: any };
 }
 const Y = getY();
-const AsyncForm = load(
-    ({
-        value,
-        onChange,
-    }: {
-        value: IValue;
-        onChange: (value: IValue) => void;
-    }) => {
-        return new Promise(resolve => {
+const AsyncForm = load<{
+    value: IValue;
+    onChange: (value: IValue) => void;
+}>(
+    ({ value, onChange }) => {
+        return new Promise((resolve, reject) => {
             let schema: Schema;
             if (value && value.fn) {
                 Y.Wegas.use({ type: value.fn }, () => {

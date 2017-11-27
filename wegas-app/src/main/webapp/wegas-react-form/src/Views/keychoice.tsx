@@ -6,21 +6,20 @@ import IconButton from '../Components/IconButton';
 import Select from './select';
 import { css } from 'glamor';
 
-function filterChildren(
+function filterChildren<P extends { editKey: string }>(
     properties: string[],
-    children?: (
-        | React.ComponentClass<{ editKey: string }>
-        | React.SFC<{ editKey: string }>)[]
+    children?: (React.ComponentType<P>)[]
 ) {
-    const child: React.ReactChild[] = [];
-    React.Children.forEach(
-        children,
-        (c: React.ReactChild & { props: { editKey: string } }) => {
-            if (properties.includes(c.props.editKey)) {
-                child.push(c);
-            }
+    const child: React.ReactElement<P>[] = [];
+    React.Children.forEach(children, c => {
+        if (
+            properties.includes(
+                (c as React.ReactElement<P>).props.editKey
+            )
+        ) {
+            child.push(c as React.ReactElement<P>);
         }
-    );
+    });
     return child;
 }
 interface IKeyChoiceProps {
@@ -36,38 +35,37 @@ function KeyChoice(props: WidgetProps.ObjectProps & IKeyChoiceProps) {
     );
     return (
         <div>
-            {filterChildren(
-                valueKeys,
-                props.children
-            ).map((c: React.ReactElement<any>) => {
-                return (
-                    <div key={c.props.editKey}>
-                        <IconButton
-                            icon="fa fa-trash"
-                            onClick={() => props.removeKey(c.props.editKey)}
-                        />
-                        <Select
-                            id={props.id}
-                            view={{
-                                choices: keys.concat(c.props.editKey),
-                                className: css({
-                                    display: 'inline-block',
-                                }).toString(),
-                            }}
-                            value={c.props.editKey}
-                            onChange={(value: string) => {
-                                const v = {
-                                    ...props.value,
-                                    [value]: undefined,
-                                };
-                                delete v[c.props.editKey];
-                                props.onChange(v);
-                            }}
-                        />
-                        {c}
-                    </div>
-                );
-            })}
+            {filterChildren(valueKeys, props.children).map(
+                (c: React.ReactElement<any>) => {
+                    return (
+                        <div key={c.props.editKey}>
+                            <IconButton
+                                icon="fa fa-trash"
+                                onClick={() => props.removeKey(c.props.editKey)}
+                            />
+                            <Select
+                                id={props.id}
+                                view={{
+                                    choices: keys.concat(c.props.editKey),
+                                    className: css({
+                                        display: 'inline-block',
+                                    }).toString(),
+                                }}
+                                value={c.props.editKey}
+                                onChange={(value: string) => {
+                                    const v = {
+                                        ...props.value,
+                                        [value]: undefined,
+                                    };
+                                    delete v[c.props.editKey];
+                                    props.onChange(v);
+                                }}
+                            />
+                            {c}
+                        </div>
+                    );
+                }
+            )}
             <IconButton
                 icon="fa fa-plus"
                 onClick={() => props.addKey(keys[0])}

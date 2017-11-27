@@ -38,47 +38,45 @@ class HashlistView extends React.Component<
     }
     render() {
         const { id, removeKey, alterKey, children, ...restProps } = this.props;
-        const newChildren = React.Children.map(
-            children,
-            (child: React.ReactElement<any>) => {
-                function remove() {
-                    removeKey(child.props.editKey);
-                }
-
-                function onKeyChange(value: string) {
-                    alterKey(child.props.editKey, value);
-                }
-
-                return (
-                    <div>
-                        <IconButton
-                            icon="fa fa-trash"
-                            tooltip="Remove property"
-                            onClick={remove}
-                        />
-                        <div
-                            style={{ position: 'relative' }}
-                            ref={node => {
-                                if (node !== null) {
-                                    this.child[child.props.editKey] = node;
-                                }
-                            }}
-                        >
-                            <TextField
-                                id={id}
-                                value={child.props.editKey}
-                                onChange={onKeyChange}
-                                view={{
-                                    label: this.props.view.keyLabel || 'Key',
-                                    style: halfWidth,
-                                }}
-                            />
-                            <div style={halfWidth}>{child}</div>
-                        </div>
-                    </div>
-                );
+        const newChildren = React.Children.map(children, child => {
+            const c = child as React.ReactElement<{ editKey: string }>;
+            function remove() {
+                removeKey(c.props.editKey);
             }
-        );
+
+            function onKeyChange(value: string) {
+                alterKey(c.props.editKey, value);
+            }
+
+            return (
+                <div>
+                    <IconButton
+                        icon="fa fa-trash"
+                        tooltip="Remove property"
+                        onClick={remove}
+                    />
+                    <div
+                        style={{ position: 'relative' }}
+                        ref={node => {
+                            if (node !== null) {
+                                this.child[c.props.editKey] = node;
+                            }
+                        }}
+                    >
+                        <TextField
+                            id={id}
+                            value={c.props.editKey}
+                            onChange={onKeyChange}
+                            view={{
+                                label: this.props.view.keyLabel || 'Key',
+                                style: halfWidth,
+                            }}
+                        />
+                        <div style={halfWidth}>{child}</div>
+                    </div>
+                </div>
+            );
+        });
         /*
         <TextField
             id={id}

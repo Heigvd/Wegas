@@ -27,7 +27,7 @@ export default function labeled<P extends { id: string }>(
     Comp: React.ComponentClass<P> | React.SFC<P>,
     cssContainer = '',
     suffixed = false
-) {
+): React.ComponentClass<P & ILabelProps> {
     class Labeled extends React.Component<P & ILabelProps> {
         id: string;
         constructor(props: P & ILabelProps) {

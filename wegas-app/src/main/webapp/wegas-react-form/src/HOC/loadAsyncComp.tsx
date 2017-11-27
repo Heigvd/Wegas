@@ -22,7 +22,7 @@ const loaderStyle = css({
 const SimpleLoader = () => <div {...loaderStyle} />;
 /**
  * Resolve an asynchronous component on mount.
- * Promise is resolved only once.
+ * Promise is resolved only once, on mount.
  * Passes props through
  *
  * @param asyncCallback Calls this function when mounting
@@ -36,7 +36,7 @@ function asyncComp<P>(
 ) {
     return class AsyncComponent extends React.Component<
         P,
-        { Comp: React.ComponentType }
+        { Comp: React.ComponentType<any> }
     > {
         unmount: boolean = false;
         constructor(props: P) {

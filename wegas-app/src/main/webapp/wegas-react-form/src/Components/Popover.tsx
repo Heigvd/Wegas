@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface IPopoverProps {
-    onClickOutside?: (event: MouseEvent) => void;
+    onClickOutside?: (event: { target: EventTarget }) => void;
     show: boolean;
 }
 class Popover extends React.Component<IPopoverProps> {
@@ -40,9 +40,13 @@ class Popover extends React.Component<IPopoverProps> {
     componentWillUnmount() {
         this.unTrack();
     }
-    checkClickOutside(event: MouseEvent) {
-        if (this.container && !this.container.contains(event.target as Node)) {
-            (this.props.onClickOutside as ((event: MouseEvent) => void))(event); // default props not handled.
+    checkClickOutside(event: { target: EventTarget }) {
+        if (
+            this.props.onClickOutside &&
+            this.container &&
+            !this.container.contains(event.target as Node)
+        ) {
+            this.props.onClickOutside(event); // default props not handled.
         }
     }
     render() {
