@@ -22,6 +22,7 @@ export default class ArgFrom extends React.Component {
     shouldComponentUpdate(nextProps) {
         return (
             this.props.schema !== nextProps.schema ||
+            this.props.entity !== nextProps.entity ||
             !!(
                 nextProps.value &&
                 this.props.value &&
@@ -32,8 +33,9 @@ export default class ArgFrom extends React.Component {
         );
     }
     render() {
-        const { value, onChange } = this.props;
+        const { value, onChange, entity } = this.props;
         const { schema } = this.state;
+        const s = { ...schema, view: { ...schema.view, entity } };
         // Reduce unary minus operator to a simple literal to make matching work:
         let negativeValue;
         if (
@@ -48,7 +50,7 @@ export default class ArgFrom extends React.Component {
         return (
             <div className={containerStyle}>
                 <Form
-                    schema={schema}
+                    schema={s}
                     value={
                         matchSchema(val, schema)
                             ? typeToValue(val, schema)
@@ -62,6 +64,7 @@ export default class ArgFrom extends React.Component {
 }
 ArgFrom.propTypes = {
     schema: PropTypes.object.isRequired,
+    entity: PropTypes.any.isRequired,
     value: PropTypes.any,
     onChange: PropTypes.func.isRequired,
 };

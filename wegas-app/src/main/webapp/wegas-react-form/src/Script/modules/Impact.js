@@ -245,6 +245,7 @@ class Impact extends React.Component {
                         <ArgForm
                             schema={argDescr}
                             value={args[i]}
+                            entity={this.state.variable}
                             onChange={v => {
                                 this.setState(prevState => {
                                     const newArgs = prevState.args.map(
