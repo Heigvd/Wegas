@@ -7,18 +7,19 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.Helper;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.game.GameModel;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +40,12 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     //@BatchFetch(BatchFetchType.IN)
-    
+
+
     @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
     //@OrderBy("id")
     @OrderColumn
-    
+
     @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<VariableDescriptor> items = new ArrayList<>();
 
@@ -124,10 +126,16 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @Override
     public void setItems(List<VariableDescriptor> items) {
         if (this.items != items) {
+            // do not clear new list if it's the same
             this.items.clear();
-        }
-        for (VariableDescriptor vd : items) {
-            this.addItem(vd);
+
+            for (VariableDescriptor cd : items) {
+                this.addItem(cd);
+            }
+        } else {
+            for (VariableDescriptor cd : items) {
+                this.registerItems(cd);
+            }
         }
     }
 

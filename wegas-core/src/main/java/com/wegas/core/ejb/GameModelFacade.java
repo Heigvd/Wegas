@@ -109,7 +109,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public void create(final GameModel entity) {
 
         // So What? 
-        
         getEntityManager().persist(entity);
 
         final User currentUser = userFacade.getCurrentUser();
@@ -296,7 +295,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             this.addDebugGame(duplicata);
 
             return duplicata;
-        } catch (IOException ex) {
+        } catch (CloneNotSupportedException ex) {
             throw WegasErrorMessage.error("GameModels does not match");
         }
     }
@@ -340,12 +339,35 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
     }
 
-    @Override
-    public GameModel duplicate(final Long entityId) throws IOException {
+    public GameModel duplicate_serialise(final Long entityId) throws IOException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
         if (srcGameModel != null) {
-            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
+            final GameModel newGameModel = (GameModel) srcGameModel.duplicate_serialise();
+            newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
+            this.create(newGameModel);
 
+            // Clone Pages
+            // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
+            //Clone files & history (?)
+            for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
+                try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
+                    connector.cloneRoot(srcGameModel.getId());
+                } catch (RepositoryException ex) {
+                    logger.error("Duplicating repository {} failure, {}", entityId, ex.getMessage());
+                }
+            }
+
+            return newGameModel;
+        } else {
+            throw new WegasNotFoundException("GameModel not found");
+        }
+    }
+
+    @Override
+    public GameModel duplicate(final Long entityId) throws CloneNotSupportedException {
+        final GameModel srcGameModel = this.find(entityId);
+        if (srcGameModel != null) {
+            GameModel newGameModel = (GameModel) srcGameModel.clone();
             newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
             this.create(newGameModel);
 
@@ -371,9 +393,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      *
      * @return gameModel copy
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
-    public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
+    public GameModel duplicateWithDebugGame_serialise(final Long gameModelId) throws IOException {
+        GameModel gm = this.duplicate_serialise(gameModelId);
+        this.addDebugGame(gm);
+//        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());
+        return gm;
+    }
+
+    public GameModel duplicateWithDebugGame(final Long gameModelId) throws CloneNotSupportedException {
         GameModel gm = this.duplicate(gameModelId);
         this.addDebugGame(gm);
 //        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());

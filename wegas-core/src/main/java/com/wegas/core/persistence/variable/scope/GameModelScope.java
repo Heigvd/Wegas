@@ -9,6 +9,8 @@ package com.wegas.core.persistence.variable.scope;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -23,7 +25,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -55,9 +56,13 @@ public class GameModelScope extends AbstractScope<GameModel> {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
-            VariableInstance clone = vd.getDefaultInstance().clone();
-            gameModel.getPrivateInstances().add(clone);
-            this.setVariableInstance(gameModel, clone);
+            try {
+                VariableInstance clone = vd.getDefaultInstance().clone();
+                gameModel.getPrivateInstances().add(clone);
+                this.setVariableInstance(gameModel, clone);
+            } catch (CloneNotSupportedException ex) {
+                throw WegasErrorMessage.error("Clone VariableInstance ERROR : " + ex);
+            }
         } else {
             vi.merge(vd.getDefaultInstance());
         }

@@ -19,14 +19,13 @@ import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import javax.naming.NamingException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.junit.Assert;
 
 /**
  *
@@ -439,7 +438,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testListDuplicate() throws NamingException, IOException, WegasNoResultException {
+    public void testListDuplicate() throws NamingException, CloneNotSupportedException, WegasNoResultException {
         final String VARIABLENAME1 = "test_variable";
         final String LISTNAME1 = "list1";
         final String LISTNAME2 = "list2";

@@ -16,7 +16,6 @@ import com.wegas.core.rest.GameController;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.User;
-import java.io.IOException;
 import java.util.List;
 import javax.naming.NamingException;
 import static org.junit.Assert.*;
@@ -112,7 +111,7 @@ public class GameFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testGameCreation() throws IOException {
+    public void testGameCreation() throws CloneNotSupportedException {
         VariableDescriptorFacade vdf = VariableDescriptorFacade.lookup();
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
@@ -133,7 +132,7 @@ public class GameFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testGameCreationThroughController() throws IOException {
+    public void testGameCreationThroughController() throws CloneNotSupportedException {
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
         newGame.setGameModel(gameModel);

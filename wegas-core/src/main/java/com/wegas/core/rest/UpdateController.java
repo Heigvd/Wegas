@@ -47,7 +47,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -152,7 +151,7 @@ public class UpdateController {
     @GET
     @Path("UpdateScript/{gameModelId : ([1-9][0-9]*)}")
     public String script(@PathParam("gameModelId") Long gameModelId) {
-        Set<VariableDescriptor> findAll = descriptorFacade.findAll(gameModelId);
+        Collection<VariableDescriptor> findAll = descriptorFacade.findAll(gameModelId);
         List<String> keys = new ArrayList<>();
         List<String> values = new ArrayList<>();
         for (VariableDescriptor vd : findAll) {
@@ -274,7 +273,7 @@ public class UpdateController {
     }
 
     private String listDescriptorScope(GameModel gameModel) {
-        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -296,7 +295,7 @@ public class UpdateController {
     }
 
     private String rtsUpdateScope(GameModel gameModel) {
-        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -323,7 +322,7 @@ public class UpdateController {
     }
 
     private void updateListDescriptorScope(GameModel gameModel) {
-        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
 
         for (VariableDescriptor vd : variableDescriptors) {
             if (vd instanceof ListDescriptor) {
@@ -393,7 +392,7 @@ public class UpdateController {
     }
 
     private String rtsNewScope(GameModel gameModel) {
-        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 

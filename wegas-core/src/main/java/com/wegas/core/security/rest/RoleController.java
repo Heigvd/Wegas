@@ -10,7 +10,6 @@ package com.wegas.core.security.rest;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.persistence.Role;
-import java.io.IOException;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -94,13 +93,12 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
      *
      * @param entityId
      * @return role copy or HTTP Forbidden status if user is not an admin
-     * @throws IOException
      */
     @Override
     @POST
     @Path("{entityId : [1-9][0-9]*}/Duplicate")                                 // @Path annotations are not inherited
     @RequiresPermissions("User:Edit")
-    public Role duplicate(@PathParam("entityId") Long entityId) throws IOException {
+    public Role duplicate(@PathParam("entityId") Long entityId) {
         throw new NoSuchMethodError("Role duplication not implemented");
     }
 

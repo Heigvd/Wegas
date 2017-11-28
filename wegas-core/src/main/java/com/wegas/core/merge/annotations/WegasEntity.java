@@ -27,4 +27,12 @@ public @interface WegasEntity {
      * @return entity level callbacks to apply
      */
     Class<? extends WegasCallback> callback();
+
+    /**
+     * List of WegasEntityProperty to ignore.
+     * Allow to ignore inherited properties
+     *
+     * @return list of properties to exclude from the merge process.
+     */
+    String[] ignoreProperties() default {};
 }

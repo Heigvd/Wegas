@@ -24,7 +24,6 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -118,10 +117,10 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param gameModelId id of the gameModel to create a new game for
      * @param game        the game to persist
+     * @throws java.lang.CloneNotSupportedException
      *
-     * @throws IOException
      */
-    public void publishAndCreate(final Long gameModelId, final Game game) throws IOException {
+    public void publishAndCreate(final Long gameModelId, final Game game) throws CloneNotSupportedException {
         GameModel gm = gameModelFacade.duplicate(gameModelId);
         gm.setName(gameModelFacade.find(gameModelId).getName());// @HACK Set name back to the original
         gm.setComments(""); // Clear comments

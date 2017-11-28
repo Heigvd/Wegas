@@ -19,12 +19,6 @@ public class Views {
     }
 
     /**
-     * Only use for internal serialization (like refIds)
-     */
-    public interface InternalI {
-    }
-
-    /**
      * FUCK
      */
     public interface LobbyI {
@@ -57,40 +51,33 @@ public class Views {
     /**
      * Minimal view with IDs
      */
-    public static class Public implements IndexI {
+    public static class Public extends Views implements IndexI {
     }
 
     /**
      * View with IDs and blobs
      */
-    public static class Extended implements ExtendedI, IndexI {
+    public static class Extended extends Views implements ExtendedI, IndexI {
     }
 
     /**
      * View relevant to Editors with blobs
      */
-    public static class Editor implements EditorI, ExtendedI, IndexI {
+    public static class Editor extends Views implements EditorI, ExtendedI, IndexI {
     }
 
-    public static class Lobby implements EditorI, ExtendedI, IndexI, LobbyI {
+    public static class Lobby extends Views implements EditorI, ExtendedI, IndexI, LobbyI {
     }
 
     /**
      * Editor view with VariableInstance embed into VariableDescriptors'Scope
      */
-    public static class Instance implements InstanceI, EditorI, ExtendedI, IndexI {
+    public static class Instance extends Views implements InstanceI, EditorI, ExtendedI, IndexI {
     }
 
     /**
      * Do not include ids nor VariableInstances, Export usage
      */
-    public static class Export implements EditorI, ExtendedI, ExportI {
+    public static class Export extends Views implements EditorI, ExtendedI, ExportI {
     }
-
-    /**
-     * Do not include ids nor VariableInstances, but refIds LocalExport usage
-     */
-    public static class LocalExport extends Export implements InternalI {
-    }
-
 }

@@ -9,8 +9,8 @@ package com.wegas.core.merge.patch;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.LifecycleCollector;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.InvocationTargetException;
@@ -49,7 +49,7 @@ public final class WegasChildrenPatch extends WegasPatch {
         this.from = from;
         this.to = to;
         this.referenceEntity = referenceEntity;
-        this.cascade =cascade;
+        this.cascade = cascade;
 
         Map<Object, Object> fromMap = asMap(from);
         Map<Object, Object> toMap = asMap(to);
@@ -139,7 +139,7 @@ public final class WegasChildrenPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass) {
+    public LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         Mergeable targetEntity = null;
         if (target instanceof Mergeable) {
             targetEntity = (Mergeable) target;
@@ -159,6 +159,7 @@ public final class WegasChildrenPatch extends WegasPatch {
 
                         if (children instanceof Map) {
                             childrenMap = new HashMap<>();
+                            // add extra key identifier like parentRefId->
                             childrenMap.putAll((Map<? extends Object, ? extends Object>) children);
                             childrenList = null;
                             children = childrenMap;
@@ -227,18 +228,18 @@ public final class WegasChildrenPatch extends WegasPatch {
                         if (parentMode == PatchMode.OVERRIDE) {
                             /*
                              first delete all children (and collect them) in order to keep only those which exists in the "toList"
-                            */
+                             */
 
                             for (Entry<Object, Object> entry : tmpMap.entrySet()) {
                                 WegasPatch patch;
                                 Object key = entry.getKey();
-                                Object toBeDeleted =entry.getValue();
+                                Object toBeDeleted = entry.getValue();
                                 if (primitive) {
                                     patch = new WegasPrimitivePatch(key, 0, null, null, null, null, toBeDeleted, null, false, false, false, cascade);
                                 } else {
-                                    patch = new WegasEntityPatch(key, 0, null, null, null, (Mergeable)toBeDeleted, null, recursive, false, false, false, cascade);
+                                    patch = new WegasEntityPatch(key, 0, null, null, null, (Mergeable) toBeDeleted, null, recursive, false, false, false, cascade);
                                 }
-                                patch.apply(toBeDeleted, registerChild, parentMode, visibility, collector, numPass);
+                                patch.apply(toBeDeleted, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                             }
 
                         }
@@ -248,7 +249,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                             Object key = patch.getIdentifier();
                             Object child = tmpMap.get(key);
 
-                            patch.apply(child, registerChild, parentMode, visibility, collector, numPass);
+                            patch.apply(child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                         }
 
                         logger.info("Post Patch: target: {} from: {} to: {}", children, from, to);

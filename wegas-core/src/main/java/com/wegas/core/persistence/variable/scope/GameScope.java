@@ -8,19 +8,18 @@
 package com.wegas.core.persistence.variable.scope;
 
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
-
-import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @todo Needs to be implemented
@@ -98,9 +97,14 @@ public class GameScope extends AbstractScope<Game> {
     protected void propagate(Game g, boolean create) {
         VariableDescriptor vd = this.getVariableDescriptor();
         if (create) {
-            VariableInstance clone = vd.getDefaultInstance().clone();
-            g.getPrivateInstances().add(clone);
-            this.setVariableInstance(g, clone);
+            try {
+                VariableInstance clone = vd.getDefaultInstance().clone();
+                g.getPrivateInstances().add(clone);
+                this.setVariableInstance(g, clone);
+
+            } catch (CloneNotSupportedException ex) {
+                throw WegasErrorMessage.error("Clone VariableInstance ERROR : " + ex);
+            }
         } else {
             this.getVariableInstance(g).merge(vd.getDefaultInstance());
         }

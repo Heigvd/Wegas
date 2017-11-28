@@ -54,11 +54,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import javax.naming.NamingException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.junit.Assert;
 
 /**
  *
@@ -71,14 +71,16 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
     static {
         reflections = new Reflections("com.wegas");
-         /*
+    }
+
+    //@BeforeClass
+    public static void setLoggerLevels() {
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptor.class)).setLevel(Level.DEBUG);
 
         ((ch.qos.logback.classic.Logger) logger).setLevel(Level.DEBUG);
-        // */
     }
 
     @Test
@@ -347,7 +349,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testModelise_GameModelProperties() throws NamingException, WegasNoResultException, IOException {
+    public void testModelise_GameModelProperties() throws NamingException, WegasNoResultException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
         GameModel gameModel1 = new GameModel();
@@ -490,7 +492,6 @@ public class MergeFacadeTest extends AbstractEJBTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-
         printPages(model);
         printPages(gameModel1);
         printPages(gameModel2);
@@ -516,7 +517,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testModelise_GameModelContent() throws NamingException, WegasNoResultException, IOException {
+    public void testModelise_GameModelContent() throws NamingException, WegasNoResultException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
         GameModel gameModel1 = new GameModel();
@@ -606,7 +607,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testModelise_PrimitiveCollection() throws NamingException, WegasNoResultException, IOException {
+    public void testModelise_PrimitiveCollection() throws NamingException, WegasNoResultException {
         MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
 
         VariableInstanceFacade vif = VariableInstanceFacade.lookup();

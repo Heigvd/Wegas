@@ -7,32 +7,31 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
-import static java.lang.Boolean.FALSE;
-import javax.persistence.Column;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 
 /**
  *
@@ -80,7 +79,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
     @OrderColumn
-    
+
     @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
@@ -249,9 +248,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.items != items) {
             // do not clear new list if it's the same 
             this.items.clear();
-        }
-        for (ChoiceDescriptor cd : items) {
-            this.addItem(cd);
+
+            for (ChoiceDescriptor cd : items) {
+                this.addItem(cd);
+            }
+        } else {
+            for (ChoiceDescriptor cd : items) {
+                this.registerItems(cd);
+            }
         }
     }
 

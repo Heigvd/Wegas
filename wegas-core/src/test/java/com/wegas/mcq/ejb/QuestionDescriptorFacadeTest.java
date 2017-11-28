@@ -16,12 +16,10 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.mcq.persistence.*;
-import org.junit.Test;
-
 import javax.naming.NamingException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import org.junit.Test;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -142,7 +140,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10"));
         choice.addResult(r);
         vdf.createChild(question.getId(), choice);
-        
+
         TestHelper.wipeEmCache();
 
         final Reply reply = qdf.selectChoice(choice.getId(), player.getId());
@@ -281,9 +279,9 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         // Set the second as default
         choice.changeCurrentResult(choice.getDefaultInstance(), r2);
         choice = (ChoiceDescriptor) vdf.update(choice.getId(), choice);
-        
+
         choice = (ChoiceDescriptor) vdf.find(choice.getId());
-        
+
         // and remove it
         choice.getResults().remove(1);
         vdf.update(choice.getId(), choice);
@@ -291,7 +289,6 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         assertEquals("result", ((ChoiceDescriptor) vdf.find(choice.getId())).getResults().get(0).getName());
         vdf.remove(question.getId());
     }
-
 
     @Test
     public void testChangeResultAndScope() throws NamingException {
@@ -321,19 +318,19 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
         assertEquals("TeamScoped instance is no the same !", instance20, instance21);
         assertEquals("Current result does not match", "result", instance20.getCurrentResult().getName());
- 
+
         // Set the second result as default
         // Change from teamScope to playerscope
         choice.changeCurrentResult(choice.getDefaultInstance(), r2);
         choice.setScope(new PlayerScope());
         choice = (ChoiceDescriptor) vdf.update(choice.getId(), choice);
-        
+
         choice = (ChoiceDescriptor) vdf.find(choice.getId());
         instance20 = choice.getInstance(player2);
         instance21 = choice.getInstance(player21);
 
         assertFalse("PlayerScoped instances are the same !", instance20.equals(instance21));
-       
+
         assertEquals("Current result does not match", "result_2", instance20.getCurrentResult().getName());
         assertEquals("Current result does not match", "result_2", instance21.getCurrentResult().getName());
 

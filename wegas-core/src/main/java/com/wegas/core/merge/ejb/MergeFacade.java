@@ -26,7 +26,6 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,7 +121,7 @@ public class MergeFacade {
                 // extract the first scenario to act as reference
 
                 logger.info("Create model, based on first scenario");
-                model = (GameModel) scenarios.remove(0).duplicate();
+                model = (GameModel) scenarios.remove(0).clone();
 
                 /**
                  * Filter gameModelContents
@@ -252,7 +251,7 @@ public class MergeFacade {
                     scenario.setModel(model);
                 }
 
-            } catch (IOException ex) {
+            } catch (CloneNotSupportedException ex) {
                 logger.error("Exception while creating model", ex);
             }
         }
@@ -276,9 +275,19 @@ public class MergeFacade {
         }
     }
 
-    private void resetRefIds(AbstractEntity target, AbstractEntity reference) {
-        if (target != null && reference != null) {
-            target.setRefId(reference.getRefId());
+    /**
+     *
+     * @param target
+     * @param reference
+     */
+    public void resetRefIds(AbstractEntity target, AbstractEntity reference) {
+        if (target != null) {
+            if (reference != null) {
+                target.forceRefId(reference.getRefId());
+            } else {
+                target.forceRefId(null);
+                target.assertRefId();
+            }
 
             WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
 
@@ -287,7 +296,11 @@ public class MergeFacade {
                     Method readMethod = field.getPropertyDescriptor().getReadMethod();
                     try {
                         AbstractEntity targetChild = (AbstractEntity) readMethod.invoke(target);
-                        AbstractEntity referenceChild = (AbstractEntity) readMethod.invoke(reference);
+                        AbstractEntity referenceChild = null;
+
+                        if (reference != null) {
+                            referenceChild = (AbstractEntity) readMethod.invoke(reference);
+                        }
 
                         this.resetRefIds(targetChild, referenceChild);
 
@@ -314,7 +327,7 @@ public class MergeFacade {
 
                 // set scenarios refId to model refId
                 for (GameModel scenario : scenarios) {
-                    scenario.setRefId(model.getRefId());
+                    scenario.forceRefId(model.getRefId());
                 }
 
                 /*
@@ -367,29 +380,35 @@ public class MergeFacade {
                         for (Iterator<VariableDescriptor> it = vdToCreate.iterator(); it.hasNext();) {
                             VariableDescriptor vd = it.next();
 
-                            logger.info(" - missing descriptor is {}", vd);
-                            DescriptorListI modelParent = vd.getParent();
-                            if (modelParent instanceof VariableDescriptor) {
-                                String parentName = ((VariableDescriptor) modelParent).getName();
-                                try {
-                                    VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
-                                    VariableDescriptor clone = (VariableDescriptor) vd.clone();
-                                    variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone);
+                            try {
+                                logger.info(" - missing descriptor is {}", vd);
+                                DescriptorListI modelParent = vd.getParent();
+                                if (modelParent instanceof VariableDescriptor) {
+                                    String parentName = ((VariableDescriptor) modelParent).getName();
+                                    try {
+                                        VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
+                                        VariableDescriptor clone;
+                                        clone = (VariableDescriptor) vd.clone();
+                                        variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone);
 
+                                        logger.info(" CREATE AT ROOL LEVEL");
+                                        it.remove();
+                                        restart = true;
+                                    } catch (WegasNoResultException ex) {
+                                        logger.info(" PARENT {} NOT FOUND -> POSTPONE", modelParent);
+                                    }
+                                } else {
                                     logger.info(" CREATE AT ROOL LEVEL");
+                                    VariableDescriptor clone = (VariableDescriptor) vd.clone();
+                                    variableDescriptorFacade.createChild(scenario, scenario, clone);
                                     it.remove();
                                     restart = true;
-                                } catch (WegasNoResultException ex) {
-                                    logger.info(" PARENT {} NOT FOUND -> POSTPONE", modelParent);
                                 }
-                            } else {
-                                logger.info(" CREATE AT ROOL LEVEL");
-                                VariableDescriptor clone = (VariableDescriptor) vd.clone();
-                                variableDescriptorFacade.createChild(scenario, scenario, clone);
-                                it.remove();
-                                restart = true;
+                            } catch (CloneNotSupportedException ex) {
+                                logger.error("Error while cloning {}", vd);
                             }
                         }
+
                     } while (restart);
                 }
 
@@ -470,9 +489,8 @@ public class MergeFacade {
      *
      * @return
      *
-     * @throws java.io.IOException
      */
-    public GameModel propagateModel(Long gameModelId) throws IOException {
+    public GameModel propagateModel(Long gameModelId) {
         return this.propagateModel(gameModelFacade.find(gameModelId));
     }
 
@@ -483,9 +501,8 @@ public class MergeFacade {
      *
      * @return
      *
-     * @throws java.io.IOException
      */
-    private GameModel propagateModel(GameModel gameModel) throws IOException {
+    private GameModel propagateModel(GameModel gameModel) {
         if (gameModel.getType().equals(GmType.MODEL)) {
             GameModel reference = gameModel.getReference();
 
@@ -494,7 +511,11 @@ public class MergeFacade {
                  * create reference
                  */
                 logger.info("Create Reference");
-                reference = (GameModel) gameModel.duplicate();
+                try {
+                    reference = (GameModel) gameModel.clone();
+                } catch (CloneNotSupportedException ex) {
+                    throw WegasErrorMessage.error("Could not create reference by cloning " + gameModel);
+                }
                 reference.setType(GameModel.GmType.REFERENCE);
                 reference.setModel(gameModel);
                 gameModelFacade.create(reference);

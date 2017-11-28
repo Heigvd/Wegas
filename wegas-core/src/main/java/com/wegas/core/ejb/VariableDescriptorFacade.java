@@ -7,13 +7,13 @@
  */
 package com.wegas.core.ejb;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.merge.ejb.MergeFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -24,16 +24,12 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.Views;
 import com.wegas.mcq.persistence.QuestionDescriptor;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -74,6 +70,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private MergeFacade mergeFacade;
 
     @Inject
     private Event<InstanceRevivedEvent> instanceRevivedEvent;
@@ -150,7 +149,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
         if (entity instanceof ListDescriptor) {
             VariableInstance defaultInstance = entity.getDefaultInstance();
-            if (defaultInstance instanceof NumberInstance){
+            if (defaultInstance instanceof NumberInstance) {
                 logger.error("Incompatible default instance {}", defaultInstance);
                 entity.setDefaultInstance(new ListInstance());
             }
@@ -268,18 +267,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return the new descriptor
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
     @Override
-    public VariableDescriptor duplicate(final Long entityId) throws IOException {
+    public VariableDescriptor duplicate(final Long entityId) throws CloneNotSupportedException {
+        final VariableDescriptor oldEntity = this.find(entityId); // Retrieve the entity to duplicate
+        final VariableDescriptor newEntity = (VariableDescriptor) oldEntity.clone();
 
-        final VariableDescriptor oldEntity = this.find(entityId);               // Retrieve the entity to duplicate
-
-        final ObjectMapper mapper = JacksonMapperProvider.getMapper();          // Retrieve a jackson mapper instance
-        final String serialized = mapper.writerWithView(Views.Export.class). // no id. no refId
-                writeValueAsString(oldEntity);                                  // Serialize the entity
-        final VariableDescriptor newEntity
-                = mapper.readValue(serialized, oldEntity.getClass());           // and deserialize it
+        // reset reference id for all new entites within newEntity
+        mergeFacade.resetRefIds(newEntity, null);
 
         final DescriptorListI list = oldEntity.getParent();
         this.createChild(oldEntity.getGameModel(), list, newEntity);
@@ -288,8 +285,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     @Override
     public void remove(VariableDescriptor entity) {
-        GameModel rootGameModel = entity.getRootGameModel();
-
         this.preDestroy(entity.getGameModel(), entity);
         entity.getParent().remove(entity);
 
@@ -463,7 +458,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return all gameModel descriptors
      */
-    public Set<VariableDescriptor> findAll(final Long gameModelId) {
+    public Collection<VariableDescriptor> findAll(final Long gameModelId) {
         return gameModelFacade.find(gameModelId).getVariableDescriptors();
     }
 
@@ -499,7 +494,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final int index) {
         final VariableDescriptor vd = this.find(descriptorId);                  // Remove from the previous list
         DescriptorListI from = vd.getParent();
-        
+
         from.localRemove(vd);
         targetListDescriptor.addItem(index, vd);
     }

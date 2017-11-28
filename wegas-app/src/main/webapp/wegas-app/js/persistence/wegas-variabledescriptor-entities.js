@@ -44,8 +44,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     };
     IDATTRDEF = {
         type: STRING,
-        optional: true, //                                                  // The id is optional for entites that
-        // have not been persisted
+        optional: true, //The id is optional for entites that have not been persisted
         _inputex: {
             _type: HIDDEN
         }
@@ -217,16 +216,16 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
                 },
                 choices: [{
-                        value: "INTERNAL",
+                        value: INTERNAL,
                         label: "Internal"
                     }, {
-                        value: "PROTECTED",
+                        value: PROTECTED,
                         label: "Protected"
                     }, {
-                        value: "INHERITED",
+                        value: INHERITED,
                         label: "Inherited"
                     }, {
-                        value: "PRIVATE",
+                        value: PRIVATE,
                         label: "Private"
                     }],
                 _inputex: {
@@ -324,7 +323,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     return o instanceof persistence.VariableInstance;
                 },
                 _inputex: {
-                    maxWritableVisibility: "PROTECTED"
+                    maxWritableVisibility: PROTECTED
                 }
             }
         },
@@ -348,7 +347,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 }
             },
             deleteBtn: {
-                index:20,
+                index: 20,
                 maxVisibility: "PRIVATE", // only visible for private variables
                 cfg: {
                     type: "DeleteEntityButton"

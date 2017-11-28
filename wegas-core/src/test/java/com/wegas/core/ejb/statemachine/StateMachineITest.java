@@ -20,11 +20,10 @@ import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import java.io.IOException;
+import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
-
-import javax.naming.NamingException;
-import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -233,7 +232,7 @@ public class StateMachineITest extends AbstractEJBTest {
     }
 
     @Test
-    public void duplicate() throws NamingException, IOException, WegasNoResultException {
+    public void duplicate() throws NamingException, WegasNoResultException, CloneNotSupportedException {
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setName("trigger");
@@ -273,34 +272,5 @@ public class StateMachineITest extends AbstractEJBTest {
         instanceFacade.update(testInstance.getId(), testInstance);
         Assert.assertEquals(0, ((NumberInstance) instanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
 
-    }
-
-    public void testChose() throws NamingException, NoSuchMethodException, IOException, WegasNoResultException {
-        this.testEvent();
-
-        this.clear();
-        this.createGameModel();
-
-        this.PlayerJoinTest();
-
-        this.clear();
-        this.createGameModel();
-
-        this.editorUpdate();
-
-        this.clear();
-        this.createGameModel();
-
-        this.highScore();
-
-        this.clear();
-        this.createGameModel();
-
-        this.duplicate();
-
-        this.clear();
-        this.createGameModel();
-
-        this.disable();
     }
 }

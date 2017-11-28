@@ -74,7 +74,7 @@ public abstract class WegasPatch {
     protected Method setter;
 
     /**
-     * Some 
+     * Some
      */
     protected WegasCallback fieldCallback;
 
@@ -162,10 +162,15 @@ public abstract class WegasPatch {
     }
 
     public void apply(Mergeable target) {
-        this.apply(target, null, PatchMode.UPDATE, null, null, null);
+        this.apply(target, null, PatchMode.UPDATE, null, null, null, false);
     }
 
-    protected abstract LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass);
+
+    public void applyForce(Mergeable target) {
+        this.apply(target, null, PatchMode.UPDATE, null, null, null, true);
+    }
+
+    protected abstract LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
 
     private PatchMode getWithParent(PatchMode parentMode, Visibility inheritedVisibility, Visibility visibility) {
         logger.debug("GET MODE (parentMode {}; inheritedV: {}, v: {}", parentMode, inheritedVisibility, visibility);
@@ -194,10 +199,11 @@ public abstract class WegasPatch {
      * @param parentMode          parent PatchMode
      * @param inheritedVisibility parent visibility
      * @param visibility          current visibility
+     * @param bypassVisibility    if true, do not skip private
      *
      * @return
      */
-    protected PatchMode getPatchMode(Object target, Object from, Object to, PatchMode parentMode, Visibility inheritedVisibility, Visibility visibility) {
+    protected PatchMode getPatchMode(Object target, Object from, Object to, PatchMode parentMode, Visibility inheritedVisibility, Visibility visibility, boolean bypassVisibility) {
         PatchMode mode;
 
         logger.info("Get MODE: target: {}; from: {}; to: {}; parentMode: {}; iV: {}; v: {}", target, from, to, parentMode, inheritedVisibility, visibility);
@@ -214,7 +220,8 @@ public abstract class WegasPatch {
                 mode = PatchMode.CREATE;
 
                 // but skip PRIVATE visibility
-                if (to instanceof ModelScoped) {
+                // Allow to
+                if (!bypassVisibility && to instanceof ModelScoped) {
                     if (Visibility.PRIVATE.equals(((ModelScoped) to).getVisibility())) {
                         mode = PatchMode.SKIP;
                     }
@@ -231,13 +238,14 @@ public abstract class WegasPatch {
                 } else {
                     // from not null to not null
                     if (to instanceof ModelScoped && from instanceof ModelScoped) {
-                        Visibility fromScope = ((ModelScoped) from).getVisibility();
-                        Visibility toScope = ((ModelScoped) to).getVisibility();
 
-                        if (from.equals(target)) {
+                        if (bypassVisibility || from.equals(target)) {
                             // same entity -> Update or override
                             mode = getWithParent(parentMode, inheritedVisibility, visibility);
                         } else {
+                            Visibility fromScope = ((ModelScoped) from).getVisibility();
+                            Visibility toScope = ((ModelScoped) to).getVisibility();
+
                             // cross gameModel entities
                             if (toScope.equals(Visibility.PRIVATE)) {
                                 // change from * to PRIVATE -> DELETE

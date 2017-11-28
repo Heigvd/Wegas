@@ -20,20 +20,19 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -120,10 +119,11 @@ public class GameController {
      *
      * @return the new game with its debug team filtered out
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
     @POST
-    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws IOException {
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws CloneNotSupportedException {
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.publishAndCreate(gameModelId, game);
@@ -164,11 +164,12 @@ public class GameController {
      *
      * @return the new game with its debug team
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
     @POST
     @Path("{gmId : [1-9][0-9]*}")
-    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) throws IOException {
+    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) throws CloneNotSupportedException {
         return this.create(gameModelId, entity);
     }
 

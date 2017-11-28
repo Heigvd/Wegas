@@ -10,8 +10,10 @@ package com.wegas.core.persistence.variable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -27,22 +29,19 @@ import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.*;
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.OptimisticLocking;
+import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
-import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
-import org.eclipse.persistence.config.CacheUsage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -135,6 +134,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(sameEntityOnly = true)
+    @JsonView(Views.IndexI.class)
     private Long version;
 
     public Long getVersion() {
@@ -235,7 +235,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     private Team team;
 
     @Override
-    public VariableInstance clone() {
+    public VariableInstance clone() throws CloneNotSupportedException {
         return (VariableInstance) super.clone();
     }
 
@@ -352,8 +352,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             return null;
         }
     }
-    //@JsonView(Views.ExtendedI.class)
 
+    @JsonView(Views.IndexI.class)
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
             return this.getTeam().getId();

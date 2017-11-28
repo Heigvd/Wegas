@@ -7,9 +7,9 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.merge.utils.WegasCallback;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import java.util.LinkedList;
@@ -42,7 +42,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      */
     @JsonIgnore
     public GameModel getGameModel();
-    
+
     /**
      * Return children ids
      * DO NOT OVERRIDE, NEVER!
@@ -88,6 +88,13 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      */
     default void addItem(T item) {
         this.addItem(null, item);
+    }
+
+    default void registerItems(T item) {
+        if (this.getGameModel() != null) {
+            this.getGameModel().addToVariableDescriptors(item);
+        }
+        this.setChildParent(item);
     }
 
     /**

@@ -12,6 +12,7 @@ import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.VariableDescriptor;

@@ -9,7 +9,8 @@ package com.wegas.core.persistence.variable.scope;
 
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -20,7 +21,6 @@ import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -90,10 +90,14 @@ public class PlayerScope extends AbstractScope<Player> {
     protected void propagate(Player p, boolean create) {
         VariableDescriptor vd = getVariableDescriptor();
         if (create) {
-            VariableInstance clone = vd.getDefaultInstance().clone();
-            p.getPrivateInstances().add(clone);
-            this.setVariableInstance(p, clone);
-            //vif.create(clone);
+            try {
+                VariableInstance clone = vd.getDefaultInstance().clone();
+                p.getPrivateInstances().add(clone);
+                this.setVariableInstance(p, clone);
+                //vif.create(clone);
+            } catch (CloneNotSupportedException ex) {
+                throw WegasErrorMessage.error("Clone VariableInstance ERROR : " + ex);
+            }
         } else {
             this.getVariableInstance(p).merge(vd.getDefaultInstance());
         }

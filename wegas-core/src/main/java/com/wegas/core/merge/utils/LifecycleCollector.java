@@ -11,6 +11,7 @@ import com.wegas.core.persistence.Mergeable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -44,15 +45,15 @@ public class LifecycleCollector {
         sb.append("\n");
         sb.append("New Entities ").append(created.size()).append(":");
         sb.append("\n");
-        for (CollectedEntity entity : created.values()) {
-            sb.append(" * ").append(entity.getEntity().toString());
+        for (Entry<String, CollectedEntity> entry : created.entrySet()) {
+            sb.append(" * ").append(entry.getKey()).append(" ->" ).append(entry.getValue().getEntity().toString());
             sb.append("\n");
         }
 
         sb.append("Destroyed Entities ").append(deleted.size()).append(":");
         sb.append("\n");
-        for (CollectedEntity entity : deleted.values()) {
-            sb.append(" * ").append(entity.getEntity().toString());
+        for (Entry<String, CollectedEntity> entry : deleted.entrySet()) {
+            sb.append(" * ").append(entry.getKey()).append(" ->" ).append(entry.getValue().getEntity().toString());
             sb.append("\n");
         }
 

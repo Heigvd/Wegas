@@ -17,22 +17,19 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.UserFacade;
-import org.apache.shiro.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -213,7 +210,7 @@ public class VariableDescriptorController {
      * @param index
      */
     @PUT
-    
+
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
             @PathParam("parentDescriptorId") Long parentDescriptorId,
@@ -231,11 +228,10 @@ public class VariableDescriptorController {
      *
      * @return the new descriptor
      *
-     * @throws IOException
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
-    public VariableDescriptor duplicate(@PathParam("entityId") Long entityId) throws IOException {
+    public VariableDescriptor duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
         VariableDescriptor duplicate = variableDescriptorFacade.duplicate(entityId);
@@ -301,7 +297,7 @@ public class VariableDescriptorController {
     @Consumes(MediaType.TEXT_PLAIN)
     public List<Long> idsContains(@PathParam("gameModelId") Long gameModelId, String criteria) {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        Set<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
+        Collection<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
         List<Long> matches = new LinkedList<>();
         for (VariableDescriptor d : vars) {
             if (d.contains(criteria)) {
@@ -323,7 +319,7 @@ public class VariableDescriptorController {
     @Consumes(MediaType.TEXT_PLAIN)
     public List<Long> idsContainsAll(@PathParam("gameModelId") Long gameModelId, String criteria) {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        Set<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
+        Collection<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
         List<Long> matches = new LinkedList<>();
         List<String> criterias = new ArrayList<>(Arrays.asList(criteria.trim().split("[ ,]+")));
         criterias.remove("");

@@ -8,9 +8,8 @@
 package com.wegas.core.merge.patch;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
@@ -18,6 +17,7 @@ import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.beans.PropertyDescriptor;
@@ -53,6 +53,13 @@ public final class WegasEntityPatch extends WegasPatch {
         return callbacks;
     }
 
+    /**
+     * Create a patch to transform "from" into "to"
+     *
+     * @param from
+     * @param to
+     * @param recursive
+     */
     public WegasEntityPatch(Mergeable from, Mergeable to, Boolean recursive) {
         this(null, 0, null, null, null, from, to, recursive, false, false, false, new Visibility[]{Visibility.INTERNAL, Visibility.PROTECTED});
     }
@@ -165,7 +172,7 @@ public final class WegasEntityPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass) {
+    public LifecycleCollector apply(Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         Mergeable target = (Mergeable) targetObject;
 
         /**
@@ -211,7 +218,7 @@ public final class WegasEntityPatch extends WegasPatch {
                             ownVisibility = ((ModelScoped) toEntity).getVisibility();
                             visibility = ownVisibility;
                         }
-                        PatchMode myMode = this.getPatchMode(target, fromEntity, toEntity, parentMode, inheritedVisibility, ownVisibility);
+                        PatchMode myMode = this.getPatchMode(target, fromEntity, toEntity, parentMode, inheritedVisibility, ownVisibility, bypassVisibility);
 
                         if (visibility == null) {
                             visibility = inheritedVisibility;
@@ -239,7 +246,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                             // Force update
                                             WegasEntityPatch createPatch = new WegasEntityPatch(remove.getPayload(), toEntity, true);
-                                            createPatch.apply(target, null, PatchMode.UPDATE, visibility, collector, null);
+                                            createPatch.apply(target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                             for (WegasCallback cb : callbacks) {
                                                 cb.add(target, null, identifier);
@@ -253,7 +260,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                             //newEntity = toEntity.clone(); //   -> INTERNAL CLONE
                                             target = toEntity.getClass().newInstance();
                                             WegasEntityPatch clone = new WegasEntityPatch(target, toEntity, true);
-                                            clone.apply(target, null, PatchMode.UPDATE, visibility, collector, null);
+                                            clone.apply(target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                             for (WegasCallback cb : callbacks) {
                                                 cb.add(target, null, identifier);
@@ -276,7 +283,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                             // DELETE CHILDREN TOO TO COLLECT THEM
                                             for (WegasPatch patch : patches) {
-                                                patch.apply(target, null, myMode, visibility, collector, numPass);
+                                                patch.apply(target, null, myMode, visibility, collector, numPass, bypassVisibility);
                                             }
 
                                             String refId = fromEntity.getRefId();
@@ -305,7 +312,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                         }
 
                                         for (WegasPatch patch : patches) {
-                                            patch.apply(target, null, myMode, visibility, collector, numPass);
+                                            patch.apply(target, null, myMode, visibility, collector, numPass, bypassVisibility);
                                         }
 
                                         if (numPass > 1) {
@@ -350,12 +357,11 @@ public final class WegasEntityPatch extends WegasPatch {
                     }
                 }
 
-                if (vdf == null) {
-                    vdf = VariableDescriptorFacade.lookup();
-                }
-
                 if (entity instanceof AbstractEntity) {
-                    vdf.removeAbstractEntity((AbstractEntity)entity);
+                    if (vdf == null) {
+                        vdf = VariableDescriptorFacade.lookup();
+                    }
+                    vdf.removeAbstractEntity((AbstractEntity) entity);
                 }
             }
 

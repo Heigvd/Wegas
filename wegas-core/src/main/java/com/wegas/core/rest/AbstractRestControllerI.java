@@ -9,11 +9,9 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.AbstractFacade;
 import com.wegas.core.persistence.AbstractEntity;
-
+import java.util.Collection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.util.Collection;
 
 /**
  * @param <T>
@@ -71,13 +69,13 @@ public interface AbstractRestControllerI<T extends AbstractFacade, U extends Abs
      *
      * @param entityId
      * @return entity copy
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    U duplicate(@PathParam("entityId") Long entityId) throws IOException;
+    U duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException;
 
     /**
      * Delete an entity

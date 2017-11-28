@@ -97,7 +97,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     private Status status = Status.LIVE;
 
     @Enumerated(value = EnumType.STRING)
-    
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'SCENARIO'::character varying")
     private GmType type = GmType.SCENARIO;
 
@@ -143,7 +143,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<VariableDescriptor> variableDescriptors = new HashSet<>();
+    private Collection<VariableDescriptor> variableDescriptors = new LinkedList<>();
 
     /**
      * A list of Variable Descriptors that are at the root level of the
@@ -154,6 +154,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JoinColumn(name = "rootgamemodel_id")
     @OrderColumn
     @JsonView(Views.Export.class)
+
     @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<VariableDescriptor> childVariableDescriptors = new ArrayList<>();
 
@@ -262,14 +263,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     *
-     */
-    public void propagateGameModel() {
-        //this.variableDescriptors.clear();
-        this.propagateGameModel(this);
-    }
-
-    /**
      * Register new descriptor within the main descriptor list
      * Method do nothing id descriptor is already registered
      *
@@ -289,6 +282,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void removeFromVariableDescriptors(VariableDescriptor vd) {
         this.getVariableDescriptors().remove(vd);
+    }
+
+    /**
+     * Make sure all variableDescriptors in the gameModel are registered in the gamemodel variableDescriptors list
+     */
+    public void propagateGameModel() {
+        //this.variableDescriptors.clear();
+        this.propagateGameModel(this);
     }
 
     /**
@@ -429,7 +430,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return all variable descriptors
      */
     @JsonIgnore
-    public Set<VariableDescriptor> getVariableDescriptors() {
+    public Collection<VariableDescriptor> getVariableDescriptors() {
         return variableDescriptors;
     }
 
@@ -477,12 +478,19 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonProperty
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
-        this.childVariableDescriptors = variableDescriptors;
-        this.variableDescriptors.clear();
+        if (this.childVariableDescriptors != variableDescriptors) {
+            this.childVariableDescriptors.clear();
 
-        for (VariableDescriptor vd : variableDescriptors) {
-            this.addItem(vd);
+            for (VariableDescriptor vd : variableDescriptors) {
+                this.addItem(vd);
+            }
+        } else {
+            for (VariableDescriptor vd : variableDescriptors) {
+                this.registerItems(vd);
+            }
         }
+
+        this.variableDescriptors.clear();
         this.propagateGameModel();
     }
 
@@ -727,7 +735,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public Map<String, JsonNode> getPages() {
         // do not even try to fetch pages from repository if the gamemodel define a pagesURI
-        if (Helper.isNullOrEmpty(getProperties().getPagesUri()))  {
+        if (Helper.isNullOrEmpty(getProperties().getPagesUri())) {
             try (final Pages pagesDAO = new Pages(this.id)) {
                 return pagesDAO.getPagesContent();
             } catch (RepositoryException ex) {
@@ -903,7 +911,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return map;
     }
 
-    
     public enum GmType {
         /**
          * A model

@@ -106,7 +106,7 @@ public abstract class AbstractRestController<T extends AbstractFacade<U>, U exte
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     @Override
-    public U duplicate(@PathParam("entityId") Long entityId) throws IOException {
+    public U duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException {
         return getFacade().duplicate(entityId);
     }
 

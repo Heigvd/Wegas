@@ -8,13 +8,12 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.*;
+import java.util.function.Function;
+import javax.naming.NamingException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.naming.NamingException;
-import java.util.function.Function;
-import org.junit.Assert;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

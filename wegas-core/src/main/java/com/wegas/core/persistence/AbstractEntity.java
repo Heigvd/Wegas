@@ -8,25 +8,26 @@
 package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.io.Serializable;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.patch.WegasEntityPatch;
-import com.wegas.core.persistence.variable.Beanjection;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.slf4j.LoggerFactory;
@@ -47,12 +48,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg ChoiceDescriptor and result).
  * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
- * 
+ * <p>
  * INVALIDATE OBJECT FIX DirectCollectionMapping NPE
  */
 @MappedSuperclass
 @Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
-public abstract class AbstractEntity implements Serializable, Cloneable, Mergeable {
+public abstract class AbstractEntity implements Serializable, Mergeable {
 
     private static final long serialVersionUID = -2538440276749623728L;
 
@@ -66,7 +67,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable, Mergeab
     abstract public Long getId();
 
     @WegasEntityProperty(initOnly = true)
-    @JsonView(Views.InternalI.class)
+    //@JsonView(Views.InternalI.class)
     private String refId;
 
     /**
@@ -76,25 +77,41 @@ public abstract class AbstractEntity implements Serializable, Cloneable, Mergeab
      */
     @Override
     public String getRefId() {
-        if (this.refId != null) {
-            return this.refId;
-        } else if (this.getId() != null) {
-            return this.getClass().getSimpleName() + ":" + this.getId();
-        } else {
-            return null;
+        return refId;
+    }
+
+    @PrePersist
+    public void assertRefId() {
+        if (refId == null) {
+            if (this.getId() == null) {
+                logger.error("ID SHOULD NOT BE NULL");
+            } else {
+                this.setRefId(this.getClass().getSimpleName() + ":" + this.getId() + ":" + Helper.genToken(6));
+            }
         }
     }
 
     @Override
     public void setRefId(String refId) {
+        if (this.refId == null) {
+            this.refId = refId;
+        }
+    }
+
+    public void forceRefId(String refId) {
         this.refId = refId;
     }
 
-
     public final void merge(AbstractEntity other) {
         WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);
-        //logger.error(wegasEntityPatch.toString());
+        logger.debug(wegasEntityPatch.toString());
         wegasEntityPatch.apply(this);
+    }
+
+    public final void deepMerge(AbstractEntity other) {
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, true);
+        logger.debug(wegasEntityPatch.toString());
+        wegasEntityPatch.applyForce(this);
     }
 
     /**
@@ -138,25 +155,17 @@ public abstract class AbstractEntity implements Serializable, Cloneable, Mergeab
     }
 
     /**
-     * Make a copy of this entity
-     *
-     * @return the new copied entity
+     * {@inheritDoc }
      */
     @Override
-    public AbstractEntity clone() {
-        AbstractEntity ae = null;
+    public AbstractEntity clone() throws CloneNotSupportedException {
         try {
-            if (this.getId() != null) {
-                ae = this.getClass().newInstance();
-                ae.merge(this);
-            } else {
-                // no need to clone entity without id
-                ae = this;
-            }
+            AbstractEntity clone = this.getClass().newInstance();
+            clone.deepMerge(this);
+            return clone;
         } catch (InstantiationException | IllegalAccessException ex) {
-            logger.error("Error during clone", ex);
+            throw new CloneNotSupportedException(ex.getLocalizedMessage());
         }
-        return ae;
     }
 
     /**
@@ -168,7 +177,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable, Mergeab
      *
      * @throws IOException
      */
-    public AbstractEntity duplicate(Class view) throws IOException {
+    public AbstractEntity duplicate_serialise(Class<? extends Views> view) throws IOException {
         //AnonymousEntity ae = (AnonymousEntity)super.clone();
         //AbstractEntity ae = (AbstractEntity) SerializationUtils.clone(this);
         //ae.setId(null);
@@ -180,14 +189,13 @@ public abstract class AbstractEntity implements Serializable, Cloneable, Mergeab
     }
 
     /**
-     * Same as duplicate(Views.Export)
      *
      * @return copy of this
      *
      * @throws IOException
      */
-    public AbstractEntity duplicate() throws IOException {
-        return this.duplicate(Views.LocalExport.class);
+    public AbstractEntity duplicate_serialise() throws IOException {
+        return this.duplicate_serialise(Views.Export.class);
     }
 
     /**

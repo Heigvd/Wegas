@@ -1,1 +1,96 @@
-{"@class":"GameModel","pages":{},"name":"Dummy","description":"","comments":null,"createdTime":1464343533228,"childVariableDescriptors":[{"@class":"NumberDescriptor","comments":"","defaultInstance":{"@class":"NumberInstance","history":[],"value":0.0},"label":"playerScopedNumber","scope":{"@class":"PlayerScope","broadcastScope":"TeamScope"},"title":null,"name":"playerScopedNumber","minValue":null,"maxValue":null,"defaultValue":0.0},{"@class":"NumberDescriptor","comments":"","defaultInstance":{"@class":"NumberInstance","history":[],"value":0.0},"label":"teamScopesNumber","scope":{"@class":"TeamScope","broadcastScope":"TeamScope"},"title":null,"name":"teamScopesNumber","minValue":null,"maxValue":null,"defaultValue":0.0},{"@class":"NumberDescriptor","comments":"","defaultInstance":{"@class":"NumberInstance","history":[],"value":0.0},"label":"gameScopedNumber","scope":{"@class":"GameScope","broadcastScope":"TeamScope"},"title":null,"name":"gameScopedNumber","minValue":null,"maxValue":null,"defaultValue":0.0},{"@class":"NumberDescriptor","comments":"","defaultInstance":{"@class":"NumberInstance","history":[],"value":0.0},"label":"gameModelScopedNumber","scope":{"@class":"GameModelScope","broadcastScope":"TeamScope"},"title":null,"name":"gameModelScopedNumber","minValue":null,"maxValue":null,"defaultValue":0.0}],"scriptLibrary":{},"cssLibrary":{},"clientScriptLibrary":{},"properties":{"freeForAll":false,"pagesUri":"","cssUri":"","websocket":"","logID":null,"scriptUri":"","clientScriptUri":"","imageUri":"","iconUri":"ICON_orange_gamepad_fa"},"createdByName":"Admin "}
+{
+    "@class": "GameModel",
+    "pages": {},
+    "name": "Dummy",
+    "description": "",
+    "comments": null,
+    "createdTime": 1464343533228,
+    "childVariableDescriptors": [{
+            "@class": "NumberDescriptor",
+            "comments": "",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0.0
+            },
+            "label": "playerScopedNumber",
+            "scope": {
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null,
+            "name": "playerScopedNumber",
+            "minValue": null,
+            "maxValue": null,
+            "defaultValue": 0.0
+        }, {
+            "@class": "NumberDescriptor",
+            "comments": "",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0.0
+            },
+            "label": "teamScopesNumber",
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null,
+            "name": "teamScopesNumber",
+            "minValue": null,
+            "maxValue": null,
+            "defaultValue": 0.0
+        }, {
+            "@class": "NumberDescriptor",
+            "comments": "",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0.0
+            },
+            "label": "gameScopedNumber",
+            "scope": {
+                "@class": "GameScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null,
+            "name": "gameScopedNumber",
+            "minValue": null,
+            "maxValue": null,
+            "defaultValue": 0.0
+        }, {
+            "@class": "NumberDescriptor",
+            "comments": "",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0.0
+            },
+            "label": "gameModelScopedNumber",
+            "scope": {
+                "@class": "GameModelScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null,
+            "name": "gameModelScopedNumber",
+            "minValue": null,
+            "maxValue": null,
+            "defaultValue": 0.0
+        }],
+    "scriptLibrary": {},
+    "cssLibrary": {},
+    "clientScriptLibrary": {},
+    "properties": {
+        "freeForAll": false,
+        "pagesUri": "",
+        "cssUri": "",
+        "websocket": "",
+        "logID": null,
+        "scriptUri": "",
+        "clientScriptUri": "",
+        "imageUri": "",
+        "iconUri": "ICON_orange_gamepad_fa"
+    },
+    "createdByName": "Admin "
+}

@@ -120,7 +120,7 @@ public class GameModelController {
      */
     @POST
     @Path("{templateGameModelId : [1-9][0-9]*}")
-    public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws IOException {
+    public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws CloneNotSupportedException  {
         // logger.info(Level.INFO, "POST GameModel");
 
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
@@ -258,11 +258,10 @@ public class GameModelController {
      *
      * @return game model Copy
      *
-     * @throws IOException
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
-    public GameModel duplicate(@PathParam("entityId") Long entityId) throws IOException {
+    public GameModel duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException{
 
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + entityId);
 

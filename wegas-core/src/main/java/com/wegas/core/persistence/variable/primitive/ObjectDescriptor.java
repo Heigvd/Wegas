@@ -7,11 +7,10 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.persistence.VariableProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.ArrayList;
