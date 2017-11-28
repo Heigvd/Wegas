@@ -19,8 +19,8 @@ import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -243,7 +243,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(descriptor1.getId(), findByClass.getId());
 
         // Check the findByGameModel function
-        Set<T> findByRootGameModelId = (Set<T>) vdf.findAll(gameModel.getId());
+        Collection<VariableDescriptor> findByRootGameModelId = vdf.findAll(gameModel.getId());
         Assert.assertTrue(findByRootGameModelId.contains(descriptor1));
 
         return descriptor1;
