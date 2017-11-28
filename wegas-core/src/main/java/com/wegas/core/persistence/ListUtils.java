@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -78,8 +79,8 @@ public class ListUtils {
     public static <E> List<E> clone(final List<E> list) {
         List<E> newInstance;
         try {
-            newInstance = list.getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            newInstance = list.getClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
             //fallback to ArrayList
             newInstance = new ArrayList<>();
         }

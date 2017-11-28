@@ -26,6 +26,7 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import org.eclipse.persistence.annotations.Cache;
@@ -160,10 +161,10 @@ public abstract class AbstractEntity implements Serializable, Mergeable {
     @Override
     public AbstractEntity clone() throws CloneNotSupportedException {
         try {
-            AbstractEntity clone = this.getClass().newInstance();
+            AbstractEntity clone = this.getClass().getDeclaredConstructor().newInstance();
             clone.deepMerge(this);
             return clone;
-        } catch (InstantiationException | IllegalAccessException ex) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
             throw new CloneNotSupportedException(ex.getLocalizedMessage());
         }
     }

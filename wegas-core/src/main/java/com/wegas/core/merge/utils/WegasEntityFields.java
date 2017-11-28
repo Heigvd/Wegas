@@ -90,7 +90,7 @@ public class WegasEntityFields {
                     Class<? extends WegasCallback> entityCallbackClass = wegasEntity.callback();
 
                     if (entityCallbackClass != null && !entityCallbackClass.equals(EmptyCallback.class)) {
-                        this.entityCallbacks.add(entityCallbackClass.newInstance());
+                        this.entityCallbacks.add(entityCallbackClass.getDeclaredConstructor().newInstance());
                     }
                 }
 

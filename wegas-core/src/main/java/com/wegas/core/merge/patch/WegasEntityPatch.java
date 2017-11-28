@@ -126,7 +126,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                         WegasCallback userFieldCallback = null;
                         if (userFieldCallbackClass != null && !userFieldCallbackClass.equals(EmptyCallback.class)) {
-                            userFieldCallback = userFieldCallbackClass.newInstance();
+                            userFieldCallback = userFieldCallbackClass.getDeclaredConstructor().newInstance();
                         }
 
                         // Get effective from and to values
@@ -258,7 +258,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                         } else {
                                             //newEntity = toEntity.clone(); //   -> INTERNAL CLONE
-                                            target = toEntity.getClass().newInstance();
+                                            target = toEntity.getClass().getDeclaredConstructor().newInstance();
                                             WegasEntityPatch clone = new WegasEntityPatch(target, toEntity, true);
                                             clone.apply(target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
@@ -334,7 +334,7 @@ public final class WegasEntityPatch extends WegasPatch {
                     logger.debug("REJECT PATCH : IGNORE NULL");
                 }
 
-            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException ex) {
+            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                 throw new RuntimeException(ex);
             }
         } while (rootPatch && numPass < 2);
