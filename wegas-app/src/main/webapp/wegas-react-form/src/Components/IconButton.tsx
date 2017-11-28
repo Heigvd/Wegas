@@ -19,6 +19,7 @@ interface Props {
 }
 const shapeStyle = css({
     width: 'auto',
+    margin: '3px',
     // minWidth: '16px',
     height: '16px',
     textAlign: 'center',
@@ -106,11 +107,9 @@ function IconButton({
             })}
             title={tooltip}
         >
-            {label && prefixedLabel === true ? (
-                renderLabel(label, labelClassName)
-            ) : (
-                ''
-            )}
+            {label && prefixedLabel === true
+                ? renderLabel(label, labelClassName)
+                : ''}
             {renderIcon(icon, stackedOnIcon)}
             {label && !prefixedLabel ? renderLabel(label, labelClassName) : ''}
         </span>
