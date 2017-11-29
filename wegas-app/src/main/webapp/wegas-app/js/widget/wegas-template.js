@@ -209,6 +209,28 @@ YUI.add('wegas-template', function(Y) {
             "<div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === 0 ? ' wegas-template-valuebox-zero' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div><% } %></span>" +
                     '</div></div>'
             )
+        },
+        {
+            ATTRS:{
+                variable: {
+                    type:"object",
+                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    view: {
+                        type: 'variableselect',
+                        label: 'Variable',
+                        classFilter: ["NumberDescriptor"]
+                    }
+                },
+                data: {
+                    type: 'object',
+                    properties:{
+                        label: { type:"string", view:{ label: "Label" } },
+                        minValue: { type:"number", view:{ label: "Minimum value", description: "Override number's minimum value", layout: "shortInline" } },
+                        maxValue: { type:"number", view:{ label: "Maximum value", description: "Override number's maximum value", layout: "shortInline" } },
+                    },
+                    view: {}
+                }
+            }
         }
     );
     Wegas.BoxTemplate = Y.Base.create('wegas-template', AbstractTemplate, [], {
@@ -221,6 +243,27 @@ YUI.add('wegas-template', function(Y) {
             //+ "<% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>"
                 ')</span></div>'
         )
+    },
+    {
+        ATTRS:{
+
+            variable: {
+                type:"object",
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Variable',
+                    classFilter: ["NumberDescriptor"]
+                }
+            },
+            data: {
+                type: 'object',
+                properties:{
+                    label: { type:"string", view:{ label: "Label" } }
+                },
+                view: {}
+            }
+        }
     });
     Wegas.NumberTemplate = Y.Base.create(
         'wegas-template',
@@ -230,6 +273,27 @@ YUI.add('wegas-template', function(Y) {
             TEMPLATE: Micro.compile(
                 "<div class='wegas-template-text'><% if(this.label){ %><span><%= this.label %></span><br/><% } %><span><%= this.value || '{value}' %></span></div>"
             )
+        },
+        {
+            ATTRS:{
+    
+                variable: {
+                    type:"object",
+                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    view: {
+                        type: 'variableselect',
+                        label: 'Variable',
+                        classFilter: ["NumberDescriptor"]
+                    }
+                },
+                data: {
+                    type: 'object',
+                    properties:{
+                        label: { type:"string", view:{ label: "Label" } }
+                    },
+                    view: {}
+                }
+            }
         }
     );
     Wegas.TitleTemplate = Y.Base.create(
@@ -240,6 +304,17 @@ YUI.add('wegas-template', function(Y) {
             TEMPLATE: Micro.compile(
                 "<div class='wegas-template-title'><%= this.label || '{label}'%></div>"
             )
+        },
+        {
+            ATTRS:{
+                data: {
+                    type: 'object',
+                    properties:{
+                        label: { type:"string", view:{ label: "Label" } }
+                    },
+                    view: {}
+                }
+            }
         }
     );
     Wegas.FractionTemplate = Y.Base.create(
@@ -253,6 +328,28 @@ YUI.add('wegas-template', function(Y) {
             //+ "<%= (this.minValue || '{minValue}')%> /"
                     "<%= (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>"
             )
+        },
+        {
+            ATTRS:{
+    
+                variable: {
+                    type:"object",
+                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    view: {
+                        type: 'variableselect',
+                        label: 'Variable',
+                        classFilter: ["NumberDescriptor"]
+                    }
+                },
+                data: {
+                    type: 'object',
+                    properties:{
+                        label: { type:"string", view:{ label: "Label" } },
+                        maxValue: { type:"number", view:{ label: "Maximum value", description: "Override number's maximum value" } }
+                    },
+                    view: {}
+                }
+            }
         }
     );
     Wegas.TextTemplate = Y.Base.create(
@@ -269,13 +366,19 @@ YUI.add('wegas-template', function(Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                    type: 'object',
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    view: {
-                        type: 'variableselect',
-                        label: 'Variable',
-                        classFilter: ['TextDescriptor', 'StringDescriptor']
+                view: {
+                    type: 'variableselect',
+                    label: 'Variable',
+                    classFilter: ['TextDescriptor', 'StringDescriptor']
                 }
+            },
+            data: {
+                type: 'object',
+                properties:{
+                },
+                view: {}
             }
         }
         }
