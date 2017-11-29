@@ -760,7 +760,7 @@ public class UpdateController {
         return players;
     }
 
-    @POST
+    @GET
     @Path("RecoverRights")
     public String recoverRights() {
         List<Player> players = this.getPlayerWithoutPermissions();
