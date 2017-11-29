@@ -32,7 +32,6 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
@@ -759,17 +758,5 @@ public class UpdateController {
         List<Player> players = query.getResultList();
 
         return players;
-    }
-
-    @GET
-    @Path("RecoverRights")
-    public String recoverRights() {
-        List<Player> players = this.getPlayerWithoutPermissions();
-        for (Player p : players) {
-            logger.error("Player: {}", p);
-            User user = p.getUser();
-            gameFacade.addRights(user, p.getGame());
-        }
-        return "OK";
     }
 }

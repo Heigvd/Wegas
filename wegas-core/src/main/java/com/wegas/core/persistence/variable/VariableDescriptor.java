@@ -417,6 +417,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @return get instance belonging to the current player
      */
     @JsonIgnore
+    @Deprecated
     public T getInstance() {
         return (T) this.getScope().getInstance();
     }
