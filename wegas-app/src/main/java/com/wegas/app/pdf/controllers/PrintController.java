@@ -69,14 +69,14 @@ public class PrintController {
     private Long playerId;
 
     /**
-     * CASE# 2 export from scenarist/trainer lobby -> fetch default user
+     * CASE# 2 export from scenarist/trainer lobby: fetch default user
      */
     @ManagedProperty("#{param.gameModelId}")
     private Long gameModelId;
 
     /**
      *
-     * @return
+     * @return the playerId
      */
     public Long getPlayerId() {
         return playerId;
@@ -92,7 +92,7 @@ public class PrintController {
 
     /**
      *
-     * @return
+     * @return gameModelId queryString parameter
      */
     public Long getGameModelId() {
         return gameModelId;
@@ -114,8 +114,8 @@ public class PrintController {
     }
 
     /**
-     *
-     * @return
+     * Get the gameModel linked to the currentPlayer
+     * @return get the current gameModel
      */
     public GameModel getGameModel() {
         return getCurrentPlayer().getGameModel();

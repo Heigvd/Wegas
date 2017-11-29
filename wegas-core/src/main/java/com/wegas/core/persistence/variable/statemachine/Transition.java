@@ -147,7 +147,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return index of state the transition is pointing to
      */
     public Long getNextStateId() {
         return nextStateId;
@@ -161,7 +161,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return script to execute on transition
      */
     public Script getPreStateImpact() {
         return preStateImpact;
@@ -183,7 +183,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return script to execute to know if the transition is walkable
      */
     public Script getTriggerCondition() {
         return triggerCondition;

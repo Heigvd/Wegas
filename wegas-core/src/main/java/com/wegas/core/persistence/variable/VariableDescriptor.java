@@ -374,9 +374,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      * Retrieve an instance which stands in the same scope as given variableInstance
      *
-     * @param variableInstance
+     * @param variableInstance an instance of another descritpor
      *
-     * @return
+     * @return instance of this, which match the scope of variableInstance
      *
      */
     @JsonIgnore

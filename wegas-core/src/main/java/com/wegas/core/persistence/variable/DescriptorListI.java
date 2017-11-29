@@ -24,7 +24,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
     /**
      * useful ?
      *
-     * @return
+     * @return id of the entity
      */
     Long getId();
 
@@ -142,7 +142,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      *
      * @param item
      *
-     * @return
+     * @return true if item has been removed from its parent
      */
     default boolean localRemove(T item) {
         return this.getItems().remove(item);

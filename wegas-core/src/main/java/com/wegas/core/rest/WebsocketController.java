@@ -134,7 +134,7 @@ public class WebsocketController {
     /**
      * Retrieve the list of online users
      *
-     * @return
+     * @return the list of current online users
      */
     @GET
     @Path("OnlineUser")
@@ -148,7 +148,7 @@ public class WebsocketController {
     /**
      * Retrieve the list of online users
      *
-     * @return
+     * @return the list of current online users
      */
     @GET
     @Path("OnlineUser/Sync")

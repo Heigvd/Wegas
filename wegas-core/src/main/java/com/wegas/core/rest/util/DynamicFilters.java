@@ -78,7 +78,7 @@ public class DynamicFilters implements DynamicFeature {
      *
      * @param cma
      *
-     * @return
+     * @return the cache-control string 
      */
     private static String genCacheString(CacheMaxAge cma) {
         return (cma.private_cache() ? private_cache : "") + "max-age: " + cma.unit().toSeconds(cma.time());

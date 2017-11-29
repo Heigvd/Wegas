@@ -67,7 +67,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     }
 
     /**
-     * @return
+     * @return true if at least an evant has been fired
      */
     public Boolean isEventFired() {
         return eventFired;
@@ -152,15 +152,16 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
 
     /**
      * @param eventName
-     * @return
+     * @return how many time the event has been fired
      */
     public int firedCount(String eventName) {
         return this.getFiredParameters(eventName).length;
     }
 
     /**
+     * check if the event has been fired. If it's the case, count this event consumption within eventCounter
      * @param eventName
-     * @return
+     * @return check if the event has been fired
      */
     @Override
     public boolean fired(String eventName) {

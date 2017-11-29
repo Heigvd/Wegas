@@ -606,7 +606,7 @@ public class WebsocketFacade {
     /**
      * 0 means Admin, 1 Scenarist or Trainer, 2 Player and 3, Guest;
      *
-     * @return
+     * @return king of role ranking... quite ugly...
      */
     private int getHighestRole(User user) {
         if (hasAnyRoles(user, "Administrator")) {

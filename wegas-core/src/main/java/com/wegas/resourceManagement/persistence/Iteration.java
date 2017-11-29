@@ -229,7 +229,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     /**
      * Get the Cost Performance Index
      *
-     * @return
+     * @return the CPI
      */
     public Double getCpi() {
         return this.cpi;
@@ -242,7 +242,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     /**
      * Get the Workload Performance Index
      *
-     * @return
+     * @return the WPI
      */
     public Double getWpi() {
         return this.wpi;
@@ -255,7 +255,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     /**
      * Get the schedule Performance Index
      *
-     * @return
+     * @return the SPI
      */
     public Double getSpi() {
         return spi;

@@ -164,7 +164,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         r.setChoiceDescriptor(this);
     }
 
-    // ***  Sugar to use from scripts *** //
+    // ~~~  Sugar to use from scripts ~~~
     /**
      * @param player
      * @param resultName
@@ -319,11 +319,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * unselected choices, or before the validation, for all choices </li>
      * <li>Standard question, if the choice is not linked to a reply </li>
      * </ul>
-     * <p>
-     * @param p the player
-     * <p>
-     * @return
      *
+     * @param p the player
+     *
+     * @return return true if this choice can be selected by the player
      */
     public boolean hasNotBeenSelected(Player p) {
         if (this.getQuestion().getCbx()) {

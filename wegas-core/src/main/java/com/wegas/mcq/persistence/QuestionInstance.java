@@ -129,7 +129,7 @@ public class QuestionInstance extends VariableInstance {
         this.unread = unread;
     }
 
-    // *** Sugar *** //
+    // ~~~ Sugar ~~~
     /**
      *
      */

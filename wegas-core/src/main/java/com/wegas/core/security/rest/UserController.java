@@ -154,7 +154,7 @@ public class UserController {
      *
      * @param gameId
      *
-     * @return
+     * @return email of all players in the game
      */
     @GET
     @Path("Emails/{gameId : [1-9][0-9]*}")
@@ -182,7 +182,7 @@ public class UserController {
      * @param gameId
      * @param teamId
      *
-     * @return
+     * @return email of all players in the team
      */
     @GET
     @Path("Emails/{gameId : [1-9][0-9]*}/{teamId : [1-9][0-9]*}")

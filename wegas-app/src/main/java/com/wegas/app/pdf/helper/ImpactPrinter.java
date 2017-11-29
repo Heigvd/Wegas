@@ -41,7 +41,7 @@ public class ImpactPrinter {
      * ;, { and }
      *
      * @param script
-     * @return
+     * @return instructions list
      */
     private List<String> parse() {
         List<String> instructions;

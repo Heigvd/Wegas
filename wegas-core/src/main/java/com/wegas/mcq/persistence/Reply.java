@@ -52,8 +52,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
     /**
-     * /
-     **
      * <p>
      */
     private Long startTime;

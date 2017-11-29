@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -18,14 +17,10 @@ import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -33,9 +28,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.naming.NamingException;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -192,7 +184,7 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param game the game
      *
-     * @return
+     * @return true if the debug game has been added, false if it was already here
      */
     public boolean addDebugTeam(Game game) {
         if (!game.hasDebugTeam()) {
@@ -212,7 +204,7 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * @param game
      *
-     * @return
+     * @return a unique token based on the game name, suffixed with some random characters
      */
     public String createUniqueToken(Game game) {
         //String prefixKey = game.getShortName().toLowerCase().replace(" ", "-");
@@ -504,6 +496,12 @@ public class GameFacade extends BaseFacade<Game> {
         this.reset(this.find(gameId));
     }
 
+    /**
+     * Allow to access this facade event when there is no active CDI context.
+     * <b>Please avoid that</b>
+     *
+     * @return GameFacade instance
+     */
     public static GameFacade lookup() {
         try {
             return Helper.lookupBy(GameFacade.class);

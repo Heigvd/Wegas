@@ -100,7 +100,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      * @param player
      *
-     * @return
+     * @return the variable instance which the player can write
      */
     abstract public VariableInstance getVariableInstance(Player player);
 
@@ -112,7 +112,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      *
      * @param team
      *
-     * @return
+     * @return a variableInstance a player of the team can write
      */
     public VariableInstance getVariableInstance(Team team) {
         for (Player p : team.getPlayers()) {
@@ -129,7 +129,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      *
      * @param game
      *
-     * @return
+     * @return a variableInstance a player in the game can write
      */
     public VariableInstance getVariableInstance(Game game) {
         for (Team t : game.getTeams()) {
@@ -146,7 +146,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      *
      * @param gm
      *
-     * @return
+     * @return a variableInstance a player in the gameModel can write
      */
     public VariableInstance getVariableInstance(GameModel gm) {
         for (Game g : gm.getGames()) {
@@ -156,8 +156,11 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     /**
-     * @return
+     *
+     * @return {@link #getVariableInstance(Player)} with the current player
+     * @deprecated
      */
+    @Deprecated
     @JsonIgnore
     public VariableInstance getInstance() {
         return this.getVariableInstance(this.lookupPlayer());
@@ -224,7 +227,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     abstract public void propagateDefaultInstance(InstanceOwner context, boolean create);
 
     /**
-     * @return
+     * @return the variable descriptor
      */
     // @fixme here we cannot use the back-reference on an abstract reference
     //@JsonBackReference
@@ -242,7 +245,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     /**
-     * @return
+     * @return the scope id
      */
     @Override
     @JsonIgnore
@@ -275,7 +278,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      * VariableInstanceFacade so we need something to fetch it...
      * It's not so nice...
      *
-     * @return
+     * @return VariableInstanceFacade instance
      */
     protected VariableInstanceFacade getVariableInstanceFacade() {
         // beans should have been injected by EntityListener

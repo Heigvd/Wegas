@@ -89,7 +89,7 @@ public class PageController {
     @GET
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     public Response getPage(@PathParam("gameModelId") final Long gameModelId,
-                            @PathParam("pageId") String pageId)
+            @PathParam("pageId") String pageId)
             throws RepositoryException {
 
         // find gameModel to ensure currentUser has readRight
@@ -154,8 +154,8 @@ public class PageController {
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setPage(@PathParam("gameModelId") Long gameModelId,
-                            @PathParam("pageId") String pageId,
-                            JsonNode content) throws RepositoryException, IOException {
+            @PathParam("pageId") String pageId,
+            JsonNode content) throws RepositoryException, IOException {
 
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
@@ -173,15 +173,15 @@ public class PageController {
      * @param pageId
      * @param page
      *
-     * @return
+     * @return strange http response with information set indo http headers...
      *
      * @throws RepositoryException
      */
     @PUT
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/meta")
     public Response setMeta(@PathParam("gameModelId") Long gameModelId,
-                            @PathParam("pageId") String pageId,
-                            Page page) throws RepositoryException {
+            @PathParam("pageId") String pageId,
+            Page page) throws RepositoryException {
 
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
@@ -197,8 +197,8 @@ public class PageController {
     @PUT
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/move/{pos: ([0-9]+)}")
     public Response move(@PathParam("gameModelId") Long gameModelId,
-                         @PathParam("pageId") String pageId,
-                         @PathParam("pos") int pos) throws RepositoryException {
+            @PathParam("pageId") String pageId,
+            @PathParam("pos") int pos) throws RepositoryException {
 
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
@@ -233,7 +233,8 @@ public class PageController {
      * @param gameModelId
      * @param content
      * @param id
-     * @return
+     *
+     * @return some http response with data into HTTP headers
      *
      * @throws javax.jcr.RepositoryException
      * @throws java.io.IOException
@@ -268,7 +269,7 @@ public class PageController {
      * @param gameModelId
      * @param pageId
      *
-     * @return
+     * @return strange http response which contains strange stuff {@link #createPage(java.lang.Long, com.fasterxml.jackson.databind.JsonNode) }
      *
      * @throws RepositoryException
      * @throws IOException
@@ -276,7 +277,7 @@ public class PageController {
     @GET
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/duplicate")
     public Response duplicate(@PathParam("gameModelId") Long gameModelId,
-                              @PathParam("pageId") String pageId) throws RepositoryException, IOException {
+            @PathParam("pageId") String pageId) throws RepositoryException, IOException {
         try (final Pages pages = new Pages(gameModelId)) {
             Page oldPage = pages.getPage(pageId);
             if (oldPage == null) {
@@ -328,7 +329,7 @@ public class PageController {
      *
      * @param gameModelId The GameModel's ID
      *
-     * @return
+     * @return HTTP 200 ok with "Page: *" header
      *
      * @throws RepositoryException
      */
@@ -350,14 +351,14 @@ public class PageController {
      * @param gameModelId The GameModel's ID
      * @param pageId      The page's ID
      *
-     * @return
+     * @return {@link #getIndex(java.lang.Long) } without the deleted page
      *
      * @throws RepositoryException
      */
     @DELETE
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     public Response deletePage(@PathParam("gameModelId") Long gameModelId,
-                               @PathParam("pageId") String pageId)
+            @PathParam("pageId") String pageId)
             throws RepositoryException {
 
         GameModel gm = gameModelFacade.find(gameModelId);
@@ -386,8 +387,8 @@ public class PageController {
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response patch(@PathParam("gameModelId") Long gameModelId,
-                          @PathParam("pageId") String pageId,
-                          String patch) throws RepositoryException, JSONException, IOException, JsonPatchException {
+            @PathParam("pageId") String pageId,
+            String patch) throws RepositoryException, JSONException, IOException, JsonPatchException {
 
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);

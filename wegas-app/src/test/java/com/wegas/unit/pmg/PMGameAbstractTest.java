@@ -31,7 +31,7 @@ abstract public class PMGameAbstractTest extends AbstractTest {
     /**
      * Return the script test path, relative to SCRIPTROOT
      *
-     * @return
+     * @return the script test path, relative to SCRIPTROOT
      */
     protected abstract String getScriptTestPath();
 

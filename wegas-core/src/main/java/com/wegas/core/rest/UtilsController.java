@@ -110,9 +110,9 @@ public class UtilsController {
     }
 
     /**
-     * Retrieve the list of online users
+     * Some text which descibe the cluster state
      *
-     * @return
+     * @return the cluster state
      */
     @GET
     @Path("ClusterInfo")

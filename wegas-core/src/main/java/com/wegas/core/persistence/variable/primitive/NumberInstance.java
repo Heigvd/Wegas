@@ -110,7 +110,7 @@ public class NumberInstance extends VariableInstance {
     }
 
     /**
-     * @return
+     * @return history of values
      */
     public List<Double> getHistory() {
         List<NumberHistoryEntry> copy = Helper.copyAndSort(this.history, new EntityComparators.OrderComparator<>());

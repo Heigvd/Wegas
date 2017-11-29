@@ -194,12 +194,10 @@ public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstract
         }
     }
 
-    /**
+    /*
      *
      * @param ic
-     *
-     * @return
-     *
+     * @return intercepted method returned object
      * @throws Exception
      */
     /*@AroundInvoke

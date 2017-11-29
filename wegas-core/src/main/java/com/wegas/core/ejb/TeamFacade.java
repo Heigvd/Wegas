@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.game.Game;
@@ -22,6 +23,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +140,7 @@ public class TeamFacade extends BaseFacade<Team> {
     /**
      * @param team
      *
-     * @return
+     * @return all instances which belons to the team
      *
      * @deprecated use JPA team.privateInstances
      */
@@ -173,5 +175,18 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     public void reset(Long teamId) {
         this.reset(this.find(teamId));
+    }
+
+    /**
+     *
+     * @return TeamFacade instance
+     */
+    public static TeamFacade lookup() {
+        try {
+            return Helper.lookupBy(TeamFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving team facade", ex);
+            return null;
+        }
     }
 }
