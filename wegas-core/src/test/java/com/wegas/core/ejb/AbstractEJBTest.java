@@ -38,7 +38,7 @@ public class AbstractEJBTest {
 
     private long startTime;
 
-    // *** Static *** //
+    // ~~~ Static ~~~
     private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
     private static EJBContainer ejbContainer;
     protected static GameModelFacade gameModelFacade;
@@ -47,7 +47,7 @@ public class AbstractEJBTest {
     protected static RoleFacade roleFacade;
     protected static UserFacade userFacade;
     protected static VariableDescriptorFacade descriptorFacade;
-    // *** Fields *** //
+    // ~~~ Fields ~~~
     protected static GameModel gameModel;
     protected static Game game;
     protected static Team team;
@@ -56,7 +56,7 @@ public class AbstractEJBTest {
     protected static Player player2;
     protected static Player player21;
     protected static User guest;
-    // *** Constants *** //
+    // ~~~ Constants ~~~
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
 

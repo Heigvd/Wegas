@@ -139,11 +139,11 @@ public class Helper {
     /**
      * Copy and sort the given list
      *
-     * @param <T>
-     * @param list
-     * @param c
+     * @param <T> list item type
+     * @param list the list to copy and sort
+     * @param c a compartor to sort the list
      *
-     * @return
+     * @return a unmodifiable copy of the list, sorted according to the comparator
      */
     public static <T extends Object> List<T> copyAndSort(List<T> list, Comparator<? super T> c) {
         List<T> copy = new ArrayList<>(list);

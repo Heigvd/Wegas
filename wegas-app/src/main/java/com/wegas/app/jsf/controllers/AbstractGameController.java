@@ -118,7 +118,7 @@ public class AbstractGameController implements Serializable {
     }
 
     /**
-     * @return
+     * @return the gameModel linked to the currentGame
      */
     public GameModel getCurrentGameModel() {
         return this.getCurrentGame().getGameModel();

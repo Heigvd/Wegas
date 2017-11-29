@@ -256,7 +256,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
      *
      * @param script to test
      *
-     * @return
+     * @return true if the script is undefined
      */
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null

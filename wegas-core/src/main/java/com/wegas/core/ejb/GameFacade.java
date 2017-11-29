@@ -191,7 +191,7 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param game the game
      *
-     * @return
+     * @return true if the debug game has been added, false if it was already here
      */
     public boolean addDebugTeam(Game game) {
         if (!game.hasDebugTeam()) {
@@ -211,7 +211,7 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * @param game
      *
-     * @return
+     * @return a unique token based on the game name, suffixed with some random characters
      */
     public String createUniqueToken(Game game) {
         //String prefixKey = game.getShortName().toLowerCase().replace(" ", "-");
@@ -611,7 +611,7 @@ public class GameFacade extends BaseFacade<Game> {
      * Allow to access this facade event when there is no active CDI context.
      * <b>Please avoid that</b>
      *
-     * @return
+     * @return GameFacade instance
      */
     public static GameFacade lookup() {
         try {

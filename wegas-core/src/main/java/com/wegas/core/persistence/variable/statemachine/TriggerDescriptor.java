@@ -60,7 +60,8 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
-     * @return
+     * is the trigger designed to trigger only once ?
+     * @return true if the trigger is designed to be trigged only once
      */
     public Boolean isOneShot() {
         return oneShot;
@@ -85,7 +86,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
-     * @return
+     * @return the script to execute when trigger triggers
      */
     public Script getPostTriggerEvent() {
         try {
@@ -114,7 +115,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      * Trigger condition
      *
-     * @return
+     * @return condition for trigger to triggers
      */
     public Script getTriggerEvent() {
         try {
@@ -128,7 +129,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      * Override to make this function transient
      *
-     * @return
+     * @return underlysing statemachine states
      * @see StateMachineDescriptor#getStates
      */
     @Override

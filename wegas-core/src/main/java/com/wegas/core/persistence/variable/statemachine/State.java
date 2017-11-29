@@ -135,7 +135,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return state position in the stateMachine editor extent
      */
     public Coordinate getEditorPosition() {
         return editorPosition;
@@ -154,7 +154,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return state name
      */
     public String getLabel() {
         return label;
@@ -168,7 +168,9 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * get the script which to execute when this state become the current state
+     *
+     * @return the script which to execute when this state become the current state
      */
     public Script getOnEnterEvent() {
         return onEnterEvent;
@@ -201,7 +203,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return list of transition going out of the state
      */
     public List<Transition> getTransitions() {
         return transitions;

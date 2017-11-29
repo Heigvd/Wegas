@@ -22,23 +22,16 @@ public class CacheManagerHolder {
 
     //private final CacheManager instance;
 
-    /**
-     *
-    public CacheManagerHolder() {
-        instance = CacheManager.getInstance();
-    }
-     */
+    //public CacheManagerHolder() {
+    //    instance = CacheManager.getInstance();
+    //}
 
-    /**
-     *
-     * @return
-    public CacheManager getInstance() {
-        return instance;
-    }
+    //public CacheManager getInstance() {
+        //return instance;
+    //}
 
-    @PreDestroy
-    private void onDestroy() {
-        instance.shutdown();
-    }
-     */
+    //@PreDestroy
+    //private void onDestroy() {
+        //instance.shutdown();
+    //}
 }

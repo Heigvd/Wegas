@@ -194,7 +194,7 @@ public class ReviewingFacade {
      *
      * @param prd peer review descriptor to dispatch
      *
-     * @return
+     * @return all peerreviewinstance which have been modified
      */
     public List<PeerReviewInstance> dispatch(PeerReviewDescriptor prd) {
         AbstractScope scope = prd.getScope();
@@ -531,11 +531,11 @@ public class ReviewingFacade {
     }
 
     /**
-     * Reviewing phase is over -> author will be able to see feedbacks
+     * Reviewing phase is over. Author will be able to see feedbacks
      *
      * @param peerReviewDescriptorId
      *
-     * @return
+     * @return all PeerReviewInstance which have been closed
      */
     public List<PeerReviewInstance> close(Long peerReviewDescriptorId) {
         VariableDescriptor vd = variableDescriptorFacade.find(peerReviewDescriptorId);

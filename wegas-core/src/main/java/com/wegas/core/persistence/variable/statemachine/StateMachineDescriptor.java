@@ -66,7 +66,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     }
 
     /**
-     * @return
+     * @return all stated mapped by index numbers
      */
     public Map<Long, State> getStates() {
         return states;
@@ -124,7 +124,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     /**
      * @param p
-     * @return
+     * @return is player instance enabled ?
      */
     public boolean isEnabled(Player p) {
         return this.getInstance(p).getEnabled();
@@ -132,7 +132,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     /**
      * @param p
-     * @return
+     * @return is player instance disabled ?
      */
     public boolean isDisabled(Player p) {
         return !this.getInstance(p).getEnabled();

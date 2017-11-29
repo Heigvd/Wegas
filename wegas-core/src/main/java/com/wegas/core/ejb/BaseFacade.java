@@ -201,10 +201,10 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
         }
     }
 
-    /**
+    /*
      *
      * @param ic
-     * @return
+     * @return intercepted method returned object
      * @throws Exception
      */
     /*@AroundInvoke

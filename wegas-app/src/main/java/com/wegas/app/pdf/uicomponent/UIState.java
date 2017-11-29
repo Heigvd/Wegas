@@ -21,8 +21,7 @@ import javax.faces.context.ResponseWriter;
 
 /**
  *
- * Faces component that print a StateMachine/Trigger State as xHTML. <br /> <br
- * />
+ * Faces component that print a StateMachine/Trigger State as xHTML. <br /> <br />
  * <pre>
  * <b>Usage:</b>
  * &lt;<b>State</b> <b>value</b>="#{the State object}"

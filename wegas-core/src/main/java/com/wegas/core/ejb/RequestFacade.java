@@ -165,7 +165,7 @@ public class RequestFacade {
      *
      * @param name
      *
-     * @return
+     * @return the bundle which match the name
      */
     public ResourceBundle getBundle(String name) {
         return this.requestManager.getBundle(name);

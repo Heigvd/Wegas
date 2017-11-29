@@ -77,7 +77,7 @@ public interface PermissionOwner {
      *
      * @param permission
      *
-     * @return
+     * @return true if the permission have been removed, false owner didn't even own the property
      */
     default public boolean removePermission(Permission permission) {
         boolean r = false;

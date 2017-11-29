@@ -45,7 +45,7 @@ public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> {
     /**
      *
      * @param p
-     * @return
+     * @return value of player p instance
      */
     public boolean getValue(Player p) {
         return this.getInstance(p).getValue();

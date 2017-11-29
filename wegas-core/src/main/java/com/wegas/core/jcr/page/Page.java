@@ -74,7 +74,7 @@ public class Page {
     }
 
     /**
-     * @return
+     * @return page id
      */
     public String getId() {
         return id;
@@ -88,7 +88,7 @@ public class Page {
     }
 
     /**
-     * @return
+     * @return page content as a JSONNode
      */
     public JsonNode getContent() {
         return content;
@@ -125,7 +125,7 @@ public class Page {
     }
 
     /**
-     * @return
+     * @return page name
      */
     public String getName() {
         return name;
@@ -170,7 +170,7 @@ public class Page {
 
     /**
      * @param jsonPath
-     * @return
+     * @return  some extracted node as text
      */
     public String extract(String jsonPath) {
         JsonNode node = this.content;

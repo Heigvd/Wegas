@@ -97,7 +97,7 @@ public class WegasScriptException extends WegasRuntimeException {
 
     /**
      *
-     * @return
+     * @return script content
      */
     public String getScript() {
         return script;
@@ -113,7 +113,7 @@ public class WegasScriptException extends WegasRuntimeException {
 
     /**
      *
-     * @return
+     * @return line number in error
      */
     public Integer getLineNumber() {
         return lineNumber;

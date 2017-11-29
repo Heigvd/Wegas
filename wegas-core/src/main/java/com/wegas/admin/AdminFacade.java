@@ -197,9 +197,9 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
     }
 
     /**
-     * Fetch the list of the games which are to be deleted. It means
+     * Fetch the list of the games which are to be deleted.
      *
-     * @return
+     * @return list of GameAdmin linked to a game which can be destroyed
      */
     public List<GameAdmin> getGameToDelete() {
         TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);

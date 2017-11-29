@@ -136,7 +136,7 @@ public class TeamFacade extends BaseFacade<Team> {
     /**
      * @param team
      *
-     * @return
+     * @return all instances which belons to the team
      *
      * @deprecated use JPA team.privateInstances
      */
@@ -174,7 +174,8 @@ public class TeamFacade extends BaseFacade<Team> {
     }
 
     /**
-     * @return
+     *
+     * @return TeamFacade instance
      */
     public static TeamFacade lookup() {
         try {

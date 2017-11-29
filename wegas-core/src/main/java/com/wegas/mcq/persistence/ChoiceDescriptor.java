@@ -7,26 +7,26 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.Helper;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.ListUtils.Updater;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.Scripted;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 
 /**
  *
@@ -161,7 +161,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         r.setChoiceDescriptor(this);
     }
 
-    // ***  Sugar to use from scripts *** //
+    // ~~~  Sugar to use from scripts ~~~
     /**
      * @param player
      * @param resultName
@@ -312,11 +312,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * unselected choices, or before the validation, for all choices </li>
      * <li>Standard question, if the choice is not linked to a reply </li>
      * </ul>
-     * <p>
-     * @param p the player
-     * <p>
-     * @return
      *
+     * @param p the player
+     *
+     * @return return true if this choice can be selected by the player
      */
     public boolean hasNotBeenSelected(Player p) {
         if (this.getQuestion().getCbx()) {

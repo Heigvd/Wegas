@@ -30,7 +30,7 @@ public class TeamSingleton {
     /**
      * @param gameId
      * @param name
-     * @return
+     * @return the team
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Team findByName(Long gameId, String name) throws WegasNoResultException {
