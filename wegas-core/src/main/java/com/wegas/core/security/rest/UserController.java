@@ -782,9 +782,6 @@ public class UserController {
         User coTrainer = accountFacade.find(accountId).getUser();
 
         //TODO assert coTrainer is a Trainer...
-        Game game = gameFacade.find(gameId);
-        requestManager.assertUpdateRight(game);
-
         userFacade.addTrainerToGame(coTrainer.getId(), gameId);
     }
 
@@ -795,10 +792,7 @@ public class UserController {
 
         User coTrainer = accountFacade.find(accountId).getUser();
 
-        Game game = gameFacade.find(gameId);
-        requestManager.assertUpdateRight(game);
-
-        userFacade.removeTrainer(gameId, coTrainer); // TODO
+        userFacade.removeTrainer(gameId, coTrainer);
     }
 
     /**
@@ -818,9 +812,6 @@ public class UserController {
 
         User user = accountFacade.find(accountId).getUser();
 
-        GameModel gameModel = gameModelFacade.find(gameModelId);
-        requestManager.assertUpdateRight(gameModel);
-
         userFacade.grantGameModelPermissionToUser(user.getId(), gameModelId, permission);
     }
 
@@ -830,9 +821,6 @@ public class UserController {
             @PathParam("accountId") Long accountId) {
 
         User coScenarist = accountFacade.find(accountId).getUser();
-
-        GameModel gameModel = gameModelFacade.find(gameModelId);
-        requestManager.assertUpdateRight(gameModel);
 
         userFacade.removeScenarist(gameModelId, coScenarist);
     }
