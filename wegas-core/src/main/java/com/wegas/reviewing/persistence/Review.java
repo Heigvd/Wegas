@@ -152,6 +152,10 @@ public class Review extends AbstractEntity implements DatedEntity {
         return reviewState;
     }
 
+    public ReviewState getInitialReviewState(){
+         return initialState != null ? initialState : getReviewState();
+    }
+
     /**
      * Set review state
      *
@@ -261,10 +265,7 @@ public class Review extends AbstractEntity implements DatedEntity {
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        ReviewState effState;
-        effState = initialState != null ? initialState : getReviewState();
-
-        switch (effState) {
+        switch (getInitialReviewState()) {
             case DISPATCHED:
                 // Only reviewer has edit right
                 return this.getReviewer().getRequieredUpdatePermission();

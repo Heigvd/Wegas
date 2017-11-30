@@ -142,6 +142,10 @@ public class PeerReviewInstance extends VariableInstance {
         beans.getReviewingFacade().revivePeerReviewInstance(this);
     }
 
+    /**
+     * Skip this {@link #getRequieredReadPermission() } implementation.
+     * call super one.
+     */
     private Collection<WegasPermission> super_getRequieredReadPermission() {
         return super.getRequieredReadPermission();
     }
@@ -152,6 +156,36 @@ public class PeerReviewInstance extends VariableInstance {
         // reviewer also have right to read
         for (Review r : getReviewed()) {
             ps.addAll(r.getReviewer().super_getRequieredReadPermission()); // avoid infinite loop
+        }
+        // so authors have
+        for (Review r : getToReview()) {
+            ps.addAll(r.getAuthor().super_getRequieredReadPermission()); // avoid infinite loop
+        }
+        return ps;
+    }
+
+    /**
+     * Skip this {@link #getRequieredUpdatePermission() } implementation.
+     * call super one.
+     */
+    private Collection<WegasPermission> super_getRequieredUpdatePermission() {
+        return super.getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        Collection<WegasPermission> ps = super.getRequieredUpdatePermission();
+        for (Review r : getReviewed()) {
+            // when they'er reviewing, reviewers also have right to write (optmisticlock = cascade on variableinstance !)
+            if (r.getInitialReviewState().equals(Review.ReviewState.DISPATCHED)) {
+                ps.addAll(r.getReviewer().super_getRequieredUpdatePermission()); // avoid infinite loop
+            }
+        }
+        for (Review r : getToReview()) {
+            // when they'er commenting the feedback, authors also have right to write (optmisticlock = cascade on variableinstance !)
+            if (r.getInitialReviewState().equals(Review.ReviewState.NOTIFIED)) {
+                ps.addAll(r.getAuthor().super_getRequieredUpdatePermission()); // avoid infinite loop
+            }
         }
         return ps;
     }
