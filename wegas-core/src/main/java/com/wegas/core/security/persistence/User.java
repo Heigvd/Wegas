@@ -44,13 +44,23 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     /**
      *
      */
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH} /*, orphanRemoval = true */)
-    @JsonManagedReference(value = "player-user")
+    @OneToMany(mappedBy = "user", cascade = {
+        CascadeType.DETACH,
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REFRESH
+    } /*, orphanRemoval = true */)
+    //@JsonManagedReference(value = "player-user")
+    @JsonIgnore
     private List<Player> players = new ArrayList<>();
 
     @JsonIgnore
-
-    @OneToMany(mappedBy = "createdBy", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH} /*, orphanRemoval = true */)
+    @OneToMany(mappedBy = "createdBy", cascade = {
+        CascadeType.DETACH,
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REFRESH
+    } /*, orphanRemoval = true */)
     private List<Team> teams = new ArrayList<>();
 
     /**
@@ -99,8 +109,8 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     /**
      * @return all user's players
      */
-    @JsonIgnore
-    @JsonManagedReference(value = "player-user")
+    //@JsonIgnore
+    //@JsonManagedReference(value = "player-user")
     public List<Player> getPlayers() {
         return players;
     }
@@ -108,7 +118,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     /**
      * @param players the players to set
      */
-    @JsonManagedReference(value = "player-user")
+    //@JsonManagedReference(value = "player-user")
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
