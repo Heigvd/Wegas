@@ -6,7 +6,7 @@ function UneditableView(props) {
     return (
         <StringField
             {...props}
-            view={{ ...props.view, disabled: true }}
+            view={{ ...props.view, readOnly: true }}
         />
     );
 }

@@ -19,6 +19,9 @@ const inputStyle = css({
     '::placeholder': {
         fontStyle: 'italic',
     },
+    '[readonly]': {
+        backgroundColor: 'lightgrey',
+    },
 });
 
 const textareaFocus = css({
@@ -38,6 +41,9 @@ const textareaStyle = css(
         fontSize: '15px',
         border: 'none',
         color: 'darkgrey',
+        '[readonly]': {
+            backgroundColor: 'lightgrey',
+        },
     },
     textareaFocus
 );
@@ -55,6 +61,7 @@ interface IStringProps {
     view: {
         rows?: number;
         disabled?: boolean;
+        readOnly?: boolean;
         placeholder?: string;
         [propName: string]: undefined | {};
     };
@@ -108,6 +115,7 @@ class StringView extends React.Component<
                     placeholder={this.props.view.placeholder}
                     value={this.state.value}
                     disabled={this.props.view.disabled}
+                    readOnly={this.props.view.readOnly}
                 />
             );
         }
@@ -121,6 +129,7 @@ class StringView extends React.Component<
                 onChange={this.handleChange}
                 onBlur={this.handleChange}
                 disabled={this.props.view.disabled}
+                readOnly={this.props.view.readOnly}
             />
         );
     }
