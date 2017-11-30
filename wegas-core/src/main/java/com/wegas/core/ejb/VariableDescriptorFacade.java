@@ -210,7 +210,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param variableDescriptorId
      * @param entity
      *
-     * @return
+     * @return the new child
      */
     public VariableDescriptor createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
         VariableDescriptor find = this.find(variableDescriptorId);

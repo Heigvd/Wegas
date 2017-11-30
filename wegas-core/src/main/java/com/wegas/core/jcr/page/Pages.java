@@ -90,7 +90,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param id
-     * @return
+     * @return the page
      * @throws RepositoryException
      */
     public Page getPage(String id) throws RepositoryException {

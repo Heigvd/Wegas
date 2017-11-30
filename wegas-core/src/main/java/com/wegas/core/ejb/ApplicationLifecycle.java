@@ -128,7 +128,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
     /**
      * Return the current numnber of member, base on the local list of members
      *
-     * @return
+     * @return  size of the local list of members
      */
     public int countMembers() {
         return clusterMembers.size();

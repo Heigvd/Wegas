@@ -121,7 +121,7 @@ public class ChoiceInstance extends VariableInstance {
 
     /**
      * @deprecated
-     * @return
+     * @return the currentResult index
      */
     @JsonIgnore
     public Integer getCurrentResultIndex() {
@@ -249,7 +249,7 @@ public class ChoiceInstance extends VariableInstance {
         }
     }
 
-    // *** Sugar *** //
+    // ~~~ Sugar ~~~
     /**
      *
      */

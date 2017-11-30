@@ -45,7 +45,7 @@ public class ListUtils {
     /**
      * Default KeyExtractor implementation
      * Extract Id from an abstractEntity
-     *
+     * <p>
      */
     public static class IdExtractor implements KeyExtractorI<Object, AbstractEntity> {
 
@@ -54,8 +54,6 @@ public class ListUtils {
             return item.getId();
         }
     }
-
-
 
     /**
      * Clone a list, not its content
@@ -237,7 +235,7 @@ public class ListUtils {
      * @param otherList the list to take new elements from
      * @param updater   callback to update the cache
      *
-     * @return
+     * @return same as {@link #mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.KeyExtractorI) without any converter
      *
      * @see ListUtils#mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.ListKeyToMap)
      */
@@ -252,7 +250,7 @@ public class ListUtils {
      * @param otherList the list to take new elements from
      * @param converter allow to identify element with a different key (element's id is the default one)
      *
-     * @return
+     * @return same as {@link #mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.KeyExtractorI) without any updated
      *
      * @see ListUtils#mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.ListKeyToMap)
      */
@@ -265,7 +263,7 @@ public class ListUtils {
      * @param theList   the original list to update
      * @param otherList the list to take new elements from
      *
-     * @return
+     * @return same as {@link #mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.KeyExtractorI) without any updated nor converter
      *
      * @see ListUtils#mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.ListKeyToMap)
      */

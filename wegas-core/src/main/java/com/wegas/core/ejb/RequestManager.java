@@ -241,7 +241,8 @@ public class RequestManager {
     }
 
     /**
-     * @return
+     * Get the gameModel linked to the current player 
+     * @return gameModel linked to the current player 
      */
     public GameModel getCurrentGameModel() {
         return this.getPlayer().getGameModel();
@@ -273,7 +274,7 @@ public class RequestManager {
     }
 
     /**
-     * @return
+     * @return entities which have just been updated, mapped by their owner
      */
     public Map<String, List<AbstractEntity>> getUpdatedEntities() {
         return updatedEntities;
@@ -299,7 +300,7 @@ public class RequestManager {
     }
 
     /**
-     * @return
+     * @return list of client events
      */
     public List<ClientEvent> getClientEvents() {
         return events;
@@ -408,7 +409,7 @@ public class RequestManager {
      *
      * @param token
      *
-     * @return
+     * @return true if token has been locked, false otherwise
      */
     public boolean tryLock(String token) {
         return tryLock(token, null);
@@ -419,7 +420,7 @@ public class RequestManager {
      * @param token  token to tryLock
      * @param target scope to inform about the lock
      *
-     * @return
+     * @return true if token has been locked, false otherwise
      */
     public boolean tryLock(String token, InstanceOwner target) {
         String audience = getAudience(target);

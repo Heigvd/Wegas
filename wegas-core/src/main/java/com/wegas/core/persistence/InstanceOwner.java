@@ -29,7 +29,7 @@ public interface InstanceOwner {
      *
      * Pusher channel to use for this owner
      *
-     * @return
+     * @return instance owner pusher channel
      */
     public String getChannel();
 
@@ -50,7 +50,7 @@ public interface InstanceOwner {
     /**
      * Return instances that belongs to this target only
      *
-     * @return
+     * @return instances that belongs to this target only
      */
     @JsonIgnore
     public List<VariableInstance> getPrivateInstances();
@@ -58,7 +58,7 @@ public interface InstanceOwner {
     /**
      * return instances that belongs to this target and its children
      *
-     * @return
+     * @return instances that belongs to this target and its children
      */
     @JsonIgnore
     public List<VariableInstance> getAllInstances();

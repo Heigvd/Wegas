@@ -240,7 +240,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      * Return the effective owner of the instance, null for default instances
      *
-     * @return
+     * @return  effective instance owner, but null for default ones
      */
     @JsonIgnore
     public InstanceOwner getOwner() {
@@ -264,7 +264,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      *
      * Same as getOwner but return the gameModel for default instances
      *
-     * @return
+     * @return  effective instance owner or the gameModel for default ones
      */
     @JsonIgnore
     public InstanceOwner getBroadcastTarget() {
@@ -325,13 +325,13 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         }
     }
 
-    /**
-     *
-     * //@PostUpdate // @PostRemove // @PostPersist public void
-     * onInstanceUpdate() { // If the instance has no scope, it means it's a
-     * default if (this.getScope() != null) { //
-     * RequestFacade.lookup().getRequestManager().addUpdatedInstance(this); } }
+    /*
+      @PostUpdate @PostRemove @PostPersist public void
+      onInstanceUpdate() { // If the instance has no scope, it means it's a
+      default if (this.getScope() != null) { //
+      RequestFacade.lookup().getRequestManager().addUpdatedInstance(this); } }
      */
+
     /**
      * @return the scope
      */

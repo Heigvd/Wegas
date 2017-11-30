@@ -86,7 +86,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
 
     /**
      *
-     * @return
+     * @return the one instance mapped with null (HACK)
      */
     @Override
     public Map<GameModel, VariableInstance> getVariableInstances() {

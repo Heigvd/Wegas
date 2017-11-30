@@ -62,9 +62,9 @@ public class LibraryFacade {
     /**
      *
      * @param gameModelId
-     * @param name
+     * @param name library name
      *
-     * @return
+     * @return get all content from the library identified by name
      */
     public String getLibraryContent(Long gameModelId, String name) {
         StringBuilder ret = new StringBuilder();

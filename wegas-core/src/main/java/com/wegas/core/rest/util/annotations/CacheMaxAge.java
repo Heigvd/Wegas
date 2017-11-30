@@ -39,6 +39,8 @@ public @interface CacheMaxAge {
     /**
      * Private cache default false
      *
+     * WHAT IS IF  FOR???
+     *
      * @return boolean
      */
     boolean private_cache() default false;

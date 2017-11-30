@@ -105,7 +105,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
-// *** Sugar for scripts *** //
+// ~~~ Sugar for scripts ~~~
 
     /**
      *

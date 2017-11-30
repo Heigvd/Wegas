@@ -153,7 +153,9 @@ public class WegasTest {
 
     /**
      *
-     * @return
+     * POST given jsonContent to url and retrieve the result
+     *
+     * @return  entity return by the POST request, as string
      */
     private String postJSON(String url, String jsonContent) throws IOException {
         HttpPost post = new HttpPost(baseURL + url);

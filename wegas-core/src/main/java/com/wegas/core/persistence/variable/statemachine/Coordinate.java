@@ -34,7 +34,7 @@ public class Coordinate implements Serializable {
 
     /**
      *
-     * @return
+     * @return x coordinate
      */
     public Integer getX() {
         return x;
@@ -50,7 +50,7 @@ public class Coordinate implements Serializable {
 
     /**
      *
-     * @return
+     * @return Y coordinate
      */
     public Integer getY() {
         return y;

@@ -114,7 +114,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @return
+     * @return the max value
      */
     @JsonIgnore
     @Transient
@@ -124,7 +124,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @return
+     * @return the minimum value
      */
     @JsonIgnore
     @Transient
@@ -144,7 +144,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         }
     }
 
-    // **** Sugar for scripts *** //
+    // ~~~ Sugar for scripts ~~~
     /**
      *
      * @param p
@@ -165,7 +165,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @return
+     * @return the defaule value
      */
     @Transient
     public double getDefaultValue() {
@@ -213,7 +213,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     /**
      *
      * @param p
-     * @return
+     * @return value of player p instance
      */
     public double getValue(Player p) {
         return this.getInstance(p).getValue();

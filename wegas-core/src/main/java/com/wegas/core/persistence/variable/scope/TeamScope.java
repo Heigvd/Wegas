@@ -8,7 +8,9 @@
 package com.wegas.core.persistence.variable.scope;
 
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -19,7 +21,6 @@ import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -45,7 +46,7 @@ public class TeamScope extends AbstractScope<Team> {
      */
     /**
      *
-     * @return
+     * @return {@link VariableInstanceFacade#getAllTeamInstances(com.wegas.core.persistence.variable.scope.TeamScope)} on this
      */
     @Override
     public Map<Team, VariableInstance> getVariableInstances() {

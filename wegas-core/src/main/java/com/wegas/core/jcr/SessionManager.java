@@ -22,7 +22,7 @@ public class SessionManager {
     final static private SimpleCredentials admin = new SimpleCredentials(Helper.getWegasProperty("jcr.admin.username"), Helper.getWegasProperty("jcr.admin.password").toCharArray());
 
     /**
-     * @return
+     * @return JCR session, logged as admin
      * @throws RepositoryException
      */
     public static Session getSession() throws RepositoryException {

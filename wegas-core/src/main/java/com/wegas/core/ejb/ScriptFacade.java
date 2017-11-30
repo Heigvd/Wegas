@@ -244,12 +244,12 @@ public class ScriptFacade {
     }
 
     /**
-     * Fires an engineInvocationEvent, which should be intercepted to customize
-     * engine scope.
+     * Instantiate script contect, inject arguments and eval the given script
      *
      * @param script
      * @param arguments
-     * @return
+     *
+     * @return whatever the script has returned
      */
     private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         if (script == null) {
@@ -284,7 +284,8 @@ public class ScriptFacade {
      *
      * @param root
      * @param files
-     * @return
+     *
+     * @return javascript file collection
      */
     private Collection<File> getJavaScriptsRecursively(String root, String[] files) {
         List<File> queue = new LinkedList<>();
@@ -327,7 +328,8 @@ public class ScriptFacade {
      * check if the given file is a minified version of an existing one
      *
      * @param file
-     * @return
+     *
+     * @return true if this file is a minified version of an existing script
      */
     private boolean isMinifedDuplicata(File file) {
         if (file.getName().endsWith("-min.js")) {
@@ -338,13 +340,14 @@ public class ScriptFacade {
         return false;
     }
 
-    // *** Sugar *** //
+    // ~~~ Sugar ~~~
     /**
      * Concatenate scripts
      *
      * @param scripts
      * @param arguments
-     * @return
+     *
+     * @return eval result
      */
     private Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         if (scripts.isEmpty()) {
@@ -375,7 +378,7 @@ public class ScriptFacade {
      * @param p
      * @param s
      * @param context
-     * @return
+     * @return eval result
      */
     public Object eval(Player p, Script s, VariableDescriptor context) throws WegasScriptException {
         Map<String, AbstractEntity> arguments = new HashMap<>();
@@ -387,7 +390,7 @@ public class ScriptFacade {
      * @param player
      * @param s
      * @param arguments
-     * @return
+     * @return eval result
      */
     private Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         requestManager.setPlayer(player);
@@ -398,7 +401,7 @@ public class ScriptFacade {
      * @param playerId
      * @param s
      * @param context
-     * @return
+     * @return eval result
      * @throws WegasScriptException
      */
     public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException { // ICI CONTEXT

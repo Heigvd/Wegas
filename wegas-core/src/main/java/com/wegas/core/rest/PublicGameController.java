@@ -68,25 +68,6 @@ public class PublicGameController {
         return ret;
     }
 
-    ///**
-    //*
-    //* @param userId
-    //* @return
-    //*/
-    //@GET
-    //@Path("AvailableGames/{userId : [1-9][0-9]*}")
-    //public Collection<Game> availableGames(@PathParam("userId") Long userId) {
-    //    final Collection<Game> retGames = new ArrayList<>();
-    //    final Collection<Game> games = gameFacade.findAll("createdTime ASC");
-    //    final Collection<Game> registeredGames = gameFacade.findRegisteredGames(userId);
-    //    for (Game g : games) {
-    //        if (SecurityHelper.isAnyPermitted(g, Arrays.asList("View", "Token"))
-    //                && !registeredGames.contains(g)) {
-    //            retGames.add(g);
-    //        }
-    //    }
-    //    return retGames;
-    //}
     /**
      *
      * @param userId

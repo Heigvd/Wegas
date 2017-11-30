@@ -48,7 +48,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return true if the directory stands at /
      */
     @JsonIgnore
     public boolean isRootDirectory() {
@@ -57,7 +57,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return ?????  sum of bytes of children ???
      */
     @JsonProperty("bytes")
     @Override

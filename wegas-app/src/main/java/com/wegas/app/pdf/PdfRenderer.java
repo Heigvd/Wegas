@@ -284,7 +284,7 @@ public class PdfRenderer implements Filter {
     /**
      * Return the filter configuration object for this filter.
      *
-     * @return
+     * @return the filterConfig
      */
     public FilterConfig getFilterConfig() {
         return (this.filterConfig);
@@ -309,7 +309,7 @@ public class PdfRenderer implements Filter {
     /**
      * Return a String representation of this object.
      *
-     * @return
+     * @return String representation of this object, including the filter
      */
     @Override
     public String toString() {
@@ -410,7 +410,7 @@ public class PdfRenderer implements Filter {
          *
          * @param cookies
          *
-         * @return
+         * @return cookies as one string
          */
         private static String joinCookies(Cookie[] cookies) {
             final String token = "; ";

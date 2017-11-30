@@ -225,7 +225,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         return (this.user != null ? user.getId() : null);
     }
 
-    // *** Sugar *** //
+    // ~~~ Sugar ~~~
     /**
      *
      * @return gameModel the player is linked to

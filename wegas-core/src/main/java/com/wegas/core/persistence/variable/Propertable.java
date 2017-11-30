@@ -26,7 +26,7 @@ public interface Propertable {
      * Internal representation. please do not use as this may change at any time.
      * Please set this method protected
      *
-     * @return
+     * @return internal properties representation, use with caution
      */
     public List<VariableProperty> getInternalProperties();
 
