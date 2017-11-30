@@ -16,12 +16,20 @@ import java.util.Locale;
 
 public interface RequestManagerI {
 
+    /**
+     * Request state machines evaluation
+     *
+     * @param player
+     */
     void commit(Player player);
 
+    /**
+     * Request state machines evaluation for the current player
+     */
     void commit();
 
     /**
-     * @return the local
+     * @return the locale
      */
     Locale getLocale();
 
@@ -30,6 +38,11 @@ public interface RequestManagerI {
      */
     void setLocale(Locale local);
 
+    /**
+     * get the current user
+     *
+     * @return current user
+     */
     User getCurrentUser();
 
     /**
@@ -99,7 +112,7 @@ public interface RequestManagerI {
      *
      * @param token
      *
-     * @return
+     * @return true if token has been locked, false otherwise
      */
     boolean tryLock(String token);
 
@@ -108,7 +121,7 @@ public interface RequestManagerI {
      * @param token  token to tryLock
      * @param target scope to inform about the lock
      *
-     * @return
+     * @return true if token has been locked, false otherwise
      */
     boolean tryLock(String token, InstanceOwner target);
 
@@ -126,8 +139,9 @@ public interface RequestManagerI {
     void unlock(String token, InstanceOwner target);
 
     /**
+     * Is test environnement ?
      *
-     * @return
+     * @return true if the current environment is TEST
      */
     boolean isTestEnv();
 

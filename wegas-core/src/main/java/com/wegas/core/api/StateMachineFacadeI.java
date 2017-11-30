@@ -12,11 +12,21 @@ import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 
 /**
  *
+ * StateMachine related business method
+ *
  * @author maxence
  */
 public interface StateMachineFacadeI {
 
-    
+    /**
+     * Count the number of reply currently available in the currentPlayer
+     * instance of the given dialogue descriptor
+     *
+     * @param dialogueDescriptor
+     * @param currentPlayer
+     *
+     * @return kind of unreadCount
+     */
     long countValidTransition(DialogueDescriptor dialogueDescriptor, Player currentPlayer);
 
 }

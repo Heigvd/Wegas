@@ -9,38 +9,56 @@ package com.wegas.core.api;
 
 import com.wegas.core.exception.client.WegasScriptException;
 
+/**
+ * Let scripts use events !
+ *
+ * @author maxence
+ */
 public interface ScriptEventFacadeI {
 
     /**
-     * @param eventName
-     * @param param
+     * Fire an event with some payload
+     *
+     * @param eventName event to fire
+     * @param param     payload
+     *
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     void fire(String eventName, Object param) throws WegasScriptException;
 
     /**
-     * @param eventName
+     * Fire an event
+     *
+     * @param eventName event to fire
+     *
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     void fire(String eventName) throws WegasScriptException;
 
     /**
+     * Has an event been fired?
+     *
      * @param eventName
-     * @return
+     *
+     * @return true id the event has been fired
      */
     boolean fired(String eventName);
 
     /**
-     * @param eventName
-     * @param func
-     * @param scope
+     * Register a function to execute on an event
+     *
+     * @param eventName event name to attache the function to
+     * @param func      the function to execute
+     * @param scope     function scope
      */
     void on(String eventName, Object func, Object scope);
 
     /**
-     * @param eventName
-     * @param func
+     * Register a function to execute on an event
+     *
+     * @param eventName event name to attache the function to
+     * @param func      the function to execute
+     *
      */
     void on(String eventName, Object func);
-    
 }

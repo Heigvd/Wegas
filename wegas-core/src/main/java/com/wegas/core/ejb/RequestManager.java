@@ -753,12 +753,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Try to Lock the token. Non-blocking. Return true if token has been
-     * locked, false otherwise
-     *
-     * @param token
-     *
-     * @return true if token has been locked, false otherwise
+     * {@inheritDoc }
      */
     @Override
     public boolean tryLock(String token) {
@@ -766,11 +761,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     *
-     * @param token  token to tryLock
-     * @param target scope to inform about the lock
-     *
-     * @return true if token has been locked, false otherwise
+     * {@inheritDoc }
      */
     public boolean tryLock(String token, InstanceOwner target) {
         String audience = getAudienceToLock(target);

@@ -20,6 +20,9 @@ import java.util.Set;
 import javax.persistence.NoResultException;
 
 /**
+ *
+ * Expose business methods related to VariableDescritors
+ *
  * @author maxence
  */
 public interface VariableDescriptorFacadeI {
@@ -27,33 +30,42 @@ public interface VariableDescriptorFacadeI {
     VariableDescriptor find(final Long entityId);
 
     /**
-     * @param gameModel
-     * @param name
+     * Look for a VariableDescriptor identified by name within the given
+     * gameModel.
+     *
+     * @param gameModel gameModel to explore
+     * @param name      name of the variableDescriptor to search
      *
      * @return the gameModel descriptor matching the name
      *
-     * @throws WegasNoResultException
+     * @throws WegasNoResultException if no such variabledescriptor exists
      */
     VariableDescriptor find(final GameModel gameModel, final String name) throws WegasNoResultException;
 
     /**
-     * @param gameModelId
+     * Return all variableDescripor in the gameModel identified by its id
+     *
+     * @param gameModelId id of the gameModel
      *
      * @return all gameModel descriptors
      */
     Set<VariableDescriptor> findAll(final Long gameModelId);
 
     /**
+     * Get all variableDescritpor from a gameModel, filtered by their type
+     *
      * @param <T>
      * @param gamemodel
      * @param variableDescriptorClass the filtering class
      *
-     * @return All specified classes and subclasses belonging to the game model.
+     * @return All descriptor which are instanceof the given class, belonging to the game model.
      */
     <T extends VariableDescriptor> List<T> findByClass(final GameModel gamemodel, final Class<T> variableDescriptorClass);
 
     /**
-     * @param gameModelId
+     * Get gameModel root-level descriptor
+     *
+     * @param gameModelId id of the gameModel
      *
      * @return gameModel root-level descriptor
      */
@@ -134,7 +146,7 @@ public interface VariableDescriptorFacadeI {
      * @param gameModel
      * @param name
      *
-     * @return
+     * @return true if gameModel contains a descriptor named name
      */
     boolean hasVariable(final GameModel gameModel, final String name);
 

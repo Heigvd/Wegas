@@ -486,11 +486,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     }
 
     /**
-     * @param <T>
-     * @param gamemodel
-     * @param variableDescriptorClass the filtering class
-     *
-     * @return All specified classes and subclasses belonging to the game model.
+     * {@inheritDoc }
      */
     @Override
     public <T extends VariableDescriptor> List<T> findByClass(final GameModel gamemodel, final Class<T> variableDescriptorClass) {

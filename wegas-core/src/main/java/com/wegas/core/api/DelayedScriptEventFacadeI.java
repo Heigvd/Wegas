@@ -7,13 +7,20 @@
  */
 package com.wegas.core.api;
 
+/**
+ * DelayedEventFacade allows to delay events.
+ *
+ * @author maxence
+ */
 public interface DelayedScriptEventFacadeI {
 
     /**
-     * @param minutes
-     * @param seconds   [s]
+     * Wait before firing and event
+     *
+     * @param minutes   number of minutes
+     * @param seconds   number of seconds [s]
      * @param eventName event to fire
      */
     void delayedFire(long minutes, long seconds, String eventName);
-    
+
 }
