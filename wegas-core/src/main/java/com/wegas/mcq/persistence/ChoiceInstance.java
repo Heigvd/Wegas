@@ -157,6 +157,10 @@ public class ChoiceInstance extends VariableInstance {
             // Backward compat
             this.setCurrentResultIndex(other.getCurrentResultIndex());
 
+            if (this.currentResultIndex == null && this.currentResultName == null){
+                this.setCurrentResult(null);
+            }
+
             if (!Helper.isNullOrEmpty(this.currentResultName)) {
                 ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
                 if (choiceDesc != null) {
