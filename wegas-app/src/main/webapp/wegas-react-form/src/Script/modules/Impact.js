@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Form from 'jsoninput';
 import { print, parse, types } from 'recast';
+import { css } from 'glamor';
+import classNames from 'classnames';
 import { schema as variableSchema, varExist } from './Variable';
 import ArgForm from './ArgForm';
 import {
@@ -18,8 +20,6 @@ import {
 } from './globalMethod';
 import JSEditor from '../Views/asyncJSEditor';
 import { containerStyle } from '../Views/conditionImpactStyle';
-import { css } from 'glamor';
-import classNames from 'classnames';
 
 const errorStyle = css({
     label: 'Impact-errorStyle',
@@ -48,29 +48,35 @@ const upgradeSchema = (varSchema, methodType = 'getter') => {
     };
     return ret;
 };
-
+function getState(node, method, type) {
+    const { global, method: m, member, variable, args } = extractMethod(node);
+    return {
+        global,
+        variable,
+        method: m,
+        member,
+        args,
+        methodSchem: methodSchema(method, variable, type),
+    };
+}
 /**
  * handles method call on VariableDescriptor
  */
 class Impact extends React.Component {
     constructor(props) {
         super(props);
-        const { global, method, member, variable, args } = extractMethod(
-            props.node
-        );
-        this.state = {
-            global,
-            variable,
-            method,
-            member,
-            args,
-            methodSchem: methodSchema(props.view.method, variable, props.type),
-        };
+        this.state = getState(props.node, props.view.method, props.type);
         this.handleVariableChange = this.handleVariableChange.bind(this);
     }
     componentWillReceiveProps(nextProps) {
-        if (this.props.node !== nextProps.node) {
-            this.setState(extractMethod(nextProps.node));
+        if (
+            this.props.node !== nextProps.node ||
+            this.props.view !== nextProps.view ||
+            this.props.type !== nextProps.type
+        ) {
+            this.setState(
+                getState(nextProps.node, nextProps.view.method, nextProps.type)
+            );
         }
     }
     checkHandled() {
