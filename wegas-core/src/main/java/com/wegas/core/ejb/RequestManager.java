@@ -36,8 +36,15 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,25 +70,50 @@ import org.apache.shiro.util.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import javax.annotation.PostConstruct;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ * @author maxence
  */
 @Named("RequestManager")
 @RequestScoped
 public class RequestManager implements RequestManagerI {
 
+    /**
+     * The Wegas Persistence Unit
+     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
+    /**
+     * give access to the entity manager
+     *
+     * @return the wegas entity manager
+     */
     public EntityManager getEntityManager() {
         return em;
     }
 
+    /**
+     * Execution environnement may be
+     * <ul>
+     * <li>{@link RequestEnvironment#STD}</li>
+     * <li>{@link RequestEnvironment#TEST}</li>
+     * <li>{@link RequestEnvironment#INTERNAL}</li>
+     * </ul>
+     */
     public enum RequestEnvironment {
-        STD, // Standard request from standard client (ie a browser)
-        TEST, // Testing Request from standard client
-        INTERNAL // Internal Process (timer, etc)
+        /**
+         * Standard request from standard client (ie a browser)
+         */
+        STD,
+        /**
+         * Testing Request from standard client
+         */
+        TEST,
+        /**
+         * Internal Process (timer, etc)
+         */
+        INTERNAL
     }
 
     /*
@@ -91,54 +123,128 @@ public class RequestManager implements RequestManagerI {
     @Inject
     ConcurrentHelper concurrentHelper;
 
+    /**
+     * GameModelFacde instance
+     */
     @Inject
     private GameModelFacade gameModelFacade;
 
+    /**
+     * GameFacade instance
+     */
     @Inject
     private GameFacade gameFacade;
 
+    /**
+     * Team facade instance
+     */
     @Inject
     private TeamFacade teamFacade;
 
+    /**
+     * PlayerFacade instance
+     */
     @Inject
     private PlayerFacade playerFacade;
 
+    /**
+     * UserFacadeInstance.
+     */
     @Inject
     private UserFacade userFacade;
 
+    /**
+     * AccountFacade instance
+     */
     @Inject
     private AccountFacade accountFacade;
 
+    /**
+     * RequestFacade instance
+     */
     @Inject
     private RequestFacade requestFacade;
 
+    /**
+     * SL4j Logger
+     */
     private static Logger logger = LoggerFactory.getLogger(RequestManager.class);
 
+    /**
+     * Default request env is {@link RequestEnvironment#STD}
+     */
     private RequestEnvironment env = RequestEnvironment.STD;
 
     /**
-     *
+     * Default view is {@link Views#Public}
      */
     private Class view = Views.Public.class;
 
     /**
-     *
+     * The current player
      */
     private Player currentPlayer;
+    /**
+     * The current user
+     */
     private User currentUser;
+    /**
+     * Current shiro principal (i.e. accountId)
+     */
     private Long currentPrincipal;
 
+    /**
+     * Request identifier
+     */
     private String requestId;
+
+    /**
+     * Websocket socket id
+     */
     private String socketId;
+
+    /**
+     * Current HTTP method
+     */
     private String method;
+
+    /**
+     * HTTP request Path
+     */
     private String path;
+
+    /**
+     * start timestamp
+     */
     private Long startTimestamp;
+
+    /**
+     * time entering ManagedMode filter
+     */
     private Long managementStartTime;
+
+    /**
+     * time leaving managed mode
+     */
     private Long serialisationStartTime;
+
+    /**
+     * timestamp just before websocket propagation
+     */
     private Long propagationStartTime;
+    /**
+     * timestamp just after websocket propagation
+     */
     private Long propagationEndTime;
 
+    /**
+     * Request response HTTP code
+     */
     private Response.StatusType status;
+
+    /**
+     * To count exceptions
+     */
     private Long exceptionCounter = 0L;
 
     /**
@@ -146,12 +252,24 @@ public class RequestManager implements RequestManagerI {
      */
     private Map<String, List<AbstractEntity>> updatedEntities = new HashMap<>();
 
-    private Map<String, List<AbstractEntity>> outdatedEntities = new HashMap<>();
-
+    /**
+     * List of entities which have been deleted during the request
+     */
     private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
 
+    /**
+     * Contains all permission already granted to the current user during the request
+     */
     private Collection<WegasPermission> grantedPermissions = new HashSet<>();
+
+    /**
+     * List of shiro permissions current user has at the begining of the request
+     */
     private Collection<String> effectiveDBPermissions;
+
+    /**
+     * List of roles current user is member of
+     */
     private Collection<String> effectiveRoles;
 
     /**
@@ -160,22 +278,32 @@ public class RequestManager implements RequestManagerI {
     private final Map<String, List<String>> lockedToken = new HashMap<>();
 
     /**
-     *
+     * event to propagate to request client
      */
     private List<ClientEvent> events = new ArrayList<>();
 
     /**
-     *
+     * the current locale
      */
     private Locale locale;
 
     /**
-     *
+     * the Nashorn script context to use during the request
      */
     private ScriptContext currentScriptContext = null;
 
+    /**
+     * Internal value to pretty print logs
+     */
     private static int logIndent = 0;
 
+    /**
+     * Internal method to pretty print logs. Call logger.trace(msg), but add
+     * whitespaces at the begining of the line, according to current logLevel
+     *
+     * @param msg  message to display
+     * @param args message arguments
+     */
     private static void log(String msg, Object... args) {
         if (logger.isTraceEnabled()) {
             StringBuilder sb = new StringBuilder();
@@ -187,34 +315,63 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * To count how many events have been thrown and how many have bean consumed
+     */
     private final StateMachineEventCounter eventCounter = new StateMachineEventCounter();
 
+    /**
+     * Get the current execution environment
+     *
+     * @return current script execution env
+     */
     public RequestEnvironment getEnv() {
         return env;
     }
 
+    /**
+     * Change the current execution env
+     *
+     * @param env new environment to use
+     */
     public void setEnv(RequestEnvironment env) {
         this.env = env;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isTestEnv() {
         return this.env == RequestEnvironment.TEST;
     }
 
+    /**
+     * Register entities as updatedEntities
+     *
+     * @param entities entities to register
+     */
     public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
         this.addEntities(entities, updatedEntities);
     }
 
-    public void addOutofdateEntities(Map<String, List<AbstractEntity>> entities) {
-        this.addEntities(entities, outdatedEntities);
-    }
-
+    /**
+     * Register entities as destroyed entities
+     *
+     * @param entities the entities which have been destroyed
+     */
     public void addDestroyedEntities(Map<String, List<AbstractEntity>> entities) {
         this.addEntities(entities, destroyedEntities);
     }
 
-    private void addEntities(Map<String, List<AbstractEntity>> entities, Map<String, List<AbstractEntity>> container) {
+    /**
+     * Add entities to the container.
+     *
+     * @param entities  entities list mapped by their audience
+     * @param container entities destination
+     */
+    private void addEntities(Map<String, List<AbstractEntity>> entities,
+            Map<String, List<AbstractEntity>> container) {
         if (entities != null) {
             for (Map.Entry<String, List<AbstractEntity>> entry : entities.entrySet()) {
                 this.addEntities(entry.getKey(), entry.getValue(), container);
@@ -222,13 +379,30 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    private void addEntities(String audience, List<AbstractEntity> updated, Map<String, List<AbstractEntity>> container) {
-        for (AbstractEntity entity : updated) {
+    /**
+     * Add entities to the container, using audience as container map key
+     *
+     * @param audience  entities audiences
+     * @param entities  entities to register
+     * @param container the container
+     */
+    private void addEntities(String audience, List<AbstractEntity> entities,
+            Map<String, List<AbstractEntity>> container) {
+        for (AbstractEntity entity : entities) {
             this.addEntity(audience, entity, container);
         }
     }
 
-    public boolean contains(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
+    /**
+     * Does the container contains the given entity?
+     *
+     * @param container the container to search in
+     * @param entity    the needle
+     *
+     * @return true if the entity has been found within the container
+     */
+    public boolean contains(Map<String, List<AbstractEntity>> container,
+            AbstractEntity entity) {
         for (List<AbstractEntity> entities : container.values()) {
             if (entities.contains(entity)) {
                 return true;
@@ -237,6 +411,12 @@ public class RequestManager implements RequestManagerI {
         return false;
     }
 
+    /**
+     * remove entity from the container
+     *
+     * @param container the container to remove the entity from
+     * @param entity    entity to remove
+     */
     private void removeEntityFromContainer(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
         for (List<AbstractEntity> entities : container.values()) {
             if (entities.contains(entity)) {
@@ -246,6 +426,24 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * Add entity within container, mapping entity with audience.
+     * <b>GENUINE HACK INSIDE</b>. make sure entity in not in both updated and
+     * destroyed containers:
+     * <ul>
+     * <li>When registering entity as a destroyed one, this method ensure entity
+     * is not registered as an updated one by removing it from updatedEntities
+     * container.</li>
+     * <li>This method don't do anything when registering an entity within
+     * updated container if this entity has already been registered
+     * in the destroyed one</li>
+     * </ul>
+     *
+     *
+     * @param audience  entity audience
+     * @param entity    the entity to register
+     * @param container the container to register the entity in
+     */
     public void addEntity(String audience, AbstractEntity entity, Map<String, List<AbstractEntity>> container) {
 
         boolean add = true;
@@ -279,7 +477,11 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * @return a User entity, based on the shiro login state
+     * Get the currentUser, based one the shiro login state.
+     * If shiro current principal does not equals {@link #currentPrincipal},
+     * reset all transient permissions
+     *
+     * @return the user which is currently logged in
      */
     @Override
     public User getCurrentUser() {
@@ -323,6 +525,9 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * Set the currentPlayer. Reset the {@link #currentScriptContext} if the
+     * new currentPlayer is null or if it doesn't equal the previous one
+     *
      * @param currentPlayer the currentPlayer to set
      */
     public void setPlayer(Player currentPlayer) {
@@ -333,8 +538,9 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Get the gameModel linked to the current player 
-     * @return gameModel linked to the current player 
+     * Get the gameModel linked to the current player
+     *
+     * @return gameModel linked to the current player
      */
     public GameModel getCurrentGameModel() {
         return this.getPlayer().getGameModel();
@@ -354,18 +560,25 @@ public class RequestManager implements RequestManagerI {
         this.currentScriptContext = currentScriptContext;
     }
 
+    /**
+     * The state machine eventCounter
+     *
+     * @return the state machine event counter
+     */
     public StateMachineEventCounter getEventCounter() {
         return eventCounter;
     }
 
+    /**
+     * Clear all entity containers
+     */
     public void clearEntities() {
         this.clearUpdatedEntities();
         this.clearDestroyedEntities();
-        this.clearOutdatedEntities();
     }
 
     /**
-     *
+     * clear the updatedEntities container
      */
     public void clearUpdatedEntities() {
         this.updatedEntities.clear();
@@ -379,25 +592,24 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     *
+     * clear the destroyedEntities container.
      */
     public void clearDestroyedEntities() {
         this.destroyedEntities.clear();
     }
 
+    /**
+     * Get the destroyedEntites container.
+     *
+     * @return the destroyedEntites container
+     */
     public Map<String, List<AbstractEntity>> getDestroyedEntities() {
         return destroyedEntities;
     }
 
-    public void clearOutdatedEntities() {
-        this.outdatedEntities.clear();
-    }
-
-    public Map<String, List<AbstractEntity>> getOutdatedEntities() {
-        return outdatedEntities;
-    }
-
     /**
+     * Get the list of event to send to client
+     *
      * @return list of client events
      */
     public List<ClientEvent> getClientEvents() {
@@ -405,6 +617,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * Register a client event, such a popup
+     *
      * @param event
      */
     public void addEvent(ClientEvent event) {
@@ -412,7 +626,9 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * @param e
+     * Register an exception to return to the client
+     *
+     * @param e exception to send to client
      */
     public void addException(WegasRuntimeException e) {
         ArrayList<WegasRuntimeException> exceptions = new ArrayList<>();
@@ -437,15 +653,29 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * how many exception have been registered ?
+     * it number of event within {@link #events} which are instanceof
+     * ExceptionEvent
+     *
+     * @return exception count
+     */
     public Long getExceptionCounter() {
         return exceptionCounter;
     }
 
+    /**
+     * Set exception count
+     *
+     * @param exceptionCounter
+     */
     public void setExceptionCounter(Long exceptionCounter) {
         this.exceptionCounter = exceptionCounter;
     }
 
     /**
+     * Get the requested JSON view to serialise response with
+     *
      * @return the view
      */
     public Class getView() {
@@ -453,6 +683,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * Set to JSON view to use when serialising the response
+     *
      * @param view the view to set
      */
     public void setView(Class view) {
@@ -469,7 +701,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * @return the local
+     * @return the locale
      */
     @Override
     public Locale getLocale() {
@@ -477,14 +709,23 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * @param local the local to set
+     * @param locale the locale to set
      */
     @Override
-    public void setLocale(Locale local) {
-        this.locale = local;
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
-    private String getAudience(InstanceOwner target) {
+    /**
+     * Based on target, return the audience (i.e. websocket channel) to lock
+     *
+     * @param target instanceOwner to get the audience from
+     *
+     * @return the audience to lock
+     *
+     * @throws WegasErrorMessage if currentUser don't have the right to lock the target
+     */
+    private String getAudienceToLock(InstanceOwner target) {
         if (target != null) {
             if (this.hasPermission(target.getAssociatedReadPermission())) {
                 return target.getChannel();
@@ -495,6 +736,14 @@ public class RequestManager implements RequestManagerI {
         return null;
     }
 
+    /**
+     * Return effective audience to use. It means using "internal" if the given
+     * audien is null or empty
+     *
+     * @param audience audience
+     *
+     * @return audience or "internal" if audience is null
+     */
     private String getEffectiveAudience(String audience) {
         if (audience != null && !audience.isEmpty()) {
             return audience;
@@ -524,7 +773,7 @@ public class RequestManager implements RequestManagerI {
      * @return true if token has been locked, false otherwise
      */
     public boolean tryLock(String token, InstanceOwner target) {
-        String audience = getAudience(target);
+        String audience = getAudienceToLock(target);
         logger.debug("TryLock \"{}\" for \"{}\"", token, audience);
         boolean tryLock = concurrentHelper.tryLock(token, audience);
         if (tryLock) {
@@ -548,6 +797,12 @@ public class RequestManager implements RequestManagerI {
         this.lock(token, null);
     }
 
+    /**
+     * remember token is locked for audience.
+     *
+     * @param token    locked token
+     * @param audience audience for which the token is locked
+     */
     private void registerLocalLock(String token, String audience) {
         String effectiveAudience = getEffectiveAudience(audience);
         logger.debug("Register Local Lock: {} -> {}", token, effectiveAudience);
@@ -561,7 +816,7 @@ public class RequestManager implements RequestManagerI {
      */
     @Override
     public void lock(String token, InstanceOwner target) {
-        String audience = getAudience(target);
+        String audience = getAudienceToLock(target);
         logger.debug("LOCK \"{}\" for \"{}\"", token, audience);
         concurrentHelper.lock(token, audience);
         if (!lockedToken.containsKey(token)) {
@@ -571,6 +826,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * Internal unlock
      *
      * @param token token to release
      */
@@ -586,7 +842,7 @@ public class RequestManager implements RequestManagerI {
      */
     @Override
     public void unlock(String token, InstanceOwner target) {
-        String audience = getAudience(target);
+        String audience = getAudienceToLock(target);
         logger.debug("UNLOCK \"{}\" for \"{}\"", token, audience);
         concurrentHelper.unlock(token, audience);
         if (lockedToken.containsKey(token)) {
@@ -602,14 +858,29 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * get all token locked for all audiences in the list
+     *
+     * @param audiences list of audiences
+     *
+     * @return all tokens locked for all audiences
+     */
     public Collection<String> getTokensByAudiences(List<String> audiences) {
         return concurrentHelper.getTokensByAudiences(audiences);
     }
 
+    /**
+     * Change http status
+     *
+     * @param statusInfo new status
+     */
     public void setStatus(Response.StatusType statusInfo) {
         this.status = statusInfo;
     }
 
+    /*
+     * Set {@link #startTimestamp} to now
+     */
     private void markProcessingStartTime() {
         this.startTimestamp = System.currentTimeMillis();
     }
@@ -717,17 +988,24 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Lifecycle
+     * Lifecycle callback to mark the processing start time
      */
     @PostConstruct
     public void postConstruct() {
         this.markProcessingStartTime();
     }
 
+    /**
+     * Clear the entityManager
+     */
     public void clear() {
         this.getEntityManager().clear();
     }
 
+    /**
+     * Lifecycle callback. Telease all locks after the request and log the
+     * request sumary
+     */
     @PreDestroy
     public void preDestroy() {
         this.clearPermissions();
@@ -749,11 +1027,17 @@ public class RequestManager implements RequestManagerI {
         this.clear();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void commit(Player player) {
         this.requestFacade.commit(player);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void commit() {
         this.requestFacade.commit(this.getPlayer());

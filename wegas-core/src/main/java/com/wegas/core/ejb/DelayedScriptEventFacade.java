@@ -71,11 +71,10 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
                  */
                 Map<String, List<AbstractEntity>> updatedEntities = requestFacade.getUpdatedEntities();
                 Map<String, List<AbstractEntity>> destroyedEntities = requestFacade.getDestroyedEntities();
-                Map<String, List<AbstractEntity>> outdatedEntities = requestFacade.getOutdatedEntities();
 
-                if (!(updatedEntities.isEmpty() && destroyedEntities.isEmpty() && outdatedEntities.isEmpty())) {
+                if (!(updatedEntities.isEmpty() && destroyedEntities.isEmpty())) {
                     rm.markPropagationStartTime();
-                    websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, outdatedEntities, null);
+                    websocketFacade.onRequestCommit(updatedEntities, destroyedEntities, null);
                     rm.markPropagationEndTime();
                 }
                 rm.markSerialisationStartTime();

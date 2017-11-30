@@ -257,12 +257,10 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
-     * @param outdatedEntities
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities) {
-        this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
+            final Map<String, List<AbstractEntity>> destroyedEntities) {
+        this.onRequestCommit(dispatchedEntities, destroyedEntities, null);
     }
 
     /**
@@ -270,13 +268,11 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
-     * @param outdatedEntities
      * @param socketId           Client's socket id. Prevent that specific
      *                           client to receive this particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
             final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities,
             final String socketId) {
         if (this.pusher == null) {
             return;
@@ -284,7 +280,6 @@ public class WebsocketFacade {
 
         propagate(destroyedEntities, socketId, EntityDestroyedEvent.class);
         propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
-        propagate(outdatedEntities, socketId, OutdatedEntitiesEvent.class);
     }
 
     /**

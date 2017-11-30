@@ -140,9 +140,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
             Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getUpdatedEntities();
             Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
-            Map<String, List<AbstractEntity>> outdatedEntitiesMap = requestManager.getOutdatedEntities();
 
-            if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty() && outdatedEntitiesMap.isEmpty())) {
+            if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 /*
                  * Include all detected updated entites within updatedEntites 
                  * (the ones which will be returned to the client)
@@ -180,7 +179,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 }
 
                 requestManager.markPropagationStartTime();
-                websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap, outdatedEntitiesMap,
+                websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,
                         (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
                 requestManager.markPropagationEndTime();
             }

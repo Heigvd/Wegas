@@ -191,16 +191,6 @@ public class RequestFacade {
         return requestManager.getUpdatedEntities();
     }
 
-    /**
-     * An outdated entity in an entity we know clients do not have the last
-     * version and we can not figure out how to send them the updated one
-     *
-     * @return all entities marked as outdated during the transaction
-     */
-    public Map<String, List<AbstractEntity>> getOutdatedEntities() {
-        return requestManager.getOutdatedEntities();
-    }
-
     /*
      *
      * @return all entities which were destroyed during the transaction
