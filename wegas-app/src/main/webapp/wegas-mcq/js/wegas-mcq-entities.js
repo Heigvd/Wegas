@@ -160,7 +160,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             {
                 type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
+                label: "Add",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
@@ -397,7 +397,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 },
                 {
                     type: BUTTON,
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
+                    label: "Add",
                     plugins: [{
                             fn: "EditEntityArrayFieldAction",
                             cfg: {

@@ -79,6 +79,65 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             formCfg: {}
         },
         /**
+         * Transform labeled menu items into an icon button.
+         * HACK ?!?!
+         * 
+         * @param {Array<{}>} menuItems list of actions
+         * @param {{}} entity entity associated with the action
+         */
+        processMenu: function(menuItems, entity){
+            Y.Array.each(menuItems, function(i) {                      // @hack add icons to some buttons
+                var allowedChildren; 
+                if (! i.label) {                                        // @Overhack to centralize more icon definitions here
+                    switch (i.type) {
+                        case "DeleteEntityButton":
+                            i = EditEntityAction.stackedIcon(i, 'fa-trash', 'Delete');
+                            break;
+                    }
+                } else {
+                    switch (i.label) {
+                        case "New":
+                        case "View":
+                        case "Open in editor":
+                        case "Open":
+                        case "Edit":
+                            i.label = '<span class="wegas-icon wegas-icon-' +
+                                i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                            break;
+                        case "Add":
+                            allowedChildren = entity.get("allowedTypes");
+                            // is children type restricted ?
+                            if (allowedChildren && allowedChildren.length > 0) {
+                                Y.Array.each(i.plugins[0].cfg.children, function (child) {
+                                    if (allowedChildren && allowedChildren.length > 0 && !Y.Array.find(allowedChildren, function (allowedType) {
+                                            return child.targetClass === allowedType;
+                                        })) {
+                                        child.cssClass = "wegas-forbidden-feature";
+                                    }
+                                }, this);
+                            }
+                            i = EditEntityAction.stackedIcon(i, 'fa-plus-circle', 'Add element');
+                            break;
+                        case "Delete":
+                            i = EditEntityAction.stackedIcon(i, 'fa-trash', 'Delete');
+                            break;
+                        case "Sort":
+                            i = EditEntityAction.stackedIcon(i, 'fa-sort-alpha-asc', 'Sort contents alphabetically');
+                            break;
+                        case "Copy":
+                            i = EditEntityAction.stackedIcon(i, 'fa-files-o', 'Duplicate');
+                            break;
+                        case "Export":
+                            i = EditEntityAction.stackedIcon(i, 'fa-download',  'Export');
+                            break;
+
+                        case "Search for usages":
+                            i = EditEntityAction.stackedIcon(i, 'fa-compass', 'Find usage');
+                    }
+                }
+            });
+        },
+        /**
          *
          * @param {type} entity
          * @@param {Y.DataSource} dataSource
@@ -110,53 +169,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         }),
                         allowedChildren;
 
-
-                    Y.Array.each(menuItems, function(i) {                       // @hack add icons to some buttons
-                        if (! i.label) {                                        // @Overhack to centralize more icon definitions here
-                            switch (i.type) {
-                                case "DeleteEntityButton":
-                                    i = EditEntityAction.stackedIcon(i, 'fa-trash', 'Delete');
-                                    break;
-                            }
-                        } else {
-                            switch (i.label) {
-                                case "New":
-                                case "View":
-                                case "Open in editor":
-                                case "Open":
-                                case "Edit":
-                                    i.label = '<span class="wegas-icon wegas-icon-' +
-                                        i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
-                                    break;
-                                case "Add":
-                                    allowedChildren = entity.get("allowedTypes");
-                                    // is children type restricted ?
-                                    if (allowedChildren && allowedChildren.length > 0) {
-                                        Y.Array.each(i.plugins[0].cfg.children, function (child) {
-                                            if (allowedChildren && allowedChildren.length > 0 && !Y.Array.find(allowedChildren, function (allowedType) {
-                                                    return child.targetClass === allowedType;
-                                                })) {
-                                                child.cssClass = "wegas-forbidden-feature";
-                                            }
-                                        }, this);
-                                    }
-                                    i = EditEntityAction.stackedIcon(i, 'fa-plus-circle', 'Add element');
-                                    break;
-                                case "Sort":
-                                    i = EditEntityAction.stackedIcon(i, 'fa-sort-alpha-asc', 'Sort contents alphabetically');
-                                    break;
-                                case "Copy":
-                                    i = EditEntityAction.stackedIcon(i, 'fa-files-o', 'Duplicate');
-                                    break;
-                                case "Export":
-                                    i = EditEntityAction.stackedIcon(i, 'fa-download',  'Export');
-                                    break;
-
-                                case "Search for usages":
-                                    i = EditEntityAction.stackedIcon(i, 'fa-compass', 'Find usage');
-                            }
-                        }
-                    });
+                    EditEntityAction.processMenu(menuItems, entity);
                     
                     form.toolbar.add(menuItems);
                     //if (form.toolbar.item(0)) { form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px"); }
@@ -569,7 +582,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     menuItems = Y.Array.filter(child.getMenuCfg({dataSource: dataSource, parentEntity: container}).slice(1), function(i) {
                         return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
                     });
-
+                    EditEntityAction.processMenu(menuItems, entity);
                    // EditEntityAction.destroyEditionTab();                           // Hide all active tabs
                     form = EditEntityAction.showEditForm(child, Y.bind(function(newVal) {
                         var assoc = this.associateDescriptor(container),

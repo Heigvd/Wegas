@@ -1290,44 +1290,44 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 {
                     type: 'DeleteEntityButton'
                 },
-                {
-                type: BUTTON,
-                    label: 'Export',
-                    plugins: [
-                        {
-                            fn: 'WidgetMenu',
-                        cfg: {
-                                children: [
-                                    {
-                                        type: 'PrintButton',
-                                        label: 'Html'
-                                    },
-                                    {
-                                        type: 'PrintButton',
-                                        label: 'Html (Players document)',
-                                        mode: 'player'
-                                    },
-                                    {
-                                        type: 'PrintButton',
-                                        label: 'Pdf',
-                                        outputType: 'pdf'
-                                    },
-                                    {
-                                        type: 'PrintButton',
-                                        label: 'Pdf (Players document)',
-                                        outputType: 'pdf',
-                                        mode: 'player'
-                                    },
-                                    {
-                                        type: 'OpenEntityButton',
-                                        label: 'Json',
-                                        url: 'rest/Export/GameModel/VariableDescriptor/{id}'
-                        }
-                                ]
-                            }
-                        }
-                    ]
-                },
+                // {
+                // type: BUTTON,
+                //     label: 'Export',
+                //     plugins: [
+                //         {
+                //             fn: 'WidgetMenu',
+                //         cfg: {
+                //                 children: [
+                //                     {
+                //                         type: 'PrintButton',
+                //                         label: 'Html'
+                //                     },
+                //                     {
+                //                         type: 'PrintButton',
+                //                         label: 'Html (Players document)',
+                //                         mode: 'player'
+                //                     },
+                //                     {
+                //                         type: 'PrintButton',
+                //                         label: 'Pdf',
+                //                         outputType: 'pdf'
+                //                     },
+                //                     {
+                //                         type: 'PrintButton',
+                //                         label: 'Pdf (Players document)',
+                //                         outputType: 'pdf',
+                //                         mode: 'player'
+                //                     },
+                //                     {
+                //                         type: 'OpenEntityButton',
+                //                         label: 'Json',
+                //                         url: 'rest/Export/GameModel/VariableDescriptor/{id}'
+                //         }
+                //                 ]
+                //             }
+                //         }
+                //     ]
+                // },
                 {
                     type: BUTTON,
                     label: 'Search for usages',
