@@ -161,7 +161,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     public void reviveChoiceInstance(ChoiceInstance choiceInstance) {
         ChoiceDescriptor choice = (ChoiceDescriptor) choiceInstance.findDescriptor();
 
-        if (choiceInstance.getCurrentResultName() != null && !choiceInstance.getCurrentResultName().isEmpty()) {
+        if (!Helper.isNullOrEmpty(choiceInstance.getCurrentResultName())) {
             logger.info("ReviveResultByName");
             try {
                 Result cr = findResult(choice, choiceInstance.getCurrentResultName());

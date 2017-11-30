@@ -19,16 +19,21 @@
     </modules>
 
     <developers>
-        <developer>
+        <!--<developer>
             <name>Francois-Xavier Aeberhard</name>
             <email>fx@red-agent.com</email>
             <url>http://www.red-agent.com</url>
-        </developer>
+        </developer>-->
         <developer>
             <name>Cyril Junod</name>
             <email>cyril.junod at gmail.com</email>
         </developer>
+
         <developer>
+            <name>Maxence Laurent</name>
+            <email>maxence.laurent at gmail.com</email>
+        </developer>
+        <!--<developer>
             <name>Benjamin Gerber</name>
             <email>ger.benjamin at gmail.com</email>
         </developer>
@@ -36,6 +41,7 @@
             <name>Yannick Lagger</name>
             <email>lagger.yannick at gmail.com</email>
         </developer>
+        -->
     </developers>
 
     <scm>
@@ -57,7 +63,7 @@
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>http://www.opensource.org/licenses/MIT</url>
+            <url>http://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
 
@@ -929,6 +935,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.17</version>
                 <configuration>
+                    <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                     <configLocation>sun_checks.xml</configLocation>
                 </configuration>
             </plugin>
