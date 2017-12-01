@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import cx from 'classnames';
 import { css } from 'glamor';
@@ -6,22 +5,21 @@ import { css } from 'glamor';
 const pointerStyle = css({
     cursor: 'pointer',
     ':hover': {
-        background: 'lightgray'
-    }
+        background: 'lightgray',
+    },
 });
 
 const selectedStyle = css({
-    fontStyle: 'italic',
-    color: 'pink'
+    fontWeight: 'bolder',
 });
 
 const noDisplayStyle = css({
-    display: 'none'
+    display: 'none',
 });
 
 const noSelectStyle = css({
     fontStyle: 'italic',
-    opacity: 0.7
+    opacity: 0.7,
 });
 
 const treeNodeContainerStyle = css({
@@ -29,7 +27,7 @@ const treeNodeContainerStyle = css({
     whiteSpace: 'nowrap',
 
     '& a': {
-        padding: '0 3px'
+        padding: '0 3px',
     },
 
     '& > ul': {
@@ -45,8 +43,8 @@ const treeNodeContainerStyle = css({
             top: 0,
             bottom: 0,
             left: 0,
-            borderLeft: '1px solid'
-        }
+            borderLeft: '1px solid',
+        },
     },
 
     '& &': {
@@ -64,16 +62,16 @@ const treeNodeContainerStyle = css({
             marginTop: '-1px',
             position: 'absolute',
             top: '1em',
-            left: 0
+            left: 0,
         },
 
         '&:last-child::before': {
             background: 'white',
             height: 'auto',
             top: '1em',
-            bottom: 0
-        }
-    }
+            bottom: 0,
+        },
+    },
 });
 
 // Shared with TreeSelect:
@@ -81,60 +79,80 @@ export const treeHeadStyle = css({
     position: 'relative',
     ':focus': {
         outline: 'none',
-        textDecoration: 'underline'
-    }
+        textDecoration: 'underline',
+    },
 });
 
-function noop() {}
-
-function update(props, val) {
-    return {
-        ...props,
-        ...val
-    };
+function noop() {
+    return;
 }
 
-export default function TreeNode(props) {
+function update(
+    props: TreeNodeProps,
+    val: Partial<TreeNodeProps>
+): TreeNodeProps {
+    return {
+        ...props,
+        ...val,
+    };
+}
+interface TreeNodeProps {
+    label: string;
+    value: string;
+    expanded?: boolean;
+    selected?: string;
+    selectable?: boolean;
+    match?: boolean;
+    items?: TreeNodeProps[];
+    onSelect?: (item: string) => void;
+    onChange?: (props: TreeNodeProps) => void;
+    className?: string;
+}
+export default function TreeNode(props: TreeNodeProps): JSX.Element {
     const {
         label,
         value,
+        selectable = true,
         expanded = false,
         items,
         className,
         match = true,
         onSelect = noop,
         selected,
-        onChange = noop
+        onChange = noop,
     } = props;
     function toggle() {
         onChange(
             update(props, {
-                expanded: !expanded
+                expanded: !expanded,
             })
         );
     }
 
     function handleSelect() {
-        if (value) {
+        if (selectable) {
             onSelect(value);
         }
     }
 
-    function onChildChange(i) {
-        return function childChange(child) {
+    function onChildChange(i: number) {
+        return function childChange(child: TreeNodeProps) {
+            if (items == null) {
+                return;
+            }
             onChange(
                 update(props, {
                     items: [
                         ...items.slice(0, i),
                         child,
-                        ...items.slice(i + 1, items.length)
-                    ]
+                        ...items.slice(i + 1, items.length),
+                    ],
                 })
             );
         };
     }
 
-    function handleKeyDown(event) {
+    function handleKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         switch (event.key) {
             case 'Enter':
                 handleSelect();
@@ -142,12 +160,16 @@ export default function TreeNode(props) {
                 event.stopPropagation();
                 break;
             case 'ArrowRight':
-                if (!expanded) toggle();
+                if (!expanded) {
+                    toggle();
+                }
                 event.preventDefault();
                 event.stopPropagation();
                 break;
             case 'ArrowLeft':
-                if (expanded) toggle();
+                if (expanded) {
+                    toggle();
+                }
                 event.preventDefault();
                 event.stopPropagation();
                 break;
@@ -158,53 +180,46 @@ export default function TreeNode(props) {
 
     return (
         <li className={cx(className, `${treeNodeContainerStyle}`)}>
-            {items
-                ? <a tabIndex="-1" className={pointerStyle} onClick={toggle}>
-                      {expanded ? '\u25BC' : '\u25B6'}
-                  </a>
-                : null}
+            {items ? (
+                <a
+                    tabIndex={-1}
+                    className={pointerStyle.toString()}
+                    onClick={toggle}
+                >
+                    {expanded ? '\u25BC' : '\u25B6'}
+                </a>
+            ) : null}
             <a
-                tabIndex={match ? '0' : '-1'}
+                tabIndex={match ? 0 : -1}
                 onClick={handleSelect}
                 onKeyDown={handleKeyDown}
                 className={cx(treeHeadStyle.toString(), {
-                    [noSelectStyle]: !value,
-                    [pointerStyle]: value,
-                    [selectedStyle]: selected && selected === value
+                    [noSelectStyle.toString()]: !selectable,
+                    [pointerStyle.toString()]: selectable,
+                    [selectedStyle.toString()]:
+                        !!selected && selected === value,
                 })}
             >
                 {label !== undefined ? label : value}
             </a>
-            {items
-                ? <ul
-                      className={cx({
-                          // treeChildren style is undefined....
-                          [noDisplayStyle]: !expanded
-                      })}
-                  >
-                      {items.map((c, i) => (
-                          <TreeNode
-                              {...c}
-                              key={String(i)}
-                              onSelect={onSelect}
-                              selected={selected}
-                              onChange={onChildChange(i)}
-                          />
-                      ))}
-                  </ul>
-                : null}
+            {items ? (
+                <ul
+                    className={cx({
+                        // treeChildren style is undefined....
+                        [noDisplayStyle.toString()]: !expanded,
+                    })}
+                >
+                    {items.map((c, i) => (
+                        <TreeNode
+                            {...c}
+                            key={String(i)}
+                            onSelect={onSelect}
+                            selected={selected}
+                            onChange={onChildChange(i)}
+                        />
+                    ))}
+                </ul>
+            ) : null}
         </li>
     );
 }
-
-TreeNode.propTypes = {
-    label: PropTypes.string,
-    value: PropTypes.string,
-    expanded: PropTypes.bool,
-    selected: PropTypes.string,
-    match: PropTypes.bool,
-    items: PropTypes.arrayOf(PropTypes.shape(TreeNode.propTypes)),
-    onSelect: PropTypes.func,
-    onChange: PropTypes.func.isRequired,
-    className: PropTypes.string
-};

@@ -1,7 +1,5 @@
-import { css } from 'glamor';
 import { handleMethodArgs } from './args';
 
-const GlobalMethodTreeCss = css({ color: 'hotpink' });
 /**
  * hold Global Methods
  */
@@ -90,7 +88,7 @@ export function genChoices(type = 'getter') {
     return Object.keys(impacts).map(k => ({
         label: impacts[k].label,
         value: k,
-        className: `${impacts[k].className} ${GlobalMethodTreeCss}`
+        className: `${impacts[k].className}`
     }));
 }
 /**

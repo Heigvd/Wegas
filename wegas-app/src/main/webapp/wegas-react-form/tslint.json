@@ -27,7 +27,7 @@
         ],
         "jsx-no-multiline-js": false,
         "jsx-no-lambda": {
-            "severity": "warning"
+            "severity": "none"
         },
         "member-access": false,
         "array-type": [true, "array"],

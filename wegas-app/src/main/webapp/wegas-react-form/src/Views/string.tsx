@@ -5,7 +5,7 @@ import commonView from '../HOC/commonView';
 import { css } from 'glamor';
 import FormStyles from './form-styles';
 
-const inputStyle = css({
+export const inputStyle = css({
     label: 'string-inputStyle',
     borderRadius: '3px',
     boxSizing: 'border-box',
@@ -15,7 +15,6 @@ const inputStyle = css({
     boxShadow: '1px 1px 4px #ccc',
     width: '100%',
     maxWidth: FormStyles.textInputWidth,
-    padding: '0px',
     '::placeholder': {
         fontStyle: 'italic',
     },

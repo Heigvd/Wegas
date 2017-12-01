@@ -1,18 +1,20 @@
 import React from 'react';
 import classnames from 'classnames';
-import Popover from '../../Components/Popover';
 import TreeSelect from '../../Components/tree/TreeSelect';
+import Searchable from '../../Components/tree/searchable';
 import { getY } from '../../index';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { css } from 'glamor';
+import { inputStyle } from '../string';
 
 const separatorCss = css({ borderTop: 'solid 1px' });
 
 const containerCss = css({
     label: 'treevariableselect-containerCss',
     color: '#6A95B6',
+    position: 'relative',
     display: 'inline-block',
-    marginTop: '0.75em',
+    marginTop: '1.25em',
     paddingLeft: '4px',
 });
 
@@ -20,6 +22,7 @@ const iconCss = css({
     label: 'treevariableselect-iconCss',
     color: 'black',
     fontSize: '85%',
+    margin: '0 6px 0 3px',
 });
 
 const treeCss = css({
@@ -28,13 +31,14 @@ const treeCss = css({
     backgroundColor: 'white',
     boxShadow: '0 2px 5px black',
     borderRadius: '3px',
-    width: 'auto',
-});
-
-const selectorLinkCss = css({
-    label: 'treevariableselect-selectorLinkCss',
-    position: 'relative',
-    marginRight: '1em',
+    position: 'absolute',
+    zIndex: 1000,
+    minWidth: '100%',
+    maxWidth: '200%',
+    maxHeight: '20em',
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    overflow: 'auto',
 });
 
 const pathCss = css({
@@ -42,17 +46,13 @@ const pathCss = css({
     position: 'absolute',
     fontSize: '75%',
     whiteSpace: 'nowrap',
-    bottom: '125%',
-});
-
-const labelCss = css({
-    label: 'treevariableselect-labelCss',
-    color: 'black',
+    top: '-1.3em',
 });
 
 interface Item {
     label: string;
-    value?: string;
+    value: string;
+    selectable?: boolean;
     className?: string;
     items?: Item[];
 }
@@ -70,7 +70,7 @@ interface ITreeSelectProps extends WidgetProps.BaseProps {
     value?: string;
 }
 const GameModelDS = getY().Wegas.Facade.GameModel.cache;
-function defaultTrue() {
+function defaultTrue(): true {
     return true;
 }
 function normalizeClassFilter(classFilter: string | string[] = []): string[] {
@@ -86,12 +86,7 @@ function labelForVariable(name?: string) {
 function labelIconForVariable(name?: string) {
     const target = getY().Wegas.Facade.Variable.cache.find('name', name);
     if (target) {
-        return (
-            <span className={`${labelCss}`}>
-                <span className={`${target.getIconCss()} ${iconCss}`} />{' '}
-                {target.getEditorLabel()}
-            </span>
-        );
+        return <span className={`${target.getIconCss()} ${iconCss}`} />;
     }
     return '';
 }
@@ -106,10 +101,10 @@ function buildPath(name?: string) {
     if (!variable) {
         return null;
     }
-    let parent = variable.parentDescriptor;
-    while (parent) {
+    let parent = variable.getParent();
+    while (parent.get('@class') !== 'GameModel') {
         path.push(parent.getEditorLabel());
-        parent = parent.parentDescriptor;
+        parent = parent.getParent();
     }
     return path.reverse().join(' \u21E8 ');
 }
@@ -132,7 +127,8 @@ function genVarItems(
         }
         return {
             label: item.get('label'),
-            value: select ? item.get('name') : undefined,
+            value: item.get('name'),
+            selectable: select,
             items: child,
         };
     }
@@ -173,13 +169,12 @@ class TreeVariableSelect extends React.Component<
     public static defaultProps = {
         value: '',
     };
+    tree: TreeSelect | null;
     items: Item[];
     constructor(props: ITreeSelectProps) {
         super(props);
         this.state = {
-            search:
-                labelForVariable(props.value) ||
-                this.labelForAdditional(props.value),
+            search: '',
             searching: !props.value,
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
@@ -189,7 +184,7 @@ class TreeVariableSelect extends React.Component<
         this.setState(
             {
                 searching: false,
-                search: labelForVariable(v) || this.labelForAdditional(v),
+                search: '',
             },
             () => this.props.onChange(v)
         );
@@ -209,73 +204,92 @@ class TreeVariableSelect extends React.Component<
         return '';
     }
     labelIconForAdditional(value?: string) {
-        const label = this.labelForAdditional(value);
-        if (label) {
-            return (
-                <span>
-                    <span className={`${iconCss} fa fa-globe `} /> {label}
-                </span>
-            );
+        if (!value) {
+            return <span className={`${iconCss}`} />;
         }
-        return '';
+        return <span className={`${iconCss} fa fa-globe `} />;
     }
     render() {
         return (
-            <div className={`${containerCss}`}>
-                <Popover
-                    show={this.state.searching}
-                    onClickOutside={() =>
-                        this.setState({
-                            searching: false,
-                            search:
-                                labelForVariable(this.props.value) ||
-                                this.labelForAdditional(this.props.value), // Reset search
-                        })}
+            <div
+                className={`${containerCss}`}
+                onBlur={ev => {
+                    const me = ev.currentTarget;
+                    setTimeout(() => {
+                        if (!me.contains(document.activeElement)) {
+                            this.setState({ searching: false });
+                        }
+                    }, 20);
+                }}
+            >
+                <div
+                    className={`${pathCss}`}
+                    title="Folder containing this variable"
                 >
+                    {buildPath(this.props.value)}
+                </div>
+                {labelIconForVariable(this.props.value) ||
+                    this.labelIconForAdditional(this.props.value)}
+                <div style={{ display: 'inline-block', position: 'relative' }}>
                     <input
-                        ref={n => {
-                            if (n) {
-                                setTimeout(() => n.focus(), 50);
-                            }
+                        {...inputStyle}
+                        style={{
+                            // Make input long enought.
+                            minWidth:
+                                (
+                                    labelForVariable(this.props.value) ||
+                                    this.labelForAdditional(this.props.value)
+                                ).length /
+                                    2 +
+                                'rem',
                         }}
-                        value={this.state.search}
-                        type="search"
+                        value={
+                            this.state.searching
+                                ? this.state.search
+                                : labelForVariable(this.props.value) ||
+                                  this.labelForAdditional(this.props.value)
+                        }
+                        placeholder="Please select ..."
+                        type="text"
+                        onFocus={() => this.setState({ searching: true })}
                         onChange={ev =>
                             this.setState({
                                 search: ev.target.value,
-                            })}
+                            })
+                        }
+                        onKeyDown={e => {
+                            if (e.key === 'ArrowDown') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (this.tree != null) {
+                                    this.tree.focus();
+                                }
+                            }
+                        }}
                     />
-                    <div className={`${treeCss}`}>
-                        <TreeSelect
-                            match={match}
-                            selected={this.props.value}
-                            items={this.items}
-                            search={this.state.search}
-                            onSelect={this.handleOnSelect}
-                        />
-                    </div>
-                </Popover>
-                <a
-                    tabIndex={0}
-                    onFocus={() =>
-                        this.setState({
-                            searching: true,
-                        })}
-                    className={`${selectorLinkCss}`}
-                >
-                    <div
-                        className={`${pathCss}`}
-                        title="Folder containing this variable"
-                    >
-                        {buildPath(this.props.value)}
-                    </div>
-                    {labelIconForVariable(this.props.value) ||
-                        this.labelIconForAdditional(this.props.value) ||
-                        ' Please select ...'}
-                </a>
+
+                    {this.state.searching ? (
+                        <div className={`${treeCss}`}>
+                            <Searchable
+                                match={match}
+                                search={this.state.search}
+                                items={this.items}
+                                render={({ items }) => (
+                                    <TreeSelect
+                                        ref={n => (this.tree = n)}
+                                        match={match}
+                                        selected={this.props.value}
+                                        items={items}
+                                        search={this.state.search}
+                                        onSelect={this.handleOnSelect}
+                                    />
+                                )}
+                            />
+                        </div>
+                    ) : null}
+                </div>
             </div>
         );
     }
 }
-
 export default TreeVariableSelect;
