@@ -22,11 +22,11 @@ const marginStyle = css({
     backgroundColor: 'white',
     boxShadow: '1px 1px 4px #ccc',
     resize: 'both',
-    '& > div' : {
+    '& > div': {
         // The inline DIV must fill up the entire container except a small (bottom) margin for the resize handle
         minHeight: 'calc( 100% - 10px )',
-        outline: 'none !important'
-    }
+        outline: 'none !important',
+    },
 });
 
 const Wegas = getY().Wegas;
@@ -145,7 +145,7 @@ const TINY_CONFIG = {
  */
 function toTinyMCE(content) {
     let updated = content;
-    if (updated === null) {
+    if (updated === null || typeof content !== 'string') {
         updated = undefined;
     }
     if (updated && Wegas.Facade.File) {
@@ -218,13 +218,15 @@ class HTMLView extends React.Component {
         const oldContent = this.state.content;
         const newContent = toInjectorStyle(tinymce.activeEditor.getContent());
         if (oldContent !== newContent) {
-            this.setState({content: newContent}, () => this.props.onChange(newContent));
+            this.setState({ content: newContent }, () =>
+                this.props.onChange(newContent)
+            );
         }
     }
 
     // A click on the container transfers the focus to the inner DIV containing TinyMCE.
     onClickHandler(event) {
-        var elem=event.target.firstChild;
+        var elem = event.target.firstChild;
         if (elem && elem.focus) {
             elem.focus();
         }
@@ -232,8 +234,7 @@ class HTMLView extends React.Component {
 
     render() {
         return (
-            <div className={marginStyle}
-                onClick={this.onClickHandler}>
+            <div className={marginStyle} onClick={this.onClickHandler}>
                 <TinyMCE
                     key={this.state.key}
                     content={toTinyMCE(this.state.content)}
