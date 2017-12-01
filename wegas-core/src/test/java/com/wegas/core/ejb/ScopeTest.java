@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -75,6 +76,32 @@ public class ScopeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), pScoped);
 
         List<VariableInstance> instances = playerFacade.getInstances(player.getId());
+
+        pScoped = (TextDescriptor) variableDescriptorFacade.find(pScoped.getId());
+        tScoped = (TextDescriptor) variableDescriptorFacade.find(tScoped.getId());
+        gScoped = (TextDescriptor) variableDescriptorFacade.find(gScoped.getId());
+        gmScoped = (TextDescriptor) variableDescriptorFacade.find(gmScoped.getId());
+
+        // Get owner test
+        Assert.assertEquals(player, pScoped.getInstance(player).getOwner());
+        Assert.assertEquals(team, tScoped.getInstance(player).getOwner());
+        Assert.assertEquals(game, gScoped.getInstance(player).getOwner());
+        Assert.assertEquals(scenario, gmScoped.getInstance(player).getOwner());
+
+        Assert.assertEquals(null, pScoped.getDefaultInstance().getOwner());
+
+        // default instance has no descriptor through the scope
+        Assert.assertEquals(null, pScoped.getDefaultInstance().getDescriptor());
+        // but findDescriptor retrieve the descriptor
+        Assert.assertEquals(pScoped, pScoped.getDefaultInstance().findDescriptor());
+
+        // test getScopeKey
+        Assert.assertEquals(player.getId(), pScoped.getInstance(player).getScopeKey());
+        Assert.assertEquals(team.getId(), tScoped.getInstance(player).getScopeKey());
+        Assert.assertEquals(game.getId(), gScoped.getInstance(player).getScopeKey());
+        Assert.assertEquals(new Long(0), gmScoped.getInstance(player).getScopeKey());// hack -> scopeKey for gameModel is always 0 !
+
+        Assert.assertEquals(null, pScoped.getDefaultInstance().getScopeKey());
 
         /* One global instance */
         Assert.assertEquals(1, gameModelFacade.find(scenario.getId()).getPrivateInstances().size());
@@ -203,5 +230,62 @@ public class ScopeTest extends AbstractArquillianTest {
         Assert.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player21), variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player22));
         Assert.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player21), variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player));
         Assert.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player22), variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player));
+
+        // Assert updates permissions
+        updateVariable(player21, "pScoped", "some other value");
+        updateVariable(player21, "tScoped", "some other value");
+        updateVariable(player21, "gScoped", "some other value");
+        updateVariable(player21, "gmScoped", "some other value");
+
+        try {
+            updateVariable(player22, "pScoped_ts", "some other value");
+            Assert.fail("playerScoped Instances from other player should not be writable");
+        } catch (Exception ex) {
+            // expected exeption
+        }
+
+        try {
+            updateVariable(player, "tScoped_gs", "some other value");
+            Assert.fail("gameScoped instance Instances from other teams should not be writable");
+        } catch (Exception ex) {
+            // expected exeption
+        }
+
+        // find Instances
+        Assert.assertEquals(pScoped.getDefaultInstance(), pScoped.findInstance(tScoped.getDefaultInstance())); // default instances
+
+        login(user);
+        TextInstance instance = pScoped.getInstance(player);
+
+        Assert.assertEquals(instance, pScoped.findInstance(pScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, pScoped.findInstance(tScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, pScoped.findInstance(gScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, pScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
+
+
+        instance = tScoped.getInstance(player);
+        Assert.assertEquals(instance, tScoped.findInstance(pScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, tScoped.findInstance(tScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, tScoped.findInstance(gScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, tScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
+
+        instance = gScoped.getInstance(player);
+        Assert.assertEquals(instance, gScoped.findInstance(pScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, gScoped.findInstance(tScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, gScoped.findInstance(gScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, gScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
+
+        instance = gmScoped.getInstance(player);
+        Assert.assertEquals(instance, gmScoped.findInstance(pScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, gmScoped.findInstance(tScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, gmScoped.findInstance(gScoped.getInstance(player), user.getUser()));
+        Assert.assertEquals(instance, gmScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
+    }
+
+    private void updateVariable(Player player, String vdName, String newValue) throws WegasNoResultException {
+        TextInstance instance = (TextInstance) variableDescriptorFacade.find(scenario, vdName).getInstance(player);
+        instance.setValue(newValue);
+
+        variableInstanceFacade.merge(instance);
     }
 }

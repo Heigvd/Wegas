@@ -443,7 +443,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
                     TaskDescriptor newTaskDescriptor;
                     try {
                         newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                        TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance);
+                        TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance, requestManager.getCurrentUser());
                         TaskInstance oldTaskInstance = assignment.getTaskInstance();
 
                         if (oldTaskInstance != null) {
@@ -463,7 +463,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
                 if (!Helper.isNullOrEmpty(taskDescriptorName)) {
                     try {
                         TaskDescriptor newTaskDescriptor = (TaskDescriptor) variableDescriptorFacade.find(gm, taskDescriptorName);
-                        TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance);
+                        TaskInstance newTaskInstance = newTaskDescriptor.findInstance(resourceInstance, requestManager.getCurrentUser());
 
                         TaskInstance oldTaskInstance = activity.getTaskInstance();
                         if (oldTaskInstance != null) {

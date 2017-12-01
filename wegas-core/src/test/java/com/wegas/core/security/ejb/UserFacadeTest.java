@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -101,38 +102,6 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         Assert.assertTrue(a.getPermissions().isEmpty());
     }
 
-    @Test(expected = Exception.class)
-    public void testRoleUpdate_forbidden() throws Exception {
-        login(u);
-        final String PERM = "Game:*:*";
-
-        role2.addPermission(PERM);
-        roleFacade.update(role2.getId(), role2);
-        Role r = roleFacade.find(role2.getId());
-        Assert.assertEquals(PERM, r.getPermissions().get(0).getValue());
-
-        r.removePermission(PERM);
-        roleFacade.update(r.getId(), r);
-        r = roleFacade.find(r.getId());
-        Assert.assertTrue(r.getPermissions().isEmpty());
-    }
-
-    @Test
-    public void testRoleUpdate() throws Exception {
-        login(admin);
-        final String PERM = "Game:*:*";
-
-        role2.addPermission(PERM);
-        roleFacade.update(role2.getId(), role2);
-        Role r = roleFacade.find(role2.getId());
-        Assert.assertEquals(PERM, r.getPermissions().get(0).getValue());
-
-        r.removePermission(PERM);
-        roleFacade.update(r.getId(), r);
-        r = roleFacade.find(r.getId());
-        Assert.assertTrue(r.getPermissions().isEmpty());
-    }
-
     /**
      *
      */
@@ -174,6 +143,29 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
     }
 
     @Test
+    public void testLoginForbidden() {
+        System.setProperty("guestallowed", "false");
+
+        try {
+            this.guestLogin();
+            Assert.fail("Should throw exception !");
+        } catch (Exception ex) {
+        }
+
+        System.setProperty("guestallowed", "true");
+    }
+
+    @Test
+    public void testDuplicateUsername() {
+        this.signup("user_1234@local");
+        try {
+            this.signup("user_1234@local");
+            Assert.fail("Shoudl throw exception !");
+        } catch (WegasConflictException ex) {
+        }
+    }
+
+    @Test
     public void testIdleGuestRemoval() {
         int nbUser = userFacade.findAll().size();
 
@@ -193,28 +185,5 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         userFacade.removeIdleGuests();
 
         Assert.assertEquals(nbUser, userFacade.findAll().size());
-    }
-
-    @Test
-    public void testRemoveRole() {
-
-        int numRole = userFacade.find(u.getId()).getRoles().size();
-
-        Role r = new Role("Test");
-        roleFacade.create(r);
-        //r = roleFacade.find(r.getId());
-
-        Assert.assertEquals("Test", roleFacade.find(r.getId()).getName());
-
-        addRoles(u, r);
-
-        //roleFacade.merge(r);
-        //accountFacade.merge(abstractAccount);
-        Assert.assertEquals(numRole + 1, userFacade.find(u.getId()).getRoles().size());
-        Assert.assertEquals(1, roleFacade.find(r.getId()).getNumberOfMember());
-
-        roleFacade.remove(r.getId());
-
-        Assert.assertNull(roleFacade.find(r.getId()));                                             // A not NoResultException should be thrown here
     }
 }

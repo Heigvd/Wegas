@@ -13,7 +13,6 @@ import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
@@ -27,7 +26,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,17 +111,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             }
         }
         throw new WegasNoResultException("Result \"" + choiceName + "/" + resultName + "\" not found");
-    }
-
-    public Result findResultTQ(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
-        final TypedQuery<Result> query = getEntityManager().createNamedQuery("Result.findByName", Result.class);
-        query.setParameter("choicedescriptorId", choiceDescriptor.getId());
-        query.setParameter("name", name);
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException ex) {
-            throw new WegasNoResultException(ex);
-        }
     }
 
     public Result findResult(Long id) {
@@ -249,9 +236,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         return reply;
     }
 
-    public QuestionInstance getQuestionInstanceFromReply(Reply reply) throws NoPlayerException {
+    public QuestionInstance getQuestionInstanceFromReply(Reply reply) {
         QuestionDescriptor findDescriptor = ((ChoiceDescriptor) reply.getChoiceInstance().findDescriptor()).getQuestion();
-        return findDescriptor.findInstance(reply.getChoiceInstance());
+        return findDescriptor.findInstance(reply.getChoiceInstance(), requestManager.getCurrentUser());
     }
 
     /**
@@ -261,14 +248,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @return reply being canceled
      */
     private Reply internalCancelReply(Long replyId) {
-        try {
-            final Reply reply = this.getEntityManager().find(Reply.class, replyId);
-            QuestionInstance questionInstance = this.getQuestionInstanceFromReply(reply);
-            requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
-            return this.internalCancelReply(reply);
-        } catch (NoPlayerException ex) {
-            throw WegasErrorMessage.error("NO PLAYER");
-        }
+        final Reply reply = this.getEntityManager().find(Reply.class, replyId);
+        QuestionInstance questionInstance = this.getQuestionInstanceFromReply(reply);
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
+        return this.internalCancelReply(reply);
     }
 
     private Reply internalCancelReply(Reply reply) {

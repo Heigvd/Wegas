@@ -255,7 +255,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
             VariableDescriptor toReview = prd.getToReview();
             for (Iterator<PeerReviewInstance> it = pris.iterator(); it.hasNext();) {
                 PeerReviewInstance pri = it.next();
-                VariableInstance toReviewInstance = toReview.findInstance(pri);
+                VariableInstance toReviewInstance = toReview.findInstance(pri, null);
                 if (toReviewInstance != null) {
 
                     boolean reject = false;

@@ -381,6 +381,16 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         return pl;
     }
 
+    @JsonIgnore
+    @Override
+    public List<Player> getLivePlayers() {
+        ArrayList<Player> pl = new ArrayList<>();
+        if (this.getStatus().equals(Status.LIVE)) {
+            pl.add(this);
+        }
+        return pl;
+    }
+
     @Override
     @JsonIgnore
     public Player getAnyLivePlayer() {
@@ -477,7 +487,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         // One must have the right to delete its own team from the game
         return this.getGame().getGameTeams().getRequieredUpdatePermission();
     }*/
-
     @Override
     public WegasPermission getAssociatedReadPermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.PLAYER);

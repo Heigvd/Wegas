@@ -94,7 +94,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Execution environnement may be
+     * Execution environment may be
      * <ul>
      * <li>{@link RequestEnvironment#STD}</li>
      * <li>{@link RequestEnvironment#TEST}</li>

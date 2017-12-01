@@ -8,9 +8,7 @@
 package com.wegas.mcq.rest;
 
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
@@ -25,6 +23,7 @@ import javax.ws.rs.core.Response;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
+
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -45,10 +44,13 @@ public class QuestionController {
      *
      * @param playerId
      * @param choiceId
+     *
      * @return p
+     *
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     @POST
+
     @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response selectChoice(
             @PathParam("playerId") Long playerId,
@@ -64,10 +66,13 @@ public class QuestionController {
      *
      * @param questionInstanceId
      * @param playerId
+     *
      * @return p
+     *
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     @POST
+
     @Path("/ValidateQuestion/{questionInstanceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response ValidateQuestion(
             @PathParam("questionInstanceId") Long questionInstanceId,
@@ -84,10 +89,12 @@ public class QuestionController {
      *
      * @param playerId
      * @param replyId
+     *
      * @return questionInstance with up to date replies list (not containing)
-     * the canceled one anymore)
+     *         the canceled one anymore)
      */
     @GET
+
     @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public QuestionInstance cancelReply(
             @PathParam("playerId") Long playerId,
@@ -95,11 +102,7 @@ public class QuestionController {
 
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
         requestFacade.commit();
-        try {
-            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
-        } catch (NoPlayerException ex) {
-            throw WegasErrorMessage.error("No Such Question Instance");
-        }
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }
 
     /**
@@ -107,9 +110,11 @@ public class QuestionController {
      * @param playerId
      * @param choiceId
      * @param startTime
+     *
      * @return p
      */
     @GET
+
     @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     public QuestionInstance selectChoice(
             @PathParam("playerId") Long playerId,
@@ -120,17 +125,14 @@ public class QuestionController {
 
         requestFacade.commit();
 
-        try {
-            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
-        } catch (NoPlayerException ex) {
-            throw WegasErrorMessage.error("No Such Question Instance");
-        }
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }
 
     /**
      *
      * @param replyId
      * @param reply
+     *
      * @return updated reply
      */
     @PUT

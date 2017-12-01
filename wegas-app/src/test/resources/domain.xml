@@ -23,7 +23,7 @@
     <system-applications />
     <resources>
         <jdbc-resource ping="true" pool-name="__TimerPool" object-type="system-admin" jndi-name="jdbc/__TimerPool"></jdbc-resource>
-        <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" name="__TimerPool" res-type="javax.sql.DataSource">
+        <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" name="__TimerPool" res-type="javax.sql.XADataSource">
             <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/ejbtimer"></property>
             <property name="connectionAttributes" value=";create=true"></property>
         </jdbc-connection-pool>

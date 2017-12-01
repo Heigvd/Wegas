@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
 import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,7 +102,6 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
         cEvalD.addCategory("strong");
         fEvaluations.add(cEvalD);
 
-
         feedback.setEvaluations(fEvaluations);
 
         initial.setFbComments(new EvaluationDescriptorContainer());
@@ -127,6 +127,10 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
     public void testSetters() {
         assertEquals("Number initial value", initial.getMaxNumberOfReview(), MAX_NUM);
         assertEquals("Var name initial", initial.getToReviewName(), VAR_NAME);
+
+        assertEquals("Max Number of review error", MAX_NUM, initial.getMaxNumberOfReview());
+        initial.setMaxNumberOfReview(-1);
+        assertEquals("Max Number of review error", Integer.valueOf(1), initial.getMaxNumberOfReview());
     }
 
     /**
@@ -156,7 +160,9 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
         String json = "{ \"@class\": \"PeerReviewDescriptor\", \"id\": \"\", \"label\": \"rr\", \"toReviewName\": \"x\", \"name\": \"\", \"maxNumberOfReview\": 3, \"feedback\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"fbComments\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"defaultInstance\": { \"@class\": \"PeerReviewInstance\", \"id\": \"\" }, \"comments\": \"\", \"scope\": { \"@class\": \"TeamScope\", \"broadcastScope\": \"TeamScope\" } }";
 
         PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
+        Assert.assertEquals("Deserialised ReviewName not match", VAR_NAME, read.getToReviewName());// transient field
         variableDescriptorFacade.create(scenario.getId(), read);
+        Assert.assertEquals("Deserialised ReviewName not match", VAR_NAME, read.getToReviewName()); // through toReview var
 
         String json2 = exportMapper.writeValueAsString(read);
     }

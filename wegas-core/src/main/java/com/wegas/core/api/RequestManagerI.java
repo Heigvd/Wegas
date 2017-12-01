@@ -139,7 +139,7 @@ public interface RequestManagerI {
     void unlock(String token, InstanceOwner target);
 
     /**
-     * Is test environnement ?
+     * Is test environment ?
      *
      * @return true if the current environment is TEST
      */

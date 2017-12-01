@@ -42,6 +42,13 @@ public interface InstanceOwner {
     public List<Player> getPlayers();
 
     /**
+     * Same as {@link #getPlayers() } gut returns only LIVE players
+     *
+     * @return all LIVE players who have access to the owner instances
+     */
+    public List<Player> getLivePlayers();
+
+    /**
      * Get any player involved
      *
      * @return a (LIVE) player who have access to all owner's instances

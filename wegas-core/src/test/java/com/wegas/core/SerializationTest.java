@@ -72,12 +72,16 @@ import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 public class SerializationTest {
+
+    private static Logger logger = LoggerFactory.getLogger(SerializationTest.class);
 
     ObjectMapper mapper;
 
@@ -112,6 +116,8 @@ public class SerializationTest {
         s1.setEditorPosition(coord1);
         s1.setLabel("label");
         smD.addState(1L, s1);
+
+        logger.error("Coordinate: {}", coord1);
 
         State s2 = new State();
         Coordinate coord2 = new Coordinate();

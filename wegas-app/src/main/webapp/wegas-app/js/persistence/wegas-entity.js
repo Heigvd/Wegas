@@ -95,7 +95,6 @@ YUI.add("wegas-entity", function(Y) {
             val: {}
         }
     });
-    persistence.RestException = persistence.DefaultEntity;
 
     /**
      * ManagedResponse mapper

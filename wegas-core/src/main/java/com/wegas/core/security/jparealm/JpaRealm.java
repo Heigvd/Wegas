@@ -61,29 +61,25 @@ public class JpaRealm extends AuthorizingRealm {
         }
     }
 
-    private SimpleAuthorizationInfo newWay(PrincipalCollection principals) {
-        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-
-        RequestManager rManager = RequestFacade.lookup().getRequestManager();
-
-        for (String roleName : rManager.getEffectiveRoles()) {
-            info.addRole(roleName);
-        }
-
-        /**
-         * Load permissions from DB
-         */
-        for (String p : rManager.getEffectiveDBPermissions()) {
-            info.addStringPermission(p);
-        }
-
-        return info;
-    }
-
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         try {
-            return this.newWay(principals);
+            SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+
+            RequestManager rManager = RequestFacade.lookup().getRequestManager();
+
+            for (String roleName : rManager.getEffectiveRoles()) {
+                info.addRole(roleName);
+            }
+
+            /**
+             * Load permissions from DB
+             */
+            for (String p : rManager.getEffectiveDBPermissions()) {
+                info.addStringPermission(p);
+            }
+
+            return info;
         } catch (EJBException e) {
             Helper.printWegasStackTrace(e);
             return null;

@@ -244,7 +244,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      * Return the effective owner of the instance, null for default instances
      *
-     * @return  effective instance owner, but null for default ones
+     * @return effective instance owner, but null for default ones
      */
     @JsonIgnore
     public InstanceOwner getOwner() {
@@ -258,8 +258,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             } else if (this.getGame() != null) {
                 return this.getGame();
             } else {
-                //return this.getGameModel();
-                return this.findDescriptor().getGameModel();
+                return this.getGameModel();
+                //return this.findDescriptor().getGameModel();
             }
         }
     }
@@ -268,7 +268,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      *
      * Same as getOwner but return the gameModel for default instances
      *
-     * @return  effective instance owner or the gameModel for default ones
+     * @return effective instance owner or the gameModel for default ones
      */
     @JsonIgnore
     public InstanceOwner getEffectiveOwner() {
@@ -350,7 +350,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
       default if (this.getScope() != null) { //
       RequestFacade.lookup().getRequestManager().addUpdatedInstance(this); } }
      */
-
     /**
      * @return the scope
      */
@@ -557,24 +556,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the gameScopeKey
-     *
-     * @JsonIgnore public Long getGameScopeKey() { return gameScopeKey; }
-     */
-    /**
-     * return instance descriptor equals the instance is a default or effective
-     * one
-     *
-     * @return instance descriptor
-     *
-     * @deprecated {@link #findDescriptor()}
-     */
-    @JsonIgnore
-    public VariableDescriptor getDescriptorOrDefaultDescriptor() {
-        return this.findDescriptor();
-    }
-
-    /**
      * @return the defaultDescriptor
      */
     public VariableDescriptor getDefaultDescriptor() {
@@ -668,34 +649,29 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        if (this.getScope() == null) {
-            return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
-        } else {
-            WegasPermission perm;
-            if (this.getTeam() != null) {
-                if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
-                    perm = this.getTeam().getGame().getAssociatedReadPermission();
-                } else {
-                    perm = this.getTeam().getAssociatedWritePermission();
-                }
-            } else if (this.getPlayer() != null) {
-                if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
-                    perm = this.getPlayer().getTeam().getAssociatedWritePermission();
-                } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
-                    perm = this.getPlayer().getGame().getAssociatedReadPermission();
-                } else {
-                    perm = this.getPlayer().getAssociatedWritePermission();
-                }
-            } else if (this.getGame() != null) {
-                perm = this.getGame().getAssociatedReadPermission();
-            } else if (this.gameModelScope != null) {
-                // this.getGameModel().getChannel();
-                perm = this.getGameModelScope().getVariableDescriptor().getGameModel().getAssociatedReadPermission();
+        WegasPermission perm = null;
+        if (this.getTeam() != null) {
+            if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
+                perm = this.getTeam().getGame().getAssociatedReadPermission();
             } else {
-                // Default instance
-                return null;
+                perm = this.getTeam().getAssociatedWritePermission();
             }
-            return WegasPermission.getAsCollection(perm);
+        } else if (this.getPlayer() != null) {
+            if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
+                perm = this.getPlayer().getTeam().getAssociatedWritePermission();
+            } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
+                perm = this.getPlayer().getGame().getAssociatedReadPermission();
+            } else {
+                perm = this.getPlayer().getAssociatedWritePermission();
+            }
+        } else if (this.getGame() != null) {
+            perm = this.getGame().getAssociatedReadPermission();
+        } else if (this.gameModelScope != null) {
+            // this.getGameModel().getChannel();
+            perm = this.getGameModelScope().getVariableDescriptor().getGameModel().getAssociatedReadPermission();
+        } else {
+            return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
         }
+        return WegasPermission.getAsCollection(perm);
     }
 }

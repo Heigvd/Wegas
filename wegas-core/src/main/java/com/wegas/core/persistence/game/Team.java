@@ -225,6 +225,21 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         return players;
     }
 
+    /**
+     * @return all LIVE players
+     */
+    @JsonIgnore
+    @Override
+    public List<Player> getLivePlayers() {
+        List<Player> pls = new ArrayList<>();
+        for (Player p : players) {
+            if (p.getStatus().equals(Populatable.Status.LIVE)) {
+                pls.add(p);
+            }
+        }
+        return pls;
+    }
+
     @JsonIgnore
     @Override
     public Player getAnyLivePlayer() {

@@ -102,7 +102,7 @@ public class PeerReviewController {
         requestFacade.getRequestManager().grant(oneOfTheAuthors.getAssociatedWritePermission());
         requestFacade.getRequestManager().grant(oneOfTheAuthors.getTeam().getAssociatedWritePermission());
 
-        VariableInstance instance = toReview.findInstance(authorInstance);
+        VariableInstance instance = toReview.findInstance(authorInstance, requestFacade.getCurrentUser());
         if (instance != null) {
             return instance;
         } else {

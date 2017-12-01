@@ -330,50 +330,6 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @param user
-     *
-     * @return try to
-     *
-     * @deprecated
-     */
-    public User findOrCreate(User user) {
-        try {
-            AbstractAccount account = user.getMainAccount();
-            if (account.getId() != null) {
-                return accountFacade.find(account.getId()).getUser();
-            }
-            if (account instanceof JpaAccount) {                                // If user already exists,
-                String mail = ((JpaAccount) account).getEmail();
-                if (mail != null && !mail.isEmpty()) {
-                    return accountFacade.findByEmail(mail).getUser();           // return it
-                }
-            }
-        } catch (WegasNoResultException ex) {
-            // GOTCHA
-        }
-        this.create(user);                                                      // If user could not be found, create and return it
-        return user;
-    }
-
-    /**
-     * @param accounts
-     *
-     * @return list of user
-     *
-     * @deprecated
-     */
-    public List<User> findOrCreate(List<AbstractAccount> accounts) {
-        List<User> ret = new ArrayList<>();
-        for (AbstractAccount account : accounts) {
-            User u = this.findOrCreate(new User(account));
-            if (!ret.contains(u)) {
-                ret.add(u);
-            }
-        }
-        return ret;
-    }
-
-    /**
      * Get all roles which have some permissions on the given instance..
      * <p>
      * Map is { id : role id, name: role name, permissions: list of permissions

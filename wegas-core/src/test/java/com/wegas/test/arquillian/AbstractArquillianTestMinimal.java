@@ -30,6 +30,7 @@ import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.test.TestHelper;
 import java.io.File;
 import java.sql.Connection;
@@ -306,6 +307,14 @@ public abstract class AbstractArquillianTestMinimal {
         if (user.getUser().getMainAccount() instanceof GuestJpaAccount) {
             subject.login(new GuestToken(user.getUser().getMainAccount().getId()));
         } else {
+            AuthenticationInformation info = new AuthenticationInformation();
+            info.setAgreed(Boolean.TRUE);
+            info.setLogin(user.getUsername());
+            info.setPassword(user.getPassword());
+            info.setRemember(true);
+
+            userFacade.authenticate(info);
+
             subject.login(new UsernamePasswordToken(user.getUsername(), user.getPassword()));
         }
 

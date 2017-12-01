@@ -10,6 +10,8 @@ package com.wegas.core.rest;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.core.persistence.variable.primitive.TextDescriptor;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -36,11 +38,19 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
     @Test
     public void testContains() throws NamingException {
         login(scenarist);
-        NumberDescriptor number = new NumberDescriptor();
-        number.setName("testnumber");
-        number.setDefaultInstance(new NumberInstance(1));
-        variableDescriptorFacade.create(gameModel.getId(), number);
-        Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testnum").contains(number.getId()));
+        TextDescriptor text = new TextDescriptor();
+        text.setName("testText");
+        text.setLabel("testLabel");
+        text.setTitle("testTitle");
+        text.setComments("testComments");
+        text.setDefaultInstance(new TextInstance("instance value"));
+        variableDescriptorFacade.create(gameModel.getId(), text);
+        Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testTex").contains(text.getId()));
+
+        Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testLab").contains(text.getId()));
+        Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testTit").contains(text.getId()));
+        Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testCom").contains(text.getId()));
+        Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "instance val").contains(text.getId()));
 
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());

@@ -131,7 +131,7 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
                         VariableDescriptor find = variableDescriptorFacade.find(gameModel, taskName);
                         if (find instanceof TaskDescriptor) {
                             TaskDescriptor theTask = (TaskDescriptor) find;
-                            TaskInstance taskInstance = theTask.findInstance(burndownInstance);
+                            TaskInstance taskInstance = theTask.findInstance(burndownInstance, requestManager.getCurrentUser());
 
                             tasks.add(taskInstance);
 

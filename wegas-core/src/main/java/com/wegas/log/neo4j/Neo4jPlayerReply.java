@@ -8,7 +8,6 @@
 package com.wegas.log.neo4j;
 
 import com.wegas.core.Helper;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Player;
@@ -17,13 +16,12 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.Reply;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
@@ -50,11 +48,11 @@ public class Neo4jPlayerReply {
         this.addPlayerReply(event.player, event.reply, (ChoiceDescriptor) event.choice.getDescriptor(), (QuestionDescriptor) event.question.getDescriptor());
     }
 
-    public void onNumberUpdate(@Observes NumberListener.NumberUpdate update) throws NoPlayerException {
+    public void onNumberUpdate(@Observes NumberListener.NumberUpdate update) {
         this.addNumberUpdate(update.player, update.number);
     }
 
-    private void addNumberUpdate(final Player player, final NumberInstance numberInstance) throws NoPlayerException {
+    private void addNumberUpdate(final Player player, final NumberInstance numberInstance) {
         if (player == null || player.getTeam() instanceof DebugTeam || player.getTeam() instanceof DebugTeam
                 || Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())
                 || !Neo4jUtils.checkDatabaseExists()) {

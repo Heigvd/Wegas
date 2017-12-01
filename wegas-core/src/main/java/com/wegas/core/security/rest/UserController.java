@@ -435,33 +435,6 @@ public class UserController {
     }
 
     /**
-     * @param username
-     * @param password
-     * @param firstname
-     * @param lastname
-     * @param email
-     * @param request
-     */
-    @POST
-    @Path("Signup")
-    @Deprecated
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void signup(@FormParam("username") String username,
-            @FormParam("password") String password,
-            @FormParam("firstname") String firstname,
-            @FormParam("lastname") String lastname,
-            @FormParam("email") String email,
-            @Context HttpServletRequest request) {
-        JpaAccount account = new JpaAccount();                                   // Convert post params to entity
-        account.setUsername(username);
-        account.setPassword(password);
-        account.setFirstname(firstname);
-        account.setLastname(lastname);
-        account.setEmail(email);
-        this.signup(account, request);                                                   // and forward
-    }
-
-    /**
      * Create a user based on a JpaAccount
      *
      * @param account
