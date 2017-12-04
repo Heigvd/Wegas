@@ -36,6 +36,11 @@ const containerForm = css({
     width: '100%',
     padding: '0 1em',
     boxSizing: 'border-box',
+    '& input, & select, & textarea': {
+        ':focus': {
+            outline: 'auto',
+        },
+    },
 });
 const AsyncForm = promised(() => {
     import(/* webpackChunkName: "reactForm" */ './defaultViews');
