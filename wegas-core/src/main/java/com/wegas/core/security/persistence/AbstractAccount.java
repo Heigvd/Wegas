@@ -264,7 +264,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     public List<Permission> getPermissions() {
         if (this.user != null) {
-            return this.user.getPermissions();
+            return this.getUser().getPermissions();
         } else {
             return null;
         }
