@@ -53,6 +53,7 @@ interface Item {
     label: string;
     value: string;
     selectable?: boolean;
+    expanded?: boolean;
     className?: string;
     items?: Item[];
 }
@@ -94,19 +95,27 @@ function labelIconForVariable(name?: string) {
 function match(item: Item, search: string) {
     return item.label.toLowerCase().indexOf(search.toLowerCase()) > -1;
 }
-
-function buildPath(name?: string) {
+function buildNamedPath(name?: string) {
     const variable = getY().Wegas.Facade.Variable.cache.find('name', name);
-    const path = [];
+    const path: string[] = [];
     if (!variable) {
-        return null;
+        return [];
     }
     let parent = variable.getParent();
     while (parent.get('@class') !== 'GameModel') {
-        path.push(parent.getEditorLabel());
+        path.push(parent.get('name'));
         parent = parent.getParent();
     }
-    return path.reverse().join(' \u21E8 ');
+    return path.reverse();
+}
+function buildLabelPath(name?: string) {
+    return buildNamedPath(name)
+        .map(value =>
+            getY()
+                .Wegas.Facade.Variable.cache.find('name', value)
+                .getEditorLabel()
+        )
+        .join(' \u21E8 ');
 }
 
 function genVarItems(
@@ -143,9 +152,24 @@ function genVarItems(
         );
 }
 /**
+ * expand items as needed for a given value path.
+ * Used to expand nodes
+ *
+ * @param items items which may be mutated
+ * @param valuePath path of value to find in the items tree
+ */
+function expandAsNeeded(items: Item[] = [], valuePath: string[]) {
+    const p = items.find(i => i.value === valuePath[0]);
+    if (p !== undefined) {
+        p.expanded = true;
+        expandAsNeeded(p.items, valuePath.slice(1));
+    }
+}
+/**
  * @returns {Array} items generated from variable and additional
  */
 function genItems(props: ITreeSelectProps) {
+    const path = buildNamedPath(props.value);
     const add = Array.isArray(props.view.additional)
         ? props.view.additional.map((i, index) => ({
               ...i,
@@ -154,13 +178,15 @@ function genItems(props: ITreeSelectProps) {
               }),
           }))
         : [];
-    return genVarItems(
+    const items = genVarItems(
         GameModelDS.getCurrentGameModel()
             .get('items')
             .concat(),
         props.view.selectable,
         normalizeClassFilter(props.view.classFilter)
     ).concat(add);
+    expandAsNeeded(items, path);
+    return items;
 }
 class TreeVariableSelect extends React.Component<
     ITreeSelectProps,
@@ -226,7 +252,7 @@ class TreeVariableSelect extends React.Component<
                     className={`${pathCss}`}
                     title="Folder containing this variable"
                 >
-                    {buildPath(this.props.value)}
+                    {buildLabelPath(this.props.value)}
                 </div>
                 {labelIconForVariable(this.props.value) ||
                     this.labelIconForAdditional(this.props.value)}
