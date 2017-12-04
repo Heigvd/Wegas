@@ -7,14 +7,12 @@
  */
 package com.wegas.core.security.rest;
 
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.security.aai.AaiConfigInfo;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
-
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
