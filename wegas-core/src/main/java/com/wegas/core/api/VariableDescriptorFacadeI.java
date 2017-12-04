@@ -93,6 +93,7 @@ public interface VariableDescriptorFacadeI {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      * @deprecated
      */
+    @Deprecated
     VariableDescriptor findByName(final GameModel gameModel, final String name) throws WegasNoResultException;
 
     /**

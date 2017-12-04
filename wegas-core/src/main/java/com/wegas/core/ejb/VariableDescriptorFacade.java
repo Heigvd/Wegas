@@ -416,6 +416,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @deprecated
      */
     @Override
+    @Deprecated
     public VariableDescriptor findByName(final GameModel gameModel, final String name) throws WegasNoResultException {
         return this.find(gameModel, name);
     }
