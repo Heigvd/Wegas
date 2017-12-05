@@ -34,24 +34,23 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.messaging.ejb.EMailFacade;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.crypto.RandomNumberGenerator;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.subject.Subject;
-import org.slf4j.LoggerFactory;
-
+import java.util.*;
+import java.util.regex.Matcher;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.naming.NamingException;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
-import java.util.*;
-import java.util.regex.Matcher;
-import javax.inject.Inject;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -140,8 +139,6 @@ public class UserFacade extends BaseFacade<User> {
         }
     }
 
-
-
     /**
      * @return a User entity, based on the shiro login state
      */
@@ -159,15 +156,15 @@ public class UserFacade extends BaseFacade<User> {
      */
     public User getCurrentUser() {
         User currentUser = this.getCurrentUserOrNull();
-        if (currentUser != null){
+        if (currentUser != null) {
             return currentUser;
         }
         throw new WegasNotFoundException("Unable to find user");
     }
 
-
     /**
      * Same as {@link #getCurrentUser() } but return null rather than throwing an exception
+     *
      * @return the current user or null if current subject is not authenticated
      */
     public User getCurrentUserOrNull() {
@@ -658,15 +655,17 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @param accountRoles
-     * @param compareRoles
      *
-     * @return true if at least a value exists in both lists
+     * @param roleNames
+     * @param user
+     *
+     * @return true if user is member of at least one group from the list
      */
-    public boolean hasRoles(ArrayList<String> accountRoles, ArrayList<Role> compareRoles) {
-        for (int i = 0; i < accountRoles.size(); i++) {
-            for (int ii = 0; ii < compareRoles.size(); ii++) {
-                if (accountRoles.get(i).equals(compareRoles.get(ii).getName())) {
+    public boolean hasAnyRole(User user, List<String> roleNames) {
+        Set<Role> roles = user.getRoles();
+        if (roleNames != null && roles != null) {
+            for (Role role : roles) {
+                if (roleNames.contains(role.getName())) {
                     return true;
                 }
             }

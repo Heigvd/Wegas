@@ -72,7 +72,7 @@ angular.module('wegas.models.permissions', [])
                         });
                     }).error(function(data) {
                         $translate('COMMONS-PERMISSIONS-SESSIONS-CREATE-FLASH-ERROR').then(function(message) {
-                            deferred.resolve(Responses.error(message, false));
+                            deferred.resolve(Responses.danger(message, false));
                         });
                     });
                 } else {
