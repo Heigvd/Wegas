@@ -3,20 +3,22 @@ import React from 'react';
 import Form from 'jsoninput';
 import { print, parse, types } from 'recast';
 import { css } from 'glamor';
-import classNames from 'classnames';
+// import classNames from 'classnames';
 import { schema as variableSchema, varExist } from './Variable';
-import ArgForm from './ArgForm';
+// import ArgForm from './ArgForm';
 import {
     methodSchema,
     genChoices,
     extractMethod,
     buildMethod,
     methodDescriptor,
+    handleArgs,
 } from './method';
 import { valueToType } from './args';
 import {
     genChoices as genGlobalChoices,
     methodDescriptor as globalMethodDescriptor,
+    handleArgs as globalHandleArgs,
 } from './globalMethod';
 import JSEditor from '../Views/asyncJSEditor';
 import { containerStyle } from '../Views/conditionImpactStyle';
@@ -28,11 +30,6 @@ const errorStyle = css({
     paddingLeft: '40px',
     paddingTop: '3px',
     marginBottom: '-3px',
-});
-
-const newLineStyle = css({
-    display: 'block',
-    marginLeft: '30px',
 });
 
 const upgradeSchema = (varSchema, methodType = 'getter') => {
@@ -237,62 +234,24 @@ class Impact extends React.Component {
         }
         if (this.state.method && this.state.variable) {
             const { variable, method, args } = this.state;
-            const methodDesc = methodDescriptor(variable, method);
-            const argsDescr = (methodDesc && methodDesc.arguments) || [];
+            // const methodDesc = methodDescriptor(variable, method);
+            // const argsDescr = (methodDesc && methodDesc.arguments) || [];
             child = child.concat(
-                argsDescr.map((argDescr, i) => (
-                    <span
-                        key={i}
-                        className={classNames({
-                            [newLineStyle.toString()]:
-                                argDescr.view && argDescr.view.label,
-                        })}
-                    >
-                        <ArgForm
-                            schema={argDescr}
-                            value={args[i]}
-                            entity={this.state.variable}
-                            onChange={v => {
-                                this.setState(prevState => {
-                                    const newArgs = prevState.args.map(
-                                        (a, j) => {
-                                            if (i === j) {
-                                                return v;
-                                            }
-                                            return a;
-                                        }
-                                    );
-                                    return { args: newArgs };
-                                }, this.checkVariableMethod);
-                            }}
-                        />
-                    </span>
-                ))
+                handleArgs(variable, method, args, v => {
+                    this.setState(
+                        () => ({ args: v }),
+                        this.checkVariableMethod
+                    );
+                })
             );
         }
         if (this.state.member && this.state.method) {
             const { member, method, args } = this.state;
-            const methodDesc = globalMethodDescriptor(member, method);
-            const argsDescr = (methodDesc && methodDesc.arguments) || [];
+
             child = child.concat(
-                argsDescr.map((argDescr, i) => (
-                    <ArgForm
-                        key={i}
-                        schema={argDescr}
-                        value={args[i]}
-                        onChange={v => {
-                            this.setState(prevState => {
-                                const newArgs = prevState.args.map((a, j) => {
-                                    if (i === j) {
-                                        return v;
-                                    }
-                                    return a;
-                                });
-                                return { args: newArgs };
-                            }, this.checkGlobalMethod);
-                        }}
-                    />
-                ))
+                globalHandleArgs(member, method, args, v =>
+                    this.setState(() => ({ args: v }), this.checkGlobalMethod)
+                )
             );
         }
         return <span className={containerStyle}>{child}</span>;

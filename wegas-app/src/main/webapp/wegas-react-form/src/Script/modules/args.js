@@ -1,10 +1,10 @@
 import React from 'react';
 import { types, print, parse, visit } from 'recast';
-import Form from 'jsoninput';
+import ArgForm from './ArgForm';
 
 const { builders: b } = types;
 /**
- * Handle a Form's' schema for unknown datatypes
+ * Handle a Form's' schema for unknown datatypes, pass in an entity.
  * @param {{type:string}} schema The schema
  * @param {?=} entity optional object to merge into the schema
  * @returns {{type:string}} a corrected / increased schema
@@ -14,8 +14,8 @@ export const argSchema = (schema, entity) => {
     return Object.assign({}, schema, {
         type,
         view: Object.assign({}, schema.view, {
-            entity
-        })
+            entity,
+        }),
     });
 };
 /**
@@ -39,11 +39,12 @@ export function valueToType(value, schema) {
             return b.identifier(value);
         case 'array':
         case 'object': {
-            const x = parse(`( ${JSON.stringify(value)} )`).program.body[0].expression;
+            const x = parse(`( ${JSON.stringify(value)} )`).program.body[0]
+                .expression;
             return x;
         }
         default:
-            throw Error(`implement me ${schema.type}`);
+            throw Error(`Unknown schema.type ${schema.type}`);
     }
 }
 
@@ -61,6 +62,7 @@ export function typeToValue(value, schema) {
     }
     switch (schema.type) {
         case 'string':
+            return String(value.value);
         case 'boolean':
             return value.value;
         case 'number':
@@ -73,17 +75,20 @@ export function typeToValue(value, schema) {
                 visitLiteral: function visitLiteral(path) {
                     tmp.push(path.node.value);
                     return false;
-                }
+                },
             });
-            tmpNum = tmp.join('');
-            return isNaN(tmpNum) ? tmpNum : Number(tmpNum);
+            tmpNum = Number(tmp.join(''));
+            return isNaN(tmpNum) ? undefined : tmpNum;
         case 'identifier':
             return value.name;
         case 'array':
         case 'object':
-            return Function(`"use strict";return ${print(value).code};`)(); // eslint-disable-line no-new-func
+            // eslint-disable-next-line no-new-func
+            tmpNum = Function(`"use strict";return ${print(value).code};`)();
+            // eslint-disable-next-line valid-typeof
+            return typeof tmpNum === schema.type ? tmpNum : undefined;
         default:
-            throw Error(`implement me ${schema.type}`);
+            throw Error(`Unknown schema.type ${schema.type}`);
     }
 }
 
@@ -95,17 +100,14 @@ export function typeToValue(value, schema) {
 export function matchSchema(value, schema) {
     const newVal = valueToType(typeToValue(value, schema), schema);
     return (
-        value && (
-            (
-                newVal.type === value.type &&
+        value &&
+        ((newVal.type === value.type &&
+            newVal.name === value.name &&
+            newVal.value === value.value) ||
+            (value.type === 'UnaryExpression' &&
+                newVal.type === 'Literal' &&
                 newVal.name === value.name &&
-                newVal.value === value.value
-            ) || (
-                value.type === 'UnaryExpression' && newVal.type === 'Literal' &&
-                newVal.name === value.name &&
-                value.value === undefined
-            )
-        )
+                value.value === undefined))
     );
 }
 /**
@@ -120,15 +122,12 @@ export function matchSchema(value, schema) {
 export function renderForm(astValue, descriptor, onChange, entity, key) {
     // validate it : ref={n => n && n.validate()}
     return (
-        <Form
+        <ArgForm
+            value={astValue}
+            entity={entity}
+            schema={descriptor}
+            onChange={onChange}
             key={key}
-            schema={argSchema(descriptor, entity)}
-            value={
-                matchSchema(astValue, descriptor)
-                    ? typeToValue(astValue, descriptor)
-                    : undefined
-            }
-            onChange={v => onChange(valueToType(v, descriptor))}
         />
     );
 }
