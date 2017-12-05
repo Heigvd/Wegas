@@ -16,13 +16,9 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -32,6 +28,8 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -138,7 +136,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             ChoiceInstance choiceInstance = (ChoiceInstance) event.getEntity();
             ChoiceDescriptor choice = (ChoiceDescriptor) choiceInstance.findDescriptor();
 
-            if (choiceInstance.getCurrentResultName() != null && !choiceInstance.getCurrentResultName().isEmpty()) {
+            if (!Helper.isNullOrEmpty(choiceInstance.getCurrentResultName())) {
                 logger.info("ReviveResultByName");
                 try {
                     Result cr = findResult(choice, choiceInstance.getCurrentResultName());

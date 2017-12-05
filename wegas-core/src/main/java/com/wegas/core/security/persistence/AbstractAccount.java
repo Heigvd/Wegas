@@ -255,7 +255,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @return the permissions
      */
     public List<Permission> getPermissions() {
-        return this.user.getPermissions();
+        return this.getUser().getPermissions();
     }
 
     @JsonIgnore

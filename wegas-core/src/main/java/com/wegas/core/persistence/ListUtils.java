@@ -152,71 +152,73 @@ public class ListUtils {
      * @return A brand new up-to-date list, which is a clone of theList
      */
     public static <E extends AbstractEntity> List<E> mergeLists(List<E> theList, List<E> otherList, Updater callback, KeyExtractorI<Object, E> converter) {
+        if (theList != otherList) {
 
-        if (converter == null) {
+            if (converter == null) {
+                /**
+                 * No converter provided: use id as default key
+                 */
+                converter = (KeyExtractorI<Object, E>) new IdExtractor();
+            }
+
+            /* map otherElements by their key */
+            Map<Object, E> otherElements = ListUtils.listAsMap(otherList, converter); // maps elements to process
+
             /**
-             * No converter provided: use id as default key
+             * Process theList
+             * <p>
+             * Extract elements which are to be merged to merged list, remove others
              */
-            converter = (KeyExtractorI<Object, E>) new IdExtractor();
-        }
-
-        /* map otherElements by their key */
-        Map<Object, E> otherElements = ListUtils.listAsMap(otherList, converter); // maps elements to process
-
-        /**
-         * Process theList
-         * <p>
-         * Extract elements which are to be merged to merged list, remove others
-         */
-        Map<Object, E> merged = new HashMap<>();
-        for (E e : theList) {
-            Object key = converter.getKey(e);
-            // Only keep element still in otherList
-            if (otherElements.containsKey(key)) {
-                // element exists in both list
-                // merge it and store it in the merged list
-                e.merge(otherElements.get(key));
-                merged.put(key, e);
-            } else {
-                // element does not exists anylonger
-                if (callback != null) {
-                    callback.removeEntity(e);
+            Map<Object, E> merged = new HashMap<>();
+            for (E e : theList) {
+                Object key = converter.getKey(e);
+                // Only keep element still in otherList
+                if (otherElements.containsKey(key)) {
+                    // element exists in both list
+                    // merge it and store it in the merged list
+                    e.merge(otherElements.get(key));
+                    merged.put(key, e);
+                } else {
+                    // element does not exists anylonger
+                    if (callback != null) {
+                        callback.removeEntity(e);
+                    }
                 }
             }
-        }
-        /**
-         * All elements from theList have been processed
-         * Those who will survive have been merged, and stored within the merged list
-         * Others have been deleted
-         */
-        theList.clear(); // make room in theList in order to preserve order
+            /**
+             * All elements from theList have been processed
+             * Those who will survive have been merged, and stored within the merged list
+             * Others have been deleted
+             */
+            theList.clear(); // make room in theList in order to preserve order
 
-        /**
-         * Process otherList.
-         * there is two cases:
-         * 1. element existed in theList ans has already been merged : put it back in theList
-         * 2. element did not exists in theList: clone it and the clone in theList
-         */
-        for (E e : otherList) {
-            Object key = converter.getKey(e);
-            if (merged.containsKey(key)) {
-                // Element already merged, put it back to theList
-                theList.add(merged.get(key));
-            } else {
-                /**
-                 * Either e came from another "world" (e.g. from defaultInstance to scoped-instance)
-                 * either it's a new one
-                 * <p>
-                 * In both case : clone it (cloning element avoids mixing elements
-                 * from different entities -- remember the so-called occupations multiplication issue)
-                 */
-                theList.add((E) e.clone());
+            /**
+             * Process otherList.
+             * there is two cases:
+             * 1. element existed in theList and has already been merged : put it back in theList
+             * 2. element did not exists in theList: clone it and add the clone in theList
+             */
+            for (E e : otherList) {
+                Object key = converter.getKey(e);
+                if (merged.containsKey(key)) {
+                    // Element already merged, put it back to theList
+                    theList.add(merged.get(key));
+                } else {
+                    /**
+                     * Either e came from another "world" (e.g. from defaultInstance to scoped-instance)
+                     * either it's a new one
+                     * <p>
+                     * In both case : clone it (cloning element avoids mixing elements
+                     * from different entities -- remember the so-called occupations multiplication issue)
+                     */
+                    theList.add((E) e.clone());
 
-                /*
+                    /*
                  * Since a new element is added to the destinationList, the callback has to be called
-                 */
-                if (callback != null) {
-                    callback.addEntity(e);
+                     */
+                    if (callback != null) {
+                        callback.addEntity(e);
+                    }
                 }
             }
         }

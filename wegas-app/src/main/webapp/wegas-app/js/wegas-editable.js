@@ -40,18 +40,16 @@ YUI.add('wegas-editable', function(Y) {
          */
         toJSON: function() {
             var k,
-                ret = this.getAttrs(),
+                object = {},
                 attrCfgs = this.getAttrCfgs();
 
-            for (k in ret) {
-                if (attrCfgs[k] && attrCfgs[k]["transient"]) {                  // Remove any transient attribute
-                    delete ret[k];
+            for (k in attrCfgs) {
+                // do not even read transient attrs 
+                if (attrCfgs.hasOwnProperty(k) && !attrCfgs[k]["transient"]) {
+                    object[k] = this.get(k);
                 }
-                //if(this.constructor.ATTRS[k] && this.constructor.ATTRS[k].value === ret[k]){ /* DEFAULT VALUE REMOVAL */
-                //    delete ret[k];
-                //}
             }
-            return ret;                                                         // Return a copy of this's fields.
+            return object;
         },
         /**
          * Create a new JSON Object from this entity, filtered out by mask
@@ -121,8 +119,8 @@ YUI.add('wegas-editable', function(Y) {
                 // form = builder.schemaToInputEx(schemaMap.Entity);
                 return {
                     type: 'object',
-                    properties: attrCfgs
-                }
+                        properties: attrCfgs
+                    }
             }
 
             return form || [];
