@@ -282,7 +282,7 @@ public abstract class AbstractArquillianTestMinimal {
     @After
     public void clean() {
         long now = System.currentTimeMillis();
-        logger.error("TEST {} DURATION: total: {} ms; init: {} ms; test: {} ms",
+        logger.info("TEST {} DURATION: total: {} ms; init: {} ms; test: {} ms",
                 name.getMethodName(),
                 now - this.startTime,
                 this.initTime - this.startTime,

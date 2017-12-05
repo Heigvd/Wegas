@@ -10,6 +10,7 @@ package com.wegas.core.api;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -131,6 +132,16 @@ public interface VariableDescriptorFacadeI {
      * @return all vd instances, mapped by their owner
      */
     Map<? extends InstanceOwner, VariableInstance> getInstances(VariableDescriptor vd);
+
+    /**
+     * Return instance of the descriptor the player has write right on
+     *
+     * @param vd     the descriptor to fetch instance from
+     * @param player player who requests an instance
+     *
+     * @return instance of vd player can write
+     */
+    VariableInstance getInstance(VariableDescriptor vd, Player player);
 
     /**
      * Same as {@link #getInstances(com.wegas.core.persistence.variable.VariableDescriptor) but map by owner id

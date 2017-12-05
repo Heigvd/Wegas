@@ -428,6 +428,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @JsonIgnore
     @Deprecated
     public T getInstance() {
+        logger.error("VariableDescriptor#getInstance() is deprecated!");
         return (T) this.getScope().getInstance();
     }
 

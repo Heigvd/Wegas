@@ -173,7 +173,7 @@ public class WebsocketFacade {
 
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send lock  \"{}\" to \"{}\"", token, channel);
+            logger.info("send lock  \"{}\" to \"{}\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}", null);
         }
@@ -181,7 +181,7 @@ public class WebsocketFacade {
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send unlock  \"{}\" to \"{}\"", token, channel);
+            logger.info("send unlock  \"{}\" to \"{}\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
         }
@@ -769,12 +769,10 @@ public class WebsocketFacade {
     }
 
     public void updateOnlineUserMetric() {
-        logger.error("FIRE COMMAND");
         commands.fire(UPDATE_OU_METRIC_CMD);
     }
 
     public void onOnlineUserMetric(@Inbound(eventName = COMMANDS_EVENT) @Observes String command) {
-        logger.error("RECEIVE COMMAND");
         if (UPDATE_OU_METRIC_CMD.equals(command)) {
             onlineUsersGauge.set(this.getLocalOnlineUsers().size());
         }

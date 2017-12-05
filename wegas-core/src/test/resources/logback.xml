@@ -15,6 +15,8 @@
             <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
         </encoder>
     </appender>-->
+    <logger name="com.wegas.test.arquillian.AbstractArquillianTestMinimal" level="INFO"/>
+
     <logger name="org.apache" level="WARN"/>
     <logger name="com.wegas.core" level="WARN"/>
     <logger name="net.sf.ehcache" level="WARN"/>
