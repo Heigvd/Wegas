@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { parse, print, types } from 'recast';
 import ViewSrc from './Views/ViewSrc';
+import { ErrorBoundary } from '../Components/ErrorBoundary';
 /**
  * HOC Parse code into AST and reverse onChange
  * @param {React.Component} Comp Component to augment
@@ -23,14 +24,16 @@ function parsed(Comp) {
         }
         return (
             <ViewSrc value={value} onChange={onChange} error={error}>
-                <Comp
-                    {...restProps}
-                    code={ast.program.body}
-                    onChange={v => {
-                        ast.program.body = v;
-                        onChange(print(ast).code);
-                    }}
-                />
+                <ErrorBoundary>
+                    <Comp
+                        {...restProps}
+                        code={ast.program.body}
+                        onChange={v => {
+                            ast.program.body = v;
+                            onChange(print(ast).code);
+                        }}
+                    />
+                </ErrorBoundary>
             </ViewSrc>
         );
     }
