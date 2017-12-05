@@ -1,6 +1,7 @@
 import React from 'react';
 import Form from 'jsoninput';
 import PropTypes from 'prop-types';
+import { isEqual } from 'lodash-es';
 import { argSchema, valueToType, typeToValue, matchSchema } from './args';
 import { containerStyle } from '../Views/conditionImpactStyle';
 import { types } from 'recast';
@@ -13,6 +14,9 @@ export default class ArgFrom extends React.Component {
         this.state = {
             schema: argSchema(props.schema),
         };
+    }
+    componentDidMount() {
+        this.checkConst();
     }
     componentWillReceiveProps(nextProps) {
         if (nextProps.schema !== this.props.schema) {
@@ -32,30 +36,35 @@ export default class ArgFrom extends React.Component {
             )
         );
     }
+    componentDidUpdate() {
+        this.checkConst();
+    }
+    checkConst() {
+        if (
+            'const' in this.state.schema &&
+            !isEqual(
+                this.state.schema.const,
+                typeToValue(this.props.value, this.props.schema)
+            )
+        ) {
+            this.props.onChange(
+                valueToType(this.state.schema.const, this.props.schema)
+            );
+        }
+    }
     render() {
         const { value, onChange, entity } = this.props;
         const { schema } = this.state;
         const s = { ...schema, view: { ...schema.view, entity } };
-        // Reduce unary minus operator to a simple literal to make matching work:
-        let negativeValue;
-        if (
-            value &&
-            value.type === 'UnaryExpression' &&
-            value.operator === '-' &&
-            value.argument.type === 'Literal'
-        ) {
-            negativeValue = b.literal(-value.argument.value);
-        }
-        const val = negativeValue || value || valueToType(undefined, schema);
+
+        const val = matchSchema(value, schema)
+            ? typeToValue(value, schema)
+            : undefined;
         return (
             <div className={containerStyle}>
                 <Form
                     schema={s}
-                    value={
-                        matchSchema(val, schema)
-                            ? typeToValue(val, schema)
-                            : undefined
-                    }
+                    value={val}
                     onChange={v => onChange(valueToType(v, this.props.schema))}
                 />
             </div>
@@ -64,7 +73,7 @@ export default class ArgFrom extends React.Component {
 }
 ArgFrom.propTypes = {
     schema: PropTypes.object.isRequired,
-    entity: PropTypes.any.isRequired,
+    entity: PropTypes.any,
     value: PropTypes.any,
     onChange: PropTypes.func.isRequired,
 };
