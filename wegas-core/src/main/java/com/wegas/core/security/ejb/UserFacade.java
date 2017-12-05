@@ -728,15 +728,17 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @param accountRoles
-     * @param compareRoles
      *
-     * @return true if at least a value exists in both lists
+     * @param roleNames
+     * @param user
+     *
+     * @return true if user is member of at least one group from the list
      */
-    public boolean hasRoles(ArrayList<String> accountRoles, ArrayList<Role> compareRoles) {
-        for (int i = 0; i < accountRoles.size(); i++) {
-            for (int ii = 0; ii < compareRoles.size(); ii++) {
-                if (accountRoles.get(i).equals(compareRoles.get(ii).getName())) {
+    public boolean hasAnyRole(User user, List<String> roleNames) {
+        Collection<Role> roles = user.getRoles();
+        if (roleNames != null && roles != null) {
+            for (Role role : roles) {
+                if (roleNames.contains(role.getName())) {
                     return true;
                 }
             }

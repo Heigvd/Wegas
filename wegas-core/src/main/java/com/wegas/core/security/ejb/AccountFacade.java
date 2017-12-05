@@ -44,8 +44,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountFacade.class);
 
-    private static final int MAXRESULT = 30;
-
     /**
      *
      */
@@ -267,6 +265,33 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
     }
 
+    private List<Predicate> getAccountAutoCompleteFilter(String input) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+
+        String[] tokens = input.split(" ");
+        List<Predicate> andPreds = new ArrayList<>(tokens.length);
+
+        CriteriaQuery<AbstractAccount> cq = cb.createQuery(AbstractAccount.class);
+        Root<AbstractAccount> account = cq.from(AbstractAccount.class);
+
+        int i;
+        for (i = 0; i < tokens.length; i++) {
+            String token = tokens[i];
+            if (!token.isEmpty()) {
+                token = "%" + token.toLowerCase() + "%";
+
+                andPreds.add(cb.or(cb.like(cb.lower(account.get("firstname")), token),
+                        cb.like(cb.lower(account.get("lastname")), token),
+                        cb.like(cb.lower(account.get("email")), token),
+                        cb.like(cb.lower(account.get("username")), token)
+                ));
+            }
+        }
+        andPreds.add(cb.notEqual(account.type(), GuestJpaAccount.class)); // Exclude guest accounts
+
+        return andPreds;
+    }
+
     /**
      * Look for AbstractAccounts (except guests) matching given value.
      * <p>
@@ -277,35 +302,53 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @return list of AbstractAccount matching the token
      */
     public List<AbstractAccount> findByNameEmailOrUsername(String input) {
-        String[] tokens = input.split(" ");
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<AbstractAccount> cq = cb.createQuery(AbstractAccount.class);
 
+        List<Predicate> filter = this.getAccountAutoCompleteFilter(input);
+        cq.where(cb.and(filter.toArray(new Predicate[filter.size()])));
+
+        TypedQuery<AbstractAccount> q = getEntityManager().createQuery(cq);
+        return q.getResultList();
+    }
+
+    public List<AbstractAccount> findByNameEmailOrUsername_WithRole(String input, List<String> roleNames) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<AbstractAccount> cq = cb.createQuery(AbstractAccount.class);
         Root<AbstractAccount> account = cq.from(AbstractAccount.class);
 
-        Predicate[] prs = {};
+        List<Predicate> filter = this.getAccountAutoCompleteFilter(input);
+        cq.where(cb.and(filter.toArray(new Predicate[filter.size()])));
 
-        List<Predicate> andPreds = new ArrayList<>();
-        andPreds.add(cb.notEqual(account.type(), GuestJpaAccount.class)); // Exclude guest accounts
 
-        for (String token : tokens) {
-            if (!token.isEmpty()) {
-                token = "%" + token.toLowerCase() + "%";
-                List<Predicate> orPreds = new ArrayList<>();
-                orPreds.add(cb.like(cb.lower(account.get("firstname")), token));
-                orPreds.add(cb.like(cb.lower(account.get("lastname")), token));
-                orPreds.add(cb.like(cb.lower(account.get("email")), token));
-                orPreds.add(cb.like(cb.lower(account.get("username")), token));
 
-                andPreds.add(cb.or(orPreds.toArray(prs)));
-            }
-        }
-
-        cq.where(cb.and(andPreds.toArray(prs)));
 
         TypedQuery<AbstractAccount> q = getEntityManager().createQuery(cq);
-        q.setMaxResults(MAXRESULT);
         return q.getResultList();
+    }
+
+    /**
+     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but
+     * account must be member of (at least) one role in rolesList
+     *
+     * @param value     account search token
+     * @param rolesList list of roles targeted account should be members (only
+     *                  one membership is sufficient)
+     *
+     * @return list of AbstractAccounts (excluding guest accounts) matching the token that are a member of at least
+     *         one given role
+     */
+    public List<AbstractAccount> getAutoCompleteByRoles(String value,
+            Map<String, List<String>> rolesList) {
+        List<String> roles = rolesList.get("rolesList");
+
+        List<AbstractAccount> returnValue = new ArrayList<>();
+        for (AbstractAccount a : findByNameEmailOrUsername(value)) {
+            if (userFacade.hasAnyRole(a.getUser(), roles)) {
+                returnValue.add(hideEmail(a));
+            }
+        }
+        return returnValue;
     }
 
     /**
@@ -344,37 +387,16 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             if (playerFacade.isInGame(gameId, ja.getUser().getId())) {
                 it.remove();
             } else {
-                getEntityManager().detach(ja);
-                ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
+                hideEmail(ja);
             }
         }
         return accounts;
     }
 
-    /**
-     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but
-     * account must be member of (at least) one role in rolesList
-     *
-     * @param value     account search token
-     * @param rolesList list of roles targeted account should be members (only
-     *                  one membership is sufficient)
-     *
-     * @return list of AbstractAccounts (excluding guest accounts) matching the token that are a member of at least
-     *         one given role
-     */
-    public List<AbstractAccount> getAutoCompleteByRoles(String value, HashMap<String, List<String>> rolesList) {
-        ArrayList<String> roles = (ArrayList<String>) rolesList.get("rolesList");
-
-        List<AbstractAccount> returnValue = new ArrayList<>();
-        for (AbstractAccount a : findByNameEmailOrUsername(value)) {
-            boolean hasRole = userFacade.hasRoles(roles, new ArrayList<>(a.getRoles()));
-            if (hasRole) {
-                getEntityManager().detach(a);
-                a.setEmail(a.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
-                returnValue.add(a);
-            }
-        }
-        return returnValue;
+    private AbstractAccount hideEmail(AbstractAccount aa) {
+        this.getEntityManager().detach(aa);
+        aa.setEmail(aa.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
+        return aa;
     }
 
     /**
