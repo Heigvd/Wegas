@@ -23,6 +23,8 @@
     <logger name="com.wegas.core.security.ejb.UserFacade" level="INFO"/>
     <logger name="net.sf.ehcache" level="WARN"/>
 
+    <logger name="com.wegas.test.arquillian.AbstractArquillianTestMinimal" level="INFO"/>
+
     <root level="WARN">
         <appender-ref ref="STDOUT" />
     </root>

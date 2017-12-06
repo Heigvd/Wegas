@@ -68,20 +68,20 @@ public class WegasTest {
 
         try {
             runtime = Wegas.boot("wegas_test", "localhost", null, true, 8280);
-               //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
+            //Wegas.WegasRuntime runtime2 = Wegas.boot("wegas_test", "localhost", null, true, 8281);
 
-               client = new WegasRESTClient(runtime.getBaseUrl());
+            client = new WegasRESTClient(runtime.getBaseUrl());
 
-               scenarist = client.signup("scenarist@local", "1234");
-               trainer = client.signup("trainer@local", "1234");
-               user = client.signup("user@local", "1234");
+            scenarist = client.signup("scenarist@local", "1234");
+            trainer = client.signup("trainer@local", "1234");
+            user = client.signup("user@local", "1234");
 
-               root = client.getAuthInfo("root@root.com", "1234");
-               root.setUserId(1l);
+            root = client.getAuthInfo("root@root.com", "1234");
+            root.setUserId(1l);
 
-               client.login(root);
-               grantRights();
-               logger.error("SETUP COMPLETED");
+            client.login(root);
+            grantRights();
+            logger.error("SETUP COMPLETED");
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(WegasTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (GlassFishException ex) {
@@ -89,7 +89,7 @@ public class WegasTest {
         }
     }
 
-        @AfterClass
+    @AfterClass
     public static void tearDownClass() throws Exception {
         logger.error("AfterCLASS");
         Wegas.shutdown(runtime);
@@ -102,7 +102,7 @@ public class WegasTest {
         client.login(root);
         client.get("/rest/Utils/SetPopulatingSynchronous");
         loadArtos();
-}
+    }
 
     private static void grantRights() throws IOException {
         Map<String, Role> roles = client.getRoles();
@@ -130,7 +130,7 @@ public class WegasTest {
     }
 
     @Test
-    public void testDatabaseIndexes(){
+    public void testDatabaseIndexes() {
         Assert.assertEquals("Some indexes are missing. Please create liquibase changesets. See log for details", 0, TestHelper.getMissingIndexesCount());
     }
 
@@ -217,9 +217,8 @@ public class WegasTest {
 
         descs = (List<VariableDescriptor>) (client.get("/rest/GameModel/" + this.artos.getId() + "/VariableDescriptor", new TypeReference<List<VariableDescriptor>>() {
         }));
-        for (VariableDescriptor vd : descs) {
-            logger.error("NAME: " + vd.getLabel());
-        }
+
+        Assert.assertTrue("Seems there is not enough descritpr here...", descs.size() > 10);
     }
 
     @Test
