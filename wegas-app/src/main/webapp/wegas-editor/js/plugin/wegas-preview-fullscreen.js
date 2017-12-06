@@ -36,6 +36,16 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
                         Y.all("body > .wegas-editview").show();
                     }
                 }, this);
+
+
+                /** Refresh **/
+                this.refreshButton = host.toolbar.add({
+                    label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
+                    cssClass: "wegas-advanced-feature"
+                }).item(0);
+                this.refreshButton.after("click", function(e) {
+                    this.get("host").reload();
+                }, this);
             }
         },
         destructor: function() {
