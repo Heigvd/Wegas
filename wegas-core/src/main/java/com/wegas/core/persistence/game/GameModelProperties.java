@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ import javax.persistence.*;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Embeddable
+@JsonIgnoreProperties(value = {"imageUri"})
 public class GameModelProperties implements Serializable {
 
     private static final long serialVersionUID = 1L;
