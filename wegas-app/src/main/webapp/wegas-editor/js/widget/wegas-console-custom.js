@@ -83,7 +83,9 @@ YUI.add('wegas-console-custom', function(Y) {
                     // this.srcField = new Y.inputEx.WysiwygScript({
                     //     parentEl: contentAdvanced
                     // });
-                    this.srcField = Y.Wegas.RForm.Script.MultiVariableMethod({}, contentAdvanced.getDOMNode())
+                    Y.Wegas.RForm.Script.MultiVariableMethod({}, contentAdvanced.getDOMNode()).then(function(o) {
+                            this.srcField = o;
+                        }.bind(this));
                     cb.append(
                         '<div class="wegas-status-bar wegas-status-bar-hidden"><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
                     // Remove buttons for advanced features (view source, etc).
