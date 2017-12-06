@@ -91,7 +91,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 if (! i.label) {                                        // @Overhack to centralize more icon definitions here
                     switch (i.type) {
                         case "DeleteEntityButton":
-                            i = EditEntityAction.stackedIcon(i, 'fa-trash', 'Delete');
+                            i = EditEntityAction.stackedIcon(i, 'fa-trash');
+                            i.tooltip = 'Delete';
                             break;
                     }
                 } else {
@@ -116,23 +117,29 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                     }
                                 }, this);
                             }
-                            i = EditEntityAction.stackedIcon(i, 'fa-plus-circle', 'Add element');
+                            i = EditEntityAction.stackedIcon(i, 'fa-plus-circle');
+                            i.tooltip = 'Add element';
                             break;
                         case "Delete":
-                            i = EditEntityAction.stackedIcon(i, 'fa-trash', 'Delete');
+                            i = EditEntityAction.stackedIcon(i, 'fa-trash');
+                            i.tooltip = 'Delete';                            
                             break;
                         case "Sort":
-                            i = EditEntityAction.stackedIcon(i, 'fa-sort-alpha-asc', 'Sort contents alphabetically');
+                            i = EditEntityAction.stackedIcon(i, 'fa-sort-alpha-asc');
+                            i.tooltip = 'Sort contents alphabetically';
                             break;
                         case "Copy":
-                            i = EditEntityAction.stackedIcon(i, 'fa-files-o', 'Duplicate');
+                            i = EditEntityAction.stackedIcon(i, 'fa-files-o');
+                            i.tooltip = 'Duplicate';
                             break;
                         case "Export":
-                            i = EditEntityAction.stackedIcon(i, 'fa-download',  'Export');
+                            i = EditEntityAction.stackedIcon(i, 'fa-download');
+                            i.tooltip = 'Export';
                             break;
 
                         case "Search for usages":
-                            i = EditEntityAction.stackedIcon(i, 'fa-compass', 'Find usage');
+                            i = EditEntityAction.stackedIcon(i, 'fa-compass');
+                            i.tooltip = 'Find usage';
                     }
                 }
             });
