@@ -168,7 +168,9 @@ function toInjectorStyle(content) {
     const root = document.createElement('div');
     root.innerHTML = content;
     const yuiId = root.querySelectorAll('[id^="yui_"]');
-    yuiId.forEach(n => n.removeAttribute('id'));
+    for (let n = 0; n < yuiId.length; n += 1) {
+        yuiId[n].removeAttribute('id');
+    }
 
     return root.innerHTML
         .replace(
