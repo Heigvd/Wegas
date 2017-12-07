@@ -21,7 +21,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction, SortEntityAction,
         DeleteEntityAction, SearchEntityAction, ToolbarMenu;
 
-    var MESSAGE_DISCARD_EDITS = "There are unsaved changes.<br/>Discard your modifications?";
+    var MESSAGE_DISCARD_EDITS = "Unsaved changes!";
 
     /**
      * @class
@@ -361,8 +361,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         okCb && okCb();
                     }, this),
                     cancelCb,
-                    "Discard",
-                    "Cancel");
+                    "Do not save",
+                    "Keep editing");
             } else {
                 okCb && okCb();
             }
