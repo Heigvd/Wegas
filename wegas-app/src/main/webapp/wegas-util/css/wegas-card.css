@@ -130,6 +130,10 @@
     overflow:auto;
     white-space: nowrap;
 }
+.bloc-details__players__list .bloc-details__player.failed{
+    text-decoration: line-through; 
+}
+
 .bloc-details__players__list .bloc-details__player:before{
     content:"\f007";
     display:block;
@@ -314,7 +318,7 @@
 }
 
 .card__blocs .bloc.bloc--icon:hover{
-background-color: #eee;
+    background-color: #eee;
 }
 
 .card__blocs .bloc.bloc--icon{

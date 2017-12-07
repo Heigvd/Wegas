@@ -125,6 +125,7 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
         TEAM_LIST_TEMPLATE: "<div class='bloc-details__players'>" + "<h3>Players</h3>" + "<ul class='bloc-details__players__list'></ul>" + "</div>",
         SIZE_TEMPLATE: "<span></span>",
         PLAYER_TEMPLATE: "<li class='bloc-details__player' title='✘ Unverified identity'></li>",
+        FAILED_PLAYER_TEMPLATE: "<li class='bloc-details__player failed' title='✘ Player was not able to join the team'></li>",
         VERIFIED_PLAYER_TEMPLATE: "<li class='bloc-details__player verified'></li>",
         _saveNotes: function(context) {
             context.get("team").set("notes", context.get("editor").getContent());
@@ -152,11 +153,15 @@ YUI.add('wegas-teams-overview-dashboard', function(Y) {
                     this.get("host").get(CONTENTBOX).addClass("card--team");
                     teamList = Y.Node.create(this.TEAM_LIST_TEMPLATE);
                     if (declSize > 0) {
-                        teamList.one("h3").setContent("Players " + realSize + "&nbsp;of&nbsp;" + declSize);
+                        teamList.one("h3").setContent("Players");
+                        //teamList.one("h3").setContent("Players " + realSize + "&nbsp;of&nbsp;" + declSize);
                     }
                     Y.Array.each(this.get("team").get("players"), function(player) {
                         var playerNode;
-                        if (player.get("verifiedId") === true) {
+
+                        if (player.get("status") !== "LIVE"){
+                            playerNode = Y.Node.create(this.FAILED_PLAYER_TEMPLATE).append("✘ " + player.get("name"));
+                        } else if (player.get("verifiedId") === true) {
                             playerNode = Y.Node.create(this.VERIFIED_PLAYER_TEMPLATE).append(player.get("name"));
                             playerNode.set("title", '✔ verified ' + player.get("homeOrg").toUpperCase() + ' member');
                         } else {
