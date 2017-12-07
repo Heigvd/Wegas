@@ -14,18 +14,18 @@ const marginStyle = css({
     width: FormStyles.textInputWidth,
     marginTop: '4px',
     fontSize: '13px',
-    minHeight: '45px',
+    minHeight: '145px',
     maxHeight: '500px',
     minWidth: '50px',
     overflow: 'auto',
     color: 'darkslategrey',
     backgroundColor: 'white',
-    boxShadow: '1px 1px 4px #ccc',
     resize: 'both',
     '& > div': {
         // The inline DIV must fill up the entire container except a small (bottom) margin for the resize handle
-        minHeight: 'calc( 100% - 10px )',
-        outline: 'none !important',
+        minHeight: 'calc( 100% - 15px )',
+        boxSizing: 'border-box',
+        // outline: 'none !important',
     },
 });
 
