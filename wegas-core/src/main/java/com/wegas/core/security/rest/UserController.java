@@ -260,15 +260,15 @@ public class UserController {
      * account must be member of (at least) one role in rolesList
      *
      * @param value     account search token
-     * @param rolesList list of roles targeted account should be members (only
-     *                  one membership is sufficient)
+     * @param rolesList list of roles targeted account should be members (one
+     *                  membership is sufficient)
      *
      * @return list of AbstractAccount matching the token that are member of at least
      *         one given role
      */
     @POST
     @Path("AutoComplete/{value}")
-    public List<AbstractAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, List<String>> rolesList) {
+    public List<AbstractAccount> getAutoCompleteByRoles(@PathParam("value") String value, Map<String, List<String>> rolesList) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
@@ -692,8 +692,8 @@ public class UserController {
             email.setReplyTo(mainAccount.getEmail());
         }
 
-        String body = "<!DOCTYPE html><html><head></head><body>" +
-                email.getBody();
+        String body = "<!DOCTYPE html><html><head></head><body>"
+                + email.getBody();
         body += "<br /><br /><hr /><i> Sent by " + name + " from albasim.ch</i></body></html>";
         email.setBody(body);
 
@@ -874,6 +874,7 @@ public class UserController {
      * @param accountId   user accountId
      */
     @POST
+
     @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|,)*}/{accountId : [1-9][0-9]*}")
     public void shareGameModel(@PathParam("gameModelId") Long gameModelId,
             @PathParam("permission") String permission,
@@ -890,6 +891,7 @@ public class UserController {
     }
 
     @DELETE
+
     @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
     public void unshareGameModel(@PathParam("gameModelId") Long gameModelId,
             @PathParam("accountId") Long accountId) {

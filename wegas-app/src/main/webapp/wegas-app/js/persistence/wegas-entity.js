@@ -51,7 +51,7 @@ YUI.add('wegas-entity', function(Y) {
                         type: 'string',
                         view: {
                             label: 'Value'
-                        }
+            }
                     },
                     inducedPermission: {
                         type: 'string',
@@ -293,14 +293,14 @@ YUI.add('wegas-entity', function(Y) {
                         {
                                     value: true,
                                         label: 'individually'
-                                    },
-                                    {
-                                    value: false,
+                        },
+                        {
+                            value: false,
                                         label: 'in team'
                                     }
                                 ]
-                            }
-                        },
+                }
+            },
                         scriptUri: {
                             type: STRING,
                             view: { label: 'Server scripts' }
@@ -752,8 +752,8 @@ YUI.add('wegas-entity', function(Y) {
                     view: {
                         type: 'password',
                         label: 'Confirm password'
-                    }
-                },
+                }
+            },
             roles: {
                 optional: true,
                 type: ARRAY,

@@ -441,6 +441,9 @@
     /* position: absolute; */
     font-size: 8pt;
     min-width: 12em;
+    max-width: 600px;
+    max-height: 350px;
+    overflow-y: auto;
     /* padding: 5px; */
 }
 
