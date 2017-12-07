@@ -70,10 +70,10 @@ function onFileBrowserClick(fieldName, url, type, win) {
 }
 
 const TINY_CONFIG = {
-    inline: true,
+    inline: false,
     plugins: [
         'autolink link image lists code media table contextmenu',
-        'paste advlist textcolor dynamic_toolbar autoresize',
+        'paste advlist textcolor dynamic_toolbar',
         // textcolor wordcount autosave
         // advlist charmap print preview hr anchor pagebreak spellchecker
         // directionality
@@ -92,12 +92,7 @@ const TINY_CONFIG = {
     toolbar_items_size: 'small',
     hidden_tootlbar: [2, 3],
     file_browser_callback: onFileBrowserClick,
-    resize: 'both',
     image_advtab: true,
-    autoresize_min_height: 35,
-    autoresize_max_height: 500,
-    autoresize_bottom_margin: 10,
-    autoresize_on_init: true,
     content_css: [
         `${Wegas.app.get('base')}wegas-editor/css/wegas-inputex-rte.css`,
     ],
@@ -212,8 +207,7 @@ class HTMLView extends React.Component {
 
     // Listens both to tinyMCE's synthetic 'change' events and to its basic 'onKeyup' events.
     // NB: the event parameter is not the same in both cases.
-    onChangeHandler(event) {
-        // console.log(event.originalEvent ? event.originalEvent.type : event.type);
+    onChangeHandler() {
         if (this.doNotCheck) {
             return;
         }
@@ -228,7 +222,7 @@ class HTMLView extends React.Component {
 
     // A click on the container transfers the focus to the inner DIV containing TinyMCE.
     onClickHandler(event) {
-        var elem = event.target.firstChild;
+        const elem = event.target.firstChild;
         if (elem && elem.focus) {
             elem.focus();
         }
