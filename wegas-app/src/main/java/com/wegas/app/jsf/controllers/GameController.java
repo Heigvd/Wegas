@@ -7,7 +7,6 @@
  */
 package com.wegas.app.jsf.controllers;
 
-import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;

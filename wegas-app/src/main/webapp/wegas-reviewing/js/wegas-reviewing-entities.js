@@ -187,6 +187,25 @@ YUI.add('wegas-reviewing-entities', function(Y) {
          * WYSIWYG editor
          */
         METHODS: {
+            setState: {
+                label: "state",
+                "arguments": [
+                    {
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        scriptType: STRING,
+                        type: "select",
+                        choices: [{
+                                label: "",
+                                value:""
+                            }, {
+                                value: "NOT_STARTED",
+                                label: "restart"
+                            }
+                        ]
+                    }]
+            },
             getState: {
                 label: "state",
                 returns: STRING,
