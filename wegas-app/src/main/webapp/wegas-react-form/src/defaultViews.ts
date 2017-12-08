@@ -24,6 +24,7 @@ import ColorPicker from './Views/color-picker';
 import KeyChoice from './Views/keychoice';
 import PageLoaderSelect from './Views/Interacting/pageloaderselect';
 import html from './Views/html';
+import Tuple from './Views/tuple';
 
 setDefaultWidgets({
     array: ArrayView,
@@ -31,6 +32,7 @@ setDefaultWidgets({
     colorpicker: ColorPicker,
     entityarrayfieldselect: EntityArrayFieldSelect,
     flatvariableselect: FlatVariableSelect,
+    tuple: Tuple,
     hashlist: HashlistView,
     hidden: HiddenView,
     html,

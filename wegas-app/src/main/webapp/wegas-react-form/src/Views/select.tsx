@@ -47,12 +47,6 @@ const hiddenStyle = css({
     display: 'none',
 });
 
-const selectContainerStyle = css({
-    '& label': {
-        fontSize: '100%',
-    },
-});
-
 function genItems(o: string | Choice, i: number) {
     if (typeof o !== 'object') {
         return (
@@ -114,7 +108,5 @@ function Sel({ view }: IAsyncSelectProps) {
     return arguments[0];
 }
 export default commonView(
-    asyncComp<IAsyncSelectProps, ISelectProps>(
-        labeled(SelectView, `${selectContainerStyle}`)
-    )(Sel)
+    asyncComp<IAsyncSelectProps, ISelectProps>(labeled(SelectView))(Sel)
 );
