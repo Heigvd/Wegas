@@ -10,23 +10,7 @@ import { getY } from './../index';
 import FormStyles from './form-styles';
 
 const marginStyle = css({
-    label: 'html-marginstyle',
     width: FormStyles.textInputWidth,
-    marginTop: '4px',
-    fontSize: '13px',
-    minHeight: '145px',
-    maxHeight: '500px',
-    minWidth: '50px',
-    overflow: 'auto',
-    color: 'darkslategrey',
-    backgroundColor: 'white',
-    resize: 'both',
-    '& > div': {
-        // The inline DIV must fill up the entire container except a small (bottom) margin for the resize handle
-        minHeight: 'calc( 100% - 15px )',
-        boxSizing: 'border-box',
-        // outline: 'none !important',
-    },
 });
 
 const Wegas = getY().Wegas;
@@ -87,7 +71,10 @@ const TINY_CONFIG = {
     // contextmenu: 'link image inserttable | cell row
     // column deletetable | formatselect forecolor',
     menubar: false,
-    statusbar: false,
+    resize: 'both',
+    max_height: 500,
+    statusbar: true,
+    branding: false,
     relative_urls: false,
     toolbar_items_size: 'small',
     hidden_tootlbar: [2, 3],
