@@ -85,8 +85,7 @@ export function typeToValue(value, schema) {
         case 'object':
             // eslint-disable-next-line no-new-func
             tmpNum = Function(`"use strict";return ${print(value).code};`)();
-            // eslint-disable-next-line valid-typeof
-            return typeof tmpNum === schema.type ? tmpNum : undefined;
+            return typeof tmpNum === 'object' ? tmpNum : undefined;
         default:
             throw Error(`Unknown schema.type ${schema.type}`);
     }
