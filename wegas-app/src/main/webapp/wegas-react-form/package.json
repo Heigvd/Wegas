@@ -30,12 +30,13 @@
     "react-dom": "^16.2.0",
     "react-tinymce": "^0.7.0",
     "react-widgets": "^4.1.1",
-    "recast": "^0.13.0"
+    "recast": "^0.13.0",
+    "rm": "^0.1.8"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.0",
     "@types/prop-types": "^15.5.2",
-    "@types/react": "^16.0.27",
+    "@types/react": "^16.0.28",
     "@types/react-color": "^2.13.3",
     "@types/react-dom": "^16.0.3",
     "@types/react-widgets": "^3.2.32",
@@ -53,6 +54,8 @@
     "css-loader": "^0.28.7",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^14.0.0",
+    "eslint-import-resolver-typescript": "^1.0.2",
+    "eslint-import-resolver-webpack": "^0.8.3",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^3.0.2",
     "eslint-plugin-react": "^6.10.3",
