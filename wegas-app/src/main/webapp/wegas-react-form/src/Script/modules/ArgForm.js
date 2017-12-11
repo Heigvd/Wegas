@@ -28,11 +28,18 @@ export default class ArgFrom extends React.Component {
             !matchSchema(nextProps.value, nextProps.schema)
         ) {
             setTimeout(() => nextProps.onChange(valueToType(undefined)), 10);
-        } else {
+        } else if (this.state.value !== newValue) {
             this.setState({
                 value: newValue,
             });
         }
+    }
+    shouldComponentUpdate(nextProps, nextState) {
+        return (
+            !isEqual(this.state.schema, nextState.schema) ||
+            !isEqual(this.state.value, nextState.value) ||
+            this.props.entity !== nextProps.entity
+        );
     }
     componentDidUpdate() {
         this.checkConst();
