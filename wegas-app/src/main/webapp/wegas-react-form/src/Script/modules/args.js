@@ -62,7 +62,6 @@ export function typeToValue(value, schema) {
     }
     switch (schema.type) {
         case 'string':
-            return String(value.value);
         case 'boolean':
             return value.value;
         case 'number':
@@ -77,8 +76,8 @@ export function typeToValue(value, schema) {
                     return false;
                 },
             });
-            tmpNum = Number(tmp.join(''));
-            return isNaN(tmpNum) ? undefined : tmpNum;
+            tmpNum = tmp.join('');
+            return isNaN(tmpNum) ? tmpNum : Number(tmpNum);
         case 'identifier':
             return value.name;
         case 'array':
@@ -97,17 +96,20 @@ export function typeToValue(value, schema) {
  * @param {{type:string}} schema The schema to check against
  */
 export function matchSchema(value, schema) {
-    const newVal = valueToType(typeToValue(value, schema), schema);
-    return (
-        value &&
-        ((newVal.type === value.type &&
-            newVal.name === value.name &&
-            newVal.value === value.value) ||
-            (value.type === 'UnaryExpression' &&
-                newVal.type === 'Literal' &&
-                newVal.name === value.name &&
-                value.value === undefined))
-    );
+    const newVal = typeToValue(value, schema);
+    switch (schema.type) {
+        case 'string':
+        case 'boolean':
+        case 'number':
+            // eslint-disable-next-line
+            return typeof newVal === schema.type;
+        case 'array':
+            return Array.isArray(newVal);
+        case 'object':
+            return !Array.isArray(newVal) && typeof newVal === 'object';
+        default:
+            return false;
+    }
 }
 /**
  * Create a Form for an AST node

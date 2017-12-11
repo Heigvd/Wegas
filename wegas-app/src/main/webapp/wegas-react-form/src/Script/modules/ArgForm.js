@@ -4,15 +4,13 @@ import PropTypes from 'prop-types';
 import { isEqual } from 'lodash-es';
 import { argSchema, valueToType, typeToValue, matchSchema } from './args';
 import { containerStyle } from '../Views/conditionImpactStyle';
-import { types } from 'recast';
-
-const b = types.builders;
 
 export default class ArgFrom extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             schema: argSchema(props.schema),
+            value: typeToValue(props.value, props.schema),
         };
     }
     componentDidMount() {
@@ -20,21 +18,21 @@ export default class ArgFrom extends React.Component {
     }
     componentWillReceiveProps(nextProps) {
         if (nextProps.schema !== this.props.schema) {
-            this.setState({ schema: argSchema(nextProps.schema) });
+            this.setState({
+                schema: argSchema(nextProps.schema),
+            });
         }
-    }
-    shouldComponentUpdate(nextProps) {
-        return (
-            this.props.schema !== nextProps.schema ||
-            this.props.entity !== nextProps.entity ||
-            !!(
-                nextProps.value &&
-                this.props.value &&
-                (nextProps.value.type !== this.props.value.type ||
-                    nextProps.value.value !== this.props.value.value ||
-                    nextProps.value.name !== this.props.value.name)
-            )
-        );
+        const newValue = typeToValue(nextProps.value, nextProps.schema);
+        if (
+            this.props.schema !== nextProps.schema &&
+            !matchSchema(nextProps.value, nextProps.schema)
+        ) {
+            setTimeout(() => nextProps.onChange(valueToType(undefined)), 10);
+        } else {
+            this.setState({
+                value: newValue,
+            });
+        }
     }
     componentDidUpdate() {
         this.checkConst();
@@ -53,19 +51,18 @@ export default class ArgFrom extends React.Component {
         }
     }
     render() {
-        const { value, onChange, entity } = this.props;
-        const { schema } = this.state;
+        const { onChange, entity } = this.props;
+        const { schema, value } = this.state;
         const s = { ...schema, view: { ...schema.view, entity } };
-
-        const val = matchSchema(value, schema)
-            ? typeToValue(value, schema)
-            : undefined;
         return (
             <div className={containerStyle}>
                 <Form
                     schema={s}
-                    value={val}
-                    onChange={v => onChange(valueToType(v, this.props.schema))}
+                    value={value}
+                    onChange={v => {
+                        this.lastValue = v;
+                        onChange(valueToType(v, this.props.schema));
+                    }}
                 />
             </div>
         );
