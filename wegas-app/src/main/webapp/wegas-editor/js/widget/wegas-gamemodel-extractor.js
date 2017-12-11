@@ -215,7 +215,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                     }
                 },
                 "mode": "Update",
-                "title": "Reset default instances",
+                "title": "Reset default instances. DO NOT USE THIS FUNCTIONNALITIES UNLESS YOU FULLY UNDERSTAND WHAT YOU ARE DOING !!!",
                 "openPopup": false
             }).render();
         }
