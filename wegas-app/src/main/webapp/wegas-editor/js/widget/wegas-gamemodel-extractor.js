@@ -104,7 +104,9 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                             this.setStatus("OK");
                             Y.later(1000, this, function() {
                                 this.hideOverlay();
-                                window.open(Wegas.app.get("base") + "edit.html?gameModelId=" + e.response.entities[0].get("id"));
+                                if (this.get("openPopup")) {
+                                    window.open(Wegas.app.get("base") + "edit.html?gameModelId=" + e.response.entities[0].get("id"));
+                                }
                                 this.fire("gamemodel:created");
                             });
                         }, this),
@@ -133,6 +135,10 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
             mode: {
                 type: "string",
                 value: "Create"
+            },
+            openPopup: {
+                type: "boolean",
+                value: "true"
             }
         }
     });
@@ -156,11 +162,12 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                             this.close();
                         }
                     }];
-                this.set("title", "Create A New Scenario Based On A Player");
+                this.set("title", this.get("title"));
                 this.set("icon", game.get("properties.freeForAll") ? "user" : "group");
                 this.add(new Y.Wegas.GmExtractor({
                     "game": game,
-                    "mode": this.get("mode")
+                    "mode": this.get("mode"),
+                    "openPopup": this.get("openPopup")
                 }));
                 this.set("actions", actions);
             }
@@ -170,6 +177,14 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
             mode: {
                 type: "string",
                 value: "Create"
+            },
+            title: {
+                type: "string",
+                value: "Create A New Scenario Based On A Player"
+            },
+            openPopup: {
+                type: "boolean",
+                value: true
             }
         }
     });
@@ -199,7 +214,9 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                         this.close();
                     }
                 },
-                "mode": "Update"
+                "mode": "Update",
+                "title": "Reset default instances",
+                "openPopup": false
             }).render();
         }
     }, {
