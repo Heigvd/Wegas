@@ -25,7 +25,7 @@ YUI.add('wegas-console-wysiwyg', function (Y) {
         /**
          * @lends Y.Wegas.WysiwygConsole#
          */
-        BOUNDING_TEMPLATE: '<div class="wegas-form"></div>',
+        BOUNDING_TEMPLATE: '<div></div>',
         // ** Lifecycle Methods ** //
         /**
          * @function
