@@ -24,7 +24,7 @@ export default class ArgFrom extends React.Component {
         }
         const newValue = typeToValue(nextProps.value, nextProps.schema);
         if (
-            this.props.schema !== nextProps.schema &&
+            !isEqual(this.props.schema, nextProps.schema) &&
             !matchSchema(nextProps.value, nextProps.schema)
         ) {
             setTimeout(() => nextProps.onChange(valueToType(undefined)), 10);

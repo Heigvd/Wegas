@@ -24,9 +24,7 @@ function defaultValue(type) {
             return true;
         default:
             throw new Error(
-                `Default value for 'returns' property '${
-                    type
-                }' is not implemented`
+                `Default value for 'returns' property '${type}' is not implemented`
             );
     }
 }
@@ -50,12 +48,14 @@ class Condition extends React.Component {
         const descr = getMethodDescriptor(isCall ? node : node.left);
         const isBoolCall = isCall && descr.returns === 'boolean';
         if (isBoolCall) {
-            this.state = node;
+            this.state = { node };
         } else {
             this.state = {
-                left: node.left,
-                right: node.right,
-                operator: node.operator || '===',
+                node: {
+                    left: node.left,
+                    right: node.right,
+                    operator: node.operator || '===',
+                },
             };
         }
         this.returns = descr && descr.returns; // store current method's returns
@@ -66,53 +66,60 @@ class Condition extends React.Component {
         const descr = isCall ? getMethodDescriptor(node) : null;
         const isBoolCall = isCall && descr.returns === 'boolean';
         if (isBoolCall && node.callee.property.name !== 'getValue') {
-            this.setState(node);
+            this.setState({ node });
         } else {
             this.setState({
-                left: node.left,
-                right: node.right,
-                operator: node.operator || '===',
+                node: {
+                    left: node.left,
+                    right: node.right,
+                    operator: node.operator || '===',
+                },
             });
         }
     }
     check() {
-        const state = this.state;
-        const isCall = state.type === 'CallExpression';
-        const descr = getMethodDescriptor(isCall ? state : state.left);
+        const node = this.state.node;
+        const isCall = node.type === 'CallExpression';
+        const descr = getMethodDescriptor(isCall ? node : node.left);
         const isBoolCall = isCall && descr.returns === 'boolean';
         const sendUpdate = () => {
-            if (isBoolCall && state.callee.property.name !== 'getValue') {
-                const node = b.callExpression(state.callee, state.arguments);
-                this.props.onChange(node);
-            } else if (state.operator && state.left) {
-                const node = b.binaryExpression(
-                    state.operator,
-                    state.left,
-                    state.right ||
+            if (isBoolCall && node.callee.property.name !== 'getValue') {
+                const n = b.callExpression(node.callee, node.arguments);
+                this.props.onChange(n);
+            } else if (node.operator && node.left) {
+                const n = b.binaryExpression(
+                    node.operator,
+                    node.left,
+                    node.right ||
                         valueToType(defaultValue(descr.returns), {
                             type: descr.returns,
                         })
                 );
-                this.props.onChange(node);
+                this.props.onChange(n);
             }
         };
         if (!descr) {
-            this.setState({ right: undefined });
+            this.setState(({ node }) => ({
+                node: { ...node, right: undefined },
+            }));
         } else if (this.returns !== descr.returns) {
             if (
-                state.left.type === 'CallExpression' &&
+                node.left.type === 'CallExpression' &&
                 descr.returns === 'boolean' &&
-                state.left.callee.property.name !== 'getValue'
+                node.left.callee.property.name !== 'getValue'
             ) {
-                this.setState(state.left, sendUpdate);
+                this.setState(() => ({ node: node.left }), sendUpdate);
             } else {
                 this.setState(
-                    {
-                        operator: '===',
-                        right: valueToType(defaultValue(descr.returns), {
-                            type: descr.returns,
-                        }),
-                    },
+                    ({ node }) => ({
+                        node: {
+                            ...node,
+                            operator: '===',
+                            right: valueToType(defaultValue(descr.returns), {
+                                type: descr.returns,
+                            }),
+                        },
+                    }),
                     sendUpdate
                 );
             }
@@ -122,9 +129,9 @@ class Condition extends React.Component {
         }
     }
     render() {
-        const state = this.state;
-        const isCall = state.type === 'CallExpression';
-        const descr = getMethodDescriptor(isCall ? state : state.left);
+        const node = this.state.node;
+        const isCall = node.type === 'CallExpression';
+        const descr = getMethodDescriptor(isCall ? node : node.left);
         const isBoolCall = isCall && descr.returns === 'boolean';
         let container;
         if (descr && !isBoolCall) {
@@ -136,18 +143,27 @@ class Condition extends React.Component {
             container = [
                 <div key="operator" className={containerStyle}>
                     <ConditionOperator
-                        operator={state.operator}
+                        operator={node.operator}
                         onChange={v =>
-                            this.setState({ operator: v }, this.check)
+                            this.setState(
+                                ({ node }) => ({
+                                    node: { ...node, operator: v },
+                                }),
+                                this.check
+                            )
                         }
                         type={descr.returns}
                     />
                 </div>,
                 <div key="right" className={containerStyle}>
                     {renderForm(
-                        state.right,
+                        node.right,
                         schema,
-                        v => this.setState({ right: v }, this.check),
+                        v =>
+                            this.setState(
+                                ({ node }) => ({ node: { ...node, right: v } }),
+                                this.check
+                            ),
                         undefined,
                         'right'
                     )}
@@ -158,9 +174,14 @@ class Condition extends React.Component {
             <div>
                 <Impact
                     {...this.props}
-                    node={isBoolCall ? state : state.left}
+                    node={isBoolCall ? node : node.left}
                     onChange={v =>
-                        this.setState(isBoolCall ? v : { left: v }, this.check)
+                        this.setState(({ node }) => {
+                            if (isBoolCall) {
+                                return { node: v };
+                            }
+                            return { node: { ...node, left: v } };
+                        }, this.check)
                     }
                 />
                 {container}
