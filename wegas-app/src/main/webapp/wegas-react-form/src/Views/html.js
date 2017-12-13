@@ -65,7 +65,7 @@ const TINY_CONFIG = {
     toolbar1: 'bold italic bullist | link image media code addToolbarButton',
     toolbar2: `forecolor backcolor underline
              alignleft aligncenter alignright alignjustify table`,
-    toolbar3: 'fontselect fontsizeselect styleselect',
+    toolbar3: 'fontsizeselect styleselect',
     // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect
     // fontsizeselect styleselect spellchecker template
     // contextmenu: 'link image inserttable | cell row
