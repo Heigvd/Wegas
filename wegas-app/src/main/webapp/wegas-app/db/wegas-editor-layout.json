@@ -49,25 +49,23 @@
                     {
                         "fn": "WidgetMenu",
                         "cfg": {
-                            "children": [
-                                {
+                            "children": [{
                                     "type": "Button",
-                                    "label": "Re-init default values from a player",
-                                    "plugins": [
-                                        {
-                                            "fn": "GmDefaulterAction"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "Button",
-                                    "label": "EXPERIMENTAL: Create new scenario from player",
+                                    "label": "EXPERIMENTAL: Create a new scenario from player state",
                                     "plugins": [
                                         {
                                             "fn": "GmExtractorAction"
                                         }
                                     ]
-                                },{
+                                }, {
+                                    "type": "Button",
+                                    "label": "<b>Experimental & Hazardous</b> Re-init default values from a player",
+                                    "plugins": [
+                                        {
+                                            "fn": "GmDefaulterAction"
+                                        }
+                                    ]
+                                }, {
                                     "type": "Button",
                                     "label": "Clear Combo Cache",
                                     "plugins": [
