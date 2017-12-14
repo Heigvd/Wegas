@@ -301,7 +301,12 @@
     display: block;
 }
 
-.yui3-skin-sam .dashboard-v3 .dashboard-global-action {
+.yui3-skin-sam .dashboard-v3 table th .first-of-group.dashboard-global-action {
+    border-left: none;
+    margin-left: 15px;
+}
+
+.yui3-skin-sam .dashboard-v3 th span.dashboard-global-action {
     width: 32px;
     height: 32px;
     margin-left: 5px;
