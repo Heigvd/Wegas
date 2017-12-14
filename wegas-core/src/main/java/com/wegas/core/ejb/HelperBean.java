@@ -25,7 +25,12 @@ public class HelperBean {
     public static final String CLEAR_CACHE_EVENT_NAME = "ClearEmCache";
 
     @Inject
-    RequestManager requestManager;
+    private RequestManager requestManager;
+
+    @Inject
+    private ScriptFacade scriptFacade;
+
+
 
     public void clearCache(@Observes @Inbound(eventName = CLEAR_CACHE_EVENT_NAME) String event) {
         this.wipeCache();
@@ -33,6 +38,7 @@ public class HelperBean {
 
     public void wipeCache() {
         requestManager.getEntityManager().getEntityManagerFactory().getCache().evictAll();
+        scriptFacade.clearCache();
     }
 
     /**

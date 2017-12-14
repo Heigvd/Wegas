@@ -127,7 +127,7 @@ public class JackrabbitConnector {
      * <p>
      * OAK 1.8 will schedule this deletion automatically !!!
      */
-    @Schedule(hour = "*", minute = "0")
+    @Schedule(hour = "0", minute = "0")
     public void revisionGC() {
         ILock lock = hzInstance.getLock("JackRabbit.Schedule");
         logger.info("revisionGC(): OAK GarbageCollection");

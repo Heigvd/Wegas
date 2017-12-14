@@ -205,10 +205,10 @@ YUI.add('wegas-datasource', function(Y) {
             for (dsid in collector) {
                 if (collector.hasOwnProperty(dsid)) {
                     ds = collector[dsid].ds;
+                    updatedDs[dsid] = ds;
                     events = collector[dsid].events;
                     for (eventName in events) {
                         if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
-                            updatedDs[dsid] = ds;
                             for (i in events[eventName]) {
                                 ds.fire(eventName, events[eventName][i]);
                             }
@@ -444,7 +444,7 @@ YUI.add('wegas-datasource', function(Y) {
 
             if (!e.error) { // If there was an server error, do not update the cache
                 if (toUpdate) { // No Update ? No-update...
-                    if (!e.cfg || !e.cfg.initialRequest) {
+                    if ((!e.cfg || ((e.cfg.updateEvent === undefined || e.cfg.updateEvent) && !e.cfg.initialRequest))) {
                         this.get(HOST).sendEventsFromCollector(collector);
                     }
                 }

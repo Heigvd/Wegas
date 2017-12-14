@@ -49,10 +49,11 @@ YUI.add('wegas-console-custom', function(Y) {
                     var cb = this.get(CONTENTBOX), menu, contents, contentBasics, contentAdvanced, cfg;
                     if (this.get("customImpacts").length > 0) {
                         menu = cb.append("" +
-                                         "<div class='modal--menu'>" +
+                        "<div class='modal--menu" + (this.get("showAdvancedImpacts") ? "" : " wegas-advanced-feature") + "'>" +
                                          "<button id='basics-impacts-btn' class='modal--tab-btn modal--tab-btn-selected'>Basic impacts</button>" +
-                                         "<button id='advanced-impacts-btn' class='modal--tab-btn'>Advanced impacts</button>" +
+                        "<button id='advanced-impacts-btn' class='modal--tab-btn" + (this.get("showAdvancedImpacts") ? "" : " wegas-advanced-feature") + "'>Advanced impacts</button>" +
                                          "</div>").one(".modal--menu");
+
                         contents = cb.append("" +
                                              "<div class='modal--content-tabs'>" +
                                              "<div class='modal--content-basics modal--content-tab modal--content-selected'></div>" +
@@ -60,6 +61,8 @@ YUI.add('wegas-console-custom', function(Y) {
                                              "</div>");
                         contentBasics = cb.one(".modal--content-basics");
                         contentAdvanced = cb.one(".modal--content-advanced .content-advanced-script");
+
+                    // _inputex: to be destroyed
                         cfg = {
                             type: "group",
                             parentEl: contentBasics,
@@ -92,7 +95,9 @@ YUI.add('wegas-console-custom', function(Y) {
                     // Y.one(this.srcField.getEl()).all("div > button").remove();
                     // Correct small scrollbar issue after rendering:
                     if (cb.one('.modal--content-tab'))
-                        setTimeout(function(){ cb.one('.modal--content-tab').setStyle('overflowY','auto') }, 1000);
+                    setTimeout(function() {
+                        cb.one('.modal--content-tab').setStyle('overflowY', 'auto')
+                    }, 1000);
                 },
                 bindUI: function() {
                     Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e) {
@@ -207,50 +212,50 @@ YUI.add('wegas-console-custom', function(Y) {
                             contentBox = this.get(CONTENTBOX),
                             resDiv;
 
-                        for (var i = 0; i<len; i++) {
+                    for (var i = 0; i < len; i++) {
                             var player = players[i];
 
                             Y.Wegas.Facade.Variable.script.run(script, {
                                 on: {
-                                    success: Y.bind(function (event) {
+                                success: Y.bind(function(event) {
                                         count++;
                                         succeeded++;
-                                        if (len>1 && failed===0) {
+                                    if (len > 1 && failed === 0) {
                                             if (!resDiv) {
                                                 resDiv = contentBox.one(".results");
                                                 resDiv.removeClass("wegas-advanced-feature");
                                             }
                                             resDiv.setHTML('<div class="result">' + teamOrPlayer + count + '&thinsp;/&thinsp;' + len + '</div>');
                                         }
-                                        if (count >= len){ // Last iteration:
+                                    if (count >= len) { // Last iteration:
                                             contentBox.one(".wegas-status-bar").addClass("wegas-status-bar-transition");
-                                            Y.later(200, this, function () {
+                                        Y.later(200, this, function() {
                                                 contentBox.one(".wegas-status-bar").removeClass("wegas-status-bar-transition");
                                                 contentBox.one(".status").removeClass("status--running").addClass("status--success");
                                                 this.hideOverlay();
                                                 contentBox.one(".results").setHTML('<div class="result">Terminated.</div>');
-                                                Y.later((failed>0 ? 5000 : 1000), null, function () {
-                                                if (modale) {
+                                            Y.later((failed > 0 ? 5000 : 1000), null, function() {
+                                                    if (modale) {
                                                         modale.close();
                                                     }
                                                     running = false;
-                                                    });
+                                                });
                                             });
                                         }
                                     }, this),
-                                    failure: Y.bind(function (e) {
+                                failure: Y.bind(function(e) {
                                         count++;
                                         failed++;
                                         contentBox.one(".status").removeClass("status--running").addClass("status--error");
                                         this.hideOverlay();
-                                        if (len>1) {
+                                    if (len > 1) {
                                             contentBox.one(".status").prepend('<div class="result error" style="text-align:center;padding-bottom:5px">' + teamOrPlayer + count + '&thinsp;/&thinsp;' + len +
                                                     //'<br/>Error executing script: ' + e.response.results.message +
                                                 "&thinsp;:</div>");
                                         }
-                                        if (count>=len) { // Last iteration:
+                                    if (count >= len) { // Last iteration:
                                             running = false;
-                                            Y.later(6000, this, function () {
+                                        Y.later(6000, this, function() {
                                                 this.setStatus("");
                                                 contentBox.one(".wegas-status-bar").addClass("wegas-status-bar-hidden");
                                                 contentBox.one(".status").removeClass("status--error");
@@ -318,6 +323,10 @@ YUI.add('wegas-console-custom', function(Y) {
                                 return Y.Lang.isArray(i) ? i : [undefined, i];
                             });
                         }
+                    },
+                    showAdvancedImpacts: {
+                        type: "boolean",
+                        value: true
                     }
                 }
             });
