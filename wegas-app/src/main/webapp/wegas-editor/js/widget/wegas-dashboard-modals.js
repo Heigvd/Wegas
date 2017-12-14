@@ -234,7 +234,7 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                 }
             });
 
-            newTab.document.write('<html><head><title>E-mail lists</title></head><body style="font-size:13px; font-family:Verdana, Geneva, sans-serif;">');
+            newTab.document.write('<html><head><title>E-mail lists</title></head><body style="font-size:13px">');
             if (nbValidEmails > 0) {
                 if (nbValidEmails > 1) {
                     newTab.document.write('<b>Standard syntax:</b><br/>');

@@ -349,7 +349,7 @@ angular.module('private.admin.users', [
                 }
             });
 
-            newTab.document.write('<html><head><title>Group ' + groupName + '</title></head><body style="font-size:13px; font-family:Verdana, Geneva, sans-serif;">');
+            newTab.document.write('<html><head><title>Group ' + groupName + '</title></head><body style="font-size:13px;">');
             newTab.document.write('<div style="font-size:120%; font-weight: bold; margin-bottom: 1em;">' + nbValidEmails + ' emails of group "' + groupName + '" </div>');
             if (ctrl.search != '') {
                 newTab.document.write('<div style="margin-bottom: 1em;">Subset corresponding to search string "' + ctrl.search + '"</div>');

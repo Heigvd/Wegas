@@ -35,18 +35,6 @@
     background-size: 100% 80px;
 }
 
-/* Set font in the editor*/
-body, button, .yui3-skin-sam .yui3-datatable-table,
-.yui3-skin-sam .wegas-layout-column,
-.yui3-skin-sam .wegas-layout-column select,
-.yui3-skin-sam .wegas-layout-column input,
-.yui3-skin-sam .wegas-layout-column textarea {
-    font-family: 'Open Sans', Verdana, Geneva, sans-serif !important;
-}
-
-.editor-preview, .editor-preview button {
-    font-family: arial; /* but not in the preview*/
-}
 
 .editor-preview {
     width: 100%;
@@ -496,7 +484,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 
 /* Wegas title */
 .yui3-skin-sam .wegas-title {
-    font-family: Rockwell;
     font-weight: bold;
     font-size: 24px;
     line-height: 1.2em;
@@ -679,9 +666,4 @@ body, button, .yui3-skin-sam .yui3-datatable-table,
 
 .wegas-uploadfile input {
     display: none;
-}
-
-@font-face {
-    font-family: "Rockwell";
-    src: url("../../wegas-app/fonts/Rockwell.ttf");
 }

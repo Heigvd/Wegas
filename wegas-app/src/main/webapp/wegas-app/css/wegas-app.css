@@ -22,6 +22,15 @@ body {
     overflow: hidden;
 }
 
+body, 
+/* YUI overrides these */
+select, input, textarea, button {
+    font-family : Lato, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 13px; /* YUI provides this, changing it will break things... */
+    line-height: 1.231; /* YUI provides this, changing it will break things... */
+}
+
 select {
     margin: 0;
 }
@@ -588,7 +597,6 @@ font {
     margin-left: 2px;
     background-color: #0981A9;
     box-shadow: 1px 0px 1px white;
-    font-family: Arial;
     font-size: 0.9em;
     padding: 3px 7px 3px 6px;
     border-radius: 16px;
@@ -725,8 +733,6 @@ font {
     text-align: center;
 }
 
-.wegas-notification-area .wegas-notification .wegas-notification-icon {
-}
 
 .wegas-notification-area .wegas-notification .wegas-notification-message {
     width: calc(100% - 40px);
