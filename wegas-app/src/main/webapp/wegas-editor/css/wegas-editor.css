@@ -177,11 +177,9 @@
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab {
     font-size: 20px;
     top: 10px;
-    margin-left: 10px;
     background: #6AACF1;
     padding: 5px 0 0 0;
     color: white;
-    border-radius: 10px 10px 0 0;
     width: 33px;
 }
 

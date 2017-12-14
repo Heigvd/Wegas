@@ -94,7 +94,6 @@
 
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-label,
 .yui3-skin-sam .wegas-layout-column .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label {
-    border-radius: 10px 10px 0 0;
     color: white;
 }
 
@@ -102,17 +101,9 @@
     font-size: 11px;
     position: absolute;
     right: 3px;
-    top: -3px;
+    top: 6px;
     padding: 5px;
-    color: transparent;
-}
-
-.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tabview-removeable:hover .yui3-tab-remove {
-    color: #ccc;
-}
-
-.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-selected.yui3-tabview-removeable:hover .yui3-tab-remove {
-    color: #eee;
+    color: #FFF;
 }
 
 .yui3-tab-remove:hover {
