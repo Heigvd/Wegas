@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:composition template="wegas-app/jsf/editor-default.xhtml">
+
+        <ui:define name="app-init">
+            <c:set var="extraBodyClass" value="wegas-hostmode"/>
+        </ui:define>
 
         <ui:define
             name="title">#{editorGameController.currentGame.name} - #{editorGameController.currentGameModel.name}</ui:define>
@@ -29,8 +34,6 @@
             };
             Y.namespace("Wegas.Config").CustomImpacts = [];
             Y.Wegas.app.once("render", function() {
-                Y.one("body").addClass("wegas-hostmode");
-
                 // Handle switch from host to edit mode
                 Y.use("wegas-button", function() {
                     var editButton = new Y.Wegas.Button({

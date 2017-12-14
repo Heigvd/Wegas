@@ -2,12 +2,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:composition template="page-default.xhtml">
-
         <ui:define name="page">
-            <h:body class="yui3-skin-sam wegas-app-default #{cookie['customstyle'].value} wegas-stdmode #{requestController.currentRoles} ">
+            <ui:insert name="app-init">
+                <c:set var="extraBodyClass" value=""/>
+            </ui:insert>
+
+            <h:body class="yui3-skin-sam wegas-app-default #{cookie['customstyle'].value} wegas-stdmode #{requestController.currentRoles} #{extraBodyClass}">
 
                 <!-- Loading -->
                 <div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>
