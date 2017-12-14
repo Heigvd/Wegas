@@ -42,6 +42,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -461,6 +462,10 @@ public class WebsocketFacade {
             User user = newPlayer.getUser();
             if (user != null) {
                 try {
+                    for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
+                        this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
+                    }
+
                     pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
                 } catch (IOException ex) {
                     logger.error("Error while propagating player");
@@ -586,10 +591,10 @@ public class WebsocketFacade {
         return ou;
     }
 
-
     /**
      * @param user
      * @param compareRoles
+     *
      * @return true if user is member of at least on of the listed roles
      */
     private static boolean hasAnyRoles(User user, String... compareRoles) {
