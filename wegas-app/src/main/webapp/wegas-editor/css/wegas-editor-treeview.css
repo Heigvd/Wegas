@@ -101,26 +101,16 @@
 }
 
 /* FILTER */
-.wegas-editor-treeview div.wegas-editor-treeview-content {
-    overflow: hidden;
-}
 
-.wegas-editor-treeview-content .yui3-treeview {
-    position: absolute;
+.wegas-editor-treeview .wegas-filter-input {
     width: 100%;
-    bottom: 0;
-    top: 0;
-    overflow: auto;
-}
-
-.wegas-editor-treeview-content .wegas-filter-input {
-    width: 100%;
-    white-space: nowrap;
-    padding-right: 45px; /*space for right button*/
+    display: flex;
+    flex-flow: row;
     box-sizing: border-box;
+    margin-bottom: 0.5em;
 }
 
-.wegas-editor-treeview-content .wegas-filter-input input {
+.wegas-editor-treeview .wegas-filter-input input {
     width: 100%;
     min-width: 80px;
     box-sizing: border-box;

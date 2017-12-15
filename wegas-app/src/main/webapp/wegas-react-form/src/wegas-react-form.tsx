@@ -13,7 +13,7 @@ const FORM = 'form';
 const wegasSimpleButtonStyle = css({
     background: 'none !important',
     fontSize: '26px',
-    padding: '2px 6px 1px',
+    padding: '0px 5px',
 });
 const saveBtnStyle = css({
     background: 'none',

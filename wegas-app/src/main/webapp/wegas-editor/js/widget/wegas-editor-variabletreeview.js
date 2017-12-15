@@ -20,7 +20,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         Wegas = Y.Wegas,
         Plugin = Y.Plugin,
         VariableTreeView,
-        scriptCheckLabel = "<span title='Search for errors (May take some time)'>Check</span>",
+        scriptCheckLabel = "<span class='fa fa-check-circle'/> <span title='Search for errors (May take some time)'>Check errors</span>",
         searchFn = function(val) {
             var e = this.get("data.entity");
             return !val.length || ((e.getEditorLabel) && (new RegExp(val, "i")).test(e.getEditorLabel()));
@@ -54,10 +54,11 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
 
             });
-            this.treeView.get("boundingBox").setStyle("top", "25px"); // Make place for the search field
-            this.handlers.push(this.get("contentBox").prepend(
-                "<div class='wegas-filter-input'><input type='search' placeholder='Search...'/></div>")
-                .one(".wegas-filter-input input").on("valueChange", this.checkSearchField, this));
+            this.handlers.push(
+                this.toolbar.get("header")
+                    .prepend("<div class='wegas-filter-input'><input type='search' placeholder='Search...'/></div>")
+                    .one('.wegas-filter-input input')
+                    .on('valueChange', this.checkSearchField, this));
             /*
             this._toggleSearchBtn = new Y.ToggleButton({
                 render: this.toolbar.get("header"),
@@ -85,7 +86,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             
             this._searchBttn = new Y.Button({
                 render: this.get("boundingBox").one(".wegas-filter-input"),
-                label: "<span title='Search in all fields'>Full</span>",
+                label: "<span title='Search in all fields'>In-depth</span>",
                 on: {
                     click: Y.bind(this.serverSearch, this)
                 }
@@ -125,7 +126,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     }, this)
                 }
             });
-            this._validateBttn.get(CONTENTBOX).setStyle("float", "right").setStyle("marginRight", "3px");
+            // this._validateBttn.get(CONTENTBOX).setStyle("float", "right").setStyle("marginRight", "3px");
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
                         nodeClass: "wegas-editor-questionitem",

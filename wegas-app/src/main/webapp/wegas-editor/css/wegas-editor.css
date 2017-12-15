@@ -194,31 +194,6 @@
     display: none;
 }
 
-/* Toolbar styles */
-.wegas-hastoolbar {
-    position: relative;
-    height: 100%;
-    overflow: hidden;
-}
-
-.editor-preview .layout .wegas-hastoolbar {
-    position: inherit;
-}
-
-.wegas-hastoolbar > .wegas-toolbar-sibling {
-    position: absolute;
-    top: 3em;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    overflow: auto;
-    height: auto !important;
-}
-
-.wegas-hastoolbar > .wegas-toolbar {
-    position: absolute;
-}
-
 /* Console widget styles */
 .wegas-console .results {
     position: absolute;
@@ -348,6 +323,7 @@
 .wegas-scriptlibrary .ace_editor {
     height: 100%;
     width: 100%;
+    position: absolute;
 }
 
 /* Panel Widget Styles */
@@ -507,7 +483,7 @@
     display: none;
 }
 .yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-stacked-button .fa-circle {
-    color: white;
+    color: transparent;
 }
 .yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-stacked-button:hover .fa-circle {
     color: #eee;
@@ -596,7 +572,6 @@
 .wegas-filter-input {
     display: inline-block;
     vertical-align: top;
-    margin-left: 4px;
 }
 
 .wegas-filter-input input {
