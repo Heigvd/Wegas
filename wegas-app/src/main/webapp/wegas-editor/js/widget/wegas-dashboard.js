@@ -309,7 +309,7 @@ YUI.add('wegas-dashboard', function(Y) {
                                 };
                                 for (i in results.structure) {
                                     if (results.structure[i].items) {
-                                        if (results.structure[i].title){
+                                        if (results.structure[i].title) {
                                             label = results.structure[i].title;
                                             label = label.slice(0, 1).toUpperCase() + label.slice(1);
                                         }
@@ -425,7 +425,7 @@ YUI.add('wegas-dashboard', function(Y) {
                                     o.cell.setHTML('<i class=\"bloc__text ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
                                 }
                             } else {
-                                if (o.value) {
+                                if (o.value !== undefined && o.value !== null) {
                                     o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
                                 } else {
                                     o.cell.setHTML("<span class=\"bloc__value no-value\"></span>");
@@ -640,7 +640,9 @@ YUI.add('wegas-dashboard', function(Y) {
             this.detailsOverlay.set("headerContent", titleBar);
             this.detailsOverlay.get("contentBox").one(".saveIcon").on("click", function(event) {
                 event.halt(true);
-                this.post(pdfLink, {"title": this.toEntities(title), "body": this.toEntities(body), "outputType": "pdf"});
+                var t = this.toEntities(title),
+                    h = "<h2>" + t + "</h2>" + "<hr />" + this.toEntities(body);
+                this.post(pdfLink, {"title": t, "body": h, "outputType": "pdf"});
             }, this);
             this.detailsOverlay.setStdModContent('body', body);
             this.detailsOverlay.set("centered", true);

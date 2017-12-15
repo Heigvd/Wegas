@@ -247,10 +247,13 @@ YUI().use(function(Y) {
                 ws_provides: ["NumberInput", "BoxesNumberInput"],
                 requires: ["wegas-number-inputcss", "wegas-widget", "wegas-button", "slider", "wegas-i18n-global", "event-valuechange"]
             },
+            "wegas-pdf-print-css": {
+                type: CSS
+            },
             "wegas-prettyprinter": {
                 path: "js/widget/wegas-prettyprinter-min.js",
-                ws_provides: ["ResourcePrettyPrinter", "TaskPrettyPrinter"],
-                requires: ["wegas-widget", "wegas-resourcemanagement-entities"]
+                ws_provides: ["AbstractPrettyPrinter"],
+                requires: ["wegas-widget", "wegas-pdf-print-css"]
             },
             "wegas-text": {
                 path: "js/widget/wegas-text-min.js",

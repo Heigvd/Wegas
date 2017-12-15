@@ -12,35 +12,48 @@
 YUI.add("wegas-prettyprinter", function(Y) {
     "use strict";
 
-    var AbstractPrettyPrinter,
-        ResourcePrettyPrinter,
-        TaskPrettyPrinter;
+    var AbstractPrettyPrinter;
 
-    /**
-     * Generate self styled html
-     */
     AbstractPrettyPrinter = Y.Base.create("wegas-prettyprinter-abstract", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         bindUI: function() {
-            this.get("contentBox").delegate("click", this.toPdf, ".toPdfButton", this);
+            this.get("contentBox").delegate("click", this.toPdf, ".print-icon", this);
         },
         renderUI: function() {
+            var mode = this.get("displayMode"),
+                cb = this.get("contentBox");
             this.html = this.generateHTML();
-            this.get("contentBox").setContent("<div class='toPdfButton'>PDF</div>" + this.html);
+
+            if (mode === "plain" || mode === "both") {
+                cb.append("<div class=\"wegas-prettyprinter__content\">" + this.html + "</div>");
+            }
+
+            if (mode === "icon" || mode === "both") {
+                cb.append("<div class='wegas-click wegas-icon-pdf print-icon' title=\"" + this.get("outputType") + "\"></div>");
+            }
+
         },
-        go: function(theVar) {
-            var output, i, items;
+        go: function(theVar, level) {
+            var output, i, items, l;
+
+            l = level || 0;
 
             if (theVar.get("@class") === this.constructor.PRETTYPRINT) {
                 return this.generateOutput(theVar);
             } else if (theVar.isAugmentedBy && theVar.isAugmentedBy(Y.Wegas.persistence.VariableContainer)) {
-                output = "<div><h1>" + theVar.get("label") + "</h1>";
+                output = this.newFolderStart(theVar, l);
                 items = theVar.get("items");
                 for (i in items) {
-                    output += this.go(items[i]);
+                    output += this.go(items[i], l + 1);
                 }
-                output += "</div>";
+                output += this.newFolderEnd(theVar, l);
                 return output;
             }
+        },
+        newFolderStart: function(theVar, level) {
+            return "<span class=\"wegas-pdf-title\">" + theVar.get("label") + "</span>";
+        },
+        newFolderEnd: function(theVar, level) {
+            return "</div>";
         },
         generateHTML: function() {
             return this.go(this.get("variable.evaluated"));
@@ -50,7 +63,7 @@ YUI.add("wegas-prettyprinter", function(Y) {
         },
         toPdf: function() {
             var pdfLink = Y.Wegas.app.get("base") + "print.html";
-            this.post(pdfLink, {"title": this.toEntities(this.title || Y.Wegas.Facade.Game.cache.getCurrentGame().get("name") + " t " + Y.Wegas.Facade.Game.cache.getCurrentTeam().get("name")), "body": this.toEntities(this.html), "outputType": "pdf"});
+            this.post(pdfLink, {"title": this.toEntities(this.title || Y.Wegas.Facade.Game.cache.getCurrentGame().get("name") + " / " + Y.Wegas.Facade.Game.cache.getCurrentTeam().get("name")), "body": this.toEntities(this.html), "outputType": this.get("outputType")});
         },
         /*
          ** Opens a new tab where the given data is posted:
@@ -84,99 +97,23 @@ YUI.add("wegas-prettyprinter", function(Y) {
     }, {
         EDITORNAME: "Abstract PrettyPrinter",
         ATTRS: {
+            displayMode: {
+                type: "string",
+                value: "icon" // icon, plain, or both 
+            },
+            outputType: {
+                type: "string",
+                value: "pdf"
+            },
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
                     label: "variable"
                 }
-            },
-            theType: {
-                type: "string",
-                value: undefined
             }
         }
     });
 
     Y.Wegas.AbstractPrettyPrinter = AbstractPrettyPrinter;
-
-    ResourcePrettyPrinter = Y.Base.create("wegas-prettyprinter-resource", Y.Wegas.AbstractPrettyPrinter, [], {
-        generateOutput: function(theVar) {
-            var output, instance, level;
-
-            instance = theVar.getInstance();
-
-            if (instance.get("active")) {
-                output = "<div>";
-                output += "<span style=\"font-weight: bolder;\">" + theVar.get("label") + "</span>";
-                level = +instance.get("properties.level");
-                if (level < 4) {
-                    level = Y.Wegas.I18n.t("pmg.grade.apprentice");
-                } else if (level < 7) {
-                    level = Y.Wegas.I18n.t("pmg.grade.junior");
-                } else if (level < 10) {
-                    level = Y.Wegas.I18n.t("pmg.grade.senior");
-                } else {
-                    level = Y.Wegas.I18n.t("pmg.grade.expert");
-                }
-                output += ", " + level + "";
-                output += ", " + instance.get("properties.activityRate") + "%";
-                output += ", " + Y.Wegas.I18n.t("pmg.resources.wages") + " " + instance.get("properties.wage");
-                output += "</div>";
-            }
-
-            return output;
-        }
-    }, {
-        EDITORNAME: "Resource PrettyPrinter",
-        PRETTYPRINT: "ResourceDescriptor",
-        ATTRS: {
-            variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
-                    label: "variable",
-                    classFilter: ["ListDescriptor", "ResourceDescriptor"]
-                }
-            }
-        }
-    });
-    Y.Wegas.ResourcePrettyPrinter = ResourcePrettyPrinter;
-
-    TaskPrettyPrinter = Y.Base.create("wegas-prettyprinter-task", Y.Wegas.AbstractPrettyPrinter, [], {
-        generateOutput: function(theVar) {
-            var output = "", instance;
-
-            instance = theVar.getInstance();
-
-            if (instance.get("active")) {
-                output = "<div style='padding-bottom: 10px;'>";
-                output += "<h3>" + theVar.get("label") + "</h3>";
-                output += "<p>" + theVar.get("description") + "</p>";
-                output += "<p><b>" + Y.Wegas.I18n.t("pmg.tasks.estimatedDuration_noBr").colonize() + "</b>" + instance.get("properties.duration") + "</p>";
-                output += "<p><b>" + Y.Wegas.I18n.t("pmg.tasks.fixedCosts").colonize() + "</b>" + instance.get("properties.fixedCosts") + "</p>";
-                output += "</div>";
-            }
-
-            return output;
-        }
-    }, {
-        EDITORNAME: "Task PrettyPrinter",
-        PRETTYPRINT: "TaskDescriptor",
-        ATTRS: {
-            theType: {
-                type: "string",
-                value: "TaskDescriptor"
-            },
-            variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
-                    label: "variable",
-                    classFilter: ["ListDescriptor", "TaskDescriptor"]
-                }
-            }
-        }
-    });
-    Y.Wegas.TaskPrettyPrinter = TaskPrettyPrinter;
 });
