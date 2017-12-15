@@ -30,6 +30,10 @@ select, input, textarea, button {
     font-size: 13px; /* YUI provides this, changing it will break things... */
     line-height: 1.231; /* YUI provides this, changing it will break things... */
 }
+.mce-ico.fa {
+    /* @hack teach tinymce, we may have tinymce on player page, thus here it is */
+    font-family: FontAwesome !important;
+}
 
 select {
     margin: 0;

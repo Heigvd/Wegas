@@ -41,7 +41,7 @@ tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
     }
 
     editor.addButton('addToolbarButton', {
-        icon: 'fa fa-angle-double-down',
+        icon: ' fa fa-angle-double-down',
         title: 'More options',
         onclick: showHideToolbar,
         onPostRender: showHideToolbar
