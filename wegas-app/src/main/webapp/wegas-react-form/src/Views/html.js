@@ -81,6 +81,7 @@ const TINY_CONFIG = {
     file_browser_callback: onFileBrowserClick,
     image_advtab: true,
     content_css: [
+        '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
         `${Wegas.app.get('base')}wegas-editor/css/wegas-inputex-rte.css`,
     ],
     style_formats: [
