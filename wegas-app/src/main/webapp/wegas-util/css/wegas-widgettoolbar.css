@@ -34,7 +34,6 @@
 }
 /** Toolbar styles **/
 .wegas-toolbar {
-    vertical-align: top;
     width: 100%;
     /* background:white; */
     /* z-index: 23; */
@@ -48,7 +47,6 @@
     padding-left:6px;
 }*/
 .wegas-toolbar-header{
-    vertical-align: top;
     border: none;
     min-height: 17.1px;
     /* background-color: #F2F9FF; Too much discrepancies between tab height */
@@ -116,7 +114,6 @@
     text-shadow: 1px 1px 0px #DDD;
     font-size: 11px;
     margin-right: 20px;
-    display: inline-block;
     vertical-align: top;
     float: right;
 }

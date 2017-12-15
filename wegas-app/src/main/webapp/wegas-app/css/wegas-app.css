@@ -14,21 +14,13 @@
 
 /* Override default browser styles and counter YUI's cssreset. */
 
-html, body {
-    height: 100%;
-}
-
+html,
 body {
+    height: 100%;
     overflow: hidden;
-}
-
-body, 
-/* YUI overrides these */
-select, input, textarea, button {
-    font-family : Lato, Helvetica, Arial, sans-serif;
+    font-family: Lato, Helvetica, Arial, sans-serif;
     font-weight: 400;
-    font-size: 13px; /* YUI provides this, changing it will break things... */
-    line-height: 1.231; /* YUI provides this, changing it will break things... */
+    font-size: 14px;
 }
 .mce-ico.fa {
     /* @hack teach tinymce, we may have tinymce on player page, thus here it is */

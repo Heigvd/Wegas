@@ -14,10 +14,11 @@ const wegasSimpleButtonStyle = css({
     background: 'none !important',
     fontSize: '26px',
     padding: '0px 5px',
+    verticalAlign: 'middle',
 });
 const saveBtnStyle = css({
     background: 'none',
-    transition: '1s',
+    transition: '1s color',
 });
 const activeSaveBtnStyle = css(saveBtnStyle, {
     color: 'black',
