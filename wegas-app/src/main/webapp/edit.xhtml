@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets" >
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:composition template="wegas-app/jsf/editor-default.xhtml">
         <ui:define name="pageUri">/wegas-app/db/wegas-editor-layout.json</ui:define>
 
+        <ui:define name="app-init">
+            <c:set var="extraBodyClass" value="wegas-editmode"/>
+        </ui:define>
+
         <script>//<ui:define name = "editorFooter"><![CDATA[
-                Y.Wegas.app.once("render", function() {
-                    Y.one("body").addClass("wegas-editmode");
+            Y.Wegas.app.once("render", function() {
 
-                    //]]><ui:fragment rendered = "#{editorGameController.gameId != null}"><![CDATA[
-                    	Y.one("body").addClass("wegas-editmode-game");
-                        // Handle switch from host to edit mode
-                        Y.use("wegas-button", function() {
-                            var editButton = new Y.Wegas.Button({
-                                label: "Back to game",
-                                cssClass: "host-switchmode"
-                            }).render(".wegas-layout-hd");
+                //]]><ui:fragment rendered = "#{editorGameController.gameId != null}"><![CDATA[
+                Y.one("body").addClass("wegas-editmode-game");
+                // Handle switch from host to edit mode
+                Y.use("wegas-button", function() {
+                    var editButton = new Y.Wegas.Button({
+                        label: "Back to game",
+                        cssClass: "host-switchmode"
+                    }).render(".wegas-layout-hd");
 
-                            editButton.on("click", function() {
-                                window.location.replace(window.location.toString().replace("edit.", "host."));
-                            }, this);
-                        });
-
-                    //]]></ui:fragment><![CDATA[
+                    editButton.on("click", function() {
+                        window.location.replace(window.location.toString().replace("edit.", "host."));
+                    }, this);
                 });
+
+                //]]></ui:fragment><![CDATA[
+            });
             //]]></ui:define></script>
 
     </ui:composition>

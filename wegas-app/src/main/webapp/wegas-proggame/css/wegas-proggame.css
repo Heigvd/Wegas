@@ -46,7 +46,7 @@ code {
 
 /*html, .editor-preview > .wegas-pageloader-content > .wegas-widget > div*/
 
-html, .editor-preview {
+.wegas-playmode, .editor-preview {
     background: url(../../wegas-proggame/images/proggame-background.jpg) top left no-repeat;
 }
 
