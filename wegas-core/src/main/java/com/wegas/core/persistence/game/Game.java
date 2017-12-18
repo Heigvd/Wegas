@@ -237,20 +237,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
         return players;
     }
 
-
-    /**
-     * @return all players from all teams
-     */
-    @JsonIgnore
-    @Override
-    public List<Player> getLivePlayers() {
-        List<Player> players = new ArrayList<>();
-        for (Team t : this.getTeams()) {
-            players.addAll(t.getLivePlayers());
-        }
-        return players;
-    }
-
     /**
      * {@inheritDoc }
      */

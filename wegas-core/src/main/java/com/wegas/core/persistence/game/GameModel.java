@@ -527,19 +527,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return players;
     }
 
-    /**
-     * @return all live players
-     */
-    @JsonIgnore
-    @Override
-    public List<Player> getLivePlayers() {
-        List<Player> players = new ArrayList<>();
-        for (Game g : this.getGames()) {
-            players.addAll(g.getLivePlayers());
-        }
-        return players;
-    }
-
     @Override
     @JsonIgnore
     public Player getAnyLivePlayer() {
