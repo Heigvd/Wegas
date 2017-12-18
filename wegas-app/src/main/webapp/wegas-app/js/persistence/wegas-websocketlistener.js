@@ -21,6 +21,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     this._hdl.push(dataSource.on("OutdatedEntitiesEvent", this.forceEntityUpdate, this));
                     this._hdl.push(dataSource.on("EntityDestroyedEvent", this.onEntityDeletion, this));
                     this._hdl.push(dataSource.on("CustomEvent", this.onCustomEvent, this));
+                    this._hdl.push(dataSource.on("PageUpdate", this.onPageUpdate, this));
+                    this._hdl.push(dataSource.on("PageIndexUpdate", this.onPageIndexUpdate, this));
                     this._hdl.push(dataSource.on("LockEvent", this.onLockEvent, this));
                     this._hdl.push(dataSource.on("LifeCycleEvent", this.onLifeCycleEvent, this));
                 }
@@ -53,6 +55,12 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     Y.Wegas.app.lockmanager.unlock(payload.token);
                 }
             }
+        },
+        onPageUpdate: function(pageId) {
+            Y.Wegas.Facade.Page.cache.forceUpdate(pageId);
+        },
+        onPageIndexUpdate: function(pageId) {
+            Y.Wegas.Facade.Page.cache.forceIndexUpdate();
         },
         onLifeCycleEvent: function(data) {
             var payload = Y.JSON.parse(data),

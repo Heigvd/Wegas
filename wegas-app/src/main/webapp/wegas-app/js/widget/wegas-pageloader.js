@@ -79,12 +79,11 @@ YUI.add("wegas-pageloader", function(Y) {
             }, this));
 
             //Wegas.Facade.Page.after("response", this.syncUI, this);
-            //this.handlers.push(Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
-            //    if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
-            //        this.currentPageId = null; // @hack force update
-            //        this.syncUI();
-            //    }
-            //}, this));
+            this.handlers.push(Wegas.Facade.Page.cache.after("forcePageUpdate", function(e) {
+                if (e.pageId && ("" + e.pageId === "" + this.get("pageId"))) {
+                    this.reload();
+                }
+            }, this));
         },
         /**
          * @function

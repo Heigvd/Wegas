@@ -132,12 +132,12 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                         this.highlight(entity, false);
                     }
                 }, this), cfg);
-                
+
                 form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "10px");
             }, this);
-            
-             /* Inject page's name */
-            if (widget.get("root") === widget) {   
+
+            /* Inject page's name */
+            if (widget.get("root") === widget) {
                 PAGEDATASOURCE.getMeta(widget.get("@pageId"), function(meta) {
 
                     if (meta) {
@@ -146,21 +146,21 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                             showMsg: true,
                             type: "group",
                             fields: [{
-                                label: "Page id",
-                                value: meta.id,
-                                type: "uneditable",
-                                name: "id"
-                            }, {
-                                label: "Name",
-                                value: meta.name,
-                                type: "string",
-                                name: "name"
-                            }, {
-                                label: "Editor position",
-                                value: meta.index,
-                                type: "hidden",
-                                name: "index"
-                            }],
+                                    label: "Page id",
+                                    value: meta.id,
+                                    type: "uneditable",
+                                    name: "id"
+                                }, {
+                                    label: "Name",
+                                    value: meta.name,
+                                    type: "string",
+                                    name: "name"
+                                }, {
+                                    label: "Editor position",
+                                    value: meta.index,
+                                    type: "hidden",
+                                    name: "index"
+                                }],
                             wrapperClassName: "inputEx-fieldWrapper wegas-pagename-edition"
                         });
                     }
