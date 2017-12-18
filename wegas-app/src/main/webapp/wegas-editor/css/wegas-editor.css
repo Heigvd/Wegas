@@ -482,6 +482,10 @@
 .yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-stacked-button.wegas-widgetmenu-hassubmenu::after {
     display: none;
 }
+/* Separator */
+.yui3-skin-sam .yui3-menu .border-bottom{
+    border-bottom: 1px solid #A3A3A3;
+}
 .yui3-skin-sam .wegas-layout-bd .wegas-toolbar .wegas-stacked-button .fa-circle {
     color: transparent;
 }

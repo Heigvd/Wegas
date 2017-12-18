@@ -166,7 +166,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         cfg: {
                             children: [{
                                     type: BUTTON,
-                                    label: "Standard",
+                                    label: "<span class='fa fa-check-square-o'></span> Standard",
                                     plugins: [{
                                             fn: "AddEntityChildAction",
                                             cfg: {
@@ -175,7 +175,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                         }]
                                 }, {
                                     type: BUTTON,
-                                    label: "Conditional results",
+                                    label: "<span class='fa fa-check-square-o'></span> Conditional results",
                                     plugins: [{
                                             fn: "AddEntityChildAction",
                                             cfg: {

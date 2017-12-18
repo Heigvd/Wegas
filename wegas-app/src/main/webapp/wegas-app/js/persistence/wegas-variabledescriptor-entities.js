@@ -1170,32 +1170,51 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                 children: [
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'Number',
-                                        targetClass: 'NumberDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: 'Text',
-                                        targetClass: 'TextDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: 'Folder',
+                                        label: '<span class="fa fa-folder"> </span>  Folder',
+                                        cssClass: 'border-bottom',
                                         targetClass: 'ListDescriptor'
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'Question',
+                                        label: '<span class="wegas-icon-numberdescriptor"></span> Number',
+                                        targetClass: 'NumberDescriptor'
+                                    },
+                                    {
+                                        type: 'AddEntityChildButton',
+                                        label: '<span class="fa fa-paragraph"></span> Text',
+                                        targetClass: 'TextDescriptor'
+                                    },
+                                    {
+                                        type: 'AddEntityChildButton',
+                                        label: '<span class="fa fa-font"></span> String',
+                                        targetClass: 'StringDescriptor'
+                                        //cssClass: "wegas-advanced-feature"
+                                    },
+                                    {
+                                        type: 'AddEntityChildButton',
+                                        label: '<span class="fa fa-database"></span> Object',
+                                        targetClass: 'ObjectDescriptor',
+                                        cssClass: 'wegas-advanced-feature'
+                                    },
+                                    {
+                                        type: 'AddEntityChildButton',
+                                        label: '<span class="fa fa-toggle-on"></span> Boolean',
+                                        targetClass: 'BooleanDescriptor',
+                                        cssClass: 'border-bottom'
+                                    },
+                                    {
+                                        type: 'AddEntityChildButton',
+                                        label: '<span class="fa fa-question-circle"></span> Question',
                                         targetClass: 'QuestionDescriptor'
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'Trigger',
+                                        label: '<span class="fa fa-cogs"></span> Trigger',
                                         targetClass: 'TriggerDescriptor'
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'State machine',
+                                        label: '<span class="fa fa-sitemap fa-rotate-270"></span> State machine',
                                         targetClass: 'FSMDescriptor' /*,
                                      cfg: {
                                      states: {
@@ -1207,30 +1226,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'Inbox',
+                                        label: '<span class="fa fa-envelope"></span> Inbox',
                                         targetClass: 'InboxDescriptor'
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'String',
-                                        targetClass: 'StringDescriptor'
-                                        //cssClass: "wegas-advanced-feature"
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: 'Boolean',
-                                        targetClass: 'BooleanDescriptor'
-                                        //cssClass: 'wegas-advanced-feature'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: 'Object',
-                                        targetClass: 'ObjectDescriptor',
-                                        cssClass: 'wegas-advanced-feature'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: 'Dialog',
+                                        label: '<span class="fa fa-comments-o"></span> Dialog',
                                         targetClass: 'DialogueDescriptor' /*,
                                      cfg: {
                                      states: {
@@ -1242,25 +1243,25 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'Resource',
+                                        label: '<span class="fa fa-user"></span> Resource',
                                         targetClass: 'ResourceDescriptor',
                                         cssClass: 'wegas-advanced-feature'
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'Task',
+                                        label: '<span class="fa fa-list"></span> Task',
                                         targetClass: 'TaskDescriptor',
                                         cssClass: 'wegas-advanced-feature'
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'Peer Review',
+                                        label: '<span class="fa fa-users"></span> Peer Review',
                                         targetClass: 'PeerReviewDescriptor',
                                         cssClass: 'wegas-advanced-feature'
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: 'Burndown',
+                                        label: '<span class="fa fa-area-chart"></span> Burndown',
                                         targetClass: 'BurndownDescriptor',
                                         cssClass: 'wegas-advanced-feature'
                                 }

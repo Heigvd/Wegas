@@ -185,18 +185,18 @@
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -649px no-repeat;
 }
 
-.yui3-skin-sam .fa-sitemap {
+/* .yui3-skin-sam .fa-sitemap {
     height: 10px;
     margin-left: -3px;
     margin-right: 11px;
-}
+} */
 
 .yui3-skin-sam .wegas-icon-numberdescriptor:before {
     content: "\211d";
     font-weight: bold;
 }
 
-.yui3-skin-sam .wegas-icon-numberdescriptor {
+/* .yui3-skin-sam .wegas-icon-numberdescriptor {
     margin-left: 3px;
     margin-right: 6px;
 }
@@ -204,7 +204,7 @@
 .yui3-skin-sam .fa-paragraph {
     margin-left: 2px;
     margin-right: 7px;
-}
+} */
 
 .yui3-skin-sam .wegas-icon-textdescriptor,
 .yui3-skin-sam .wegas-page-editor .wegas-icon-text {
