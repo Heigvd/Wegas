@@ -215,7 +215,8 @@
                                                     "cssClass": "editor-preview wegas-playerview",
                                                     "plugins": [
                                                         {
-                                                            "fn": "PreviewFullScreen"
+                                                            "fn": "PreviewFullScreen",
+                                                            "cfg":{"selector":".wegas-layout-bd"}
                                                         }, {
                                                             "fn": "WidgetToolbar",
                                                             "cfg": {
@@ -351,7 +352,8 @@
                                 "cssClass": "editor-preview wegas-playerview",
                                 "plugins": [
                                     {
-                                        "fn": "PreviewFullScreen"
+                                        "fn": "PreviewFullScreen",
+                                        "cfg":{"selector":".wegas-layout-bd"}
                                     }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
@@ -403,7 +405,8 @@
                                                     "cssClass": "editor-preview wegas-playerview",
                                                     "plugins": [
                                                         {
-                                                            "fn": "PreviewFullScreen"
+                                                            "fn": "PreviewFullScreen",
+                                                            "cfg":{"selector":".wegas-layout-bd"}
                                                         }, {
                                                             "fn": "WidgetToolbar",
                                                             "cfg": {
