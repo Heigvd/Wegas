@@ -188,8 +188,11 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty() && outdatedEntitiesMap.isEmpty())) {
                 requestManager.markPropagationStartTime();
                 String socketId = requestManager.getSocketId();
+                if (!isManaged || socketId == null || !socketId.matches("^[\\d\\.]+$")){
+                    socketId = null;
+                }
                 websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap, outdatedEntitiesMap,
-                        (isManaged && socketId.matches("^[\\d\\.]+$") ? socketId : null));
+                        socketId);
                 requestManager.markPropagationEndTime();
             }
 
