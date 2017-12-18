@@ -300,6 +300,10 @@ public class ScriptFacade extends WegasAbstractFacade {
         }
     }
 
+    public void clearCache(){
+        staticCache.clear();
+    }
+
     /**
      * Instantiate script contect, inject arguments and eval the given script
      *

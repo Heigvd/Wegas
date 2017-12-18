@@ -69,8 +69,14 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             logger.warn("Problem : {}", response.getEntity());
         }
 
-        if (managedMode != null && !managedMode.toLowerCase().equals("false")) {
+        boolean rollbacked = false;
 
+        Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getUpdatedEntities();
+        Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
+
+        boolean isManaged= managedMode != null && !managedMode.toLowerCase().equals("false");
+
+        if (isManaged){
             ManagedResponse serverResponse = new ManagedResponse();
             /* 
              * returnd entities are not to propagate through websockets
@@ -79,7 +85,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             List updatedEntities;
             List deletedEntities = new LinkedList<>();
 
-            boolean rollbacked = false;
 
             /*
              * if response entity is kind of exception.
@@ -116,7 +121,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                 List entities;
 
-
                 if (response.getEntity() instanceof Collection) {
                     entities = new LinkedList<>();
                     for (Object o : (Collection) response.getEntity()) {
@@ -137,9 +141,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                 response.setStatus(HttpStatus.SC_OK);
             }
-
-            Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getUpdatedEntities();
-            Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
 
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 /*
@@ -177,10 +178,14 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                         }
                     }
                 }
+            }
 
+
+            if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 requestManager.markPropagationStartTime();
+                String socketId = requestManager.getSocketId();
                 websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,
-                        (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
+                        (isManaged && socketId.matches("^[\\d\\.]+$") ? socketId : null));
                 requestManager.markPropagationEndTime();
             }
 

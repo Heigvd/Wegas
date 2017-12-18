@@ -16,6 +16,7 @@ import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameScope;
@@ -253,16 +254,14 @@ public class PlayerFacade extends BaseFacade<Player> {
                 result.add(instance);
             } else if (scope.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
                 // Current player has access to all instances in the game
-                for (Team t : player.getGame().getTeams()) {
-                    for (Player p : t.getPlayers()) {
-                        query.setParameter("playerId", p.getId());
-                        VariableInstance vi = query.getSingleResult();
-                        result.add(vi);
-                    }
+                for (Player p : player.getGame().getLivePlayers()) {
+                    query.setParameter("playerId", p.getId());
+                    VariableInstance vi = query.getSingleResult();
+                    result.add(vi);
                 }
             } else if (scope.getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
                 //Player has access to all instances within their game
-                for (Player p : player.getTeam().getPlayers()) {
+                for (Player p : player.getTeam().getLivePlayers()) {
                     query.setParameter("playerId", p.getId());
                     VariableInstance vi = query.getSingleResult();
                     result.add(vi);
@@ -296,9 +295,12 @@ public class PlayerFacade extends BaseFacade<Player> {
             if (scope.getBroadcastScope().equals("GameScope")) {
                 //current player has access to all instance in the game
                 for (Team t : team.getGame().getTeams()) {
-                    query.setParameter("teamId", t.getId());
-                    VariableInstance vi = query.getSingleResult();
-                    result.add(vi);
+                    if (t.getStatus().equals(Status.LIVE)) {
+                        // LIVE ONLY
+                        query.setParameter("teamId", t.getId());
+                        VariableInstance vi = query.getSingleResult();
+                        result.add(vi);
+                    }
                 }
             } else {
                 //TeamScope and PlayerScope -> only current team instance !

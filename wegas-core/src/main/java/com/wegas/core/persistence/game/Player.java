@@ -381,16 +381,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         return pl;
     }
 
-    @JsonIgnore
-    @Override
-    public List<Player> getLivePlayers() {
-        ArrayList<Player> pl = new ArrayList<>();
-        if (this.getStatus().equals(Status.LIVE)) {
-            pl.add(this);
-        }
-        return pl;
-    }
-
     @Override
     @JsonIgnore
     public Player getAnyLivePlayer() {

@@ -30,20 +30,21 @@
                         "children": [
                             {
                                 "name": "overview",
-                                "type": "TeamsOverviewDashboard",
-                                "remoteScript": "",
-                                "plugins": [
-                                    {
-                                        "fn": "WidgetToolbar"
-                                    }
-                                ]
+                                "type": "Dashboard",
+                                "remoteScript": ""
                             }
                         ]
                     }
                 ],
-                "plugins": [{"fn": "ExtraTabs"}, 
-                    {"fn": "PopupListener"},
-                    {"fn": "ServerPopupListener"}
+                "plugins": [{
+                        "fn": "ExtraTabs"
+                    }, 
+                    {
+                        "fn": "PopupListener"
+                    },
+                    {
+                        "fn": "ServerPopupListener"
+                    }
                 ]
             }
         ]

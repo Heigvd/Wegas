@@ -10,9 +10,17 @@ package com.wegas.app.pdf;
 import com.lowagie.text.DocumentException;
 import com.wegas.app.pdf.helper.StringInputStream;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.security.ejb.RoleFacade;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -22,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.servlet.DispatcherType;
@@ -39,15 +48,6 @@ import javax.ws.rs.POST;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.security.ejb.RoleFacade;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Role;
-import com.wegas.core.security.persistence.User;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,7 +165,7 @@ public class PdfRenderer implements Filter {
 
                     // In a POST'ed filter method, all parameters must be in the post data.
                     String body = req.getParameter("body");
-                    content = createHtmlDoc("Wegas - " + title, "<h2>" + title + "</h2><hr />" + body);
+                    content = createHtmlDoc("Wegas - " + title, body);
                 } else {
                     if (renderType == null) {
                         return; // Hack to exit when content was initially POST'ed
@@ -189,9 +189,8 @@ public class PdfRenderer implements Filter {
                     InputStream iStream = new StringInputStream(content);
                     tidy.parse(iStream, os);
 
-
                     /**
-                     * Since injecting correct url within print.xhtml.h:doctype.system leads to nothing good, let's hack 
+                     * Since injecting correct url within print.xhtml.h:doctype.system leads to nothing good, let's hack
                      */
                     String urlDTD = req.getRequestURL().toString().replace(req.getServletPath(), "/wegas-app/DTD/xhtml1-transitional.dtd");
                     String toString = os.toString().replaceFirst("__DTD_URL__", urlDTD);
@@ -248,7 +247,7 @@ public class PdfRenderer implements Filter {
                     // no specific type ? -> normal processing
 
                     log("PdfRenderer:Normal output", null);
-                    chain.doFilter(request, response);
+                    resp.getOutputStream().write(content.getBytes(StandardCharsets.UTF_8));
                 }
             } else {
                 throw new ServletException("Not an HTTP request");
@@ -276,7 +275,10 @@ public class PdfRenderer implements Filter {
                 + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://wegas.albasim.ch/wegas-app/DTD/xhtml1-transitional.dtd\"> "
                 + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
                 + title
-                + "</title></head><body style=\"font-family:Helvetica, Arial; font-size:12px\">"
+                + "</title>"
+                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print.css\" media=\"all\" />"
+                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print-page.css\" media=\"print\" />"
+                + "</head><body style=\"font-family:Helvetica, Arial; font-size:12px\">"
                 + body
                 + "</body></html>";
     }

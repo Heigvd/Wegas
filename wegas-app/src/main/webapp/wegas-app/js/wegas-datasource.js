@@ -120,7 +120,8 @@ YUI.add('wegas-datasource', function(Y) {
             request.on.failure = request.on.failure || Y.bind(this.fire, this, "failure");
             Y.mix(request.cfg.headers, {
                 'Content-Type': 'application/json;charset=UTF-8',
-                'Managed-Mode': Y.Wegas.app.get("socketId") || true
+                'Managed-Mode': true,
+                'SocketId': Y.Wegas.app.get("socketId") || ""
             });
             if (Lang.isObject(request.cfg.data)) { // Stringify data if required
                 request.cfg.data = Y.JSON.stringify(request.cfg.data);
@@ -205,10 +206,10 @@ YUI.add('wegas-datasource', function(Y) {
             for (dsid in collector) {
                 if (collector.hasOwnProperty(dsid)) {
                     ds = collector[dsid].ds;
+                    updatedDs[dsid] = ds;
                     events = collector[dsid].events;
                     for (eventName in events) {
                         if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
-                            updatedDs[dsid] = ds;
                             for (i in events[eventName]) {
                                 ds.fire(eventName, events[eventName][i]);
                             }
@@ -444,7 +445,7 @@ YUI.add('wegas-datasource', function(Y) {
 
             if (!e.error) { // If there was an server error, do not update the cache
                 if (toUpdate) { // No Update ? No-update...
-                    if (!e.cfg || !e.cfg.initialRequest) {
+                    if ((!e.cfg || ((e.cfg.updateEvent === undefined || e.cfg.updateEvent) && !e.cfg.initialRequest))) {
                         this.get(HOST).sendEventsFromCollector(collector);
                     }
                 }
@@ -1433,6 +1434,8 @@ YUI.add('wegas-datasource', function(Y) {
             this.doBefore("_defResponseFn", this.beforeResponse, this);
             /* Publishing */
             this.publish("pageUpdated");
+            this.publish("forcePageUpdate");
+            this.publish("forceIndexUpdate");
         },
         /**
          * Server requests methods
@@ -1661,6 +1664,20 @@ YUI.add('wegas-datasource', function(Y) {
                     }, this)
                 }
             });
+        },
+        forceIndexUpdate: function() {
+            this.index = null;
+            this.getIndex(Y.bind(function() {
+                this.fire("forceIndexUpdate", {});
+            }, this));
+        },
+        forceUpdate: function(pageId) {
+            this.get(HOST).data["" + pageId] = undefined;
+            this.getPage(pageId, Y.bind(function() {
+                this.fire("forcePageUpdate", {
+                    pageId: pageId
+                });
+            }, this));
         },
         /**
          *

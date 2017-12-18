@@ -91,7 +91,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @throws WegasNoResultException if not found
      */
     public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
-        if (!Helper.isNullOrEmpty(name)) {
+        //if (!Helper.isNullOrEmpty(name)) {
+        if (name != null) {
             for (Result result : choiceDescriptor.getResults()) {
                 if (name.equals(result.getName())) {
                     return result;

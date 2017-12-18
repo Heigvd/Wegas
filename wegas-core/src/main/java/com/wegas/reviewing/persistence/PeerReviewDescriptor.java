@@ -76,13 +76,34 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * Define review states
      */
     public enum ReviewingState {
-        DISCARDED, // completely out of reviewing process (debug team for instance)
-        EVICTED, // partially out of reviewing process -> nothing to review
-        NOT_STARTED, // author can edit toReview
-        SUBMITTED, // authors can't edit toReview anymore
-        DISPATCHED, // toReview are dispatched, state became review dependent
-        NOTIFIED, // tema take aquintance of peer's evaluations
-        COMPLETED // 
+        /**
+         * completely out of reviewing process (debug team for instance)
+         */
+        DISCARDED,
+        /**
+         * partially out of reviewing process -> nothing to review
+         */
+        EVICTED,
+        /**
+         * author can edit toReview
+         */
+        NOT_STARTED,
+        /**
+         * authors can't edit toReview anymore
+         */
+        SUBMITTED,
+        /**
+         * toReview are dispatched, state became review dependent
+         */
+        DISPATCHED,
+        /**
+         * team take aquintance of peer evaluations
+         */
+        NOTIFIED,
+        /**
+         * Process completed
+         */
+        COMPLETED
     }
 
     /**
@@ -290,6 +311,14 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public String getState(Player p) {
         return this.getInstance(p).getReviewState().toString();
+    }
+
+    public void setState(Player p, String stateName) {
+        ReviewingState newState = ReviewingState.valueOf(stateName);
+        PeerReviewInstance instance = this.getInstance(p);
+        if (instance.getReviewState().equals(ReviewingState.SUBMITTED) && newState.equals(ReviewingState.NOT_STARTED)) {
+            instance.setReviewState(ReviewingState.NOT_STARTED);
+        }
     }
 
     public Boolean getIncludeEvicted() {

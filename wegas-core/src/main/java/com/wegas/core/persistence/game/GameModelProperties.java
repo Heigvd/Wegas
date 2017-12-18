@@ -7,16 +7,18 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
-import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Embeddable
+@JsonIgnoreProperties(value = {"imageUri"})
 public class GameModelProperties implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,10 +65,6 @@ public class GameModelProperties implements Serializable {
     /**
      *
      */
-    private String imageUri = "";
-    /**
-     *
-     */
     private String iconUri = "";
 
     /**
@@ -84,7 +82,6 @@ public class GameModelProperties implements Serializable {
         this.setGuestAllowed(other.getGuestAllowed());
         this.setPagesUri(other.getPagesUri());
         this.setIconUri(other.getIconUri());
-        this.setImageUri(other.getImageUri());
         this.setWebsocket(other.getWebsocket());
         this.setLogID(other.getLogID());
         this.setCssUri(other.getCssUri());
@@ -199,20 +196,6 @@ public class GameModelProperties implements Serializable {
      */
     public void setScriptUri(String scriptUri) {
         this.scriptUri = scriptUri;
-    }
-
-    /**
-     * @return the imageUri
-     */
-    public String getImageUri() {
-        return imageUri;
-    }
-
-    /**
-     * @param imageUri the imageUri to set
-     */
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
     }
 
     /**

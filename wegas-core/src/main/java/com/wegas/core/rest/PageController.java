@@ -16,6 +16,7 @@ import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
@@ -54,6 +55,9 @@ public class PageController {
 
     @Inject
     private GameModelFacade gameModelFacade;
+
+    @Inject
+    private WebsocketFacade websocketFacade;
 
     /**
      * Retrieves all GameModel's page.
@@ -163,6 +167,7 @@ public class PageController {
         try (final Pages pages = new Pages(gameModelId)) {
             Page page = new Page(pageId, content);
             pages.store(page);
+            websocketFacade.pageUpdate(gameModelId, pageId, requestManager.getSocketId());
             return Response.ok(pages.getPage(pageId).getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", pageId).build();
         }
@@ -189,6 +194,7 @@ public class PageController {
         try (final Pages pages = new Pages(gameModelId)) {
             page.setId(pageId);
             pages.setMeta(page);
+            websocketFacade.pageUpdate(gameModelId, pageId, requestManager.getSocketId());
             return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
                     .header("Page", "index").build();
         }
@@ -205,6 +211,7 @@ public class PageController {
 
         try (final Pages pages = new Pages(gameModelId)) {
             pages.move(pageId, pos);
+            websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
             return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
                     .header("Page", "index").build();
         }
@@ -258,9 +265,11 @@ public class PageController {
             Page page = new Page(id, content);
             page.setIndex((int) pages.size()); // May loose some values if we had that many pages...
             pages.store(page);
+
             return Response.ok(pages.getPage(id).getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", id).build();
         } finally {
+            websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
             gameModelLock.unlock();
         }
     }
@@ -321,6 +330,7 @@ public class PageController {
                 pages.store(new Page(p.getKey(), p.getValue()));
             }
         }
+        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
         return getPages(gameModelId);
     }
 
@@ -342,6 +352,7 @@ public class PageController {
         try (final Pages pages = new Pages(gameModelId)) {
             pages.delete();
         }
+        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
         return Response.ok().header("Page", "*").build();
     }
 
@@ -367,6 +378,7 @@ public class PageController {
         try (final Pages pages = new Pages(gameModelId)) {
             pages.deletePage(pageId);
         }
+        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
         return this.getIndex(gameModelId);
     }
 
@@ -401,6 +413,9 @@ public class PageController {
             JsonNode patches = (new ObjectMapper()).readTree(patch);
             page.patch(patches);
             pages.store(page);
+
+            websocketFacade.pageUpdate(gameModelId, pageId, requestManager.getSocketId());
+
             return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", pageId).build();
         }

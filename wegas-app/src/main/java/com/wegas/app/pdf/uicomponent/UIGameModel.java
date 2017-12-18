@@ -216,13 +216,7 @@ public class UIGameModel extends UIComponentBase {
         UIHelper.startSpan(writer, UIHelper.CSS_CLASS_MAIN_IMAGE);
 
         HtmlGraphicImage image = new HtmlGraphicImage();
-        String imgSrc;
-        if (gm.getProperties().getImageUri().length() > 0) {
-            imgSrc = gm.getProperties().getImageUri();
-        } else {
-            // @todo wegas-app/src/main/webapp/wegas-lobby/js/wegas-lobby-datatable.js 
-            imgSrc = "wegas-lobby/images/wegas-game-thumb.png";
-        }
+        String imgSrc = "wegas-lobby/images/wegas-game-thumb.png";
 
         image.setValue(imgSrc);
         image.encodeAll(context);

@@ -41,6 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,6 +99,9 @@ public class WebsocketFacade {
         READY,
         OUTDATED
     }
+
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
@@ -430,6 +434,20 @@ public class WebsocketFacade {
         }
     }
 
+    public void pageIndexUpdate(Long gameModelId, String socketId) {
+        if (pusher != null) {
+            GameModel gameModel = gameModelFacade.find(gameModelId);
+            pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+        }
+    }
+
+    public void pageUpdate(Long gameModelId, String pageId, String socketId) {
+        if (pusher != null) {
+            GameModel gameModel = gameModelFacade.find(gameModelId);
+            pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
+        }
+    }
+
     public final String toJson(Object o) throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         //ObjectWriter writerWithView = mapper.writerWithView(Views.class);
@@ -448,6 +466,10 @@ public class WebsocketFacade {
             User user = newPlayer.getUser();
             if (user != null) {
                 try {
+                    for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
+                        this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
+                    }
+
                     pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
                 } catch (IOException ex) {
                     logger.error("Error while propagating player");

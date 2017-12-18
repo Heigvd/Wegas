@@ -9,8 +9,10 @@ package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,16 +39,26 @@ public interface InstanceOwner {
     /**
      * Fetch all players involved
      *
-     * @return all players who have access to the owner instances
+     * @return all players who have write access to the owner instances
      */
     public List<Player> getPlayers();
 
     /**
-     * Same as {@link #getPlayers() } gut returns only LIVE players
      *
-     * @return all LIVE players who have access to the owner instances
+     * @return all LIVE players who have write access to the owner instances
      */
-    public List<Player> getLivePlayers();
+    @JsonIgnore
+    default public List<Player> getLivePlayers() {
+        List<Player> players = this.getPlayers();
+        List<Player> lives = new ArrayList<>(players.size());
+        for (Player p : players) {
+            if (p.getStatus().equals(Status.LIVE)) {
+                lives.add(p);
+            }
+        }
+
+        return lives;
+    }
 
     /**
      * Get any player involved
