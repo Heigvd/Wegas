@@ -127,7 +127,7 @@ public class JackrabbitConnector {
      * <p>
      * OAK 1.8 will schedule this deletion automatically !!!
      */
-    @Schedule(hour = "0", minute = "0")
+    @Schedule(hour = "*", minute = "0")
     public void revisionGC() {
         ILock lock = hzInstance.getLock("JackRabbit.Schedule");
         logger.info("revisionGC(): OAK GarbageCollection");
@@ -142,7 +142,34 @@ public class JackrabbitConnector {
                     logger.info("revisionGC(): start VersionGC");
                     VersionGarbageCollector.VersionGCStats gc = versionGc.gc(1, TimeUnit.DAYS);
                     logger.info("revisionGC(): versionGC done: {}", gc);
+                } else {
+                    logger.error("nodeStore is null");
+                }
 
+            } catch (IOException ex) {
+                logger.error("Error while revisionGC: {}", ex);
+            } finally {
+                lock.unlock();
+                lock.destroy();
+            }
+        } else {
+            logger.info("Somebody else got the lock");
+        }
+    }
+
+    /**
+     * HAZARADOUS BEHAVIOUR: do not use unless ykwyd
+     */
+    public void blobsGC() {
+        ILock lock = hzInstance.getLock("JackRabbit.Schedule");
+        logger.info("revisionGC(): OAK GarbageCollection");
+        if (lock.tryLock()) {
+            logger.info(" * I got the lock");
+            try {
+                if (repo == null) {
+                    init();
+                }
+                if (nodeStore != null) {
                     // GC blobs older than 1 day (60*60*24 sec => 86400 sec => 1 day)
                     MarkSweepGarbageCollector blobGC = nodeStore.createBlobGarbageCollector(60 * 60 * 24, "oak");
 
@@ -173,8 +200,6 @@ public class JackrabbitConnector {
                     logger.error("nodeStore is null");
                 }
 
-            } catch (IOException ex) {
-                logger.error("Error while revisionGC: {}", ex);
             } finally {
                 lock.unlock();
                 lock.destroy();
