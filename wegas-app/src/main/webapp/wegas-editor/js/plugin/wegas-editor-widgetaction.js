@@ -102,7 +102,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                         PAGEDATASOURCE.editMeta(entity.get('@pageId'), val[PAGE_META], function () {
                             PAGEDATASOURCE.fire('pageUpdated');
                         });
-                       delete val[PAGE_META];
+                        delete val[PAGE_META];
                     }
                     entity.setAttrs(val);
                     for (i = 0; i < val.plugins.length; i += 1) {
@@ -141,11 +141,11 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                         this.highlight(entity, false);
                     }
                 }, this), cfg);
-
+                
                 form.toolbar.add(menuItems);
             }, this);
-
-            /* Inject page's name */
+            
+             /* Inject page's name */
             if (widget.get('root') === widget) {
                 PAGEDATASOURCE.getMeta(widget.get('@pageId'), function (meta) {
 
@@ -157,24 +157,24 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                             properties: {
                                 id: {
                                     type: 'string',
-                                    value: meta.id,
+                                value: meta.id,
                                     view: {
                                         label: 'Page id',
                                         type: 'uneditable'
                                     }
                                 }, name: {
-                                    value: meta.name,
+                                value: meta.name,
                                     type: 'string',
                                     view: {
                                         label: 'Page name'
                                     }
                                 }, index: {
-                                    value: meta.index,
+                                value: meta.index,
                                     type: 'number',
                                     view: {
                                         type: 'hidden'
                                     }
-                                }
+                    }
                             }
                         };
                         // Also update the widget to prevent false update notifications:
@@ -204,7 +204,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
     }, {
             NS: 'EditWidgetAction',
             NAME: 'EditWidgetAction'
-        });
+    });
     Plugin.EditWidgetAction = EditWidgetAction;
 
     /**
@@ -242,18 +242,18 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
     }, {
             NS: 'AddChildWidgetAction',
             NAME: 'AddChildWidgetAction',
-            ATTRS: {
-                childType: {},
-                childCfg: {
-                    value: {},
+        ATTRS: {
+            childType: {},
+            childCfg: {
+                value: {},
                     getter: function (v) {
-                        if (!v.type) {
+                    if (!v.type) {
                             v.type = this.get('childType');
-                        }
-                        return v;
                     }
+                    return v;
                 }
             }
+        }
         }
     );
     Plugin.AddChildWidgetAction = AddChildWidgetAction;
@@ -282,7 +282,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
     }, {
             NS: 'DeleteWidgetAction',
             NAME: 'DeleteWidgetAction'
-        });
+    });
     Plugin.DeleteWidgetAction = DeleteWidgetAction;
     /**
      * @class
@@ -313,7 +313,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
     }, {
             NS: 'DeleteLayoutWidgetAction',
             NAME: 'DeleteLayoutWidgetAction'
-        });
+    });
     /**
      * @class
      * @name Y.Plugin.DuplicateWidgetAction
@@ -340,6 +340,6 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
     }, {
             NS: 'DeleteLayoutWidgetAction',
             NAME: 'DeleteLayoutWidgetAction'
-        });
+    });
 
 });

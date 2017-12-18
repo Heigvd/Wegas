@@ -103,6 +103,9 @@ public class WebsocketFacade {
         OUTDATED
     }
 
+    @Inject
+    private GameModelFacade gameModelFacade;
+
     @EJB
     GameFacade gameFacade;
 
@@ -441,6 +444,20 @@ public class WebsocketFacade {
             //}
         } catch (IOException ex) {
             logger.error("     IOEX <----------------------", ex);
+        }
+    }
+
+    public void pageIndexUpdate(Long gameModelId, String socketId) {
+        if (pusher != null) {
+            GameModel gameModel = gameModelFacade.find(gameModelId);
+            pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+        }
+    }
+
+    public void pageUpdate(Long gameModelId, String pageId, String socketId) {
+        if (pusher != null) {
+            GameModel gameModel = gameModelFacade.find(gameModelId);
+            pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
         }
     }
 

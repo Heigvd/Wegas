@@ -286,7 +286,12 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             tab.form.detach("submit");
             tab.form.on("submit", function(e) {                                 // Attach submit callback
                 this.showOverlay();
-                callback(e.value, EditEntityAction.currentEntity);
+                var destroyed = EditEntityAction.currentEntity.get("destroyed");
+                if (destroyed) {
+                    EditEntityAction.showFormMessage("error", "Conflit !");
+                } else {
+                    callback(e.value, EditEntityAction.currentEntity);
+                }
                 this.hideOverlay();
                 EditEntityAction.unsaved = false;
                 //callback(e.value, entity);
