@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { types } from 'recast';
+import { css } from 'glamor';
 import { RemoveStatementButton, AddStatementButton } from './Views/Button';
 import Statement from './Views/Statement';
-import { css } from 'glamor';
 
 const removeButtonStyle = css({
     label: 'addStatement-removeButtonStyle',
     opacity: 0,
-    marginTop: '8px',
-    verticalAlign: 'top',
     display: 'inline-block',
     transition: 'opacity 300ms 300ms',
 });

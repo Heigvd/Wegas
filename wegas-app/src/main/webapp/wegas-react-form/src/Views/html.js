@@ -1,17 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-for */
+/* global tinymce:true */
 import PropTypes from 'prop-types';
 import React from 'react';
 import TinyMCE from 'react-tinymce';
-import { css } from 'glamor';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
-import FormStyles from './form-styles';
-
-const marginStyle = css({
-    width: FormStyles.textInputWidth,
-});
 
 const Wegas = getY().Wegas;
 
@@ -71,7 +66,7 @@ const TINY_CONFIG = {
     // contextmenu: 'link image inserttable | cell row
     // column deletetable | formatselect forecolor',
     menubar: false,
-    resize: 'both',
+    resize: true,
     max_height: 500,
     statusbar: true,
     branding: false,
@@ -171,6 +166,13 @@ function toInjectorStyle(content) {
             'data-file="$3"'
         ); // Replace absolute path with injector style path
 }
+// A click on the container transfers the focus to the inner DIV containing TinyMCE.
+function focusChildOnClick(event) {
+    const elem = event.target.firstChild;
+    if (elem && elem.focus) {
+        elem.focus();
+    }
+}
 class HTMLView extends React.Component {
     constructor(props) {
         super(props);
@@ -208,17 +210,9 @@ class HTMLView extends React.Component {
         }
     }
 
-    // A click on the container transfers the focus to the inner DIV containing TinyMCE.
-    onClickHandler(event) {
-        const elem = event.target.firstChild;
-        if (elem && elem.focus) {
-            elem.focus();
-        }
-    }
-
     render() {
         return (
-            <div className={marginStyle} onClick={this.onClickHandler}>
+            <div onClick={focusChildOnClick}>
                 <TinyMCE
                     key={this.state.key}
                     content={toTinyMCE(this.state.content)}

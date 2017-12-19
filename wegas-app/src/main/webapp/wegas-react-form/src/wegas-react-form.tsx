@@ -36,6 +36,7 @@ const containerForm = css({
     position: 'relative',
     width: '100%',
     padding: '0 1em',
+    maxWidth: '600px',
     boxSizing: 'border-box',
     '& input, & select, & textarea': {
         ':focus': {

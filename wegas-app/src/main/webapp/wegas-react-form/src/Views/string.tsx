@@ -14,7 +14,6 @@ export const inputStyle = css({
     color: 'darkslategrey',
     boxShadow: '1px 1px 4px #ccc',
     width: '100%',
-    maxWidth: FormStyles.textInputWidth,
     '::placeholder': {
         fontStyle: 'italic',
     },
@@ -35,7 +34,6 @@ const textareaStyle = css(
         label: 'string-textareaStyle',
         borderRadius: '3px',
         width: '100%',
-        maxWidth: FormStyles.textareaWidth,
         fontStyle: 'italic',
         fontSize: '15px',
         border: 'none',

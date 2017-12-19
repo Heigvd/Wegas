@@ -46,15 +46,15 @@
     font-style: italic;
     margin-top: 25px !important;
     border-top: solid 2px #6AACF1;
-    width: 30em;
 }
 
 .wegas-comments textarea {
     width:100%;
+    resize: vertical;
     font-style: italic;
     margin-top: 8px;
     font-size: 14px;
-    }
+}
 
 /** Hide all advanced feature while in std mode */
 .wegas-forbidden-feature,

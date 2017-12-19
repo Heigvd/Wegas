@@ -7,7 +7,6 @@ const containerStyle = css({
     label: 'commonView-containerStyle',
     position: 'relative',
     marginTop: '0.8em',
-    maxWidth: '600px',
 });
 
 const extraShortStyle = css({
@@ -33,7 +32,7 @@ const shortNumberStyle = css({
 });
 
 const longStyle = css({
-    maxWidth: FormStyles.defaultEditorWidth,
+    width: '100%',
 });
 
 const infoStyle = css(FormStyles.unselectable, {
@@ -53,7 +52,6 @@ const errorStyle = css({
 const borderTopStyle = css({
     borderTop: '2px solid #6a95b6',
     paddingTop: '1em',
-    width: FormStyles.defaultEditorWidth,
 });
 
 const indentStyle = css({

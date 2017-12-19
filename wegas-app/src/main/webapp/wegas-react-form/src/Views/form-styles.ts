@@ -2,9 +2,6 @@ import { css } from 'glamor';
 
 // tslint:disable-next-line:no-namespace
 export namespace FormStyles {
-    export const defaultEditorWidth: string = '30em';
-    export const textInputWidth: string = '30em';
-    export const textareaWidth: string = '30em';
 
     export const labelColor: string = '#888'; // was bluish '#6A95B6';
     export const labelFontSize: string = '15px';
