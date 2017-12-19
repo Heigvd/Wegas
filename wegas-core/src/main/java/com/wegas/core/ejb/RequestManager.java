@@ -1537,6 +1537,24 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * has the currentUser the right to restore the given gameModel from the bin
+     *
+     * @param gameModel the game model to restore
+     *
+     * @return whether or not the user can move gameModel from the bin
+     */
+    public boolean canDuplicateGameModel(final GameModel gameModel) {
+        GameModel theOne;
+        if (gameModel.getStatus().equals(GameModel.Status.PLAY) && gameModel.getBasedOn() != null) {
+            theOne = gameModel.getBasedOn();
+        } else {
+            theOne = gameModel;
+        }
+        String id = "gm" + theOne.getId();
+        return this.isPermitted("GameModel:Duplicate:" + id);
+    }
+
+    /**
      * has the currentUser the right to delete (ie move to BIN, empty from the bin) the given gameModel
      *
      * @param gameModel the gameModel the user want to move to the bin
@@ -1598,6 +1616,17 @@ public class RequestManager implements RequestManagerI {
     public void assertCanReadGameModel(final GameModel gameModel) {
         if (!hasGameModelReadRight(gameModel)) {
             throw new WegasAccessDenied(gameModel, "Read", gameModel.getRequieredReadPermission().toString(), this.getCurrentUser());
+        }
+    }
+
+    /**
+     * Assert currentUser has the right to duplicate gameModel
+     *
+     * @param gameModel the GameModel to check right against
+     */
+    public void assertCanDuplicateGameModel(final GameModel gameModel) {
+        if (!canDuplicateGameModel(gameModel)) {
+            throw new WegasAccessDenied(gameModel, "Duplicate", "Not allowed to duplicate the scenario", this.getCurrentUser());
         }
     }
 

@@ -48,7 +48,8 @@ import org.apache.shiro.SecurityUtils;
 })
 @Table(
         indexes = {
-            @Index(columnList = "createdby_id")
+            @Index(columnList = "createdby_id"),
+            @Index(columnList = "basedon_gamemodelid")
         }
 )
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable {
@@ -117,6 +118,17 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private User createdBy;
+
+    /**
+     * Link to original gameModel for "PLAY" gameModel
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private GameModel basedOn;
+
+    @OneToMany(mappedBy = "basedOn")
+    @JsonIgnore
+    private List<GameModel> instantiation = new ArrayList<>();
 
     /*
      *
@@ -226,6 +238,42 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             map.put(curKey, pageMap.get(curKey));
         }
         this.setPages(map);
+    }
+
+    /**
+     * Set the gameModel this PLAY gameModel is based on
+     *
+     * @param srcGameModel the original game model this gameModel is a duplicata of
+     */
+    public void setBasedOn(GameModel srcGameModel) {
+        this.basedOn = srcGameModel;
+    }
+
+    /**
+     * Returns the original game model this gameModel is a duplicata of
+     *
+     * @return the original game model
+     */
+    public GameModel getBasedOn() {
+        return this.basedOn;
+    }
+
+    /**
+     * All PLAY gameModel which are instantiation of this gameModel
+     *
+     * @return
+     */
+    public List<GameModel> getInstantiation() {
+        return instantiation;
+    }
+
+    /**
+     * Set the list of PLAY gameModels linked to this one
+     *
+     * @param instantiation
+     */
+    public void setInstantiation(List<GameModel> instantiation) {
+        this.instantiation = instantiation;
     }
 
     /**

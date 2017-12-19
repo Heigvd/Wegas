@@ -378,6 +378,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             newGameModel.setComments("");
             // to right restriction for trainer, status PLAY must be set before persisting the gameModel
             newGameModel.setStatus(GameModel.Status.PLAY);
+            srcGameModel.getInstantiation().add(newGameModel);
+            newGameModel.setBasedOn(srcGameModel);
 
             this.create(newGameModel);
 
@@ -391,8 +393,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
-        final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
+        // Retrieve the entity to duplicate
+        final GameModel srcGameModel = this.find(entityId);
+
         if (srcGameModel != null) {
+            requestManager.assertCanDuplicateGameModel(this.find(entityId));
             final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
 
             newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
@@ -423,6 +428,14 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public void remove(final GameModel gameModel) {
         final Long id = gameModel.getId();
         userFacade.deletePermissions(gameModel);
+
+        if (gameModel.getBasedOn() != null) {
+            gameModel.getBasedOn().getInstantiation().remove(gameModel);
+        }
+
+        for (GameModel instantiation : gameModel.getInstantiation()) {
+            instantiation.setBasedOn(null);
+        }
 
         for (Game g : this.find(id).getGames()) {
             userFacade.deletePermissions(g);
