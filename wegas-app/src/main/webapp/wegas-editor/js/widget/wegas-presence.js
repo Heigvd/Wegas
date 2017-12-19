@@ -139,22 +139,33 @@ YUI.add('wegas-presence', function(Y) {
         },
         updateCount: function() {
             var count = pagePresence.members.count - 1; // minus self
+            this.get(CONTENTBOX)
+                .one('.count')
+                .setHTML('viewer' + (count > 1 ? 's: ' : ': ') + count);
             if (count > 0) {
-                this.get(CONTENTBOX).one('.editorchat-footer').show();
-                this.get(CONTENTBOX).one('.count').setHTML("viewer" +
-                    (count > 1 ? "s: " : ": ") + count);
+                this.get(CONTENTBOX)
+                    .one('.chat-icon')
+                    .removeClass('disabled');
+                this.get(CONTENTBOX)
+                    .one('.count')
+                    .setHTML('viewer' + (count > 1 ? 's: ' : ': ') + count);
             } else {
-                this.get(CONTENTBOX).one('.editorchat-footer').hide();
+                this.get(CONTENTBOX)
+                    .one('.chat-icon')
+                    .addClass('disabled');
+                this.get(CONTENTBOX)
+                    .one('.count')
+                    .setHTML('');
             }
         },
-        addToChat: function(html) {
+        addToChat: function(html, notification) {
             var msgBox = this.get(CONTENTBOX).one('.msgs'),
                 node = (html instanceof Y.Node) ? html :
                     Y.Node.create(html);
             msgBox.append(node);
             this.lastNode = node;
             msgBox.getDOMNode().scrollTop = msgBox.getDOMNode().scrollHeight;
-            if (this.closed) {
+            if (this.closed && !notification) {
                 this.get(CONTENTBOX).addClass("new-message");
             }
         },
@@ -175,7 +186,7 @@ YUI.add('wegas-presence', function(Y) {
             }
         },
         notification: function(not) {
-            this.addToChat('<div class="notification">' + not + '</div>');
+            this.addToChat('<div class="notification">' + not + '</div>', true);
         },
         destructor: function() {
             Y.Array.each(this._handlers, function(i) {

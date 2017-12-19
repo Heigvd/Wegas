@@ -91,9 +91,12 @@
     border-radius: 5px;
     border: 2px solid #D07000;
 }
-
+.yui3-skin-sam .chat-icon.disabled{
+    opacity: 0.3
+}
 .yui3-skin-sam .yui3-wegas-editorchat.new-message .chat-icon {
     color: #D07000;
+    opacity: 1;
     transform-origin: 50% 0%;
     animation: msg-icon-pulse 1.2s 1;
 }

@@ -362,7 +362,7 @@
 /* Editor layout styles */
 .yui3-skin-sam .wegas-layout-hd {
     white-space: nowrap;
-    min-width: 900px;
+    min-width: 600px;
 }
 
 .yui3-skin-sam .wegas-layout-hd > div {
