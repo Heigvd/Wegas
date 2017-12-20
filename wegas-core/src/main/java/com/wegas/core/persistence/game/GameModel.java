@@ -44,7 +44,8 @@ import org.apache.shiro.SecurityUtils;
     @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC"),
     @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
-    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm")
+    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm"),
+    @NamedQuery(name = "GameModel.findAllInstantiations", query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id")
 })
 @Table(
         indexes = {
@@ -125,10 +126,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private GameModel basedOn;
-
-    @OneToMany(mappedBy = "basedOn")
-    @JsonIgnore
-    private List<GameModel> instantiation = new ArrayList<>();
 
     /*
      *
@@ -256,24 +253,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public GameModel getBasedOn() {
         return this.basedOn;
-    }
-
-    /**
-     * All PLAY gameModel which are instantiation of this gameModel
-     *
-     * @return
-     */
-    public List<GameModel> getInstantiation() {
-        return instantiation;
-    }
-
-    /**
-     * Set the list of PLAY gameModels linked to this one
-     *
-     * @param instantiation
-     */
-    public void setInstantiation(List<GameModel> instantiation) {
-        this.instantiation = instantiation;
     }
 
     /**

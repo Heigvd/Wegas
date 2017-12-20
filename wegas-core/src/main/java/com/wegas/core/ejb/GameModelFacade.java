@@ -378,7 +378,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             newGameModel.setComments("");
             // to right restriction for trainer, status PLAY must be set before persisting the gameModel
             newGameModel.setStatus(GameModel.Status.PLAY);
-            srcGameModel.getInstantiation().add(newGameModel);
             newGameModel.setBasedOn(srcGameModel);
 
             this.create(newGameModel);
@@ -429,11 +428,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         final Long id = gameModel.getId();
         userFacade.deletePermissions(gameModel);
 
-        if (gameModel.getBasedOn() != null) {
-            gameModel.getBasedOn().getInstantiation().remove(gameModel);
-        }
+        TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
+        query.setParameter("id", id);
+        List<GameModel> instantiations = query.getResultList();
 
-        for (GameModel instantiation : gameModel.getInstantiation()) {
+        for (GameModel instantiation : instantiations) {
             instantiation.setBasedOn(null);
         }
 
