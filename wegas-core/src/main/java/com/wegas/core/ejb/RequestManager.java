@@ -1652,7 +1652,7 @@ public class RequestManager implements RequestManagerI {
 
             if (subject.getPrincipal() != null) {
                 logger.info("SU: User {} SU to {}", subject.getPrincipal(), accountId);
-                if (this.isAdmin()) {
+                //if (this.isAdmin()) {
                     // The subject exists and is an authenticated admin
                     // -> Shiro runAs
                     //subject.checkRole("Administrator");
@@ -1662,9 +1662,9 @@ public class RequestManager implements RequestManagerI {
                     SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
                     subject.runAs(newSubject);
                     return this.getCurrentUser();
-                } else {
-                    throw WegasErrorMessage.error("Su is forbidden !");
-                }
+                //} else {
+                //    throw WegasErrorMessage.error("Su is forbidden !");
+                //}
             }
         } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException ex) {
             // runAs faild
