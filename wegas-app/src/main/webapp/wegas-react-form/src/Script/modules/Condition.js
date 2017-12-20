@@ -34,21 +34,27 @@ function defaultValue(type) {
  * @returns {Object} schema for given ast node
  */
 function getMethodDescriptor(node) {
-    const { global, method, variable, member } = extractMethod(node);
+    const isCall = node.type === 'CallExpression';
+    const { global, method, variable, member } = extractMethod(
+        isCall ? node : node.left
+    );
     return global
         ? globalMethodDescriptor(member, method)
         : methodDescriptor(variable, method);
 }
-
+function isBoolCallFn(node) {
+    const isCall = node.type === 'CallExpression';
+    const descr = getMethodDescriptor(node);
+    return isCall && descr.returns === 'boolean';
+}
 class Condition extends React.Component {
     constructor(props) {
         super(props);
         const node = props.node;
-        const isCall = node.type === 'CallExpression';
-        const descr = getMethodDescriptor(isCall ? node : node.left);
-        const isBoolCall = isCall && descr.returns === 'boolean';
+        const descr = getMethodDescriptor(node);
+        const isBoolCall = isBoolCallFn(node);
         if (isBoolCall) {
-            this.state = { node };
+            this.state = { node: { left: node } };
         } else {
             this.state = {
                 node: {
@@ -59,14 +65,15 @@ class Condition extends React.Component {
             };
         }
         this.returns = descr && descr.returns; // store current method's returns
+
+        this.sendUpdate = this.sendUpdate.bind(this);
     }
     componentWillReceiveProps(nextProps) {
         const node = nextProps.node;
-        const isCall = node.type === 'CallExpression';
-        const descr = isCall ? getMethodDescriptor(node) : null;
-        const isBoolCall = isCall && descr.returns === 'boolean';
-        if (isBoolCall && node.callee.property.name !== 'getValue') {
-            this.setState({ node });
+        const descr = getMethodDescriptor(node);
+        const isBoolCall = isBoolCallFn(node);
+        if (isBoolCall) {
+            this.setState({ node: { left: node } });
         } else {
             this.setState({
                 node: {
@@ -76,65 +83,57 @@ class Condition extends React.Component {
                 },
             });
         }
+        this.returns = descr && descr.returns;
+    }
+    sendUpdate() {
+        const node = this.state.node;
+        const descr = getMethodDescriptor(node);
+        if (descr.returns === 'boolean') {
+            this.props.onChange(node.left);
+        } else if (node.operator && node.left) {
+            const n = b.binaryExpression(
+                node.operator,
+                node.left,
+                node.right ||
+                    valueToType(defaultValue(descr.returns), {
+                        type: descr.returns,
+                    })
+            );
+            this.props.onChange(n);
+        }
     }
     check() {
         const node = this.state.node;
-        const isCall = node.type === 'CallExpression';
-        const descr = getMethodDescriptor(isCall ? node : node.left);
-        const isBoolCall = isCall && descr.returns === 'boolean';
-        const sendUpdate = () => {
-            if (isBoolCall && node.callee.property.name !== 'getValue') {
-                const n = b.callExpression(node.callee, node.arguments);
-                this.props.onChange(n);
-            } else if (node.operator && node.left) {
-                const n = b.binaryExpression(
-                    node.operator,
-                    node.left,
-                    node.right ||
-                        valueToType(defaultValue(descr.returns), {
-                            type: descr.returns,
-                        })
-                );
-                this.props.onChange(n);
-            }
-        };
+        const descr = getMethodDescriptor(node);
         if (!descr) {
             this.setState(({ node }) => ({
                 node: { ...node, right: undefined },
             }));
         } else if (this.returns !== descr.returns) {
-            if (
-                node.left.type === 'CallExpression' &&
-                descr.returns === 'boolean' &&
-                node.left.callee.property.name !== 'getValue'
-            ) {
-                this.setState(() => ({ node: node.left }), sendUpdate);
-            } else {
-                this.setState(
-                    ({ node }) => ({
-                        node: {
-                            ...node,
-                            operator: '===',
-                            right: valueToType(defaultValue(descr.returns), {
-                                type: descr.returns,
-                            }),
-                        },
-                    }),
-                    sendUpdate
-                );
-            }
+            this.setState(
+                ({ node }) => ({
+                    node: {
+                        ...node,
+                        operator: '===',
+                        right: valueToType(defaultValue(descr.returns), {
+                            type: descr.returns,
+                        }),
+                    },
+                }),
+                this.sendUpdate
+            );
             this.returns = descr.returns;
         } else {
-            sendUpdate();
+            this.sendUpdate();
         }
     }
     render() {
         const node = this.state.node;
         const isCall = node.type === 'CallExpression';
-        const descr = getMethodDescriptor(isCall ? node : node.left);
+        const descr = getMethodDescriptor(node);
         const isBoolCall = isCall && descr.returns === 'boolean';
         let container;
-        if (descr && !isBoolCall) {
+        if (node.right) {
             const schema = {
                 type: descr.returns,
                 value: defaultValue(descr.returns),

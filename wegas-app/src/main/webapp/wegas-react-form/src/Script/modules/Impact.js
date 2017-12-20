@@ -254,7 +254,7 @@ class Impact extends React.Component {
                 )
             );
         }
-        return <span className={containerStyle}>{child}</span>;
+        return <span>{child}</span>;
     }
 }
 Impact.propTypes = {
