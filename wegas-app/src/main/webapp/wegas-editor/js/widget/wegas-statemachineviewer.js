@@ -385,9 +385,10 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                                 queue.call(e);
                                 this.highlightUnusedStates();
                                 this.hideOverlay();
+                                this._rebuild();
                                 /*Wegas.Facade.Variable.cache.getWithView(e.response.entity, "Editor", {
-                                 on: {
-                                 success: Y.bind(function (e) {
+                                    on: {
+                                        success: Y.bind(function (e) {
                                  this.get(ENTITY).setAttrs(e.response.entity.getAttrs());
                                  this.hideOverlay();
                                  }, this)
