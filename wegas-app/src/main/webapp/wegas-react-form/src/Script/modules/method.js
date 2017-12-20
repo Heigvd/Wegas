@@ -68,8 +68,7 @@ const methodSchema = (view, variable, type) => {
         required: true,
         value: choices[0].value,
         view: Object.assign({}, view, {
-            type: MethodView,
-            hidden,
+            type: hidden ? 'hidden' : MethodView,
             choices,
         }),
     };
