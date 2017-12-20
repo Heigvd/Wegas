@@ -14,11 +14,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.wegas.core.Helper;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import java.io.IOException;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -31,8 +30,7 @@ public class Page {
 
     static final protected String NAME_KEY = "pageName";
 
-    @JsonIgnore
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = null;
 
     private String id;
 
@@ -53,6 +51,7 @@ public class Page {
 
     /**
      * @param n
+     *
      * @throws RepositoryException
      * @throws IOException
      */
@@ -110,14 +109,22 @@ public class Page {
         this.extractAttrs();
     }
 
+    private static synchronized ObjectMapper getMapper() {
+        if (Page.mapper == null) {
+            Page.mapper = new ObjectMapper();
+        }
+        return Page.mapper;
+    }
+
     /**
      * @param content
+     *
      * @throws IOException
      */
     @JsonIgnore
     public final void setContent(String content) {
         try {
-            this.content = mapper.readTree(content);
+            this.content = getMapper().readTree(content);
             this.extractAttrs();
         } catch (IOException e) {
 
@@ -156,7 +163,6 @@ public class Page {
         }
     }
 
-
     /**
      * @param patch RFC6902: patch Array
      */
@@ -167,9 +173,9 @@ public class Page {
     }
 
     //@TODO : tokenizer
-
     /**
      * @param jsonPath
+     *
      * @return  some extracted node as text
      */
     public String extract(String jsonPath) {

@@ -14,7 +14,7 @@ YUI.add("wegas-userpreferences", function(Y) {
     var UserPreferences = Y.Base.create("wegas-userpreferences", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
             this.afterHostEvent("render", function() {
-                var k, entity = Y.Wegas.Facade.User.get("currentUser").getMainAccount(),
+                var k, entity = Y.Wegas.Facade.User.cache.get("currentUser").getMainAccount(),
                     host = this.get("host"),
                     fieldsToIgnore = [];
 

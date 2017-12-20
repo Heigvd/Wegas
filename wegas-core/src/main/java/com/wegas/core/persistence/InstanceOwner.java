@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,6 @@ public interface InstanceOwner {
     public List<Player> getPlayers();
 
     /**
-     * Fetch all LIVE players involved
      *
      * @return all LIVE players who have write access to the owner instances
      */
@@ -82,4 +82,20 @@ public interface InstanceOwner {
      */
     @JsonIgnore
     public List<VariableInstance> getAllInstances();
+
+    /**
+     * The permission which require read right to this instanceOwner
+     *
+     * @return
+     */
+    @JsonIgnore
+    public WegasPermission getAssociatedReadPermission();
+
+    /**
+     * The permission to grant to give write right to this instanceOwner
+     *
+     * @return
+     */
+    @JsonIgnore
+    public WegasPermission getAssociatedWritePermission();
 }

@@ -114,10 +114,13 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                      * Since orphanRemoval does not trigger preRemove event,
                      * one should update bidirectional relation here in adition to Result.updateCacheOnDelete
                      */
-                    Result resultToRemove = (Result) entity;
-                    for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
-                        ci.setCurrentResult(null);
+                    if (entity instanceof Result) {
+                        Result resultToRemove = (Result) entity;
+                        resultToRemove.updateCacheOnDelete(beans);
                     }
+                    /*for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
+                        ci.setCurrentResult(null);
+                    }*/
                 }
             }));
 
@@ -175,15 +178,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     public void changeCurrentResult(ChoiceInstance choiceInstance, Result newCurrentResult) {
-        Result previousResult = choiceInstance.getCurrentResult();
-        if (previousResult != null) {
+        //Result previousResult = choiceInstance.getCurrentResult();
+        /*if (previousResult != null) {
             previousResult.removeChoiceInstance(choiceInstance);
-        }
+        }*/
 
-        if (newCurrentResult != null) {
+ /*if (newCurrentResult != null) {
             newCurrentResult.addChoiceInstance(choiceInstance);
-        }
-
+        }*/
         choiceInstance.setCurrentResult(newCurrentResult);
     }
 
@@ -260,6 +262,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * @param results the results to set
      */
     public void setResults(List<Result> results) {
+        if (results != null) {
+            for (Result r : results) {
+                r.setChoiceDescriptor(this);
+            }
+        }
         this.results = results;
     }
 

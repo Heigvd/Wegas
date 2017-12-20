@@ -53,6 +53,7 @@ public class AccountController {
      * Create a new account
      *
      * @param entity new account to create
+     *
      * @return the user the account has been created for
      */
     @POST
@@ -68,6 +69,7 @@ public class AccountController {
      * Retrieve an account
      *
      * @param entityId
+     *
      * @return AbstractAccount matching given entityId
      */
     @GET
@@ -85,7 +87,9 @@ public class AccountController {
      *
      * @param accountId
      * @param entity
+     *
      * @return up-to-date account
+     *
      * @throws AuthorizationException if currentUser cannot edit users or
      *                                targeted account does not belongs to
      *                                current user
@@ -95,13 +99,9 @@ public class AccountController {
     public AbstractAccount update(@PathParam("accountId") Long accountId,
             AbstractAccount entity) {
         AbstractAccount a = accountFacade.find(accountId);
-        if (!userFacade.getCurrentUser().equals(a.getUser())) {
-            SecurityUtils.getSubject().checkPermission("User:Edit");
-        }
-        if (!SecurityUtils.getSubject().isPermitted("User:Edit")) {
-            // restore original permission in case current user lack UserEdit permission
-            entity.setPermissions(a.getPermissions());
-        }
+
+        entity.setPermissions(a.getPermissions());
+
         return accountFacade.update(accountId, entity);
     }
 
@@ -109,6 +109,7 @@ public class AccountController {
      * Delete an account
      *
      * @param accountId
+     *
      * @return the just deleted account
      */
     @DELETE
@@ -130,6 +131,7 @@ public class AccountController {
      * altered (by hiding some parts) so they can be publicly displayed
      *
      * @param teamId id of the team we want players from
+     *
      * @return List of abstractAccount which are players of the team
      */
     @GET
@@ -142,7 +144,9 @@ public class AccountController {
      * Sets the current user as having agreed to the general conditions.
      *
      * @param accountId
+     *
      * @return up-to-date account
+     *
      * @throws AuthorizationException if currentUser cannot edit users or
      *                                targeted account does not belongs to
      *                                current user

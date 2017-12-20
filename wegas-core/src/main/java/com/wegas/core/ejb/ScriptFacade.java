@@ -8,7 +8,20 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.event.internal.EngineInvocationEvent;
+import com.wegas.core.api.DelayedScriptEventFacadeI;
+import com.wegas.core.api.GameModelFacadeI;
+import com.wegas.core.api.IterationFacadeI;
+import com.wegas.core.api.QuestionDescriptorFacadeI;
+import com.wegas.core.api.RequestManagerI;
+import com.wegas.core.api.ResourceFacadeI;
+import com.wegas.core.api.ReviewingFacadeI;
+import com.wegas.core.api.ScriptEventFacadeI;
+import com.wegas.core.api.StateMachineFacadeI;
+import com.wegas.core.api.VariableDescriptorFacadeI;
+import com.wegas.core.api.VariableInstanceFacadeI;
+import com.wegas.core.ejb.nashorn.JavaObjectInvocationHandler;
+import com.wegas.core.ejb.nashorn.NHClassLoader;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.WegasErrorMessageManager;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -18,6 +31,11 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.resourceManagement.ejb.IterationFacade;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.reviewing.ejb.ReviewingFacade;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,9 +47,9 @@ import java.util.Map.Entry;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.script.*;
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class ScriptFacade {
+public class ScriptFacade extends WegasAbstractFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacade.class);
 
@@ -52,7 +70,7 @@ public class ScriptFacade {
      * A single, thread safe, javascript engine (only language currently
      * supported)
      */
-    private static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    private static final ScriptEngine engine;
     /**
      * Pre-compiled script. nashorn specific __noSuchProperty__ hijacking : find
      * a variableDescriptor's scriptAlias. Must be included in each Bindings.
@@ -64,24 +82,30 @@ public class ScriptFacade {
     private static final Map<String, CompiledScript> staticCache = new Helper.LRUCache<>(100);
 
     /*
-    Initialize noSuchProperty
+     * Initialize noSuchProperty and other nashorn stuff
      */
     static {
+        //engine = new ScriptEngineManager().getEngineByName("JavaScript");
+        NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+        engine = factory.getScriptEngine(new NHClassLoader());
+        //engine = factory.getScriptEngine(new String[] {} , new NHClassLoader(), new NHClassFilter());
+
         CompiledScript compile = null;
         try {
-            compile = ((Compilable) engine).compile("(function(global){"
-                    + "var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
-                    + "Object.defineProperty(global, '__noSuchProperty__', {"
-                    + "value: function(prop){"
-                    + "try{"
-                    + "var ret = Variable.find(gameModel, prop).getInstance(self);"
-                    + "print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
-                    + "return ret;" // Try to find a VariableDescriptor's instance for that given prop
-                    + "}catch(e){"
-                    + "return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
-                    + "}}"
-                    + "});"
-                    + "if (!Math._random) { Math._random = Math.random; Math.random = function random(){if (RequestManager.isTestEnv()) {return 0} else {return Math._random()} }}"
+            compile = ((Compilable) engine).compile(
+                    "(function(global){"
+                    + "  var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
+                    + "  Object.defineProperty(global, '__noSuchProperty__', {"
+                    + "    value: function(prop){"
+                    + "      try{"
+                    + "        var ret = Variable.find(gameModel, prop).getInstance(self);"
+                    + "        print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
+                    + "        return ret;" // Try to find a VariableDescriptor's instance for that given prop
+                    + "      }catch(e){"
+                    + "        return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
+                    + "    }}"
+                    + "  });"
+                    + "  if (!Math._random) { Math._random = Math.random; Math.random = function random(){if (RequestManager.isTestEnv()) {return 0} else {return Math._random()} }}"
                     + "})(this);"); // Run on Bindings
         } catch (ScriptException e) {
             logger.error("noSuchProperty script compilation failed", e);
@@ -92,20 +116,38 @@ public class ScriptFacade {
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
+
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
+
+    @Inject
+    private ResourceFacade resourceFacade;
+
+    @Inject
+    private IterationFacade iterationFacade;
+
+    @Inject
+    private QuestionDescriptorFacade questionDescriptorFacade;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
+
+    @Inject
+    private ReviewingFacade reviewingFacade;
 
     /**
      *
@@ -119,23 +161,14 @@ public class ScriptFacade {
     @EJB
     private DelayedScriptEventFacade delayedEvent;
 
-    /**
-     * 
-     */
     @Inject
-    private GameModelFacade  gameModelFacade;
+    private UserFacade userFacade;
 
     /**
      *
      */
     @Inject
     private RequestManager requestManager;
-
-    /**
-     *
-     */
-    @Inject
-    Event<EngineInvocationEvent> engineInvocationEvent;
 
     public ScriptContext instantiateScriptContext(Player player, String language) {
         final ScriptContext currentContext = requestManager.getCurrentScriptContext();
@@ -148,34 +181,59 @@ public class ScriptFacade {
 
     }
 
+    private <T> void putBinding(Bindings bindings, String name, Class<T> klass, T object) {
+        bindings.put(name, JavaObjectInvocationHandler.wrap(object, klass));
+    }
+
     private ScriptContext populate(Player player) {
         final Bindings bindings = engine.createBindings();
         bindings.put("self", player);                           // Inject current player
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
-        bindings.put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
-        bindings.put("Instance", variableInstanceFacade);
-        bindings.put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
-        bindings.put("GameModelFacade", gameModelFacade);//
-        bindings.put("RequestManager", requestManager);                  // Inject the request manager
-        bindings.put("Event", event);                                    // Inject the Event manager
-        bindings.put("DelayedEvent", delayedEvent);
+
+        putBinding(bindings, "GameModelFacade", GameModelFacadeI.class, gameModelFacade);
+
+        putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
+        putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
+
+        putBinding(bindings, "Instance", VariableInstanceFacadeI.class, variableInstanceFacade);
+
+        putBinding(bindings, "ResourceFacade", ResourceFacadeI.class, resourceFacade);
+        putBinding(bindings, "IterationFacade", IterationFacadeI.class, iterationFacade);
+
+        putBinding(bindings, "QuestionFacade", QuestionDescriptorFacadeI.class, questionDescriptorFacade);
+        putBinding(bindings, "StateMachineFacade", StateMachineFacadeI.class, stateMachineFacade);
+        putBinding(bindings, "ReviewingFacade", ReviewingFacadeI.class, reviewingFacade);
+
+        putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
+        putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
+        putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
+
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
 
         bindings.remove("exit");
         bindings.remove("quit");
         bindings.remove("loadWithNewGlobal");
-        
+
         event.detachAll();
         ScriptContext ctx = new SimpleScriptContext();
         ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+
         try {
             noSuchProperty.eval(bindings);
         } catch (ScriptException e) {
             logger.error("noSuchProperty injection", e);
         }
+
+        /**
+         * Inject hard server scripts first
+         */
         this.injectStaticScript(ctx, player.getGameModel());
 
-        for (GameModelContent script :player.getGameModel().getScriptLibraryList()){
+        /**
+         * Then inject soft ones.
+         * It means a soft script may override methods defined in a hard coded one
+         */
+        for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
             try {
                 engine.eval(script.getContent(), ctx);
@@ -209,7 +267,7 @@ public class ScriptFacade {
             // smells like such an integration test
             root = Helper.getWegasRootDirectory();
             if (root == null) {
-                logger.error("Wegas Lost In The Sky... [Static Script Injection Not Available] ->  " + currentPath);
+                logger.error("Wegas Lost In The Sky... [Static Script Injection Not Available] ->  {}", currentPath);
                 return;
             }
         } else {
@@ -225,7 +283,7 @@ public class ScriptFacade {
                         java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
                     staticCache.putIfAbsent(cacheFileName, ((Compilable) engine).compile(isr));
                 } catch (IOException e) {
-                    logger.warn("File " + f.getPath() + " was not found");
+                    logger.warn("File {} was not found", f.getPath());
                 } catch (ScriptException ex) {
                     throw new WegasScriptException(f.getPath(), ex.getLineNumber(), ex.getMessage());
                 }
@@ -233,7 +291,7 @@ public class ScriptFacade {
             try {
                 ctx.setAttribute(ScriptEngine.FILENAME, "Static Scripts " + f.getPath(), ScriptContext.ENGINE_SCOPE);
                 staticCache.get(cacheFileName).eval(ctx);
-                logger.info("File " + f + " successfully injected");
+                logger.info("File {} successfully injected", f);
             } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
                 throw new WegasScriptException(scriptURI, ex.getLineNumber(), ex.getMessage());
             } catch (RuntimeException ex) { // Unwrapped Java exception (Java -> JS -> Java -> throw)
@@ -381,6 +439,7 @@ public class ScriptFacade {
      * @param p
      * @param s
      * @param context
+     *
      * @return eval result
      */
     public Object eval(Player p, Script s, VariableDescriptor context) throws WegasScriptException {
@@ -393,6 +452,7 @@ public class ScriptFacade {
      * @param player
      * @param s
      * @param arguments
+     *
      * @return eval result
      */
     private Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -404,6 +464,7 @@ public class ScriptFacade {
      * @param playerId
      * @param s
      * @param context
+     *
      * @return eval result
      * @throws WegasScriptException
      */

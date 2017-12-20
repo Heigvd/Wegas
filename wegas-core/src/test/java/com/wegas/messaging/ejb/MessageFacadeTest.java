@@ -7,7 +7,6 @@
  */
 package com.wegas.messaging.ejb;
 
-import com.wegas.core.ejb.*;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -21,9 +20,13 @@ import com.wegas.core.rest.ScriptController;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.naming.NamingException;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,17 +34,18 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Benjamin
  */
-public class MessageFacadeTest extends AbstractEJBTest {
+public class MessageFacadeTest extends AbstractArquillianTest {
 
     protected static final Logger logger = LoggerFactory.getLogger(MessageFacadeTest.class);
 
-    private void exec(Player player,  String script) throws NamingException{
-        final ScriptFacade sm = lookupBy(ScriptFacade.class);
+    @EJB
+    private ScriptController scriptController;
 
+    private void exec(Player player,  String script) throws NamingException{
         final Script s = new Script();
         s.setLanguage("JavaScript");
         s.setContent(script);
-        sm.eval(player.getId(), s, null);
+        scriptFacade.eval(player.getId(), s, null);
     }
 
     /**
@@ -51,15 +55,11 @@ public class MessageFacadeTest extends AbstractEJBTest {
     public void testInboxDescriptor_SendMessage() throws Exception {
         logger.info("send(player, msg)");
 
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final MessageFacade mf = lookupBy(MessageFacade.class);
-
         // Create a inbox
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        vdf.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         //send a message
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessage(self, \"from1\", \"subject\", \"body\");");
@@ -72,7 +72,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
 
 
         //get inbox
-        VariableDescriptor vd = vdf.find(player.getGameModel(), "inbox");
+        VariableDescriptor vd = variableDescriptorFacade.find(player.getGameModel(), "inbox");
         InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
         List<Message> messages = gettedInbox.getSortedMessages();
 
@@ -91,95 +91,82 @@ public class MessageFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testInboxSendTrigger() throws NamingException {
+        this.createSecondTeam();
         logger.info("send inbox trigger");
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
         // Create a inbox descriptor
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        vdf.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
-                new Script("print(\"sending\");var inbox = VariableDescriptorFacade.find(" + inbox.getId() + "); inbox.sendMessage(self, \"test\", \"test\", \"test\");"));
-        vdf.create(gameModel.getId(), trigger);
+                new Script("print(\"sending\");var inbox = Variable.find(" + inbox.getId() + "); inbox.sendMessage(self, \"test\", \"test\", \"test\");"));
+        variableDescriptorFacade.create(scenario.getId(), trigger);
 
         // Reset
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
-        InboxInstance ii = ((InboxInstance) vif.find(inbox.getId(), player));
+        InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
-        assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
-        assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player2)).getMessages().size());
+        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         assertTrue(ii.getMessages().get(0).getBody().equals("test"));
 
         // Clean up
-        vdf.remove(inbox.getId());
-        vdf.remove(trigger.getId());
+        variableDescriptorFacade.remove(inbox.getId());
+        variableDescriptorFacade.remove(trigger.getId());
     }
 
     @Test
     public void testInboxSendMultipleCapped() throws NamingException {
         logger.info("send inbox trigger");
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
-
         // Create a inbox descriptor
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setCapped(true);
         inbox.setDefaultInstance(new InboxInstance());
-        vdf.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setPostTriggerEvent(
-                new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg1\");\n" +
-                        "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg2\");\n"));
-        vdf.create(gameModel.getId(), trigger);
+                new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg1\");\n"
+                        + "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg2\");\n"));
+        variableDescriptorFacade.create(scenario.getId(), trigger);
 
         // Reset
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
-        InboxInstance ii = ((InboxInstance) vif.find(inbox.getId(), player));
+        InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
-        assertEquals(1, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
+        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
         assertTrue(ii.getMessages().get(0).getBody().equals("msg2"));
         scriptFacade.eval(player, new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg out\");"), null);
         // Clean up
-        vdf.remove(inbox.getId());
-        vdf.remove(trigger.getId());
+        variableDescriptorFacade.remove(inbox.getId());
+        variableDescriptorFacade.remove(trigger.getId());
     }
 
     @Test
     public void testTriggeredMessage() throws NamingException {
         logger.info("send inbox trigger");
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
-        final ScriptController scriptController = lookupBy(ScriptController.class);
-
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));
         number.setScope(new PlayerScope());
-        vdf.create(gameModel.getId(), number);
+        variableDescriptorFacade.create(scenario.getId(), number);
         // Create a inbox descriptor
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setCapped(false);
         inbox.setDefaultInstance(new InboxInstance());
-        vdf.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
@@ -188,7 +175,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         trigger.setDisableSelf(false);
         trigger.setPostTriggerEvent(
                 new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg1\", []);\n"));
-        vdf.create(gameModel.getId(), trigger);
+        variableDescriptorFacade.create(scenario.getId(), trigger);
 
         TriggerDescriptor trig = new TriggerDescriptor();
         trig.setDefaultInstance(new TriggerInstance());
@@ -197,36 +184,31 @@ public class MessageFacadeTest extends AbstractEJBTest {
         trig.setDisableSelf(false);
         trig.setPostTriggerEvent(
                 new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg2\", []);\n"));
-        vdf.create(gameModel.getId(), trig);
+        variableDescriptorFacade.create(scenario.getId(), trig);
 
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
-        InboxInstance ii = ((InboxInstance) vif.find(inbox.getId(), player));
-        assertEquals(0, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
+        InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
+        assertEquals(0, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
         //This MAY Fail
-        scriptController.run(gameModel.getId(), player.getId(), null, new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"));
+        scriptController.run(scenario.getId(), player.getId(), null, new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"));
         // This NEVER fails
-//        scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"), null);
+//        scriptFacade.eval(player.getId(), new Script("Variable.find(scenario,'testnumber').setValue(self,2)"), null);
 //        lookupBy(RequestFacade.class).commit();
-        assertEquals(2, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
-        assertNotSame(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0).getBody(), ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(1).getBody());
+        assertEquals(2, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        assertNotSame(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody(), ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody());
     }
 
     @Test
     public void testInboxSend_ScriptEval_aaa_bbb() throws NamingException {
         logger.info("send inbox trigger");
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
-
         // Create a inbox descriptor
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        vdf.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
-        vdf.flush();
+        variableDescriptorFacade.flush();
 
         String script = "var inbox = Variable.find(gameModel, \"inbox\");"
                 + "var inbox2 = Variable.find(gameModel, \"inbox\");"
@@ -236,33 +218,28 @@ public class MessageFacadeTest extends AbstractEJBTest {
                 + "inbox3.sendMessage(self, \"test\", \"test\", \"test\");\n";
         scriptFacade.eval(player, new Script("javascript", script), null);
 
-        vdf.flush();
+        variableDescriptorFacade.flush();
         // Test
-        assertEquals(3, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
-        //assertEquals(3, ((InboxInstance) vif.find(inbox.getId(), player2)).getMessages().size());
-        Message get = ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0);
+        assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
+        Message get = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(1).getBody().equals("test"));
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(2).getBody().equals("test"));
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().equals("test"));
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().equals("test"));
 
         // Clean up
-        vdf.remove(inbox.getId());
+        variableDescriptorFacade.remove(inbox.getId());
     }
 
     @Test
     public void testInboxSend_ScriptEval_ababab() throws NamingException, WegasNoResultException {
         logger.info("send inbox trigger");
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
-
         // Create a inbox descriptor
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        vdf.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
         /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging")).setLevel(Level.TRACE);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging.cache")).setLevel(Level.TRACE);
@@ -283,38 +260,32 @@ public class MessageFacadeTest extends AbstractEJBTest {
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging.sql")).setLevel(Level.WARN);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging.default")).setLevel(Level.WARN);
          */
-        InboxDescriptor i2 = (InboxDescriptor) vdf.find(gameModel, "inbox");
-        InboxInstance ii = (InboxInstance) vdf.find(gameModel, "inbox").getInstance(player);
+        InboxDescriptor i2 = (InboxDescriptor) variableDescriptorFacade.find(scenario, "inbox");
+        InboxInstance ii = (InboxInstance) variableDescriptorFacade.find(scenario, "inbox").getInstance(player);
 
-        //InboxInstance ii = ((InboxInstance) vif.find(inbox.getId(), player));
-
+        //InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
         assertEquals(3, ii.getMessages().size());
-        //assertEquals(3, ((InboxInstance) vif.find(inbox.getId(), player2)).getMessages().size());
-        Message get = ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0);
+        //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
+        Message get = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0) != null);
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(1) != null);
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(2) != null);
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0) != null);
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1) != null);
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2) != null);
 
         // Clean up
-        vdf.remove(inbox.getId());
+        variableDescriptorFacade.remove(inbox.getId());
     }
 
     @Test
     public void testInboxSend_ScriptEval_ababab___() throws NamingException {
         logger.info("send inbox trigger");
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
-
         // Create a inbox descriptor
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        vdf.create(gameModel.getId(), inbox);
+        variableDescriptorFacade.create(scenario.getId(), inbox);
 
         Long inboxId = inbox.getId();
 
@@ -328,16 +299,16 @@ public class MessageFacadeTest extends AbstractEJBTest {
         scriptFacade.eval(player, new Script("javascript", script), null);
 
         // Test
-        assertEquals(4, ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().size());
-        //assertEquals(3, ((InboxInstance) vif.find(inbox.getId(), player2)).getMessages().size());
-        Message get = ((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0);
+        assertEquals(4, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
+        Message get = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(1).getBody().equals("test"));
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(2).getBody().equals("test"));
-        assertTrue(((InboxInstance) vif.find(inbox.getId(), player)).getMessages().get(3).getBody().equals("test"));
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().equals("test"));
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().equals("test"));
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(3).getBody().equals("test"));
 
         // Clean up
-        vdf.remove(inbox.getId());
+        variableDescriptorFacade.remove(inbox.getId());
     }
 }

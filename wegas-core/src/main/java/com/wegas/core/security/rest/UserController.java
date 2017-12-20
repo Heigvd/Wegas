@@ -10,8 +10,11 @@ package com.wegas.core.security.rest;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.DatedEntity;
@@ -21,19 +24,16 @@ import com.wegas.core.security.aai.*;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
-import com.wegas.core.security.util.SecurityHelper;
 import java.io.IOException;
 import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,11 +43,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +84,9 @@ public class UserController {
      */
     @EJB
     private GameFacade gameFacade;
+    
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
@@ -101,6 +102,9 @@ public class UserController {
 
     @Inject
     private PopulatorFacade populatorFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      * @return list of all users, sorted by names
@@ -160,7 +164,7 @@ public class UserController {
         if (g instanceof DebugGame) {
             return null;
         }
-        SecurityHelper.checkPermission(g, "Edit");
+        requestManager.assertGameTrainer(g);
 
         List<String> emails = new ArrayList<String>();
         for (Team t : g.getTeams()) {
@@ -176,6 +180,7 @@ public class UserController {
      * the same game.
      *
      * @param gameId
+     * @param teamId
      *
      * @return email of all players in the team
      */
@@ -191,7 +196,7 @@ public class UserController {
             return null;
         }
         // Caller must be trainer for the given game:
-        SecurityHelper.checkPermission(g, "Edit");
+        requestManager.assertGameTrainer(g);
         return collectEmails(t);
     }
 
@@ -202,14 +207,10 @@ public class UserController {
      */
     protected List<String> collectEmails(Team team) {
         List<String> emails = new ArrayList<>();
-        if (team instanceof DebugTeam) {
+        if (team instanceof DebugTeam || team.getPlayers().isEmpty()) {
             return emails;
         }
-        List<Player> players = team.getPlayers();
-        if (players.size() == 0) {
-            return emails;
-        }
-        for (Player p : players) {
+        for (Player p : team.getPlayers()) {
             if (p.getName().equals("Guest")) {
                 emails.add("Guest");
             } else {
@@ -366,40 +367,7 @@ public class UserController {
     public User login(AuthenticationInformation authInfo,
             @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws ServletException, IOException {
-
-        Subject subject = SecurityUtils.getSubject();
-
-        User guest = null;
-        if (subject.isAuthenticated()) {
-            AbstractAccount gAccount = accountFacade.find((Long) subject.getPrincipal());
-            if (gAccount instanceof GuestJpaAccount) {
-                logger.error("Logged as guest");
-                guest = gAccount.getUser();
-                subject.logout();
-            }
-        }
-
-        //if (!currentUser.isAuthenticated()) {
-        UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
-        token.setRememberMe(authInfo.isRemember());
-        try {
-            subject.login(token);
-            if (authInfo.isAgreed()) {
-                AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
-                if (account instanceof JpaAccount) {
-                    account.setAgreedTime(new Date());
-                }
-            }
-
-            User user = userFacade.getCurrentUser();
-
-            if (guest != null) {
-                userFacade.transferPlayers(guest, user);
-            }
-            return user;
-        } catch (AuthenticationException aex) {
-            throw WegasErrorMessage.error("Email/password combination not found");
-        }
+        return userFacade.authenticate(authInfo);
     }
 
     /**
@@ -421,8 +389,8 @@ public class UserController {
      */
     @POST
     @Path("GuestLogin")
-    public void guestLogin(AuthenticationInformation authInfo) {
-        userFacade.guestLogin();
+    public User guestLogin(AuthenticationInformation authInfo) {
+        return userFacade.guestLogin();
     }
 
     /**
@@ -463,41 +431,7 @@ public class UserController {
     @POST
     @Path("Be/{accountId: [1-9][0-9]*}")
     public void runAs(@PathParam("accountId") Long accountId) {
-        Subject oSubject = SecurityUtils.getSubject();
-
-        if (oSubject.isRunAs()) {
-            oSubject.releaseRunAs(); //@TODO: check shiro version > 1.2.1 (SHIRO-380)
-        }
-        oSubject.checkRole("Administrator");
-        SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm"); // NB: this also seems to work with AaiAccounts ...
-        oSubject.runAs(subject);
-    }
-
-    /**
-     * @param username
-     * @param password
-     * @param firstname
-     * @param lastname
-     * @param email
-     * @param request
-     */
-    @POST
-    @Path("Signup")
-    @Deprecated
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void signup(@FormParam("username") String username,
-            @FormParam("password") String password,
-            @FormParam("firstname") String firstname,
-            @FormParam("lastname") String lastname,
-            @FormParam("email") String email,
-            @Context HttpServletRequest request) {
-        JpaAccount account = new JpaAccount();                                   // Convert post params to entity
-        account.setUsername(username);
-        account.setPassword(password);
-        account.setFirstname(firstname);
-        account.setLastname(lastname);
-        account.setEmail(email);
-        this.signup(account, request);                                                   // and forward
+        requestManager.su(accountId);
     }
 
     /**
@@ -513,44 +447,27 @@ public class UserController {
     @Path("Signup")
     public Response signup(JpaAccount account,
             @Context HttpServletRequest request) {
-        Response r;
-        if (this.checkEmailString(account.getEmail())) {
-            if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
-                User user;
-                Subject subject = SecurityUtils.getSubject();
+        WegasErrorMessage error;
 
-                if (subject.isAuthenticated() && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
-                    GuestJpaAccount from = (GuestJpaAccount) accountFacade.find((Long) subject.getPrincipal());
-                    subject.logout();
-                    userFacade.upgradeGuest(from, account);
-                    r = Response.status(Response.Status.CREATED).build();
-                } else {
-                    // Check if e-mail is already taken and if yes return a localized error message:
-                    try {
-                        // Do NOT restrict checking to JpaAccounts (this is to prevent any collisions):
-                        accountFacade.findByEmail(account.getEmail());
-                        r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage
-                                .error("This email address is already taken", "CREATE-ACCOUNT-TAKEN-EMAIL")).build();
-                    } catch (WegasNoResultException e) {
-                        // GOTCHA
-                        // E-Mail not yet registered -> proceed with account creation
-                        if (account.getAgreedTime() != null) {
-                            account.setAgreedTime(new Date());
-                        }
-                        user = new User(account);
-                        userFacade.create(user);
-                        r = Response.status(Response.Status.CREATED).build();
-                    }
-                }
-            } else {
-                r = Response.status(Response.Status.BAD_REQUEST)
-                        .entity(WegasErrorMessage.error("This username is already taken", "CREATE-ACCOUNT-TAKEN-USERNAME")).build();
+        try {
+            return Response.status(Response.Status.CREATED).entity(userFacade.signup(account)).build();
+        } catch (AddressException ex) {
+            error = WegasErrorMessage.error("This e-mail address is not valid", "CREATE-ACCOUNT-INVALID-EMAIL");
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
+        } catch (WegasConflictException ex) {
+            String msg;
+            switch (ex.getMessage()) {
+                case "email":
+                    error = WegasErrorMessage.error("This email address is already taken", "CREATE-ACCOUNT-TAKEN-EMAIL");
+                    break;
+                case "username":
+                    error = WegasErrorMessage.error("This username is already taken", "CREATE-ACCOUNT-TAKEN-USERNAME");
+                    break;
+                default:
+                    error = WegasErrorMessage.error("UnknownError");
             }
-        } else {
-            r = Response.status(Response.Status.BAD_REQUEST)
-                    .entity(WegasErrorMessage.error("This e-mail address is not valid", "CREATE-ACCOUNT-INVALID-EMAIL")).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }
-        return r;
     }
 
     /**
@@ -599,13 +516,13 @@ public class UserController {
         String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
         if (server.length() != 0 && !getRequestingIP(request).equals(server)
                 || secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
-            logger.error("Real secret: " + userDetails.getSecret() + ", expected: " + secret);
-            logger.error("Real remote host: " + getRequestingIP(request) + ", expected: " + server);
+            logger.error("Real secret: {}, expected:{}", userDetails.getSecret(), secret);
+            logger.error("Real remote host : {}, expected: {}",getRequestingIP(request), server);
             Enumeration<String> headerNames = request.getHeaderNames();
             if (headerNames != null) {
                 while (headerNames.hasMoreElements()) {
                     String hdr = headerNames.nextElement();
-                    logger.error("    HTTP header: " + hdr + ":" + request.getHeader(hdr));
+                    logger.error("    HTTP header: {} = {}", hdr, request.getHeader(hdr));
                 }
             }
             return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);
@@ -745,8 +662,7 @@ public class UserController {
      */
     @GET
     @Path("Current/Team")
-    public Response findTeamsByCurrentUser() {
-        Response r = Response.noContent().build();
+    public Collection<Team> findTeamsByCurrentUser() {
         Collection<Team> teamsToReturn = new ArrayList<>();
         User currentUser = userFacade.getCurrentUser();
         final List<Player> players = currentUser.getPlayers();
@@ -761,10 +677,10 @@ public class UserController {
             teamsToReturn.add(p.getTeam());
         }
         if (!teamsToReturn.isEmpty()) {
-            r = Response.ok().entity(teamsToReturn).build();
+            return teamsToReturn;
+        } else {
+            return null;
         }
-
-        return r;
     }
 
     /**
@@ -776,22 +692,17 @@ public class UserController {
      */
     @GET
     @Path("Current/Team/{teamId}")
-    public Response getTeamByCurrentUser(@PathParam("teamId") Long teamId) {
-        Response r = Response.noContent().build();
+    public Team getTeamByCurrentUser(@PathParam("teamId") Long teamId) {
         User currentUser = userFacade.getCurrentUser();
-        final Collection<Game> playedGames = gameFacade.findRegisteredGames(currentUser.getId());
-        for (Game g : playedGames) {
-            for (Team t : g.getTeams()) {
-                if (teamId.equals(t.getId())) {
-                    for (Player p : t.getPlayers()) {
-                        if (p.getUserId().equals(currentUser.getId())) {
-                            r = Response.ok().entity(t).build();
-                        }
-                    }
-                }
-            }
+
+        Player thePlayer = playerFacade.findPlayerInTeam(teamId, currentUser.getId());
+
+        if (thePlayer != null) {
+            return thePlayer.getTeam();
+        } else {
+            return null;
         }
-        return r;
+
     }
 
     /**
@@ -842,12 +753,8 @@ public class UserController {
             @PathParam("accountId") Long accountId) {
 
         User coTrainer = accountFacade.find(accountId).getUser();
+
         //TODO assert coTrainer is a Trainer...
-
-        String thePermission = "Game:Edit:g" + gameId;
-        // Assert current user has edit right on the game
-        SecurityUtils.getSubject().checkPermission(thePermission);
-
         userFacade.addTrainerToGame(coTrainer.getId(), gameId);
     }
 
@@ -858,10 +765,7 @@ public class UserController {
 
         User coTrainer = accountFacade.find(accountId).getUser();
 
-        String thePermission = "Game:Edit:g" + gameId;
-        // Assert current user has edit right on the game
-        SecurityUtils.getSubject().checkPermission(thePermission);
-        userFacade.removeTrainer(gameId, coTrainer); // TODO
+        userFacade.removeTrainer(gameId, coTrainer);
     }
 
     /**
@@ -882,11 +786,6 @@ public class UserController {
 
         User user = accountFacade.find(accountId).getUser();
 
-        String editPermission = "GameModel:Edit:gm" + gameModelId;
-
-        // Assert current user has edit right on the gameModel
-        SecurityUtils.getSubject().checkPermission(editPermission);
-
         userFacade.grantGameModelPermissionToUser(user.getId(), gameModelId, permission);
     }
 
@@ -898,10 +797,6 @@ public class UserController {
 
         User coScenarist = accountFacade.find(accountId).getUser();
 
-        String editPermission = "GameModel:Edit:gm" + gameModelId;
-
-        // Assert current user has edit right on the gameModel
-        SecurityUtils.getSubject().checkPermission(editPermission);
         userFacade.removeScenarist(gameModelId, coScenarist);
     }
 
@@ -919,40 +814,6 @@ public class UserController {
     }
 
     /**
-     * Check if email is valid. (Only a string test)
-     *
-     * @param email
-     *
-     * @return true if given address is valid
-     */
-    private boolean checkEmailString(String email) {
-        boolean validEmail = true;
-        try {
-            InternetAddress emailAddr = new InternetAddress(email);
-            emailAddr.validate();
-        } catch (AddressException ex) {
-            validEmail = false;
-        }
-        return validEmail;
-    }
-
-    /**
-     * Check if username is already in use
-     *
-     * @param username username to check
-     *
-     * @return true is username is already in use
-     */
-    private boolean checkExistingUsername(String username) {
-        boolean existingUsername = false;
-        User user = userFacade.getUserByUsername(username);
-        if (user != null) {
-            existingUsername = true;
-        }
-        return existingUsername;
-    }
-
-    /**
      * Check if persistent ID is already in use
      *
      * @param persistentId to check
@@ -967,5 +828,4 @@ public class UserController {
         }
         return existingId;
     }
-
 }

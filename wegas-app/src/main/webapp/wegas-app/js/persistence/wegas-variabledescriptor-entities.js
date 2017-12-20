@@ -487,7 +487,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             }]
     });
     /**
-     * Meant to augment primitive Descriptors (Number, Text, String) with some functions
+     * Meant to augment primitive Descriptors (Number, Text, String, Boolean) with some functions
      */
     persistence.PrimitiveDescriptor = Base.create("Primitive", persistence.Entity, [], {
         getValue: function(player) {
@@ -573,8 +573,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
      * StringInstance mapper
      */
     persistence.StringInstance = Base.create("StringInstance",
-        persistence.VariableInstance,
-        [persistence.PrimitiveDescriptor],
+        persistence.VariableInstance, [],
         {},
         {
             ATTRS: {
@@ -635,7 +634,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: HTML,
                         value: "",
                         scriptType: STRING,
-                        required: true
+                        required: false
                     }]
             },
             getValue: {

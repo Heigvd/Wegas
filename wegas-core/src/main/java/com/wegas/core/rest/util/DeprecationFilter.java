@@ -26,7 +26,7 @@ public class DeprecationFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext request) {
-        RequestFacade rmf = RequestFacade.lookup();
+        RequestFacade rmf = RequestFacade.lookup(); //CDI not available here
 
         Logger logger = LoggerFactory.getLogger(DeprecationFilter.class);
         String msg = "The requested endpoint (" + request.getMethod() + " /" + request.getUriInfo().getPath() + ") has been deprecated and will be removed in the future";

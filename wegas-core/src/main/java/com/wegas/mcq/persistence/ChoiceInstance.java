@@ -7,23 +7,24 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -35,9 +36,15 @@ import org.eclipse.persistence.annotations.BatchFetchType;
             @Index(columnList = "currentresult_id")
         }
 )
+@NamedQueries({
+    @NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
+})
 public class ChoiceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LoggerFactory.getLogger(ChoiceInstance.class);
+
     /**
      *
      */
@@ -48,10 +55,17 @@ public class ChoiceInstance extends VariableInstance {
     private Boolean unread = true;
     /**
      *
+     * @ManyToOne(fetch = FetchType.LAZY)
+     * @JsonIgnore
+     * private CurrentResult currentResult;
+     */
+
+    /**
+     *
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    private CurrentResult currentResult;
+    private Result currentResult;
 
     /**
      *
@@ -166,14 +180,15 @@ public class ChoiceInstance extends VariableInstance {
                 if (choiceDesc != null) {
                     // if choiceDesc is null, the following will eventually be
                     // done by with the help of an InstanceReviveEvent
-                    Result previousResult = this.getCurrentResult();
+                    /*Result previousResult = this.getCurrentResult();
                     if (previousResult != null) {
                         previousResult.removeChoiceInstance(this);
                     }
+                     */
                     try {
                         Result newResult = choiceDesc.getResultByName(this.currentResultName);
                         this.setCurrentResult(newResult);
-                        newResult.addChoiceInstance(this);
+                        //newResult.addChoiceInstance(this);
                     } catch (WegasNoResultException ex) {
                         this.setCurrentResult(null);
                     }
@@ -273,25 +288,18 @@ public class ChoiceInstance extends VariableInstance {
      */
     @JsonIgnore
     public Result getCurrentResult() {
-        if (this.currentResult != null) {
-            return this.currentResult.getResult();
-        } else {
-            return null;
-        }
+        return this.currentResult;
     }
 
     /**
      * @param currentResult the currentResult to set
      */
     public void setCurrentResult(Result currentResult) {
-        if (currentResult != null) {
-            this.currentResult = currentResult.getCurrentResult();
-        } else {
-            this.currentResult = null;
-        }
+        this.currentResult = currentResult;
         this.setCurrentResultName(null);
     }
 
+    /*
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
         Result cr = this.getCurrentResult();
@@ -312,5 +320,9 @@ public class ChoiceInstance extends VariableInstance {
         }
 
         super.updateCacheOnDelete(beans);
+    }*/
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getQuestionDescriptorFacade().reviveChoiceInstance(this);
     }
 }

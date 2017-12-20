@@ -10,11 +10,12 @@ package com.wegas.resourceManagement.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import javax.persistence.*;
  * @Index(columnList = "properties.resourceinstance_variableinstance_id")
  * })
  */
-public class ResourceInstance extends VariableInstance implements Propertable {
+public class ResourceInstance extends VariableInstance implements Propertable, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -78,6 +79,10 @@ public class ResourceInstance extends VariableInstance implements Propertable {
         return properties;
     }
 
+    @JsonIgnore
+    @Transient
+    private Beanjection beans;
+
     /**
      *
      * @param a
@@ -100,7 +105,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
                             public void removeEntity(AbstractEntity entity) {
                                 if (entity instanceof Assignment) {
                                     Assignment assignment = (Assignment) entity;
-                                    TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());
+                                    TaskInstance parent = (TaskInstance) beans.getVariableInstanceFacade().find(assignment.getTaskInstance().getId());
                                     if (parent != null) {
                                         parent.removeAssignment(assignment);
                                     }
@@ -118,7 +123,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
                     @Override
                     public void removeEntity(AbstractEntity entity) {
                         Activity activity = (Activity) entity;
-                        TaskInstance tdParent = (TaskInstance) VariableInstanceFacade.lookup().find(activity.getTaskInstance().getId());
+                        TaskInstance tdParent = (TaskInstance) beans.getVariableInstanceFacade().find(activity.getTaskInstance().getId());
                         if (tdParent != null) {
                             tdParent.removeActivity(activity);
                         }
@@ -161,9 +166,9 @@ public class ResourceInstance extends VariableInstance implements Propertable {
         this.removeAssignment(assignment);
         this.addAssignment(assignment, index);
 
-        List<Assignment> newAssignments =new ArrayList<>();
+        List<Assignment> newAssignments = new ArrayList<>();
 
-        for (Assignment a : this.getAssignments()){
+        for (Assignment a : this.getAssignments()) {
             newAssignments.add(a);
         }
 
@@ -315,6 +320,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
 
     /**
      * @return the confidence
+     *
      * @deprecated please use instance properties
      */
     @Deprecated
@@ -326,6 +332,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      * Set the confidence value
      *
      * @param confidence the confidence to set
+     *
      * @deprecated please use instance properties
      */
     @Deprecated
@@ -368,4 +375,13 @@ public class ResourceInstance extends VariableInstance implements Propertable {
      * }
      * }
      */
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getResourceFacade().reviveResourceInstance(this);
+    }
 }

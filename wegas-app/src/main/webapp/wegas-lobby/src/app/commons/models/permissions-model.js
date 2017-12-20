@@ -5,7 +5,7 @@ angular.module('wegas.models.permissions', [])
         model.getSessionPermissions = function(session) {
             var deferred = $q.defer(),
                 permissionsToReturn;
-            $http.get(ServiceURL + "rest/Extended/User/FindEditorsByInstance/g" +
+            $http.get(ServiceURL + "rest/Public/User/FindEditorsByInstance/g" +
                 session.id).success(function(data) {
                 deferred.resolve(_(data)
                     .map(function(user) {
@@ -114,6 +114,11 @@ angular.module('wegas.models.permissions', [])
             var deferred = $q.defer(),
                 url = "rest/Extended/User/FindUserPermissionByInstance/gm" + scenarioId;
 
+            /**
+             * 
+             * @param {type} data list of users
+             * @returns {Array} list of {user: Acount, permissions: Array of (View|Edit|Instantiate|Delete) values)}
+             */
             function mapPermissions(data) {
                 /* Transform permissions in a comprehensible way :) */
                 var permissions = [];

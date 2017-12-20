@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -20,6 +21,7 @@ import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.messaging.persistence.InboxInstance;
@@ -27,21 +29,20 @@ import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.*;
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.OptimisticLocking;
+import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
-import com.wegas.core.persistence.InstanceOwner;
-import org.eclipse.persistence.config.CacheUsage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -104,7 +105,8 @@ import org.eclipse.persistence.config.CacheUsage;
     @Index(columnList = "playerscope_id"),
     @Index(columnList = "variableinstances_key"),
     @Index(columnList = "teamvariableinstances_key"),
-    @Index(columnList = "gamevariableinstances_key")
+    @Index(columnList = "gamevariableinstances_key"),
+    @Index(columnList = "gamemodelvariableinstances_key")
 })
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
@@ -115,12 +117,14 @@ import org.eclipse.persistence.config.CacheUsage;
     @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
     @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class),
+
     @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
     @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class),
     @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
     @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
     @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
     @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
+
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 @OptimisticLocking(cascade = true)
@@ -240,7 +244,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      * Return the effective owner of the instance, null for default instances
      *
-     * @return  effective instance owner, but null for default ones
+     * @return effective instance owner, but null for default ones
      */
     @JsonIgnore
     public InstanceOwner getOwner() {
@@ -254,8 +258,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             } else if (this.getGame() != null) {
                 return this.getGame();
             } else {
-                //return this.getGameModel();
-                return this.findDescriptor().getGameModel();
+                return this.getGameModel();
+                //return this.findDescriptor().getGameModel();
             }
         }
     }
@@ -264,10 +268,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      *
      * Same as getOwner but return the gameModel for default instances
      *
-     * @return  effective instance owner or the gameModel for default ones
+     * @return effective instance owner or the gameModel for default ones
      */
     @JsonIgnore
-    public InstanceOwner getBroadcastTarget() {
+    public InstanceOwner getEffectiveOwner() {
         if (this.getTeam() != null) {
             return this.getTeam();
         } else if (this.getPlayer() != null) {
@@ -280,28 +284,43 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         }
     }
 
+    /**
+     * Get the channel to broadcast this instance on, according to scope and broadcast scope
+     *
+     * @return
+     */
     @JsonIgnore
     public String getAudience() {
+        InstanceOwner audienceOwner = getBroadcastTarget();
+        if (audienceOwner != null) {
+            return audienceOwner.getChannel();
+        } else {
+            return null;
+        }
+    }
+
+    @JsonIgnore
+    public InstanceOwner getBroadcastTarget() {
         if (this.getTeam() != null) {
             if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
-                return this.getTeam().getGame().getChannel();
+                return this.getTeam().getGame();
             } else {
-                return this.getTeam().getChannel();
+                return this.getTeam();
             }
         } else if (this.getPlayer() != null) {
             if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
 
-                return this.getPlayer().getTeam().getChannel();
+                return this.getPlayer().getTeam();
             } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
-                return this.getPlayer().getGame().getChannel();
+                return this.getPlayer().getGame();
             } else {
-                return this.getPlayer().getChannel();
+                return this.getPlayer();
             }
         } else if (this.getGame() != null) {
-            return this.getGame().getChannel();
+            return this.getGame();
         } else if (this.gameModelScope != null) {
             // this.getGameModel().getChannel();
-            return this.getGameModelScope().getVariableDescriptor().getGameModel().getChannel();
+            return this.getGameModelScope().getVariableDescriptor().getGameModel();
         } else {
             // Default instance
             return null;
@@ -331,7 +350,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
       default if (this.getScope() != null) { //
       RequestFacade.lookup().getRequestManager().addUpdatedInstance(this); } }
      */
-
     /**
      * @return the scope
      */
@@ -538,24 +556,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the gameScopeKey
-     *
-     * @JsonIgnore public Long getGameScopeKey() { return gameScopeKey; }
-     */
-    /**
-     * return instance descriptor equals the instance is a default or effective
-     * one
-     *
-     * @return instance descriptor
-     *
-     * @deprecated {@link #findDescriptor()}
-     */
-    @JsonIgnore
-    public VariableDescriptor getDescriptorOrDefaultDescriptor() {
-        return this.findDescriptor();
-    }
-
-    /**
      * @return the defaultDescriptor
      */
     public VariableDescriptor getDefaultDescriptor() {
@@ -612,6 +612,9 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         }
     }
 
+    public void revive(Beanjection beans) {
+    }
+
     /**
      *
      * @return string representation of the instance (class name, id, default or
@@ -626,5 +629,49 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         } else {
             return this.getClass().getSimpleName() + "( " + getId() + ") NO DESC";
         }
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        if (this.getScope() == null) {
+            // Default Instance is only editable with edit permission on Descriptor
+            return this.getDefaultDescriptor().getRequieredUpdatePermission();
+        } else {
+            if (this.getTeamScope() != null || this.getPlayerScope() != null) {
+                return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedWritePermission());
+            } else if (this.getGameScope() != null || this.getGameModelScope() != null) {
+                return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedReadPermission());
+            }
+        }
+
+        return WegasPermission.FORBIDDEN;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        WegasPermission perm = null;
+        if (this.getTeam() != null) {
+            if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
+                perm = this.getTeam().getGame().getAssociatedReadPermission();
+            } else {
+                perm = this.getTeam().getAssociatedWritePermission();
+            }
+        } else if (this.getPlayer() != null) {
+            if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
+                perm = this.getPlayer().getTeam().getAssociatedWritePermission();
+            } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
+                perm = this.getPlayer().getGame().getAssociatedReadPermission();
+            } else {
+                perm = this.getPlayer().getAssociatedWritePermission();
+            }
+        } else if (this.getGame() != null) {
+            perm = this.getGame().getAssociatedReadPermission();
+        } else if (this.gameModelScope != null) {
+            // this.getGameModel().getChannel();
+            perm = this.getGameModelScope().getVariableDescriptor().getGameModel().getAssociatedReadPermission();
+        } else {
+            return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
+        }
+        return WegasPermission.getAsCollection(perm);
     }
 }

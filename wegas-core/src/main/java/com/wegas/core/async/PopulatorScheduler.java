@@ -14,14 +14,13 @@ import fish.payara.micro.cdi.Outbound;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
+import javax.annotation.ManagedBean;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.slf4j.Logger;
@@ -32,6 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 @Named
 @LocalBean
+@ManagedBean(value = "PopulatorScheduler")
 public class PopulatorScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(PopulatorScheduler.class);
@@ -39,6 +39,9 @@ public class PopulatorScheduler {
     private static final int MAX_CREATORS;
 
     protected static final String EVENT_NAME = "Wegas_Populator_Event";
+
+    private static boolean async = true;
+    private static boolean broadcast = true;
 
     protected static enum PopulatingCommand {
         START_ONE,
@@ -71,8 +74,24 @@ public class PopulatorScheduler {
     }
 
     public void scheduleCreation() {
-        logger.info("Send START_ONE");
-        events.fire(PopulatingCommand.START_ONE);
+        if (broadcast) {
+            // async process:broadcast start event
+            logger.info("Send START_ONE");
+            events.fire(PopulatingCommand.START_ONE);
+        } else {
+            //synchronous process : start one populator locally and wait for completion
+            logger.info("Start local process");
+            Future<Integer> scheduleCreation = this.internalScheduleCreation();
+            if (!async) {
+                try {
+                    logger.info("Wait to re-sycn call");
+                    Integer get = scheduleCreation.get();
+                    logger.info ("re-sync done {}", get);
+                } catch (Exception ex) {
+                    logger.error("Synchronous Creation Error: ", ex);
+                }
+            }
+        }
     }
 
     public void stopAll() {
@@ -91,7 +110,7 @@ public class PopulatorScheduler {
     }
 
     public void onScheduleCreation(@Observes @Inbound(eventName = EVENT_NAME) PopulatingCommand command) {
-        logger.info("Command: " + command);
+        logger.info("Command: {}", command);
         switch (command) {
             case START_ALL:
                 this.startAllLocalPopulators();
@@ -117,12 +136,12 @@ public class PopulatorScheduler {
             //Helper.printWegasStackTrace(new Exception());
 
             // allowed to create more creators ?
-            if (creators.size() < MAX_CREATORS) {
+            if (!async || creators.size() < MAX_CREATORS) {
                 Populator newCreator = myCreators.get();
                 future = managedExecutorService.submit(newCreator);
                 creators.put(newCreator, future);
             } else {
-                logger.error("Maximum number of creators reached (" + MAX_CREATORS + ")");
+                logger.info("Maximum number of creators reached ({})", MAX_CREATORS);
                 future = creators.values().iterator().next();
             }
         } finally {
@@ -139,6 +158,17 @@ public class PopulatorScheduler {
         }
     }
 
+    public void waitAll() {
+        for (Future<Integer> future : creators.values()) {
+            try {
+                logger.info("Wait");
+                Integer get = future.get();
+                logger.info(" * Got {}", get);
+            } catch (Exception ex) {
+            }
+        }
+    }
+
     /**
      * let populators finish their current task before stopping them
      */
@@ -151,9 +181,8 @@ public class PopulatorScheduler {
             try {
                 logger.info("Wait");
                 Integer get = future.get();
-                logger.info(" * Got " + get);
+                logger.info(" * Got {}", get);
             } catch (Exception ex) {
-                java.util.logging.Logger.getLogger(PopulatorScheduler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -170,5 +199,13 @@ public class PopulatorScheduler {
             //future.get();
             future.cancel(true);
         }
+    }
+
+    public void setAsync(boolean async) {
+        PopulatorScheduler.async = async;
+    }
+
+    public void setBroadcast(boolean broadcast) {
+        PopulatorScheduler.broadcast = broadcast;
     }
 }

@@ -10,32 +10,41 @@ package com.wegas.core.ejb;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
-import com.wegas.core.event.internal.DescriptorRevivedEvent;
-import com.wegas.core.event.internal.InstanceRevivedEvent;
+import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.GameScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.resourceManagement.ejb.IterationFacade;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.reviewing.ejb.ReviewingFacade;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
@@ -51,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
+public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> implements VariableDescriptorFacadeI {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacade.class);
 
@@ -64,17 +73,35 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
 
-    /**
-     *
-     */
     @Inject
-    private Event<DescriptorRevivedEvent> descriptorRevivedEvent;
+    private ResourceFacade resourceFacade;
 
     @Inject
-    private RequestManager requestManager;
+    private IterationFacade iterationFacade;
 
     @Inject
-    private Event<InstanceRevivedEvent> instanceRevivedEvent;
+    private ReviewingFacade reviewingFacade;
+
+    @Inject
+    private UserFacade userFacade;
+
+    @Inject
+    private TeamFacade teamFacade;
+
+    @Inject
+    private QuestionDescriptorFacade questionDescriptorFacade;
+
+    private Beanjection beans = null;
+
+    private Beanjection getBeans() {
+        if (beans == null) {
+            logger.error("INIT BEANS");
+            beans = new Beanjection(variableInstanceFacade, this,
+                    resourceFacade, iterationFacade,
+                    reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
+        }
+        return beans;
+    }
 
     /**
      *
@@ -153,20 +180,23 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
          */
         this.getEntityManager().flush();
 
-        descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
-        instanceRevivedEvent.fire(new InstanceRevivedEvent(entity.getDefaultInstance()));
+        this.reviveDescriptor(entity);
+        variableInstanceFacade.reviveInstance(entity.getDefaultInstance());
 
         // @TODO find a smarter way to decide to propagate or not to propatate...
         if (propagate) {
-            AbstractScope scope = entity.getScope();
-            scope.setBeanjection(new Beanjection(variableInstanceFacade));
-            gameModelFacade.resetAndReviveScopeInstances(scope);
+            entity.getScope().setBeanjection(new Beanjection(variableInstanceFacade));
+            gameModelFacade.resetAndReviveScopeInstances(entity);
         }
 
         gameModel.addToVariableDescriptors(entity);
         if (entity instanceof DescriptorListI) {
             this.reviveItems(gameModel, (DescriptorListI) entity, propagate); // also revive children
         }
+    }
+
+    public void reviveDescriptor(VariableDescriptor vd) {
+        vd.revive(getBeans());
     }
 
     /**
@@ -186,7 +216,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     public void preDestroy(GameModel gameModel, VariableDescriptor entity) {
         gameModel.removeFromVariableDescriptors(entity);
 
-        Collection<VariableInstance> values = entity.getScope().getVariableInstances().values();
+        Collection<VariableInstance> values = this.getInstances(entity).values();
+
         for (VariableInstance vi : values) {
             variableInstanceFacade.remove(vi);
         }
@@ -225,11 +256,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         GameModel find = this.gameModelFacade.find(gameModelId);
         /*
         for (Game g : find.getGames()) {
-            logger.error("Game " + g);
+            logger.error("Game {}",  g);
             for (Team t : g.getTeams()) {
-                logger.error("  Team " + t + " ->  " + t.getStatus());
+                logger.error("  Team {} -> {}",  t, t.getStatus());
                 for (Player p : t.getPlayers()) {
-                    logger.error("    Player " + p + " -> " + p.getStatus());
+                    logger.error("    Player {} -> {}",  p, p.getStatus());
                 }
             }
         } // */
@@ -276,6 +307,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @deprecated use {@link VariableDescriptor#getParent()}
      */
+    @Override
     public DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {
         return vd.getParent();
     }
@@ -288,6 +320,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @throws WegasNoResultException if the desciptor is at root-level
      * @deprecated use {@link VariableDescriptor#getParentList()}
      */
+    @Override
     public ListDescriptor findParentListDescriptor(final VariableDescriptor item) throws WegasNoResultException {
         if (item.getParentList() != null) {
             return item.getParentList();
@@ -296,6 +329,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         }
     }
 
+    @Override
     public boolean hasVariable(final GameModel gameModel, final String name) {
         try {
             this.find(gameModel, name);
@@ -314,6 +348,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @throws WegasNoResultException
      */
+    @Override
     public VariableDescriptor find(final GameModel gameModel, final String name) throws WegasNoResultException {
 //        for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
 //            if (name.equals(vd.getName())) {
@@ -384,6 +419,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      * @deprecated
      */
+    @Override
+    @Deprecated
     public VariableDescriptor findByName(final GameModel gameModel, final String name) throws WegasNoResultException {
         return this.find(gameModel, name);
     }
@@ -396,6 +433,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
+    @Override
     public VariableDescriptor findByLabel(final GameModel gameModel, final String label) throws WegasNoResultException {
         // TODO update to handle label duplicata
         final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -418,6 +456,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return all gameModel descriptors with the given title
      */
+    @Override
     public List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title) {
 
         List<VariableDescriptor> result = new ArrayList<>();
@@ -436,6 +475,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return all gameModel descriptors
      */
+    @Override
     public Set<VariableDescriptor> findAll(final Long gameModelId) {
         return gameModelFacade.find(gameModelId).getVariableDescriptors();
     }
@@ -445,17 +485,15 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @return gameModel root-level descriptor
      */
+    @Override
     public List<VariableDescriptor> findByGameModelId(final Long gameModelId) {
         return gameModelFacade.find(gameModelId).getChildVariableDescriptors();
     }
 
     /**
-     * @param <T>
-     * @param gamemodel
-     * @param variableDescriptorClass the filtering class
-     *
-     * @return All specified classes and subclasses belonging to the game model.
+     * {@inheritDoc }
      */
+    @Override
     public <T extends VariableDescriptor> List<T> findByClass(final GameModel gamemodel, final Class<T> variableDescriptorClass) {
         //Cannot be a namedQuery, find by TYPE() removes subclasses
         final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -472,7 +510,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final int index) {
         final VariableDescriptor vd = this.find(descriptorId);                  // Remove from the previous list
         DescriptorListI from = vd.getParent();
-        
+
         from.localRemove(vd);
         targetListDescriptor.addItem(index, vd);
     }
@@ -531,19 +569,53 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<? extends InstanceOwner, VariableInstance> getInstances(VariableDescriptor vd) {
+        return variableInstanceFacade.getAllInstances(vd);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd) {
+        return variableInstanceFacade.getAllInstancesById(vd);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VariableInstance getInstance(VariableDescriptor vd, Player player) {
+        AbstractScope scope = vd.getScope();
+        if (scope instanceof TeamScope) {
+            return variableInstanceFacade.getTeamInstance((TeamScope) scope, player.getTeam());
+        } else if (scope instanceof GameScope) {
+            return variableInstanceFacade.getGameInstance((GameScope) scope, player.getGame());
+        } else if (scope instanceof PlayerScope) {
+            return variableInstanceFacade.getPlayerInstance((PlayerScope) scope, player);
+        } else if (scope instanceof GameModelScope) {
+            return scope.getVariableInstance(player.getGameModel());
+        }
+        return null;
+    }
+
+    /**
      *
      * @param vd
      * @param newScope
      */
     public void updateScope(VariableDescriptor vd, AbstractScope newScope) {
-        Collection<VariableInstance> values = vd.getScope().getVariableInstancesByKeyId().values();
+        Collection<VariableInstance> values = variableInstanceFacade.getAllInstances(vd).values();
         for (VariableInstance vi : values) {
             variableInstanceFacade.remove(vi);
         }
         vd.setScope(newScope);
         this.getEntityManager().persist(vd);
         vd = this.find(vd.getId());
-        gameModelFacade.resetAndReviveScopeInstances(vd.getScope());
+        gameModelFacade.resetAndReviveScopeInstances(vd);
     }
 
     /**
@@ -557,5 +629,4 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
             return null;
         }
     }
-
 }

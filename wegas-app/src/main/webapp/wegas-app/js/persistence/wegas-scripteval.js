@@ -37,9 +37,10 @@ YUI.add('wegas-scripteval', function(Y) {
                 };
             }
 
-            try {
+           try {
                 result = this.localEval(script, player); // Try to do local eval
             } catch (error) { // And if there is an error
+                Y.log("Delegate script eval after localEval failure: " + JSON.stringify(script));
                 this.remoteEval(script, cfg, player, contextId); // Use server fallback
                 return; // and stop the method
             }
@@ -102,6 +103,7 @@ YUI.add('wegas-scripteval', function(Y) {
                 return (new Function(Y.Object.keys(this.context), "return (" + script.toString() + "())")).apply({},
                     Y.Object.values(this.context));
             }
+            // AST, nope ?
             if (script.indexOf("return") === -1) {
                 script = "return " + script;
             }

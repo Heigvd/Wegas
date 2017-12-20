@@ -9,8 +9,6 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.LibraryFacade;
-import com.wegas.core.exception.client.WegasConflictException;
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import java.util.Map;
@@ -18,7 +16,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 
 /**
@@ -57,8 +54,6 @@ public class LibraryController {
     public Map get(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library) {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
-
         return libraryFacade.findLibrary(gameModelId, library);
     }
 
@@ -78,8 +73,6 @@ public class LibraryController {
     public String read(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
         return libraryFacade.findLibrary(gameModelId, library).get(key).getContent();
     }
@@ -101,8 +94,6 @@ public class LibraryController {
     public GameModel edit(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         libraryFacade.update(gameModelId, library, key, script);
 
@@ -127,8 +118,6 @@ public class LibraryController {
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-
         libraryFacade.create(gameModelId, library, key, script);
         // return Response.ok().build();
         return gameModelFacade.find(gameModelId);
@@ -150,8 +139,6 @@ public class LibraryController {
     public GameModel delete(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         libraryFacade.delete(gameModelId, library, key);
         // return Response.ok().build();

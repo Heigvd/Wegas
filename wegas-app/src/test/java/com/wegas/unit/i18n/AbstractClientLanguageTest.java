@@ -7,12 +7,10 @@
  */
 package com.wegas.unit.i18n;
 
-import com.wegas.unit.AbstractEJBContainerTest;
-import com.wegas.unit.pmg.*;
+import com.wegas.utils.AbstractTest;
 import java.io.IOException;
 import java.util.List;
 import org.glassfish.embeddable.GlassFishException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +18,7 @@ import org.junit.Test;
  *
  * @author Maxence Laurent <maxence.laurent at gmail.com>
  */
-public abstract class AbstractClientLanguageTest extends AbstractEJBContainerTest {
+public abstract class AbstractClientLanguageTest extends AbstractTest {
 
     public static final String SCRIPTROOT = "src/main/webapp/";
 
@@ -35,12 +33,6 @@ public abstract class AbstractClientLanguageTest extends AbstractEJBContainerTes
 
         //guestLogin();
         this.createGameModelFromFileWithConcatenatedScript(this.getGameModelPath(), scripts.toArray(aScripts));
-    }
-
-    @After
-    public void cleanGM() {
-        this.getGameModelFacade().remove(getGameModel().getId());
-        cleanData();
     }
 
     @Test

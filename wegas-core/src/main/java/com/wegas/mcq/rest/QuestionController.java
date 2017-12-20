@@ -7,31 +7,23 @@
  */
 package com.wegas.mcq.rest;
 
-import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
+
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -47,31 +39,22 @@ public class QuestionController {
      */
     @EJB
     private RequestFacade requestFacade;
-    /**
-     *
-     */
-    @EJB
-    private UserFacade userFacade;
-    /**
-     *
-     */
-    @EJB
-    private PlayerFacade playerFacade;
 
     /**
      *
      * @param playerId
      * @param choiceId
+     *
      * @return p
+     *
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     @POST
+
     @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response selectChoice(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws WegasScriptException {
-
-        checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         questionDescriptorFacade.selectAndValidateChoice(choiceId, playerId);
         requestFacade.commit();
@@ -83,18 +66,19 @@ public class QuestionController {
      *
      * @param questionInstanceId
      * @param playerId
+     *
      * @return p
+     *
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     @POST
+
     @Path("/ValidateQuestion/{questionInstanceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response ValidateQuestion(
             @PathParam("questionInstanceId") Long questionInstanceId,
             @PathParam("playerId") Long playerId) throws WegasScriptException {
 
         // !!!!!   CHECK TYPE OF RETURN PARAM   !!!!
-        checkPermissions(playerFacade.find(playerId).getGame(), playerId);
-
         questionDescriptorFacade.validateQuestion(questionInstanceId, playerId);
         requestFacade.commit();
 
@@ -105,24 +89,20 @@ public class QuestionController {
      *
      * @param playerId
      * @param replyId
+     *
      * @return questionInstance with up to date replies list (not containing)
-     * the canceled one anymore)
+     *         the canceled one anymore)
      */
     @GET
+
     @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public QuestionInstance cancelReply(
             @PathParam("playerId") Long playerId,
             @PathParam("replyId") Long replyId) {
 
-        checkPermissions(playerFacade.find(playerId).getGame(), playerId);
-
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
         requestFacade.commit();
-        try {
-            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
-        } catch (NoPlayerException ex) {
-            throw WegasErrorMessage.error("No Such Question Instance");
-        }
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }
 
     /**
@@ -130,32 +110,29 @@ public class QuestionController {
      * @param playerId
      * @param choiceId
      * @param startTime
+     *
      * @return p
      */
     @GET
+
     @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     public QuestionInstance selectChoice(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId,
             @PathParam("startTime") Long startTime) {
 
-        checkPermissions(playerFacade.find(playerId).getGame(), playerId);
-
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
 
         requestFacade.commit();
 
-        try {
-            return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
-        } catch (NoPlayerException ex) {
-            throw WegasErrorMessage.error("No Such Question Instance");
-        }
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }
 
     /**
      *
      * @param replyId
      * @param reply
+     *
      * @return updated reply
      */
     @PUT
@@ -164,11 +141,5 @@ public class QuestionController {
 
         //SecurityUtils.getSubject().checkPermission("Game:Edit:g" + VariableInstanceFacade.findGame(entityId).getId());
         return questionDescriptorFacade.updateReply(replyId, reply);
-    }
-
-    private void checkPermissions(Game game, Long playerId) throws UnauthorizedException {
-        if (!SecurityHelper.isPermitted(game, "Edit") && !userFacade.matchCurrentUser(playerId)) {
-            throw new UnauthorizedException();
-        }
     }
 }

@@ -65,6 +65,8 @@
             init = function() {
                 var Wegas, base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
                     pusher, userChannel, presence, cfg = (localStorage["wegas-config"] ? JSON.parse(localStorage["wegas-config"]) : {}),
+                    httpRequest,
+                    onConnected,
                     email = "#{waitController.currentUserEmail}";
 
                 window.Wegas = Wegas = {
@@ -72,6 +74,7 @@
                     currentPosition: #{waitController.currentPlayer.queueSize},
                     since: (new Date()).getTime(),
                     playerId: #{waitController.currentPlayer.id},
+                    teamId: #{waitController.currentPlayer.team.id},
                     progressBar: document.getElementById("progressbar"),
                     spinner: document.getElementById("processing"),
                     title: document.getElementById("title"),
@@ -124,8 +127,35 @@
                     }, 2000);
                 });
 
+
+                /**
+                 * check if the player been processed during page init
+                 */
+                onConnected = function() {
+                    httpRequest = new XMLHttpRequest();
+                    httpRequest.onreadystatechange = function() {
+                        var player;
+                        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                            if (httpRequest.status === 200) {
+                                player = JSON.parse(httpRequest.responseText);
+
+                                console.log("Player status: " + player.status);
+
+                                if (player.status === "LIVE" || player.status === "FAILED") {
+                                    window.location.reload();
+                                }
+                            }
+                        }
+                    };
+                    httpRequest.open("GET", base + "/rest/GameModel/Game/Team/" + Wegas.teamId + "/Player/" + Wegas.playerId);
+                    httpRequest.setRequestHeader('Content-Type', 'application/json');
+                    httpRequest.send();
+                };
+
                 presence = pusher.subscribe('global-channel');
                 userChannel = pusher.subscribe('private-User-' + #{requestController.currentUser.id});
+                presence.bind('pusher:subscription_succeeded', onConnected, this);
+                userChannel.bind('pusher:subscription_succeeded', onConnected, this);
 
                 presence.bind('populateQueue-dec', function(size) {
                     var lastUpdate, alreadyWaited, timeToWait;

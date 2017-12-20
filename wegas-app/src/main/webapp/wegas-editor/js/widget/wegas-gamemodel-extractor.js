@@ -21,7 +21,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
             var cb = this.get(CONTENTBOX),
                 game = this.get("game"),
                 freeForAll = game.get("properties.freeForAll"),
-                cfg, options = [{label: "-select-", value: "-1"}], spacer = "";
+                options = [{label: "-select-", value: "-1"}], spacer = "";
 
             if (!freeForAll) {
                 spacer = "&nbsp;&nbsp;";
@@ -43,7 +43,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                 }, this);
             }, this);
 
-            cfg = {
+            this.cfg = {
                 type: "group",
                 parentEl: cb,
                 fields: [{
@@ -54,14 +54,16 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                     }]
             };
 
-            inputEx.use(cfg, Y.bind(function() {
-                this._form = new inputEx(cfg);
+            inputEx.use(this.cfg, Y.bind(function() {
+                this._form = new inputEx(this.cfg);
             }, this));
 
             cb.append('<div><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
         },
         syncUI: function() {
-            this.get("contentBox").one("select").all("option[value='-1']").setAttribute("disabled", true);
+            inputEx.use(this.cfg, Y.bind(function() {
+                this.get("contentBox").one("select").all("option[value='-1']").setAttribute("disabled", true);
+            }, this));
         },
         setStatus: function(status) {
             this.get("contentBox").one(".status").set("text", status);

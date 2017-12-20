@@ -148,7 +148,7 @@ public class JCRFacade {
                 //TODO : check allowed mime-types
                 try {
                     detachedFile.setBase64Data(file, mediaType);
-                    logger.info(name + "(" + mediaType + ") uploaded");
+                    logger.info("{} ({}) uploaded", name, mediaType);
                     return detachedFile;
                 } catch (IOException ex) {
                     logger.error("Error reading uploaded file :", ex);

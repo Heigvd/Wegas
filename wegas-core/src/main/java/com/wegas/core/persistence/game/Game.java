@@ -20,6 +20,9 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -35,11 +38,13 @@ import javax.validation.constraints.Pattern;
             //    @UniqueConstraint(columnNames = {"name"}),
             @UniqueConstraint(columnNames = {"token"})},
         indexes = {
-            @Index(columnList = "gamemodelid")
+            @Index(columnList = "gamemodelid"),
+            @Index(columnList = "createdby_id")
         }
 )
 @NamedQueries({
     @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+    @NamedQuery(name = "Game.findIdById", query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId"),
     @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
@@ -68,7 +73,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @NotNull
     @Basic(optional = false)
-    
+
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     private String token;
 
@@ -96,9 +101,9 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     /**
      *
      */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("game-team")
-    private List<Team> teams = new ArrayList<>();
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private GameTeams gameTeams;
 
     @JsonIgnore
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
@@ -120,13 +125,13 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @Enumerated
-    private GameAccess access = GameAccess.CLOSE;
+    private GameAccess access = GameAccess.OPEN;
 
     /**
      *
      */
     @Enumerated(value = EnumType.STRING)
-    
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -158,11 +163,9 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @PrePersist
     public void prePersist() {
         this.setCreatedTime(new Date());
-        /*
-         * if (this.getTeams().isEmpty()) {
-         * this.addTeam(new DebugTeam());
-         * }
-         */
+        if (gameTeams == null) {
+            this.setGameTeams(new GameTeams());
+        }
         this.preUpdate();
     }
 
@@ -182,13 +185,25 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
         this.setToken(other.getToken());
     }
 
+    public GameTeams getGameTeams() {
+        if (gameTeams == null) {
+            this.setGameTeams(new GameTeams());
+        }
+        return gameTeams;
+    }
+
+    public void setGameTeams(GameTeams gameTeams) {
+        this.gameTeams = gameTeams;
+        this.gameTeams.setGame(this);
+    }
+
     /**
      * @return the teams
      */
     @JsonManagedReference("game-team")
     @JsonView(Views.IndexI.class)
     public List<Team> getTeams() {
-        return this.teams;
+        return this.getGameTeams().getTeams();
     }
 
     /**
@@ -196,7 +211,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @JsonManagedReference("game-team")
     public void setTeams(List<Team> teams) {
-        this.teams = teams;
+        this.getGameTeams().setTeams(teams);
     }
 
     @JsonIgnore
@@ -222,8 +237,11 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
         return players;
     }
 
-    @Override
+    /**
+     * {@inheritDoc }
+     */
     @JsonIgnore
+    @Override
     public Player getAnyLivePlayer() {
         for (Team t : this.getTeams()) {
             return t.getAnyLivePlayer();
@@ -236,6 +254,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      */
     @JsonIgnore
     public void addTeam(Team t) {
+
         this.getTeams().add(t);
         t.setGame(this);
         //t.setGameId(this.getId());
@@ -503,5 +522,37 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
         entities.add(this);
         map.put(audience, entities);
         return map;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        // Only trainer can create games
+        return WegasMembership.TRAINER;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        return WegasMembership.ADMIN;
+    }
+
+
+    @Override
+    public WegasPermission getAssociatedReadPermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAME);
+    }
+
+    @Override
+    public WegasPermission getAssociatedWritePermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME);
     }
 }

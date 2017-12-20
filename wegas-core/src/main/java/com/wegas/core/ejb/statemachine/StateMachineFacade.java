@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb.statemachine;
 
+import com.wegas.core.api.StateMachineFacadeI;
 import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
@@ -39,7 +40,8 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
+public class StateMachineFacade extends WegasAbstractFacade implements  StateMachineFacadeI {
+//public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> implements  StateMachineFacadeI {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
 
@@ -55,27 +57,10 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     private PlayerFacade playerFacade;
 
     @EJB
-    private VariableInstanceFacade variableInstanceFacade;
-
-    @EJB
     private ScriptFacade scriptManager;
 
     @Inject
-    private RequestManager requestManager;
-
-    @Inject
     private ScriptEventFacade scriptEvent;
-
-    /**
-     * Manage internal event transition.
-     */
-    //private InternalStateMachineEventCounter stateMachineEventsCounter;
-    /**
-     *
-     */
-    public StateMachineFacade() {
-        super(StateMachineDescriptor.class);
-    }
 
     public Transition findTransition(Long transitionId) {
         return getEntityManager().find(Transition.class, transitionId);
@@ -147,7 +132,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         List<Transition> passed = new ArrayList<>();
         //stateMachineEventsCounter = new InternalStateMachineEventCounter();
         Integer steps = this.doSteps(player, passed, statemachines, 0);
-        logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
+        logger.info("#steps[{}] - Player {} triggered transition(s):{}", steps, player.getName(), passed);
         //stateMachineEventsCounter = null;
         /*
         Force resources release
@@ -185,7 +170,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
                     try {
                         validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
                     } catch (EJBException ex) {
-                        logger.error("Transition eval exception: FSM " + sm.getName() + ":" + sm.getId() + ":" + transition.getTriggerCondition().getContent());
+                        logger.error("Transition eval exception: FSM {}:{}:{}",  sm.getName(), sm.getId(), transition.getTriggerCondition().getContent());
                         throw ex;
                     } catch (WegasScriptException ex) {
                         ex.setScript("Variable " + sm.getLabel());
@@ -301,16 +286,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         return stateMachineInstance;
     }
 
-    @Override
-    public void create(StateMachineDescriptor entity) {
-        variableDescriptorFacade.create(entity);
-    }
-
-    @Override
-    public void remove(StateMachineDescriptor entity) {
-        variableDescriptorFacade.remove(entity);
-    }
-
     /**
      * Access from nashhorn event callback
      */
@@ -331,6 +306,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         }
     }
 
+    @Override
     public long countValidTransition(DialogueDescriptor dialogueDescriptor, Player currentPlayer) {
         long count = 0;
         DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();

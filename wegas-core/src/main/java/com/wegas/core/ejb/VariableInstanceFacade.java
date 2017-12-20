@@ -8,13 +8,13 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.event.internal.InstanceRevivedEvent;
-import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.api.VariableInstanceFacadeI;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
@@ -22,14 +22,19 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.resourceManagement.ejb.IterationFacade;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.reviewing.ejb.ReviewingFacade;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
@@ -43,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
+public class VariableInstanceFacade extends BaseFacade<VariableInstance> implements VariableInstanceFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(VariableInstanceFacade.class);
     /**
@@ -73,7 +78,30 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
     private GameFacade gameFacade;
 
     @Inject
-    private Event<InstanceRevivedEvent> instanceRevivedEvent;
+    private UserFacade userFacade;
+
+    @Inject
+    private ResourceFacade resourceFacade;
+
+    @Inject
+    private IterationFacade iterationFacade;
+
+    @Inject
+    private ReviewingFacade reviewingFacade;
+
+    @Inject QuestionDescriptorFacade questionDescriptorFacade;
+
+    private Beanjection beans = null;
+
+    private Beanjection getBeans() {
+        if (beans == null) {
+            logger.error("INIT BEANS");
+            beans = new Beanjection(this, variableDescriptorFacade,
+                    resourceFacade, iterationFacade,
+                    reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
+        }
+        return beans;
+    }
 
     /**
      *
@@ -121,6 +149,49 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
             return query.getSingleResult();
         } catch (NoResultException ex) {
             return null;
+        }
+    }
+
+    /**
+     *
+     * @param instances
+     *
+     * @return
+     */
+    private Map<Long, VariableInstance> mapInstances(Map<? extends InstanceOwner, VariableInstance> instances) {
+        Map<Long, VariableInstance> mappedInstances = new HashMap<>();
+        for (Entry<? extends InstanceOwner, VariableInstance> entry : instances.entrySet()) {
+            // GameModelScope Hack (null key means id=0...)
+            mappedInstances.put((entry.getKey() != null ? entry.getKey().getId() : 0L), entry.getValue());
+        }
+        return mappedInstances;
+    }
+
+    public Map<Long, VariableInstance> getAllInstancesById(VariableDescriptor vd) {
+        return this.mapInstances(this.getAllInstances(vd));
+    }
+
+    /**
+     * get all instances
+     *
+     * @param vd
+     *
+     * @return
+     */
+    public Map<? extends InstanceOwner, VariableInstance> getAllInstances(VariableDescriptor vd) {
+        AbstractScope scope = vd.getScope();
+        if (scope instanceof TeamScope) {
+            return this.getAllTeamInstances((TeamScope) scope);
+        } else if (scope instanceof PlayerScope) {
+            return this.getAllPlayerInstances((PlayerScope) scope);
+        } else if (scope instanceof GameScope) {
+            return this.getAllGameInstances((GameScope) scope);
+        } else if (scope instanceof GameModelScope) {
+            HashMap<GameModel, VariableInstance> hashMap = new HashMap<GameModel, VariableInstance>();
+            hashMap.put(null, ((GameModelScope) scope).getVariableInstance());
+            return hashMap;
+        } else {
+            return new HashMap<>();
         }
     }
 
@@ -285,9 +356,13 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         VariableInstance vi = vd.getScope().getVariableInstance(playerFacade.find(playerId));
         vi.merge(variableInstance);
 
-        instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+        this.reviveInstance(vi);
 
         return vi;
+    }
+
+    public void reviveInstance(VariableInstance vi) {
+        vi.revive(getBeans());
     }
 
     @Override

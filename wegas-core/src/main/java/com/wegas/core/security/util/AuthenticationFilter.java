@@ -7,17 +7,16 @@
  */
 package com.wegas.core.security.util;
 
-import com.wegas.core.Helper;
-import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.net.URLEncoder;
-import javax.naming.NamingException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,14 +24,17 @@ import org.apache.shiro.web.util.WebUtils;
  */
 public class AuthenticationFilter extends PassThruAuthenticationFilter {
 
+    private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
+
     /**
      * Extend to authorize remembered login
-     *
+     * <p>
      * edition if credentials were not give for the current session.
      *
      * @param request
      * @param response
      * @param mappedValue
+     *
      * @return true if current user is already logged in or if an automatic
      *         guest login has been done
      */
@@ -40,24 +42,14 @@ public class AuthenticationFilter extends PassThruAuthenticationFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         // @todo It should not be authorized to do sensitive operations like pwd
         Subject subject = getSubject(request, response);
-        if (subject.isAuthenticated() || subject.isRemembered()) {
-            return true;
-        } else if (request.getParameter("al") != null
-                && Helper.getWegasProperty("guestallowed").equals("true")) {    // Automatic guest login
-            try {
-                Helper.lookupBy(UserFacade.class).guestLogin();
-                return true;
-            } catch (NamingException ex) {
-                // Gotcha: log this
-            }
-        }
-        return false;
+        return (subject.isAuthenticated() || subject.isRemembered());
     }
 
     /**
      *
      * @param request
      * @param response
+     *
      * @throws IOException
      */
     @Override

@@ -66,7 +66,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext cr) throws IOException {
-        //RequestFacade rmf = RequestFacade.lookup();
         RequestManager requestManager = requestFacade.getRequestManager();
 
         requestManager.setSocketId(cr.getHeaderString("socketId"));
@@ -77,13 +76,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         requestManager.setPath(cr.getUriInfo().getPath());
 
         //String userAgent = cr.getHeaderString("user-agent");
-        User currentUser = null;
-        try {
-            currentUser = userFacade.getCurrentUser();
-        } catch (WegasNotFoundException e) {
-        }
-        requestManager.setCurrentUser(currentUser);
-
         Class<?> view;
 
         // Handle language parameter
@@ -117,8 +109,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
                 break;
         }
 
-        logger.info("Start Request [" + requestManager.getRequestId()
-                + "] " + cr.getMethod() + " " + cr.getUriInfo().getPath());
+        logger.info("Start Request [{}] {} {}", requestManager.getRequestId(), cr.getMethod(), cr.getUriInfo().getPath());
 
         try {
             cr.setRequestUri(new URI(newUri));
@@ -175,7 +166,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
         @Override
         public ObjectWriter modify(EndpointConfigBase<?> ecb, MultivaluedMap<String, Object> mm, Object o, ObjectWriter writer, JsonGenerator jg) throws IOException {
-            //Class view = RequestFacade.lookup().getView();
             return writer.withView(view);
         }
     }

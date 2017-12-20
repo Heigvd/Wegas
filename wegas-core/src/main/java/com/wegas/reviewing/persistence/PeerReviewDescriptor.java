@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
@@ -21,9 +22,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
@@ -58,6 +61,13 @@ import javax.validation.constraints.NotNull;
  * @see PeerReviewInstance
  */
 @Entity
+@Table(
+        indexes = {
+            @Index(columnList = "fbcomments_id"),
+            @Index(columnList = "toreview_variabledescriptor_id"),
+            @Index(columnList = "feedback_id")
+        }
+)
 public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance> {
 
     private static final long serialVersionUID = 1L;
@@ -266,6 +276,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public void setFeedback(EvaluationDescriptorContainer feedback) {
         this.feedback = feedback;
+        feedback.setFbPeerReviewDescriptor(this);
     }
 
     /**
@@ -285,6 +296,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public void setFbComments(EvaluationDescriptorContainer fbComments) {
         this.fbComments = fbComments;
+        this.fbComments.setCommentsPeerReviewDescriptor(this);
     }
 
     /*
@@ -315,5 +327,10 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
 
     public void setIncludeEvicted(Boolean includeEvicted) {
         this.includeEvicted = includeEvicted;
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getReviewingFacade().revivePeerReviewDescriptor(this);
     }
 }

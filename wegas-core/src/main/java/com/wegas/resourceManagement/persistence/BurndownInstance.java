@@ -11,13 +11,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -77,5 +77,10 @@ public class BurndownInstance extends VariableInstance {
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getIterationFacade().reviveBurndownInstance(this);
     }
 }

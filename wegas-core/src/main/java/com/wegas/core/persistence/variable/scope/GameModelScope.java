@@ -9,22 +9,19 @@ package com.wegas.core.persistence.variable.scope;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.persistence.InstanceOwner;
 
 /**
  *
@@ -42,14 +39,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JsonIgnore
     private VariableInstance variableInstance;
-
-    /**
-     *
-     */
-    //@PrePersist
-    public void prePersist() {
-        //this.propagateDefaultInstance(null);
-    }
 
     @Override
     protected void propagate(GameModel gameModel, boolean create) {
@@ -82,25 +71,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
         } else {
             propagate(getVariableDescriptor().getGameModel(), create);
         }
-    }
-
-    /**
-     *
-     * @return the one instance mapped with null (HACK)
-     */
-    @Override
-    public Map<GameModel, VariableInstance> getVariableInstances() {
-        Map<GameModel, VariableInstance> ret = new HashMap<>();
-        ret.put(null, getVariableInstance());
-        return ret;
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
     }
 
     /**
@@ -177,10 +147,5 @@ public class GameModelScope extends AbstractScope<GameModel> {
     @JsonIgnore
     public void setVariableInstance(VariableInstance variableInstance) {
         this.variableInstance = variableInstance;
-    }
-
-    @Override
-    public Map<GameModel, VariableInstance> getPrivateInstances() {
-        return this.getVariableInstances();
     }
 }

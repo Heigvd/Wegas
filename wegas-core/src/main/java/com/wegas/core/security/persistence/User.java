@@ -12,10 +12,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
+import javax.persistence.*;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -41,9 +44,24 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     /**
      *
      */
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH} /*, orphanRemoval = true */)
-    @JsonManagedReference(value = "player-user")
+    @OneToMany(mappedBy = "user", cascade = {
+        CascadeType.DETACH,
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REFRESH
+    } /*, orphanRemoval = true */)
+    //@JsonManagedReference(value = "player-user")
+    @JsonIgnore
     private List<Player> players = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "createdBy", cascade = {
+        CascadeType.DETACH,
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REFRESH
+    } /*, orphanRemoval = true */)
+    private List<Team> teams = new ArrayList<>();
 
     /**
      *
@@ -63,7 +81,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
                 @JoinColumn(name = "users_id", referencedColumnName = "id")},
             inverseJoinColumns = {
                 @JoinColumn(name = "roles_id", referencedColumnName = "id")})
-    private Set<Role> roles = new HashSet<>();
+    private Collection<Role> roles = new ArrayList<>();
 
     /**
      *
@@ -91,8 +109,8 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     /**
      * @return all user's players
      */
-    @JsonIgnore
-    @JsonManagedReference(value = "player-user")
+    //@JsonIgnore
+    //@JsonManagedReference(value = "player-user")
     public List<Player> getPlayers() {
         return players;
     }
@@ -100,9 +118,17 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     /**
      * @param players the players to set
      */
-    @JsonManagedReference(value = "player-user")
+    //@JsonManagedReference(value = "player-user")
     public void setPlayers(List<Player> players) {
         this.players = players;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
     }
 
     /**
@@ -152,6 +178,9 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         }
     }
 
+    public void setName(String name) {
+    }
+
     /**
      * {@inheritDoc }
      */
@@ -186,14 +215,14 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     /**
      * @return the roles
      */
-    public Set<Role> getRoles() {
+    public Collection<Role> getRoles() {
         return roles;
     }
 
     /**
      * @param roles the roles to set
      */
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
 
@@ -216,5 +245,25 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     @Override
     public int compareTo(User o) {
         return this.getName().toLowerCase(Locale.ENGLISH).compareTo(o.getName().toLowerCase(Locale.ENGLISH));
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        Collection<WegasPermission> p = WegasPermission.getAsCollection(
+                new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.USER)
+        );
+        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel
+        return p;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return null;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        //Sign-Up
+        return null;
     }
 }

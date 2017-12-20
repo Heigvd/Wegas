@@ -7,13 +7,23 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,16 +32,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.Helper;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.core.persistence.variable.Propertable;
-import com.wegas.core.persistence.VariableProperty;
-import com.wegas.resourceManagement.ejb.IterationFacade;
-import javax.persistence.Column;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -429,6 +429,12 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
 
         super.updateCacheOnDelete(beans);
     }
+
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getResourceFacade().reviveTaskDescriptor(this);
+    }
+
 
     /*
      * BACKWARD COMPAT

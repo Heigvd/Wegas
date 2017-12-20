@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.security.persistence.User;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -62,12 +63,19 @@ public class RequestFacade {
      * @Inject
      * private Event<PlayerAction> playerActionEvent;
      */
-
     /**
      * @return the variableInstanceManager
      */
     public RequestManager getRequestManager() {
         return requestManager;
+    }
+
+    public void clearEntities() {
+        this.requestManager.clearEntities();
+    }
+
+    public User getCurrentUser() {
+        return requestManager.getCurrentUser();
     }
 
     /**
@@ -95,9 +103,13 @@ public class RequestFacade {
      * @param playerId
      */
     public void setPlayer(Long playerId) {
-        Player p = playerFacade.find(playerId);
-        //playerFacade.getEntityManager().detach(p);
-        this.requestManager.setPlayer(p);
+        if (playerId != null) {
+            Player p = playerFacade.find(playerId);
+            //playerFacade.getEntityManager().detach(p);
+            this.requestManager.setPlayer(p);
+        } else {
+            requestManager.setPlayer(null);
+        }
     }
 
     /**
@@ -177,16 +189,6 @@ public class RequestFacade {
      */
     public Map<String, List<AbstractEntity>> getUpdatedEntities() {
         return requestManager.getUpdatedEntities();
-    }
-
-    /**
-     * An outdated entity in an entity we know clients do not have the last
-     * version and we can not figure out how to send them the updated one
-     *
-     * @return all entities marked as outdated during the transaction
-     */
-    public Map<String, List<AbstractEntity>> getOutdatedEntities() {
-        return requestManager.getOutdatedEntities();
     }
 
     /*

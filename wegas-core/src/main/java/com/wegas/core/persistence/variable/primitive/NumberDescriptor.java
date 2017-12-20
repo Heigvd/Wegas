@@ -59,15 +59,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @param name
-     * @param defaultInstance
-     */
-    public NumberDescriptor(String name, NumberInstance defaultInstance) {
-        super(name, defaultInstance);
-    }
-
-    /**
-     *
      * @param a
      */
     @Override
@@ -186,8 +177,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      * @param value
      */
     public void add(Player p, double value) {
-        NumberInstance instance = this.getInstance(p);
-        instance.setValue(instance.getValue() + value);
+        this.getInstance(p).add(value);
     }
 
     /**
@@ -206,8 +196,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      * @param value
      */
     public void add(Player p, int value) {
-        NumberInstance instance = this.getInstance(p);
-        instance.setValue(instance.getValue() + value);
+        this.getInstance(p).add(value);
     }
 
     /**
