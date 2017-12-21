@@ -32,7 +32,6 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
@@ -59,7 +58,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -259,7 +257,8 @@ public class UpdateController {
         if (!(vd.getScope() instanceof GameModelScope)) {
             EntityManager em = this.getEntityManager();
 
-            Collection<VariableInstance> values = vd.getScope().getVariableInstancesByKeyId().values();
+            Collection<VariableInstance> values = this.descriptorFacade.getInstances(vd).values();
+
             for (VariableInstance vi : values) {
                 em.remove(vi);
             }
@@ -338,7 +337,7 @@ public class UpdateController {
         try {
             sb.append("[");
 
-            ListDescriptor etapes = (ListDescriptor) VariableDescriptorFacade.lookup().find(gameModel, "etapes");
+            ListDescriptor etapes = (ListDescriptor) descriptorFacade.find(gameModel, "etapes");
             for (VariableDescriptor item : etapes.getItems()) {
                 this.updateScope(item);
             }
@@ -376,7 +375,7 @@ public class UpdateController {
             scope.setBroadcastScope("GameScope");
             vd.setScope(scope);
             String json = vd.toJson(Views.Export.class);
-            logger.error("JSON for " + parentName + "/" + name + " variable: " + json);
+            logger.error("JSON for {}/{} variable: ", parentName, name, json);
 
             descriptorFacade.remove(vd.getId());
             descriptorFacade.flush();
@@ -429,23 +428,23 @@ public class UpdateController {
 
     private String addVariable(GameModel gm, String json, String varName, String parentName) {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        logger.error("Going to add " + parentName + "/" + varName + " variable");
+        logger.error("Going to add {}/{} variable", parentName, varName);
 
         try {
             // Does the variable already exists ? 
             descriptorFacade.find(gm, varName);
-            logger.error("  -> variable " + varName + " exists : SKIP");
+            logger.error("  -> variable {} exists : SKIP", varName);
             return "already exists";
         } catch (WegasNoResultException ex) {
-            logger.error("  -> variable " + varName + " not found : PROCEED");
+            logger.error("  -> variable {} not found : PROCEED", varName);
         }
 
         try {
             // assert the parent already exists ? 
             descriptorFacade.find(gm, parentName);
-            logger.error("  -> variable " + parentName + " exists : PROCEED");
+            logger.error("  -> variable {} exists : PROCEED", parentName);
         } catch (WegasNoResultException ex) {
-            logger.error("  -> variable " + parentName + " not found : FAILED");
+            logger.error("  -> variable {} not found : FAILED", parentName);
             return "parent not found";
         }
         try {
@@ -454,10 +453,10 @@ public class UpdateController {
             descriptorFacade.flush();
             return "OK";
         } catch (WegasNotFoundException ex) {
-            logger.error("Error white adding the variable : parent " + parentName + " not found", ex);
+            logger.error("Error white adding the variable : parent {} not found", parentName);
             return "Parent (2) not found";
         } catch (IOException ex) {
-            logger.error("Error While Reading JSON: " + json, ex);
+            logger.error("Error While Reading JSON: {}", json);
             return "JSON Error";
         }
     }
@@ -520,14 +519,14 @@ public class UpdateController {
 
         /* Kill'em all */
         for (VariableInstance vi : findOrphans) {
-            logger.error("Remove instance: " + vi.getId());
+            logger.error("Remove instance: {}", vi.getId());
             String descName;
             if (vi.getScope() != null) {
                 descName = vi.getDescriptor().getName();
             } else {
                 descName = "NOPE";
             }
-            logger.error("    DESC: " + descName);
+            logger.error("    DESC: {}", descName);
             em.remove(vi);
 
             if (++counter == 3000) {
@@ -544,7 +543,7 @@ public class UpdateController {
         int counter = 0;
 
         for (Game g : findNoDebugTeamGames) {
-            logger.error("Restore Game: " + g.getName() + "/" + g.getId());
+            logger.error("Restore Game: {}/{}", g.getName(), g.getId());
             DebugTeam dt = new DebugTeam();
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
@@ -602,8 +601,9 @@ public class UpdateController {
             /**
              * make sure each occupation exists for each resources
              */
-            Collection<ResourceInstance> resourceInstances = rd.getScope().getPrivateInstances().values();
-            for (ResourceInstance resourceInstance : resourceInstances) {
+            Collection<VariableInstance> resourceInstances = descriptorFacade.getInstances(rd).values();
+            for (VariableInstance vi : resourceInstances) {
+                ResourceInstance resourceInstance = (ResourceInstance) vi;
                 for (Entry<Long, List<Occupation>> entry : map.entrySet()) {
                     if (!hasOccupation(resourceInstance, entry.getKey().doubleValue())) {
                         resourceFacade.addOccupation(resourceInstance.getId(), false, entry.getKey());
@@ -688,12 +688,12 @@ public class UpdateController {
             List<VariableInstance> list = query2.getResultList();
 
             sb.append(list.get(0));
-            sb.append(" SCOPE - TEAM " + scope.getId() + "   " + game.getId());
+            sb.append(" SCOPE - TEAM ").append(scope.getId()).append("   ").append(game.getId());
 
             sb.append(("<br />"));
 
             if (list.size() != 2) {
-                sb.append("   -> NOT 2 but " + list.size());
+                sb.append("   -> NOT 2 but ").append(list.size());
             } else {
 
                 VariableInstance get = list.get(0);
@@ -757,17 +757,5 @@ public class UpdateController {
         List<Player> players = query.getResultList();
 
         return players;
-    }
-
-    @POST
-    @Path("RecoverRights")
-    public String recoverRights() {
-        List<Player> players = this.getPlayerWithoutPermissions();
-        for (Player p : players) {
-            logger.error("Player: {}", p);
-            User user = p.getUser();
-            gameFacade.addRights(user, p.getGame());
-        }
-        return "OK";
     }
 }

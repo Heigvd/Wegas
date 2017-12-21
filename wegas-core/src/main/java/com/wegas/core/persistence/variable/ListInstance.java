@@ -24,7 +24,7 @@ public class ListInstance extends VariableInstance {
     /**
      *
      * @param index
-     * @return
+     * @return i-est child of the listDescriptor (? why here ?) 
      */
     public VariableDescriptor item(int index) {
         return ((ListDescriptor) this.getDescriptor()).item(index);

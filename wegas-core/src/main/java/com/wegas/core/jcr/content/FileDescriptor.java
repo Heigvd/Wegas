@@ -80,7 +80,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @param from
      * @param len
-     * @return
+     * @return file parital content as Base64 within an inputStream
      */
     @JsonIgnore
     public InputStream getBase64Data(long from, int len) {
@@ -95,7 +95,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * @return
+     * @return file content as Base64 within an inputStream
      */
     @JsonIgnore
     public InputStream getBase64Data() {
@@ -155,7 +155,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * @return
+     * @return last modified date
      */
     @JsonProperty("dataLastModified")
     public Calendar getDataLastModified() {
@@ -163,7 +163,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * @return
+     * @return file content as bytes
      */
     @JsonProperty("bytes")
     @Override

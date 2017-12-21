@@ -7,27 +7,29 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.security.aai.AaiAccount;
-import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.User;
-import java.util.Date;
-import java.util.Objects;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.aai.AaiAccount;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.security.ejb.UserFacade;
+import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +39,9 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameId", query = "SELECT player FROM Player player WHERE player.team.game.id = :gameId"),
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByGameIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.game.id = :gameId"),
-    @NamedQuery(name = "DEPRECATED_Player.findPlayerByTeamIdAndUserId", query = "SELECT player FROM Player player WHERE player.user.id = :userId AND player.team.id = :teamId"),
+    @NamedQuery(name = "Player.findPlayerByGameModelIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.gameModel.id = :gameModelId"),
+    @NamedQuery(name = "Player.findPlayerByGameIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.id = :gameId"),
+    @NamedQuery(name = "Player.findPlayerByTeamIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId"),
     @NamedQuery(name = "Player.findToPopulate", query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -102,7 +104,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      *
      */
     @Enumerated(value = EnumType.STRING)
-    
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
     private Status status = Status.WAITING;
 
@@ -216,13 +218,18 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     /**
+     *
+     * @param teamId public void setTeamId(Long teamId) { this.teamId = teamId;
+     *               }
+     */
+    /**
      * @return the userId
      */
     public Long getUserId() {
         return (this.user != null ? user.getId() : null);
     }
 
-    // *** Sugar *** //
+    // ~~~ Sugar ~~~
     /**
      *
      * @return gameModel the player is linked to
@@ -424,5 +431,37 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @Override
     public String getChannel() {
         return Helper.PLAYER_CHANNEL_PREFIX + this.getId();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        return null;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        // ?? strange, should be either this.getChannel() to have a very incognito mode
+        // but, with broadcastScope, should be GameModel.Read, nope ? TBT
+        return this.getTeam().getRequieredReadPermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
+    }
+
+    /*@Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        // One must have the right to delete its own team from the game
+        return this.getGame().getGameTeams().getRequieredUpdatePermission();
+    }*/
+    @Override
+    public WegasPermission getAssociatedReadPermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.PLAYER);
+    }
+
+    @Override
+    public WegasPermission getAssociatedWritePermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.PLAYER);
     }
 }

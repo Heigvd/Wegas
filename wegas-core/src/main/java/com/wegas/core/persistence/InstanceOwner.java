@@ -9,7 +9,10 @@ package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,16 +32,33 @@ public interface InstanceOwner {
      *
      * Pusher channel to use for this owner
      *
-     * @return
+     * @return instance owner pusher channel
      */
     public String getChannel();
 
     /**
      * Fetch all players involved
      *
-     * @return all players who have access to the owner instances
+     * @return all players who have write access to the owner instances
      */
     public List<Player> getPlayers();
+
+    /**
+     *
+     * @return all LIVE players who have write access to the owner instances
+     */
+    @JsonIgnore
+    default public List<Player> getLivePlayers() {
+        List<Player> players = this.getPlayers();
+        List<Player> lives = new ArrayList<>(players.size());
+        for (Player p : players) {
+            if (p.getStatus().equals(Status.LIVE)) {
+                lives.add(p);
+            }
+        }
+
+        return lives;
+    }
 
     /**
      * Get any player involved
@@ -50,7 +70,7 @@ public interface InstanceOwner {
     /**
      * Return instances that belongs to this target only
      *
-     * @return
+     * @return instances that belongs to this target only
      */
     @JsonIgnore
     public List<VariableInstance> getPrivateInstances();
@@ -58,8 +78,24 @@ public interface InstanceOwner {
     /**
      * return instances that belongs to this target and its children
      *
-     * @return
+     * @return instances that belongs to this target and its children
      */
     @JsonIgnore
     public List<VariableInstance> getAllInstances();
+
+    /**
+     * The permission which require read right to this instanceOwner
+     *
+     * @return
+     */
+    @JsonIgnore
+    public WegasPermission getAssociatedReadPermission();
+
+    /**
+     * The permission to grant to give write right to this instanceOwner
+     *
+     * @return
+     */
+    @JsonIgnore
+    public WegasPermission getAssociatedWritePermission();
 }

@@ -19,10 +19,8 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.security.util.SecurityHelper;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -86,29 +84,8 @@ public class GameController {
     @Path("{entityId : [1-9][0-9]*}")
     public Game find(@PathParam("entityId") Long entityId) {
         Game g = gameFacade.find(entityId);
-        SecurityHelper.checkAnyPermission(g, Arrays.asList("View"));
 
         return g; // was: gameFacade.find(entityId);
-    }
-
-    /**
-     * @param gameModelId
-     *
-     * @return all gameModel games
-     */
-    @GET
-    public Collection<Game> index(@PathParam("gameModelId") String gameModelId) {
-        final Collection<Game> retGames = new ArrayList<>();
-        final Collection<Game> games = (!gameModelId.isEmpty())
-                ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
-                : gameFacade.findAll(Game.Status.LIVE);
-
-        for (Game g : games) {
-            if (SecurityHelper.isPermitted(g, "Edit")) {
-                retGames.add(g);
-            }
-        }
-        return retGames;
     }
 
     /**
@@ -124,6 +101,7 @@ public class GameController {
      */
     @POST
     public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws CloneNotSupportedException {
+        // Special instantiate permission is not handled by automatic permission system
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.publishAndCreate(gameModelId, game);
@@ -150,6 +128,7 @@ public class GameController {
     @Path("ShadowCreate")
     @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
+        // Special instantiate permission is not handled by automatic permission system
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.create(gameModelId, entity);
@@ -183,27 +162,9 @@ public class GameController {
     @Path("{entityId: [1-9][0-9]*}")
     public Game update(@PathParam("entityId") Long entityId, Game entity) {
 
-        SecurityHelper.checkPermission(gameFacade.find(entityId), "Edit");
+        requestManager.assertGameTrainer(entity);
 
         return gameFacade.update(entityId, entity);
-    }
-
-    /**
-     * Due to strange unpredictable bug, some users might not have rights to
-     * view the game. This method check if all player within the game have the
-     * correct rights and create them if it's not the case
-     *
-     * @param gameId id of the game one want to recover players rights
-     *
-     * @return the game
-     */
-    @PUT
-    @Path("{gameId: [1-9][0-9]*}/recoverRights")
-    public Game recoverRights(@PathParam("gameId") Long gameId) {
-        Game game = gameFacade.find(gameId);
-        SecurityHelper.checkPermission(game, "Edit");
-        gameFacade.recoverRights(game);
-        return game;
     }
 
     /**
@@ -218,7 +179,7 @@ public class GameController {
     @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
     public Game changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final Game.Status status) {
         Game game = gameFacade.find(entityId);
-        SecurityHelper.checkPermission(game, "Edit");
+        requestManager.assertGameTrainer(game);
         switch (status) {
             case LIVE:
                 gameFacade.live(game);
@@ -240,19 +201,6 @@ public class GameController {
      *
      * @return all game having the given status
      */
-    @GET
-    @Path("status_old/{status: [A-Z]*}")
-    public Collection<Game> findByStatus_old(@PathParam("status") final Game.Status status) {
-        final Collection<Game> retGames = new ArrayList<>();
-        final Collection<Game> games = gameFacade.findAll(status);
-        for (Game g : games) {
-            if (SecurityHelper.isPermitted(g, "Edit")) {
-                retGames.add(gameFacade.getGameWithoutDebugTeam(g));
-            }
-        }
-        return retGames;
-    }
-
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<Game> findByStatus(@PathParam("status") final Game.Status status) {
@@ -295,7 +243,7 @@ public class GameController {
         final Collection<Game> retGames = new ArrayList<>();
         final Collection<Game> games = gameFacade.findAll(Game.Status.BIN);
         for (Game g : games) {
-            if (SecurityHelper.isPermitted(g, "Edit")) {
+            if (requestManager.hasAnyPermission(g.getRequieredDeletePermission())){
                 gameFacade.delete(g);
                 retGames.add(g);
             }
@@ -325,8 +273,7 @@ public class GameController {
                 r = Response.status(Response.Status.CONFLICT).build();
                 if (game.getAccess() == Game.GameAccess.OPEN) {
                     if (requestManager.tryLock("join-" + gameId + "-" + currentUser.getId())) {
-                        Player player = playerFacade.checkExistingPlayer(game.getId(), currentUser.getId());
-                        if (player == null) {
+                        if (!playerFacade.isInGame(game.getId(), currentUser.getId())) {
                             if (game.getGameModel().getProperties().getFreeForAll()) {
                                 Team team = new Team("Ind-" + Helper.genToken(12), 1);
                                 teamFacade.create(game.getId(), team); // return managed team
@@ -373,7 +320,8 @@ public class GameController {
     @Path("{gameId : [1-9][0-9]*}/Reset")
     public Response reset(@PathParam("gameId") Long gameId) {
 
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
+        Game game = gameFacade.find(gameId);
+        requestManager.assertUpdateRight(game);
 
         gameFacade.reset(gameId);
         return Response.ok().build();

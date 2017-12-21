@@ -8,30 +8,25 @@
 package com.wegas.core.persistence.variable.scope;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
-
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import javax.persistence.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import com.wegas.core.persistence.AcceptInjection;
-import com.wegas.core.persistence.variable.Beanjection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @param <T> scope context
@@ -46,7 +41,8 @@ import com.wegas.core.persistence.InstanceOwner;
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
-    @Index(columnList = "variableinstance_variableinstance_id")
+    @Index(columnList = "variableinstance_variableinstance_id"),
+    @Index(columnList = "variabledescriptor_variabledescriptor_id")
 })
 abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEntity implements AcceptInjection {
 
@@ -108,7 +104,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      * @param player
      *
-     * @return
+     * @return the variable instance which the player can write
      */
     abstract public VariableInstance getVariableInstance(Player player);
 
@@ -120,7 +116,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      *
      * @param team
      *
-     * @return
+     * @return a variableInstance a player of the team can write
      */
     public VariableInstance getVariableInstance(Team team) {
         for (Player p : team.getPlayers()) {
@@ -137,7 +133,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      *
      * @param game
      *
-     * @return
+     * @return a variableInstance a player in the game can write
      */
     public VariableInstance getVariableInstance(Game game) {
         for (Team t : game.getTeams()) {
@@ -154,7 +150,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      *
      * @param gm
      *
-     * @return
+     * @return a variableInstance a player in the gameModel can write
      */
     public VariableInstance getVariableInstance(GameModel gm) {
         for (Game g : gm.getGames()) {
@@ -164,55 +160,14 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     /**
-     * Fetch all instances, mapped by owner
      *
-     * @return a map which map InstanceOwner with their variableInstance
+     * @return {@link #getVariableInstance(Player)} with the current player
+     * @deprecated
      */
-    @JsonIgnore
-    abstract public Map<T, VariableInstance> getVariableInstances();
-
-    private Map<Long, VariableInstance> mapInstances(Map<T, VariableInstance> instances) {
-        Map<Long, VariableInstance> mappedInstances = new HashMap<>();
-        for (Entry<T, VariableInstance> entry : instances.entrySet()) {
-            // GameModelScope Hack (null key means id=0...)
-            mappedInstances.put((entry.getKey() != null ? entry.getKey().getId() : 0L), entry.getValue());
-        }
-        return mappedInstances;
-    }
-
-    /**
-     *
-     * Fetch all instances, mapped by owner id
-     *
-     * @return a map which map InstanceOwner'is with their variableInstance
-     */
-    @JsonProperty("variableInstances")
-    @JsonView(Views.InstanceI.class)
-    public Map<Long, VariableInstance> getVariableInstancesByKeyId() {
-        return mapInstances(this.getVariableInstances());
-    }
-
-    /**
-     * @return The variable instance associated to the current player, which is
-     *         stored in the RequestManager.
-     */
-    @JsonIgnore
     @Deprecated
-    abstract public Map<T, VariableInstance> getPrivateInstances();
-
-    @JsonIgnore
-    @JsonProperty("privateInstances")
-    @Deprecated
-    public Map<Long, VariableInstance> getPrivateInstancesByKeyId() {
-        return mapInstances(this.getPrivateInstances());
-    }
-
-    /**
-     * @return
-     */
     @JsonIgnore
     public VariableInstance getInstance() {
-        return this.getVariableInstance(RequestFacade.lookup().getPlayer());
+        return this.getVariableInstance(this.lookupPlayer());
     }
 
     /**
@@ -235,7 +190,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
             if (!p.isWaiting()) {
                 propagate(p, create);
             } else {
-                logger.error("SKIP PLAYER: " + p + " -> " + p.getStatus());
+                logger.error("SKIP PLAYER: {} -> {}", p, p.getStatus());
             }
         }
     }
@@ -276,7 +231,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     abstract public void propagateDefaultInstance(InstanceOwner context, boolean create);
 
     /**
-     * @return
+     * @return the variable descriptor
      */
     // @fixme here we cannot use the back-reference on an abstract reference
     //@JsonBackReference
@@ -294,7 +249,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     /**
-     * @return
+     * @return the scope id
      */
     @Override
     @JsonIgnore
@@ -330,12 +285,12 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     /**
-     * Since the @ManyToMany HashMap from scope to instances is not efficient,
+     * Since the @ManyToMany HashMap from scope to instances is not effiient,
      * it has been cut and replace by JPA queries. Those queries stands within
      * VariableInstanceFacade so we need something to fetch it...
      * It's not so nice...
      *
-     * @return
+     * @return VariableInstanceFacade instance
      */
     protected VariableInstanceFacade getVariableInstanceFacade() {
         // beans should have been injected by EntityListener
@@ -351,4 +306,24 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
         return this.variableInstanceFacade;
     }
 
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getVariableDescriptor().getGameModel().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getVariableDescriptor().getGameModel().getRequieredReadPermission();
+    }
+
+    /**
+     * Missing player arguments ? get it from requestFacade (but please avoid it)
+     *
+     * @return the current player
+     */
+    protected Player lookupPlayer() {
+        logger.error("LOOKUP OCCURS: {}", this);
+        Helper.printWegasStackTrace(new Exception());
+        return RequestFacade.lookup().getPlayer();
+    }
 }

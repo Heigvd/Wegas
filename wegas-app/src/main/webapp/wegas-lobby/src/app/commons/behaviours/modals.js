@@ -7,9 +7,10 @@ angular.module('wegas.behaviours.modals', [])
         modalsCtrl.close = function() {
             $(document).off("keyup");
             modalsCtrl.opened = false;
-            $timeout(function() {
+            /*$timeout(function() {
                 close();
-            }, 500);
+            }, 0);*/
+            close();
 
         };
     })

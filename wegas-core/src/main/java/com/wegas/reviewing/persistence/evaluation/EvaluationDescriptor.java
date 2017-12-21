@@ -15,6 +15,8 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
@@ -33,7 +35,12 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(uniqueConstraints = {})
+@Table(
+        uniqueConstraints = {},
+        indexes= {
+            @Index(columnList = "container_id")
+        }
+)
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(value = TextEvaluationDescriptor.class),
     @JsonSubTypes.Type(value = CategorizedEvaluationDescriptor.class),
@@ -209,5 +216,15 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
 
     public void removeInstance(EvaluationInstance instance) {
         this.evaluationInstances.remove(instance);
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getContainer().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getContainer().getRequieredReadPermission();
     }
 }

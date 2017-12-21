@@ -18,14 +18,21 @@
     <logger name="org.apache" level="WARN"/>
     <logger name="com.wegas.core" level="WARN"/>
     <logger name="com.wegas.admin.AdminFacade" level="INFO"/> <!-- log scheduled deletion -->
+    <logger name="com.wegas.core.ejb.GameModelFacade" level="INFO"/> <!-- log scheduled deletion -->
     <logger name="com.wegas.core.rest.util" level="INFO"/>
     <logger name="com.wegas.core.ejb.RequestManager" level="INFO"/>
     <logger name="com.wegas.core.ejb.ApplicationLifecycle" level="INFO"/>
     <logger name="com.wegas.core.ejb.ApplicationStartup" level="INFO"/>
+    <logger name="com.wegas.core.jcr.JackrabbitConnector" level="INFO"/>
     <logger name="com.wegas.core.rest.ScriptController" level="INFO"/>
     <logger name="com.wegas.core.security.ejb.UserFacade" level="INFO"/>
     <logger name="com.wegas.core.rest.util.GuestTracker" level="INFO"/>
     <!--<logger name="com.wegas.core.persistence.EntityListener" level="DEBUG"/>-->
+
+    <!-- JCR GC -->
+    <logger name="org.apache.jackrabbit.oak.plugins.blob.MarkSweepGarbageCollector" level="INFO"/>
+    <logger name= "org.apache.jackrabbit.oak.plugins.document.VersionGarbageCollector" level="INFO"/>
+
     <logger name="net.sf.ehcache" level="WARN"/>
 
     <root level="WARN">

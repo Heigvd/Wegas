@@ -10,28 +10,26 @@ package com.wegas.core.persistence.variable.primitive;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NumberListener;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @EntityListeners(NumberListener.class)
-
 /*@Table(indexes = {
  @Index(columnList = "history.numberinstance_variableinstance_id")
  })*/
@@ -97,6 +95,14 @@ public class NumberInstance extends VariableInstance {
         this.value = value;
     }
 
+    public void add(double value) {
+        this.setValue(this.getValue() + value);
+    }
+
+    public void add(int value) {
+        this.setValue(this.getValue() + value);
+    }
+
     /**
      *
      */
@@ -107,7 +113,7 @@ public class NumberInstance extends VariableInstance {
     }
 
     /**
-     * @return
+     * @return history of values
      */
     public List<Double> getHistory() {
         List<NumberHistoryEntry> copy = Helper.copyAndSort(this.history, new EntityComparators.OrderComparator<>());

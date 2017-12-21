@@ -9,31 +9,14 @@ YUI.add('wegas-scripteval', function(Y) {
     "use strict";
 
     var ScriptEval, Variable,
-        Wegas = Y.Wegas,
-        buildItems = function(entity, acc) { // Recursively build items lists
-            var j, items;
-            if (entity instanceof Wegas.persistence.ListDescriptor) {
-                items = entity.get("items");
-                acc.items = [];
-                for (j in items) {
-                    if (items.hasOwnProperty(j)) {
-                        acc.items.push(Y.JSON.parse(Y.JSON.stringify(items[j].getInstance())));
-                        buildItems(items[j], acc.items[acc.items.length - 1]);
-                    }
-                }
-            }
-        };
+        Wegas = Y.Wegas;
 
     ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
         /**
          *
          */
         initializer: function() {
-            this.context = {};
-            this.upToDate = false;
-            this.afterHostEvent("response", function(e) {
-                this.upToDate = false;
-            }, this);
+            this.context = undefined;
             this.publish("failure");
         },
         /**
@@ -54,9 +37,10 @@ YUI.add('wegas-scripteval', function(Y) {
                 };
             }
 
-            try {
+           try {
                 result = this.localEval(script, player); // Try to do local eval
             } catch (error) { // And if there is an error
+                Y.log("Delegate script eval after localEval failure: " + JSON.stringify(script));
                 this.remoteEval(script, cfg, player, contextId); // Use server fallback
                 return; // and stop the method
             }
@@ -107,7 +91,7 @@ YUI.add('wegas-scripteval', function(Y) {
          */
         localEval: function(script, player) {
             var p = player || Wegas.Facade.Game.cache.getCurrentPlayer();
-            if (!this.upToDate || this.context.self !== p) { //Only compute if new value
+            if (!this.context || this.context.self !== p) { //Only compute if new value
                 this._buildContext(p);
             }
 
@@ -119,6 +103,7 @@ YUI.add('wegas-scripteval', function(Y) {
                 return (new Function(Y.Object.keys(this.context), "return (" + script.toString() + "())")).apply({},
                     Y.Object.values(this.context));
             }
+            // AST, nope ?
             if (script.indexOf("return") === -1) {
                 script = "return " + script;
             }
@@ -130,38 +115,15 @@ YUI.add('wegas-scripteval', function(Y) {
          * @returns {undefined}
          */
         _buildContext: function(player) {
-            var i, j,
-                data = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items");
-            this.upToDate = true;
-            this.context = {};
-
-            for (i in data) {
-                if (data.hasOwnProperty(i)) {
-                    this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance(player)));
-                    buildItems(data[i], this.context[data[i].get('name')]);
-                    //                    if (data[i] instanceof Wegas.persistence.ListDescriptor) {
-                    //                        this.context[data[i].get('name')].items = [];
-                    //                        for (j in data[i].get("items")) {
-                    //                            if (data[i].get("items").hasOwnProperty(j)) {
-                    //                                this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance(player))));
-                    //                            }
-                    //                        }
-                    //                    }
-                }
-            }
-            /*SANDBOX*/
-            Y.mix(this.context, {
+            this.context = {
                 window: undefined,
                 Y: undefined,
-                YUI: undefined
-            });
-            /*Extend functionalities (mirror server)*/
-            Y.mix(this.context, {
+                YUI: undefined,
                 VariableDescriptorFacade: Variable,
                 Variable: Variable,
                 self: player,
                 gameModel: Wegas.Facade.GameModel.cache.getCurrentGameModel()
-            });
+            };
         },
         /**
          * Check current gameModel's script for errors

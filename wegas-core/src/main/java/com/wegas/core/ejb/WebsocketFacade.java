@@ -31,7 +31,6 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
-import com.wegas.core.security.util.SecurityHelper;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import io.prometheus.client.Gauge;
@@ -42,6 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,14 +49,12 @@ import java.util.zip.GZIPOutputStream;
 import javax.cache.Cache;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +73,7 @@ public class WebsocketFacade {
     private final Boolean maintainLocalListUpToDate;
 
     public final static String GLOBAL_CHANNEL = "global-channel";
-    public final static String ADMIN_CHANNEL = "private-Admin";
+    public final static String ADMIN_CHANNEL = "private-Role-Administrator";
 
     public static final Pattern USER_CHANNEL_PATTERN = Pattern.compile(Helper.USER_CHANNEL_PREFIX + "(\\d+)");
     public static final Pattern PRIVATE_CHANNEL_PATTERN = Pattern.compile("private-(User|Player|Team|Game|GameModel)-(\\d+)");
@@ -102,20 +100,20 @@ public class WebsocketFacade {
         OUTDATED
     }
 
-    @EJB
-    GameFacade gameFacade;
-
-    @EJB
-    TeamFacade teamFacade;
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      * Initialize Pusher Connection
@@ -137,7 +135,7 @@ public class WebsocketFacade {
     }
 
     /**
-     * Get all channels based on entites
+     * Get all channels based on entities
      *
      * @param entities
      *
@@ -149,25 +147,23 @@ public class WebsocketFacade {
 
         for (AbstractEntity entity : entities) {
             if (entity instanceof GameModel) {
-                if (SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + entity.getId())) {
+                if (requestManager.hasGameModelReadRight((GameModel) entity)) {
                     channel = ((GameModel) entity).getChannel();
                 }
             } else if (entity instanceof Game) {
-                if (SecurityHelper.isPermitted((Game) entity, "View")) {
+                if (requestManager.hasGameReadRight((Game) entity)) {
                     channel = ((Game) entity).getChannel();
                 }
             } else if (entity instanceof Team) {
                 Team team = (Team) entity;
                 User user = userFacade.getCurrentUser();
-                if (SecurityHelper.isPermitted(team.getGame(), "Edit") // Trainer and scenarist 
-                        || playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null) { // or member of team
+
+                if (requestManager.hasTeamRight(team)) {
                     channel = ((Team) entity).getChannel();
                 }
             } else if (entity instanceof Player) {
                 Player player = (Player) entity;
-                User user = userFacade.getCurrentUser();
-                if (SecurityHelper.isPermitted(player.getGame(), "Edit") // Trainer and scenarist 
-                        || player.getUser() == user) { // is the player
+                if (requestManager.hasPlayerRight(player)) {
                     channel = ((Player) entity).getChannel();
                 }
             }
@@ -181,7 +177,7 @@ public class WebsocketFacade {
 
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send lock " + token + " to " + channel);
+            logger.info("send lock  \"{}\" to \"{}\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}", null);
         }
@@ -189,7 +185,7 @@ public class WebsocketFacade {
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send unlock " + token + " to " + channel);
+            logger.info("send unlock  \"{}\" to \"{}\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
         }
@@ -238,7 +234,7 @@ public class WebsocketFacade {
         try {
             return Helper.getWegasProperty(property);
         } catch (MissingResourceException ex) {
-            logger.warn("Pusher init failed: missing " + property + " property");
+            logger.warn("Pusher init failed: missing {} property", property);
             return null;
         }
     }
@@ -265,12 +261,10 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
-     * @param outdatedEntities
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities) {
-        this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
+            final Map<String, List<AbstractEntity>> destroyedEntities) {
+        this.onRequestCommit(dispatchedEntities, destroyedEntities, null);
     }
 
     /**
@@ -278,13 +272,11 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
-     * @param outdatedEntities
      * @param socketId           Client's socket id. Prevent that specific
      *                           client to receive this particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
             final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities,
             final String socketId) {
         if (this.pusher == null) {
             return;
@@ -292,7 +284,6 @@ public class WebsocketFacade {
 
         propagate(destroyedEntities, socketId, EntityDestroyedEvent.class);
         propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
-        propagate(outdatedEntities, socketId, OutdatedEntitiesEvent.class);
     }
 
     /**
@@ -309,7 +300,7 @@ public class WebsocketFacade {
                 ClientEvent event;
 
                 if (eventClass == EntityDestroyedEvent.class) {
-                    List<AbstractEntity> refreshed = new ArrayList<>();
+                    List<DestroyedEntity> refreshed = new ArrayList<>();
                     /*
                      * Not possible to find an already destroyed entity, so, in 
                      * this case (and since those informations are sufficient), 
@@ -400,7 +391,7 @@ public class WebsocketFacade {
             ObjectMapper mapper = JacksonMapperProvider.getMapper();
             String writeValueAsString = mapper.writeValueAsString(gzip);
             logger.error(writeValueAsString);
-            logger.error("LENGTH SHOULD BE: " + writeValueAsString.length());
+            logger.error("LENGTH SHOULD BE: {}", writeValueAsString.length());
 
             return writeValueAsString.length();
         } catch (JsonProcessingException ex) {
@@ -443,6 +434,20 @@ public class WebsocketFacade {
         }
     }
 
+    public void pageIndexUpdate(Long gameModelId, String socketId) {
+        if (pusher != null) {
+            GameModel gameModel = gameModelFacade.find(gameModelId);
+            pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+        }
+    }
+
+    public void pageUpdate(Long gameModelId, String pageId, String socketId) {
+        if (pusher != null) {
+            GameModel gameModel = gameModelFacade.find(gameModelId);
+            pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
+        }
+    }
+
     public final String toJson(Object o) throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         //ObjectWriter writerWithView = mapper.writerWithView(Views.class);
@@ -461,6 +466,10 @@ public class WebsocketFacade {
             User user = newPlayer.getUser();
             if (user != null) {
                 try {
+                    for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
+                        this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
+                    }
+
                     pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
                 } catch (IOException ex) {
                     logger.error("Error while propagating player");
@@ -496,8 +505,7 @@ public class WebsocketFacade {
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
         }
         if (channel.startsWith("private")) {
-            boolean hasPermission = userFacade.hasPermission(channel);
-            if (hasPermission) {
+            if (requestManager.hasChannelPermission(channel)){
                 return pusher.authenticate(socketId, channel);
             }
         }
@@ -564,36 +572,42 @@ public class WebsocketFacade {
      * @return list a users who are online
      */
     public Collection<OnlineUser> getOnlineUsers() {
-        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
-        onlineUsersLock.lock();
-        try {
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-            if (onlineUsersUpToDate.get() == 0) {
-                initOnlineUsers();
+        if (pusher != null) {
+            ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+            onlineUsersLock.lock();
+            try {
+                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                if (onlineUsersUpToDate.get() == 0) {
+                    initOnlineUsers();
+                }
+                return this.getLocalOnlineUsers();
+            } finally {
+                onlineUsersLock.unlock();
             }
-            return this.getLocalOnlineUsers();
-        } finally {
-            onlineUsersLock.unlock();
+        } else {
+            return new ArrayList<>();
         }
     }
 
     public Collection<OnlineUser> getLocalOnlineUsers() {
         Collection<OnlineUser> ou = new ArrayList<>();
-        Iterator<Cache.Entry<Long, OnlineUser>> iterator = onlineUsers.iterator();
-        while (iterator.hasNext()) {
-            ou.add(iterator.next().getValue());
+        if (pusher != null) {
+            Iterator<Cache.Entry<Long, OnlineUser>> iterator = onlineUsers.iterator();
+            while (iterator.hasNext()) {
+                ou.add(iterator.next().getValue());
+            }
         }
         return ou;
     }
 
-
     /**
      * @param user
      * @param compareRoles
+     *
      * @return true if user is member of at least on of the listed roles
      */
     private static boolean hasAnyRoles(User user, String... compareRoles) {
-        Set<Role> roles = user.getRoles();
+        Collection<Role> roles = user.getRoles();
         Iterator<Role> rIt = roles.iterator();
         while (rIt.hasNext()) {
             Role role = rIt.next();
@@ -609,7 +623,7 @@ public class WebsocketFacade {
     /**
      * 0 means Admin, 1 Scenarist or Trainer, 2 Player and 3, Guest;
      *
-     * @return
+     * @return king of role ranking... quite ugly...
      */
     private int getHighestRole(User user) {
         if (hasAnyRoles(user, "Administrator")) {
@@ -729,7 +743,7 @@ public class WebsocketFacade {
         try {
             ObjectMapper mapper = JacksonMapperProvider.getMapper();
             String users = mapper.writeValueAsString(getLocalOnlineUsers());
-            pusher.trigger("private-Admin", "online-users", users);
+            pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", users);
         } catch (JsonProcessingException ex) {
             java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -777,12 +791,10 @@ public class WebsocketFacade {
     }
 
     public void updateOnlineUserMetric() {
-        logger.error("FIRE COMMAND");
         commands.fire(UPDATE_OU_METRIC_CMD);
     }
 
     public void onOnlineUserMetric(@Inbound(eventName = COMMANDS_EVENT) @Observes String command) {
-        logger.error("RECEIVE COMMAND");
         if (UPDATE_OU_METRIC_CMD.equals(command)) {
             onlineUsersGauge.set(this.getLocalOnlineUsers().size());
         }

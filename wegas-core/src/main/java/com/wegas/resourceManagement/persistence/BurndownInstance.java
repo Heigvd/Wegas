@@ -8,15 +8,14 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -68,4 +67,8 @@ public class BurndownInstance extends VariableInstance {
         iteration.setBurndownInstance(this);
     }
 
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getIterationFacade().reviveBurndownInstance(this);
+    }
 }

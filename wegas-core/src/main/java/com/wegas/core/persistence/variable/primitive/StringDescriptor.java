@@ -77,7 +77,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
     /**
      * get allowed values
      *
-     * @return
+     * @return list of allowed values
      */
     public List<String> getAllowedValues() {
         return allowedValues;
@@ -98,7 +98,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
     /**
      *
      * @param p
-     * @return
+     * @return value of player instance
      */
     public String getValue(Player p) {
         return this.getInstance(p).getValue();

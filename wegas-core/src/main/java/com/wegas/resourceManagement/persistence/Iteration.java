@@ -7,24 +7,26 @@
  */
 package com.wegas.resourceManagement.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.rest.util.Views;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import javax.persistence.*;
 
 /**
  * PMG Related !
@@ -229,7 +231,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     /**
      * Get the Cost Performance Index
      *
-     * @return
+     * @return the CPI
      */
     public Double getCpi() {
         return this.cpi;
@@ -242,7 +244,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     /**
      * Get the Workload Performance Index
      *
-     * @return
+     * @return the WPI
      */
     public Double getWpi() {
         return this.wpi;
@@ -255,7 +257,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     /**
      * Get the schedule Performance Index
      *
-     * @return
+     * @return the SPI
      */
     public Double getSpi() {
         return spi;
@@ -556,4 +558,13 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         this.setTasks(new ArrayList<>());
     }
 
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getBurndownInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getBurndownInstance().getRequieredReadPermission();
+    }
 }

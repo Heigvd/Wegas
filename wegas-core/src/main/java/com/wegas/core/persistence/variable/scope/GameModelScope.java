@@ -17,8 +17,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,14 +40,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JsonIgnore
     private VariableInstance variableInstance;
-
-    /**
-     *
-     */
-    //@PrePersist
-    public void prePersist() {
-        //this.propagateDefaultInstance(null);
-    }
 
     @Override
     protected void propagate(GameModel gameModel, boolean create) {
@@ -87,18 +77,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
     }
 
     /**
-     *
-     * @return
-     */
-    @Override
-    public Map<GameModel, VariableInstance> getVariableInstances() {
-        Map<GameModel, VariableInstance> ret = new HashMap<>();
-        ret.put(null, getVariableInstance());
-        return ret;
-    }
-
-    /**
-     * Return the instance which is accessible by the player
      *
      * @param player the player who request the instance
      *
@@ -171,10 +149,5 @@ public class GameModelScope extends AbstractScope<GameModel> {
     @JsonIgnore
     public void setVariableInstance(VariableInstance variableInstance) {
         this.variableInstance = variableInstance;
-    }
-
-    @Override
-    public Map<GameModel, VariableInstance> getPrivateInstances() {
-        return this.getVariableInstances();
     }
 }

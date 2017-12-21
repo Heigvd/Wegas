@@ -34,7 +34,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
          */
         initializer: function(cfg) {
             this.channel_prefix = {
-                "Admin": "private-Admin",
+                "Admin": "private-Role-Administrator",
                 "Global": "global-channel",
                 "User": "private-User-",
                 "Player": "private-Player-",

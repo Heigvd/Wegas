@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
-import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
@@ -15,8 +14,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,11 +86,6 @@ public class GameScope extends AbstractScope<Game> {
     }
 
     @Override
-    public Map<Game, VariableInstance> getVariableInstances() {
-        return getVariableInstanceFacade().getAllGameInstances(this);
-    }
-
-    @Override
     protected void propagate(Game g, boolean create) {
         VariableDescriptor vd = this.getVariableDescriptor();
         if (create) {
@@ -121,14 +113,5 @@ public class GameScope extends AbstractScope<Game> {
         } else {
             propagate(getVariableDescriptor().getGameModel(), create);
         }
-    }
-
-    @Override
-    public Map<Game, VariableInstance> getPrivateInstances() {
-        Map<Game, VariableInstance> ret = new HashMap<>();
-        Player cPlayer = RequestFacade.lookup().getPlayer();
-
-        ret.put(cPlayer.getGame(), this.getVariableInstance(cPlayer));
-        return ret;
     }
 }

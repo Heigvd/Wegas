@@ -83,11 +83,10 @@ public class UIGameModel extends UIComponentBase {
         Boolean displayPath = "true".equals((String) getAttributes().get("displayPath"));
         String[] roots;
 
+        boolean hasEditRightOnGameModel = SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
         // editor mode and default values only allowedif current user has edit permission on gamemodel
-        defaultValues = "true".equals(defVal)
-            && SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
-        editorMode = "editor".equals(modeParam)
-            && SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
+        defaultValues = "true".equals(defVal) && hasEditRightOnGameModel;
+        editorMode = "editor".equals(modeParam) && hasEditRightOnGameModel;
 
         ResponseWriter writer = context.getResponseWriter();
 
@@ -217,13 +216,7 @@ public class UIGameModel extends UIComponentBase {
         UIHelper.startSpan(writer, UIHelper.CSS_CLASS_MAIN_IMAGE);
 
         HtmlGraphicImage image = new HtmlGraphicImage();
-        String imgSrc;
-        if (gm.getProperties().getImageUri().length() > 0) {
-            imgSrc = gm.getProperties().getImageUri();
-        } else {
-            // @todo wegas-app/src/main/webapp/wegas-lobby/js/wegas-lobby-datatable.js 
-            imgSrc = "wegas-lobby/images/wegas-game-thumb.png";
-        }
+        String imgSrc = "wegas-lobby/images/wegas-game-thumb.png";
 
         image.setValue(imgSrc);
         image.encodeAll(context);

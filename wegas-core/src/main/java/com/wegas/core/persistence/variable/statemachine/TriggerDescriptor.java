@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Script;
@@ -71,7 +70,8 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
-     * @return
+     * is the trigger designed to trigger only once ?
+     * @return true if the trigger is designed to be trigged only once
      */
     public Boolean isOneShot() {
         return oneShot;
@@ -96,7 +96,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
-     * @return
+     * @return the script to execute when trigger triggers
      */
     public Script getPostTriggerEvent() {
         if (this.getStates() != null && this.getStates().size() > 0) {
@@ -125,7 +125,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      * Trigger condition
      *
-     * @return
+     * @return condition for trigger to triggers
      */
     public Script getTriggerEvent() {
         if (this.getStates() != null && this.getStates().size() > 0
@@ -141,8 +141,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      * Override to make this function transient
      *
-     * @return
-     *
+     * @return underlying statemachine states
      * @see StateMachineDescriptor#getStates
      */
     @Override

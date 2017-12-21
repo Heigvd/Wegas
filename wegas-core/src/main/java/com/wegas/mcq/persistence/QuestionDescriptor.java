@@ -91,6 +91,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @WegasEntityProperty
     private List<String> pictures = new ArrayList<>();
 
+// ~~~ Sugar for scripts ~~~
+
     /**
      *
      * @param p

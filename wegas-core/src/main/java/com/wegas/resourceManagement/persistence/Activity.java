@@ -8,14 +8,13 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.rest.util.Views;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.rest.util.Views;
+import javax.persistence.*;
 
 /**
  *
@@ -23,7 +22,9 @@ import com.wegas.core.persistence.variable.Beanjection;
  */
 @Entity
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id")
+    @Index(columnList = "variableinstance_id"),
+    @Index(columnList = "taskinstance_id"),
+    @Index(columnList = "wrequirement_id")
 })
 public class Activity extends AbstractAssignement {
 

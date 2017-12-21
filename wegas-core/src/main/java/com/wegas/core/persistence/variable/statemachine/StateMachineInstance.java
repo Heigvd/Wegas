@@ -68,7 +68,7 @@ public class StateMachineInstance extends VariableInstance {
 
     /**
      *
-     * @return
+     * @return the current state
      */
     @JsonProperty("currentState")
     public State getCurrentState() {
@@ -101,7 +101,7 @@ public class StateMachineInstance extends VariableInstance {
 
     /**
      *
-     * @return
+     * @return true if the state machine enabled ?
      */
     public Boolean getEnabled() {
         return enabled;
@@ -117,7 +117,7 @@ public class StateMachineInstance extends VariableInstance {
 
     /**
      *
-     * @return
+     * @return list of walked transitions 
      */
     @JsonProperty
     public List<Long> getTransitionHistory() {

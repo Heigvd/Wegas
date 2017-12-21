@@ -7,12 +7,9 @@
  */
 package com.wegas.core.security.guest;
 
-import com.wegas.core.security.jparealm.*;
-import com.wegas.core.Helper;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.ejb.RoleFacade;
+import com.wegas.core.security.jparealm.*;
 import com.wegas.core.security.persistence.AbstractAccount;
-import javax.naming.NamingException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -46,15 +43,12 @@ public class GuestRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         Long accountId = (Long) authcToken.getPrincipal();
-        try {
-            AbstractAccount account = accountFacade().find(accountId);
+            AbstractAccount account = AccountFacade.lookup().find(accountId);
 
             if (account != null && account instanceof GuestJpaAccount) {
                 return new SimpleAuthenticationInfo(authcToken.getPrincipal(), "", this.getName());
             }
 
-        } catch (NamingException ex) {
-        }
         return null;
     }
 
@@ -85,21 +79,5 @@ public class GuestRealm extends AuthorizingRealm {
             return null;
         }
          */
-    }
-
-    /**
-     *
-     * @return @throws NamingException
-     */
-    public AccountFacade accountFacade() throws NamingException {
-        return Helper.lookupBy(AccountFacade.class);
-    }
-
-    /**
-     *
-     * @return @throws NamingException
-     */
-    public RoleFacade roleFacade() throws NamingException {
-        return Helper.lookupBy(RoleFacade.class);
     }
 }

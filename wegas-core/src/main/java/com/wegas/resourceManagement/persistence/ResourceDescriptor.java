@@ -71,7 +71,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
         this.description = description;
     }
 
-    // **** Sugar for editor *** //
+    /**** Sugar for editor ***/
     /**
      *
      * @param p

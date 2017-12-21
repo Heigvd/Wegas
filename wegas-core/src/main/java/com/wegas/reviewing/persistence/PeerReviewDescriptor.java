@@ -9,21 +9,22 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
@@ -58,6 +59,13 @@ import javax.validation.constraints.NotNull;
  * @see PeerReviewInstance
  */
 @Entity
+@Table(
+        indexes = {
+            @Index(columnList = "fbcomments_id"),
+            @Index(columnList = "toreview_variabledescriptor_id"),
+            @Index(columnList = "feedback_id")
+        }
+)
 public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance> {
 
     private static final long serialVersionUID = 1L;
@@ -66,13 +74,34 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * Define review states
      */
     public enum ReviewingState {
-        DISCARDED, // completely out of reviewing process (debug team for instance)
-        EVICTED, // partially out of reviewing process -> nothing to review
-        NOT_STARTED, // author can edit toReview
-        SUBMITTED, // authors can't edit toReview anymore
-        DISPATCHED, // toReview are dispatched, state became review dependent
-        NOTIFIED, // tema take aquintance of peer's evaluations
-        COMPLETED // 
+        /**
+         * completely out of reviewing process (debug team for instance)
+         */
+        DISCARDED,
+        /**
+         * partially out of reviewing process -> nothing to review
+         */
+        EVICTED,
+        /**
+         * author can edit toReview
+         */
+        NOT_STARTED,
+        /**
+         * authors can't edit toReview anymore
+         */
+        SUBMITTED,
+        /**
+         * toReview are dispatched, state became review dependent
+         */
+        DISPATCHED,
+        /**
+         * team take aquintance of peer evaluations
+         */
+        NOTIFIED,
+        /**
+         * Process completed
+         */
+        COMPLETED
     }
 
     /**
@@ -271,11 +300,24 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         return this.getInstance(p).getReviewState().toString();
     }
 
+    public void setState(Player p, String stateName) {
+        ReviewingState newState = ReviewingState.valueOf(stateName);
+        PeerReviewInstance instance = this.getInstance(p);
+        if (instance.getReviewState().equals(ReviewingState.SUBMITTED) && newState.equals(ReviewingState.NOT_STARTED)) {
+            instance.setReviewState(ReviewingState.NOT_STARTED);
+        }
+    }
+
     public Boolean getIncludeEvicted() {
         return includeEvicted != null && includeEvicted;
     }
 
     public void setIncludeEvicted(Boolean includeEvicted) {
         this.includeEvicted = includeEvicted;
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getReviewingFacade().revivePeerReviewDescriptor(this);
     }
 }

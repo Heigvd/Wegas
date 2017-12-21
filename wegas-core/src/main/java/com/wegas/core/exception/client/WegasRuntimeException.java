@@ -35,6 +35,7 @@ public abstract class WegasRuntimeException extends RuntimeException {
      *
      */
     public WegasRuntimeException() {
+        super();
     }
 
     public WegasRuntimeException (final Throwable t){

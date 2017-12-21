@@ -29,7 +29,7 @@ abstract public class AbstractContentDescriptor {
      * @param name
      * @param path
      * @param mimeType
-     * @return
+     * @return 
      * @throws RepositoryException
      */
     @JsonCreator
@@ -296,7 +296,7 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     * @return
+     * @return 
      */
     @JsonIgnore
     protected ZipEntry getZipEntry() {

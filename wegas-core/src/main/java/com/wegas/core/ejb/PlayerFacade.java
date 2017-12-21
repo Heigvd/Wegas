@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -17,6 +16,7 @@ import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameScope;
@@ -35,7 +35,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -78,6 +77,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     @Inject
     private RequestManager requestManager;
 
+
     /**
      * Create a player linked to the user identified by userId(may be null) and join the team
      * identified by teamId.
@@ -100,6 +100,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Long joinTeamAndCommit(Long teamId, Long userId, String playerName) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
+        logger.info("Adding user {} to team {}", userId, teamId);
 
         Team team = teamFacade.find(teamId);
 
@@ -116,7 +117,6 @@ public class PlayerFacade extends BaseFacade<Player> {
             user.getPlayers().add(player);
             player.setUser(user);
             player.setName(user.getName());
-            gameFacade.addRights(user, team.getGame());
         } else {
             if (playerName != null) {
                 player.setName(playerName);
@@ -142,7 +142,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws WegasNoResultException if not player was found
      */
     public Player findByGameIdAndUserId(final Long gameId, final Long userId) throws WegasNoResultException {
-        Player p = this.checkExistingPlayer(gameId, userId);
+        Player p = this.findPlayer(gameId, userId);
         if (p != null) {
             return p;
         } else {
@@ -166,19 +166,27 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @param gameId id of the game
      * @param userId id of the player
      *
-     * @return the player owned by user linked to the game or null if not found
+     * @return
      */
-    public Player checkExistingPlayer(final Long gameId, final Long userId) {
-        if (userId != null) {
-            for (Team t : gameFacade.find(gameId).getTeams()) {
-                for (Player p : t.getPlayers()) {
-                    if (userId.equals(p.getUserId())) {
-                        return p;
-                    }
-                }
-            }
+    public Player findPlayer(final Long gameId, final Long userId) {
+        try {
+            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("Player.findPlayerByGameIdAndUserId", Player.class);
+            findByGameIdAndUserId.setParameter("gameId", gameId);
+            findByGameIdAndUserId.setParameter("userId", userId);
+            return findByGameIdAndUserId.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         }
-        return null;
+    }
+
+    /**
+     * @param gameId
+     * @param userId
+     *
+     * @return
+     */
+    public boolean isInGame(final Long gameId, final Long userId) {
+        return this.findPlayer(gameId, userId) != null;
     }
 
     /**
@@ -189,16 +197,34 @@ public class PlayerFacade extends BaseFacade<Player> {
      *
      * @return the player owned by user who is member of the team or null
      */
-    public Player checkExistingPlayerInTeam(final Long teamId, final Long userId) {
-        if (userId != null) {
-            Team t = teamFacade.find(teamId);
-            for (Player p : t.getPlayers()) {
-                if (userId.equals(p.getUserId())) {
-                    return p;
-                }
-            }
+    public Player findPlayerInTeam(final Long teamId, final Long userId) {
+        try {
+            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("Player.findPlayerByTeamIdAndUserId", Player.class);
+            findByGameIdAndUserId.setParameter("teamId", teamId);
+            findByGameIdAndUserId.setParameter("userId", userId);
+            return findByGameIdAndUserId.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         }
-        return null;
+    }
+
+    public boolean isInTeam(final Long teamId, final Long userId) {
+        return this.findPlayerInTeam(teamId, userId) != null;
+    }
+
+    public Player findPlayerInGameModel(final Long gameModelId, final Long userId) {
+        try {
+            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("Player.findPlayerByGameModelIdAndUserId", Player.class);
+            findByGameIdAndUserId.setParameter("gameModelId", gameModelId);
+            findByGameIdAndUserId.setParameter("userId", userId);
+            return findByGameIdAndUserId.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public boolean isInGameModel(final Long gameModelId, final Long userId) {
+        return this.findPlayerInGameModel(gameModelId, userId) != null;
     }
 
     /**
@@ -228,16 +254,14 @@ public class PlayerFacade extends BaseFacade<Player> {
                 result.add(instance);
             } else if (scope.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
                 // Current player has access to all instances in the game
-                for (Team t : player.getGame().getTeams()) {
-                    for (Player p : t.getPlayers()) {
-                        query.setParameter("playerId", p.getId());
-                        VariableInstance vi = query.getSingleResult();
-                        result.add(vi);
-                    }
+                for (Player p : player.getGame().getLivePlayers()) {
+                    query.setParameter("playerId", p.getId());
+                    VariableInstance vi = query.getSingleResult();
+                    result.add(vi);
                 }
             } else if (scope.getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
                 //Player has access to all instances within their game
-                for (Player p : player.getTeam().getPlayers()) {
+                for (Player p : player.getTeam().getLivePlayers()) {
                     query.setParameter("playerId", p.getId());
                     VariableInstance vi = query.getSingleResult();
                     result.add(vi);
@@ -271,9 +295,12 @@ public class PlayerFacade extends BaseFacade<Player> {
             if (scope.getBroadcastScope().equals("GameScope")) {
                 //current player has access to all instance in the game
                 for (Team t : team.getGame().getTeams()) {
-                    query.setParameter("teamId", t.getId());
-                    VariableInstance vi = query.getSingleResult();
-                    result.add(vi);
+                    if (t.getStatus().equals(Status.LIVE)) {
+                        // LIVE ONLY
+                        query.setParameter("teamId", t.getId());
+                        VariableInstance vi = query.getSingleResult();
+                        result.add(vi);
+                    }
                 }
             } else {
                 //TeamScope and PlayerScope -> only current team instance !
@@ -358,16 +385,22 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @Override
     public void remove(final Player player) {
-        player.getTeam().getPlayers().remove(player);
-        if (player.getUser() != null) {
-            player.getUser().getPlayers().remove(player);
+        //List<VariableInstance> instances = this.getAssociatedInstances(player);
+        Team team = teamFacade.find(player.getTeam().getId());
+
+        if (team instanceof DebugTeam == false) {
+            if (team.getPlayers().size() == 1) {
+                // Last player -> remove the whole team
+                teamFacade.remove(team);
+            } else {
+                // Only remove the player
+                team.getPlayers().remove(player);
+                if (player.getUser() != null) {
+                    player.getUser().getPlayers().remove(player);
+                }
+                this.getEntityManager().remove(player);
+            }
         }
-
-        this.getEntityManager().remove(player);
-
-        //for (VariableInstance i : instances) {
-        //    this.getEntityManager().remove(i);
-        //}
     }
 
     /**
@@ -457,7 +490,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findByGameModelId(Long gameModelId) throws WegasNoResultException {
-        Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId");
+        Query getByGameId = getEntityManager().createQuery("SELECT p FROM Player p WHERE p.team.gameTeams.game.gameModel.id = :gameModelId");
         getByGameId.setParameter("gameModelId", gameModelId);
         try {
             return (Player) getByGameId.setMaxResults(1).getSingleResult();
@@ -533,18 +566,6 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public void reset(Long playerId) {
         this.reset(this.find(playerId));
-    }
-
-    /**
-     * @return Looked-up EJB
-     */
-    public static PlayerFacade lookup() {
-        try {
-            return Helper.lookupBy(PlayerFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Error retrieving player facade", ex);
-            return null;
-        }
     }
 
     /**

@@ -30,6 +30,8 @@ import java.util.Locale;
  */
 public class AbstractGameController implements Serializable {
 
+    private static final long serialVersionUID = -1511995063657626077L;
+
     /**
      *
      */
@@ -118,7 +120,7 @@ public class AbstractGameController implements Serializable {
     }
 
     /**
-     * @return
+     * @return the gameModel linked to the currentGame
      */
     public GameModel getCurrentGameModel() {
         return this.getCurrentGame().getGameModel();

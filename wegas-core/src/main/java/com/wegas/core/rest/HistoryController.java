@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.*;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
@@ -21,7 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
@@ -51,6 +51,10 @@ public class HistoryController {
      */
     @Inject
     private GameModelFacade gameModelFacade;
+
+    @Inject
+    private RequestManager requestManager;
+    
 
     @Inject
     private UserFacade userFacade;
@@ -99,8 +103,6 @@ public class HistoryController {
     @POST
     @Path("/CreateVersion")
     public void createVersion(@PathParam("gameModelId") Long gameModelId) throws RepositoryException, IOException {
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-
         String name = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date())
                 + " by " + userFacade.getCurrentUser().getName();
 
@@ -120,7 +122,8 @@ public class HistoryController {
     public void createVersion(@PathParam("gameModelId") Long gameModelId,
             @PathParam("version") String name) throws RepositoryException, IOException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
 
         if (!name.matches("^.*\\.json$")) {
             name = name + ".json";
@@ -162,8 +165,6 @@ public class HistoryController {
     @Path("CreateFromVersion/{path: .*}")
     public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
             @PathParam("path") String path) throws IOException {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         InputStream file = jcrFacade.getFile(gameModelId, WorkspaceType.HISTORY, path);           // Retrieve file from content repository
 

@@ -22,7 +22,7 @@ public class DescriptorFactory {
     /**
      * @param node
      * @param contentConnector
-     * @return
+     * @return 
      */
     public static AbstractContentDescriptor getDescriptor(Node node, ContentConnector contentConnector) {
         AbstractContentDescriptor abstractContentDescriptor = null;
@@ -51,7 +51,7 @@ public class DescriptorFactory {
     /**
      * @param absolutePath
      * @param contentConnector
-     * @return
+     * @return 
      * @throws RepositoryException
      */
     public static AbstractContentDescriptor getDescriptor(String absolutePath, ContentConnector contentConnector) throws RepositoryException {

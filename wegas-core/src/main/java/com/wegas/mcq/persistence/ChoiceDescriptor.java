@@ -102,7 +102,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         r.setChoiceDescriptor(this);
     }
 
-    // ***  Sugar to use from scripts *** //
+    // ~~~  Sugar to use from scripts ~~~
     /**
      * @param player
      * @param resultName
@@ -116,15 +116,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     public void changeCurrentResult(ChoiceInstance choiceInstance, Result newCurrentResult) {
-        Result previousResult = choiceInstance.getCurrentResult();
-        if (previousResult != null) {
+        //Result previousResult = choiceInstance.getCurrentResult();
+        /*if (previousResult != null) {
             previousResult.removeChoiceInstance(choiceInstance);
-        }
+        }*/
 
-        if (newCurrentResult != null) {
+ /*if (newCurrentResult != null) {
             newCurrentResult.addChoiceInstance(choiceInstance);
-        }
-
+        }*/
         choiceInstance.setCurrentResult(newCurrentResult);
     }
 
@@ -201,8 +200,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * @param results the results to set
      */
     public void setResults(List<Result> results) {
-        for (Result r : results) {
-            r.setChoiceDescriptor(this);
+        if (results != null) {
+            for (Result r : results) {
+                r.setChoiceDescriptor(this);
+            }
         }
         this.results = results;
     }
@@ -256,11 +257,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * unselected choices, or before the validation, for all choices </li>
      * <li>Standard question, if the choice is not linked to a reply </li>
      * </ul>
-     * <p>
-     * @param p the player
-     * <p>
-     * @return
      *
+     * @param p the player
+     *
+     * @return return true if this choice can be selected by the player
      */
     public boolean hasNotBeenSelected(Player p) {
         if (this.getQuestion().getCbx()) {

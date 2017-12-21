@@ -10,13 +10,12 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.util.SecurityHelper;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -60,6 +59,9 @@ public class EditorGameController extends AbstractGameController {
     private GameModelFacade gameModelFacade;
     @EJB
     private UserFacade userFacade;
+    @Inject
+    private RequestManager requestManager;
+
     @Inject
     ErrorController errorController;
 
@@ -108,7 +110,7 @@ public class EditorGameController extends AbstractGameController {
         }
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.dispatch("Team " + teamFacade.find(this.teamId).getName() + " has no player.");
-        } else if (!SecurityHelper.isPermitted(currentPlayer.getGame(), "Edit")) {
+        } else if (!requestManager.hasGameWriteRight(currentPlayer.getGame())){
             errorController.accessDenied();
         }
 

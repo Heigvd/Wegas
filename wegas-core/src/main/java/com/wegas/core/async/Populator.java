@@ -7,7 +7,7 @@
  */
 package com.wegas.core.async;
 
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.async.PopulatorFacade.Candidate;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import java.util.concurrent.Callable;
@@ -28,14 +28,14 @@ public class Populator implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        AbstractEntity owner;
+        Candidate candidate;
         int count = 0;
 
-        while ((owner = populatorFacade.getNextOwner(this)) != null) {
-            if (owner instanceof Team) {
-                populatorFacade.populateTeam(owner.getId());
-            } else if (owner instanceof Player) {
-                populatorFacade.populatePlayer(owner.getId());
+        while ((candidate = populatorFacade.getNextCandidate(this)) != null) {
+            if (candidate.owner instanceof Team) {
+                populatorFacade.populateTeam(candidate.owner.getId(), candidate.accountId);
+            } else if (candidate.owner instanceof Player) {
+                populatorFacade.populatePlayer(candidate.owner.getId(), candidate.accountId);
             }
             count++;
         }

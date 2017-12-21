@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.api.ScriptEventFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -20,7 +21,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import java.util.Collection;
 import javax.script.ScriptContext;
 
@@ -28,7 +28,7 @@ import javax.script.ScriptContext;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @RequestScoped
-public class ScriptEventFacade {
+public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEventFacadeI {
 
     /**
      *
@@ -47,11 +47,6 @@ public class ScriptEventFacade {
      */
     @EJB
     private ScriptFacade scriptFacace;
-    /**
-     *
-     */
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *
@@ -72,7 +67,7 @@ public class ScriptEventFacade {
     }
 
     /**
-     * @return
+     * @return true if at least an evant has been fired
      */
     public Boolean isEventFired() {
         return eventFired;
@@ -102,6 +97,7 @@ public class ScriptEventFacade {
      * @param param
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
+    @Override
     public void fire(String eventName, Object param) throws WegasScriptException {
         this.fire(requestManager.getPlayer(), eventName, param);
     }
@@ -110,6 +106,7 @@ public class ScriptEventFacade {
      * @param eventName
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
+    @Override
     public void fire(String eventName) throws WegasScriptException {
         this.fire(eventName, null);
     }
@@ -155,16 +152,18 @@ public class ScriptEventFacade {
 
     /**
      * @param eventName
-     * @return
+     * @return how many time the event has been fired
      */
     public int firedCount(String eventName) {
         return this.getFiredParameters(eventName).length;
     }
 
     /**
+     * check if the event has been fired. If it's the case, count this event consumption within eventCounter
      * @param eventName
-     * @return
+     * @return check if the event has been fired
      */
+    @Override
     public boolean fired(String eventName) {
         ScriptContext scriptContext = requestManager.getCurrentScriptContext();
         if (requestManager.isTestEnv()) {
@@ -198,6 +197,7 @@ public class ScriptEventFacade {
      * @param func
      * @param scope
      */
+    @Override
     public void on(String eventName, Object func, Object scope) {
         this.registeredEvents.put(eventName, new Object[]{func, scope});
     }
@@ -206,6 +206,7 @@ public class ScriptEventFacade {
      * @param eventName
      * @param func
      */
+    @Override
     public void on(String eventName, Object func) {
         this.registeredEvents.put(eventName, new Object[]{func});
     }

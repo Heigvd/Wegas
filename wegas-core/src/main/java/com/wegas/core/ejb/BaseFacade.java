@@ -10,10 +10,11 @@ package com.wegas.core.ejb;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
-import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,23 +25,9 @@ import javax.persistence.criteria.Root;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFacade<T> {
+public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstractFacade implements AbstractFacade<T> {
 
-    @Inject
-    private RequestManager requestManager;
-
-    /*
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
-     */
-    /**
-     * get the entity manager
-     *
-     * @return the wegasPU entityManager
-     */
-    protected EntityManager getEntityManager() {
-        return requestManager.getEntityManager();
-    }
+    private static final Logger logger = LoggerFactory.getLogger(BaseFacade.class);
 
     /**
      * the Class the facade manage
@@ -207,12 +194,10 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
         }
     }
 
-    /**
+    /*
      *
      * @param ic
-     *
-     * @return
-     *
+     * @return intercepted method returned object
      * @throws Exception
      */
     /*@AroundInvoke

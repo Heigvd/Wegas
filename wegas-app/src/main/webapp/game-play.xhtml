@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:composition template="wegas-app/jsf/app-default.xhtml">
+
+        <ui:define name="app-init">
+            <c:set var="extraBodyClass" value="wegas-playmode"/>
+        </ui:define>
 
         <ui:define name="title">#{gameController.currentGame.name} - #{gameController.currentGameModel.name}</ui:define>
 
@@ -73,10 +78,10 @@
                                  *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.properties.pagesUri != ''}">
                                  */
                                 source: "#{gameController.currentGameModel.properties.pagesUri}",
-                                    /* THIS IS NOT A COMMENT
-                                     * </ui:fragment>
-                                     */
-                                    initialFullRequest: '<ui:insert name="pageUri">wegas-app/db/wegas-app-layout.json</ui:insert>',
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                initialFullRequest: '<ui:insert name="pageUri">wegas-app/db/wegas-app-layout.json</ui:insert>',
                                 plugins: [{
                                         fn: "JSONSchema"
                                     }, {

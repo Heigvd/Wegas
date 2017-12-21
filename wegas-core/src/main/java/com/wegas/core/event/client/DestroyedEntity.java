@@ -9,6 +9,8 @@ package com.wegas.core.event.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 
 /**
  *
@@ -37,4 +39,8 @@ public class DestroyedEntity extends AbstractEntity {
         return effectiveClass;
     }
 
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        BITCH;
+    }
 }

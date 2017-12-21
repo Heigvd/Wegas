@@ -2,31 +2,123 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2016 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 /**
- * Wegas Dashboard - V2
- * @author Raphaël Schmutz <raph@hat-owl.cc>
+ * Wegas Dashboard - V3
+ * @author Maxence Laurent 
  */
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
-    var CONTENTBOX = "contentBox";
 
-    Y.Wegas.Dashboard = Y.Base.create("wegas-dashboard",
-        Y.Widget,
-        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        CONTENT_TEMPLATE: "<div class='dashboard'></div>",
-        initializer: function() {
-            var context = this;
-            context.get("cardsData").forEach(function(data) {
-                if (data.blocs && data.blocs.length > 0) {
-                    context.get("cardsData").blocs.forEach(function(bloc) {
-                        context._addOriginalBloc(data.id, bloc);
-                    });
+    var DEFAULT_TABLE_STRUCTURE,
+        TITLE_TEMPLATE = "<span class='team-name'></span>",
+        LINK_TEMPLATE = "<span class='details__link details__link__closed'>Details</span>",
+        BASE_TEMPLATE = "<div><div class='team-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
+        TEAM_LIST_TEMPLATE = "<div class='team-details__players'><ul class='team-details__players__list'></ul>" + "</div>",
+        DEFAULT_TABLE_STRUCTURE = {
+            title: "",
+            def: {
+                impacts: {
+                    "label": "Impact",
+                    "itemType": "group",
+                    "items": {
+                        impacts: {
+                            "icon": "fa fa-pencil",
+                            "itemType": "action",
+                            "label": "Variables",
+                            "hasGlobal": true,
+                            "do": function(team, payload) {
+                                new Y.Wegas.ImpactsTeamModal({
+                                    "team": team
+                                }).render();
+                            }
+                        }
+                    }
+                },
+                actions: {
+                    "label": "Actions",
+                    "itemType": "group",
+                    "items": {
+                        sendmail: {
+                            "icon": "fa fa-envelope",
+                            "itemType": "action",
+                            "label": "Send real E-Mail",
+                            "hasGlobal": true,
+                            "do": function(team, payload) {
+                                new Y.Wegas.EmailTeamModal({
+                                    "team": team,
+                                    "on": {
+                                        "email:sent": function() {
+                                            this.close();
+                                        }
+                                    }
+                                }).render();
+                            }
+                        },
+                        view: {
+                            "icon": "info-view",
+                            "itemType": "action",
+                            "label": "View playing session",
+                            "hasGlobal": false,
+                            "do": function(team, payload) {
+                                window.open("game-lock.html?id=" + team.get("players")[0].get("id"), "_blank");
+                            }
+                        }
+                    }
                 }
-            });
-            this.handlers = [];
+            }
+        };
+
+    Y.Wegas.DashboardDatatable = Y.Base.create("wegas-dashboard-datatable", Y.Widget,
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        CONTENT_TEMPLATE: "<div>" +
+            "<div class='dashboard-table-title'></div>" +
+            "<div class='dashboard-table-data'></div>" +
+            "</dib>",
+        initializer: function() {
+            this.dt = this.get("datatable");
+        },
+        renderUI: function() {
+            var title = this.get("title");
+            if (title) {
+                this.get("contentBox").one(".dashboard-table-title").setContent(title);
+                this.get("contentBox").addClass("with-table-title");
+            }
+            this.dt.render(this.get("contentBox").one(".dashboard-table-data"));
+        },
+        syncUI: function() {
+        },
+        destructor: function() {
+            this.dt.destroy();
+        }
+    }, {
+        ATTRS: {
+            datatable: "object",
+            openByDefault: {
+                type: "boolean",
+                value: true,
+                optionnal: true
+            },
+            title: {
+                type: "string",
+                optionnal: true,
+                value: null
+            }
+        }
+    });
+
+
+
+    Y.Wegas.Dashboard = Y.Base.create("wegas-dashboard", Y.Widget,
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        CONTENT_TEMPLATE: "<div class='dashboard-v3'></div>",
+        initializer: function() {
+            this.handlers = {};
+            this._freeForAll = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll");
+
+            this.datatables = {};
 
             this.detailsOverlay = new Y.Overlay({
                 zIndex: 100,
@@ -37,411 +129,510 @@ YUI.add('wegas-dashboard', function(Y) {
 
             this.detailsOverlay.get("contentBox").addClass("wegas-dashboard-monitor--popup-overlay");
             this.detailsTarget = null;
-        },
+        }
+        ,
         destructor: function() {
             var i;
-            for (i = 0; i < this.handlers.length; i += 1) {
-                this.handlers[i].detach();
+            for (i in this.handlers) {
+                if (this.handlers.hasOwnProperty(i)) {
+                    this.handlers[i].detach();
+                }
             }
         },
         renderUI: function() {
-            if (this.toolbar) {
-                this.toolbar.removeAll();
+            this.addButtons();
+        },
+        addButtons: function() {
+            var label = "Refresh",
+                game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+                teams = game.get("teams");
 
-                var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
-                    teams = game.get("teams"),
-                    hasTeam = true,
-                    hasTrueTeam = true,
-                    trueGame = true;
-
-
-                if (game.get("@class") === "DebugGame") {
-                    this.toolbar.add(new Y.Wegas.Button({
-                        label: 'This is a scenario, you little hacker !',
-                        cssClass: 'globalRefreshTitle'
-                    }));
-                    hasTrueTeam = false;
-                    trueGame = false;
-                } else if (teams.length === 0 || teams.length === 1 && teams[0].get("@class") === "DebugTeam") {
-                    this.toolbar.add(new Y.Wegas.Button({
-                        label: '<span class="wegas-icon wegas-icon-refresh"></span>No players have joined yet: click to check for new players',
-                        cssClass: 'globalRefreshTitle',
-                        on: {
-                            click: Y.bind(function(event) {
-                                location.reload(); // That's stupid, same as {@see phenixize}
-                            }, this)
-                        }
-                    }));
-                    hasTrueTeam = false;
-                    hasTeam = false;
-                }
-
-
-                if (trueGame) {
-                    this.toolbar.add(new Y.Wegas.Button({
-                        label: '<span class="wegas-icon wegas-icon-refresh"></span>Check for new players',
-                        cssClass: 'globalRefreshTitle',
-                        on: {
-                            click: Y.bind(function(event) {
-                                location.reload(); // That's stupid, same as {@see phenixize}
-                            }, this)
-                        }
-                    }));
-                }
-
-                if (hasTrueTeam) {
-                    this.toolbar.add(new Y.Wegas.Button({
-                        label: '<span class="wegas-icon wegas-icon-email"></span>',
-                        cssClass: 'globalImpacts mailButton',
-                        on: {
-                            click: Y.bind(function(event) {
-                                new Y.Wegas.EmailTeamModal({
-                                    "team": game,
-                                    "on": {
-                                        "email:sent": function() {
-                                            this.close();
-                                        }
-                                    }
-                                }).render();
-                            }, this)
-                        },
-                        tooltip: 'Send real E-mail to all players'
-                    }));
-                }
-
-                if (hasTeam) {
-                    this.toolbar.add(new Y.Wegas.Button({
-                        label: '<span class="wegas-icon wegas-icon-impacts"></span>',
-                        cssClass: 'globalImpacts impactButton',
-                        on: {
-                            click: Y.bind(function(event) {
-                                new Y.Wegas.ImpactsTeamModal({
-                                    "team": game
-                                }).render();
-                            }, this)
-                        },
-                        tooltip: 'Impact all players'
-                    }));
-
-
-                    this.toolbar.add(new Y.Wegas.Button({
-                        label: '<span class="wegas-icon wegas-icon-refresh"></span>Monitoring',
-                        cssClass: 'globalImpacts monitoredDataTitle',
-                        on: {
-                            click: Y.bind(function(event) {
-                                var button = event.target;
-                                //this.phenixize();
-                                if (button.get("boundingBox").hasClass("loading")) {
-                                    return;
-                                }
-                                button.get("boundingBox").addClass("loading");
-                                this.syncUI().then(function() {
-                                    button.get("boundingBox").removeClass("loading");
-                                });
-                            }, this)
-                        }
-                    }));
-                }
-
-                if (hasTrueTeam) {
-                    this.toolbar.add(new Y.Wegas.Button({
-                        label: '<i class="fa fa-1x fa-wrench"></i> Recover Rights',
-                        cssClass: 'globalImpacts monitoredDataTitle wegas-advanced-feature',
-                        on: {
-                            click: Y.bind(function() {
-                                Y.Wegas.Facade.Game.sendRequest({
-                                    request: "/" + Y.Wegas.Facade.Game.cache.get("currentGameId") + "/recoverRights",
-                                    cfg: {
-                                        method: "PUT",
-                                        headers: {
-                                            "Managed-Mode": false
-                                        }
-                                    }
-                                });
-
-                            }, this)
-                        }
-                    }));
-                }
-
-                this._checkToolbarResize();
-
+            if (teams.length === 0 || teams.length === 1 && teams[0].get("@class") === "DebugTeam") {
+                label = "No players have joined yet: click to check for new players";
             }
+
+            this.add(new Y.Wegas.Button({
+                label: '<span class="wegas-icon wegas-icon-refresh"></span> ' + label,
+                cssClass: 'refreshButton',
+                on: {
+                    click: Y.bind(function(event) {
+                        this.syncUI();
+                    }, this)
+                }
+            }));
+        },
+        onGameUpdate: function() {
+            this.get("contentBox").one(".refreshButton").addClass("please-refresh fa fa-asterisk");
         },
         bindUI: function() {
-            this.handlers.push(Y.Wegas.Facade.Game.after("update", this.phenixize, this));
-            this.handlers.push(Y.one("body").on("click", Y.bind(function(event) {
+            this.handlers.onGameUpdate = Y.Wegas.Facade.Game.after("update", this.onGameUpdate, this);
+
+            this.get("contentBox").delegate("click", this.actionClick, ".dashboard-action.enabled", this);
+            this.get("contentBox").delegate("click", this.detailsClick, ".details__link", this);
+
+            this.get("contentBox").delegate("click", this.onBooleanClick, ".bloc__boolean", this);
+            this.get("contentBox").delegate("click", this.onTextClick, ".bloc__text", this);
+
+            this.handlers.onBodyClick = Y.one("body").on("click", Y.bind(function(event) {
                 this.detailsOverlay.hide();
                 this.detailsTarget = null;
-            }, this),
-                this.detailsOverlay
-                ));
-        },
-        /**
-         * BEURK... Dirty Solution
-         * @todo replace fuckin dirty clone'n'suicide pattern with slightly more intelligent sync
-         * @returns {undefined}
-         */
-        phenixize: function() {
-            return;
-            var parent, childIndex,
-                cfg = {
-                    "name": "overview",
-                    "type": "TeamsOverviewDashboard",
-                    "remoteScript": "",
-                    "plugins": [
-                        {
-                            "fn": "WidgetToolbar"
-                        }
-                    ]
-                };
-
-            parent = this.get("parent");
-            if (parent) {
-                childIndex = parent.indexOf(this);
-                if (childIndex >= 0) {
-                    parent.remove(childIndex);
-                }
-                parent.add(Y.Wegas.Widget.create(cfg));
-                if (childIndex >= 0) {
-                    this.destroy();
-                }
-            }
+            }, this), this.detailsOverlay);
         },
         syncUI: function() {
             var BB = this.get("boundingBox");
-            BB.addClass("loading");
-            return this._createCards().then(function(data) {
-                BB.removeClass("loading");
-                return data;
+            //BB.addClass("loading");
+            this.get("contentBox").one(".refreshButton span").addClass(" fa-pulse");
+            this._loadRemoteData();
+        },
+        detailsClick: function(e) {
+            var datatable = Y.Widget.getByNode(e.target),
+                record = datatable.getRecord(e.target).getAttrs(),
+                team = record.team,
+                cell = datatable.getCell(e.target),
+                trDetails = datatable.get("contentBox").one("tr[data-teamid='" + team.get("id") + "']"),
+                theTr = e.target.ancestor("tr");
+
+            if (!theTr._editor) {
+                theTr._editor = true;
+                tinyMCE.init({
+                    "width": "100%",
+                    "height": "100%",
+                    "menubar": false,
+                    "statusbar": false,
+                    "toolbar": "bold italic | bullist numlist",
+                    "selector": "tr[data-teamid='" + team.get("id") + "'] .infos-comments",
+                    "setup": Y.bind(function(mce) {
+                        var saveTimer,
+                            context = this;
+                        mce.on('init', function(args) {
+                            context.editor = args.target;
+                            if (context.team.get("notes")) {
+                                context.editor.setContent(context.team.get("notes"));
+                            } else {
+                                context.editor.setContent("<i>Notes</i>");
+                            }
+                        });
+                        mce.on('keyup', function() {
+                            clearTimeout(saveTimer);
+                            saveTimer = setTimeout(context.saveNotes, 500, context);
+                        });
+                    }, {
+                        team: team,
+                        saveNotes: this._saveNotes
+                    })
+                });
+            }
+
+            e.target.toggleClass("details__link__closed");
+            e.target.toggleClass("details__link__opened");
+
+            trDetails.toggleClass("team-details-closed");
+            trDetails.toggleClass("team-details-opened");
+
+            theTr.toggleClass("team-closed");
+            theTr.toggleClass("team-opened");
+        },
+        _saveNotes: function(context) {
+            context.team.set("notes", context.editor.getContent());
+            Y.Wegas.Facade.Game.cache.put(context.team.toObject("players"), {
+                cfg: {
+                    updateEvent: false
+                }
             });
         },
-        getMonitoredData: function() {
-            return this._monitoredData || {};
-        },
-        /**
-         *
-         * create cards as child
-         * return Promise-> cardsData
-         */
-        _createCards: function() {
-            return this._getMonitoredData().then(Y.bind(function(monitoredBlocs) {
-                this.destroyAll();
-                this._monitoredData = monitoredBlocs;
-                Y.Array.each(this.get("cardsData"), function(data) {
-                    var card = {
-                        "id": data.id,
-                        "title": data.title,
-                        "icon": data.icon || null,
-                        "tooltip": data.tooltip || null,
-                        "blocs": this._combineBlocs(data, monitoredBlocs)
-                    };
-                    this.add(new Y.Wegas.Card(card));
-                }, this);
-                try {
-                    if (this.get("resize")) {
-                        this.plug(Y.Wegas.CardsResizable);
-                        this.CardsResizable.resetClassSize();
-                        this.CardsResizable.resize();
-                    }
-                } catch (e) {
-                } finally {
-                    this._adjustTitles();
-                    this.get("boundingBox").removeClass("loading");
-                    return this.get("cardsData");
-                }
-            }, this));
-        },
-        _addOriginalBloc: function(idCard, originalBloc) {
-            var originalBlocs = this.get("originalBlocs");
-            if (!originalBlocs[idCard]) {
-                originalBlocs[idCard] = [];
+        _getPayloadFromEvent: function(e) {
+            var datatable = Y.Widget.getByNode(e.target),
+                tr,
+                record,
+                cell,
+                column,
+                team,
+                value;
+
+            tr = datatable.getRecord(e.target);
+            if (tr) {
+                record = tr.getAttrs();
+
+                cell = datatable.getCell(e.target);
+                //column = datatable.getColumn(e.target.getData()["action-id"]),
+                column = datatable.getColumn(cell);
+
+                team = record.team;
+                value = record[column.key];
+            } else {
+                // global hit
+                team = Y.Wegas.Facade.Game.cache.getCurrentGame();
+                value = null;
+                column = datatable.getColumn(e.target.getData("columnName"));
             }
-            originalBlocs[idCard].push(originalBloc);
-            this.set("originalBlocs", originalBlocs);
+            return {
+                column: column,
+                team: team,
+                value: value
+            };
         },
-        _resetToInitialBlocs: function(data) {
-            var originalBlocs = this.get("originalBlocs");
-            data.blocs = [];
-            if (originalBlocs[data.id]) {
-                originalBlocs[data.id].forEach(function(bloc) {
-                    data.blocs.push(bloc);
-                });
-            }
+        actionClick: function(e) {
+            var data = this._getPayloadFromEvent(e);
+            data.column.do(data.team, data.value);
         },
-        _combineBlocs: function(data, monitoredBlocs) {
-            var blocs, newBlocs, newBloc, ctx = this;
-            this._resetToInitialBlocs(data);
-            blocs = data.blocs;
-            if (monitoredBlocs !== null && monitoredBlocs.data && monitoredBlocs.data[data.id]) {
-                monitoredBlocs.structure.forEach(function(blocsToAdd) {
-                    newBlocs = {
-                        "position": "left",
-                        "cardBlocType": "monitoring",
-                        "items": []
-                    };
-                    if (blocsToAdd.title) {
-                        newBlocs.title = blocsToAdd.title;
-                    }
-                    if (blocsToAdd.cardBlocType) {
-                        newBlocs.cardBlocType = blocsToAdd.cardBlocType;
-                    }
-                    blocsToAdd.items.forEach(function(bloc) {
-                        var value = monitoredBlocs.data[data.id][bloc.id];
-                        if (bloc.kind) {
-                            var empty = value.empty;
-                            if (bloc.kind === "boolean") {
-                                bloc.do = Y.Wegas.Dashboard.prototype.onBooleanClick;
-                                // bloc.icon = '<i class=' + (empty ? '"icon fa fa-comment-o"' : '"icon fa fa-commenting"') + ' title="Click to view"></i>';
-                            } else if (bloc.kind === "inbox") {
-                                bloc.do = Y.Wegas.Dashboard.prototype.onInboxClick;
-                                bloc.icon = '<i class=' + (empty ? '"icon fa fa-comment-o"' : '"icon fa fa-commenting"') + ' title="Click to view"></i>';
-                            } else if (bloc.kind === "text") {
-                                bloc.do = Y.Wegas.Dashboard.prototype.onTextClick;
-                                bloc.icon = '<i class=' + (empty ? '"icon fa fa-file-o"' : '"icon fa fa-file-text"') + ' title="Click to view"></i>';
-                            } else {
-                                bloc.value = "Error: unknown kind";
-                            }
-                        }
-                        newBloc = {
-                            label: bloc.label,
-                            icon: bloc.icon,
-                            value: value,
-                            formatter: eval("(" + bloc.formatter + ")"),
-                            do: bloc.do, //eval("(" + bloc.do + ")"),
-                            kind: bloc.kind,
-                            userCfg: bloc.userCfg,
-                            aPlayerId: data.aPlayerId,
-                            ctx: ctx // context of onclick callback, i.e. the wegas-dashboard-teams-overview singleton
-                        };
-                        newBlocs.items.push(newBloc);
-                    });
-                    blocs.push(newBlocs);
-                });
-            }
-            return blocs;
-        },
-        _getMonitoredData: function() {
+        _loadRemoteData: function() {
             var dashboards = Y.namespace("Wegas.Config.Dashboards"), script;
             if (dashboards && this.get("name") && dashboards[this.get("name")]) {
                 script = dashboards[this.get("name")];
-                return new Y.Promise(function(resolve, reject) {
-                    Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
-                        cfg: {
-                            method: "POST",
-                            headers: {
-                                "Managed-Mode": false
-                            },
-                            data: {
-                                "@class": "Script",
-                                content: script
-                            }
+
+                Y.Wegas.Facade.Variable.sendRequest({
+                    request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
+                    cfg: {
+                        method: "POST",
+                        headers: {
+                            "Managed-Mode": false
                         },
-                        on: {
-                            success: function(e) {
-                                resolve(e.response.results);
-                            },
-                            failure: reject
+                        data: {
+                            "@class": "Script",
+                            content: script
                         }
-                    });
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            var results = e.response.results,
+                                i, j, item, key, label;
+
+                            if (Y.Lang.isArray(results.structure)) {
+                                this._monitoredData = {
+                                    structure: {
+                                        main: {
+                                            def: {},
+                                            title: ""
+                                        }
+                                    }, data: {
+                                    }
+                                };
+                                for (i in results.structure) {
+                                    if (results.structure[i].items) {
+                                        if (results.structure[i].title) {
+                                            label = results.structure[i].title;
+                                            label = label.slice(0, 1).toUpperCase() + label.slice(1);
+                                        }
+                                        this._monitoredData.structure.main.def[results.structure[i].title] = {
+                                            id: results.structure[i].title,
+                                            label: label,
+                                            itemType: "group",
+                                            items: {}
+                                        };
+                                        for (j in  results.structure[i].items) {
+                                            item = results.structure[i].items[j];
+                                            this._monitoredData.structure.main.def[results.structure[i].title].items[item.id] = item;
+                                        }
+                                    }
+                                }
+
+                                for (key in results.data) {
+                                    this._monitoredData.data[key] = {
+                                        "main": results.data[key]
+                                    };
+                                }
+                            } else {
+                                this._monitoredData = results;
+                            }
+                            this.syncTable();
+
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            this._monitoredData = {};
+                            this.syncTable();
+                        }, this)
+                    }
                 });
             } else {
-                return Y.Promise.resolve(null);
+                this._monitoredData = {};
+                this.syncTable();
             }
         },
-        // Centers button/titles if possible, otherwise hides them or reduces them inside their columns.
-        _adjustTitles: function() {
-            var cb = this.get(CONTENTBOX),
-                toolbar = cb.get("parentNode").one(".wegas-toolbar"),
-                monitorTitle = toolbar.one(".monitoredDataTitle"),
-                monitoringBloc,
-                actionBloc,
-                cards = cb.all(".card"),
-                i, card;
-            // We pick the first card which contains a monitor bloc
+        syncTable: function() {
+            var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+                that = this,
+                tables = {}, data = {}, i, j, tableDef,
+                teamId, team, teamData, entry,
+                cell, cellDef,
+                tableName, tableColumns, formatter,
+                key1, key2, firstCellFormatter,
+                firstOfGroup,
+                getPlayerIcon,
+                parseItem = function(id, def, firstOfGroup) {
+                    var item = {
+                        key: id,
+                        label: def.label,
+                        sortable: (def.sortable !== undefined ? def.sortable : false),
+                        // Try to use column user defined tooltip or use defaut one otherwise
+                        disabledTooltip: def.disabledTooltip || "This action is not yet active",
+                        cssClass: (firstOfGroup ? "first-of-group" : "")
+                    };
 
-            for (i = 0; i < cards.size(); i++) {
-                card = cards.item(i);
-                monitoringBloc = card.one(".card__blocs--monitoring");
-                actionBloc = card.one(".card__blocs--action");
+                    if (def.itemType === "action") {
 
-                if (monitoringBloc && actionBloc) {
-                    break;
-                } else {
-                    monitoringBloc = null;
-                    actionBloc = null;
-                    card = null;
-                }
-            }
-            if (!card) {
-                return;
-            }
+                        if (def.hasGlobal) {
+                            item.label = "<span data-columnName=\"" + id + "\" class=\"dashboard-action dashboard-global-action " + (firstOfGroup ? "first-of-group " : "") +
+                                def.icon + " enabled\" title=\"Global " + def.label + "\"></span>";
+                        } else {
+                            item.label = " ";
+                        }
+                        item.title = def.label;
 
-            if (monitoringBloc) {
-                if (monitoringBloc.getY() === actionBloc.getY()) {
-                    // Horizontal space is sufficient:
-                    monitorTitle.set("offsetWidth", monitoringBloc.get("offsetWidth") - 2); // Subtract a few pixels for vertical alignment despite borders etc.
-                } else {
-                    // Set to minimal width when monitoring and action blocs are misaligned due to lack of horizontal space
-                    monitorTitle.setStyle("width", "auto");
-                }
-                monitorTitle.show();
+                        item.nodeFormatter = function(o) {
+                            o.cell.setHTML("<span class=\"dashboard-action " +
+                                o.column.icon + " " +
+                                (o.value && o.value.disabled ? "disabled" : "enabled") +
+                                "\" title=\"" + o.column.title + "\"></span>");
+
+                            if (o.column.cssClass) {
+                                o.cell.addClass(o.column.cssClass);
+                            }
+
+                            if (o.value && o.value.disabled) {
+                                o.cell.plug(Y.Plugin.Tooltip, {
+                                    // Try to use value specific tooltip, or use the fallback one otherwise
+                                    content: o.value.disabledTooltip || o.column.disabledTooltip
+                                });
+                            }
+                        };
+                        item.icon = def.icon;
+                        item.do = eval("(" + def.do + ")");
+                        item.sortable = false;
+                    } else {
+                        if (def.formatter) {
+                            formatter = eval("(" + def.formatter + ")");
+                            if (formatter) {
+                                item.valueFormatter = formatter;
+                            }
+                        }
+
+                        item.nodeFormatter = function(o) {
+                            if (o.column.cssClass) {
+                                o.cell.addClass(o.column.cssClass);
+                            }
+
+                            if (def.kind) {
+                                if (def.kind === "boolean") {
+                                    o.cell.setHTML("<span class=\"bloc__value bloc__boolean\">" + (o.value ? "✔" : "✕") + "</span>");
+
+                                    if (o.column.valueFormatter) {
+                                        o.column.valueFormatter.call(this, o.cell, o.value);
+                                    }
+
+                                } else if (def.kind === "inbox") {
+                                    o.cell.setHTML('<i class=\"bloc__text ' + (o.value.empty ? 'icon fa fa-comment-o"' : 'icon fa fa-commenting-o"') + ' title="Click to view"></i>');
+                                } else if (def.kind === "text") {
+                                    o.cell.setHTML('<i class=\"bloc__text ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
+                                }
+                            } else {
+                                if (o.value !== undefined && o.value !== null) {
+                                    o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
+                                } else {
+                                    o.cell.setHTML("<span class=\"bloc__value no-value\"></span>");
+                                }
+
+                                if (o.column.valueFormatter) {
+                                    o.column.valueFormatter.call(this, o.cell, o.value);
+                                }
+                            }
+                        };
+                    }
+                    return item;
+                };
+
+            if (Y.Object.isEmpty(this._monitoredData)) {
+                Y.mix(this._monitoredData, {
+                    "structure": {
+                        "main": DEFAULT_TABLE_STRUCTURE
+                    },
+                    "data": {
+                    }
+                }, false, null, 0, true);
             } else {
-                // Hide monitoring title when there is no monitoring bloc
-                monitorTitle.hide();
+                for (tableName in this._monitoredData.structure) {
+                    Y.mix(this._monitoredData.structure[tableName], DEFAULT_TABLE_STRUCTURE, false, null, 0, true);
+                }
+            }
+
+            getPlayerIcon = function(player) {
+                if (player.get("status") === "LIVE") {
+                    if (player.get("verifiedId")) {
+                        return "<i class='verified fa fa-id-card-o' title=\"" + "✔ verified " + player.get("homeOrg").toUpperCase() + " member" + "\"></i>";
+                    } else {
+                        return "<i class='unverified fa fa-user' title=\"✘ Unverified identity\"></i>";
+                    }
+                } else {
+                    return "<i class='erroneous fa fa-exclamation-triangle' title=\"Player failed to join\"></i>";
+                }
+            };
+
+            firstCellFormatter = function(o) {
+                var cell = o.cell,
+                    team = o.record.get("team"),
+                    teamList,
+                    row = cell.ancestor(),
+                    base = Y.Node.create(BASE_TEMPLATE),
+                    icon = Y.Node.create("<span class='team-details__icon'></span>"),
+                    details = Y.Node.create("<span class='team-details__content'></span>");
+
+                if (!that._freeForAll) {
+                    base.addClass("team-details--team");
+                    //this.get("host").get("contentBox").addClass("card--team");
+                    teamList = Y.Node.create(TEAM_LIST_TEMPLATE);
+
+                    Y.Array.each(team.get("players"), function(player) {
+                        var node = Y.Node.create("<li class='team-details__player'>" + getPlayerIcon(player) + "<span>" + player.get("name") + "</span></li>");
+                        teamList.one(".team-details__players__list").append(node);
+                    }, that);
+
+                    base.prepend(teamList);
+                    icon.setContent("<i class='fa fa-users'></i>");
+                } else {
+                    if (team.get("players")) {
+                        icon.setContent(getPlayerIcon(team.get("players")[0]));
+                    } else {
+                        icon.setContent("<i class='fa fa-exclamation-triangle'></i>");
+                    }
+                }
+                cell.append(icon);
+
+                details.append(Y.Node.create(TITLE_TEMPLATE).setContent(o.record.get("team-name")));
+                details.append(Y.Node.create(LINK_TEMPLATE));
+                cell.append(details);
+
+                row.insert(
+                    '<tr class="team-details team-details-closed" data-teamid="' + team.get("id") + '">' +
+                    '<td colspan="30">' + base.getContent() + ' </td>' +
+                    '</tr>',
+                    'after');
+            };
+            /**
+             * Generate Table(s) structure
+             */
+            for (tableName in this._monitoredData.structure) {
+                Y.log("PARSE TABLE " + tableName);
+                tableDef = this._monitoredData.structure[tableName].def;
+                // first cell il team/player info
+                tableColumns = [{key: "team-name", label: (this._freeForAll ? "Player" : "Team"), nodeFormatter: firstCellFormatter, sortable: true}];
+                //for (i = 0; i < tableDef.length; i++) {
+                for (i in tableDef) {
+                    cellDef = tableDef[i];
+                    if (cellDef.itemType === "group") {
+                        cell = {
+                            label: cellDef.label,
+                            children: []
+                        };
+                        firstOfGroup = true;
+                        for (j in cellDef.items) {
+                            cell.children.push(parseItem(j, cellDef.items[j], firstOfGroup));
+                            firstOfGroup = false;
+                        }
+                    } else {
+                        cell = parseItem(i, cellDef);
+                    }
+                    tableColumns.push(cell);
+                }
+                tables[tableName] = tableColumns;
+            }
+            if (Y.Object.isEmpty(this._monitoredData.data)) {
+                // NO DATA PROVIDED -> include all team in all tables
+                if (game) {
+                    for (i = 0; i < game.get("teams").length; i++) {
+                        team = game.get("teams")[i];
+                        if ((game.get("@class") === "DebugGame" || team.get("@class") !== "DebugTeam") &&
+                            team.get("players").length) {
+                            for (tableName in this._monitoredData.structure) {
+                                data[tableName] = data[tableName] || [];
+                                entry = {"team-name": (this._freeForAll ? team.get("players")[0].get("name") : team.get("name")),
+                                    "team-id": teamId, "team": team};
+                                data[tableName].push(entry);
+                            }
+                        }
+                    }
+                }
+            } else {
+                // DATA PROVIDED BY REMOTE SCRIPT
+                for (teamId in this._monitoredData.data) {
+                    team = Y.Wegas.Facade.Game.cache.getTeamById(teamId);
+                    teamData = this._monitoredData.data[teamId];
+                    if ((game.get("@class") === "DebugGame" || team.get("@class") !== "DebugTeam") && team.get("players").length > 0) {
+                        for (tableName in teamData) {
+                            data[tableName] = data[tableName] || [];
+                            entry = {"team-name": (this._freeForAll ? team.get("players")[0].get("name") : team.get("name")),
+                                "team-id": teamId, "team": team};
+
+                            for (cell in teamData[tableName]) {
+                                entry[cell] = teamData[tableName][cell];
+                            }
+                            data[tableName].push(entry);
+                        }
+                    }
+                }
+            }
+
+            for (tableName in this.datatables) {
+                this.datatables[tableName].destroy();
+            }
+
+            this.destroyAll();
+            this.addButtons();
+
+            for (tableName in this._monitoredData.structure) {
+                if (data[tableName]) {
+                    this.datatables[tableName] = new Y.DataTable({columns: tables[tableName], data: data[tableName], sortBy: {"team-name": 'asc'}});
+                    this.add(new Y.Wegas.DashboardDatatable({
+                        title: this._monitoredData.structure[tableName].title,
+                        datatable: this.datatables[tableName]
+                    }));
+                }
             }
         },
-        _checkToolbarResize: function() {
-            var ctx = this,
-                resizeTimer = null;
-            this.resizeHandle = Y.on("windowresize", function() { // use "windowresize" instead of just "resize"
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(function() {
-                    ctx._adjustTitles();
-                }, 10);
-            });
-        },
-        onBooleanClick: function(event, value, cardBloc) {
+        onBooleanClick: function(event) {
+            var data = this._getPayloadFromEvent(event),
+                aPlayerId = data.team.getLivePlayer().get("id"),
+                varName = data.column.key,
+                value = data.value;
 
-            var ctx = event.ctx;
-            ctx.get("contentBox").addClass("loading");
+            event.target.addClass("loading");
+
             Y.Wegas.Facade.Variable.sendRequest({
-                request: "/Script/Run/" + cardBloc.get("aPlayerId"),
+                request: "/Script/Run/" + aPlayerId,
                 cfg: {
                     method: "POST",
                     data: {
                         "@class": "Script",
-                        content: "Variable.find(gameModel, \"" + cardBloc.get("userCfg").varName + "\").getInstance(self).setValue(" + !value + ");"
+                        content: "Variable.find(gameModel, \"" + varName + "\").getInstance(self).setValue(" + !value + ");"
                     }
                 },
                 on: {
-                    success: Y.bind(function() {
-                        ctx.get("contentBox").removeClass("loading");
-                        ctx.syncUI();
-                    }, this),
-                    failure: Y.bind(function() {
-                        ctx.get("contentBox").removeClass("loading");
-                        ctx.syncUI();
-                    }, this)
+                    success: Y.bind(function(target) {
+                        event.target.removeClass("loading");
+                        this.syncUI();
+                    }, this, event.target),
+                    failure: Y.bind(function(target) {
+                        event.target.removeClass("loading");
+                        this.syncUI();
+                    }, this, event.targer)
                 }
             });
         },
-        onTextClick: function(event, text) {
-            // In this callback, 'this' is undefined, therefore we get it through event.ctx
-            var ctx = event.ctx;
-            if (ctx.detailsOverlay.get("visible")) {
-                ctx.detailsOverlay.hide();
-            }
-            if (event.currentTarget != ctx.detailsTarget) {
-                ctx._display(text.title, text.body);
-                ctx.detailsTarget = event.currentTarget;
-            } else {
-                ctx.detailsTarget = null;
-            }
+
+        _getValueFromEvent: function(e) {
+            return this._getPayloadFromEvent(e).value;
         },
-        onInboxClick: function(event, inbox) {
-            event.ctx.onTextClick(event, inbox);
+        onTextClick: function(event) {
+            var v;
+            if (this.detailsOverlay.get("visible")) {
+                this.detailsOverlay.hide();
+            }
+            if (event.currentTarget !== this.detailsTarget) {
+                v = this._getValueFromEvent(event);
+                this._display(v.title, v.body);
+                this.detailsTarget = event.currentTarget;
+            } else {
+                this.detailsTarget = null;
+            }
+            event.halt(true);
         },
         _display: function(title, body) {
             var pdfLink = Y.Wegas.app.get("base") + "print.html",
@@ -449,7 +640,9 @@ YUI.add('wegas-dashboard', function(Y) {
             this.detailsOverlay.set("headerContent", titleBar);
             this.detailsOverlay.get("contentBox").one(".saveIcon").on("click", function(event) {
                 event.halt(true);
-                this.post(pdfLink, {"title": this.toEntities(title), "body": this.toEntities(body), "outputType": "pdf"});
+                var t = this.toEntities(title),
+                    h = "<h2>" + t + "</h2>" + "<hr />" + this.toEntities(body);
+                this.post(pdfLink, {"title": t, "body": h, "outputType": "pdf"});
             }, this);
             this.detailsOverlay.setStdModContent('body', body);
             this.detailsOverlay.set("centered", true);
@@ -484,26 +677,13 @@ YUI.add('wegas-dashboard', function(Y) {
                 return '&#' + c.charCodeAt(0) + ';';
             });
         }
-    },
-        {
-            "ATTRS": {
-                "name": {
-                    value: null
-                },
-                "cardsData": {
-                    value: []
-                },
-                "resize": {
-                    value: true
-                },
-                "quickAccess": {
-                    value: null
-                },
-                "originalBlocs": {
-                    value: {}
-                }
+    }, {
+        EDITORNAME: "Dashboard (datatable)",
+        ATTRS: {
+            "name": {
+                type: "string",
+                value: null
             }
-        });
-}, 'V1.0', {
-    requires: ['node', 'event', 'event-resize']
+        }
+    });
 });

@@ -12,16 +12,16 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
-
-import javax.persistence.*;
 import java.util.*;
+import javax.persistence.*;
 
 /**
  * A review is linked to two PeerReviewInstnace : the one who reviews and the
- * original reviewed 'author'
- * A review is composed of the feedback (written by reviewers) and the feedback
- * comments (written by author). Both are a list of evaluation instances
+ * original reviewed 'author' A review is composed of the feedback (written by
+ * reviewers) and the feedback comments (written by author). Both are a list of
+ * evaluation instances
  * <ol>
  * <li> dispatched: initial state, reviewer can edit feedback
  * <li> reviewed: reviewer can't edit feedback anymore, author can't read
@@ -44,12 +44,35 @@ public class Review extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Review state:<ul>
+     * <li>{@link #DISPATCHED}</li>
+     * <li>{@link #REVIEWED}</li>
+     * <li>{@link #NOTIFIED}</li>
+     * <li>{@link #COMPLETED}</li>
+     * <li>{@link #CLOSED}</li>
+     * </ul>
+     */
     public enum ReviewState {
-
+        /**
+         * Initial state : reviewer is revewing
+         */
         DISPATCHED,
+        /**
+         * Just reviewed (no longer editable by reviewer, not yet viewable by author)
+         */
         REVIEWED,
+        /**
+         * Author acquaint themself with the review and can comment it
+         */
         NOTIFIED,
+        /**
+         * Author's comment is over
+         */
         COMPLETED,
+        /**
+         * Reviewer acquaint thenself with author's comment
+         */
         CLOSED
     }
 
@@ -61,8 +84,15 @@ public class Review extends AbstractEntity implements DatedEntity {
     @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
 
+    /**
+     * Current review state
+     */
     @Enumerated(value = EnumType.STRING)
     private ReviewState reviewState;
+
+    @JsonIgnore
+    @Transient
+    private ReviewState initialState;
 
     /**
      * the PeerReviewInstance that belongs to the reviewer
@@ -123,12 +153,21 @@ public class Review extends AbstractEntity implements DatedEntity {
         return reviewState;
     }
 
+    public ReviewState getInitialReviewState(){
+         return initialState != null ? initialState : getReviewState();
+    }
+
     /**
      * Set review state
      *
      * @param state
      */
     public void setReviewState(ReviewState state) {
+        if (initialState == null) {
+            // Keep a transient initial state to check permission against
+            // such a transient  field will be reinitialised for each
+            this.initialState = this.reviewState;
+        }
         this.reviewState = state;
     }
 
@@ -212,6 +251,43 @@ public class Review extends AbstractEntity implements DatedEntity {
         }
     }
 
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        switch (getInitialReviewState()) {
+            case DISPATCHED:
+                // Only reviewer has edit right
+                return this.getReviewer().getRequieredUpdatePermission();
+            case NOTIFIED:
+                // Only author has edit right
+                return this.getAuthor().getRequieredUpdatePermission();
+            case REVIEWED:
+            case COMPLETED:
+            case CLOSED:
+            default:
+                // only trainer or scenarist with write right on ethe game model
+                // should be checked against the game, but it's quite equals
+                return this.getReviewer().findDescriptor().getGameModel().getRequieredUpdatePermission();
+        }
+    }
+
+    /*
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        Collection<WegasPermission> p = new ArrayList<>();
+        p.addAll(getReviewer().getRequieredUpdatePermission());
+        p.addAll(getAuthor().getRequieredUpdatePermission());
+
+        return p;
+    }
+     */
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        ArrayList<WegasPermission> p = new ArrayList<>(this.getAuthor().getRequieredReadPermission());
+        p.addAll(this.getReviewer().getRequieredReadPermission());
+        return p;
+    }
 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {

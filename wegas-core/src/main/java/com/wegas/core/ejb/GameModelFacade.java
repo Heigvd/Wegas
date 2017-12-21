@@ -7,9 +7,11 @@
  */
 package com.wegas.core.ejb;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
+import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
-import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -49,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class GameModelFacade extends BaseFacade<GameModel> {
+public class GameModelFacade extends BaseFacade<GameModel> implements GameModelFacadeI {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelFacade.class);
 
@@ -65,9 +67,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @Inject
     private Event<EntityCreated<GameModel>> createdGameModelEvent;
 
-    @Inject
-    private Event<InstanceRevivedEvent> instanceRevivedEvent;
-
     /**
      *
      */
@@ -80,26 +79,39 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
 
-    @EJB
+    @Inject
+    private VariableInstanceFacade variableInstanceFacade;
+
+    @Inject
     private PlayerFacade playerFacade;
 
     @Inject
     private TeamFacade teamFacade;
 
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
     @Inject
-    private RequestManager requestManager;
+    private StateMachineFacade stateMachineFacade;
 
     @Inject
-    private StateMachineFacade stateMachineFacade;
+    private HazelcastInstance hzInstance;
 
     /**
      * Dummy constructor
      */
     public GameModelFacade() {
         super(GameModel.class);
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public boolean isPersisted(final Long gameModelId) {
+        try {
+            getEntityManager().createNamedQuery("GameModel.findIdById").setParameter("gameModelId", gameModelId).getSingleResult();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     /**
@@ -110,15 +122,19 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         // So What? 
         getEntityManager().persist(entity);
-
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
+        userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
+
+        // HACK (since those values are inferred from permission, but permissions are ignored until effective commit...)
+        entity.setCanView(true);
+        entity.setCanEdit(true);
+        entity.setCanDuplicate(true);
+        entity.setCanInstantiate(true);
+
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));
-
-        // 
-        userFacade.addUserPermission(userFacade.getCurrentUser(), "GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
     }
 
     /**
@@ -153,6 +169,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
             vd.createInstances(owner);
         }
+        //this.getEntityManager().merge(owner);
     }
 
     /**
@@ -177,7 +194,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     public void revivePrivateInstances(InstanceOwner owner) {
         for (VariableInstance vi : owner.getPrivateInstances()) {
-            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+            variableInstanceFacade.reviveInstance(vi);
         }
     }
 
@@ -189,7 +206,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public void reviveInstances(InstanceOwner owner) {
         // revive just propagated instances
         for (VariableInstance vi : owner.getAllInstances()) {
-            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+            variableInstanceFacade.reviveInstance(vi);
         }
     }
 
@@ -197,14 +214,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * Reset instances with {@link AbstractScope#propagateDefaultInstance(com.wegas.core.persistence.InstanceOwner, boolean)
      * and fire {@link InstanceRevivedEvent} for each reset instances
      *
-     * @param aScope the scope to reset the variable for
+     * @param vd the variable descriptor to reset the variable for
      */
-    public void resetAndReviveScopeInstances(AbstractScope aScope) {
-        aScope.propagateDefaultInstance(null, true);
+    public void resetAndReviveScopeInstances(VariableDescriptor vd) {
+        vd.getScope().propagateDefaultInstance(null, true);
         this.getEntityManager().flush();
         // revive just propagated instances
-        for (VariableInstance vi : (Collection<VariableInstance>) aScope.getVariableInstances().values()) {
-            instanceRevivedEvent.fire(new InstanceRevivedEvent(vi));
+        for (VariableInstance vi : (Collection<VariableInstance>) variableDescriptorFacade.getInstances(vd).values()) {
+            variableInstanceFacade.reviveInstance(vi);
         }
     }
 
@@ -259,7 +276,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
                 VariableInstance dest = vd.getDefaultInstance();
                 dest.merge(srcVi);
-                instanceRevivedEvent.fire(new InstanceRevivedEvent(dest));
+
+                variableInstanceFacade.reviveInstance(dest);
             }
             return toUpdate;
         } catch (WegasNoResultException ex) {
@@ -356,6 +374,39 @@ public class GameModelFacade extends BaseFacade<GameModel> {
                     logger.error("Duplicating repository {} failure, {}", entityId, ex.getMessage());
                 }
             }
+            return newGameModel;
+        } else {
+            throw new WegasNotFoundException("GameModel not found");
+        }
+    }
+
+    private void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
+// Clone Pages
+        // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
+        //Clone files & history (?)
+        for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
+            try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
+                connector.cloneRoot(srcGameModel.getId());
+            } catch (RepositoryException ex) {
+                logger.error("Duplicating repository {} failure, {}", srcGameModel.getId(), ex.getMessage());
+            }
+        }
+    }
+
+    public GameModel createGameGameModel(final Long entityId) throws IOException {
+        final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
+        if (srcGameModel != null) {
+            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
+
+            // Clear comments
+            newGameModel.setComments("");
+            // to right restriction for trainer, status PLAY must be set before persisting the gameModel
+            newGameModel.setStatus(GameModel.Status.PLAY);
+            newGameModel.setBasedOn(srcGameModel);
+
+            this.create(newGameModel);
+
+            this.duplicateRepository(newGameModel, srcGameModel);
 
             return newGameModel;
         } else {
@@ -367,21 +418,12 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public GameModel duplicate(final Long entityId) throws CloneNotSupportedException {
         final GameModel srcGameModel = this.find(entityId);
         if (srcGameModel != null) {
+            requestManager.assertCanDuplicateGameModel(this.find(entityId));
             GameModel newGameModel = (GameModel) srcGameModel.clone();
             newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
             this.create(newGameModel);
 
-            // Clone Pages
-            // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
-            //Clone files & history (?)
-            for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
-                try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
-                    connector.cloneRoot(srcGameModel.getId());
-                } catch (RepositoryException ex) {
-                    logger.error("Duplicating repository {} failure, {}", entityId, ex.getMessage());
-                }
-            }
-
+            this.duplicateRepository(newGameModel, srcGameModel);
             return newGameModel;
         } else {
             throw new WegasNotFoundException("GameModel not found");
@@ -414,6 +456,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public void remove(final GameModel gameModel) {
         final Long id = gameModel.getId();
         userFacade.deletePermissions(gameModel);
+
+        TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
+        query.setParameter("id", id);
+        List<GameModel> instantiations = query.getResultList();
+
+        for (GameModel instantiation : instantiations) {
+            instantiation.setBasedOn(null);
+        }
 
         for (Game g : this.find(id).getGames()) {
             userFacade.deletePermissions(g);
@@ -524,14 +574,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         stateMachineFacade.runStateMachines(gameModel);
     }
 
+    @Override
     public void reset(final Game game) {
         gameFacade.reset(game);
     }
 
+    @Override
     public void reset(final Team team) {
         teamFacade.reset(team);
     }
 
+    @Override
     public void reset(final Player player) {
         playerFacade.reset(player);
     }
@@ -578,13 +631,12 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.GmType gmType, GameModel.Status gmStatus, Game.Status gStatus) {
         TypedQuery<Permission> query = this.getEntityManager().createQuery(sqlQuery, Permission.class);
-        User user = requestManager.getCurrentUser();
+        User user = userFacade.getCurrentUser();
         query.setParameter("userId", user.getId());
         List<Permission> resultList = query.getResultList();
 
         for (Permission p : resultList) {
-            processPermission(p.getValue(), gmMatrix, gMatrix, gmType, gmStatus, gStatus);
-            processPermission(p.getInducedPermission(), gmMatrix, gMatrix, gmType, gmStatus, gStatus);
+            processPermission(p.getValue(), gmMatrix, gMatrix, gmType, gStatus);
         }
     }
 
@@ -672,10 +724,27 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
     @Schedule(hour = "4", dayOfMonth = "Last Sat")
     public void removeGameModels() {
-        List<GameModel> byStatus = this.findByTypeAndStatus(GameModel.GmType.SCENARIO, Status.DELETE);
-        for (GameModel gm : byStatus) {
-            this.remove(gm);
+        requestManager.su();
+        try {
+            ILock lock = hzInstance.getLock("GameModelFacade.Schedule");
+            logger.info("deleteGameModels(): want to delete gameModels");
+            if (lock.tryLock()) {
+                try {
+                    List<GameModel> byStatus = this.findByTypeAndStatus(GameModel.GmType.SCENARIO, Status.DELETE);
+                    for (GameModel gm : byStatus) {
+                        this.remove(gm);
+                    }
+                    this.getEntityManager().flush();
+                } finally {
+                    lock.unlock();
+                    lock.destroy();
+                }
+            } else {
+                logger.info("somebody else got the lock...");
+            }
+
+        } finally {
+            requestManager.releaseSu();
         }
-        this.getEntityManager().flush();
     }
 }

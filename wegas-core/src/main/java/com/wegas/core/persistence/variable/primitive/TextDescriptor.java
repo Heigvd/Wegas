@@ -21,7 +21,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance> {
 
     private static final long serialVersionUID = 1L;
 
-    // **** Sugar for scripts *** //
+    // ~~~ Sugar for scripts ~~~
 
     /**
      *
@@ -35,7 +35,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance> {
     /**
      *
      * @param p
-     * @return
+     * @return value of player instance
      */
     public String getValue(Player p) {
         return this.getInstance(p).getValue();

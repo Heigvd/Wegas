@@ -29,8 +29,7 @@ angular.module('private.admin.groups.edit.directives', ['wegas.directive.permiss
             var newPermission = {
                 'id': null,
                 "@class": "Permission",
-                "value": "",
-                "inducedPermission": ""
+                "value": ""
             };
             ctrl.group.permissions.push(newPermission);
         };

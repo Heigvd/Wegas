@@ -19,7 +19,6 @@ import javax.transaction.TransactionRolledbackException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
@@ -41,11 +40,11 @@ public abstract class AbstractExceptionMapper {
      * @return HTTP BadRequest
      */
     public static Response processException(Throwable exception) {
-        logger.warn("ProcessException: " + exception);
+        logger.trace("ProcessException: {}", exception);
 
         if (exception instanceof OptimisticLockException) {
             OptimisticLockException ex = (OptimisticLockException) exception;
-            logger.error("Try to update outated: " + ex.getEntity());
+            logger.error("Try to update outated: {}",  ex.getEntity());
 
             return Response.status(Response.Status.CONFLICT).entity(new WegasConflictException(exception)).build();
         } else if (exception instanceof RollbackException

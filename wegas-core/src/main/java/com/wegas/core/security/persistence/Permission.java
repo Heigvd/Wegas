@@ -7,10 +7,21 @@
  */
 package com.wegas.core.security.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
+import javax.persistence.*;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,18 +29,32 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
  */
 @Entity
 @NamedQueries({
+    @NamedQuery(name = "Permission.findByPermission", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission"),
     @NamedQuery(name = "Permission.findByPermissionAndUser", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission AND p.user.id = :userId"),
-    @NamedQuery(name = "Permission.findByPermission", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission")
+    @NamedQuery(name = "Permission.findByRole", query = "SELECT p FROM Permission p WHERE p.role.id = :roleId",
+            hints = {
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
+            }),
+    @NamedQuery(name = "Permission.findByUser", query = "SELECT p FROM Permission p WHERE p.user.id = :userId",
+            hints = {
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
+            })
+})
+@NamedNativeQueries({
+    @NamedNativeQuery(name = "Permission.findByUser_native", query = "SELECT permissions FROM permission LEFT JOIN users_roles ON users_roles.roles_id = permission.role_id WHERE users_roles.users_id = ?1 OR permission.user_id = ?1")
 })
 @Table(
-    indexes = {
-        @Index(columnList = "role_id"),
-        @Index(columnList = "user_id")
-    }
+        indexes = {
+            @Index(columnList = "role_id"),
+            @Index(columnList = "user_id")
+        }
 )
 public class Permission extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
+    public static final Logger logger = LoggerFactory.getLogger(Permission.class);
+
     /**
      *
      */
@@ -37,12 +62,6 @@ public class Permission extends AbstractEntity {
     @Column(name = "permissions")
     @WegasEntityProperty
     private String value;
-    /**
-     *
-     */
-    @Basic
-    @WegasEntityProperty
-    private String inducedPermission;
     /**
      *
      */
@@ -76,31 +95,6 @@ public class Permission extends AbstractEntity {
      */
     public Permission(String value) {
         this.value = value;
-    }
-
-    /**
-     *
-     * @param value
-     * @param inducedPermission
-     */
-    public Permission(String value, String inducedPermission) {
-        this.value = value;
-        this.inducedPermission = inducedPermission;
-    }
-
-
-    /**
-     * @return the inducedPermission
-     */
-    public String getInducedPermission() {
-        return inducedPermission;
-    }
-
-    /**
-     * @param inducedPermission the inducedPermission to set
-     */
-    public void setInducedPermission(String inducedPermission) {
-        this.inducedPermission = inducedPermission;
     }
 
     /**
@@ -165,5 +159,42 @@ public class Permission extends AbstractEntity {
      */
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    private boolean isPermId(String id) {
+        return id.matches("(g|gm)\\d+");
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        String[] split = this.getValue().split(":");
+
+        if (split.length == 3) {
+            String perm = split[2];
+            switch (split[0]) {
+                case "GameModel":
+                    if (isPermId(perm)) {
+                        // One should have super right on the gameModel the permission give access to
+                        GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
+                        if (gameModel != null) {
+                            return gameModel.getRequieredUpdatePermission();
+                        }
+                    }
+                case "Game":
+                    if (isPermId(perm)) {
+                        // One should have super right on the game the permission give access to
+                        Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
+                        if (game != null) {
+                            return game.getRequieredUpdatePermission();
+                        }
+                    }
+            }
+        }
+        return WegasMembership.ADMIN;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return null;
     }
 }

@@ -8,10 +8,11 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.AbstractEntity;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import javax.persistence.Transient;
 
 /**
@@ -58,5 +59,15 @@ public abstract class AbstractAssignement extends AbstractEntity {
      */
     public void setTaskDescriptorName(String taskName) {
         this.taskDescriptorName = taskName;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getResourceInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getResourceInstance().getRequieredReadPermission();
     }
 }

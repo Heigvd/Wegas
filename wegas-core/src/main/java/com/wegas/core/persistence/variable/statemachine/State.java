@@ -12,18 +12,22 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Script;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasPermission;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import javax.persistence.*;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -35,12 +39,13 @@ import java.util.List;
             @Index(columnList = "statemachine_id")
         }
 )
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 //@OptimisticLocking(cascade = true)
-public class State extends AbstractEntity implements Searchable, Scripted {
+public class State extends AbstractEntity implements Searchable, Scripted, Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -106,6 +111,11 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     public State() {
     }
 
+    /**
+     * Get the stateMachineDescriptor which defines this state
+     *
+     * @return this state's parent
+     */
     public StateMachineDescriptor getStateMachine() {
         return stateMachine;
     }
@@ -139,7 +149,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return state position in the stateMachine editor extent
      */
     public Coordinate getEditorPosition() {
         return editorPosition;
@@ -158,7 +168,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return state name
      */
     public String getLabel() {
         return label;
@@ -172,7 +182,9 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * get the script which to execute when this state become the current state
+     *
+     * @return the script which to execute when this state become the current state
      */
     public Script getOnEnterEvent() {
         return onEnterEvent;
@@ -205,7 +217,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return list of transition going out of the state
      */
     public List<Transition> getTransitions() {
         return transitions;
@@ -234,10 +246,27 @@ public class State extends AbstractEntity implements Searchable, Scripted {
         return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
     }
 
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getStateMachine().getEntities();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getStateMachine().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getStateMachine().getRequieredReadPermission();
+    }
+
     /**
      * Compare transition by index
      */
-    private static class ComparatorImpl implements Comparator<Transition> {
+    private static class ComparatorImpl implements Comparator<Transition>, Serializable {
+
+        private static final long serialVersionUID = -6452488638539643500L;
 
         public ComparatorImpl() {
         }

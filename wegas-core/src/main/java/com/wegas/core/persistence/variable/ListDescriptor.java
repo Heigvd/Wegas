@@ -77,15 +77,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         super(name);
     }
 
-    /**
-     *
-     * @param name
-     * @param defaultInstance
-     */
-    public ListDescriptor(String name, VariableInstance defaultInstance) {
-        super(name, defaultInstance);
-    }
-
     /*  @Override
      public Boolean contains(String criteria) {
      if (super.contains(criteria)) {

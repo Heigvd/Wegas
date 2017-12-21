@@ -26,6 +26,8 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -86,29 +88,18 @@ public class Helper {
     }
 
     /**
-     * @param <T>
-     * @param context
-     * @param type
+     * To be used to make a JNDI lookup when there is no CDI context
      *
-     * @return looked-up EJB instance
+     * @param <T>      resource type
+     * @param jndiName resource name
+     * @param type     resource type
      *
-     * @throws NamingException
-     */
-    public static <T> T lookupBy(Context context, Class<T> type) throws NamingException {
-        return lookupBy(context, type, type);
-    }
-
-    /**
-     * @param <T>
-     * @param type
-     * @param service
-     *
-     * @return looked-up EJB instance
+     * @return instance of the given type matching jndiName
      *
      * @throws NamingException
      */
-    public static <T> T lookupBy(Class<T> type, Class<?> service) throws NamingException {
-        return lookupBy(new InitialContext(), type, service);
+    public static <T> T jndiLookup(String jndiName, Class<T> type) throws NamingException {
+        return (T) new InitialContext().lookup(jndiName);
     }
 
     /**
@@ -120,7 +111,7 @@ public class Helper {
      * @throws NamingException
      */
     public static <T> T lookupBy(Class<T> type) throws NamingException {
-        return lookupBy(type, type);
+        return lookupBy(new InitialContext(), type, type);
     }
 
     /*
@@ -139,11 +130,11 @@ public class Helper {
     /**
      * Copy and sort the given list
      *
-     * @param <T>
-     * @param list
-     * @param c
+     * @param <T> list item type
+     * @param list the list to copy and sort
+     * @param c a compartor to sort the list
      *
-     * @return
+     * @return a unmodifiable copy of the list, sorted according to the comparator
      */
     public static <T extends Object> List<T> copyAndSort(List<T> list, Comparator<? super T> c) {
         List<T> copy = new ArrayList<>(list);
@@ -732,6 +723,31 @@ public class Helper {
         return sb.toString();
     }
 
+    public static void printWegasStackTrace(Throwable t) {
+        StringBuilder sb = new StringBuilder(t.getClass().getName());
+        sb.append(" - ").append(t.getMessage());
+        for (StackTraceElement elem : t.getStackTrace()) {
+            if (elem.getClassName().startsWith("com.wegas")
+                    || elem.getClassName().startsWith("jdk.nashorn")) {
+                sb.append("\n\tat ");
+                sb.append(elem);
+            }
+        }
+        logger.error(sb.toString());
+    }
+
+    /**
+     * Check if email is valid. (Only a string test)
+     *
+     * @param email
+     *
+     * @throws javax.mail.internet.AddressException
+     */
+    public static void assertEmailPattern(String email) throws AddressException {
+        InternetAddress emailAddr = new InternetAddress(email);
+        emailAddr.validate();
+    }
+
     /**
      * A Least Recently Used key-value in memory cache.
      *
@@ -760,25 +776,13 @@ public class Helper {
 
     public static void printClusterState(Cluster cluster) {
         if (cluster != null) {
-            logger.error("Cluster up: " + cluster.getClusterState());
+            logger.error("Cluster up: {}", cluster.getClusterState());
             for (Member member : cluster.getMembers()) {
-                logger.error(" * " + member + (member == cluster.getLocalMember() ? " <-- it's me !" : ""));
+                logger.error(" * {}{}", member, (member == cluster.getLocalMember() ? "<-- it's me !" : ""));
             }
         } else {
             logger.error("No cluster (null)");
         }
-    }
-
-    public static void printWegasStackTrace(Throwable t) {
-        StringBuilder sb = new StringBuilder(t.getClass().getName());
-        sb.append(" - ").append(t.getMessage());
-        for (StackTraceElement elem : t.getStackTrace()) {
-            if (elem.getClassName().startsWith("com.wegas")) {
-                sb.append("\n\tat ");
-                sb.append(elem);
-            }
-        }
-        logger.error(sb.toString());
     }
 
     private static void indent(StringBuilder sb, int ident) {

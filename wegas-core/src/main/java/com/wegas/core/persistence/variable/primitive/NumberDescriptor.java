@@ -9,12 +9,11 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -105,7 +104,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @return
+     * @return the max value
      */
     @JsonIgnore
     @Transient
@@ -115,7 +114,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @return
+     * @return the minimum value
      */
     @JsonIgnore
     @Transient
@@ -135,7 +134,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         }
     }
 
-    // **** Sugar for scripts *** //
+    // ~~~ Sugar for scripts ~~~
     /**
      *
      * @param p
@@ -156,7 +155,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @return
+     * @return the defaule value
      */
     @Transient
     public double getDefaultValue() {
@@ -177,8 +176,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      * @param value
      */
     public void add(Player p, double value) {
-        NumberInstance instance = this.getInstance(p);
-        instance.setValue(instance.getValue() + value);
+        this.getInstance(p).add(value);
     }
 
     /**
@@ -197,15 +195,14 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      * @param value
      */
     public void add(Player p, int value) {
-        NumberInstance instance = this.getInstance(p);
-        instance.setValue(instance.getValue() + value);
+        this.getInstance(p).add(value);
     }
 
     /**
      *
      * @param p
      *
-     * @return
+     * @return value of player p instance
      */
     public double getValue(Player p) {
         return this.getInstance(p).getValue();

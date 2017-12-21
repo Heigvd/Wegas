@@ -96,9 +96,9 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      * @param memberUUID new instance uuid
      */
     public void instanceUp(@Observes @Inbound(eventName = LIFECYCLE_UP) String memberUUID) {
-        logger.info("REGISTER MEMBER " + memberUUID);
+        logger.info("REGISTER MEMBER {}", memberUUID);
         this.addMember(memberUUID);
-        //logger.error("EVENTRECEIVED: " + event.getMember() + " -> " + event.isUp());
+        //logger.error("EVENTRECEIVED: {} -> {} ", event.getMember(),  event.isUp());
         logClusterInfo(null);
     }
 
@@ -108,9 +108,9 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      * @param memberUUID new instance uuid
      */
     public void instanceDown(@Observes @Inbound(eventName = LIFECYCLE_DOWN) String memberUUID) {
-        logger.info("REMOVE MEMBER " + memberUUID);
+        logger.info("REMOVE MEMBER {}",  memberUUID);
         this.removeMember(memberUUID);
-        //logger.error("EVENTRECEIVED: " + event.getMember() + " -> " + event.isUp());
+        //logger.error("EVENTRECEIVED: {} -> {} ", event.getMember(), event.isUp());
         logClusterInfo(null);
     }
 
@@ -120,7 +120,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      * @param fromMemberUUID
      */
     public void announcemenetRequested(@Observes @Inbound(eventName = REQUEST_ALL) String fromMemberUUID) {
-        logger.info("MEMBER " + fromMemberUUID + " REQUESTS ANNOUNCE");
+        logger.info("MEMBER {} REQUESTS ANNOUNCE", fromMemberUUID);
         this.sendInstanceReadyEvent(hzInstance.getCluster().getLocalMember().getUuid());
         logClusterInfo(null);
     }
@@ -128,7 +128,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
     /**
      * Return the current numnber of member, base on the local list of members
      *
-     * @return
+     * @return  size of the local list of members
      */
     public int countMembers() {
         return clusterMembers.size();
@@ -160,7 +160,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
     public void memberAdded(MembershipEvent me) {
         // This event is throw way too early...
         // New membership are managed by ApplicationStartup servlet
-        logger.info("NEW MEMBER (MembershipEvent) " + me.getMember().getUuid());
+        logger.info("NEW MEMBER (MembershipEvent) {}", me.getMember().getUuid());
         this.requestClusterMemberNotification();
         logClusterInfo(null);
         hazelCastSize.set(me.getMembers().size());
@@ -168,7 +168,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
 
     @Override
     public void memberAttributeChanged(MemberAttributeEvent mae) {
-        logger.info("MEMBER ATTR CHANGE: " + mae.getMember().getUuid());
+        logger.info("MEMBER ATTR CHANGE: {}", mae.getMember().getUuid());
         logClusterInfo(null);
         // no need
     }
@@ -180,7 +180,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      */
     @Override
     public void memberRemoved(MembershipEvent me) {
-        logger.info("MEMBER " + me.getMember().getUuid() + " REMOVED (membership event)");
+        logger.info("MEMBER {} REMOVED (membership event)", me.getMember().getUuid());
         this.removeMember(me.getMember().getUuid());
         logClusterInfo(null);
         hazelCastSize.set(me.getMembers().size());

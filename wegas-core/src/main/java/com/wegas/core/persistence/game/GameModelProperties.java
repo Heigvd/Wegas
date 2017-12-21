@@ -7,18 +7,20 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.wegas.core.rest.util.Views;
-import java.io.Serializable;
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.rest.util.Views;
+import java.io.Serializable;
+import javax.persistence.*;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Embeddable
+@JsonIgnoreProperties(value = {"imageUri"})
 public class GameModelProperties implements Serializable, Mergeable {
 
     @Override
@@ -83,11 +85,6 @@ public class GameModelProperties implements Serializable, Mergeable {
      *
      */
     @WegasEntityProperty
-    private String imageUri = "";
-    /**
-     *
-     */
-    @WegasEntityProperty
     private String iconUri = "";
 
     /**
@@ -97,6 +94,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     }
 
     /**
+     * Is a guest allowed to create/join a team on this gameModel ?
      *
      * @return whether or not a guest is allowed to create or join a team within this gameModel
      */
@@ -202,20 +200,6 @@ public class GameModelProperties implements Serializable, Mergeable {
      */
     public void setScriptUri(String scriptUri) {
         this.scriptUri = scriptUri;
-    }
-
-    /**
-     * @return the imageUri
-     */
-    public String getImageUri() {
-        return imageUri;
-    }
-
-    /**
-     * @param imageUri the imageUri to set
-     */
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
     }
 
     /**

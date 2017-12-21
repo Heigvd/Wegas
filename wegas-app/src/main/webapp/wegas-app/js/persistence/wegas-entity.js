@@ -116,7 +116,6 @@ YUI.add("wegas-entity", function(Y) {
             val: {}
         }
     });
-    persistence.RestException = persistence.DefaultEntity;
 
     /**
      * ManagedResponse mapper
@@ -252,15 +251,11 @@ YUI.add("wegas-entity", function(Y) {
                                     value: false,
                                     label: "in team"
                                 }]
-                        }, {/*
-                         name: "imageUri",
-                         label: "Thumbnail",
-                         type: "wegasurl"
-                         }, {
-                         name: "iconUri",
-                         label: "Icon",
-                         type: "wegasurl"
-                         }, {*/
+                        }, {
+                            name: "iconUri",
+                            label: "Icon",
+                            type: "hidden"
+                        }, {
                             name: "scriptUri",
                             label: "Server scripts",
                             wrapperClassName: "inputEx-fieldWrapper"
@@ -634,9 +629,6 @@ YUI.add("wegas-entity", function(Y) {
                                 value: "Permission"
                             }, {
                                 name: "value"
-                            }, {
-                                name: "inducedPermission",
-                                value: null
                             }]
                     }
                 }
@@ -762,9 +754,6 @@ YUI.add("wegas-entity", function(Y) {
                                 value: "Permission"
                             }, {
                                 name: "value"
-                            }, {
-                                name: "inducedPermission",
-                                value: ""
                             }]
                     }
                 },
@@ -859,9 +848,6 @@ YUI.add("wegas-entity", function(Y) {
                                 value: "Permission"
                             }, {
                                 name: "value"
-                            }, {
-                                name: "inducedPermission",
-                                value: ""
                             }]
                     }
                 },

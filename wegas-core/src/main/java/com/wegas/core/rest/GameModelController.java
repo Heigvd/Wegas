@@ -9,6 +9,7 @@ package com.wegas.core.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.merge.ejb.MergeFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -25,7 +26,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.apache.shiro.subject.Subject;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
@@ -47,8 +47,17 @@ public class GameModelController {
     @EJB
     private GameModelFacade gameModelFacade;
 
+    /**
+     *
+     */
     @Inject
     private MergeFacade mergeFacade;
+
+    /**
+     *
+     */
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -59,7 +68,6 @@ public class GameModelController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public GameModel create(GameModel gm) {
-        SecurityUtils.getSubject().checkPermission("GameModel:Create");
         gameModelFacade.createWithDebugGame(gm);
 
         return gm;
@@ -111,8 +119,10 @@ public class GameModelController {
 
     /**
      *
-     * @param templateGameModelId
-     * @param gm
+     * Duplicate and set new gameModel name
+     *
+     * @param templateGameModelId id of the gameModel to duplicate
+     * @param gm                  template to fetch the new name in
      *
      * @return the new game model
      *
@@ -123,13 +133,9 @@ public class GameModelController {
     public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws CloneNotSupportedException  {
         // logger.info(Level.INFO, "POST GameModel");
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
-
-        //TODO : replace duplicate + addDebugGame by duplicateWithDebugGame !
-        GameModel duplicate = gameModelFacade.duplicate(templateGameModelId);
+        GameModel duplicate = gameModelFacade.duplicateWithDebugGame(templateGameModelId);
+        // restore original name
         duplicate.setName(gm.getName());
-
-        gameModelFacade.addDebugGame(duplicate);
 
         return duplicate;
     }
@@ -147,12 +153,9 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
-    
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + templateGameModelId);
 
         GameModel gm = gameModelFacade.setDefaultInstancesFromPlayer(templateGameModelId, playerId);
         gameModelFacade.reset(gm);
@@ -177,12 +180,10 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
-    
     @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
         GameModel duplicate = gameModelFacade.createFromPlayer(templateGameModelId, playerId);
 
         return duplicate;
@@ -201,8 +202,6 @@ public class GameModelController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public GameModel upload(@FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws IOException {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Create");
 
         ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
         GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
@@ -223,13 +222,11 @@ public class GameModelController {
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8") // @hack force utf-8 charset
     @Path("{entityId : [1-9][0-9]*}")
     public GameModel get(@PathParam("entityId") Long entityId) {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + entityId);
-
         return gameModelFacade.find(entityId);
     }
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8") // @hack force utf-8 charset
     @Path("{entityId : [1-9][0-9]*}/{filename: .*\\.json}")
     public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) {
         return Response.ok(this.get(entityId))
@@ -246,13 +243,11 @@ public class GameModelController {
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public GameModel update(@PathParam("entityId") Long entityId, GameModel entity) {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + entityId);
-
         return gameModelFacade.update(entityId, entity);
     }
 
     /**
+     * Duplicate as-is
      *
      * @param entityId
      *
@@ -262,9 +257,6 @@ public class GameModelController {
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     public GameModel duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException{
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + entityId);
-
         return gameModelFacade.duplicateWithDebugGame(entityId);
     }
 
@@ -288,24 +280,20 @@ public class GameModelController {
     @PUT
     @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
     public GameModel changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final GameModel.Status status) {
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + entityId);
         GameModel gm = gameModelFacade.find(entityId);
-        Subject s = SecurityUtils.getSubject();
         switch (status) {
             case LIVE:
-                if (s.isPermitted("GameModel:View:gm" + gm.getId())
-                        || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
-                        || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                if (requestManager.canRestoreGameModel(gm)) {
                     gameModelFacade.live(gm);
                 }
                 break;
             case BIN:
-                if (s.isPermitted("GameModel:Delete:gm" + entityId)) {
+                if (requestManager.canDeleteGameModel(gm)) {
                     gameModelFacade.bin(gm);
                 }
                 break;
             case DELETE:
-                if (s.isPermitted("GameModel:Delete:gm" + entityId)) {
+                if (requestManager.canDeleteGameModel(gm)) {
                     gameModelFacade.delete(gm);
                 }
                 break;
@@ -374,9 +362,8 @@ public class GameModelController {
     @DELETE
     public Collection<GameModel> deleteAll() {
         Collection<GameModel> games = new ArrayList<>();
-        Subject s = SecurityUtils.getSubject();
         for (GameModel gm : gameModelFacade.findByTypeAndStatus(GameModel.GmType.SCENARIO, GameModel.Status.BIN)) {
-            if (s.isPermitted("GameModel:Delete:gm" + gm.getId())) {
+            if (requestManager.canDeleteGameModel(gm)) {
                 gameModelFacade.delete(gm);
                 games.add(gm);
             }

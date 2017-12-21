@@ -13,8 +13,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
+import java.util.Collection;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -37,6 +39,12 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
+@Table(
+        indexes = {
+            @Index(columnList = "evaluationdescriptor_id"),
+            @Index(columnList = "commentsreview_id"),
+            @Index(columnList = "feedbackreview_id")
+        })
 public abstract class EvaluationInstance extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -211,5 +219,21 @@ public abstract class EvaluationInstance extends AbstractEntity {
             }
         }
         super.updateCacheOnDelete(beans);
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getEffectiveReview().getRequieredUpdatePermission();
+    }
+
+    /*
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        return this.getEffectiveReview().getRequieredDeletePermission();
+    }*/
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getEffectiveReview().getRequieredReadPermission();
     }
 }

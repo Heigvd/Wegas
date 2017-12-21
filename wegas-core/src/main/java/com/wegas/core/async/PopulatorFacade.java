@@ -11,9 +11,9 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.core.ejb.*;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
@@ -28,8 +28,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +38,9 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 @TransactionManagement(TransactionManagementType.BEAN)
-public class PopulatorFacade {
+public class PopulatorFacade extends WegasAbstractFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(PopulatorFacade.class);
-
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
 
     @Inject
     private HazelcastInstance hzInstance;
@@ -86,11 +81,15 @@ public class PopulatorFacade {
      * Two-step team creation: second step
      *
      * @param teamId
+     * @param accountId
      */
-    public void populateTeam(Long teamId) {
+    public void populateTeam(Long teamId, Long accountId) {
+        requestManager.su(accountId);
+        Team team = teamFacade.find(teamId);
+        teamFacade.detach(team);
         try {
             utx.begin();
-            Team team = teamFacade.find(teamId);
+            team = teamFacade.find(teamId);
             Game game = gameFacade.find(team.getGameId());
             gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
 
@@ -107,20 +106,26 @@ public class PopulatorFacade {
                 }
                 try {
                     utx.begin();
-                    Team team = teamFacade.find(teamId);
+                    team = teamFacade.find(teamId);
                     this.postpone(team);
                     utx.commit();
                 } catch (Exception ex1) {
                     logger.error("Fails to revert Team status");
                 }
             }
+        } finally {
+            requestManager.releaseSu();
         }
     }
 
-    public void populatePlayer(Long playerId) {
+    public void populatePlayer(Long playerId, Long accountId) {
+        requestManager.su(accountId);
+        Player player = playerFacade.find(playerId);
+        playerFacade.detach(player);
+
         try {
             utx.begin();
-            Player player = playerFacade.find(playerId);
+            player = playerFacade.find(playerId);
             // Inform player's user its player is porocessing
 
             websocketFacade.propagateNewPlayer(player);
@@ -130,7 +135,7 @@ public class PopulatorFacade {
 
             player.setStatus(Status.LIVE);
 
-            this.em.flush();
+            this.flush();
             stateMachineFacade.runStateMachines(player);
             utx.commit();
             websocketFacade.propagateNewPlayer(player);
@@ -146,13 +151,15 @@ public class PopulatorFacade {
 
                 try {
                     utx.begin();
-                    Player player = playerFacade.find(playerId);
+                    player = playerFacade.find(playerId);
                     this.postpone(player);
                     utx.commit();
                 } catch (Exception ex1) {
                     logger.error("Fails to revert Team status");
                 }
             }
+        } finally {
+            requestManager.releaseSu();
         }
     }
 
@@ -205,12 +212,13 @@ public class PopulatorFacade {
         return this.getQueue().size();
     }
 
-    public void setForceQuit(boolean forceQuit) {
-        this.forceQuit = forceQuit;
+    public static void setForceQuit(boolean forceQuit) {
+        PopulatorFacade.forceQuit = forceQuit;
     }
 
-    public AbstractEntity getNextOwner(Populator currentCreator) {
-        AbstractEntity owner = null;
+    public Candidate getNextCandidate(Populator currentCreator) {
+        requestManager.su();
+        Candidate candidate = null;
 
         ILock lock = this.getLock();
         lock.lock();
@@ -220,7 +228,7 @@ public class PopulatorFacade {
 
                 if (forceQuit) {
                     logger.info("Force Populator to quit");
-                    owner = null;
+                    candidate = null;
                 } else {
 
                     List<DatedEntity> queue = new ArrayList<>();
@@ -235,20 +243,20 @@ public class PopulatorFacade {
                         if (pop instanceof Team) {
                             Team t = (Team) pop;
                             this.markAsProcessing(t);
-                            owner = t;
+                            candidate = new Candidate(t.getCreatedBy().getMainAccount().getId(), t);
                             break;
                         } else if (pop instanceof Player
                                 && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Status.LIVE)) {
                             Player p = (Player) pop;
                             this.markAsProcessing(p);
-                            owner = p;
+                            candidate = new Candidate(p.getUser().getMainAccount().getId(), p);
                             break;
                         }
                     }
                 }
 
                 // No new job for callee...
-                if (owner == null) {
+                if (candidate == null) {
                     populatorScheduler.removePopulator(currentCreator);
                     utx.rollback();
                 } else {
@@ -267,7 +275,23 @@ public class PopulatorFacade {
             }
         } finally {
             lock.unlock();
+            requestManager.releaseSu();
         }
-        return owner;
+        return candidate;
+    }
+
+    public PopulatorScheduler getPopulatorScheduler() {
+        return populatorScheduler;
+    }
+
+    public static class Candidate {
+
+        public InstanceOwner owner;
+        public Long accountId;
+
+        public Candidate(Long accountId, InstanceOwner owner) {
+            this.owner = owner;
+            this.accountId = accountId;
+        }
     }
 }

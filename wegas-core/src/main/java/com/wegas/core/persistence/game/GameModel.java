@@ -22,6 +22,9 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
@@ -42,11 +45,19 @@ import org.slf4j.LoggerFactory;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
+    @NamedQuery(name = "GameModel.findIdById", query = "SELECT gm.id FROM GameModel gm WHERE gm.id = :gameModelId"),
     @NamedQuery(name = "GameModel.findByTypeAndStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status AND a.type = :type ORDER BY a.name ASC"),
     @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.rootGameModel.id = :containerId"),
     @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name AND a.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"),
-    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO")
+    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"),
+    @NamedQuery(name = "GameModel.findAllInstantiations", query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id")
 })
+@Table(
+        indexes = {
+            @Index(columnList = "createdby_id"),
+            @Index(columnList = "basedon_gamemodelid")
+        }
+)
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModel.class);
@@ -125,6 +136,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     private User createdBy;
 
     /**
+     * Link to original gameModel for "PLAY" gameModel
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private GameModel basedOn;
+
+    /*
      *
      */
     @ManyToOne
@@ -263,6 +281,24 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
+     * Set the gameModel this PLAY gameModel is based on
+     *
+     * @param srcGameModel the original game model this gameModel is a duplicata of
+     */
+    public void setBasedOn(GameModel srcGameModel) {
+        this.basedOn = srcGameModel;
+    }
+
+    /**
+     * Returns the original game model this gameModel is a duplicata of
+     *
+     * @return the original game model
+     */
+    public GameModel getBasedOn() {
+        return this.basedOn;
+    }
+
+    /**
      * Register new descriptor within the main descriptor list
      * Method do nothing id descriptor is already registered
      *
@@ -324,8 +360,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         if (canView != null) {
             return canView;
         } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.id);
+            Helper.printWegasStackTrace(new Exception());
+            return true; // by design, non readable gameModel will throws an exception
         }
     }
 
@@ -338,6 +374,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             return canEdit;
         } else {
             // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            Helper.printWegasStackTrace(new Exception());
             return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
         }
     }
@@ -351,6 +388,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             return canDuplicate;
         } else {
             // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            Helper.printWegasStackTrace(new Exception());
             return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
         }
     }
@@ -364,6 +402,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             return canInstantiate;
         } else {
             // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
+            Helper.printWegasStackTrace(new Exception());
             return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
         }
     }
@@ -558,8 +597,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Override
     @JsonIgnore
     public Player getAnyLivePlayer() {
-        for (Game g : this.getGames()) {
-            return g.getAnyLivePlayer();
+        for (Game game : this.getGames()) {
+            Player p = game.getAnyLivePlayer();
+            if (p != null) {
+                return p;
+            }
         }
         return null;
     }
@@ -897,6 +939,35 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonIgnore
     public String getChannel() {
         return Helper.GAMEMODEL_CHANNEL_PREFIX + getId();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        if (this.getStatus() == Status.PLAY) {
+            return WegasMembership.TRAINER;
+        } else {
+            return WegasMembership.SCENARIST;
+        }
+    }
+
+    @Override
+    public WegasPermission getAssociatedReadPermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAMEMODEL);
+    }
+
+    @Override
+    public WegasPermission getAssociatedWritePermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
     }
 
     /**
