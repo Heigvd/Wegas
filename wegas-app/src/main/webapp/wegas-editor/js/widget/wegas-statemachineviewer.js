@@ -268,12 +268,12 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                                     }
                                 }
                                 if (!t) {
-                                    child.disconnect();
+                                    child.disconnect(true);
                                 }
                             });
 
                         } else {
-                            this.deleteSelf();
+                            this.deleteSelf(true);
                             //this.destroyAll();
                             //this.remove();
                         }
@@ -748,7 +748,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
          * User action delete Node.
          * @returns {undefined}
          */
-        deleteSelf: function() {
+        deleteSelf: function(noSave) {
             var fsmViewer = this.get(PARENT);
             if (this.get(SID) === fsmViewer.get(ENTITY).getInitialStateId()) {
                 fsmViewer.showMessage("info", "Unable to delete initial state");
@@ -768,7 +768,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             // (id !== null) { fsmViewer.get(ENTITY).setInitialStateId(id);
             // fsmViewer.get(BOUNDING_BOX).all(".initial-state").removeClass("initial-state");
             // fsmViewer.nodes[id].syncUI(); } }
-            fsmViewer.save();
+            if(!noSave){
+                fsmViewer.save();
+            }
         }
     }, {
         ATTRS: {
@@ -867,7 +869,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         syncUI: function() {
             this.updateLabel();
         },
-        disconnect: function() {
+        disconnect: function(noSave) {
             var target = this.getTargetState(),
                 index = Y.Array.indexOf(target.transitionsTarget, this),
                 con = this.connection,
@@ -887,7 +889,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             if (index > -1) {
                 transitions.splice(index, 1);
             }
-            this.get(PARENT).get(PARENT).save();
+            if(!noSave){
+                this.get(PARENT).get(PARENT).save();
+            }
 
             this.destroy();
         },
