@@ -1,3 +1,4 @@
+const p = require('path');
 function hasLabel(path) {
     return path.node.properties.some(a => {
         if (a.type !== 'ObjectProperty') {
@@ -24,10 +25,12 @@ module.exports = function transform(babel) {
             CallExpression(path) {
                 if (isGCSS && path.node.callee.name === isGCSS) {
                     let name = '';
-                    const filename = this.file.opts.sourceFileName.replace(
-                        /\//g,
-                        '£'
-                    );
+                    const filename = p
+                        .relative(
+                            this.file.opts.sourceRoot,
+                            this.file.opts.filename
+                        )
+                        .replace(/\//g, '_');
                     if (path.parent.id) {
                         name = `££${path.parent.id.name}£££`;
                     }

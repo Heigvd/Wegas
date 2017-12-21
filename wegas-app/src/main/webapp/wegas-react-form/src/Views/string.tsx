@@ -3,7 +3,6 @@ import deb from 'lodash-es/debounce';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 import { css } from 'glamor';
-import FormStyles from './form-styles';
 
 export const inputStyle = css({
     label: 'string-inputStyle',

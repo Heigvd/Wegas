@@ -71,8 +71,18 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                loader: 'awesome-typescript-loader',
                 exclude: /node_modules/,
+                use: [
+                    // 'babel-loader',
+                    {
+                        loader: 'awesome-typescript-loader',
+                        options: {
+                            babelCore: '@babel/core',
+                            useBabel: true,
+                            useCache: false,
+                        },
+                    },
+                ],
             },
             {
                 test: /\.jsx?$/,
