@@ -138,6 +138,9 @@ class Condition extends React.Component {
                 type: descr.returns,
                 value: defaultValue(descr.returns),
                 required: true,
+                view: {
+                    layout: 'extraShortInline',
+                },
             };
             container = [
                 <div key="operator" className={containerStyle}>
@@ -154,19 +157,17 @@ class Condition extends React.Component {
                         type={descr.returns}
                     />
                 </div>,
-                <div key="right" className={containerStyle}>
-                    {renderForm(
-                        node.right,
-                        schema,
-                        v =>
-                            this.setState(
-                                ({ node }) => ({ node: { ...node, right: v } }),
-                                this.check
-                            ),
-                        undefined,
-                        'right'
-                    )}
-                </div>,
+                renderForm(
+                    node.right,
+                    schema,
+                    v =>
+                        this.setState(
+                            ({ node }) => ({ node: { ...node, right: v } }),
+                            this.check
+                        ),
+                    undefined,
+                    'right'
+                ),
             ];
         }
         return (

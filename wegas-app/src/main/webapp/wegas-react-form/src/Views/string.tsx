@@ -5,44 +5,29 @@ import commonView from '../HOC/commonView';
 import { css } from 'glamor';
 
 export const inputStyle = css({
-    label: 'string-inputStyle',
-    borderRadius: '3px',
     boxSizing: 'border-box',
-    border: '1px solid lightgrey',
+    border: '1px solid #BFBFBF',
     fontSize: '13px',
     color: 'darkslategrey',
-    boxShadow: '1px 1px 4px #ccc',
+    minHeight: '1.5em',
     width: '100%',
+    resize: 'vertical',
     '::placeholder': {
         fontStyle: 'italic',
     },
     '[readonly]': {
         backgroundColor: 'lightgrey',
     },
-});
-
-const textareaFocus = css({
-    label: 'string-textareaFocus',
-    ':focus': {
-        border: '1px solid lightgrey',
+    '[type=text]': {
+        padding: '4px',
+    },
+    '[type=password]': {
+        padding: '4px',
+    },
+    '[type=search]': {
+        padding: '4px',
     },
 });
-
-const textareaStyle = css(
-    {
-        label: 'string-textareaStyle',
-        borderRadius: '3px',
-        width: '100%',
-        fontStyle: 'italic',
-        fontSize: '15px',
-        border: 'none',
-        color: 'darkgrey',
-        '[readonly]': {
-            backgroundColor: 'lightgrey',
-        },
-    },
-    textareaFocus
-);
 
 function fromNotToEmpty(value?: void | string | number) {
     if (value === null || value === undefined) {
@@ -104,7 +89,7 @@ class StringView extends React.Component<
             return (
                 <textarea
                     id={this.props.id}
-                    className={textareaStyle.toString()}
+                    className={inputStyle.toString()}
                     rows={this.props.view.rows}
                     onChange={this.handleChange}
                     onBlur={this.handleChange}

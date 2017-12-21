@@ -20,12 +20,11 @@ const shortStyle = css({
 const shortInlineStyle = css(
     {
         display: 'inline-block',
-        marginRight: '4em',
-        verticalAlign: 'top',
+        marginRight: '1em',
     },
     shortStyle
 );
-
+const extraShortInline = css(shortInlineStyle, extraShortStyle);
 const shortNumberStyle = css({
     label: 'commonView shortNumberStyle',
     width: '75px',
@@ -48,10 +47,10 @@ const errorStyle = css({
     float: 'left',
 });
 
-// Used e.g. inside "Choices" (answers to questions):
 const borderTopStyle = css({
-    borderTop: '2px solid #6a95b6',
-    paddingTop: '1em',
+    borderTop: '2px solid #D3ECF6',
+    paddingTop: '0.5em',
+    marginTop: '1em',
 });
 
 const indentStyle = css({
@@ -91,6 +90,7 @@ export default function commonView<E>(
                     [`${shortInlineStyle}`]: layout === 'shortInline',
                     [`${longStyle}`]: layout === 'long',
                     [`${extraShortStyle}`]: layout === 'extraShort',
+                    [`${extraShortInline}`]: layout === 'extraShortInline',
                     [`${borderTopStyle}`]: view.borderTop,
                     [`${indentStyle}`]: view.indent,
                 })}

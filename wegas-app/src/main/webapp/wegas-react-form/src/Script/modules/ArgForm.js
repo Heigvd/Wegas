@@ -62,7 +62,7 @@ export default class ArgFrom extends React.Component {
         const { schema, value } = this.state;
         const s = { ...schema, view: { ...schema.view, entity } };
         return (
-            <div className={containerStyle}>
+            // <div className={containerStyle}>
                 <Form
                     schema={s}
                     value={value}
@@ -71,7 +71,7 @@ export default class ArgFrom extends React.Component {
                         onChange(valueToType(v, this.props.schema));
                     }}
                 />
-            </div>
+            // </div>
         );
     }
 }

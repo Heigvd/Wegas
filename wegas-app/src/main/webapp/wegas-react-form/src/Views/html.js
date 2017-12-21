@@ -3,13 +3,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import TinyMCE from 'react-tinymce';
+import { css } from 'glamor';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
 
 const Wegas = getY().Wegas;
-
+const tinymceStyle = css({
+    '& .mce-tinymce': {
+        boxShadow: 'none',
+        boxSizing: 'border-box',
+    },
+});
 function onFileBrowserClick(fieldName, url, type, win) {
     const filePanel = new Wegas.FileSelect();
 
@@ -212,7 +218,7 @@ class HTMLView extends React.Component {
 
     render() {
         return (
-            <div onClick={focusChildOnClick}>
+            <div {...tinymceStyle} onClick={focusChildOnClick}>
                 <TinyMCE
                     key={this.state.key}
                     content={toTinyMCE(this.state.content)}

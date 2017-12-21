@@ -254,7 +254,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     view: {
                         type: 'textarea',
                         className: 'wegas-comments',
-                        placeholder: 'Optional comments'
+                        borderTop: true,
+                        label: 'Comments'
                     }
                 },
                 label: {
@@ -677,7 +678,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             type: STRING,
                             value: '',
                             required: false,
-                            view: {label: 'value'}
+                            view: {layout: 'shortInline'}
                         }
                     ]
                 },
@@ -951,7 +952,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             type: NUMBER,
                             required: true,
                             view: {
-                                layout: 'extraShort'
+                                layout: 'extraShortInline'
                             }
                         }
                     ]
@@ -973,7 +974,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         {
                             type: NUMBER,
                             required: true,
-                            view: {layout: 'extraShort'}
+                            view: {layout: 'extraShortInline'}
                         }
                     ]
                 },
@@ -1484,16 +1485,16 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         {
                             type: STRING,
                             required: true,
-                            view: {label: 'From', layout: 'long'}
+                            view: {label: 'From', layout: 'short'}
                         },
                         {
                             type: STRING,
                             value: '',
-                            view: {label: 'Date'}
+                            view: {label: 'Date', layout: 'short'}
                         },
                         {
                             type: STRING,
-                            view: {label: 'Subject'},
+                            view: {label: 'Subject', layout: 'short'},
                             required: true
                         },
                         {

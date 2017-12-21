@@ -10,23 +10,19 @@ import { inputStyle } from '../string';
 const separatorCss = css({ borderTop: 'solid 1px' });
 
 const containerCss = css({
-    label: 'treevariableselect-containerCss',
     color: '#6A95B6',
     position: 'relative',
     display: 'inline-block',
     marginTop: '1.25em',
-    paddingLeft: '4px',
 });
 
 const iconCss = css({
-    label: 'treevariableselect-iconCss',
     color: 'black',
     fontSize: '85%',
     margin: '0 6px 0 3px',
 });
 
 const treeCss = css({
-    label: 'treevariableselect-treeCss',
     padding: '5px 10px',
     backgroundColor: 'white',
     boxShadow: '0 2px 5px black',
@@ -42,7 +38,6 @@ const treeCss = css({
 });
 
 const pathCss = css({
-    label: 'treevariableselect-pathCss',
     position: 'absolute',
     fontSize: '75%',
     whiteSpace: 'nowrap',

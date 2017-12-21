@@ -6,18 +6,17 @@ import { RemoveStatementButton, AddStatementButton } from './Views/Button';
 import Statement from './Views/Statement';
 
 const removeButtonStyle = css({
-    label: 'addStatement-removeButtonStyle',
     opacity: 0,
     display: 'inline-block',
     transition: 'opacity 300ms 300ms',
 });
 
 const removeContainerStyle = css({
-    label: 'addStatement-removeContainerStyle',
     // borderLeft: 'solid 1px lightsteelblue',
     // marginTop: '2em',
     backgroundColor: '#f0f0ff',
     marginBottom: '4px',
+    padding: '0 5px',
     [`:hover > .${removeButtonStyle}`]: {
         opacity: 1,
     },

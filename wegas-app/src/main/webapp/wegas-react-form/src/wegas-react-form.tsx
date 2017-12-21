@@ -37,10 +37,11 @@ const containerForm = css({
     width: '100%',
     padding: '0 1em',
     maxWidth: '600px',
+    marginBottom: '1em',
     boxSizing: 'border-box',
     '& input, & select, & textarea': {
         ':focus': {
-            outline: 'auto',
+            outline: 'medium auto #6AACF1',
         },
     },
 });
