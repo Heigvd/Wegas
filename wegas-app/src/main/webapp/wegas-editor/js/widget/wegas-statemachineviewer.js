@@ -382,10 +382,10 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                                 if (this._saveWaiting) {
                                     this.save();
                                 }
+                                this._rebuild();
                                 queue.call(e);
                                 this.highlightUnusedStates();
                                 this.hideOverlay();
-                                this._rebuild();
                                 /*Wegas.Facade.Variable.cache.getWithView(e.response.entity, "Editor", {
                                     on: {
                                         success: Y.bind(function (e) {
