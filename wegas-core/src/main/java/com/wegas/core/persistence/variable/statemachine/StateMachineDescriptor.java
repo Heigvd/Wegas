@@ -17,10 +17,9 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.persistence.*;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -149,9 +148,12 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
             }
         }
         for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext(); ) {
-            Entry<Long, State> newState = it.next();
-            Long newKey = newState.getKey();
-            this.getStates().putIfAbsent(newKey, newState.getValue());
+            Entry<Long, State> newStateEntry = it.next();
+            Long newKey = newStateEntry.getKey();
+            State newState = newStateEntry.getValue();
+            // link the new state to correct (managed) stateMachine
+            newState.setStateMachine(this);
+            this.getStates().putIfAbsent(newKey, newState);
         }
     }
 
