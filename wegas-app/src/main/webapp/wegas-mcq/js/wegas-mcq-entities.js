@@ -615,8 +615,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 type: NULLSTRING,
                                 index: 4,
                                 visible: function (val, formVal) {
-                                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentDescriptorId);
-                                    return parent ? parent.get("cbx") : false;
+                                    return Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent().get("cbx");
                                 },
                                 view: {
                                     type: HTML,
@@ -634,8 +633,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 }
                             },
                                 visible: function (val, formVal) {
-                                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentDescriptorId);
-                                    return parent ? parent.get("cbx") : false;
+                                    return Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent().get("cbx");
                             },
                                 view: {
                                     label: "Impact on variables when ignored",
@@ -817,7 +815,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 optional: true,
                 visible: function (val, formVal) {
                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                    return parent ? parent.parentDescriptor.get("cbx") : false;
+                    return parent ? parent.getParent().get("cbx") : false;
                 },
                 view: {
                     type: HTML,
@@ -836,7 +834,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
                 visible: function (val, formVal) {
                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                    return parent ? parent.parentDescriptor.get("cbx") : false;
+                    return parent ? parent.getParent().get("cbx") : false;
                 },
                 view: {
                     label: "Impact on variables when ignored",
