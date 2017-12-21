@@ -91,6 +91,7 @@ public interface AbstractFacade<T extends AbstractEntity> {
      * @return all entities matching the range filter
      * @deprecated 
      */
+    @Deprecated
     List<T> findRange(int[] range);
 
     /**

@@ -7,17 +7,12 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,29 +27,8 @@ public class TeamScope extends AbstractScope<Team> {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(TeamScope.class.getName());
 
-    /*
-     * FIXME Here we should use Team reference and add a key deserializer
-     * module. @JoinTable(joinColumns = @JoinColumn(name = "teamscope_id",
-     * referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name =
-     * "variableinstance_id", referencedColumnName = "variableinstance_id"))
-     
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "teamScope")
-    @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
-    @MapKeyJoinColumn(name = "teamvariableinstances_key", referencedColumnName = "id")
-    @JsonIgnore
-    private Map<Team, VariableInstance> teamVariableInstances = new HashMap<>();
-     */
     /**
-     *
-     * @return {@link VariableInstanceFacade#getAllTeamInstances(com.wegas.core.persistence.variable.scope.TeamScope)} on this
-     */
-    @Override
-    public Map<Team, VariableInstance> getVariableInstances() {
-        return this.getVariableInstanceFacade().getAllTeamInstances(this);
-    }
-
-    /**
-     * Return a instace which is accessible by the player
+     * Return a instance which is accessible by the player
      *
      * @param player the player who request the instance
      *
@@ -77,23 +51,6 @@ public class TeamScope extends AbstractScope<Team> {
         return this.getVariableInstanceFacade().getTeamInstance(this, t);
     }
 
-    @Override
-    public Map<Team, VariableInstance> getPrivateInstances() {
-        Map<Team, VariableInstance> ret = new HashMap<>();
-        Player cPlayer = RequestFacade.lookup().getPlayer();
-
-        if (cPlayer != null) {
-            if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
-                for (Team t : cPlayer.getGame().getTeams()) {
-                    ret.put(t, this.getVariableInstance(t));
-                }
-            } else {
-                ret.put(cPlayer.getTeam(), this.getVariableInstance(cPlayer));
-            }
-        }
-        return ret;
-    }
-
     /**
      *
      * @param key
@@ -105,14 +62,6 @@ public class TeamScope extends AbstractScope<Team> {
         //v.setTeamScopeKey(key.getId());
         v.setTeam(key);
         v.setTeamScope(this);
-    }
-
-    /**
-     *
-     */
-    //@PrePersist
-    public void prePersist() {
-        //this.propagateDefaultInstance(null);
     }
 
     @Override
@@ -145,13 +94,5 @@ public class TeamScope extends AbstractScope<Team> {
         } else {
             propagate(getVariableDescriptor().getGameModel(), create);
         }
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
     }
 }

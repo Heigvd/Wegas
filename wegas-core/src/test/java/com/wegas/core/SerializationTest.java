@@ -44,6 +44,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -71,12 +72,16 @@ import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 public class SerializationTest {
+
+    private static Logger logger = LoggerFactory.getLogger(SerializationTest.class);
 
     ObjectMapper mapper;
 
@@ -111,6 +116,8 @@ public class SerializationTest {
         s1.setEditorPosition(coord1);
         s1.setLabel("label");
         smD.addState(1L, s1);
+
+        logger.error("Coordinate: {}", coord1);
 
         State s2 = new State();
         Coordinate coord2 = new Coordinate();
@@ -267,7 +274,7 @@ public class SerializationTest {
         Reply reply = new Reply();
         choiceI.addReply(reply);
         reply.setChoiceInstance(choiceI);
-        result11.addReply(reply);
+        //result11.addReply(reply);
         reply.setResult(result11);
 
         assertPropertyEquals(mapper.writeValueAsString(questionD), "@class", "QuestionDescriptor");
@@ -429,4 +436,20 @@ public class SerializationTest {
         System.out.println("JSON: " + json);
 
     }
+
+    @Test
+    public void testJpaAccount() throws JsonProcessingException, IOException {
+        JpaAccount ja = new JpaAccount();
+        ja.setFirstname("Alan");
+        ja.setLastname("Smithee");
+        ja.setEmail("alan@local");
+        ja.setUsername("alan@local");
+
+        String strJa = mapper.writeValueAsString(ja);
+
+        mapper.readValue(strJa, AbstractAccount.class);
+
+        // 
+    }
+
 }

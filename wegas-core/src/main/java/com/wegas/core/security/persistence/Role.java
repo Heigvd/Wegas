@@ -11,9 +11,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
-
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
+import javax.persistence.*;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -24,7 +27,15 @@ import java.util.*;
 })
 @Cacheable(true)
 @NamedQueries({
-    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
+    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name"),
+    @NamedQuery(name = "Roles.findByUser", query = "SELECT r FROM Role r JOIN r.users u WHERE u.id = :userId",
+            hints = {
+                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
+            })
+})
+@NamedNativeQueries({
+    @NamedNativeQuery(name = "Roles.findByUser_native", query = "SELECT roles.name FROM roles JOIN users_roles on users_roles.roles_id = roles.id WHERE users_roles.users_id = ?1")
+})
 public class Role extends AbstractEntity implements PermissionOwner {
 
     private static final long serialVersionUID = 1L;
@@ -65,7 +76,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      private Set<AbstractAccount> abstractAccounts = new HashSet<>();*/
     @JsonIgnore
     @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    private Collection<User> users = new HashSet<>();
 
     /**
      *
@@ -191,7 +202,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      *
      * @return all users which are member of this role
      */
-    public Set<User> getUsers() {
+    public Collection<User> getUsers() {
         return users;
     }
 
@@ -200,7 +211,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      *
      * @param users list of member
      */
-    public void setUsers(Set<User> users) {
+    public void setUsers(Collection<User> users) {
         this.users = users;
     }
 
@@ -225,5 +236,15 @@ public class Role extends AbstractEntity implements PermissionOwner {
     @Override
     public String toString() {
         return "Role(" + this.id + ", " + this.name + ")";
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasMembership.ADMIN;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return null;
     }
 }

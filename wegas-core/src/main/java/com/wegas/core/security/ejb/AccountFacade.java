@@ -7,9 +7,9 @@
  */
 package com.wegas.core.security.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
@@ -25,14 +25,13 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class AccountFacade extends BaseFacade<AbstractAccount> {
 
-    Logger logger = LoggerFactory.getLogger(AccountFacade.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountFacade.class);
 
     /**
      *
@@ -56,9 +55,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     @EJB
     private UserFacade userFacade;
-
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *
@@ -92,18 +88,16 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
         AbstractAccount oAccount = super.update(entityId, account);
 
-        if (SecurityUtils.getSubject().isPermitted("User:Edit:" + entityId)) {
-            Set<Role> revivedRoles = new HashSet<>();
-            for (Role r : account.getDeserialisedRoles()) {
-                try {
-                    revivedRoles.add(roleFacade.find(r.getId()));
-                } catch (EJBException e) {
-                    // not able to revive this role
-                }
+        Set<Role> revivedRoles = new HashSet<>();
+        for (Role r : account.getDeserialisedRoles()) {
+            try {
+                revivedRoles.add(roleFacade.find(r.getId()));
+            } catch (EJBException e) {
+                // not able to revive this role
             }
-            oAccount.getUser().setRoles(revivedRoles);
-            //oAccount.setRoles(revivedRoles);
         }
+        oAccount.getUser().setRoles(revivedRoles);
+        //oAccount.setRoles(revivedRoles);
 
         return oAccount;
     }
@@ -389,15 +383,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     public List<AbstractAccount> getAutoCompleteFull(String value, Long gameId) {
         List<AbstractAccount> accounts = this.getAutoComplete(value);
         for (Iterator<AbstractAccount> it = accounts.iterator(); it.hasNext();) {
-            AbstractAccount aa = hideEmail(it.next());
-            try {
-                // excelude users which already have a player in the given game
-                Player p = playerFacade.findByGameIdAndUserId(gameId, aa.getUser().getId());
-                if (aa.getUser() == p.getUser()) {
-                    it.remove();
-                }
-            } catch (WegasNoResultException e) {
-                //Gotcha
+            AbstractAccount ja = it.next();
+            if (playerFacade.isInGame(gameId, ja.getUser().getId())) {
+                it.remove();
+            } else {
+                hideEmail(ja);
             }
         }
         return accounts;
@@ -407,5 +397,17 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         this.getEntityManager().detach(aa);
         aa.setEmail(aa.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
         return aa;
+    }
+
+    /**
+     * @return Looked-up EJB
+     */
+    public static AccountFacade lookup() {
+        try {
+            return Helper.lookupBy(AccountFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving account facade", ex);
+            return null;
+        }
     }
 }

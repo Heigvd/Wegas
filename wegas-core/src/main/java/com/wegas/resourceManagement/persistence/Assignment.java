@@ -21,7 +21,7 @@ import javax.persistence.*;
  */
 @Table(indexes = {
     @Index(columnList = "variableinstance_id"),
-    @Index(columnList = "taskdescriptor_id")
+    @Index(columnList = "taskinstance_id")
 })
 @NamedQueries({
     @NamedQuery(

@@ -8,25 +8,24 @@
 package com.wegas.mcq.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.api.QuestionDescriptorFacadeI;
 import com.wegas.core.ejb.*;
-import com.wegas.core.event.internal.InstanceRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.naming.NamingException;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
+public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> implements QuestionDescriptorFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);
 
@@ -77,6 +76,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     @Inject
     private VariableInstanceFacade variableInstanceFacade;
 
+    @Inject
+    private VariableDescriptorFacade variableDescriptorFacade;
+
     /**
      * Find a result identified by the given name belonging to the given
      * descriptor
@@ -112,59 +114,68 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         throw new WegasNoResultException("Result \"" + choiceName + "/" + resultName + "\" not found");
     }
 
-    public Result findResultTQ(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
-        final TypedQuery<Result> query = getEntityManager().createNamedQuery("Result.findByName", Result.class);
-        query.setParameter("choicedescriptorId", choiceDescriptor.getId());
-        query.setParameter("name", name);
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException ex) {
-            throw new WegasNoResultException(ex);
-        }
-    }
-
     public Result findResult(Long id) {
         return this.getEntityManager().find(Result.class, id);
     }
 
     /**
-     * @param event
+     * Fetch all ChoiceInstance which have result as currentResult
+     *
+     * @param result
+     *
+     * @return
      */
-    public void instanceRevivedEvent(@Observes InstanceRevivedEvent event) {
+    public Collection<ChoiceInstance> getChoiceInstancesByResult(Result result) {
+        TypedQuery<ChoiceInstance> query = this.getEntityManager().createNamedQuery("ChoiceInstance.findByResultId", ChoiceInstance.class);
+        query.setParameter("resultId", result.getId());
 
-        if (event.getEntity() instanceof ChoiceInstance) {
-            logger.info("Received DescriptorRevivedEvent event");
-            ChoiceInstance choiceInstance = (ChoiceInstance) event.getEntity();
-            ChoiceDescriptor choice = (ChoiceDescriptor) choiceInstance.findDescriptor();
+        return query.getResultList();
+    }
 
-            if (!Helper.isNullOrEmpty(choiceInstance.getCurrentResultName())) {
-                logger.info("ReviveResultByName");
-                try {
-                    Result cr = findResult(choice, choiceInstance.getCurrentResultName());
-                    choice.changeCurrentResult(choiceInstance, cr);
-                    //defaultInstance.setCurrentResult(cr);
-                } catch (WegasNoResultException ex) {
-                    choice.changeCurrentResult(choiceInstance, null);
-                    logger.error("No Such Result !!!");
-                }
-            } else if (choiceInstance.getCurrentResultIndex() != null
-                    && choiceInstance.getCurrentResultIndex() >= 0
-                    && choiceInstance.getCurrentResultIndex() < choice.getResults().size()) {
-                // Backward compat
+    /**
+     * Manually cascade result deletion to replies which references the result
+     *
+     * @param result
+     */
+    public void cascadeDelete(Result result) {
+        TypedQuery<Reply> query = this.getEntityManager().createNamedQuery("Reply.findByResultId", Reply.class);
+        query.setParameter("resultId", result.getId());
+        List<Reply> repliesToRemove = query.getResultList();
+        for (Reply r : repliesToRemove) {
+            this.getEntityManager().remove(r);
+        }
+    }
 
-                logger.error(" !!!!  REVIVE RESULT BY INDEX !!!! (so 2013...)");
-                Result cr = choice.getResults().get(choiceInstance.getCurrentResultIndex());
-                //defaultInstance.setCurrentResult(cr);
+    public void reviveChoiceInstance(ChoiceInstance choiceInstance) {
+        ChoiceDescriptor choice = (ChoiceDescriptor) choiceInstance.findDescriptor();
+
+        if (!Helper.isNullOrEmpty(choiceInstance.getCurrentResultName())) {
+            logger.info("ReviveResultByName");
+            try {
+                Result cr = findResult(choice, choiceInstance.getCurrentResultName());
                 choice.changeCurrentResult(choiceInstance, cr);
+                //defaultInstance.setCurrentResult(cr);
+            } catch (WegasNoResultException ex) {
+                choice.changeCurrentResult(choiceInstance, null);
+                logger.error("No Such Result !!!");
             }
-            for (Reply r : choiceInstance.getReplies()) {
-                try {
-                    Result result = findResult(choice, r.getResultName());
-                    result.addReply(r);
-                    r.setResult(result);
-                } catch (WegasNoResultException ex) {
-                    logger.error("NO SUCH RESULT ! ");
-                }
+        } else if (choiceInstance.getCurrentResultIndex() != null
+                && choiceInstance.getCurrentResultIndex() >= 0
+                && choiceInstance.getCurrentResultIndex() < choice.getResults().size()) {
+            // Backward compat
+
+            logger.error(" !!!!  REVIVE RESULT BY INDEX !!!! (so 2013...)");
+            Result cr = choice.getResults().get(choiceInstance.getCurrentResultIndex());
+            //defaultInstance.setCurrentResult(cr);
+            choice.changeCurrentResult(choiceInstance, cr);
+        }
+        for (Reply r : choiceInstance.getReplies()) {
+            try {
+                Result result = findResult(choice, r.getResultName());
+                //result.addReply(r);
+                r.setResult(result);
+            } catch (WegasNoResultException ex) {
+                logger.error("NO SUCH RESULT ! ");
             }
         }
     }
@@ -186,6 +197,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @return the updated reply
      */
+    @Override
     public Reply updateReply(Long replyId, Reply r) {
         final Reply oldEntity = this.findReply(replyId);
         oldEntity.merge(r);
@@ -193,7 +205,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     private Reply createReply(Long choiceId, Player player, Long startTime) {
-        ChoiceDescriptor choice = (ChoiceDescriptor) VariableDescriptorFacade.lookup().find(choiceId);
+        ChoiceDescriptor choice = (ChoiceDescriptor) variableDescriptorFacade.find(choiceId);
         ChoiceInstance choiceInstance = choice.getInstance(player);
 
         QuestionDescriptor questionDescriptor = choice.getQuestion();
@@ -217,7 +229,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             reply.setStartTime(startTime);
         }
         Result result = choice.getInstance(player).getResult();
-        result.addReply(reply);
+        //result.addReply(reply);
         reply.setResult(result);
         choiceInstance.addReply(reply);
         this.getEntityManager().persist(reply);
@@ -225,9 +237,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         return reply;
     }
 
-    public QuestionInstance getQuestionInstanceFromReply(Reply reply) throws NoPlayerException {
+    public QuestionInstance getQuestionInstanceFromReply(Reply reply) {
         QuestionDescriptor findDescriptor = ((ChoiceDescriptor) reply.getChoiceInstance().findDescriptor()).getQuestion();
-        return findDescriptor.findInstance(reply.getChoiceInstance());
+        return findDescriptor.findInstance(reply.getChoiceInstance(), requestManager.getCurrentUser());
     }
 
     /**
@@ -237,14 +249,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return reply being canceled
      */
     private Reply internalCancelReply(Long replyId) {
-        try {
-            final Reply reply = this.getEntityManager().find(Reply.class, replyId);
-            QuestionInstance questionInstance = this.getQuestionInstanceFromReply(reply);
-            requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
-            return this.internalCancelReply(reply);
-        } catch (NoPlayerException ex) {
-            throw WegasErrorMessage.error("NO PLAYER");
-        }
+        final Reply reply = this.getEntityManager().find(Reply.class, replyId);
+        QuestionInstance questionInstance = this.getQuestionInstanceFromReply(reply);
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
+        return this.internalCancelReply(reply);
     }
 
     private Reply internalCancelReply(Reply reply) {
@@ -260,6 +268,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @return new reply
      */
+    @Override
     public Reply ignoreChoice(Long choiceId, Player player) {
 
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
@@ -287,12 +296,13 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @return the new reply
      */
+    @Override
     public Reply selectChoice(Long choiceId, Player player, Long startTime) {
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
         //getEntityManager().refresh(questionInstance);
         //requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
         if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
@@ -329,6 +339,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @return the new reply
      */
+    @Override
     public Reply selectChoice(Long choiceId, Long playerId) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), (long) 0);
     }
@@ -340,6 +351,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @return the new reply
      */
+    @Override
     public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
     }
@@ -354,6 +366,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @return the new validated reply
      */
+    @Override
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) {
         Player player = playerFacade.find(playerId);
         Reply reply = this.selectChoice(choiceId, player, (long) 0);
@@ -367,6 +380,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         //  throw e;
         //}
         return reply;
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public Reply TX_selectAndValidateChoice(Long choiceId, Long playerId) {
+        return this.selectAndValidateChoice(choiceId, playerId);
     }
 
     /**
@@ -421,6 +439,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @return reply being canceled
      */
+    @Override
     public Reply cancelReply(Long playerId, Long replyId) {
         return this.cancelReplyTransactional(playerId, replyId);
     }
@@ -431,6 +450,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
+    @Override
     public void validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
         validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
@@ -461,6 +481,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param player
      * @param replyVariableInstanceId
      */
+    @Override
     public void validateReply(Player player, Long replyVariableInstanceId) {
         this.validateReply(player, getEntityManager().find(Reply.class, replyVariableInstanceId));
     }
@@ -469,6 +490,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param playerId
      * @param replyVariableInstanceId
      */
+    @Override
     public void validateReply(Long playerId, Long replyVariableInstanceId) {
         this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);
     }
@@ -483,6 +505,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
+    @Override
     public void validateQuestion(final QuestionInstance validateQuestion, final Player player) throws WegasRuntimeException {
 
         final QuestionDescriptor questionDescriptor = (QuestionDescriptor) validateQuestion.getDescriptor();
@@ -527,9 +550,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param questionInstanceId
      * @param player
      */
+    @Override
     public void validateQuestion(Long questionInstanceId, Player player) {
         QuestionInstance questionInstance = getEntityManager().find(QuestionInstance.class, questionInstanceId);
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getBroadcastTarget());
+        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
         this.validateQuestion(questionInstance, player);
     }
 
@@ -599,18 +623,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             this.choice = null;
             this.question = null;
             this.player = null;
-        }
-    }
-
-    /**
-     * @return looked-up EJB
-     */
-    public static QuestionDescriptorFacade lookup() {
-        try {
-            return Helper.lookupBy(QuestionDescriptorFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Error retrieving var inst f", ex);
-            return null;
         }
     }
 }

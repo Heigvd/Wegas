@@ -16,6 +16,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
 import javax.persistence.*;
 
@@ -119,7 +120,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @JsonView(Views.ExtendedI.class)
     @Transient
-    private Set<Role> roles = new HashSet<>();
+    private Collection<Role> roles = new ArrayList<>();
 
     /**
      * @return the id
@@ -144,7 +145,7 @@ public abstract class AbstractAccount extends AbstractEntity {
             this.setLastname(a.getLastname());
             this.setUsername(a.getUsername());
             this.setEmail(a.getEmail());
-            if (a.getAgreedTime()!=null) {
+            if (a.getAgreedTime() != null) {
                 // Never reset this attribute:
                 this.setAgreedTime(a.getAgreedTime());
             }
@@ -204,6 +205,9 @@ public abstract class AbstractAccount extends AbstractEntity {
         }
     }
 
+    public void setName(String name) {
+    }
+
     /**
      * @return the first name
      */
@@ -235,19 +239,23 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      * @return the roles
      */
-    public Set<Role> getRoles() {
-        return user.getRoles();
+    public Collection<Role> getRoles() {
+        if (this.user != null) {
+            return user.getRoles();
+        } else {
+            return null;
+        }
     }
 
     @JsonIgnore
-    public Set<Role> getDeserialisedRoles() {
+    public Collection<Role> getDeserialisedRoles() {
         return roles;
     }
 
     /**
      * @param roles the roles to set
      */
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
 
@@ -255,7 +263,11 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @return the permissions
      */
     public List<Permission> getPermissions() {
-        return this.getUser().getPermissions();
+        if (this.user != null) {
+            return this.getUser().getPermissions();
+        } else {
+            return null;
+        }
     }
 
     @JsonIgnore
@@ -284,6 +296,21 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        return null;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getUser().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getUser().getRequieredReadPermission();
+    }
+
     /**
      *
      * @return the email
@@ -306,6 +333,10 @@ public abstract class AbstractAccount extends AbstractEntity {
         } else {
             return Helper.md5Hex("default");
         }
+    }
+
+    public void setHash(String hash){
+        /* Jackson useless sugar */
     }
 
     public Date getAgreedTime() {

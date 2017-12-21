@@ -97,13 +97,13 @@ YUI.add('wegas-pageeditor', function(Y) {
                 });
 
                 /** Refresh **/
-                this.refreshButton = host.toolbar.add({
-                    label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
-                    cssClass: "wegas-advanced-feature"
-                }).item(0);
-                this.refreshButton.after("click", function(e) {
-                    this.get("host").reload();
-                }, this);
+//                this.refreshButton = host.toolbar.add({
+//                    label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
+//                    cssClass: "wegas-advanced-feature"
+//                }).item(0);
+//                this.refreshButton.after("click", function(e) {
+//                    this.get("host").reload();
+//                }, this);
 
                 this.layoutButton = host.toolbar.add({// Layout
                     type: "ToggleButton",

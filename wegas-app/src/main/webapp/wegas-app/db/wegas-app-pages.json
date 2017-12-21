@@ -1,6 +1,6 @@
 {
     "Team": {
-        "type": "EditTeam"
+        "type": "Form"
     },
     "UserPreferences": {
         "type": "Form",

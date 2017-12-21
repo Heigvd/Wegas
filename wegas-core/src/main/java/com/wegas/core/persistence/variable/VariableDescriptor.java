@@ -16,7 +16,9 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Game;
@@ -27,6 +29,8 @@ import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
@@ -35,23 +39,21 @@ import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
-import org.eclipse.persistence.annotations.CacheIndex;
-import org.eclipse.persistence.annotations.JoinFetch;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.wegas.core.persistence.AcceptInjection;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
+import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.persistence.InstanceOwner;
 
 /**
  * @param <T>
@@ -69,7 +71,9 @@ import com.wegas.core.persistence.InstanceOwner;
     @Index(columnList = "defaultinstance_variableinstance_id"),
     @Index(columnList = "items_variabledescriptor_id"),
     @Index(columnList = "rootgamemodel_id"),
-    @Index(columnList = "dtype")
+    @Index(columnList = "gamemodel_gamemodelid"),
+    @Index(columnList = "dtype"),
+    @Index(columnList = "scope_id")
 })
 @NamedQueries({
     @NamedQuery(
@@ -125,7 +129,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     @JsonIgnore
     @Transient
-    private Beanjection beans;
+    protected Beanjection beans;
 
     /**
      *
@@ -237,15 +241,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public VariableDescriptor(String name) {
         this.name = name;
-    }
-
-    /**
-     * @param name
-     * @param defaultInstance
-     */
-    public VariableDescriptor(String name, T defaultInstance) {
-        this.name = name;
-        this.defaultInstance = defaultInstance;
     }
 
     /**
@@ -377,35 +372,43 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return id;
     }
 
+    @Deprecated
+    public T findInstance(VariableInstance variableInstance) {
+        return this.findInstance(variableInstance, null);
+    }
+
     /**
-     * Retrieve an instance which stands in the same scope as given variableInstance
+     * Retrieve an instance the owner has also write permission on given variableInstance
      *
-     * @param variableInstance an instance of another descritpor
+     * @param variableInstance an instance of another descriptor
+     * @param user             player owner to prioritise
      *
-     * @return instance of this, which match the scope of variableInstance
+     * @return instance of this
      *
      */
     @JsonIgnore
-    public T findInstance(VariableInstance variableInstance) {
+    public T findInstance(VariableInstance variableInstance, User user) {
 
         // if the given VariableInstance is a default instance, return the descripto default instance
         if (variableInstance.isDefaultInstance()) {
             return this.getDefaultInstance();
         }
 
-        AbstractScope iScope = variableInstance.getScope();
+        InstanceOwner owner = variableInstance.getOwner();
+        List<Player> players = owner.getLivePlayers();
 
-        if (iScope instanceof PlayerScope) {
-            return (T) scope.getVariableInstance(variableInstance.getPlayer());
-        } else if (iScope instanceof TeamScope) {
-            return (T) scope.getVariableInstance(variableInstance.getTeam());
-        } else if (iScope instanceof GameScope) {
-            return (T) scope.getVariableInstance(variableInstance.getGame());
-        } else if (iScope instanceof GameModelScope) {
-            return (T) scope.getVariableInstance(variableInstance.getGameModel());
+        if (players == null || players.isEmpty()) {
+            return null;
+        } else {
+            if (user != null) {
+                for (Player p : players) {
+                    if (user.equals(p.getUser())) {
+                        return (T) scope.getVariableInstance(p);
+                    }
+                }
+            }
         }
-
-        return null;
+        return (T) scope.getVariableInstance(players.get(0));
     }
 
     /**
@@ -423,7 +426,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @return get instance belonging to the current player
      */
     @JsonIgnore
+    @Deprecated
     public T getInstance() {
+        logger.error("VariableDescriptor#getInstance() is deprecated!");
         return (T) this.getScope().getInstance();
     }
 
@@ -593,7 +598,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        //logger.error("CHANNEL TOKEN: " + this.getGameModel().getChannel());
         map.put(this.getGameModel().getChannel(), entities);
         return map;
     }
@@ -636,10 +640,23 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
             return this.beans.getVariableDescriptorFacade();
         } else if (this.variableDescriptorFacade == null) {
             logger.error("LOOKUP OCCURS : " + this);
-            new Exception().printStackTrace();
+            Helper.printWegasStackTrace(new Exception());
             this.variableDescriptorFacade = VariableDescriptorFacade.lookup();
         }
 
         return this.variableDescriptorFacade;
+    }
+
+    public void revive(Beanjection beans) {
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getGameModel().getRequieredReadPermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getGameModel().getRequieredUpdatePermission();
     }
 }

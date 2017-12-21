@@ -9,10 +9,6 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.wegas.core.ejb.AbstractEJBTest;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -22,14 +18,16 @@ import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import com.wegas.reviewing.persistence.evaluation.GradeDescriptor;
 import com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
-
 import org.junit.After;
+import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,20 +35,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public class PeerReviewDescriptorTest extends AbstractEJBTest {
+public class PeerReviewDescriptorTest extends AbstractArquillianTest {
 
-    private static TeamFacade teamFacade;
-    private static PlayerFacade playerFacade;
     private static final Logger logger = LoggerFactory.getLogger(PeerReviewDescriptorTest.class);
-
-    static {
-        try {
-            teamFacade = lookupBy(TeamFacade.class);
-            playerFacade = lookupBy(PlayerFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Lookup error", ex);
-        }
-    }
 
     ObjectMapper mapper;
     ObjectWriter exportMapper;
@@ -80,7 +67,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         toBeReviewed = new NumberDescriptor(VAR_NAME);
         toBeReviewed.setDefaultInstance(new NumberInstance(0));
 
-        descriptorFacade.create(gameModel.getId(), toBeReviewed);
+        variableDescriptorFacade.create(scenario.getId(), toBeReviewed);
 
         initial = new PeerReviewDescriptor();
         initial.setName("myReview");
@@ -96,7 +83,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
 
         initial.setFeedback(new EvaluationDescriptorContainer());
         EvaluationDescriptorContainer feedback = initial.getFeedback();
-        List<EvaluationDescriptor> fEvaluations = feedback.getEvaluations();
+        List<EvaluationDescriptor> fEvaluations = new ArrayList<>();
 
         TextEvaluationDescriptor text = new TextEvaluationDescriptor();
         text.setName("aText");
@@ -115,17 +102,20 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         cEvalD.addCategory("strong");
         fEvaluations.add(cEvalD);
 
+        feedback.setEvaluations(fEvaluations);
+
         initial.setFbComments(new EvaluationDescriptorContainer());
         EvaluationDescriptorContainer feedbackComments = initial.getFbComments();
-        List<EvaluationDescriptor> f2evaluations = feedbackComments.getEvaluations();
+        List<EvaluationDescriptor> f2evaluations = new ArrayList<>();
 
         GradeDescriptor grade2 = new GradeDescriptor();
         grade2.setName("fevalG");
         grade2.setMinValue(0L);
 
         f2evaluations.add(grade2);
-
-        descriptorFacade.create(gameModel.getId(), initial);
+        feedbackComments.setEvaluations(f2evaluations);
+        variableDescriptorFacade.create(scenario.getId(), initial);
+        requestManager.clearEntities();
     }
 
     @After
@@ -137,6 +127,10 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
     public void testSetters() {
         assertEquals("Number initial value", initial.getMaxNumberOfReview(), MAX_NUM);
         assertEquals("Var name initial", initial.getToReviewName(), VAR_NAME);
+
+        assertEquals("Max Number of review error", MAX_NUM, initial.getMaxNumberOfReview());
+        initial.setMaxNumberOfReview(-1);
+        assertEquals("Max Number of review error", Integer.valueOf(1), initial.getMaxNumberOfReview());
     }
 
     /**
@@ -146,7 +140,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
      */
     @Test
     public void testSerialise() throws IOException {
-        RequestFacade.lookup().setPlayer(player.getId());
+        requestFacade.setPlayer(player.getId());
 
         String json = exportMapper.writeValueAsString(initial);
 
@@ -166,7 +160,9 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         String json = "{ \"@class\": \"PeerReviewDescriptor\", \"id\": \"\", \"label\": \"rr\", \"toReviewName\": \"x\", \"name\": \"\", \"maxNumberOfReview\": 3, \"feedback\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"fbComments\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"defaultInstance\": { \"@class\": \"PeerReviewInstance\", \"id\": \"\" }, \"comments\": \"\", \"scope\": { \"@class\": \"TeamScope\", \"broadcastScope\": \"TeamScope\" } }";
 
         PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
-        descriptorFacade.create(gameModel.getId(), read);
+        Assert.assertEquals("Deserialised ReviewName not match", VAR_NAME, read.getToReviewName());// transient field
+        variableDescriptorFacade.create(scenario.getId(), read);
+        Assert.assertEquals("Deserialised ReviewName not match", VAR_NAME, read.getToReviewName()); // through toReview var
 
         String json2 = exportMapper.writeValueAsString(read);
     }
@@ -180,7 +176,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         merged.setFeedback(new EvaluationDescriptorContainer());
         merged.setFbComments(new EvaluationDescriptorContainer());
 
-        descriptorFacade.create(gameModel.getId(), merged);
+        variableDescriptorFacade.create(scenario.getId(), merged);
 
         //logger.warn("Initial: " + exportMapper.writeValueAsString(initial));
         merged.merge(initial);

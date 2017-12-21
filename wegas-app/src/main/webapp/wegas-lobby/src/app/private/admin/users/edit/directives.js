@@ -26,7 +26,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
         };
 
         ctrl.addPermission = function() {
-            var newPermission = {'id':null, "@class":"Permission","value":"", "inducedPermission":""};
+            var newPermission = {'id':null, "@class":"Permission","value":""};
             ctrl.user.account.permissions.push(newPermission);
         };
 

@@ -22,10 +22,11 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import javax.persistence.*;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -122,20 +123,23 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @JsonBackReference
     @JoinColumn(name = "choicedescriptor_id")
     private ChoiceDescriptor choiceDescriptor;
+
     /**
      * This link is here so the reference is updated on remove.
      */
-    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private CurrentResult currentResult;
-
+    /*
+      @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
+      @JsonIgnore
+      private CurrentResult currentResult;
+     */
     /**
      * This field is here so deletion will be propagated to replies.
      */
+    /*
     @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Replies replies;
-
+     */
     /**
      *
      */
@@ -334,12 +338,14 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
 
     /**
      * @return the choiceInstances
+     *
+     * @JsonIgnore
+     * public List<ChoiceInstance> getChoiceInstances() {
+     * return currentResult.getChoiceInstances();
+     * }
      */
-    @JsonIgnore
-    public List<ChoiceInstance> getChoiceInstances() {
-        return currentResult.getChoiceInstances();
-    }
 
+    /*
     public void addChoiceInstance(ChoiceInstance choiceInstance) {
         if (this.currentResult == null) {
             this.currentResult = new CurrentResult();
@@ -350,19 +356,25 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
             this.currentResult.getChoiceInstances().add(choiceInstance);
         }
     }
-
+     */
+ /*
     public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
         return this.currentResult.remove(choiceInstance);
     }
+     */
 
+ /*
     public CurrentResult getCurrentResult() {
         return currentResult;
     }
-
+     */
+ /*
     public Replies getReplies() {
         return replies;
     }
+     */
 
+ /*
     public void addReply(Reply reply) {
         if (replies == null) {
             replies = new Replies();
@@ -370,16 +382,22 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         }
         this.replies.add(reply);
     }
+     */
 
+ /*
     void removeReply(Reply reply) {
         this.replies.remove(reply);
     }
-
+     */
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
         VariableInstanceFacade vif = beans.getVariableInstanceFacade();
 
-        for (ChoiceInstance cInstance : this.getChoiceInstances()) {
+        // JPA query to fetch ChoiceInstance ci
+        Collection<ChoiceInstance> choiceInstances = beans.getQuestionDescriptorFacade().getChoiceInstancesByResult(this);
+
+        // clear currentResult
+        for (ChoiceInstance cInstance : choiceInstances) {
             if (cInstance != null) {
                 cInstance = (ChoiceInstance) vif.find(cInstance.getId());
                 if (cInstance != null) {
@@ -387,8 +405,22 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
                 }
             }
         }
+
+        // Destroy replies
+        beans.getQuestionDescriptorFacade().cascadeDelete(this);
     }
 
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getChoiceDescriptor().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getChoiceDescriptor().getRequieredReadPermission();
+    }
+
+    /*
     @PrePersist
     private void prePersist() {
         if (replies == null) {
@@ -400,4 +432,5 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
             currentResult.setResult(this);
         }
     }
+     */
 }

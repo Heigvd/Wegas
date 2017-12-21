@@ -7,19 +7,22 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Simple wrapper to group several evaluation descriptor
@@ -46,13 +49,38 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @OneToMany(mappedBy = "container", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
+    @NotNull
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "feedback")
+    @JsonIgnore
+    private PeerReviewDescriptor fbPeerReviewDescriptor;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "fbComments")
+    @JsonIgnore
+    private PeerReviewDescriptor commentsPeerReviewDescriptor;
 
     /**
      * Empty constructor
      */
     public EvaluationDescriptorContainer() {
         super();
+    }
+
+    public PeerReviewDescriptor getFbPeerReviewDescriptor() {
+        return fbPeerReviewDescriptor;
+    }
+
+    public void setFbPeerReviewDescriptor(PeerReviewDescriptor fbPeerReviewDescriptor) {
+        this.fbPeerReviewDescriptor = fbPeerReviewDescriptor;
+    }
+
+    public PeerReviewDescriptor getCommentsPeerReviewDescriptor() {
+        return commentsPeerReviewDescriptor;
+    }
+
+    public void setCommentsPeerReviewDescriptor(PeerReviewDescriptor commentsPeerReviewDescriptor) {
+        this.commentsPeerReviewDescriptor = commentsPeerReviewDescriptor;
     }
 
     /**
@@ -71,6 +99,9 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
      */
     public void setEvaluations(List<EvaluationDescriptor> evaluations) {
         this.evaluations = evaluations;
+        for (EvaluationDescriptor ed : this.evaluations) {
+            ed.setContainer(this);
+        }
     }
 
     @Override
@@ -86,5 +117,28 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
+    }
+
+    /**
+     * back reference to PeerReviewDescriptor through FbPRD or CommentsPRD
+     *
+     * @return
+     */
+    private PeerReviewDescriptor getEffectiveDescriptor() {
+        if (this.getFbPeerReviewDescriptor() != null) {
+            return this.getFbPeerReviewDescriptor();
+        } else {
+            return this.getCommentsPeerReviewDescriptor();
+        }
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getEffectiveDescriptor().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getEffectiveDescriptor().getRequieredReadPermission();
     }
 }

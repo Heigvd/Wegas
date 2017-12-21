@@ -277,6 +277,10 @@ YUI().use(function (Y) {
             "wegas-tabviewcss": {
                 type: CSS
             },
+            "wegas-bscopeinspector": {
+                path: "js/widget/wegas-bscopeinspector-min.js",
+                ws_provides: "BScopeInspector"
+            },
             "wegas-gaugedisplay": {
                 path: "js/widget/wegas-gaugedisplay-min.js",
                 requires: ["gauge", "wegas-templatecss"],
@@ -830,6 +834,7 @@ YUI().use(function (Y) {
         root: "/wegas-mcq/",
         modules: {
             "wegas-mcq-entities": {
+                requires: "wegas-variabledescriptor-entities",
                 ws_provides: ["QuestionDescriptor", "QuestionInstance"]
             },
             "wegas-mcq-tabview": {

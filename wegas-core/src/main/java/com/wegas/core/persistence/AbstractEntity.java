@@ -8,22 +8,25 @@
 package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.Views;
-import java.io.IOException;
-import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.slf4j.LoggerFactory;
@@ -41,16 +44,15 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class),
     @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class)
 })
-
 /**
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg ChoiceDescriptor and result).
  * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
- * 
+ * <p>
  * INVALIDATE OBJECT FIX DirectCollectionMapping NPE
  */
 @MappedSuperclass
 @Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
-public abstract class AbstractEntity implements Serializable, Cloneable {
+public abstract class AbstractEntity implements Serializable, Cloneable, WithPermission {
 
     private static final long serialVersionUID = -2538440276749623728L;
 
@@ -69,6 +71,10 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * @param other the entity to copy values from
      */
     public abstract void merge(AbstractEntity other);
+
+    @Transient
+    @JsonIgnore
+    private boolean persisted = false;
 
     /**
      * this hashCode is base on id and class hashcode
@@ -89,6 +95,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * have the id and being instances of the same class
      *
      * @param object entity to compare to
+     *
      * @return true if object equals this, false otherwise
      */
     @Override
@@ -133,7 +140,9 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Duplicate an entity by using Jackson Mapper and provided view
      *
      * @param view
+     *
      * @return copy of this
+     *
      * @throws IOException
      */
     public AbstractEntity duplicate(Class view) throws IOException {
@@ -151,6 +160,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Same as duplicate(Views.Export)
      *
      * @return copy of this
+     *
      * @throws IOException
      */
     public AbstractEntity duplicate() throws IOException {
@@ -161,6 +171,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Serialize to JSON
      *
      * @return JSON String representing this
+     *
      * @throws IOException
      */
     public String toJson() throws IOException {
@@ -172,7 +183,9 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
      * Serialize to JSON with view
      *
      * @param view the view to use to export this
+     *
      * @return JSON String representing this
+     *
      * @throws IOException
      */
     public String toJson(Class view) throws IOException {
@@ -192,7 +205,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
     /**
      * Default behaviour is to do nothing
-     *
+     * <p>
      * Overriding this method may helps to maintain cache integrity after
      * cascaded entity deletion
      *
@@ -210,5 +223,46 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         } else {
             return this.getClass().getSimpleName();
         }
+    }
+
+    /**
+     * Comma-separated list of permission, only one is required to grand the permission
+     * <p>
+     * <ul>
+     * <li>null means no special permission required</li>
+     * <li>empty string "" means completely forbidden</li>
+     * </ul>
+     *
+     * @return
+     */
+    @JsonIgnore
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        return this.getRequieredUpdatePermission();
+    }
+
+    @JsonIgnore
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getRequieredUpdatePermission();
+    }
+
+    @JsonIgnore
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        return this.getRequieredUpdatePermission();
+    }
+
+    public boolean isPersisted() {
+        return persisted;
+    }
+
+    /**
+     * MUST BE PACKAGE PROTECTED !!!
+     *
+     * @param persisted
+     */
+    public void setPersisted(boolean persisted) {
+        this.persisted = persisted;
     }
 }

@@ -14,11 +14,13 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,7 +30,6 @@ import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.SecurityUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.slf4j.LoggerFactory;
 
@@ -50,10 +51,13 @@ public class PageController {
     private HazelcastInstance hzInstance;
 
     @Inject
-    private WebsocketFacade websocketFacade;
+    private RequestManager requestManager;
 
     @Inject
-    private RequestManager requestManager;
+    private GameModelFacade gameModelFacade;
+
+    @Inject
+    private WebsocketFacade websocketFacade;
 
     /**
      * Retrieves all GameModel's page.
@@ -68,7 +72,8 @@ public class PageController {
     public Response getPages(@PathParam("gameModelId") Long gameModelId)
             throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (Pages pages = new Pages(gameModelId)) {
             return Response.ok(pages.getPagesContent(), MediaType.APPLICATION_JSON).header("Page", "*").build();
@@ -90,6 +95,10 @@ public class PageController {
     public Response getPage(@PathParam("gameModelId") final Long gameModelId,
             @PathParam("pageId") String pageId)
             throws RepositoryException {
+
+        // find gameModel to ensure currentUser has readRight
+        GameModel gm = gameModelFacade.find(gameModelId);
+
         try (final Pages pages = new Pages(gameModelId)) {
             Page page;
             if (pageId.equals("default")) {
@@ -97,8 +106,6 @@ public class PageController {
             } else {
                 page = pages.getPage(pageId);
             }
-
-            SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
             if (page == null) {                                                     //try admin repo
                 page = this.getAdminPage(pageId);
@@ -125,7 +132,8 @@ public class PageController {
     public Response getIndex(@PathParam("gameModelId") Long gameModelId)
             throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
+        // find gameModel to ensure currentUser has readRight
+        GameModel gm = gameModelFacade.find(gameModelId);
 
         try (final Pages pages = new Pages(gameModelId)) {
             return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
@@ -153,7 +161,8 @@ public class PageController {
             @PathParam("pageId") String pageId,
             JsonNode content) throws RepositoryException, IOException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             Page page = new Page(pageId, content);
@@ -179,7 +188,8 @@ public class PageController {
             @PathParam("pageId") String pageId,
             Page page) throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             page.setId(pageId);
@@ -196,7 +206,8 @@ public class PageController {
             @PathParam("pageId") String pageId,
             @PathParam("pos") int pos) throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             pages.move(pageId, pos);
@@ -237,7 +248,10 @@ public class PageController {
      */
     private Response createPage(Long gameModelId, JsonNode content, String id)
             throws RepositoryException, IOException {
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
+
         final ILock gameModelLock = hzInstance.getLock("page-" + gameModelId);
         gameModelLock.lock();
         try (final Pages pages = new Pages(gameModelId)) {
@@ -308,7 +322,8 @@ public class PageController {
     public Response addPages(@PathParam("gameModelId") Long gameModelId, Map<String, JsonNode> pageMap)
             throws RepositoryException, JSONException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             for (Entry<String, JsonNode> p : pageMap.entrySet()) {
@@ -331,7 +346,8 @@ public class PageController {
     @DELETE
     public Response delete(@PathParam("gameModelId") Long gameModelId) throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             pages.delete();
@@ -356,7 +372,8 @@ public class PageController {
             @PathParam("pageId") String pageId)
             throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             pages.deletePage(pageId);
@@ -385,7 +402,8 @@ public class PageController {
             @PathParam("pageId") String pageId,
             String patch) throws RepositoryException, JSONException, IOException, JsonPatchException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             final Page page = pages.getPage(pageId);

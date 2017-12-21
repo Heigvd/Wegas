@@ -230,7 +230,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
                     method: "POST",
                     data: {
                         "@class": "Script",
-                        content: "Variable.findByName(gameModel, '" + name + "').getInstance(self).setValue(" + value + ");"
+                        content: "Variable.find(gameModel, '" + name + "').getInstance(self).setValue(" + value + ");"
                     }
                 }
             });

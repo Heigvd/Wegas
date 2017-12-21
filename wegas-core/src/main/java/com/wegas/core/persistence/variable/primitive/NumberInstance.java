@@ -17,21 +17,19 @@ import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @EntityListeners(NumberListener.class)
-
 /*@Table(indexes = {
  @Index(columnList = "history.numberinstance_variableinstance_id")
  })*/
@@ -92,6 +90,14 @@ public class NumberInstance extends VariableInstance {
         }
 
         this.val = value;
+    }
+
+    public void add(double value) {
+        this.setValue(this.getValue() + value);
+    }
+
+    public void add(int value) {
+        this.setValue(this.getValue() + value);
     }
 
     /**

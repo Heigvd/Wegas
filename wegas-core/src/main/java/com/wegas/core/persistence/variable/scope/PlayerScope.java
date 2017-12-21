@@ -7,17 +7,12 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,24 +26,6 @@ public class PlayerScope extends AbstractScope<Player> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(PlayerScope.class);
-
-    /*
-     * FIXME Here we should use UserEntity reference and add a key deserializer
-     * module
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "playerScope")
-    @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
-    @MapKeyJoinColumn(name = "variableinstances_key", referencedColumnName = "id")
-    @JsonIgnore
-    private Map<Player, VariableInstance> variableInstances = new HashMap<>();
-     */
-    /**
-     *
-     * @return {@link VariableInstanceFacade#getAllPlayerInstances(com.wegas.core.persistence.variable.scope.PlayerScope)} on this
-     */
-    @Override
-    public Map<Player, VariableInstance> getVariableInstances() {
-        return this.getVariableInstanceFacade().getAllPlayerInstances(this);
-    }
 
     /**
      * Get the instances which belongs to the player
@@ -71,14 +48,6 @@ public class PlayerScope extends AbstractScope<Player> {
         //this.getVariableInstances().put(key, v);
         v.setPlayer(key);
         v.setPlayerScope(this);
-    }
-
-    /**
-     *
-     */
-    //@PrePersist
-    public void prePersist() {
-        //this.propagateDefaultInstance(null);
     }
 
     /**
@@ -113,35 +82,5 @@ public class PlayerScope extends AbstractScope<Player> {
         } else { // instanceof GameModel or null
             propagate(getVariableDescriptor().getGameModel(), create);
         }
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-    }
-
-    @Override
-    public Map<Player, VariableInstance> getPrivateInstances() {
-        Map<Player, VariableInstance> ret = new HashMap<>();
-        Player cPlayer = RequestFacade.lookup().getPlayer();
-        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
-
-        if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
-            for (Team t : cPlayer.getGame().getTeams()) {
-                for (Player p : t.getPlayers()) {
-                    ret.put(p, this.getVariableInstance(p));
-                }
-            }
-        } else if (this.getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
-            for (Player p : cPlayer.getTeam().getPlayers()) {
-                ret.put(p, this.getVariableInstance(p));
-            }
-        } else {
-            ret.put(cPlayer, this.getVariableInstance(cPlayer));
-        }
-        return ret;
     }
 }

@@ -7,11 +7,13 @@
  */
 package com.wegas.unit.pmg;
 
-import com.wegas.unit.AbstractEJBContainerTest;
+import com.wegas.utils.AbstractTest;
 import java.io.IOException;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.After;
 import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,9 +21,10 @@ import org.junit.Before;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 //abstract public class PMGameAbstractTest extends AbstractEmbeddedGlassfishTest {
-abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
+abstract public class PMGameAbstractTest extends AbstractTest {
 
     public static final String SCRIPTROOT = "src/main/webapp/wegas-private/wegas-pmg/scripts/";
+    private static final Logger logger = LoggerFactory.getLogger(PMGameAbstractTest.class);
 
     protected abstract String getGameModelPath();
 
@@ -49,6 +52,8 @@ abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
 
         //guestLogin();
         this.createGameModelFromFileWithScript(this.getGameModelPath(), scripts);
+        this.initTime = System.currentTimeMillis();
+        requestManager.clearEntities();
     }
 
     @After

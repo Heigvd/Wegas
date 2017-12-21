@@ -8,13 +8,14 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.security.util.SecurityHelper;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -43,6 +44,9 @@ public class TeamController {
     @EJB
     private GameFacade gameFacade;
 
+    @Inject
+    private RequestManager requestManager;
+
     /**
      *
      * @param teamId
@@ -52,7 +56,6 @@ public class TeamController {
     @Path("{teamId : [1-9][0-9]*}")
     public Team get(@PathParam("teamId") Long teamId) {
         Team t = teamFacade.find(teamId);
-        SecurityHelper.checkPermission(t.getGame(), "View");
         return t;
     }
 
@@ -64,7 +67,6 @@ public class TeamController {
     @GET
     public Collection<Team> index(@PathParam("gameId") Long gameId) {
         final Game g = gameFacade.find(gameId);
-        SecurityHelper.checkPermission(g, "View");
         return g.getTeams();
     }
 
@@ -79,7 +81,9 @@ public class TeamController {
         Response r = Response.status(Response.Status.CONFLICT).build();
         Game g = gameFacade.find(gameId);
         if (g.getAccess() == Game.GameAccess.OPEN) {
-            this.teamFacade.create(gameId, entity);
+            entity = this.teamFacade.create(gameId, entity);
+            teamFacade.detach(entity);
+            entity = teamFacade.find(entity.getId());
             r = Response.status(Response.Status.CREATED).entity(entity).build();
         }
         return r;
@@ -94,7 +98,8 @@ public class TeamController {
     @PUT
     @Path("{teamId : [1-9][0-9]*}")
     public Team update(@PathParam("teamId") Long teamId, Team entity) {
-        SecurityHelper.checkPermission(teamFacade.find(teamId).getGame(), "Edit");
+        Game game = teamFacade.find(teamId).getGame();
+        requestManager.assertGameTrainer(game);
         return teamFacade.update(teamId, entity);
     }
 
@@ -108,7 +113,6 @@ public class TeamController {
     public Team delete(@PathParam("teamId") Long teamId) {
         Team entity = teamFacade.find(teamId);
 
-        SecurityHelper.checkPermission(entity.getGame(), "Edit");
         teamFacade.remove(entity);
         return entity;
     }
@@ -123,8 +127,6 @@ public class TeamController {
     @Path("{teamId: [1-9][0-9]*}/Reset")
     public Response reset(@PathParam("teamId") Long teamId) {
         Team team = teamFacade.find(teamId);
-
-        SecurityHelper.checkPermission(team.getGame(), "Edit");
 
         teamFacade.reset(team);
         return Response.ok().build();

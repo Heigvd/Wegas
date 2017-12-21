@@ -30,6 +30,8 @@ import java.util.Locale;
  */
 public class AbstractGameController implements Serializable {
 
+    private static final long serialVersionUID = -1511995063657626077L;
+
     /**
      *
      */

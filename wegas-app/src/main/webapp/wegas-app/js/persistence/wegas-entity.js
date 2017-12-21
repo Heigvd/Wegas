@@ -52,12 +52,6 @@ YUI.add('wegas-entity', function(Y) {
                         view: {
                             label: 'Value'
             }
-                    },
-                    inducedPermission: {
-                        type: 'string',
-                        view: {
-                            label: ' Induced permission'
-            }
                     }
                 }
             },
@@ -149,7 +143,6 @@ YUI.add('wegas-entity', function(Y) {
         }
         }
     );
-    persistence.RestException = persistence.DefaultEntity;
 
     /**
      * ManagedResponse mapper
