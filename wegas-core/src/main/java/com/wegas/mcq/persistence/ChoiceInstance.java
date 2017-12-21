@@ -139,16 +139,9 @@ public class ChoiceInstance extends VariableInstance {
         if (!Helper.isNullOrEmpty(this.currentResultName)) {
             ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
             if (choiceDesc != null) {
-                // if choiceDesc is null, the following will eventually be
-                // done by with the help of an InstanceReviveEvent
-                Result previousResult = this.getCurrentResult();
-                if (previousResult != null) {
-                    previousResult.removeChoiceInstance(this);
-                }
                 try {
                     Result newResult = choiceDesc.getResultByName(this.currentResultName);
                     this.setCurrentResult(newResult);
-                    newResult.addChoiceInstance(this);
                 } catch (WegasNoResultException ex) {
                     this.setCurrentResult(null);
                 }

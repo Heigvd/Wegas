@@ -96,8 +96,4 @@ public class GameTeams extends AbstractEntity {
     public Collection<WegasPermission> getRequieredDeletePermission() {
         return game.getRequieredDeletePermission();
     }
-
-    @Override
-    public void merge(AbstractEntity other) {
-    }
 }

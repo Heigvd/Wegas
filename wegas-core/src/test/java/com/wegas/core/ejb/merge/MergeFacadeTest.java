@@ -42,6 +42,7 @@ import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.persistence.User;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence
  */
-public class MergeFacadeTest extends AbstractEJBTest {
+public class MergeFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MergeFacadeTest.class);
     private static final Reflections reflections;
@@ -92,17 +93,17 @@ public class MergeFacadeTest extends AbstractEJBTest {
         textD.setDefaultInstance(new TextInstance());
         textD.getDefaultInstance().setValue("initialvalue");
 
-        descriptorFacade.create(gameModel.getId(), textD);
+        variableDescriptorFacade.create(gameModel.getId(), textD);
 
-        textD = (TextDescriptor) descriptorFacade.find(textD.getId());
+        textD = (TextDescriptor) variableDescriptorFacade.find(textD.getId());
         TextInstance defaultInstance = textD.getDefaultInstance();
 
         defaultInstance.setValue("newvalue");
-        Assert.assertEquals("initialvalue", ((TextInstance) descriptorFacade.find(textD.getId()).getDefaultInstance()).getValue());
+        Assert.assertEquals("initialvalue", ((TextInstance) variableDescriptorFacade.find(textD.getId()).getDefaultInstance()).getValue());
         Assert.assertEquals("newvalue", defaultInstance.getValue());
 
-        descriptorFacade.update(textD.getId(), textD);
-        textD = (TextDescriptor) descriptorFacade.find(textD.getId());
+        variableDescriptorFacade.update(textD.getId(), textD);
+        textD = (TextDescriptor) variableDescriptorFacade.find(textD.getId());
         defaultInstance = textD.getDefaultInstance();
 
         Assert.assertEquals("newvalue", defaultInstance.getValue());
@@ -118,9 +119,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         listD.setScope(new TeamScope());
         listD.setDefaultInstance(new ListInstance());
 
-        descriptorFacade.create(gameModel.getId(), listD);
+        variableDescriptorFacade.create(gameModel.getId(), listD);
 
-        listD = (ListDescriptor) descriptorFacade.find(listD.getId());
+        listD = (ListDescriptor) variableDescriptorFacade.find(listD.getId());
 
         ListDescriptor newListD = new ListDescriptor();
         newListD.setVersion(listD.getVersion());
@@ -133,20 +134,20 @@ public class MergeFacadeTest extends AbstractEJBTest {
         newListD.setAllowedTypes(allowed);
         newListD.setAddShortcut("NumberDescriptor");
 
-        descriptorFacade.update(listD.getId(), newListD);
-        listD = (ListDescriptor) descriptorFacade.find(listD.getId());
+        variableDescriptorFacade.update(listD.getId(), newListD);
+        listD = (ListDescriptor) variableDescriptorFacade.find(listD.getId());
         Assert.assertEquals(3, listD.getAllowedTypes().size());
 
         allowed.remove("StringDescriptor");
         newListD.setVersion(listD.getVersion());
-        descriptorFacade.update(listD.getId(), newListD);
-        listD = (ListDescriptor) descriptorFacade.find(listD.getId());
+        variableDescriptorFacade.update(listD.getId(), newListD);
+        listD = (ListDescriptor) variableDescriptorFacade.find(listD.getId());
         Assert.assertEquals(2, listD.getAllowedTypes().size());
 
         try {
             allowed.remove("NumberDescriptor");
             newListD.setVersion(listD.getVersion());
-            descriptorFacade.update(listD.getId(), newListD);
+            variableDescriptorFacade.update(listD.getId(), newListD);
             Assert.fail("Shortcut incompatibility should raises error");
         } catch (Exception ex) {
             // expected
@@ -155,14 +156,14 @@ public class MergeFacadeTest extends AbstractEJBTest {
         try {
             allowed.add("NumberDescriptor");
             newListD.setAddShortcut("BooleanDescriptor");
-            descriptorFacade.update(listD.getId(), newListD);
+            variableDescriptorFacade.update(listD.getId(), newListD);
             Assert.fail("Shortcut incompatibility should raises error");
         } catch (Exception ex) {
             // Excpected
         }
 
         newListD.setAddShortcut("TextDescriptor");
-        descriptorFacade.update(listD.getId(), newListD);
+        variableDescriptorFacade.update(listD.getId(), newListD);
     }
 
     @Test
@@ -175,18 +176,18 @@ public class MergeFacadeTest extends AbstractEJBTest {
         ObjectInstance defaultInstance = objectD.getDefaultInstance();
         defaultInstance.setProperty("myInstanceProperty", "initialInstanceValue");
 
-        descriptorFacade.create(gameModel.getId(), objectD);
+        variableDescriptorFacade.create(gameModel.getId(), objectD);
 
-        objectD = (ObjectDescriptor) descriptorFacade.find(objectD.getId());
+        objectD = (ObjectDescriptor) variableDescriptorFacade.find(objectD.getId());
         defaultInstance = objectD.getDefaultInstance();
         Assert.assertEquals("initialValue", objectD.getProperty("myProperty"));
         Assert.assertEquals("initialInstanceValue", defaultInstance.getProperty("myInstanceProperty"));
 
         objectD.setProperty("myProperty", "newValue");
         defaultInstance.setProperty("myInstanceProperty", "newInstanceValue");
-        descriptorFacade.update(objectD.getId(), objectD);
+        variableDescriptorFacade.update(objectD.getId(), objectD);
 
-        objectD = (ObjectDescriptor) descriptorFacade.find(objectD.getId());
+        objectD = (ObjectDescriptor) variableDescriptorFacade.find(objectD.getId());
         defaultInstance = objectD.getDefaultInstance();
 
         Assert.assertEquals("newValue", objectD.getProperty("myProperty"));
@@ -254,9 +255,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         }
 
         if (parent == null) {
-            descriptorFacade.create(gameModel.getId(), desc);
+            variableDescriptorFacade.create(gameModel.getId(), desc);
         } else {
-            descriptorFacade.createChild(parent.getId(), desc);
+            variableDescriptorFacade.createChild(parent.getId(), desc);
         }
 
         return desc;
@@ -279,9 +280,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         desc.getDefaultInstance().setHistory(hist);
 
         if (parent == null) {
-            descriptorFacade.create(gameModel.getId(), desc);
+            variableDescriptorFacade.create(gameModel.getId(), desc);
         } else {
-            descriptorFacade.createChild(parent.getId(), desc);
+            variableDescriptorFacade.createChild(parent.getId(), desc);
         }
 
         return desc;
@@ -300,9 +301,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         desc.getDefaultInstance().setValue(value);
 
         if (parent == null) {
-            descriptorFacade.create(gameModel.getId(), desc);
+            variableDescriptorFacade.create(gameModel.getId(), desc);
         } else {
-            descriptorFacade.createChild(parent.getId(), desc);
+            variableDescriptorFacade.createChild(parent.getId(), desc);
         }
 
         return desc;
@@ -315,9 +316,9 @@ public class MergeFacadeTest extends AbstractEJBTest {
         desc.setLabel(label);
 
         if (parent == null) {
-            descriptorFacade.create(gameModel.getId(), desc);
+            variableDescriptorFacade.create(gameModel.getId(), desc);
         } else {
-            descriptorFacade.createChild(parent.getId(), desc);
+            variableDescriptorFacade.createChild(parent.getId(), desc);
         }
 
         return desc;
@@ -325,7 +326,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
     private VariableDescriptor getDescriptor(GameModel gm, String name) {
         try {
-            return descriptorFacade.find(gm, name);
+            return variableDescriptorFacade.find(gm, name);
         } catch (WegasNoResultException ex) {
             return null;
         }
@@ -644,7 +645,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         VariableDescriptor descriptor = getDescriptor(model, "anOtherNumber");
 
         descriptor.setVisibility(ModelScoped.Visibility.INTERNAL);
-        descriptorFacade.update(descriptor.getId(), descriptor);
+        variableDescriptorFacade.update(descriptor.getId(), descriptor);
 
         model = mergeFacade.propagateModel(model.getId());
 
@@ -659,7 +660,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         ObjectDescriptor om1 = (ObjectDescriptor) getDescriptor(model, "aSet");
         om1.setProperty("prop1", "value1.0");
         om1.getDefaultInstance().setProperty("prop1", "value1.0");
-        descriptorFacade.update(om1.getId(), om1);
+        variableDescriptorFacade.update(om1.getId(), om1);
 
         ObjectDescriptor o1 = (ObjectDescriptor) getDescriptor(gameModel1, "aSet");
         o1.setProperty("prop0", "value0.1");
@@ -668,12 +669,12 @@ public class MergeFacadeTest extends AbstractEJBTest {
         o1.getDefaultInstance().setProperty("prop0", "value0.1");
         o1.getDefaultInstance().setProperty("prop1", "value1.1");
         o1.getDefaultInstance().setProperty("prop2", "value2.1");
-        descriptorFacade.update(o1.getId(), o1);
+        variableDescriptorFacade.update(o1.getId(), o1);
 
         StringDescriptor s1 = (StringDescriptor) getDescriptor(gameModel1, "aString");
         s1.getAllowedValues().remove(1);
         s1.getAllowedValues().add("v11");
-        descriptorFacade.update(s1.getId(), s1);
+        variableDescriptorFacade.update(s1.getId(), s1);
 
         NumberDescriptor nm = (NumberDescriptor) getDescriptor(model, "aNumber");
         List<Double> history = nm.getDefaultInstance().getHistory();
@@ -681,7 +682,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         history.add(1.1);
         history.add(1.0);
         nm.getDefaultInstance().setHistory(history);
-        descriptorFacade.update(nm.getId(), nm);
+        variableDescriptorFacade.update(nm.getId(), nm);
 
         NumberDescriptor n1 = (NumberDescriptor) getDescriptor(gameModel1, "aNumber");
         history = n1.getDefaultInstance().getHistory();
@@ -689,7 +690,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         history.add(1.3);
         history.add(1.2);
         n1.getDefaultInstance().setHistory(history);
-        descriptorFacade.update(n1.getId(), n1);
+        variableDescriptorFacade.update(n1.getId(), n1);
 
         NumberInstance ni1 = (NumberInstance) getInstance(gameModel1, "aNumber");
         List<Double> history1 = ni1.getHistory();
@@ -830,7 +831,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
                     vd.setVisibility(ModelScoped.Visibility.INHERITED);
             }
 
-            descriptorFacade.update(vd.getId(), vd);
+            variableDescriptorFacade.update(vd.getId(), vd);
 
             logger.info("Vd {} -> {}", vd, vd.getVisibility());
             if (vd instanceof DescriptorListI) {
@@ -899,22 +900,22 @@ public class MergeFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(3.5, zi3.getValue(), 0.00001);
 
         // Update model
-        NumberDescriptor xModel = (NumberDescriptor) descriptorFacade.find(model, "x");
-        NumberDescriptor yModel = (NumberDescriptor) descriptorFacade.find(model, "y");
-        NumberDescriptor zModel = (NumberDescriptor) descriptorFacade.find(model, "z");
+        NumberDescriptor xModel = (NumberDescriptor) variableDescriptorFacade.find(model, "x");
+        NumberDescriptor yModel = (NumberDescriptor) variableDescriptorFacade.find(model, "y");
+        NumberDescriptor zModel = (NumberDescriptor) variableDescriptorFacade.find(model, "z");
 
         xModel.setLabel("my X");
         xModel.getDefaultInstance().setValue(11.0);
-        descriptorFacade.update(xModel.getId(), xModel);
+        variableDescriptorFacade.update(xModel.getId(), xModel);
 
         yModel.setLabel("my Y");
         yModel.getDefaultInstance().setValue(12.0);
-        descriptorFacade.update(yModel.getId(), yModel);
+        variableDescriptorFacade.update(yModel.getId(), yModel);
 
         zModel.setLabel("my Z");
         zModel.getDefaultInstance().setValue(13.0);
         zModel.getDefaultInstance().getHistory().add(13.0);
-        descriptorFacade.update(zModel.getId(), zModel);
+        variableDescriptorFacade.update(zModel.getId(), zModel);
 
         logger.info("Propagate Model Update");
         mergeFacade.propagateModel(model.getId());
@@ -977,8 +978,8 @@ public class MergeFacadeTest extends AbstractEJBTest {
         /**
          * Switch to 2D and move x to root level
          */
-        descriptorFacade.remove(getDescriptor(model, "z").getId());
-        descriptorFacade.move(getDescriptor(model, "x").getId(), 0);
+        variableDescriptorFacade.remove(getDescriptor(model, "z").getId());
+        variableDescriptorFacade.move(getDescriptor(model, "x").getId(), 0);
 
         logger.info("Propagate Model: Create Alpha &Pi; Remove Z and move X");
         mergeFacade.propagateModel(model.getId());
@@ -1015,7 +1016,7 @@ public class MergeFacadeTest extends AbstractEJBTest {
         /**
          * remove var from root level
          */
-        descriptorFacade.remove(getDescriptor(model, "x").getId());
+        variableDescriptorFacade.remove(getDescriptor(model, "x").getId());
         logger.info("Propagate Model: Remove X");
         mergeFacade.propagateModel(model.getId());
 
@@ -1038,8 +1039,8 @@ public class MergeFacadeTest extends AbstractEJBTest {
 
         y1.setLabel("my Y");
         y1.getDefaultInstance().setValue(22.0);
-        descriptorFacade.update(y1.getId(), y1);
-        descriptorFacade.move(getDescriptor(model, "y").getId(), 0);
+        variableDescriptorFacade.update(y1.getId(), y1);
+        variableDescriptorFacade.move(getDescriptor(model, "y").getId(), 0);
 
         logger.info("Propagate Model: Update Y.value; move Y to Root");
         mergeFacade.propagateModel(model.getId());
@@ -1067,8 +1068,8 @@ public class MergeFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(2.5, ((NumberInstance) getInstance(gameModel3, "y")).getValue(), 0.00001);
 
         /* Move alpha to root & delete */
-        descriptorFacade.move(getDescriptor(model, "alpha").getId(), 0);
-        descriptorFacade.remove(getDescriptor(model, "myFirstFolder").getId());
+        variableDescriptorFacade.move(getDescriptor(model, "alpha").getId(), 0);
+        variableDescriptorFacade.remove(getDescriptor(model, "myFirstFolder").getId());
 
         logger.info("Propagate Model: Update Y.value; move Y to Root");
         mergeFacade.propagateModel(model.getId());

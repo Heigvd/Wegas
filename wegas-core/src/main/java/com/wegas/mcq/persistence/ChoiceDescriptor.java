@@ -428,9 +428,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         public Object remove(Object entity, Object container, Object identifier) {
             if (entity instanceof Result) {
                 Result resultToRemove = (Result) entity;
-                for (ChoiceInstance ci : resultToRemove.getChoiceInstances()) {
-                    ci.setCurrentResult(null);
-                }
+                resultToRemove.updateCacheOnDelete(resultToRemove.getChoiceDescriptor().beans);
             }
             return null;
         }

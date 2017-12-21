@@ -393,15 +393,16 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
-    public GameModel createGameGameModel(final Long entityId) throws IOException {
+    public GameModel createGameGameModel(final Long entityId) throws CloneNotSupportedException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
         if (srcGameModel != null) {
-            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
+            final GameModel newGameModel = (GameModel) srcGameModel.clone();
 
             // Clear comments
             newGameModel.setComments("");
-            // to right restriction for trainer, status PLAY must be set before persisting the gameModel
-            newGameModel.setStatus(GameModel.Status.PLAY);
+            // to right restriction for trainer, status PLAY/LIVE must be set before persisting the gameModel
+            newGameModel.setStatus(GameModel.Status.LIVE);
+            newGameModel.setType(GameModel.GmType.PLAY);
             newGameModel.setBasedOn(srcGameModel);
 
             this.create(newGameModel);
@@ -636,7 +637,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         List<Permission> resultList = query.getResultList();
 
         for (Permission p : resultList) {
-            processPermission(p.getValue(), gmMatrix, gMatrix, gmType, gStatus);
+            processPermission(p.getValue(), gmMatrix, gMatrix, gmType, gmStatus, gStatus);
         }
     }
 

@@ -139,36 +139,30 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
      * Test of assign method, of class ResourceFacade.
      */
     @Test
-    public void testMergeAssignmentsOrder() throws NamingException {
-
-        // Lookup Ejb's
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
-
+    public void testMergeAssignmentsOrder() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        vdf.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(gameModel.getId(), res);
 
         // Create a task1
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        vdf.create(gameModel.getId(), task1);
+        variableDescriptorFacade.create(gameModel.getId(), task1);
 
         // Create a task1
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My second task");
         task2.setDefaultInstance(new TaskInstance());
-        vdf.create(gameModel.getId(), task2);
+        variableDescriptorFacade.create(gameModel.getId(), task2);
 
         // Create a task3
         TaskDescriptor task3 = new TaskDescriptor();
         task3.setLabel("My third task");
         task3.setDefaultInstance(new TaskInstance());
-        vdf.create(gameModel.getId(), task3);
+        variableDescriptorFacade.create(gameModel.getId(), task3);
 
         // Assign default resource to task 1 2 and 3
         resourceFacade.assign(res.getDefaultInstance().getId(), task1.getDefaultInstance().getId());
@@ -177,32 +171,32 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         gameModelFacade.reset(gameModel.getId());
 
-        ResourceInstance resI = (ResourceInstance) vif.find(res.getId(), player);
-        TaskInstance t1 = (TaskInstance) vif.find(task1.getId(), player);
-        TaskInstance t2 = (TaskInstance) vif.find(task2.getId(), player);
-        TaskInstance t3 = (TaskInstance) vif.find(task3.getId(), player);
+        ResourceInstance resI = (ResourceInstance) variableInstanceFacade.find(res.getId(), player);
+        TaskInstance t1 = (TaskInstance) variableInstanceFacade.find(task1.getId(), player);
+        TaskInstance t2 = (TaskInstance) variableInstanceFacade.find(task2.getId(), player);
+        TaskInstance t3 = (TaskInstance) variableInstanceFacade.find(task3.getId(), player);
 
         assertEquals(resI.getAssignments().get(0).getTaskInstance(), t1);
         assertEquals(resI.getAssignments().get(1).getTaskInstance(), t2);
         assertEquals(resI.getAssignments().get(2).getTaskInstance(), t3);
 
-        res = (ResourceDescriptor) descriptorFacade.find(res.getId());
+        res = (ResourceDescriptor) variableDescriptorFacade.find(res.getId());
         // 1 2 3 -> 2 3 1
         resourceFacade.moveAssignment(res.getDefaultInstance().getAssignments().get(0).getId(), 2);
 
         gameModelFacade.reset(gameModel.getId());
 
-        resI = (ResourceInstance) vif.find(res.getId(), player);
+        resI = (ResourceInstance) variableInstanceFacade.find(res.getId(), player);
 
         assertEquals(resI.getAssignments().get(0).getTaskInstance(), t2);
         assertEquals(resI.getAssignments().get(1).getTaskInstance(), t3);
         assertEquals(resI.getAssignments().get(2).getTaskInstance(), t1);
 
         // Clean
-        vdf.remove(res.getId());
-        vdf.remove(task1.getId());
-        vdf.remove(task2.getId());
-        vdf.remove(task3.getId());
+        variableDescriptorFacade.remove(res.getId());
+        variableDescriptorFacade.remove(task1.getId());
+        variableDescriptorFacade.remove(task2.getId());
+        variableDescriptorFacade.remove(task3.getId());
     }
 
     /**

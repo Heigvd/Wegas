@@ -189,7 +189,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty
-    
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     private Visibility visibility = Visibility.PRIVATE;
 
@@ -265,6 +265,15 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      */
     public VariableDescriptor(String name) {
         this.name = name;
+    }
+
+    /**
+     * @param name
+     * @param defaultInstance
+     */
+    public VariableDescriptor(String name, T defaultInstance) {
+        this.name = name;
+        this.defaultInstance = defaultInstance;
     }
 
     /**
@@ -709,6 +718,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
                 vd.getVariableDescriptorFacade().preDestroy(vd.getGameModel(), vd);
             }
         }
+    }
 
     public void revive(Beanjection beans) {
     }

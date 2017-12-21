@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -497,7 +496,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @return all gameModel descriptors
      */
     @Override
-    public Set<VariableDescriptor> findAll(final Long gameModelId) {
+    public Collection<VariableDescriptor> findAll(final Long gameModelId) {
         return gameModelFacade.find(gameModelId).getVariableDescriptors();
     }
 

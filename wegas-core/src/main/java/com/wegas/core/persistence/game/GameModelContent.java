@@ -8,15 +8,17 @@
 package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.rest.util.Views;
-import java.io.Serializable;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.Objects;
+import javax.persistence.*;
 
 /**
  *
@@ -74,6 +76,7 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
 
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     private Visibility visibility = Visibility.PRIVATE;
 
@@ -237,6 +240,11 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
         hash = 29 * hash + Objects.hashCode(clientscriptlibrary_GameModel);
         hash = 29 * hash + Objects.hashCode(this.contentKey);
         return hash;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getGameModel().getRequieredUpdatePermission();
     }
 
 }

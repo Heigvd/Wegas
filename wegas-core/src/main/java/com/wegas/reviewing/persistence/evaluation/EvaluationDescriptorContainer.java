@@ -75,8 +75,6 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
         super();
     }
 
-    <<<<<<< HEAD
-
     public PeerReviewDescriptor getFeedbacked() {
         return feedbacked;
     }

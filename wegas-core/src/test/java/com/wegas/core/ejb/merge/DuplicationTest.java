@@ -13,6 +13,8 @@ import com.wegas.core.merge.ejb.MergeFacade;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.test.TestHelper;
+import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.io.IOException;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -22,7 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence
  */
-public class DuplicationTest extends AbstractEJBTest {
+public class DuplicationTest extends AbstractArquillianTestMinimal {
 
     private static final Logger logger = LoggerFactory.getLogger(DuplicationTest.class);
 
@@ -38,8 +40,8 @@ public class DuplicationTest extends AbstractEJBTest {
 
     @Test
     public void compareDuplication() throws CloneNotSupportedException, IOException {
-        GameModel gm = TestHelper.loadGameModelFromFile("../wegas-app/src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json");
-        //GameModel gm = TestHelper.loadGameModelFromFile("../wegas-app/src/test/resources/aLittleScenario.json");
+        //GameModel gm = TestHelper.loadGameModelFromFile("../wegas-app/src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json");
+        GameModel gm = TestHelper.loadGameModelFromFile("../wegas-app/src/test/resources/aLittleScenario.json");
         gameModelFacade.createWithDebugGame(gm);
 
         gm = gameModelFacade.find(gm.getId());
@@ -53,7 +55,6 @@ public class DuplicationTest extends AbstractEJBTest {
 
         logger.error("Copy a {} ({} desc) created in {}", copy1, copy1.getVariableDescriptors().size(), time1 - time0);
         logger.error("Copy b {} ({} desc) created in {}", copy2, copy2.getVariableDescriptors().size(), time2 - time1);
-
 
         logger.error("Coucou");
     }

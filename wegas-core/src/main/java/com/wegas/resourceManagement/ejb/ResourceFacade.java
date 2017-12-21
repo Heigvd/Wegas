@@ -410,10 +410,14 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
                 task.getPredecessors().clear();
                 
                 for (String predecessorName : task.getImportedPredecessorNames()) {
+                    try{
                     TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
                     //if (!task.getPredecessorNames().contains(predecessorName)) {
                         task.addPredecessor(predecessor);
                     //}
+                    } catch (WegasNoResultException ex){
+                        throw WegasErrorMessage.error("Unable to restore task predecessor : " + task + " -> " + predecessorName);
+                    }
                 }
                 /**
                  * Old predecessor's names : make sure to remove oldies

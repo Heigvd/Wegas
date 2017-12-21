@@ -38,9 +38,6 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@Table(indexes = {
-    @Index(columnList = "model_gamemodelid")
-})
 //@Table(uniqueConstraints =
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -55,7 +52,8 @@ import org.slf4j.LoggerFactory;
 @Table(
         indexes = {
             @Index(columnList = "createdby_id"),
-            @Index(columnList = "basedon_gamemodelid")
+            @Index(columnList = "basedon_gamemodelid"),
+            @Index(columnList = "model_gamemodelid")
         }
 )
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable {
@@ -953,7 +951,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public Collection<WegasPermission> getRequieredCreatePermission() {
-        if (this.getStatus() == Status.PLAY) {
+        if (this.getType() == GmType.PLAY) {
             return WegasMembership.TRAINER;
         } else {
             return WegasMembership.SCENARIST;
