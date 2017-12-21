@@ -46,6 +46,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +85,7 @@ public class UserController {
      */
     @EJB
     private GameFacade gameFacade;
-    
+
     @Inject
     private GameModelFacade gameModelFacade;
 
@@ -430,6 +431,7 @@ public class UserController {
      */
     @POST
     @Path("Be/{accountId: [1-9][0-9]*}")
+    @RequiresRoles("Administrator")
     public void runAs(@PathParam("accountId") Long accountId) {
         requestManager.su(accountId);
     }
@@ -517,7 +519,7 @@ public class UserController {
         if (server.length() != 0 && !getRequestingIP(request).equals(server)
                 || secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
             logger.error("Real secret: {}, expected:{}", userDetails.getSecret(), secret);
-            logger.error("Real remote host : {}, expected: {}",getRequestingIP(request), server);
+            logger.error("Real remote host : {}, expected: {}", getRequestingIP(request), server);
             Enumeration<String> headerNames = request.getHeaderNames();
             if (headerNames != null) {
                 while (headerNames.hasMoreElements()) {

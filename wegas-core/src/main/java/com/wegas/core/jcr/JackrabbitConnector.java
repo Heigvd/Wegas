@@ -14,6 +14,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadConcern;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -49,6 +50,9 @@ public class JackrabbitConnector {
 
     @Inject
     private HazelcastInstance hzInstance;
+
+    @Inject
+    private RequestManager requestManager;
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
     final private static String URI = Helper.getWegasProperty("jcr.repository.URI");
@@ -134,6 +138,7 @@ public class JackrabbitConnector {
         if (lock.tryLock()) {
             logger.info(" * I got the lock");
             try {
+                requestManager.su();
                 if (repo == null) {
                     init();
                 }
@@ -151,6 +156,7 @@ public class JackrabbitConnector {
             } finally {
                 lock.unlock();
                 lock.destroy();
+                requestManager.releaseSu();
             }
         } else {
             logger.info("Somebody else got the lock");
