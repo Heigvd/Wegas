@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
@@ -26,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.*;
 
 /**
@@ -44,7 +46,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 //@OptimisticLocking(cascade = true)
-public class State extends AbstractEntity implements Searchable, Scripted {
+public class State extends AbstractEntity implements Searchable, Scripted, Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -251,6 +253,11 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     @Override
     public String toString() {
         return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
+    }
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getStateMachine().getEntities();
     }
 
     @Override
