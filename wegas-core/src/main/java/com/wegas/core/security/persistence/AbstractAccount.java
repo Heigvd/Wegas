@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
@@ -109,15 +108,6 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      *
      */
-    //@ElementCollection(fetch = FetchType.EAGER)
-    // Backward Compatibility
-    @JsonView(Views.ExtendedI.class)
-    @Transient
-    private List<Permission> permissions = new ArrayList<>();
-
-    /**
-     *
-     */
     @JsonView(Views.ExtendedI.class)
     @Transient
     private Collection<Role> roles = new ArrayList<>();
@@ -148,10 +138,6 @@ public abstract class AbstractAccount extends AbstractEntity {
             if (a.getAgreedTime() != null) {
                 // Never reset this attribute:
                 this.setAgreedTime(a.getAgreedTime());
-            }
-            if (a.getDeserializedPermissions() != null && !a.getDeserializedPermissions().isEmpty()) {
-                // Pass through setter to update user
-                this.getUser().setPermissions(ListUtils.mergeLists(this.getUser().getPermissions(), a.getDeserializedPermissions()));
             }
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
@@ -270,16 +256,11 @@ public abstract class AbstractAccount extends AbstractEntity {
         }
     }
 
-    @JsonIgnore
-    public List<Permission> getDeserializedPermissions() {
-        return this.permissions;
-    }
-
     /**
-     * @param permissions the permissions to set
+     *
+     * @param permissions
      */
     public void setPermissions(List<Permission> permissions) {
-        this.permissions = permissions;
     }
 
     /**

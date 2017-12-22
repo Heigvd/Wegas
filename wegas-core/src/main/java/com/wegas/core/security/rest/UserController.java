@@ -327,9 +327,12 @@ public class UserController {
      *
      * @throws AuthorizationException currentUser does not have the permission
      *                                to delete users
+     *
+     * @deprecated please delete account through account controller
      */
     @DELETE
     @Path("{accountId: [1-9][0-9]*}")
+    @Deprecated
     public User delete(@PathParam("accountId") Long accountId) {
         AbstractAccount a = accountFacade.find(accountId);
         User user = a.getUser();
@@ -338,16 +341,7 @@ public class UserController {
         }
 
         accountFacade.remove(a);
-        userFacade.remove(user);
         return user;
-        //return user;
-        //User u = userFacade.find(entityId);
-        //
-        //if (!userFacade.getCurrentUser().equals(u)) {
-        //    SecurityUtils.getSubject().checkPermission("User:Edit");
-        //}
-        //userFacade.remove(entityId);
-        //return u;
     }
 
     /**

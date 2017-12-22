@@ -20,6 +20,7 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
 import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -88,16 +89,23 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
         AbstractAccount oAccount = super.update(entityId, account);
 
-        Set<Role> revivedRoles = new HashSet<>();
-        for (Role r : account.getDeserialisedRoles()) {
-            try {
-                revivedRoles.add(roleFacade.find(r.getId()));
-            } catch (EJBException e) {
-                // not able to revive this role
+        /*
+         * Only an administrator can modify memberships
+         */
+        if (requestManager.isAdmin()) {
+            // Only if given account contains roles by itself
+            if (account.getDeserialisedRoles() != null) {
+                Set<Role> revivedRoles = new HashSet<>();
+                for (Role r : account.getDeserialisedRoles()) {
+                    try {
+                        revivedRoles.add(roleFacade.find(r.getId()));
+                    } catch (EJBException e) {
+                        // not able to revive this role
+                    }
+                }
+                oAccount.getUser().setRoles(revivedRoles);
             }
         }
-        oAccount.getUser().setRoles(revivedRoles);
-        //oAccount.setRoles(revivedRoles);
 
         return oAccount;
     }
@@ -109,7 +117,14 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     @Override
     public void remove(AbstractAccount entity) {
+        User user = entity.getUser();
+
+        user.getAccounts().remove(entity);
         getEntityManager().remove(entity);
+
+        if (user.getAccounts().isEmpty()){
+            userFacade.remove(user);
+        }
     }
 
     /**
@@ -257,7 +272,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                     || !a.getHomeOrg().equals(userDetails.getHomeOrg())
                     || !a.getEmail().equals(userDetails.getEmail())) {
 
-                a.merge(new AaiAccount(userDetails));
+                a.merge(new AaiAccount(userDetails)); //HAZARDOUS!!!!
                 update(a.getId(), a);
             }
         } catch (WegasNoResultException ex) {
@@ -319,9 +334,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
         List<Predicate> filter = this.getAccountAutoCompleteFilter(input);
         cq.where(cb.and(filter.toArray(new Predicate[filter.size()])));
-
-
-
 
         TypedQuery<AbstractAccount> q = getEntityManager().createQuery(cq);
         return q.getResultList();
