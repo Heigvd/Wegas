@@ -314,7 +314,9 @@ public class UserFacade extends BaseFacade<User> {
             r.removeUser(entity);
         }
         /* ???: Should be cascaded, nope ??? */
-        for (AbstractAccount aa : entity.getAccounts()) {
+        // clone list to avoid CME
+        List<AbstractAccount> accounts = new ArrayList<>(entity.getAccounts());
+        for (AbstractAccount aa : accounts) {
             accountFacade.remove(aa);
         }
 
