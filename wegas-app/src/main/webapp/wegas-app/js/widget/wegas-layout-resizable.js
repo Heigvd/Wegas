@@ -37,6 +37,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                               '</div>',
             HANDLEBAR_WIDTH: 4,
             LEFT_COL_WIDTH: "300px",
+            CENTER_COL_MIN_WIDTH: 30,
             CENTER_COL_WIDTH: "420px",
             WEGAS_EDITOR_LOCALSTORAGE_ID: "wegas-editor",
 
@@ -316,7 +317,8 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     centerWidthStyle = centerNode.getStyle('width'),
                     rightWidthStyle = rightNode.getStyle('width'),
                     leftWidth = leftNode.getComputedStyle("width"),
-                    rightWidth = rightNode.getComputedStyle("width");
+                    rightWidth = rightNode.getComputedStyle("width"),
+                    centerWidth = centerNode.getComputedStyle("width");
                 // If center width style is set to zero, it shall remain hidden:
                 if (centerWidthStyle !== '0px') {
                     centerNode.setStyles({
@@ -327,6 +329,20 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     rightNode.setStyles({
                         left: 'auto'
                     });
+                    if(parseInt(centerWidth) < this.CENTER_COL_MIN_WIDTH){
+
+                        if (e && e.currentTarget.handle === 'l') {  // Left handle of right column has been moved
+                            var windowWidth = parseInt(window.innerWidth || document.documentElement.clientWidth);
+                            leftNode.setStyles({
+                                width: parseInt(windowWidth - parseInt(rightWidth) + this.HANDLEBAR_WIDTH - this.CENTER_COL_MIN_WIDTH)
+                            });
+                        } else {                                    // Right handle of left column has been moved
+                            rightNode.setStyles({
+                                left: parseInt(leftWidth) - this.HANDLEBAR_WIDTH + this.CENTER_COL_MIN_WIDTH,
+                                width: 'auto'
+                            });
+                        }
+                    }
                 } else {
                     if (e && e.currentTarget.handle === 'l') {  // Left handle of right column has been moved
                         var windowWidth = parseInt(window.innerWidth || document.documentElement.clientWidth);
