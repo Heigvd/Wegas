@@ -9,6 +9,7 @@ package com.wegas.core.rest;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
 import com.wegas.core.Helper;
@@ -16,6 +17,8 @@ import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.HelperBean;
 import fish.payara.micro.cdi.Outbound;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -146,18 +149,13 @@ public class UtilsController {
     }
 
     @GET
-    @Path("SetLoggerLevel/{className: .*}/{level: .*}")
+    @Path("SetLoggerLevel/{loggerName: .*}/{level: .*}")
     @RequiresRoles("Administrator")
     @Produces(MediaType.TEXT_PLAIN)
-    public String setLoggerLevel(@PathParam("className") String className, @PathParam("level") String level) {
-        try {
-            Class<?> loadClass = Thread.currentThread().getContextClassLoader().loadClass(className);
-            Logger logger = (Logger) LoggerFactory.getLogger(loadClass);
-            logger.setLevel(Level.valueOf(level));
-            return logger.getLevel().toString();
-        } catch (ClassNotFoundException ex) {
-            return "Class " + className + " Not Found";
-        }
+    public String setLoggerLevel(@PathParam("loggerName") String loggerName, @PathParam("level") String level) {
+        Logger logger = (Logger) LoggerFactory.getLogger(loggerName);
+        logger.setLevel(Level.valueOf(level));
+        return logger.getLevel().toString();
     }
 
     @GET
@@ -201,4 +199,136 @@ public class UtilsController {
         populatorScheduler.abortAll();
         return "STOPPED";
     }
+
+    private static class TreeNode {
+
+        private static Level[] LEVELS = {
+            Level.OFF,
+            Level.ERROR,
+            Level.WARN,
+            Level.INFO,
+            Level.DEBUG,
+            Level.TRACE,
+            Level.ALL
+        };
+
+        private String name;
+        private Map<String, TreeNode> children = new HashMap<>();
+        private ch.qos.logback.classic.Logger logger;
+
+        public TreeNode(String name) {
+            this.name = name;
+        }
+
+        private TreeNode getOrCreateLeaf(String path) {
+            String segment;
+            String subPath = null;
+            if (path.contains(".")) {
+                segment = path.split("\\.")[0];
+                subPath = path.substring(path.indexOf('.') + 1);
+            } else {
+                segment = path;
+            }
+
+            if (!this.children.containsKey(segment)) {
+                TreeNode newChild = new TreeNode(segment);
+                this.children.put(segment, newChild);
+            }
+
+            TreeNode child = this.children.get(segment);
+
+            if (subPath == null) {
+                return child;
+            } else {
+                return child.getOrCreateLeaf(subPath);
+            }
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder("<li>");
+
+            if (this.name != null && !this.name.isEmpty()) {
+                sb.append("<b>").append(this.name).append("</b>");
+            }
+
+            if (logger != null) {
+                sb.append(": <span class='levels'>");
+                for (Level l : LEVELS) {
+                    sb.append("<span class='level' data-logger='").append(logger.getName()).append("' data-level='").append(l).append("'>");
+                    if (logger.getEffectiveLevel().equals(l)) {
+                        sb.append("<b>").append(l).append("</b>");
+                    } else {
+                        sb.append(l);
+                    }
+                    sb.append("</span>");
+                }
+                sb.append("</span>");
+            }
+
+            for (TreeNode child : children.values()) {
+                sb.append("<ul>").append(System.lineSeparator());
+                sb.append(child);
+                sb.append("</ul>").append(System.lineSeparator());
+            }
+
+            sb.append("</li>").append(System.lineSeparator());
+
+            return sb.toString();
+        }
+    }
+
+    @GET
+    @Path("Loggers")
+    @RequiresRoles("Administrator")
+    @Produces(MediaType.TEXT_HTML)
+    public String listLogger() {
+        TreeNode root = new TreeNode(null);
+
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        for (ch.qos.logback.classic.Logger logger : lc.getLoggerList()) {
+            String name = logger.getName();
+            if (name.startsWith("com.wegas")) {
+                TreeNode leaf = root.getOrCreateLeaf(name);
+                leaf.logger = logger;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<style>");
+        sb.append("ul, li {\n"
+                + "      padding-left: 5px;\n"
+                + "  }\n"
+                + "\n"
+                + "li .level {\n"
+                + "    margin-left : 10px;\n"
+                + "    cursor: pointer;"
+                + "}\n"
+                + "\n"
+                + ".levels {\n"
+                + "    left: 300px;\n"
+                + "    position: absolute;\n"
+                + "}");
+        sb.append("</style>");
+
+        sb.append("<ul>");
+        sb.append(root);
+        sb.append("</ul>");
+
+        sb.append("<script>");
+        sb.append("document.body.onclick= function(e){\n"
+                + "   e=window.event? event.srcElement: e.target;\n"
+                + "   if(e.className && e.className.indexOf('level')!=-1){\n"
+                + "		var logger = e.getAttribute(\"data-logger\");\n"
+                + " 		var level = e.getAttribute(\"data-level\");\n"
+                + "        fetch(\"SetLoggerLevel/\" + logger + \"/\" + level, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
+                + "   }\n"
+                + "\n"
+                + "}");
+        sb.append("</script>");
+
+        return sb.toString();
+    }
+
 }
