@@ -255,12 +255,9 @@ public class UtilsController {
             if (logger != null) {
                 sb.append(": <span class='levels'>");
                 for (Level l : LEVELS) {
-                    sb.append("<span class='level' data-logger='").append(logger.getName()).append("' data-level='").append(l).append("'>");
-                    if (logger.getEffectiveLevel().equals(l)) {
-                        sb.append("<b>").append(l).append("</b>");
-                    } else {
-                        sb.append(l);
-                    }
+                    String className = (logger.getLevel() != null && logger.getLevel().equals(l) ? " current direct level" : (logger.getEffectiveLevel().equals(l) ? " current level" : " level"));
+                    sb.append("<span class='").append(className).append("' data-logger='").append(logger.getName()).append("' data-level='").append(l).append("'>");
+                    sb.append(l);
                     sb.append("</span>");
                 }
                 sb.append("</span>");
@@ -301,6 +298,12 @@ public class UtilsController {
                 + "      padding-left: 5px;\n"
                 + "  }\n"
                 + "\n"
+                + "li .level.direct {\n"
+                + "    text-decoration: underline;"
+                + "}"
+                + "li .level.current {\n"
+                + "    font-weight: bold;"
+                + "}"
                 + "li .level {\n"
                 + "    margin-left : 10px;\n"
                 + "    cursor: pointer;"
