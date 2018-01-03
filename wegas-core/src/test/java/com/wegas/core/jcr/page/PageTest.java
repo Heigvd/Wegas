@@ -1,4 +1,11 @@
-package com.wegas.com.wegas.core.jcr.page;
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+package com.wegas.core.jcr.page;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;

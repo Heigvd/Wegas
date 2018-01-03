@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -10,9 +10,7 @@ package com.wegas.core.security.persistence;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
@@ -114,16 +112,6 @@ public abstract class AbstractAccount extends AbstractEntity {
     @Column(columnDefinition = "timestamp with time zone")
     @WegasEntityProperty(ignoreNull = true)
     private Date agreedTime = null;
-
-    /**
-     *
-     */
-    //@ElementCollection(fetch = FetchType.EAGER)
-    // Backward Compatibility
-    @JsonView(Views.ExtendedI.class)
-    @Transient
-    @WegasEntityProperty
-    private List<Permission> permissions = new ArrayList<>();
 
     /**
      *
@@ -252,18 +240,18 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @return the permissions
      */
     public List<Permission> getPermissions() {
-        if (this.permissions != null) {
-            return this.permissions;
-        } else {
+        if (this.user != null) {
             return this.user.getPermissions();
+        } else {
+            return null;
         }
     }
 
     /**
-     * @param permissions the permissions to set
+     *
+     * @param permissions
      */
     public void setPermissions(List<Permission> permissions) {
-        this.getUser().setPermissions(permissions);
     }
 
     /**
@@ -329,20 +317,5 @@ public abstract class AbstractAccount extends AbstractEntity {
 
     public void setAgreedTime(Date agreedTime) {
         this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
-    }
-
-    public static class MergePermission implements WegasCallback {
-
-        @Override
-        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
-            if (entity instanceof AbstractAccount) {
-                /**
-                 * Hack: effective permissions owner is the user not its account
-                 */
-                AbstractAccount aa = (AbstractAccount) entity;
-                aa.getUser().setPermissions(aa.getPermissions());
-                aa.permissions = null;
-            }
-        }
     }
 }
