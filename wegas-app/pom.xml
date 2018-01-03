@@ -16,6 +16,7 @@
 
     <properties>
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
+        <netbeans.hint.license>license</netbeans.hint.license>
     </properties>
 
     <profiles>
