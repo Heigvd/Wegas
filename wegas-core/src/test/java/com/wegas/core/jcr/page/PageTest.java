@@ -1,4 +1,4 @@
-package com.wegas.com.wegas.core.jcr.page;
+package com.wegas.core.jcr.page;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
