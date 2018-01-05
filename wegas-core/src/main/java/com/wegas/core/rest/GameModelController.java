@@ -10,7 +10,7 @@ package com.wegas.core.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.merge.ejb.MergeFacade;
+import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class GameModelController {
      *
      */
     @Inject
-    private MergeFacade mergeFacade;
+    private ModelFacade mergeFacade;
 
     /**
      *

@@ -8,7 +8,6 @@
 package com.wegas.core.jcr.content;
 
 import com.wegas.core.Helper;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -66,6 +65,11 @@ public final class WFSConfig {
      * <b>{@value #WFS_DESCRIPTION}</b>
      */
     static final String WFS_DESCRIPTION = WeGAS_FILE_SYSTEM_PREFIX + "description";
+    /**
+     * WeGAS file system description property name
+     * <b>{@value #WFS_VISIBILITY}</b>
+     */
+    static final String WFS_VISIBILITY = WeGAS_FILE_SYSTEM_PREFIX + "visibility";
     /**
      * WeGAS file system private property name <b>{@value #WFS_PRIVATE}</b>
      */

@@ -5,21 +5,17 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb.merge;
+package com.wegas.core.ejb;
 
 import ch.qos.logback.classic.Level;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.*;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.ejb.MergeFacade;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.tools.RepositoryVisitor;
 import com.wegas.core.merge.patch.WegasPatch;
-import com.wegas.core.merge.utils.WegasEntitiesHelper;
-import com.wegas.core.merge.utils.WegasEntityFields;
-import com.wegas.core.merge.utils.WegasFieldProperties;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
@@ -38,22 +34,16 @@ import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
-import com.wegas.core.persistence.variable.primitive.TextDescriptor;
-import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
+import javax.inject.Inject;
+import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -65,10 +55,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence
  */
-public class MergeFacadeTest extends AbstractArquillianTest {
+public class ModelFacadeTest extends AbstractArquillianTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(MergeFacadeTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(ModelFacadeTest.class);
     private static final Reflections reflections;
+
+    @Inject
+    private ModelFacade modelFacade;
+
+    @Inject
+    private JCRFacade jcrFacade;
 
     static {
         reflections = new Reflections("com.wegas");
@@ -76,165 +72,12 @@ public class MergeFacadeTest extends AbstractArquillianTest {
 
     //@BeforeClass
     public static void setLoggerLevels() {
-        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ModelFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptor.class)).setLevel(Level.DEBUG);
 
         ((ch.qos.logback.classic.Logger) logger).setLevel(Level.DEBUG);
-    }
-
-    @Test
-    public void testTextDescriptorMerge() {
-
-        TextDescriptor textD = new TextDescriptor();
-        textD.setName("tScoped");
-        textD.setScope(new TeamScope());
-        textD.setDefaultInstance(new TextInstance());
-        textD.getDefaultInstance().setValue("initialvalue");
-
-        variableDescriptorFacade.create(gameModel.getId(), textD);
-
-        textD = (TextDescriptor) variableDescriptorFacade.find(textD.getId());
-        TextInstance defaultInstance = textD.getDefaultInstance();
-
-        defaultInstance.setValue("newvalue");
-        Assert.assertEquals("initialvalue", ((TextInstance) variableDescriptorFacade.find(textD.getId()).getDefaultInstance()).getValue());
-        Assert.assertEquals("newvalue", defaultInstance.getValue());
-
-        variableDescriptorFacade.update(textD.getId(), textD);
-        textD = (TextDescriptor) variableDescriptorFacade.find(textD.getId());
-        defaultInstance = textD.getDefaultInstance();
-
-        Assert.assertEquals("newvalue", defaultInstance.getValue());
-    }
-
-    @Test
-    public void testListDescriptorMerge() {
-
-        List<String> allowed = new ArrayList<>();
-
-        ListDescriptor listD = new ListDescriptor();
-        listD.setName("myList");
-        listD.setScope(new TeamScope());
-        listD.setDefaultInstance(new ListInstance());
-
-        variableDescriptorFacade.create(gameModel.getId(), listD);
-
-        listD = (ListDescriptor) variableDescriptorFacade.find(listD.getId());
-
-        ListDescriptor newListD = new ListDescriptor();
-        newListD.setVersion(listD.getVersion());
-        newListD.setName("MyRenamedList");
-        newListD.setDefaultInstance(new ListInstance());
-
-        allowed.add("NumberDescriptor");
-        allowed.add("StringDescriptor");
-        allowed.add("TextDescriptor");
-        newListD.setAllowedTypes(allowed);
-        newListD.setAddShortcut("NumberDescriptor");
-
-        variableDescriptorFacade.update(listD.getId(), newListD);
-        listD = (ListDescriptor) variableDescriptorFacade.find(listD.getId());
-        Assert.assertEquals(3, listD.getAllowedTypes().size());
-
-        allowed.remove("StringDescriptor");
-        newListD.setVersion(listD.getVersion());
-        variableDescriptorFacade.update(listD.getId(), newListD);
-        listD = (ListDescriptor) variableDescriptorFacade.find(listD.getId());
-        Assert.assertEquals(2, listD.getAllowedTypes().size());
-
-        try {
-            allowed.remove("NumberDescriptor");
-            newListD.setVersion(listD.getVersion());
-            variableDescriptorFacade.update(listD.getId(), newListD);
-            Assert.fail("Shortcut incompatibility should raises error");
-        } catch (Exception ex) {
-            // expected
-        }
-
-        try {
-            allowed.add("NumberDescriptor");
-            newListD.setAddShortcut("BooleanDescriptor");
-            variableDescriptorFacade.update(listD.getId(), newListD);
-            Assert.fail("Shortcut incompatibility should raises error");
-        } catch (Exception ex) {
-            // Excpected
-        }
-
-        newListD.setAddShortcut("TextDescriptor");
-        variableDescriptorFacade.update(listD.getId(), newListD);
-    }
-
-    @Test
-    public void testObjectDescriptorMerge() {
-        ObjectDescriptor objectD = new ObjectDescriptor();
-        objectD.setName("tScoped");
-        objectD.setScope(new TeamScope());
-        objectD.setDefaultInstance(new ObjectInstance());
-        objectD.setProperty("myProperty", "initialValue");
-        ObjectInstance defaultInstance = objectD.getDefaultInstance();
-        defaultInstance.setProperty("myInstanceProperty", "initialInstanceValue");
-
-        variableDescriptorFacade.create(gameModel.getId(), objectD);
-
-        objectD = (ObjectDescriptor) variableDescriptorFacade.find(objectD.getId());
-        defaultInstance = objectD.getDefaultInstance();
-        Assert.assertEquals("initialValue", objectD.getProperty("myProperty"));
-        Assert.assertEquals("initialInstanceValue", defaultInstance.getProperty("myInstanceProperty"));
-
-        objectD.setProperty("myProperty", "newValue");
-        defaultInstance.setProperty("myInstanceProperty", "newInstanceValue");
-        variableDescriptorFacade.update(objectD.getId(), objectD);
-
-        objectD = (ObjectDescriptor) variableDescriptorFacade.find(objectD.getId());
-        defaultInstance = objectD.getDefaultInstance();
-
-        Assert.assertEquals("newValue", objectD.getProperty("myProperty"));
-        Assert.assertEquals("newInstanceValue", defaultInstance.getProperty("myInstanceProperty"));
-    }
-
-    private Set<Field> getFields(Class klass) {
-
-        Set<Field> fields = new HashSet<>();
-
-        while (klass != null) {
-            for (Field f : klass.getDeclaredFields()) {
-
-                WegasEntityProperty a = f.getDeclaredAnnotation(WegasEntityProperty.class);
-                if (a != null) {
-                    fields.add(f);
-                }
-            }
-            klass = klass.getSuperclass();
-        }
-        return fields;
-    }
-
-    @Test
-    public void testGetterAndSetter() {
-        Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
-
-        List<Exception> exes = new ArrayList<>();
-
-        for (Class<? extends AbstractEntity> entityClass : sub) {
-
-            Set<Field> fields = this.getFields(entityClass);
-
-            for (Field f : fields) {
-                try {
-                    PropertyDescriptor property = new PropertyDescriptor(f.getName(), f.getDeclaringClass());
-                } catch (IntrospectionException ex) {
-                    exes.add(ex);
-                }
-            }
-        }
-
-        for (Exception ex : exes) {
-            System.out.println(ex);
-        }
-
-        Assert.assertEquals(0, exes.size());
     }
 
     private ObjectDescriptor createObjectDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, String... values) {
@@ -351,8 +194,6 @@ public class MergeFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testModelise_GameModelProperties() throws NamingException, WegasNoResultException {
-        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
-
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         GameModelProperties properties1 = gameModel1.getProperties();
@@ -376,8 +217,8 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
-        mergeFacade.propagateModel(model.getId());
+        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        modelFacade.propagateModel(model.getId());
 
         Assert.assertEquals("DefaultLogId1", model.getProperties().getLogID());
         Assert.assertEquals("DefaultLogId1", gameModel1.getProperties().getLogID());
@@ -389,7 +230,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         /**
          * Update gameModel properties
          */
-        mergeFacade.propagateModel(model.getId());
+        modelFacade.propagateModel(model.getId());
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -461,8 +302,6 @@ public class MergeFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testModelise_GameModelPages() throws NamingException, WegasNoResultException, IOException {
-        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
-
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
 
@@ -486,8 +325,8 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
-        mergeFacade.propagateModel(model.getId());
+        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
         gameModel1 = gameModelFacade.find(gameModel1.getId());
@@ -506,7 +345,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         /**
          * Update gameModel properties
          */
-        mergeFacade.propagateModel(model.getId());
+        modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
         gameModel1 = gameModelFacade.find(gameModel1.getId());
@@ -519,8 +358,6 @@ public class MergeFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testModelise_GameModelContent() throws NamingException, WegasNoResultException {
-        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
-
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         this.createCss(gameModel1, "sheet1");
@@ -540,8 +377,8 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
-        mergeFacade.propagateModel(model.getId());
+        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
         gameModel1 = gameModelFacade.find(gameModel1.getId());
@@ -579,7 +416,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         /**
          * Update gameModel properties
          */
-        mergeFacade.propagateModel(model.getId());
+        modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
         gameModel1 = gameModelFacade.find(gameModel1.getId());
@@ -609,10 +446,6 @@ public class MergeFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testModelise_PrimitiveCollection() throws NamingException, WegasNoResultException {
-        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
-
-        VariableInstanceFacade vif = VariableInstanceFacade.lookup();
-
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         gameModelFacade.createWithDebugGame(gameModel1);
@@ -640,14 +473,14 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
 
         VariableDescriptor descriptor = getDescriptor(model, "anOtherNumber");
 
         descriptor.setVisibility(ModelScoped.Visibility.INTERNAL);
         variableDescriptorFacade.update(descriptor.getId(), descriptor);
 
-        model = mergeFacade.propagateModel(model.getId());
+        model = modelFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
@@ -696,7 +529,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         List<Double> history1 = ni1.getHistory();
         history1.add(3.14);
         ni1.setHistory(history1);
-        vif.update(ni1.getId(), ni1);
+        variableInstanceFacade.update(ni1.getId(), ni1);
 
         assertListEquals(((NumberInstance) getInstance(gameModel1, "aNumber")).getHistory(), 1.1, 1.2, 1.3, 3.14);
 
@@ -711,7 +544,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
           | str         | v1; v10            | v1;v11 -> v1;v11                   | v1;v10             |
           | nbr hist    | 123 + 210          | 123 + 432 => 123432210             | 123 + 210          |
          */
-        mergeFacade.propagateModel(model.getId());
+        modelFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
@@ -762,8 +595,6 @@ public class MergeFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testModelise() throws NamingException, WegasNoResultException, IOException {
-        MergeFacade mergeFacade = Helper.lookupBy(MergeFacade.class);
-
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         gameModelFacade.createWithDebugGame(gameModel1);
@@ -805,8 +636,8 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel3);
 
         logger.info("Create Model");
-        GameModel model = mergeFacade.createModelFromCommonContent(scenarios);
-        mergeFacade.propagateModel(model.getId());
+        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        modelFacade.propagateModel(model.getId());
 
         List<VariableDescriptor> children = new ArrayList<>();
         children.addAll(model.getChildVariableDescriptors());
@@ -840,7 +671,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         }
 
         logger.info("Initial Model Propagation");
-        model = mergeFacade.propagateModel(model.getId());
+        model = modelFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(model));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
@@ -918,7 +749,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.update(zModel.getId(), zModel);
 
         logger.info("Propagate Model Update");
-        mergeFacade.propagateModel(model.getId());
+        modelFacade.propagateModel(model.getId());
 
         /*
          * X: Model override scenarios
@@ -982,7 +813,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.move(getDescriptor(model, "x").getId(), 0);
 
         logger.info("Propagate Model: Create Alpha &Pi; Remove Z and move X");
-        mergeFacade.propagateModel(model.getId());
+        modelFacade.propagateModel(model.getId());
 
         /**
          * Assert new descriptor stand in the correct folder
@@ -1018,7 +849,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
          */
         variableDescriptorFacade.remove(getDescriptor(model, "x").getId());
         logger.info("Propagate Model: Remove X");
-        mergeFacade.propagateModel(model.getId());
+        modelFacade.propagateModel(model.getId());
 
         /**
          * Assert x no longer exists
@@ -1043,7 +874,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.move(getDescriptor(model, "y").getId(), 0);
 
         logger.info("Propagate Model: Update Y.value; move Y to Root");
-        mergeFacade.propagateModel(model.getId());
+        modelFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
@@ -1072,7 +903,7 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.remove(getDescriptor(model, "myFirstFolder").getId());
 
         logger.info("Propagate Model: Update Y.value; move Y to Root");
-        mergeFacade.propagateModel(model.getId());
+        modelFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
@@ -1089,47 +920,61 @@ public class MergeFacadeTest extends AbstractArquillianTest {
         logger.info("FINI");
     }
 
-    //@Test
-    public void printEntityChildren() {
-        Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
+    @Test
+    public void testModelise_GameModelFiles() throws RepositoryException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
 
-        for (Class<? extends AbstractEntity> klass : sub) {
-            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(klass);
-            List<WegasFieldProperties> fields = entityIterator.getFields();
+        RepositoryVisitor.ListRepository ls = new RepositoryVisitor.ListRepository();
 
-            List<WegasFieldProperties> children = new LinkedList<>();
+        gameModelFacade.createWithDebugGame(gameModel1);
+        jcrFacade.createDirectory(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "dir1", "/", "first directory", "first directory description");
+        jcrFacade.createDirectory(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "dir11", "/dir1", "first directory child", "first directory description child");
+        jcrFacade.createDirectory(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "dir2", "/", "second directory", "2nd directory description");
 
-            for (WegasFieldProperties field : fields) {
-                if (field.getType() == WegasFieldProperties.FieldType.CHILDREN) {
-                    children.add(field);
-                }
-            }
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        gameModelFacade.createWithDebugGame(gameModel2);
+        jcrFacade.createDirectory(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "dir1", "/", "first directory", "first directory description");
+        jcrFacade.createDirectory(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "dir3", "/", "third directory", "3rd directory description");
 
-            if (children.size() > 0) {
-                System.out.println("");
-                System.out.println("Class " + klass.getSimpleName());
-                for (WegasFieldProperties field : children) {
-                    System.out.println(" * " + field.getField().getName() + " : " + field.getField().getType().getSimpleName());
-                }
-            }
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        ls.visitGameModelFiles(gameModel1);
+        ls.visitGameModelFiles(gameModel2);
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        modelFacade.propagateModel(model.getId());
+
+        model = gameModelFacade.find(model.getId());
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+
+        ls.visitGameModelFiles(model);
+        ls.visitGameModelFiles(gameModel1);
+        ls.visitGameModelFiles(gameModel2);
+
+        List<AbstractContentDescriptor> list = jcrFacade.listDirectory(model.getId(), ContentConnector.WorkspaceType.FILES, "/");
+        for (AbstractContentDescriptor item : list) {
+            logger.error("I: " + item.getPath() + " :: " + item.getName());
         }
-    }
 
-    //@Test
-    public void printEntity() {
-        Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
+        list = jcrFacade.listDirectory(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/");
+        for (AbstractContentDescriptor item : list) {
+            logger.error("I: " + item.getPath() + " :: " + item.getName());
+        }
 
-        for (Class<? extends AbstractEntity> klass : sub) {
-            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(klass);
-            List<WegasFieldProperties> fields = entityIterator.getFields();
-
-            if (fields.size() > 0) {
-                System.out.println("");
-                System.out.println("Class " + klass.getSimpleName());
-                for (WegasFieldProperties field : fields) {
-                    System.out.println(" * " + field.getField().getName() + " : " + field.getField().getType().getSimpleName());
-                }
-            }
+        list = jcrFacade.listDirectory(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/");
+        for (AbstractContentDescriptor item : list) {
+            logger.error("I: " + item.getPath() + " :: " + item.getName());
         }
     }
 

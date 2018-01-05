@@ -9,7 +9,6 @@ package com.wegas.core.ejb.merge;
 
 import ch.qos.logback.classic.Level;
 import com.wegas.core.ejb.*;
-import com.wegas.core.merge.ejb.MergeFacade;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -30,7 +29,7 @@ public class DuplicationTest extends AbstractArquillianTestMinimal {
 
     //@BeforeClass
     public static void setLoggerLevels() {
-        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(MergeFacade.class)).setLevel(Level.DEBUG);
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ModelFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptor.class)).setLevel(Level.DEBUG);
@@ -47,14 +46,11 @@ public class DuplicationTest extends AbstractArquillianTestMinimal {
         gm = gameModelFacade.find(gm.getId());
 
         long time0 = System.currentTimeMillis();
-        GameModel copy1 = gameModelFacade.duplicateWithDebugGame_serialise(gm.getId());
+
+        GameModel copy = gameModelFacade.duplicateWithDebugGame(gm.getId());
         long time1 = System.currentTimeMillis();
 
-        GameModel copy2 = gameModelFacade.duplicateWithDebugGame(gm.getId());
-        long time2 = System.currentTimeMillis();
-
-        logger.error("Copy a {} ({} desc) created in {}", copy1, copy1.getVariableDescriptors().size(), time1 - time0);
-        logger.error("Copy b {} ({} desc) created in {}", copy2, copy2.getVariableDescriptors().size(), time2 - time1);
+        logger.error("Copy b {} ({} desc) created in {}", copy, copy.getVariableDescriptors().size(), time1 - time0);
 
         logger.error("Coucou");
     }

@@ -10,17 +10,17 @@ package com.wegas.core.jcr.content;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.slf4j.LoggerFactory;
-
+import com.wegas.core.persistence.variable.ModelScoped;
+import java.util.zip.ZipEntry;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import java.util.zip.ZipEntry;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-abstract public class AbstractContentDescriptor {
+abstract public class AbstractContentDescriptor implements ModelScoped {
 
     @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);
@@ -29,7 +29,9 @@ abstract public class AbstractContentDescriptor {
      * @param name
      * @param path
      * @param mimeType
-     * @return 
+     *
+     * @return
+     *
      * @throws RepositoryException
      */
     @JsonCreator
@@ -51,6 +53,7 @@ abstract public class AbstractContentDescriptor {
     private String path;
     private String note = "";
     private String description = "";
+    private ModelScoped.Visibility visibility = ModelScoped.Visibility.PRIVATE;
     /**
      *
      */
@@ -154,7 +157,6 @@ abstract public class AbstractContentDescriptor {
         return p;
     }
 
-
     /**
      * @return note
      */
@@ -184,6 +186,22 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
+    }
+
+    /**
      * @return true if is synched
      */
     @JsonIgnore
@@ -193,6 +211,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      * @return truc if node exists
+     *
      * @throws RepositoryException
      */
     @JsonIgnore
@@ -202,6 +221,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      * @return true is this has children
+     *
      * @throws RepositoryException
      */
     @JsonIgnore
@@ -231,7 +251,9 @@ abstract public class AbstractContentDescriptor {
 
     /**
      * @param file
+     *
      * @return the child
+     *
      * @throws RepositoryException
      */
     @JsonIgnore
@@ -251,6 +273,7 @@ abstract public class AbstractContentDescriptor {
 
     /**
      * @param force
+     *
      * @throws RepositoryException
      */
     @JsonIgnore
@@ -272,6 +295,13 @@ abstract public class AbstractContentDescriptor {
         this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
         this.note = connector.getNote(fileSystemAbsolutePath);
         this.description = connector.getDescription(fileSystemAbsolutePath);
+        Visibility visib;
+        try {
+            visib = ModelScoped.Visibility.valueOf(connector.getVisibility(fileSystemAbsolutePath));
+        } catch (IllegalArgumentException ex) {
+            visib = Visibility.PRIVATE;
+        }
+        this.visibility = visib;
     }
 
     /**
@@ -282,6 +312,7 @@ abstract public class AbstractContentDescriptor {
         connector.setMimeType(fileSystemAbsolutePath, mimeType);
         connector.setNote(fileSystemAbsolutePath, note);
         connector.setDescription(fileSystemAbsolutePath, description);
+        connector.setVisibility(fileSystemAbsolutePath, visibility.toString());
         connector.save();
     }
 
@@ -296,7 +327,7 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     * @return 
+     * @return
      */
     @JsonIgnore
     protected ZipEntry getZipEntry() {

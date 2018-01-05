@@ -12,7 +12,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.merge.ejb.MergeFacade;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -87,7 +86,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     private TeamFacade teamFacade;
 
     @Inject
-    private MergeFacade mergeFacade;
+    private ModelFacade mergeFacade;
 
     private QuestionDescriptorFacade questionDescriptorFacade;
 

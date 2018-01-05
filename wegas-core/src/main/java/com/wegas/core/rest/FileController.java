@@ -83,7 +83,7 @@ public class FileController {
      * @param path
      * @param file
      * @param details
-     * @param force       ovveride
+     * @param force       overide
      *
      * @return HTTP 200 if everything ok, 4xx otherwise
      *

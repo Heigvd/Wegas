@@ -5,15 +5,16 @@
  * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.merge.ejb;
+package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.content.DescriptorFactory;
+import com.wegas.core.jcr.content.DirectoryDescriptor;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
@@ -30,12 +31,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jcr.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +49,9 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class MergeFacade {
+public class ModelFacade {
 
-    private static final Logger logger = LoggerFactory.getLogger(MergeFacade.class);
+    private static final Logger logger = LoggerFactory.getLogger(ModelFacade.class);
 
     @Inject
     private GameModelFacade gameModelFacade;
@@ -97,6 +101,7 @@ public class MergeFacade {
         return scenarios;
     }
 
+
     /**
      * Create a gameModel which contains only the content which is shared among all gameModels
      * The structure, as well as gameModel properties, will be the same as the first scenario in the list
@@ -121,7 +126,8 @@ public class MergeFacade {
                 // extract the first scenario to act as reference
 
                 logger.info("Create model, based on first scenario");
-                model = (GameModel) scenarios.remove(0).clone();
+                GameModel srcModel = scenarios.remove(0);
+                model = (GameModel) srcModel.clone();
 
                 /**
                  * Filter gameModelContents
@@ -251,6 +257,70 @@ public class MergeFacade {
                     scenario.setModel(model);
                 }
 
+
+                /*
+                 * JCR REPOSITORY
+                 */
+                gameModelFacade.duplicateRepository(model, srcModel);
+
+                // Open the brand new model repository
+                try (ContentConnector modelRepo = new ContentConnector(model.getId(), ContentConnector.WorkspaceType.FILES)) {
+                    logger.error("JCR FILES");
+
+                    // open all other repositories but the one whose modelRepo is a copy of
+                    List<ContentConnector> repositories = new ArrayList<>(scenarios.size());
+                    for (GameModel scenario : scenarios) {
+                        repositories.add(new ContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES));
+                    }
+
+                    try {
+                        List<AbstractContentDescriptor> fileQueue = new LinkedList<>();
+                        fileQueue.add(DescriptorFactory.getDescriptor("/", modelRepo));
+
+                        while (!fileQueue.isEmpty()) {
+                            AbstractContentDescriptor item = fileQueue.remove(0);
+                            logger.error("Process {}", item);
+                            String path = item.getFullPath();
+                            boolean exists = true;
+                            for (ContentConnector otherRepository : repositories) {
+                                logger.error(" other repo: path {}", path);
+                                AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, otherRepository);
+                                if (!descriptor.exist() || !descriptor.getClass().equals(item.getClass())) {
+                                    logger.error("BREAK");
+                                    exists = false;
+                                    break;
+                                }
+                            }
+                            if (exists) {
+                                logger.error(" item exists");
+                                item.setVisibility(ModelScoped.Visibility.INHERITED);
+
+                                item.setContentToRepository();
+                                item.getContentFromRepository();
+
+                                if (item instanceof DirectoryDescriptor) {
+                                    // directory exists in all scenarios: process children
+                                    fileQueue.addAll(((DirectoryDescriptor) item).list());
+                                }
+                            } else {
+                                // item does not exists in all scenario -> delete
+                                logger.error(" item does not exist");
+                                item.delete(true);
+                            }
+
+                        }
+                    } finally {
+                        for (ContentConnector connector : repositories) {
+                            connector.close();
+                        }
+                    }
+
+                } catch (RepositoryException ex) {
+                    java.util.logging.Logger.getLogger(ModelFacade.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                logger.info("Process variables");
+
             } catch (CloneNotSupportedException ex) {
                 logger.error("Exception while creating model", ex);
             }
@@ -260,7 +330,6 @@ public class MergeFacade {
     }
 
     /**
-     * §
      *
      * @param vd
      *
@@ -443,6 +512,14 @@ public class MergeFacade {
                 logger.info("PROCESS COMPLETED");
             }
         }
+    }
+
+    /**
+     *
+     * @param model
+     */
+    private void syncRepository(GameModel model) {
+
     }
 
     /**

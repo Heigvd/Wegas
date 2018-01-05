@@ -33,7 +33,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
-import java.io.IOException;
 import java.util.*;
 import javax.ejb.*;
 import javax.enterprise.event.Event;
@@ -357,30 +356,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
-    public GameModel duplicate_serialise(final Long entityId) throws IOException {
-        final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
-        if (srcGameModel != null) {
-            final GameModel newGameModel = (GameModel) srcGameModel.duplicate_serialise();
-            newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
-            this.create(newGameModel);
-
-            // Clone Pages
-            // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
-            //Clone files & history (?)
-            for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
-                try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
-                    connector.cloneRoot(srcGameModel.getId());
-                } catch (RepositoryException ex) {
-                    logger.error("Duplicating repository {} failure, {}", entityId, ex.getMessage());
-                }
-            }
-            return newGameModel;
-        } else {
-            throw new WegasNotFoundException("GameModel not found");
-        }
-    }
-
-    private void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
+    public void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
 // Clone Pages
         // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
         //Clone files & history (?)
@@ -439,13 +415,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @throws java.lang.CloneNotSupportedException
      *
      */
-    public GameModel duplicateWithDebugGame_serialise(final Long gameModelId) throws IOException {
-        GameModel gm = this.duplicate_serialise(gameModelId);
-        this.addDebugGame(gm);
-//        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());
-        return gm;
-    }
-
     public GameModel duplicateWithDebugGame(final Long gameModelId) throws CloneNotSupportedException {
         GameModel gm = this.duplicate(gameModelId);
         this.addDebugGame(gm);
