@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.test.arquillian;
@@ -116,7 +116,7 @@ public abstract class AbstractArquillianTestMinimal {
     private PopulatorScheduler populatorScheduler;
 
     @Rule
-    public TestName name = new TestName();
+    public TestName testName = new TestName();
 
     protected long initTime;
 
@@ -283,7 +283,7 @@ public abstract class AbstractArquillianTestMinimal {
     public void clean() {
         long now = System.currentTimeMillis();
         logger.info("TEST {} DURATION: total: {} ms; init: {} ms; test: {} ms",
-                name.getMethodName(),
+                testName.getMethodName(),
                 now - this.startTime,
                 this.initTime - this.startTime,
                 now - this.initTime);

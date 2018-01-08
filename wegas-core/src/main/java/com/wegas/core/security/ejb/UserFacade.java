@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.ejb;
@@ -313,8 +313,10 @@ public class UserFacade extends BaseFacade<User> {
         for (Role r : entity.getRoles()) {
             r.removeUser(entity);
         }
-        /* ??? */
-        for (AbstractAccount aa : entity.getAccounts()) {
+        /* ???: Should be cascaded, nope ??? */
+        // clone list to avoid CME
+        List<AbstractAccount> accounts = new ArrayList<>(entity.getAccounts());
+        for (AbstractAccount aa : accounts) {
             accountFacade.remove(aa);
         }
 

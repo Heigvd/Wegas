@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.rest;
@@ -98,10 +98,6 @@ public class AccountController {
     @Path("{accountId: [1-9][0-9]*}")
     public AbstractAccount update(@PathParam("accountId") Long accountId,
             AbstractAccount entity) {
-        AbstractAccount a = accountFacade.find(accountId);
-
-        entity.setPermissions(a.getPermissions());
-
         return accountFacade.update(accountId, entity);
     }
 
@@ -122,7 +118,6 @@ public class AccountController {
         }
 
         accountFacade.remove(a);
-        userFacade.remove(user);
         return user;
     }
 
@@ -160,8 +155,9 @@ public class AccountController {
         }
 
         a.setAgreedTime(new Date());
-        a.setRoles(a.getRoles()); // @QuickFix @Dirty @Ugly @Broken @TODO should certainly be inside accountFacade.update
-        return accountFacade.update(accountId, a);
+        //a.setRoles(a.getRoles()); // @QuickFix @Dirty @Ugly @Broken @TODO should certainly be inside accountFacade.update
+        //return accountFacade.update(accountId, a);
+        return a;
     }
 
     /**
