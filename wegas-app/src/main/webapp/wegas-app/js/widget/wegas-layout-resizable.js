@@ -228,10 +228,11 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     target.setStyle("left", this.initialLeft[position]);            // Reset left value
                     var width = parseInt(this.oldWidth[position]) || this.get(position + ".width") || 430;
                         target.setStyle("width", width + "px");
-                    if (position === "center") {
-                        var rightNode = this.getPosition("right"),
-                            rightWidth = parseInt(rightNode.getComputedStyle("width"));
-                        rightNode.setStyle('width', (rightWidth - width) + 'px');
+                    if (position === 'center') {
+                        var rightNode = this.getPosition('right'),
+                            rightWidth = parseInt(rightNode.getComputedStyle('width'));
+                        rightNode.setStyle('width', rightWidth - width + 'px');
+                        rightNode.setStyle('left', 'auto');
                     }
                     this.syncCenterNode();
                 }
@@ -327,7 +328,8 @@ YUI.add('wegas-layout-resizable', function(Y) {
                         width: 'auto'
                     });
                     rightNode.setStyles({
-                        left: 'auto'
+                        left: 'auto',
+                        width: rightWidth
                     });
                     if(parseInt(centerWidth) < this.CENTER_COL_MIN_WIDTH){
 
@@ -474,8 +476,9 @@ YUI.add('wegas-layout-resizable', function(Y) {
             }
             this._destruct();
             this.showPosition("center");
-            this.getPosition("right").setStyles({
-                "width": this.oldRight
+            this.getPosition('right').setStyles({
+                width: this.oldRight,
+                left: 'auto'
             });
             delete this.oldRight;
             this.getPosition("center").setStyle("width", "auto");
