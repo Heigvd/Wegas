@@ -47,7 +47,10 @@ function requiredCheck(argument, descr) {
             throw Error('is required');
         }
     }
-    return argument === undefined || argument.name === 'undefined' && argument.type === 'Identifier';
+    return (
+        argument === undefined ||
+        (argument.name === 'undefined' && argument.type === 'Identifier')
+    );
 }
 const validators = {
     identifier: combineValidators(
@@ -117,7 +120,20 @@ function check(code) {
             } else {
                 methodDescr = methodDescriptor(descr.variable, descr.method);
                 if (!methodDescr) {
-                    errors.push(`Variable '${descr.variable}' not found`);
+                    if (
+                        getY().Wegas.Facade.Variable.cache.find(
+                            'name',
+                            descr.variable
+                        ) == null
+                    ) {
+                        errors.push(`Variable '${descr.variable}' not found`);
+                    } else {
+                        errors.push(
+                            `Method '${descr.method}' not found on variable '${
+                                descr.variable
+                            }'`
+                        );
+                    }
                 }
             }
             // console.log(methodDescr);
@@ -130,8 +146,13 @@ function check(code) {
                             validators[a.type](argument, a);
                         } catch (e) {
                             errors.push(
-                                `${descr.member ||
-                                    descr.variable}.${descr.method}: parameter ${a.view && a.view.label ? a.view.label : '#' + i} ${e.message}`
+                                `${descr.member || descr.variable}.${
+                                    descr.method
+                                }: parameter ${
+                                    a.view && a.view.label
+                                        ? a.view.label
+                                        : '#' + i
+                                } ${e.message}`
                             );
                         }
                     }
