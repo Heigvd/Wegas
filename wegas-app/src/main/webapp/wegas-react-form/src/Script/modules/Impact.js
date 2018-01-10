@@ -79,7 +79,7 @@ class Impact extends React.Component {
     checkHandled() {
         if (this.props.node && this.props.node.type !== 'EmptyStatement') {
             if (!this.state.global && !this.state.variable) {
-                return 'Unhandled';
+                throw Error('Unhandled');
             }
             if (this.state.global) {
                 if (
@@ -88,13 +88,15 @@ class Impact extends React.Component {
                         this.state.method
                     )
                 ) {
-                    return `No global ${this.state.member}.${
-                        this.state.method
-                    }`;
+                    throw Error(
+                        `Global function '${this.state.member}.${
+                            this.state.method
+                        }' not found`
+                    );
                 }
             }
             if (this.state.variable && !varExist(this.state.variable)) {
-                return `No variable ${this.state.variable}`;
+                throw Error(`Variable '${this.state.variable}' not found`);
             }
         }
         return '';
@@ -173,31 +175,8 @@ class Impact extends React.Component {
         }
     }
     render() {
-        const { view, type, node } = this.props;
-        const error = this.checkHandled();
-        if (error) {
-            return (
-                <div>
-                    <JSEditor
-                        value={print(node).code}
-                        maxLines={5}
-                        onChange={val => {
-                            try {
-                                const body =
-                                    parse(val).program.body[0] ||
-                                    types.builders.emptyStatement();
-                                this.setState(extractMethod(body), () =>
-                                    this.props.onChange(body)
-                                );
-                            } catch (e) {
-                                // do nothing
-                            }
-                        }}
-                    />
-                    <div className={errorStyle}>{error}</div>
-                </div>
-            );
-        }
+        const { view, type } = this.props;
+        this.checkHandled();
         let child = [
             <div key="variable" className={containerStyle}>
                 <Form
@@ -268,4 +247,55 @@ Impact.defaultProps = {
     view: {},
     type: 'getter',
 };
-export default Impact;
+// eslint-disable-next-line
+export class ErrorCatcher extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { error: undefined, info: undefined };
+        this.handleErrorBlur = this.handleErrorBlur.bind(this);
+    }
+    componentWillReceiveProps() {
+        this.setState(() => ({ error: undefined, info: undefined }));
+    }
+    handleErrorBlur(target, editor) {
+        const val = editor.getValue();
+        try {
+            const body =
+                parse(val).program.body[0] || types.builders.emptyStatement();
+            this.props.onChange(body);
+        } catch (e) {
+            // do nothing
+        }
+    }
+    componentDidCatch(error, info) {
+        this.setState(() => ({
+            hasErrored: true,
+            error,
+            info,
+        }));
+    }
+    render() {
+        const { node, children } = this.props;
+
+        if (this.state.error) {
+            return (
+                <div>
+                    <JSEditor
+                        value={print(node).code}
+                        maxLines={5}
+                        onBlur={this.handleErrorBlur}
+                    />
+                    <div className={errorStyle}>{this.state.error.message}</div>
+                </div>
+            );
+        }
+        return children;
+    }
+}
+export default function SecuredImpact(props) {
+    return (
+        <ErrorCatcher node={props.node} onChange={props.onChange}>
+            <Impact {...props} />
+        </ErrorCatcher>
+    );
+}

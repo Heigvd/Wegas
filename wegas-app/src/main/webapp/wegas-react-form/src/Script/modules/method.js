@@ -27,6 +27,9 @@ function methodDescriptor(variable, method) {
  */
 function genChoices(variable, type) {
     const descr = Y.Wegas.Facade.Variable.cache.find('name', variable);
+    if (descr === undefined) {
+        return [];
+    }
     const methods = descr.getMethodCfgs();
     return Object.keys(methods)
         .filter(
@@ -41,6 +44,9 @@ function genChoices(variable, type) {
 }
 function handleArgs(variable, method, args, onChange) {
     const methodDescr = methodDescriptor(variable, method);
+    if (!methodDescr) {
+        throw Error(`Method '${method}' not found`);
+    }
     return handleMethodArgs(methodDescr, args, onChange, variable);
 }
 // Replace with select with if it stays in this shape
