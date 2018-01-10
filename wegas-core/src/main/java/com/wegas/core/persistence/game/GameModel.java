@@ -13,6 +13,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
@@ -31,6 +32,7 @@ import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
+import com.wegas.core.jta.JCRClient;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -53,7 +55,7 @@ import org.apache.shiro.SecurityUtils;
             @Index(columnList = "basedon_gamemodelid")
         }
 )
-public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable {
+public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, JCRClient {
 
     private static final long serialVersionUID = 1L;
 
@@ -65,6 +67,10 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     private Boolean canInstantiate = null;
     @Transient
     private Boolean canDuplicate = null;
+
+    @Transient
+    @JsonIgnore
+    private JCRConnectorProvider txBean;
 
     /**
      *
@@ -721,14 +727,17 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public Map<String, JsonNode> getPages() {
         // do not even try to fetch pages from repository if the gamemodel define a pagesURI
         if (Helper.isNullOrEmpty(getProperties().getPagesUri())) {
-            try (final Pages pagesDAO = new Pages(this.id)) {
-                return pagesDAO.getPagesContent();
-            } catch (RepositoryException ex) {
-                return new HashMap<>();
+            if (this.pages != null) {
+                // pages have been set but not yet saved to repository
+                return this.pages;
+            } else if (this.getId() != null) {
+                try {
+                    return this.txBean.getPagesRepositoryConnector(this.id).getPagesContent();
+                } catch (RepositoryException ex) {
+                }
             }
-        } else {
-            return new HashMap<>();
         }
+        return new HashMap<>();
     }
 
     /**
@@ -761,7 +770,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @PostPersist
     private void storePages() {
         if (this.pages != null) {
-            try (final Pages pagesDAO = new Pages(this.id)) {
+            try {
+                Pages pagesDAO = this.txBean.getPagesRepositoryConnector(this.id);
                 pagesDAO.delete();                                              // Remove existing pages
                 // Pay Attention: this.pages != this.getPages() ! 
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
@@ -902,6 +912,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         entities.add(this);
         map.put(this.getChannel(), entities);
         return map;
+    }
+
+    @Override
+    public void inject(JCRConnectorProvider txBean) {
+        this.txBean = txBean;
     }
 
     /**

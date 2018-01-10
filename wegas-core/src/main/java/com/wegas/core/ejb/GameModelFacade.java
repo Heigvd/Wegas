@@ -18,7 +18,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.ContentConnector;
-import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
@@ -93,6 +92,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     @Inject
     private StateMachineFacade stateMachineFacade;
+
+    @Inject
+    private PageFacade pageFacade;
 
     @Inject
     private HazelcastInstance hzInstance;
@@ -442,11 +444,12 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         getEntityManager().remove(gameModel);
         // Remove pages.
-        try (Pages pages = new Pages(id)) {
-            pages.delete();
+        try {
+            pageFacade.deletePages(gameModel);
         } catch (RepositoryException e) {
             logger.error("Error suppressing pages for gameModel {}, {}", id, e.getMessage());
         }
+
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
             try (ContentConnector connector = new ContentConnector(gameModel.getId(), wt)) {
                 connector.deleteRoot();

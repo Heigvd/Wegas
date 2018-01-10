@@ -9,11 +9,10 @@ package com.wegas.core.jcr.page;
 
 import com.wegas.core.jcr.SessionManager;
 import com.wegas.core.jcr.content.WFSConfig;
-import org.slf4j.LoggerFactory;
-
 import javax.jcr.*;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -134,6 +133,14 @@ public class PageConnector implements AutoCloseable{
     @Override
     public void close() throws RepositoryException {
         session.save();
+        SessionManager.closeSession(session);
+    }
+
+    public void commit() throws RepositoryException{
+        this.close();
+    }
+
+    public void rollback(){
         SessionManager.closeSession(session);
     }
 }

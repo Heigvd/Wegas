@@ -11,6 +11,8 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.jta.JTASynchronizer;
+import com.wegas.core.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -33,6 +35,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.jta.JCRClient;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -43,6 +46,9 @@ public class EntityListener {
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private JCRConnectorProvider txBean;
 
     @Inject
     private VariableInstanceFacade variableInstanceFacade;
@@ -76,6 +82,9 @@ public class EntityListener {
     void onPrePersist(Object o) {
         //Do not remove this empty method nor its @PrePersist annotation !!!!
         // Remove this method  makes CDI injection fails ...
+        if (o instanceof JCRClient) {
+            this.injectJTABean((JCRClient) o);
+        }
     }
 
     @PostPersist
@@ -172,5 +181,15 @@ public class EntityListener {
             AcceptInjection id = (AcceptInjection) o;
             id.setBeanjection(getBeansjection());
         }
+
+        if (o instanceof JCRClient) {
+            this.injectJTABean((JCRClient) o);
+        }
+    }
+
+    private void injectJTABean(JCRClient o) {
+        o.inject(txBean);
+        JTASynchronizer jtaSynchronizer = txBean.getJTASynchronizer();
+        jtaSynchronizer.register(o);
     }
 }

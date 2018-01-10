@@ -1653,15 +1653,15 @@ public class RequestManager implements RequestManagerI {
             if (subject.getPrincipal() != null) {
                 logger.info("SU: User {} SU to {}", subject.getPrincipal(), accountId);
                 //if (this.isAdmin()) {
-                    // The subject exists and is an authenticated admin
-                    // -> Shiro runAs
-                    //subject.checkRole("Administrator");
-                    if (subject.isRunAs()) {
-                        subject.releaseRunAs();
-                    }
-                    SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
-                    subject.runAs(newSubject);
-                    return this.getCurrentUser();
+                // The subject exists and is an authenticated admin
+                // -> Shiro runAs
+                //subject.checkRole("Administrator");
+                if (subject.isRunAs()) {
+                    subject.releaseRunAs();
+                }
+                SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
+                subject.runAs(newSubject);
+                return this.getCurrentUser();
                 //} else {
                 //    throw WegasErrorMessage.error("Su is forbidden !");
                 //}
