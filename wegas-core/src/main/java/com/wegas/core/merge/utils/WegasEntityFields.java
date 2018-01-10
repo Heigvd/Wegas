@@ -10,7 +10,9 @@ package com.wegas.core.merge.utils;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
+import java.beans.IntrospectionException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -23,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WegasEntityFields {
 
-    public static final Logger logger =LoggerFactory.getLogger(WegasEntityFields.class);
+    public static final Logger logger = LoggerFactory.getLogger(WegasEntityFields.class);
 
     /**
      * Mergeable this object is related to
@@ -39,6 +41,8 @@ public class WegasEntityFields {
      * List of Entity level callback defined in theClass inheritance hierarchy
      */
     private final List<WegasCallback> entityCallbacks = new ArrayList<>();
+
+    private WegasFactory factory;
 
     /**
      * Fetch all WegasEntityPropertes annotated fields for theClass
@@ -92,12 +96,17 @@ public class WegasEntityFields {
                     if (entityCallbackClass != null && !entityCallbackClass.equals(EmptyCallback.class)) {
                         this.entityCallbacks.add(entityCallbackClass.getDeclaredConstructor().newInstance());
                     }
+
+                    // register the first factory as the factory to use
+                    if (this.factory == null) {
+                        this.factory = wegasEntity.factory().getDeclaredConstructor().newInstance();
+                    }
                 }
 
                 klass = klass.getSuperclass();
             }
 
-        } catch (Exception ex) {
+        } catch (IntrospectionException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -127,5 +136,9 @@ public class WegasEntityFields {
      */
     public List<WegasCallback> getEntityCallbacks() {
         return entityCallbacks;
+    }
+
+    public WegasFactory getFactory() {
+        return factory;
     }
 }

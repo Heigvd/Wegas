@@ -9,8 +9,8 @@ package com.wegas.core.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ModelFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
@@ -21,6 +21,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -113,7 +114,7 @@ public class GameModelController {
      */
     @PUT
     @Path("propagateModel/{modelId : [1-9][0-9]*}")
-    public GameModel propagateModel(@PathParam("modelId") Long modelId) throws IOException {
+    public GameModel propagateModel(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
         return mergeFacade.propagateModel(modelId);
     }
 
@@ -125,8 +126,6 @@ public class GameModelController {
      * @param gm                  template to fetch the new name in
      *
      * @return the new game model
-     *
-     * @throws IOException
      */
     @POST
     @Path("{templateGameModelId : [1-9][0-9]*}")
@@ -312,7 +311,7 @@ public class GameModelController {
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<GameModel> findByStatus(@PathParam("status") final GameModel.Status status) {
-        return gameModelFacade.findByTypeAndStatus(GameModel.GmType.SCENARIO, status);
+        return gameModelFacade.findByTypeStatusAndUser(GameModel.GmType.SCENARIO, status);
     }
 
     /**

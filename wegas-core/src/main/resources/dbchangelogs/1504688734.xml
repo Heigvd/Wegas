@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
     <changeSet author="maxence" id="1504688739111-1">
-        <addColumn tableName="gamemodel">
-            <column name="model_gamemodelid" type="int8"/>
-        </addColumn>
-    </changeSet>
-
-    <changeSet author="maxence" id="1504688739111-2">
         <addColumn tableName="abstractaccount">
             <column name="refid" type="varchar(255)"/>
         </addColumn>
@@ -99,7 +93,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet author="maxence" id="1504688739111-3">
+    <changeSet author="maxence" id="1504688739111-2">
         <addColumn tableName="gamemodel">
             <column defaultValue="SCENARIO" name="type" type="varchar(24)"/>
         </addColumn>
@@ -107,7 +101,7 @@
         <sql>UPDATE gamemodel SET type = 'SCENARIO' WHERE status IS NULL;</sql>
     </changeSet>
 
-    <changeSet author="maxence (generated)" id="1504688739111-34">
+    <changeSet author="maxence (generated)" id="1504688739111-3">
         <addColumn tableName="gamemodelcontent">
             <column defaultValue="PRIVATE" name="visibility" type="varchar(24)"/>
         </addColumn>
@@ -118,67 +112,57 @@
         <sql>UPDATE variabledescriptor SET visibility = 'PRIVATE';</sql>
     </changeSet>
 
-    <changeSet author="maxence (generated)" id="1504688739111-35">
-        <addForeignKeyConstraint baseColumnNames="model_gamemodelid" baseTableName="gamemodel" constraintName="fk_gamemodel_model_gamemodelid" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="gamemodelid" referencedTableName="gamemodel"/>
-    </changeSet>
-
-    <changeSet author="maxence (generated)" id="1504688739111-36">
-        <createIndex indexName="index_gamemodel_model_gamemodelid" tableName="gamemodel" unique="false">
-            <column name="model_gamemodelid"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet author="maxence" id="1504688739111-37">
-        <sql>
+    <changeSet author="maxence" id="1504688739111-4">
+        <sql splitStatements="false">
             <![CDATA[
             Create or replace function random_string(length integer) returns text as
-            $$                               
-            declare                            
+            $$
+            declare
               chars text[] := '{0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z}';
               result text := '';
               i integer := 0;
-            begin             
+            begin
               if length < 0 then
                 raise exception 'Given length cannot be less than 0';
-              end if;                       
+              end if;
               for i in 1..length loop
-              result := result || chars[1+random()*(array_length(chars, 1)-1)];
+                  result := result || chars[1+random()*(array_length(chars, 1)-1)];
               end loop;
               return result;
             end;
             $$ language plpgsql;
             ]]>
         </sql>
-        <sql>UPDATE TABLE abstractaccount SET refid = 'abstractaccount' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE abstractscope SET refid = 'abstractscope' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE activity SET refid = 'activity' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE assignment SET refid = 'assignment' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE evaluationdescriptor SET refid = 'evaluationdescriptor' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE evaluationdescriptorcontainer SET refid = 'evaluationdescriptorcontainer' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE evaluationinstance SET refid = 'evaluationinstance:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE fsm_state SET refid = 'fsm_state:' || state_id || random_string(6);</sql>
-        <sql>UPDATE TABLE game SET refid = 'game:' || game_id || random_string(6);</sql>
-        <sql>UPDATE TABLE gameadmin SET refid = 'gameadmin:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE gamemodel SET refid = 'gamemodel:' || gamemodelid || random_string(6);</sql>
-        <sql>UPDATE TABLE gamemodelcontent SET refid = 'gamemodelcontent:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE iteration SET refid = 'iteration:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE mcqcurrentresult SET refid = 'mcqcurrentresult:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE mcqreplies SET refid = 'mcqreplies:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE mcqreply SET refid = 'mcqreply:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE mcqresult SET refid = 'mcqresult:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE message SET refid = 'message:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE occupation SET refid = 'occupation:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE permission SET refid = 'permission:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE player SET refid = 'player:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE review SET refid = 'review:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE roles SET refid = 'roles:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE team SET refid = 'team:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE transition SET refid = 'transition:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE users SET refid = 'users:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE variabledescriptor SET refid = 'variabledescriptor:' || variabledescriptor_id || random_string(6);</sql>
-        <sql>UPDATE TABLE variableinstance SET refid = 'variableinstance:' || variableinstance_id || random_string(6);</sql>
-        <sql>UPDATE TABLE workload SET refid = 'workload:' || id || random_string(6);</sql>
-        <sql>UPDATE TABLE wrequirement SET refid = 'wrequirement:' || wrequirement_id || random_string(6);</sql>
+        <sql>UPDATE abstractaccount SET refid = 'abstractaccount' || id || random_string(6);</sql>
+        <sql>UPDATE abstractscope SET refid = 'abstractscope' || id || random_string(6);</sql>
+        <sql>UPDATE activity SET refid = 'activity' || id || random_string(6);</sql>
+        <sql>UPDATE assignment SET refid = 'assignment' || id || random_string(6);</sql>
+        <sql>UPDATE evaluationdescriptor SET refid = 'evaluationdescriptor' || id || random_string(6);</sql>
+        <sql>UPDATE evaluationdescriptorcontainer SET refid = 'evaluationdescriptorcontainer' || id || random_string(6);</sql>
+        <sql>UPDATE evaluationinstance SET refid = 'evaluationinstance:' || id || random_string(6);</sql>
+        <sql>UPDATE fsm_state SET refid = 'fsm_state:' || state_id || random_string(6);</sql>
+        <sql>UPDATE game SET refid = 'game:' || game_id || random_string(6);</sql>
+        <sql>UPDATE gameadmin SET refid = 'gameadmin:' || id || random_string(6);</sql>
+        <sql>UPDATE gamemodel SET refid = 'gamemodel:' || gamemodelid || random_string(6);</sql>
+        <sql>UPDATE gamemodelcontent SET refid = 'gamemodelcontent:' || id || random_string(6);</sql>
+        <sql>UPDATE iteration SET refid = 'iteration:' || id || random_string(6);</sql>
+        <sql>UPDATE mcqcurrentresult SET refid = 'mcqcurrentresult:' || id || random_string(6);</sql>
+        <sql>UPDATE mcqreplies SET refid = 'mcqreplies:' || id || random_string(6);</sql>
+        <sql>UPDATE mcqreply SET refid = 'mcqreply:' || id || random_string(6);</sql>
+        <sql>UPDATE mcqresult SET refid = 'mcqresult:' || id || random_string(6);</sql>
+        <sql>UPDATE message SET refid = 'message:' || id || random_string(6);</sql>
+        <sql>UPDATE occupation SET refid = 'occupation:' || id || random_string(6);</sql>
+        <sql>UPDATE permission SET refid = 'permission:' || id || random_string(6);</sql>
+        <sql>UPDATE player SET refid = 'player:' || id || random_string(6);</sql>
+        <sql>UPDATE review SET refid = 'review:' || id || random_string(6);</sql>
+        <sql>UPDATE roles SET refid = 'roles:' || id || random_string(6);</sql>
+        <sql>UPDATE team SET refid = 'team:' || id || random_string(6);</sql>
+        <sql>UPDATE transition SET refid = 'transition:' || id || random_string(6);</sql>
+        <sql>UPDATE users SET refid = 'users:' || id || random_string(6);</sql>
+        <sql>UPDATE variabledescriptor SET refid = 'variabledescriptor:' || variabledescriptor_id || random_string(6);</sql>
+        <sql>UPDATE variableinstance SET refid = 'variableinstance:' || variableinstance_id || random_string(6);</sql>
+        <sql>UPDATE workload SET refid = 'workload:' || id || random_string(6);</sql>
+        <sql>UPDATE wrequirement SET refid = 'wrequirement:' || wrequirement_id || random_string(6);</sql>
 
         <sql>drop function random_string ( integer);</sql>
     </changeSet>

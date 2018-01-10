@@ -210,6 +210,21 @@ public class ContentConnector implements AutoCloseable {
         return newNode;
     }
 
+    public void setLastModified(String absolutePath, Calendar date) throws RepositoryException {
+        this.getNode(absolutePath).setProperty(WFSConfig.WFS_LAST_MODIFIED, date);
+    }
+
+    public void setLastModified(String absolutePath) throws RepositoryException {
+        this.getNode(absolutePath).setProperty(WFSConfig.WFS_LAST_MODIFIED, Calendar.getInstance());
+    }
+
+    public void setData(String absolutePath, byte[] data) throws RepositoryException {
+        Node newNode = this.getNode(absolutePath);
+        InputStream input = new ByteArrayInputStream(data);
+        newNode.setProperty(WFSConfig.WFS_DATA, this.session.getValueFactory().createBinary(input));
+        this.save();
+    }
+
     /**
      * @param absolutePath
      *

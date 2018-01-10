@@ -10,6 +10,7 @@ package com.wegas.core.merge.patch;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.InvocationTargetException;
@@ -69,7 +70,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisiblity) {
+    public LifecycleCollector apply(GameModel rgetGameModel, Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisiblity) {
         Mergeable targetEntity = null;
         if (isField) {
             targetEntity = (Mergeable) target;

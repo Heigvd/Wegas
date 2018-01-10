@@ -10,14 +10,17 @@ package com.wegas.core.merge.patch;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.DefaultWegasFactory;
 import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;
+import com.wegas.core.merge.utils.WegasFactory;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.beans.PropertyDescriptor;
@@ -45,6 +48,21 @@ public final class WegasEntityPatch extends WegasPatch {
     private Mergeable toEntity;
 
     private List<WegasCallback> entityCallbacks;
+
+    private WegasFactory factory;
+
+    /**
+     * Get the factory to use.
+     * This method may initialise the factory to a default one.
+     *
+     * @return the factory to use to create new instances
+     */
+    private WegasFactory getFactory() {
+        if (this.factory == null) {
+            this.factory = new DefaultWegasFactory();
+        }
+        return factory;
+    }
 
     @Override
     protected List<WegasCallback> getCallbacks(WegasCallback userCallback) {
@@ -102,6 +120,8 @@ public final class WegasEntityPatch extends WegasPatch {
                 Class klass = (fromEntity != null) ? fromEntity.getClass() : toEntity.getClass();
 
                 WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(klass);
+
+                this.factory = entityIterator.getFactory();
 
                 this.entityCallbacks = new ArrayList<>();
                 this.entityCallbacks.addAll(entityIterator.getEntityCallbacks());
@@ -172,7 +192,7 @@ public final class WegasEntityPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
+    public LifecycleCollector apply(GameModel targetGameModel, Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         Mergeable target = (Mergeable) targetObject;
 
         /**
@@ -246,7 +266,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                             // Force update
                                             WegasEntityPatch createPatch = new WegasEntityPatch(remove.getPayload(), toEntity, true);
-                                            createPatch.apply(target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
+                                            createPatch.apply(targetGameModel, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                             for (WegasCallback cb : callbacks) {
                                                 cb.add(target, null, identifier);
@@ -257,10 +277,11 @@ public final class WegasEntityPatch extends WegasPatch {
                                             }
 
                                         } else {
-                                            //newEntity = toEntity.clone(); //   -> INTERNAL CLONE
-                                            target = toEntity.getClass().getDeclaredConstructor().newInstance();
+
+                                            target = this.getFactory().newInstance(targetGameModel, toEntity);
+
                                             WegasEntityPatch clone = new WegasEntityPatch(target, toEntity, true);
-                                            clone.apply(target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
+                                            clone.apply(targetGameModel, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                             for (WegasCallback cb : callbacks) {
                                                 cb.add(target, null, identifier);
@@ -283,7 +304,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                             // DELETE CHILDREN TOO TO COLLECT THEM
                                             for (WegasPatch patch : patches) {
-                                                patch.apply(target, null, myMode, visibility, collector, numPass, bypassVisibility);
+                                                patch.apply(targetGameModel, target, null, myMode, visibility, collector, numPass, bypassVisibility);
                                             }
 
                                             String refId = fromEntity.getRefId();
@@ -312,7 +333,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                         }
 
                                         for (WegasPatch patch : patches) {
-                                            patch.apply(target, null, myMode, visibility, collector, numPass, bypassVisibility);
+                                            patch.apply(targetGameModel, target, null, myMode, visibility, collector, numPass, bypassVisibility);
                                         }
 
                                         if (numPass > 1) {
@@ -334,7 +355,7 @@ public final class WegasEntityPatch extends WegasPatch {
                     logger.debug("REJECT PATCH : IGNORE NULL");
                 }
 
-            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException | SecurityException | NoSuchMethodException ex) {
                 throw new RuntimeException(ex);
             }
         } while (rootPatch && numPass < 2);

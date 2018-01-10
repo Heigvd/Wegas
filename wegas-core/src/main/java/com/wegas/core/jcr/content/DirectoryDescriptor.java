@@ -8,11 +8,12 @@
 package com.wegas.core.jcr.content;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
@@ -24,6 +25,10 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
      * Directory mime-type
      */
     public static final String MIME_TYPE = "application/wfs-directory";
+
+    @JsonIgnore
+    @WegasEntityProperty(includeByDefault = false)
+    private List<AbstractContentDescriptor> children;
 
     /**
      *
@@ -57,7 +62,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     /**
      *
-     * @return ?????  sum of bytes of children ???
+     * @return ????? sum of bytes of children ???
      */
     @JsonProperty("bytes")
     @Override
@@ -86,5 +91,13 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
             files.add(DescriptorFactory.getDescriptor(nodeIterator.nextNode(), this.connector));
         }
         return files;
+    }
+
+    @JsonIgnore
+    public List<AbstractContentDescriptor> getChildren() throws RepositoryException {
+        return this.list();
+    }
+
+    public void setChildren(List<AbstractContentDescriptor> children) {
     }
 }

@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;

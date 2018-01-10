@@ -13,8 +13,10 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;
+import com.wegas.core.merge.utils.WegasFactory;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -240,17 +242,19 @@ public class MergeTest extends AbstractArquillianTest {
         }
     }
 
-    //@Test
+    @Test
     public void printEntity() {
-        Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
+        Set<Class<? extends Mergeable>> classes = reflections.getSubTypesOf(Mergeable.class);
 
-        for (Class<? extends AbstractEntity> klass : sub) {
+        for (Class<? extends Mergeable> klass : classes) {
             WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(klass);
+            WegasFactory factory = entityIterator.getFactory();
             List<WegasFieldProperties> fields = entityIterator.getFields();
 
             if (fields.size() > 0) {
                 System.out.println("");
                 System.out.println("Class " + klass.getSimpleName());
+                System.out.println(" factory:" + factory);
                 for (WegasFieldProperties field : fields) {
                     System.out.println(" * " + field.getField().getName() + " : " + field.getField().getType().getSimpleName());
                 }

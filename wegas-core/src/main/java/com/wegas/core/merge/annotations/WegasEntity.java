@@ -7,7 +7,10 @@
  */
 package com.wegas.core.merge.annotations;
 
+import com.wegas.core.merge.utils.DefaultWegasFactory;
+import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.merge.utils.WegasFactory;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,7 +29,14 @@ public @interface WegasEntity {
      *
      * @return entity level callbacks to apply
      */
-    Class<? extends WegasCallback> callback();
+    Class<? extends WegasCallback> callback() default EmptyCallback.class;
+
+    /**
+     * postUpdate, preDestroy, postPersist callback
+     *
+     * @return entity level callbacks to apply
+     */
+    Class<? extends WegasFactory> factory() default DefaultWegasFactory.class;
 
     /**
      * List of WegasEntityProperty to ignore.

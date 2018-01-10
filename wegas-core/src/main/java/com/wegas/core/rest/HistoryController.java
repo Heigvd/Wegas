@@ -22,15 +22,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import org.slf4j.LoggerFactory;
-
+import java.util.Date;
+import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.util.Date;
-import java.util.List;
-import javax.inject.Inject;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -175,10 +174,8 @@ public class HistoryController {
         gameModelFacade.createWithDebugGame(gm);
         
         GameModel original = gameModelFacade.find(gameModelId);
-        if (original.getReference() != null){
-            // original is a model ?
-            
-        }
+
+        // TODO
 
         return gm;
     }

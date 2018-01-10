@@ -31,15 +31,22 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
     public void createGameModels() throws NamingException {
         logger.info("createGameModel()");
         final String name = "test";
-        final String SCRIPTNAME = "defaultScript";
-        final String SCRIPTCONTENT = "test";
+        final String SERVER_SCRIPTNAME = "defaultScript";
+        final String CLIENT_SCRIPTNAME = "defaultClientScript";
+        final String CSS_NAME = "defaultCss";
+
+        final String SERVER_SCRIPTCONTENT = "var test = 'server'";
+        final String CLIENT_SCRIPTCONTENT = "var test = 'client'";
+        final String CSS_CONTENT = "body {color: hotpink;}";
+
+        final String PAGE_URI = "/bidule/pages.json";
 
         GameModel myGameModel = new GameModel();
         myGameModel.setName(name);
-        myGameModel.getClientScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
-        myGameModel.getScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
-        myGameModel.getCssLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
-        myGameModel.getProperties().setPagesUri(SCRIPTCONTENT);
+        myGameModel.setClientScript(new GameModelContent(CLIENT_SCRIPTNAME, CLIENT_SCRIPTCONTENT, ""));
+        myGameModel.setScript(new GameModelContent(SERVER_SCRIPTNAME, SERVER_SCRIPTCONTENT, ""));
+        myGameModel.setCss(new GameModelContent(CSS_NAME, CSS_CONTENT, ""));
+        myGameModel.getProperties().setPagesUri(PAGE_URI);
 
         final int size = gameModelFacade.findAll().size();
         gameModelFacade.create(myGameModel);
@@ -47,10 +54,10 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
 
         myGameModel = gameModelFacade.find(myGameModel.getId());
         Assert.assertEquals(name, myGameModel.getName());
-        Assert.assertEquals(SCRIPTCONTENT, myGameModel.getClientScript(SCRIPTNAME).getContent());
-        Assert.assertEquals(SCRIPTCONTENT, myGameModel.getProperties().getPagesUri());
-        Assert.assertEquals(SCRIPTCONTENT, myGameModel.getCss(SCRIPTNAME).getContent());
-        Assert.assertEquals(SCRIPTCONTENT, myGameModel.getScript(SCRIPTNAME).getContent());
+        Assert.assertEquals(CLIENT_SCRIPTCONTENT, myGameModel.getClientScript(CLIENT_SCRIPTNAME).getContent());
+        Assert.assertEquals(PAGE_URI, myGameModel.getProperties().getPagesUri());
+        Assert.assertEquals(CSS_CONTENT, myGameModel.getCss(CSS_NAME).getContent());
+        Assert.assertEquals(SERVER_SCRIPTCONTENT, myGameModel.getScript(SERVER_SCRIPTNAME).getContent());
 
         gameModelFacade.remove(myGameModel.getId());
         Assert.assertEquals(size, gameModelFacade.findAll().size());
@@ -71,14 +78,12 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
         gm.setName(GAMENAME2);
 
-
         // Edit this gam
         gm.getProperties().setGuestAllowed(true);
         gm.setName(GAMENAME2);
         // Change Name and guestAllowed properties
         GameModel gm2 = gameModelFacade.update(gm.getId(), gm);
         Assert.assertEquals(GAMENAME2, gm2.getName());
-        
 
         // Create a game, a team and a player
         Game g = new Game(NAME, TOKEN);

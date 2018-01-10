@@ -422,14 +422,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return gm;
     }
 
+    public List<GameModel> getImplementations(GameModel gm){
+        TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
+        query.setParameter("id", gm.getId());
+        return query.getResultList();
+    }
+
     @Override
     public void remove(final GameModel gameModel) {
         final Long id = gameModel.getId();
         userFacade.deletePermissions(gameModel);
 
-        TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
-        query.setParameter("id", id);
-        List<GameModel> instantiations = query.getResultList();
+        List<GameModel> instantiations = this.getImplementations(gameModel);
 
         for (GameModel instantiation : instantiations) {
             instantiation.setBasedOn(null);

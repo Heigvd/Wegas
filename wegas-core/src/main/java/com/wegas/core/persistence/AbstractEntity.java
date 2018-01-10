@@ -86,7 +86,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
 
     @PrePersist
     public void assertRefId() {
-        if (refId == null) {
+        if (Helper.isNullOrEmpty(refId)) {
             if (this.getId() == null) {
                 logger.error("ID SHOULD NOT BE NULL");
             } else {
@@ -97,7 +97,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
 
     @Override
     public void setRefId(String refId) {
-        if (this.refId == null) {
+        if (Helper.isNullOrEmpty(this.refId)) {
             this.refId = refId;
         }
     }
@@ -109,13 +109,22 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
     public final void merge(AbstractEntity other) {
         WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);
         logger.debug(wegasEntityPatch.toString());
-        wegasEntityPatch.apply(this);
+        if (this instanceof GameModel) {
+            wegasEntityPatch.apply((GameModel) this, this);
+        } else {
+            wegasEntityPatch.apply(null, this);
+        }
     }
 
     public final void deepMerge(AbstractEntity other) {
         WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, true);
         logger.debug(wegasEntityPatch.toString());
-        wegasEntityPatch.applyForce(this);
+
+        if (this instanceof GameModel) {
+            wegasEntityPatch.applyForce((GameModel) this, this);
+        } else {
+            wegasEntityPatch.applyForce(null, this);
+        }
     }
 
     @Transient

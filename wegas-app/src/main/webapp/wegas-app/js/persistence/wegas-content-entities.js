@@ -30,6 +30,7 @@ YUI.add("wegas-content-entities", function(Y) {
                     _type: "uneditable"
                 }
             },
+            visibility: Y.Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY,
             path: {
                 type: "string",
                 _inputex: {

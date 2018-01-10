@@ -11,7 +11,9 @@ import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.DirectoryDescriptor;
+import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.core.persistence.game.GameModel;
+import java.io.IOException;
 import javax.jcr.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,13 +59,48 @@ public abstract class RepositoryVisitor {
 
         private int level = 0;
 
-        @Override
-        public void visit(AbstractContentDescriptor node) {
-            StringBuilder sb = new StringBuilder();
+        private int bytesLimit;
+
+        public ListRepository() {
+            this(0);
+        }
+
+        /**
+         * Display up to 'limit' bytes for file
+         *
+         * @param limit
+         */
+        public ListRepository(int limit) {
+            this.bytesLimit = limit;
+        }
+
+        private void indent(StringBuilder sb) {
             for (int i = 0; i <= level; i++) {
                 sb.append("  ");
             }
+        }
+
+        @Override
+        public void visit(AbstractContentDescriptor node) {
+            StringBuilder sb = new StringBuilder();
+            indent(sb);
             sb.append(node.getName()).append(" (").append(node.getFullPath()).append(")");
+            if (bytesLimit > 0 && node instanceof FileDescriptor) {
+                FileDescriptor fd = (FileDescriptor) node;
+                byte[] data;
+                try {
+                    data = fd.getData().getContent();
+
+                    sb.append(System.lineSeparator());
+                    indent(sb);
+                    sb.append("Content (first bytes only): ");
+
+                    for (int i = 0; i < bytesLimit && i < data.length; i++) {
+                        sb.append(data[i]).append(" ");
+                    }
+                } catch (IOException ex) {
+                }
+            }
             logger.error(sb.toString());
         }
 

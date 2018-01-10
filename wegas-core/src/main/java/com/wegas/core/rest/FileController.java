@@ -83,9 +83,9 @@ public class FileController {
      * @param path
      * @param file
      * @param details
-     * @param force       overide
+     * @param force       override
      *
-     * @return HTTP 200 if everything ok, 4xx otherwise
+     * @return HTTP 200 if everything OK, 4xx otherwise
      *
      * @throws RepositoryException
      */
@@ -453,6 +453,7 @@ public class FileController {
             descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             descriptor.setNote(tmpDescriptor.getNote());
             descriptor.setDescription(tmpDescriptor.getDescription());
+            descriptor.setVisibility(tmpDescriptor.getVisibility());
             descriptor.setContentToRepository();
             descriptor.getContentFromRepository();                              //Update
             return descriptor;

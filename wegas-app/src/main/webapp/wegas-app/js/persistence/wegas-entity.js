@@ -17,14 +17,16 @@ YUI.add("wegas-entity", function(Y) {
         ITEMS = "items",
         Wegas = Y.namespace("Wegas"), persistence = Y.namespace("Wegas.persistence"),
         Base = Y.Base, Entity,
-        IDATTRDEF = {
-            type: STRING,
-            optional: true, //                                                  // The id is optional for entites that
-            // have not been persisted
-            _inputex: {
-                _type: HIDDEN
-            }
-        };
+        IDATTRDEF;
+
+    IDATTRDEF = {
+        type: STRING,
+        optional: true, //                                                  // The id is optional for entites that
+        // have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
 
     /**
      * @class Entity is used to represent db objects
@@ -97,7 +99,32 @@ YUI.add("wegas-entity", function(Y) {
         /**
          * Defines methods available in wysiwyge script editor
          */
-        METHODS: {}
+        METHODS: {},
+        ATTRS_DEF: {
+            VISIBILITY: {
+                type: STRING,
+                valueFn: function() {
+                    return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
+                },
+                choices: [{
+                        value: "INTERNAL",
+                        label: "Internal"
+                    }, {
+                        value: "PROTECTED",
+                        label: "Protected"
+                    }, {
+                        value: "INHERITED",
+                        label: "Inherited"
+                    }, {
+                        value: "PRIVATE",
+                        label: "Private"
+                    }],
+                _inputex: {
+                    maxWritableVisibility: "NONE",
+                    wrapperClassName: "wegas-advanced-feature"
+                }
+            },
+        }
     });
     persistence.Entity = Entity;
 

@@ -29,6 +29,7 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -100,7 +101,6 @@ public class ModelFacade {
         }
         return scenarios;
     }
-
 
     /**
      * Create a gameModel which contains only the content which is shared among all gameModels
@@ -248,13 +248,13 @@ public class ModelFacade {
                  * Persist GameModel
                  */
                 model.setType(GameModel.GmType.MODEL);
-                model.setModel(null);
+                model.setBasedOn(null);
                 gameModelFacade.createWithDebugGame(model);
 
                 for (GameModel scenario : allScenarios) {
                     logger.info("Register Implementation {} to {}", scenario, model);
                     //model.getImplementations().add(scenario);
-                    scenario.setModel(model);
+                    scenario.setBasedOn(model);
                 }
 
 
@@ -381,16 +381,26 @@ public class ModelFacade {
         }
     }
 
+    public GameModel getReference(GameModel model) {
+        Collection<GameModel> implementations = gameModelFacade.getImplementations(model);
+        for (GameModel gm : implementations) {
+            if (gm.getType().equals(GmType.REFERENCE)) {
+                return gm;
+            }
+        }
+        return null;
+    }
+
     /**
      * Attach all scenarios to the given model
      *
      * @param model     the model
      * @param scenarios scenario to attach to model
      */
-    public void integrateScenario(GameModel model, List<GameModel> scenarios) {
+    public void integrateScenario(GameModel model, List<GameModel> scenarios) throws RepositoryException {
         if (model != null) {
             if (GmType.MODEL.equals(model.getType())) {
-                GameModel reference = model.getReference();
+                GameModel reference = this.getReference(model);
 
                 scenarios = loadGameModels(scenarios);
 
@@ -489,7 +499,7 @@ public class ModelFacade {
                 }
 
                 // generate initial patch agains model
-                WegasEntityPatch initialPatch = new WegasEntityPatch(model, reference, true);
+                WegasEntityPatch initialPatch = new WegasEntityPatch(reference, reference, true);
 
                 logger.info("InitialPatch: {}", initialPatch);
 
@@ -497,9 +507,9 @@ public class ModelFacade {
                 for (GameModel scenario : scenarios) {
                     //initialPatch.apply(scenario, null, WegasPatch.PatchMode.OVERRIDE);
                     logger.info("Patch {}", scenario);
-                    initialPatch.apply(scenario);
+                    initialPatch.apply(scenario, scenario);
                     // revive
-                    scenario.setModel(model);
+                    scenario.setBasedOn(model);
                     logger.info("Revive {}", scenario);
                     //scenario.propagateGameModel();
 
@@ -508,6 +518,8 @@ public class ModelFacade {
                     variableDescriptorFacade.reviveItems(scenario, scenario, false);
                     gameModelFacade.reset(scenario);
                 }
+
+                this.syncRepository(model);
 
                 logger.info("PROCESS COMPLETED");
             }
@@ -518,7 +530,37 @@ public class ModelFacade {
      *
      * @param model
      */
-    private void syncRepository(GameModel model) {
+    private void syncRepository(GameModel model) throws RepositoryException {
+        if (model.getType().equals(GmType.MODEL)) {
+            GameModel reference = this.getReference(model);
+            Collection<GameModel> implementations = gameModelFacade.getImplementations(model);
+
+            if (reference != null) {
+
+                try (ContentConnector modelRepo = new ContentConnector(model.getId(), ContentConnector.WorkspaceType.FILES);
+                        ContentConnector refRepo = new ContentConnector(reference.getId(), ContentConnector.WorkspaceType.FILES)) {
+
+                    AbstractContentDescriptor modelRoot = DescriptorFactory.getDescriptor("/", modelRepo);
+                    AbstractContentDescriptor refRoot = DescriptorFactory.getDescriptor("/", refRepo);
+
+                    //diff from ref to model files
+                    WegasPatch patch = new WegasEntityPatch(refRoot, modelRoot, Boolean.TRUE);
+
+                    for (GameModel scenario : implementations) {
+                        // apply patch to each implementations
+                        try (ContentConnector repo = new ContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES)) {
+                            AbstractContentDescriptor root = DescriptorFactory.getDescriptor("/", repo);
+                            patch.apply(scenario, root);
+                        }
+                    }
+
+                    // and patch the reference
+                    patch.apply(reference, refRoot);
+                }
+            }
+        } else {
+            throw WegasErrorMessage.error("GameModel " + model + " is not a model (sic)");
+        }
 
     }
 
@@ -567,7 +609,7 @@ public class ModelFacade {
      * @return
      *
      */
-    public GameModel propagateModel(Long gameModelId) {
+    public GameModel propagateModel(Long gameModelId) throws RepositoryException {
         return this.propagateModel(gameModelFacade.find(gameModelId));
     }
 
@@ -579,9 +621,9 @@ public class ModelFacade {
      * @return
      *
      */
-    private GameModel propagateModel(GameModel gameModel) {
+    private GameModel propagateModel(GameModel gameModel) throws RepositoryException {
         if (gameModel.getType().equals(GmType.MODEL)) {
-            GameModel reference = gameModel.getReference();
+            GameModel reference = this.getReference(gameModel);
 
             if (reference == null) {
                 /*
@@ -594,13 +636,16 @@ public class ModelFacade {
                     throw WegasErrorMessage.error("Could not create reference by cloning " + gameModel);
                 }
                 reference.setType(GameModel.GmType.REFERENCE);
-                reference.setModel(gameModel);
+                reference.setBasedOn(gameModel);
                 gameModelFacade.create(reference);
 
                 // flush to force pages to be stored
                 gameModelFacade.flush();
 
-                this.integrateScenario(gameModel, gameModel.getImplementations());
+                gameModelFacade.duplicateRepository(reference, gameModel);
+
+                List<GameModel> implementations = gameModelFacade.getImplementations(gameModel);
+                this.integrateScenario(gameModel, implementations);
 
             } else {
 
@@ -608,10 +653,11 @@ public class ModelFacade {
 
                 logger.info("PropagatePatch: {}" + patch);
 
-                for (GameModel scenario : gameModel.getImplementations()) {
+                Collection<GameModel> implementations = gameModelFacade.getImplementations(gameModel);
+                for (GameModel scenario : implementations) {
                     // avoid propagating to game's scenarios or to the model
                     if (scenario.getType().equals(GmType.SCENARIO)) {
-                        patch.apply(scenario);
+                        patch.apply(scenario, scenario);
 
                         logger.info("Revive {}", scenario);
                         //scenario.propagateGameModel();
@@ -620,9 +666,10 @@ public class ModelFacade {
                     }
                 }
 
-                patch.apply(reference);
+                patch.apply(reference, reference);
                 //reference.propagateGameModel();
 
+                this.syncRepository(gameModel);
             }
             return gameModel;
         } else {

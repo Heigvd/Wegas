@@ -12,6 +12,7 @@ import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
@@ -161,16 +162,16 @@ public abstract class WegasPatch {
         this.fieldCallback = userCallback;
     }
 
-    public void apply(Mergeable target) {
-        this.apply(target, null, PatchMode.UPDATE, null, null, null, false);
+    public void apply(GameModel gameModel, Mergeable target) {
+        this.apply(gameModel, target, null, PatchMode.UPDATE, null, null, null, false);
     }
 
 
-    public void applyForce(Mergeable target) {
-        this.apply(target, null, PatchMode.UPDATE, null, null, null, true);
+    public void applyForce(GameModel gameModel, Mergeable target) {
+        this.apply(gameModel, target, null, PatchMode.UPDATE, null, null, null, true);
     }
 
-    protected abstract LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
+    protected abstract LifecycleCollector apply(GameModel targetGameModel, Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
 
     private PatchMode getWithParent(PatchMode parentMode, Visibility inheritedVisibility, Visibility visibility) {
         logger.debug("GET MODE (parentMode {}; inheritedV: {}, v: {}", parentMode, inheritedVisibility, visibility);

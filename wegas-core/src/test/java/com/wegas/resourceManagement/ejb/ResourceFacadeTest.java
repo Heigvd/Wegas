@@ -144,32 +144,32 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        variableDescriptorFacade.create(gameModel.getId(), res);
+        variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task1);
+        variableDescriptorFacade.create(scenario.getId(), task1);
 
         // Create a task1
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My second task");
         task2.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task2);
+        variableDescriptorFacade.create(scenario.getId(), task2);
 
         // Create a task3
         TaskDescriptor task3 = new TaskDescriptor();
         task3.setLabel("My third task");
         task3.setDefaultInstance(new TaskInstance());
-        variableDescriptorFacade.create(gameModel.getId(), task3);
+        variableDescriptorFacade.create(scenario.getId(), task3);
 
         // Assign default resource to task 1 2 and 3
         resourceFacade.assign(res.getDefaultInstance().getId(), task1.getDefaultInstance().getId());
         resourceFacade.assign(res.getDefaultInstance().getId(), task2.getDefaultInstance().getId());
         resourceFacade.assign(res.getDefaultInstance().getId(), task3.getDefaultInstance().getId());
 
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         ResourceInstance resI = (ResourceInstance) variableInstanceFacade.find(res.getId(), player);
         TaskInstance t1 = (TaskInstance) variableInstanceFacade.find(task1.getId(), player);
@@ -184,7 +184,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         // 1 2 3 -> 2 3 1
         resourceFacade.moveAssignment(res.getDefaultInstance().getAssignments().get(0).getId(), 2);
 
-        gameModelFacade.reset(gameModel.getId());
+        gameModelFacade.reset(scenario.getId());
 
         resI = (ResourceInstance) variableInstanceFacade.find(res.getId(), player);
 

@@ -140,20 +140,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonIgnore
     private GameModel basedOn;
 
-    /*
-     *
-     */
-    @ManyToOne
-    @JsonIgnore
-    private GameModel model;
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "model")
-    @JsonIgnore
-    private List<GameModel> implementations = new ArrayList<>();
-
     /**
      *
      */
@@ -264,18 +250,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             map.put(curKey, pageMap.get(curKey));
         }
         this.setPages(map);
-    }
-
-    @JsonIgnore
-    public GameModel getReference() {
-        if (this.getType() == GmType.MODEL) {
-            for (GameModel implementation : this.getImplementations()) {
-                if (implementation.getType().equals(GmType.REFERENCE)) {
-                    return implementation;
-                }
-            }
-        }
-        return null;
     }
 
     /**
@@ -736,6 +710,21 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
+     * Add or update a client script.
+     *
+     * @param clientScript
+     */
+    public void setClientScript(GameModelContent clientScript) {
+        GameModelContent cs = this.getClientScript(clientScript.getContentKey());
+        if (cs != null) {
+            cs.setContent(clientScript.getContent());
+        } else {
+            clientScript.setClientscriptlibrary_GameModel(this);
+            clientScriptLibrary.add(clientScript);
+        }
+    }
+
+    /**
      * @param key
      *
      * @return the clientScript matching the key or null
@@ -745,12 +734,42 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
+     * Add or update a client script.
+     *
+     * @param script
+     */
+    public void setScript(GameModelContent script) {
+        GameModelContent s = this.getScript(script.getContentKey());
+        if (s != null) {
+            s.setContent(script.getContent());
+        } else {
+            script.setScriptlibrary_GameModel(this);
+            scriptLibrary.add(script);
+        }
+    }
+
+    /**
      * @param key
      *
      * @return the clientScript matching the key or null
      */
     public GameModelContent getCss(String key) {
         return this.getGameModelContent(cssLibrary, key);
+    }
+
+    /**
+     * Add or update a stylesheet.
+     *
+     * @param css
+     */
+    public void setCss(GameModelContent css) {
+        GameModelContent stylesheet = this.getCss(css.getContentKey());
+        if (stylesheet != null) {
+            stylesheet.setContent(css.getContent());
+        } else {
+            css.setCsslibrary_GameModel(this);
+            cssLibrary.add(css);
+        }
     }
 
     public GameModelContent getGameModelContent(List<GameModelContent> list, String key) {
@@ -776,10 +795,15 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public Map<String, JsonNode> getPages() {
         // do not even try to fetch pages from repository if the gamemodel define a pagesURI
         if (Helper.isNullOrEmpty(getProperties().getPagesUri())) {
-            try (final Pages pagesDAO = new Pages(this.id)) {
-                return pagesDAO.getPagesContent();
-            } catch (RepositoryException ex) {
-                return new HashMap<>();
+            if (this.pages != null) {
+                // pages have been set but not yet save to repository
+                return this.pages;
+            } else {
+                try (final Pages pagesDAO = new Pages(this.id)) {
+                    return pagesDAO.getPagesContent();
+                } catch (RepositoryException ex) {
+                    return new HashMap<>();
+                }
             }
         } else {
             return new HashMap<>();
@@ -824,6 +848,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
                 }
 
+                this.pages = null;
             } catch (RepositoryException ex) {
                 logger.error("Failed to create repository for GameModel " + this.id);
             }
@@ -892,30 +917,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     public void setType(GmType type) {
         this.type = type;
-    }
-
-    public GameModel getModel() {
-        return model;
-    }
-
-    public void setModel(GameModel model) {
-        this.model = model;
-        if (model != null) {
-            if (!model.getImplementations().contains(this)) {
-                model.getImplementations().add(this);
-            }
-        }
-    }
-
-    public List<GameModel> getImplementations() {
-        return implementations;
-    }
-
-    public void setImplementations(List<GameModel> implementations) {
-        this.implementations = implementations;
-        for (GameModel implementation : implementations) {
-            implementation.setModel(this);
-        }
     }
 
     /**

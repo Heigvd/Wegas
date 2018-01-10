@@ -247,6 +247,37 @@ public class JCRFacade {
         return ret;
     }
 
+    /**
+     * @param gameModelId
+     * @param wType
+     * @param path
+     *
+     * @return the file content
+     *
+     * @throws java.io.IOException
+     *
+     * @throws WegasErrorMessage   when the requested file doesn't exists
+     */
+    public byte[] getFileBytes(Long gameModelId, WorkspaceType wType, String path) throws IOException {
+        logger.debug("Asking file bytes (/{})", path);
+
+        try {
+            ContentConnector connector = this.getContentConnector(gameModelId, wType);
+            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, connector);
+
+            if (descriptor instanceof FileDescriptor) {
+                return ((FileDescriptor) descriptor).getBytesData();
+            }
+
+        } catch (PathNotFoundException e) {
+            logger.debug("Asked path does not exist: {}", e.getMessage());
+            throw WegasErrorMessage.error("Directory " + path + " doest not exist");
+        } catch (RepositoryException e) {
+            logger.error("Need to check those errors", e);
+        }
+        return new byte[]{};
+    }
+
     private ContentConnector getContentConnector(long gameModelId, WorkspaceType wType) throws RepositoryException {
         return new ContentConnector(gameModelId, wType);
     }

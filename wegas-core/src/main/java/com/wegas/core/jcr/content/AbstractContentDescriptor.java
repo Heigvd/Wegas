@@ -10,7 +10,13 @@ package com.wegas.core.jcr.content;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.jcr.tools.JCRDescriptorCallback;
+import com.wegas.core.jcr.tools.JCRDescriptorFactory;
+import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped;
+import java.io.Serializable;
 import java.util.zip.ZipEntry;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -20,7 +26,10 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-abstract public class AbstractContentDescriptor implements ModelScoped {
+@WegasEntity(factory = JCRDescriptorFactory.class, callback = JCRDescriptorCallback.class)
+abstract public class AbstractContentDescriptor implements ModelScoped, Mergeable, Serializable{
+
+    private static final long serialVersionUID = 7654657575516817326L;
 
     @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);
@@ -43,16 +52,41 @@ abstract public class AbstractContentDescriptor implements ModelScoped {
         }
     }
 
+
     @JsonIgnore
     private boolean synched = false;
     /**
+     * MIME type
+     */
+    @WegasEntityProperty
+    protected String mimeType;
+
+    /**
+     * node name
+     */
+    private String name;
+
+    /**
      *
      */
-    protected String mimeType;
-    private String name;
     private String path;
+
+    /**
+     * Some internal comment
+     */
+    @WegasEntityProperty
     private String note = "";
+
+    /**
+     * Some public comment
+     */
+    @WegasEntityProperty
     private String description = "";
+
+    /**
+     * The so-called visibility
+     */
+    @WegasEntityProperty(cascadeOverride = {Visibility.INTERNAL})
     private ModelScoped.Visibility visibility = ModelScoped.Visibility.PRIVATE;
     /**
      *
@@ -108,6 +142,17 @@ abstract public class AbstractContentDescriptor implements ModelScoped {
         this(name, path, contentConnector);
 
         this.mimeType = mimeType;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getRefId() {
+        return this.getFullPath();
+    }
+
+    @Override
+    @JsonIgnore
+    public void setRefId(String refId) {
     }
 
     /**

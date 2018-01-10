@@ -285,6 +285,10 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     width: 100%;
 }
 
+.wegas-scriptlibrary > .readonly .ace_editor .ace_content {
+    backgroun-color: #ddd;
+}
+
 /* Panel Widget Styles */
 .yui3-panel-hidden {
     display: none; /* added to the defaulty yui3 visibility: hidden */

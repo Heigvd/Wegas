@@ -34,6 +34,7 @@ import javax.naming.NamingException;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -130,9 +131,9 @@ public class Helper {
     /**
      * Copy and sort the given list
      *
-     * @param <T> list item type
+     * @param <T>  list item type
      * @param list the list to copy and sort
-     * @param c a compartor to sort the list
+     * @param c    a compartor to sort the list
      *
      * @return a unmodifiable copy of the list, sorted according to the comparator
      */
@@ -816,5 +817,34 @@ public class Helper {
         printDescriptors(gameModel, gameModel.getItems(), sb, 1);
 
         return sb.toString();
+    }
+
+
+    public static Level setLoggerLevel(Class klass, Level level) {
+        return Helper.setLoggerLevel(LoggerFactory.getLogger(klass), level);
+    }
+
+    /**
+     * Set logger level and returns the previous level.
+     *
+     * @param logger
+     * @param level
+     *
+     * @return the previous level
+     */
+    public static Level setLoggerLevel(Logger logger, Level level) {
+        if (logger instanceof ch.qos.logback.classic.Logger) {
+            ch.qos.logback.classic.Logger qLogger = (ch.qos.logback.classic.Logger) logger;
+            ch.qos.logback.classic.Level pLevel = qLogger.getLevel();
+            if (level != null) {
+                qLogger.setLevel(ch.qos.logback.classic.Level.valueOf(level.toString()));
+            } else {
+                qLogger.setLevel(null);
+            }
+            if (pLevel != null) {
+                return Level.valueOf(pLevel.toString());
+            }
+        }
+        return null;
     }
 }

@@ -11,6 +11,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.InvocationTargetException;
@@ -139,7 +140,7 @@ public final class WegasChildrenPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
+    public LifecycleCollector apply(GameModel targetGameModel, Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         Mergeable targetEntity = null;
         if (target instanceof Mergeable) {
             targetEntity = (Mergeable) target;
@@ -239,7 +240,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                                 } else {
                                     patch = new WegasEntityPatch(key, 0, null, null, null, (Mergeable) toBeDeleted, null, recursive, false, false, false, cascade);
                                 }
-                                patch.apply(toBeDeleted, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
+                                patch.apply(targetGameModel, toBeDeleted, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                             }
 
                         }
@@ -249,7 +250,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                             Object key = patch.getIdentifier();
                             Object child = tmpMap.get(key);
 
-                            patch.apply(child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
+                            patch.apply(targetGameModel, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                         }
 
                         logger.info("Post Patch: target: {} from: {} to: {}", children, from, to);

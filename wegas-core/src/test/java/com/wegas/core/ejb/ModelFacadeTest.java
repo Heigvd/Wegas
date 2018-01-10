@@ -7,12 +7,10 @@
  */
 package com.wegas.core.ejb;
 
-import ch.qos.logback.classic.Level;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.tools.RepositoryVisitor;
 import com.wegas.core.merge.patch.WegasPatch;
@@ -37,7 +35,9 @@ import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +45,15 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
+import javax.ws.rs.core.MediaType;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  *
@@ -59,6 +63,11 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ModelFacadeTest.class);
     private static final Reflections reflections;
+
+    private static Level mfLevel;
+    private static Level vdLevel;
+    private static Level vdfLevel;
+    private static Level wpLevel;
 
     @Inject
     private ModelFacade modelFacade;
@@ -70,14 +79,21 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         reflections = new Reflections("com.wegas");
     }
 
-    //@BeforeClass
+    @BeforeClass
     public static void setLoggerLevels() {
-        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ModelFacade.class)).setLevel(Level.DEBUG);
-        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(WegasPatch.class)).setLevel(Level.DEBUG);
-        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptorFacade.class)).setLevel(Level.DEBUG);
-        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(VariableDescriptor.class)).setLevel(Level.DEBUG);
+        Helper.setLoggerLevel(logger, Level.INFO);
+        mfLevel = Helper.setLoggerLevel(ModelFacade.class, Level.DEBUG);
+        wpLevel = Helper.setLoggerLevel(WegasPatch.class, Level.DEBUG);
+        vdfLevel = Helper.setLoggerLevel(VariableDescriptorFacade.class, Level.DEBUG);
+        vdLevel = Helper.setLoggerLevel(VariableDescriptor.class, Level.DEBUG);
+    }
 
-        ((ch.qos.logback.classic.Logger) logger).setLevel(Level.DEBUG);
+    @AfterClass
+    public static void rollbackLevels() {
+        Helper.setLoggerLevel(ModelFacade.class, mfLevel);
+        Helper.setLoggerLevel(WegasPatch.class, wpLevel);
+        Helper.setLoggerLevel(VariableDescriptorFacade.class, vdfLevel);
+        Helper.setLoggerLevel(VariableDescriptor.class, vdLevel);
     }
 
     private ObjectDescriptor createObjectDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, String... values) {
@@ -193,7 +209,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testModelise_GameModelProperties() throws NamingException, WegasNoResultException {
+    public void testModelise_GameModelProperties() throws NamingException, WegasNoResultException, RepositoryException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         GameModelProperties properties1 = gameModel1.getProperties();
@@ -301,7 +317,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testModelise_GameModelPages() throws NamingException, WegasNoResultException, IOException {
+    public void testModelise_GameModelPages() throws NamingException, WegasNoResultException, IOException, RepositoryException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
 
@@ -357,7 +373,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testModelise_GameModelContent() throws NamingException, WegasNoResultException {
+    public void testModelise_GameModelContent() throws NamingException, WegasNoResultException, RepositoryException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         this.createCss(gameModel1, "sheet1");
@@ -445,7 +461,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testModelise_PrimitiveCollection() throws NamingException, WegasNoResultException {
+    public void testModelise_PrimitiveCollection() throws NamingException, WegasNoResultException, RepositoryException, RepositoryException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         gameModelFacade.createWithDebugGame(gameModel1);
@@ -594,7 +610,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testModelise() throws NamingException, WegasNoResultException, IOException {
+    public void testModelise() throws NamingException, WegasNoResultException, IOException, RepositoryException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         gameModelFacade.createWithDebugGame(gameModel1);
@@ -921,22 +937,30 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testModelise_GameModelFiles() throws RepositoryException {
+    public void testModelise_GameModelFiles() throws RepositoryException, IOException, IOException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
 
-        RepositoryVisitor.ListRepository ls = new RepositoryVisitor.ListRepository();
+        RepositoryVisitor.ListRepository ls = new RepositoryVisitor.ListRepository(10);
 
         gameModelFacade.createWithDebugGame(gameModel1);
         jcrFacade.createDirectory(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "dir1", "/", "first directory", "first directory description");
         jcrFacade.createDirectory(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "dir11", "/dir1", "first directory child", "first directory description child");
         jcrFacade.createDirectory(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "dir2", "/", "second directory", "2nd directory description");
 
+        byte[] bin1 = {0, 1, 0, 1};
+        InputStream isBin1 = new ByteArrayInputStream(bin1);
+
+        jcrFacade.createFile(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "binFile1", "/dir1", MediaType.APPLICATION_OCTET_STREAM, "note bin1", "descBin1", isBin1, false);
+
         GameModel gameModel2 = new GameModel();
         gameModel2.setName("gamemodel #2");
         gameModelFacade.createWithDebugGame(gameModel2);
         jcrFacade.createDirectory(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "dir1", "/", "first directory", "first directory description");
         jcrFacade.createDirectory(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "dir3", "/", "third directory", "3rd directory description");
+
+        isBin1 = new ByteArrayInputStream(bin1);
+        jcrFacade.createFile(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "binFile1", "/dir1", MediaType.APPLICATION_OCTET_STREAM, "note bin1", "descBin1", isBin1, false);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -957,25 +981,64 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-
+        logger.info("Model initial repository");
         ls.visitGameModelFiles(model);
+        logger.info("Scenarios repositories");
         ls.visitGameModelFiles(gameModel1);
         ls.visitGameModelFiles(gameModel2);
 
-        List<AbstractContentDescriptor> list = jcrFacade.listDirectory(model.getId(), ContentConnector.WorkspaceType.FILES, "/");
-        for (AbstractContentDescriptor item : list) {
-            logger.error("I: " + item.getPath() + " :: " + item.getName());
-        }
+        logger.info("Add /dir4 to model");
+        jcrFacade.createDirectory(model.getId(), ContentConnector.WorkspaceType.FILES, "dir4", "/", "fourth directory", "4th directory description");
 
-        list = jcrFacade.listDirectory(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/");
-        for (AbstractContentDescriptor item : list) {
-            logger.error("I: " + item.getPath() + " :: " + item.getName());
-        }
+        logger.info("update model /dir/1/binFile1 to 1 2 3 -2 10");
+        byte[] update = {1, 2, 3, -2, 10};
+        isBin1 = new ByteArrayInputStream(update);
+        jcrFacade.createFile(model.getId(), ContentConnector.WorkspaceType.FILES, "binFile1", "/dir1", MediaType.APPLICATION_OCTET_STREAM, "note bin1", "descBin1", isBin1, true);
 
-        list = jcrFacade.listDirectory(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/");
-        for (AbstractContentDescriptor item : list) {
-            logger.error("I: " + item.getPath() + " :: " + item.getName());
-        }
+        logger.info("Model repository before propagation");
+        ls.visitGameModelFiles(model);
+        logger.info("Scenarios repositories before propagation");
+        ls.visitGameModelFiles(gameModel1);
+        ls.visitGameModelFiles(gameModel2);
+
+        logger.info("Propagation");
+        modelFacade.propagateModel(model.getId());
+
+        logger.info("[AfterPropagation] Model");
+        ls.visitGameModelFiles(model);
+        logger.info("[AfterPropagation] Scenario");
+        ls.visitGameModelFiles(gameModel1);
+        ls.visitGameModelFiles(gameModel2);
+
+
+        Assert.assertArrayEquals(update,
+                jcrFacade.getFileBytes(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
+
+        Assert.assertArrayEquals(update,
+                jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
+
+
+
+        logger.info("update gm1 /dir/1/binFile1 to -1 -2 -3 2 10");
+        byte[] update1 = {-1, -2, -3, 2, 10};
+        isBin1 = new ByteArrayInputStream(update1);
+        jcrFacade.createFile(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "binFile1", "/dir1", MediaType.APPLICATION_OCTET_STREAM, "note bin1", "descBin1", isBin1, true);
+
+        logger.info("Propagation");
+        modelFacade.propagateModel(model.getId());
+
+        logger.info("[AfterPropagation] Model");
+        ls.visitGameModelFiles(model);
+        logger.info("[AfterPropagation] Scenario");
+        ls.visitGameModelFiles(gameModel1);
+        ls.visitGameModelFiles(gameModel2);
+
+        Assert.assertArrayEquals(update1,
+                jcrFacade.getFileBytes(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
+
+        Assert.assertArrayEquals(update,
+                jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
+
     }
 
     private Team createTeam(Game g, String name) {
