@@ -11,10 +11,12 @@ export default class ArgFrom extends React.Component {
             schema: argSchema(props.schema),
             value: typeToValue(props.value, props.schema),
         };
+        this.onChange = this.onChange.bind(this);
     }
     componentDidMount() {
         this.checkConst();
     }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.schema !== this.props.schema) {
             this.setState({
@@ -33,8 +35,18 @@ export default class ArgFrom extends React.Component {
             });
         }
     }
+    shouldComponentUpdate(nextProps, nextState) {
+        return (
+            !isEqual(this.state.schema, nextState.schema) ||
+            !isEqual(this.state.value, nextState.value) ||
+            this.props.entity !== nextProps.entity
+        );
+    }
     componentDidUpdate() {
         this.checkConst();
+    }
+    onChange(value) {
+        this.props.onChange(valueToType(value, this.props.schema));
     }
     checkConst() {
         if (
@@ -50,18 +62,10 @@ export default class ArgFrom extends React.Component {
         }
     }
     render() {
-        const { onChange, entity } = this.props;
+        const { entity } = this.props;
         const { schema, value } = this.state;
         const s = { ...schema, view: { ...schema.view, entity } };
-        return (
-            <Form
-                schema={s}
-                value={value}
-                onChange={v => {
-                    onChange(valueToType(v, this.props.schema));
-                }}
-            />
-        );
+        return <Form schema={s} value={value} onChange={this.onChange} />;
     }
 }
 ArgFrom.propTypes = {
