@@ -3,7 +3,6 @@ import Form from 'jsoninput';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash-es';
 import { argSchema, valueToType, typeToValue, matchSchema } from './args';
-import { containerStyle } from '../Views/conditionImpactStyle';
 
 export default class ArgFrom extends React.Component {
     constructor(props) {
@@ -34,13 +33,6 @@ export default class ArgFrom extends React.Component {
             });
         }
     }
-    shouldComponentUpdate(nextProps, nextState) {
-        return (
-            !isEqual(this.state.schema, nextState.schema) ||
-            !isEqual(this.state.value, nextState.value) ||
-            this.props.entity !== nextProps.entity
-        );
-    }
     componentDidUpdate() {
         this.checkConst();
     }
@@ -62,16 +54,13 @@ export default class ArgFrom extends React.Component {
         const { schema, value } = this.state;
         const s = { ...schema, view: { ...schema.view, entity } };
         return (
-            // <div className={containerStyle}>
-                <Form
-                    schema={s}
-                    value={value}
-                    onChange={v => {
-                        this.lastValue = v;
-                        onChange(valueToType(v, this.props.schema));
-                    }}
-                />
-            // </div>
+            <Form
+                schema={s}
+                value={value}
+                onChange={v => {
+                    onChange(valueToType(v, this.props.schema));
+                }}
+            />
         );
     }
 }

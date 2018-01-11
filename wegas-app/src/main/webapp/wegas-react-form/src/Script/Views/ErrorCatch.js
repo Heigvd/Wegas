@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { print, parse } from 'recast';
 import JSEditor from './asyncJSEditor';
-
+// eslint-disable-next-line
 export class ErrorCatch extends React.Component {
     constructor(props) {
         super(props);
