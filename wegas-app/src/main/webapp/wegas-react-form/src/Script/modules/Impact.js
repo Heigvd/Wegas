@@ -24,9 +24,9 @@ import JSEditor from '../Views/asyncJSEditor';
 import { containerStyle } from '../Views/conditionImpactStyle';
 
 const errorStyle = css({
-    label: 'Impact-errorStyle',
     color: '#999',
     fontSize: '12px',
+    fontStyle: 'italic',
     paddingLeft: '40px',
     paddingTop: '3px',
     marginBottom: '-3px',
@@ -102,16 +102,7 @@ class Impact extends React.Component {
         return '';
     }
     checkVariableMethod() {
-        const schema = this.state.methodSchem;
-        if (
-            !schema ||
-            !schema.view.choices.some(c => c.value === this.state.method)
-        ) {
-            this.setState({
-                // method does not exist in method's schema, remove it
-                method: undefined,
-            });
-        } else if (this.state.variable && this.state.method) {
+        if (this.state.variable && this.state.method) {
             try {
                 const mergedArgs = methodDescriptor(
                     this.state.variable,
@@ -169,6 +160,14 @@ class Impact extends React.Component {
                     global: false,
                     variable: v,
                     methodSchem,
+                    method:
+                        // Reset method as it does not exist after a variable change
+                        !methodSchem ||
+                        !methodSchem.view.choices.some(
+                            c => c.value === this.state.method
+                        )
+                            ? undefined
+                            : prevState.method,
                     member: undefined,
                 };
             }, this.checkVariableMethod);
@@ -251,11 +250,11 @@ Impact.defaultProps = {
 export class ErrorCatcher extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { error: undefined, info: undefined };
+        this.state = { error: undefined };
         this.handleErrorBlur = this.handleErrorBlur.bind(this);
     }
     componentWillReceiveProps() {
-        this.setState(() => ({ error: undefined, info: undefined }));
+        this.setState(() => ({ error: undefined }));
     }
     handleErrorBlur(target, editor) {
         const val = editor.getValue();
@@ -292,6 +291,11 @@ export class ErrorCatcher extends React.Component {
         return children;
     }
 }
+ErrorCatcher.propTypes = {
+    node: PropTypes.object,
+    children: PropTypes.element,
+    onChange: PropTypes.func.isRequired,
+};
 export default function SecuredImpact(props) {
     return (
         <ErrorCatcher node={props.node} onChange={props.onChange}>
@@ -299,3 +303,7 @@ export default function SecuredImpact(props) {
         </ErrorCatcher>
     );
 }
+SecuredImpact.propTypes = {
+    node: PropTypes.object,
+    onChange: PropTypes.func.isRequired,
+};
