@@ -30,15 +30,24 @@ YUI.add('wegas-editor-action', function(Y) {
         execute: function() {
             var editGame = Y.one("body.wegas-editmode-game");
             var btn = this.get("host"),
-                childNodes;
+                childNodes,
+                icon,
+                hideOverlay = Y.bind(this.hideOverlay, this),
+                cb = function() {
+                    if (icon) {
+                        icon.removeClass('fa-spin');
+                    }
+                    hideOverlay();
+                };
 
             // Make the button spin around for a while as a visual feedback:
-            if (btn && (childNodes = btn.get("contentBox").get("childNodes"))){
+            if (btn && (childNodes = btn
+                    .get('contentBox')
+                    .get('childNodes'))) {
                 // The icon is a child element of the button:
-                var icon = childNodes.get("items")[0];
-                if (icon){
-                    icon.addClass("fa-spin");
-                    Y.later(1000, this, function(){ icon.removeClass("fa-spin"); });
+                icon = childNodes.get('items')[0];
+                if (icon) {
+                    icon.addClass('fa-spin');
                 }
             }
 
@@ -48,9 +57,9 @@ YUI.add('wegas-editor-action', function(Y) {
                 Wegas.Facade.Variable.sendRequest({
                     request: '/Reset/',
                     on: {
-                        success: Y.bind(this.hideOverlay, this),
-                        failure: Y.bind(this.hideOverlay, this)
-                    }
+                        success: cb,
+                        failure: cb,
+                    },
                 });
             }
         }
