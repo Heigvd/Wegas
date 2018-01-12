@@ -139,16 +139,16 @@ YUI.add('wegas-presence', function(Y) {
         },
         updateCount: function() {
             var count = pagePresence.members.count - 1; // minus self
-            this.get(CONTENTBOX)
-                .one('.count')
-                .setHTML('viewer' + (count > 1 ? 's: ' : ': ') + count);
+            // this.get(CONTENTBOX)
+            //     .one('.count')
+            //     .setHTML('viewer' + (count > 1 ? 's: ' : ': ') + count);
             if (count > 0) {
                 this.get(CONTENTBOX)
                     .one('.chat-icon')
                     .removeClass('disabled');
-                this.get(CONTENTBOX)
-                    .one('.count')
-                    .setHTML('viewer' + (count > 1 ? 's: ' : ': ') + count);
+                // this.get(CONTENTBOX)
+                //     .one('.count')
+                //     .setHTML('viewer' + (count > 1 ? 's: ' : ': ') + count);
             } else {
                 this.get(CONTENTBOX)
                     .one('.chat-icon')
