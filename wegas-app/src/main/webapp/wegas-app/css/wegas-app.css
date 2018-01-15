@@ -249,6 +249,15 @@ font {
     font-size: 1.3em;
 }
 
+/** Hide all advanced feature while in std mode */
+.wegas-forbidden-feature,
+.wegas-stdmode .wegas-advanced-feature {
+    display: none !important;
+}
+
+.wegas-advanced-feature {
+    font-style: italic;
+}
 
 .wegas-advancedmode .wegas-loading.pusher-update .wegas-loading-overlay {
     background: rgba(0, 0, 0, 0.1);

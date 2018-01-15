@@ -149,19 +149,8 @@ public class PdfRenderer implements Filter {
                 String content;
 
                 if (req.getMethod().equalsIgnoreCase("POST")) {
-                    // To prevent abuse, check that the user is logged in and has at least trainer credentials:
+                    // To prevent abuse, check that the user is logged in
                     User user = userFacade.getCurrentUser();
-                    boolean isTrainer = false;
-                    for (Role r : user.getRoles()) {
-                        String role = r.getName();
-                        if (role.equals("Trainer") || role.equals("PMG-trainer") || role.equals("Scenarist")) {
-                            isTrainer = true;
-                            break;
-                        }
-                    }
-                    if (!isTrainer) {
-                        throw new UnauthorizedException("User is not a trainer");
-                    }
 
                     // In a POST'ed filter method, all parameters must be in the post data.
                     String body = req.getParameter("body");

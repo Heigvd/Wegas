@@ -41,16 +41,6 @@
     height: 100%;
 }
 
-/** Hide all advanced feature while in std mode */
-.wegas-forbidden-feature,
-.wegas-stdmode .wegas-advanced-feature {
-    display: none !important;
-}
-
-.wegas-advanced-feature {
-    font-style: italic;
-}
-
 .wegas-stdmode .wegas-treeview-advanced-children .yui3-treenode-content-toggle{
     display: none
 }

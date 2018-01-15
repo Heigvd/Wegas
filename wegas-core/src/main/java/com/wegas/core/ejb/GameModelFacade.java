@@ -35,13 +35,14 @@ import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -335,25 +336,34 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Find a unique name for this new game (e.g. Oldname(1))
+     * Find a unique name for this new game (e.g. Oldname (2))
      *
      * @param oName
      *
      * @return new unique name
      */
     public String findUniqueName(String oName) {
-        int suffix = 2;
         String newName = oName;
-        while (true) {
-            try {
-                this.findByName(newName);
-            } catch (WegasNoResultException ex) {
-                return newName;
-            } catch (NonUniqueResultException ex) {
-            }
-            newName = oName + "(" + suffix + ")";
+
+        Pattern p = Pattern.compile("(.*)\\((\\d*)\\)");
+        Matcher matcher = p.matcher(oName);
+
+        String baseName;
+        Long suffix;
+        if (matcher.matches()) {
+            baseName = matcher.group(1).trim();
+            suffix = Long.decode(matcher.group(2)) + 1;
+        } else {
+            baseName = newName;
+            suffix = 2l;
+        }
+
+        while (this.countByName(newName) > 0) {
+            newName = baseName + " (" + suffix + ")";
             suffix++;
         }
+        return newName;
+
     }
 
     private void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
@@ -501,27 +511,17 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Template gameModels are editable scenrios
-     *
-     * @return all template GameModels public List<GameModel>
-     * findTemplateGameModels() { final TypedQuery<GameModel> query =
-     * getEntityManager().createNamedQuery("GameModel.findTemplate",
-     * GameModel.class); return query.getResultList(); }
-     */
-    /**
      * @param name
      *
-     * @return the gameModel with the given name
-     *
-     * @throws WegasNoResultException gameModel not exists
+     * @return the number of gamemodel having the given name
      */
-    public GameModel findByName(final String name) throws NonUniqueResultException, WegasNoResultException {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByName", GameModel.class);
+    public long countByName(final String name) {
+        final TypedQuery<Long> query = getEntityManager().createNamedQuery("GameModel.countByName", Long.class);
         query.setParameter("name", name);
         try {
             return query.getSingleResult();
         } catch (NoResultException ex) {
-            throw new WegasNoResultException(ex);
+            return 0l;
         }
     }
 
