@@ -17,9 +17,7 @@ const labelStyle = css(FormStyles.labelStyle, {
 const warnStyle = css({
     color: 'orange',
     verticalAlign: '+2px',
-    padding: '10px', // Create plenty of space for facilitating the hover
-    marginLeft: '-5px',
-    marginRight: '-5px',
+    padding: '0 10px', // Create plenty of space for facilitating the hover
 });
 const containerStyle = css({
     marginTop: '15px',
