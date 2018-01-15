@@ -42,9 +42,9 @@ class ViewSrc extends React.Component<
     }
     runCode() {
         const Y = getY();
-        const context = (Y.Plugin.EditEntityAction as any).currentEntity.get(
-            'id'
-        );
+        const context = (Y.Plugin.EditEntityAction as any).currentEntity
+            ? (Y.Plugin.EditEntityAction as any).currentEntity.get('id')
+            : null;
         Y.Wegas.Facade.Variable.script.remoteEval(
             this.props.value,
             {
