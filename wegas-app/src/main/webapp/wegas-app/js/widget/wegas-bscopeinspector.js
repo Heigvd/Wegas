@@ -101,9 +101,9 @@ YUI.add('wegas-bscopeinspector', function(Y) {
         ATTRS: {
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
-                    label: "variable",
+                view: {
+                    type: "variableselect",
+                    label: "Variable",
                     classFilter: ["TextDescriptor"]
                 }
             }

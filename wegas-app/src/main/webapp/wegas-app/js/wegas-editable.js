@@ -82,7 +82,7 @@ YUI.add('wegas-editable', function(Y) {
             return this.toObject(["id", "variableInstances"]);
         },
         /**
-         * Returns the form configuration associated to this object, to be used a an inputex object.
+         * Returns the form configuration associated to this object, to be used a Form schema.
          * @param {Array} fieldsToIgnore (optional), don't create these inputs.
          */
         getFormCfg: function(fieldsToIgnore) {
@@ -103,20 +103,6 @@ YUI.add('wegas-editable', function(Y) {
                         delete attrCfgs[i];
                     }
                 }
-
-                // schemaMap = {
-                //     Entity: {
-                //         properties: attrCfgs
-                //     }
-                // };
-
-                // builder = new Y.inputEx.JsonSchema.Builder({
-                //     schemaIdentifierMap: schemaMap,
-                //     defaultOptions: {
-                //         showMsg: true
-                //     }
-                // });
-                // form = builder.schemaToInputEx(schemaMap.Entity);
                 return {
                     type: 'object',
                         properties: attrCfgs

@@ -244,8 +244,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     type: STRING,
                     optional: true,
                     "transient": true,
-                    _inputex: {
-                        _type: HIDDEN
+                    view: {
+                        type: HIDDEN
                     }
                 },
                 comments: {

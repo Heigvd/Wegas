@@ -52,20 +52,11 @@ YUI.add('wegas-console-wysiwyg', function (Y) {
                 .then(Y.bind(function(ret) {
                     this.srcField = ret;
                 }, this));
-            // this.srcField = new Y.Wegas.RForm({cfg: { type: "object", view: { type: 'script' } } }).render(x);
-            // this.srcField = new Y.inputEx.WysiwygScript({
-            //     parentEl: cb
-            // });
             cb.append('<div class="results"></div>');
 
-            // this.toolbar.get("header").append(this.srcField.addButton.get("boundingBox").removeClass("inputEx-WysiwygScript-add")
-            //     .append("Add impact"));
-            // this.srcField.addButton.fire("click");
 
             this.renderRunButton();
 
-            // this.toolbar.get("header").append(this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwygScript-viewsrc")
-            //     .append("Source"));
 
             this.renderClearButton();
         },
