@@ -310,7 +310,7 @@ public class UtilsController {
                 + "}\n"
                 + "\n"
                 + ".levels {\n"
-                + "    left: 300px;\n"
+                + "    left: 375px;\n"
                 + "    position: absolute;\n"
                 + "}");
         sb.append("</style>");

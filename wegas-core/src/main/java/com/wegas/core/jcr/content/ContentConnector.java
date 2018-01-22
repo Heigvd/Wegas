@@ -7,7 +7,9 @@
  */
 package com.wegas.core.jcr.content;
 
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.SessionManager;
+import com.wegas.core.jcr.jta.JTARepositoryConnector;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,11 +28,13 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class ContentConnector implements AutoCloseable {
+public class ContentConnector implements JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
 
     private final long gameModelId;
+
+    private boolean managed;
 
     final private Session session;
 
@@ -57,16 +61,9 @@ public class ContentConnector implements AutoCloseable {
         return String.format("%.1f%sB", bytes / Math.pow(unit, exponent), prefix);
     }
 
-    public static ContentConnector getFilesConnector(long gameModelId) throws RepositoryException {
-        return new ContentConnector(gameModelId, WorkspaceType.FILES);
-    }
-
-    public static ContentConnector getHistoryConnector(long gameModelId) throws RepositoryException {
-        return new ContentConnector(gameModelId, WorkspaceType.HISTORY);
-    }
-
     /**
      * @param gameModelId
+     * @param workspaceType
      *
      * @throws RepositoryException
      */
@@ -82,12 +79,27 @@ public class ContentConnector implements AutoCloseable {
                 break;
         }
         this.session = SessionManager.getSession();
+
         if (!this.session.nodeExists(this.workspaceRoot)) {
+            logger.info("Initializing workspace {}", workspaceRoot);
             Node n = SessionManager.createPath(this.session, this.workspaceRoot);
             this.initializeNamespaces();
             n.setProperty(WFSConfig.WFS_MIME_TYPE, DirectoryDescriptor.MIME_TYPE);
-            this.save(); // write it so that concurrent session may access it.
+            /*
+             * DO not save manually anymore -> JTA Sychronisation will handle this automatically
+             */
+            //session.save(); // write it so that concurrent session may access it.
         }
+    }
+
+    @Override
+    public void setManaged(boolean managed) {
+        this.managed = managed;
+    }
+
+    @Override
+    public boolean getManaged() {
+        return this.managed;
     }
 
     /**
@@ -124,7 +136,7 @@ public class ContentConnector implements AutoCloseable {
      */
     protected void deleteNode(String absolutePath) throws RepositoryException {
         this.getNode(absolutePath).remove();
-        session.save();
+        //session.save();
     }
 
     /**
@@ -206,7 +218,7 @@ public class ContentConnector implements AutoCloseable {
         newNode.setProperty(WFSConfig.WFS_MIME_TYPE, mimeType);
         newNode.setProperty(WFSConfig.WFS_DATA, session.getValueFactory().createBinary(data));
         newNode.setProperty(WFSConfig.WFS_LAST_MODIFIED, Calendar.getInstance());
-        this.save();
+        //this.save();
         return newNode;
     }
 
@@ -407,20 +419,23 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     public void cloneRoot(Long fromGameModel) throws RepositoryException {
-        try (ContentConnector connector = new ContentConnector(fromGameModel, workspaceType)) {
-            final String fromPath = connector.getNode("/").getPath();
-            this.session.refresh(true);
-            final String destPath = this.getNode("/").getPath();
+        ContentConnector connector = new ContentConnector(fromGameModel, workspaceType);
+        try {
             this.getNode("/").remove();
-            this.save();
-            this.session.getWorkspace().copy(fromPath, destPath);
+            this.session.save();
+
+            // TODO copy reposity without saving the workspace !
+            this.session.getWorkspace().copy(connector.workspaceRoot + "/", this.workspaceRoot + "/");
+        } finally {
+            // do not modify source repository ever
+            connector.rollback();
         }
     }
 
     /**
      *
      */
-    public void save() {
+    public void _save() {
         if (session.isLive()) {
             try {
                 session.save();
@@ -449,7 +464,7 @@ public class ContentConnector implements AutoCloseable {
      */
     public void importXML(InputStream input) throws RepositoryException, IOException {
         try {
-            this.deleteRoot();                                              // Remove nodes first
+            this.deleteRoot(); // Remove nodes first
             session.save();
             session.getWorkspace().importXML(WFSConfig.GM_ROOT.apply(gameModelId), input, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING);
             session.save();
@@ -489,8 +504,26 @@ public class ContentConnector implements AutoCloseable {
     }
 
     @Override
-    public void close() {
-        this.save();
+    public void prepare() {
+        try {
+            session.getNode("/");
+        } catch (RepositoryException ex) {
+            throw WegasErrorMessage.error("PLEASE ROLLBACK " + ex);
+        }
+    }
+
+    @Override
+    public void commit() {
+        try {
+            session.save();
+        } catch (RepositoryException ex) {
+            throw WegasErrorMessage.error("COMMIT FAILS");
+        }
+        SessionManager.closeSession(session);
+    }
+
+    @Override
+    public void rollback() {
         SessionManager.closeSession(session);
     }
 }

@@ -7,10 +7,9 @@
  */
 package com.wegas.core.jcr.content;
 
-import org.slf4j.LoggerFactory;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -22,7 +21,8 @@ public class DescriptorFactory {
     /**
      * @param node
      * @param contentConnector
-     * @return 
+     *
+     * @return
      */
     public static AbstractContentDescriptor getDescriptor(Node node, ContentConnector contentConnector) {
         AbstractContentDescriptor abstractContentDescriptor = null;
@@ -34,10 +34,13 @@ public class DescriptorFactory {
                 abstractContentDescriptor = new DirectoryDescriptor("/", contentConnector);     //Root Node
             } else {
                 mimeType = node.getProperty(WFSConfig.WFS_MIME_TYPE).getString();
-                abstractContentDescriptor
-                        = DirectoryDescriptor.MIME_TYPE.equals(mimeType)
-                        ? new DirectoryDescriptor(nodePath, contentConnector)
-                        : new FileDescriptor(nodePath, mimeType, node.getProperty(WFSConfig.WFS_LAST_MODIFIED).getDate(), node.getProperty(WFSConfig.WFS_DATA).getBinary().getSize(), contentConnector);
+                switch (mimeType) {
+                    case DirectoryDescriptor.MIME_TYPE:
+                        abstractContentDescriptor = new DirectoryDescriptor(nodePath, contentConnector);
+                        break;
+                    default:
+                        abstractContentDescriptor = new FileDescriptor(nodePath, mimeType, node.getProperty(WFSConfig.WFS_LAST_MODIFIED).getDate(), node.getProperty(WFSConfig.WFS_DATA).getBinary().getSize(), contentConnector);
+                }
             }
             if (abstractContentDescriptor.exist()) {
                 abstractContentDescriptor.getContentFromRepository();
@@ -51,7 +54,9 @@ public class DescriptorFactory {
     /**
      * @param absolutePath
      * @param contentConnector
-     * @return 
+     *
+     * @return
+     *
      * @throws RepositoryException
      */
     public static AbstractContentDescriptor getDescriptor(String absolutePath, ContentConnector contentConnector) throws RepositoryException {

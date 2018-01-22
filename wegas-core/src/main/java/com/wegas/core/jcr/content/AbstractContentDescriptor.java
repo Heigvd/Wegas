@@ -255,8 +255,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     }
 
     /**
-     * @return truc if node exists
-     *
+     * @return true if node exists
      * @throws RepositoryException
      */
     @JsonIgnore
@@ -358,7 +357,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         connector.setNote(fileSystemAbsolutePath, note);
         connector.setDescription(fileSystemAbsolutePath, description);
         connector.setVisibility(fileSystemAbsolutePath, visibility.toString());
-        connector.save();
+        //connector.save();
     }
 
     /**

@@ -18,7 +18,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.ContentConnector;
-import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
@@ -95,7 +95,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     private StateMachineFacade stateMachineFacade;
 
     @Inject
+    private PageFacade pageFacade;
+
+    @Inject
     private HazelcastInstance hzInstance;
+
+    @Inject
+    private JCRConnectorProvider jcrConnectorProvider;
 
     /**
      * Dummy constructor
@@ -122,6 +128,14 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         // So What? 
         getEntityManager().persist(entity);
+
+        try {
+            this.openRepositories(entity);
+        } catch (RepositoryException ex) {
+            throw WegasErrorMessage.error("Unable to create repository " + ex);
+        }
+
+        // create File and history repositories
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
@@ -366,15 +380,31 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     }
 
-    public void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
+    /**
+     * Open both File and History repository through the jctConnectorProvider.
+     * <p>
+     * If one of the repository does not yet exists, it will be create and saved at JTA commit
+     *
+     * @param gameModel open repository which belong to this gameModel
+     *
+     * @throws RepositoryException unable to open repository
+     */
+    private void openRepositories(GameModel gameModel) throws RepositoryException {
+        for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
+            ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel.getId(), wt);
+        }
+    }
+
+    private void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
 // Clone Pages
         // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
         //Clone files & history (?)
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
-            try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
+            try {
+                ContentConnector connector = jcrConnectorProvider.getContentConnector(newGameModel.getId(), wt);
                 connector.cloneRoot(srcGameModel.getId());
             } catch (RepositoryException ex) {
-                logger.error("Duplicating repository {} failure, {}", srcGameModel.getId(), ex.getMessage());
+                throw WegasErrorMessage.error("Duplicating repository " + srcGameModel.getId() + " failure: " + ex);
             }
         }
     }
@@ -443,7 +473,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         final Long id = gameModel.getId();
         userFacade.deletePermissions(gameModel);
 
-        List<GameModel> instantiations = this.getImplementations(gameModel);
+        TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class
+        );
+        query.setParameter("id", id);
+        List<GameModel> instantiations = query.getResultList();
 
         for (GameModel instantiation : instantiations) {
             instantiation.setBasedOn(null);
@@ -455,13 +488,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         getEntityManager().remove(gameModel);
         // Remove pages.
-        try (Pages pages = new Pages(id)) {
-            pages.delete();
+        try {
+            pageFacade.deletePages(gameModel);
         } catch (RepositoryException e) {
             logger.error("Error suppressing pages for gameModel {}, {}", id, e.getMessage());
         }
+
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
-            try (ContentConnector connector = new ContentConnector(gameModel.getId(), wt)) {
+            try {
+                ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel.getId(), wt);
                 connector.deleteRoot();
             } catch (RepositoryException ex) {
                 logger.error("Error suppressing repository {}, {}", id, ex.getMessage());
@@ -498,7 +533,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     @Override
     public List<GameModel> findAll() {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findAll", GameModel.class);
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findAll", GameModel.class
+        );
         return query.getResultList();
     }
 
@@ -687,9 +723,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @return looked-up EJB
      */
-    public static GameModelFacade lookup() {
+    public static GameModelFacade
+            lookup() {
         try {
-            return Helper.lookupBy(GameModelFacade.class);
+            return Helper.lookupBy(GameModelFacade.class
+            );
         } catch (NamingException ex) {
             logger.error("Error retrieving gamemodelfacade", ex);
             return null;
