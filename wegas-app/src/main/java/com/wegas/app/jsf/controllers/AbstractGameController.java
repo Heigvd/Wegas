@@ -94,7 +94,7 @@ public class AbstractGameController implements Serializable {
     public String getStaticClientScripts() throws IOException, WegasForbiddenException {
         String clientScriptUri = this.getCurrentGameModel().getProperties().getClientScriptUri();
         final List<String> files = new ArrayList<>();
-        if (clientScriptUri != null) {
+        if (!Helper.isNullOrEmpty(clientScriptUri)) {
             for (String s : clientScriptUri.split(";")) {
                 s = s.trim();
                 s = s.startsWith("/") ? s : "/" + s;
