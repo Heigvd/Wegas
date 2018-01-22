@@ -12,9 +12,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.wegas.core.Helper;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.core.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,17 +36,17 @@ import org.slf4j.LoggerFactory;
 public class PageFacade {
 
     @Inject
-    private JCRConnectorProvider txBean;
+    private JCRConnectorProvider jcrConnectorProvider;
 
     static final private Logger logger = LoggerFactory.getLogger(PageFacade.class);
 
     public List<HashMap<String, String>> getPageIndex(GameModel gm) throws RepositoryException {
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
         return pagesDAO.getIndex();
     }
 
     public Page getPage(GameModel gm, String pageId) throws RepositoryException {
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
         if (pageId.equals("default")) {
             return pagesDAO.getDefaultPage();
         } else {
@@ -55,7 +55,7 @@ public class PageFacade {
     }
 
     public Page createPage(GameModel gm, String pId, JsonNode content) throws RepositoryException {
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
 
         if (Helper.isNullOrEmpty(pId)) {
             Integer pageId = 1;
@@ -83,7 +83,7 @@ public class PageFacade {
     }
 
     public void addPages(GameModel gm, Map<String, JsonNode> pageMap) throws RepositoryException {
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
 
         for (Entry<String, JsonNode> p : pageMap.entrySet()) {
             pagesDAO.store(new Page(p.getKey(), p.getValue()));
@@ -91,35 +91,35 @@ public class PageFacade {
     }
 
     public void setPage(GameModel gm, String pageId, JsonNode content) throws RepositoryException {
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
         Page page = new Page(pageId, content);
         pagesDAO.store(page);
     }
 
     public void setPageMeta(GameModel gm, String pageId, Page page) throws RepositoryException {
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
         page.setId(pageId);
         pagesDAO.setMeta(page);
     }
 
     public void movePage(GameModel gm, String pageId, int pos) throws RepositoryException {
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
         pagesDAO.move(pageId, pos);
     }
 
     public void deletePages(GameModel gm) throws RepositoryException {
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
         pagesDAO.delete();
     }
 
     public void deletePage(GameModel gm, String pageId) throws RepositoryException {
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
         pagesDAO.deletePage(pageId);
     }
 
     public Page patchPage(GameModel gm, String pageId, JsonNode patch) throws RepositoryException, IOException, JsonPatchException {
 
-        Pages pagesDAO = this.txBean.getPagesRepositoryConnector(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
 
         Page page = this.getPage(gm, pageId);
 

@@ -16,11 +16,12 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import org.codehaus.jettison.json.JSONException;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.jcr.jta.JTARepositoryConnector;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class Pages {
+public class Pages implements JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
 
@@ -33,8 +34,17 @@ public class Pages {
      * @throws RepositoryException
      */
     public Pages(Long gameModelId) throws RepositoryException {
-        logger.error("OPEN REPOSITORY");
         this.connector = new PageConnector(gameModelId);
+    }
+
+    @Override
+    public void setManaged(boolean managed) {
+        connector.setManaged(managed);
+    }
+
+    @Override
+    public boolean getManaged() {
+        return connector.getManaged();
     }
 
     /**
@@ -152,19 +162,24 @@ public class Pages {
         this.connector.deleteRoot();
     }
 
+    @Override
+    public void prepare() {
+        this.connector.prepare();
+    }
+
     /**
      *
-     * @throws RepositoryException
      */
-    public void commit() throws RepositoryException {
+    @Override
+    public void commit() {
         this.connector.commit();
     }
 
     /**
      *
-     * @throws RepositoryException
      */
-    public void rollback() throws RepositoryException {
+    @Override
+    public void rollback() {
         this.connector.rollback();
     }
 
@@ -216,6 +231,13 @@ public class Pages {
         return pages;
     }
 
+    /**
+     * Return the first page or null is there is no pages
+     *
+     * @return
+     *
+     * @throws RepositoryException
+     */
     public Page getDefaultPage() throws RepositoryException {
         final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('"
                 + this.connector.getRootPath() + "') order by n.index, localname(n)", 1);
@@ -223,5 +245,10 @@ public class Pages {
             return new Page(query.nextNode());
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Pages(" + connector.getRootPath() + ")";
     }
 }

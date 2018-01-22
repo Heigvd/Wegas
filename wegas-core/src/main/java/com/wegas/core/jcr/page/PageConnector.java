@@ -7,26 +7,48 @@
  */
 package com.wegas.core.jcr.page;
 
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.SessionManager;
 import com.wegas.core.jcr.content.WFSConfig;
 import javax.jcr.*;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.jcr.jta.JTARepositoryConnector;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class PageConnector implements AutoCloseable{
+public class PageConnector implements JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageConnector.class);
+    private static final long serialVersionUID = 1317346293333627485L;
 
     private final Session session;
-    private Long gameModelId;
+    private final Long gameModelId;
 
-    public PageConnector(Long gameModelId) throws RepositoryException {
+    private Boolean managed = false;
+
+    /**
+     * Package protected constructor
+     *
+     * @param gameModelId
+     *
+     * @throws RepositoryException
+     */
+    PageConnector(Long gameModelId) throws RepositoryException {
         this.session = SessionManager.getSession();
         this.gameModelId = gameModelId;
+    }
+
+    @Override
+    public void setManaged(boolean managed) {
+        this.managed = managed;
+    }
+
+    @Override
+    public boolean getManaged() {
+        return this.managed;
     }
 
     private Node getRootNode() throws RepositoryException {
@@ -40,11 +62,14 @@ public class PageConnector implements AutoCloseable{
         return ret;
 
     }
-    public String getRootPath(){
+
+    public String getRootPath() {
         return WFSConfig.PAGES_ROOT.apply(this.gameModelId);
     }
+
     /**
      * @return childre NodeIterator
+     *
      * @throws RepositoryException
      */
     protected NodeIterator listChildren() throws RepositoryException {
@@ -74,23 +99,25 @@ public class PageConnector implements AutoCloseable{
     /**
      *
      * @param path
-     * @return child matching the path
+     *
+     * @return child matching the path or null if there is no such child
+     *
      * @throws RepositoryException
      */
     protected Node getChild(String path) throws RepositoryException {
-        Node ret;
         try {
-            ret = this.getRootNode().getNode(path);
+            return this.getRootNode().getNode(path);
         } catch (PathNotFoundException ex) {
-            ret = null;
+            return null;
         }
-        return ret;
     }
 
     /**
      *
      * @param name
+     *
      * @return the child
+     *
      * @throws RepositoryException
      */
     protected Node addChild(String name) throws RepositoryException {
@@ -106,6 +133,7 @@ public class PageConnector implements AutoCloseable{
     /**
      *
      * @param name
+     *
      * @throws RepositoryException
      */
     protected void deleteChild(String name) throws RepositoryException {
@@ -123,24 +151,27 @@ public class PageConnector implements AutoCloseable{
         this.getRootNode().remove();
     }
 
-    /**
-     * @throws RepositoryException
-     */
-    protected void save() throws RepositoryException {
-        session.save();
+    @Override
+    public void prepare() {
+        try {
+            this.getRootNode();
+        } catch (RepositoryException ex) {
+            throw WegasErrorMessage.error("PLEASE ROLLBACK " + ex);
+        }
     }
 
     @Override
-    public void close() throws RepositoryException {
-        session.save();
+    public void commit() {
+        try {
+            session.save();
+        } catch (RepositoryException ex) {
+            throw WegasErrorMessage.error("COMMIT FAILS");
+        }
         SessionManager.closeSession(session);
     }
 
-    public void commit() throws RepositoryException{
-        this.close();
-    }
-
-    public void rollback(){
+    @Override
+    public void rollback() {
         SessionManager.closeSession(session);
     }
 }

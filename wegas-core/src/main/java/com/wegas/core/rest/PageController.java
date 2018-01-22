@@ -97,12 +97,16 @@ public class PageController {
         Page page;
         try {
             page = pageFacade.getPage(gm, pageId);
-
         } catch (RepositoryException ex) {
-            return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
+            page = null;
         }
-        return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
-                .header("Page", page.getId()).build();
+
+        if (page == null) {
+            return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
+        } else {
+            return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
+                    .header("Page", page.getId()).build();
+        }
     }
 
     /**
@@ -237,7 +241,7 @@ public class PageController {
         try {
             Page page = pageFacade.createPage(gm, id, content);
             return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
-                    .header("Page", id).build();
+                    .header("Page", page.getId()).build();
         } finally {
             websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
             gameModelLock.unlock();

@@ -11,8 +11,8 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.jta.JTASynchronizer;
-import com.wegas.core.jta.JCRConnectorProvider;
+import com.wegas.core.jcr.jta.JCRClient;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -35,7 +35,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.jta.JCRClient;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -48,7 +47,7 @@ public class EntityListener {
     private RequestManager requestManager;
 
     @Inject
-    private JCRConnectorProvider txBean;
+    private JCRConnectorProvider jcrProvider;
 
     @Inject
     private VariableInstanceFacade variableInstanceFacade;
@@ -188,8 +187,6 @@ public class EntityListener {
     }
 
     private void injectJTABean(JCRClient o) {
-        o.inject(txBean);
-        JTASynchronizer jtaSynchronizer = txBean.getJTASynchronizer();
-        jtaSynchronizer.register(o);
+        o.inject(jcrProvider);
     }
 }

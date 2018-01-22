@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.*;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
 import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class JCRFacade {
 
+    @Inject JCRConnectorProvider jCRConnectorProvider;
     /**
      *
      */
@@ -62,7 +65,8 @@ public class JCRFacade {
 
         final Boolean recursive = !force.equals("");
         logger.debug("Asking delete for node ({}), force {}", absolutePath, recursive);
-        try (final ContentConnector connector = new ContentConnector(gameModelId, workspaceType)) {
+        try {
+            ContentConnector connector = this.getContentConnector(gameModelId, workspaceType);
             AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             if (descriptor.exist()) {
                 descriptor.sync();
@@ -95,7 +99,9 @@ public class JCRFacade {
             WorkspaceType workspaceType,
             String directory) {
         logger.debug("Asking listing for directory (/{})", directory);
-        try (final ContentConnector connector = new ContentConnector(gameModelId, workspaceType)) {
+
+        try {
+            ContentConnector connector = jCRConnectorProvider.getContentConnector(gameModelId, workspaceType);
             AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(directory, connector);
             if (!dir.exist() || dir instanceof FileDescriptor) {
                 return null;
@@ -137,7 +143,9 @@ public class JCRFacade {
         if (name.equals("") || !matcher.matches()) {
             throw WegasErrorMessage.error(name + " is not a valid filename.  Letters, numbers, whitespace or \".-_\" only.");
         }
-        try (final ContentConnector connector = this.getContentConnector(gameModelId, wType)) {
+
+        try {
+            ContentConnector connector = jCRConnectorProvider.getContentConnector(gameModelId, wType);
 
             AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
             FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
@@ -242,13 +250,12 @@ public class JCRFacade {
         }
         if (fileDescriptor instanceof FileDescriptor) {
             ret = new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512);
-            connector.save();
         }
         return ret;
     }
 
-    private ContentConnector getContentConnector(long gameModelId, WorkspaceType wType) throws RepositoryException {
-        return new ContentConnector(gameModelId, wType);
+    private ContentConnector getContentConnector(long gameModelId, WorkspaceType workspaceType) throws RepositoryException {
+        return jCRConnectorProvider.getContentConnector(gameModelId, workspaceType);
     }
 
 }

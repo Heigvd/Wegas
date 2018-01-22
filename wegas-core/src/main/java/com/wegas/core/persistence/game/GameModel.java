@@ -11,9 +11,10 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.jcr.jta.JCRClient;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.core.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
@@ -32,7 +33,6 @@ import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
-import com.wegas.core.jta.JCRClient;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -71,7 +71,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Transient
     @JsonIgnore
-    private JCRConnectorProvider txBean;
+    private JCRConnectorProvider jcrProvider;
 
     /**
      *
@@ -723,7 +723,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     * @return the pages
+    * @return the pages
      */
     public Map<String, JsonNode> getPages() {
         // do not even try to fetch pages from repository if the gamemodel define a pagesURI
@@ -733,8 +733,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
                 return this.pages;
             } else if (this.getId() != null) {
                 try {
-                    return this.txBean.getPagesRepositoryConnector(this.id).getPagesContent();
+                    return this.jcrProvider.getPages(this.id).getPagesContent();
                 } catch (RepositoryException ex) {
+                    System.out.println("getPages() EXCEPTION {}" + ex);
                 }
             }
         }
@@ -746,7 +747,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public final void setPages(Map<String, JsonNode> pageMap) {
         this.pages = pageMap;
+
         if (this.id != null) {
+            // no id means not persisted
+            // no id means no JCR repository
+            // no repository means no store
+            // let @PostPersist storePaged
             this.storePages();
         }
     }
@@ -772,13 +778,15 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     private void storePages() {
         if (this.pages != null) {
             try {
-                Pages pagesDAO = this.txBean.getPagesRepositoryConnector(this.id);
+                Pages pagesDAO = this.jcrProvider.getPages(this.id);
                 pagesDAO.delete();                                              // Remove existing pages
                 // Pay Attention: this.pages != this.getPages() ! 
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
                 for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
                 }
+                // As soon as repository is up to date, clear local pages
+                this.pages = null;
 
             } catch (RepositoryException ex) {
                 System.err.println("Failed to create repository for GameModel " + this.id);
@@ -916,8 +924,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     @Override
-    public void inject(JCRConnectorProvider txBean) {
-        this.txBean = txBean;
+    public void inject(JCRConnectorProvider jcrProvider) {
+        this.jcrProvider = jcrProvider;
     }
 
     /**

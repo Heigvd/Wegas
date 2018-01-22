@@ -13,6 +13,11 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.wegas.core.ejb.PageFacade;
+import com.wegas.core.jcr.jta.JCRTestFacade;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
 import javax.inject.Inject;
@@ -29,10 +34,12 @@ public class PageTest extends AbstractArquillianTest {
     final static JsonNode pageContent = factory.objectNode()
             .put("type", "AbsoluteLayout")
             .put("@name", pageName);
-    private static final long GAME_MODEL_ID = -100L;
 
     @Inject
     private PageFacade pageFacade;
+
+    @Inject
+    private JCRTestFacade jcrTestFacade;
 
     @Before
     public void before() throws RepositoryException {
@@ -78,7 +85,6 @@ public class PageTest extends AbstractArquillianTest {
         Assert.assertEquals(pageName, page.getName());
         Assert.assertEquals(0L, (long) page.getIndex());
 
-
         final ObjectNode jsonNode = pageContent.deepCopy();
         jsonNode.put("@name", "Second Page");
         Page page1 = pageFacade.createPage(gameModel, "1", jsonNode);
@@ -86,5 +92,44 @@ public class PageTest extends AbstractArquillianTest {
         Assert.assertEquals(1, pageFacade.getPageIndex(gameModel).size());
         Assert.assertEquals("Second Page", pageFacade.getPage(gameModel, "1").getName());
         // Delete done in after
+    }
+
+    @Test
+    public void testPagesRollback() throws RepositoryException {
+
+        // first descriptor
+        NumberDescriptor desc1 = new NumberDescriptor("x");
+        desc1.setDefaultInstance(new NumberInstance(0));
+
+        variableDescriptorFacade.create(gameModel.getId(), desc1);
+
+        // second descriptor
+        NumberDescriptor desc2 = new NumberDescriptor("y");
+        desc2.setDefaultInstance(new NumberInstance(0));
+
+        variableDescriptorFacade.create(gameModel.getId(), desc2);
+
+        Assert.assertEquals(1, pageFacade.getPageIndex(gameModel).size());
+
+        jcrTestFacade.addAPage(gameModel.getId(), "b name", "2");
+
+        Assert.assertEquals(2, pageFacade.getPageIndex(gameModel).size());
+
+        try {
+            jcrTestFacade.addPageAndRename(gameModel.getId(), "c name", "3", "a");
+            Assert.fail("Transaction should have been rejeced");
+        } catch (RuntimeException ex) {
+            logger.error("Runtime exception: {}", ex);
+        }
+
+        // no new page
+        Assert.assertEquals(2, pageFacade.getPageIndex(gameModel).size());
+        GameModel gm = gameModelFacade.find(gameModel.getId());
+        for (VariableDescriptor vd : gm.getVariableDescriptors()){
+            logger.error("VD: {}", vd);
+            Assert.assertNotEquals("a", vd.getName());
+        }
+
+        pageFacade.deletePage(gameModel, "2");
     }
 }
