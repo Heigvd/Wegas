@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.jcr.RepositoryException;
 
 /**
+ * JCR Descriptor used by WegasPatch to create new files/directories
  *
  * @author maxence
  */
@@ -27,8 +28,11 @@ public class JCRDescriptorFactory implements WegasFactory {
             AbstractContentDescriptor ori = (AbstractContentDescriptor) originalObject;
             Constructor<? extends AbstractContentDescriptor> constructor = ori.getClass().getDeclaredConstructor(String.class, String.class, ContentConnector.class);
 
-            try (final ContentConnector connector = ContentConnector.getFilesConnector(gameModel.getId())) {
-                return (T) constructor.newInstance(ori.getName(), ori.getPath(), connector);
+            try {
+                AbstractContentDescriptor newInstance = constructor.newInstance(ori.getName(), ori.getPath(), gameModel.getFilesConnector());
+                newInstance.saveToRepository();
+
+                return (T) newInstance;
             } catch (RepositoryException ex) {
                 throw new InstantiationException("JCR Repository Exception");
             }

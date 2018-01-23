@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @WegasEntity(factory = JCRDescriptorFactory.class, callback = JCRDescriptorCallback.class)
-abstract public class AbstractContentDescriptor implements ModelScoped, Mergeable, Serializable{
+abstract public class AbstractContentDescriptor implements ModelScoped, Mergeable, Serializable {
 
     private static final long serialVersionUID = 7654657575516817326L;
 
@@ -51,7 +51,6 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
             return new FileDescriptor(name, path, null);
         }
     }
-
 
     @JsonIgnore
     private boolean synched = false;
@@ -147,7 +146,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @Override
     @JsonIgnore
     public String getRefId() {
-        return this.getFullPath();
+        return this.getFullPath() + "::" + this.getClass().getSimpleName();
     }
 
     @Override
@@ -256,6 +255,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
 
     /**
      * @return true if node exists
+     *
      * @throws RepositoryException
      */
     @JsonIgnore
@@ -422,6 +422,6 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
 
     @Override
     public String toString() {
-        return "AbstractContentDescriptor{" + "mimeType=" + mimeType + ", name=" + name + ", path=" + path + ", fileSystemAbsolutePath=" + fileSystemAbsolutePath + ", note=" + note + ", description=" + description + "}";
+        return "AbstractContentDescriptor{" + "mimeType=" + mimeType + ", name=" + name + ", path=" + path + ", fsAbsPath=" + fileSystemAbsolutePath + ", note=" + note + ", desc=" + description + "}";
     }
 }

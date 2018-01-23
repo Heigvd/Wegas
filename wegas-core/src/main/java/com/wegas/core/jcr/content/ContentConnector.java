@@ -189,7 +189,12 @@ public class ContentConnector implements JTARepositoryConnector {
      * @throws RepositoryException
      */
     protected InputStream getData(String absolutePath) throws RepositoryException {
-        return this.getProperty(absolutePath, WFSConfig.WFS_DATA).getBinary().getStream();
+        Property property = this.getProperty(absolutePath, WFSConfig.WFS_DATA);
+        if (property != null) {
+            return property.getBinary().getStream();
+        } else {
+            return new ByteArrayInputStream(new byte[0]);
+        }
     }
 
     /**
@@ -234,7 +239,7 @@ public class ContentConnector implements JTARepositoryConnector {
         Node newNode = this.getNode(absolutePath);
         InputStream input = new ByteArrayInputStream(data);
         newNode.setProperty(WFSConfig.WFS_DATA, this.session.getValueFactory().createBinary(input));
-        this.save();
+        //this.save();
     }
 
     /**

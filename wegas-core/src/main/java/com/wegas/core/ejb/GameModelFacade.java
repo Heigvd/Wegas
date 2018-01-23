@@ -17,8 +17,12 @@ import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
+import com.wegas.core.merge.patch.WegasEntityPatch;
+import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
@@ -395,14 +399,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
-    private void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
-// Clone Pages
-        // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
-        //Clone files & history (?)
+    public void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
             try {
-                ContentConnector connector = jcrConnectorProvider.getContentConnector(newGameModel.getId(), wt);
-                connector.cloneRoot(srcGameModel.getId());
+                ContentConnector srcRepo = jcrConnectorProvider.getContentConnector(srcGameModel.getId(), wt);
+                AbstractContentDescriptor srcRoot = DescriptorFactory.getDescriptor("/", srcRepo);
+
+                ContentConnector newRepo = jcrConnectorProvider.getContentConnector(newGameModel.getId(), wt);
+                AbstractContentDescriptor newRoot = DescriptorFactory.getDescriptor("/", newRepo);
+
+                WegasPatch patch = new WegasEntityPatch(newRoot, srcRoot, true);
+
+                patch.applyForce(newGameModel, newRoot);
             } catch (RepositoryException ex) {
                 throw WegasErrorMessage.error("Duplicating repository " + srcGameModel.getId() + " failure: " + ex);
             }
@@ -462,7 +470,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return gm;
     }
 
-    public List<GameModel> getImplementations(GameModel gm){
+    public List<GameModel> getImplementations(GameModel gm) {
         TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
         query.setParameter("id", gm.getId());
         return query.getResultList();

@@ -12,6 +12,8 @@ import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.DirectoryDescriptor;
 import com.wegas.core.jcr.content.FileDescriptor;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
+import com.wegas.core.jcr.jta.JCRConnectorProviderTx;
 import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
 import javax.jcr.RepositoryException;
@@ -44,8 +46,14 @@ public abstract class RepositoryVisitor {
     }
 
     public void visitGameModelFiles(GameModel gameModel) throws RepositoryException {
-        try (final ContentConnector repository = new ContentConnector(gameModel.getId(), ContentConnector.WorkspaceType.FILES)) {
-            this.visitRepository(repository);
+        ContentConnector connector = null;
+        try {
+            connector = (ContentConnector) JCRConnectorProviderTx.getDetachedConnector(gameModel.getId(), JCRConnectorProvider.RepositoryType.FILES);
+            this.visitRepository(connector);
+        } finally {
+            if (connector != null) {
+                connector.rollback();
+            }
         }
     }
 
@@ -92,6 +100,8 @@ public abstract class RepositoryVisitor {
                     data = fd.getData().getContent();
 
                     sb.append(System.lineSeparator());
+                    indent(sb);
+                    sb.append("Meta: ").append(fd.getDescription());
                     indent(sb);
                     sb.append("Content (first bytes only): ");
 

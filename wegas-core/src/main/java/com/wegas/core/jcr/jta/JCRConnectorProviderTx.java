@@ -102,7 +102,7 @@ public class JCRConnectorProviderTx implements Serializable {
      *
      * @throws RepositoryException something when wrong (no store ?)
      */
-    protected static JTARepositoryConnector getDetachedConnector(Long gameModelId, RepositoryType type) throws RepositoryException {
+    public static JTARepositoryConnector getDetachedConnector(Long gameModelId, RepositoryType type) throws RepositoryException {
         JTARepositoryConnector repo;
         switch (type) {
             case PAGES:

@@ -56,7 +56,8 @@ public interface WegasCallback {
      * @param child      the child to remove from container
      * @param container  container to remove child from
      * @param identifier child identifier
-     * @return child key (key for map and idx for list), null is nothing was removed
+     *
+     * @return child key (key for map and idx for list), null if nothing was removed
      */
     default public Object remove(Object child, Object container, Object identifier) {
         return null;

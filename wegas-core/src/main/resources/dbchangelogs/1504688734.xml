@@ -40,12 +40,6 @@
         <addColumn tableName="iteration">
             <column name="refid" type="varchar(255)"/>
         </addColumn>
-        <addColumn tableName="mcqcurrentresult">
-            <column name="refid" type="varchar(255)"/>
-        </addColumn>
-        <addColumn tableName="mcqreplies">
-            <column name="refid" type="varchar(255)"/>
-        </addColumn>
         <addColumn tableName="mcqreply">
             <column name="refid" type="varchar(255)"/>
         </addColumn>
@@ -146,8 +140,6 @@
         <sql>UPDATE gamemodel SET refid = 'gamemodel:' || gamemodelid || random_string(6);</sql>
         <sql>UPDATE gamemodelcontent SET refid = 'gamemodelcontent:' || id || random_string(6);</sql>
         <sql>UPDATE iteration SET refid = 'iteration:' || id || random_string(6);</sql>
-        <sql>UPDATE mcqcurrentresult SET refid = 'mcqcurrentresult:' || id || random_string(6);</sql>
-        <sql>UPDATE mcqreplies SET refid = 'mcqreplies:' || id || random_string(6);</sql>
         <sql>UPDATE mcqreply SET refid = 'mcqreply:' || id || random_string(6);</sql>
         <sql>UPDATE mcqresult SET refid = 'mcqresult:' || id || random_string(6);</sql>
         <sql>UPDATE message SET refid = 'message:' || id || random_string(6);</sql>

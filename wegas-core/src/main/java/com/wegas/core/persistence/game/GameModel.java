@@ -10,6 +10,7 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
+import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
@@ -995,8 +996,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return map;
     }
 
-    <<<<<<< HEAD
-
     public enum GmType {
         /**
          * A model
@@ -1014,15 +1013,19 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
          * Private COPY for games
          */
         PLAY
+    }
 
-
-
-
-    =======
     @Override
     public void inject(JCRConnectorProvider jcrProvider) {
         this.jcrProvider = jcrProvider;
-         >>> >>> > JCR_JTA
+    }
+
+    @JsonIgnore
+    public ContentConnector getFilesConnector() throws RepositoryException {
+        if (jcrProvider != null) {
+            return jcrProvider.getContentConnector(this.getId(), ContentConnector.WorkspaceType.FILES);
+        }
+        return null;
     }
 
     /**

@@ -15,6 +15,7 @@ import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.DirectoryDescriptor;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
@@ -62,6 +63,9 @@ public class ModelFacade {
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private JCRConnectorProvider jCRConnectorProvider;
 
     /**
      * return a new list of managed scenarios
@@ -264,55 +268,50 @@ public class ModelFacade {
                 gameModelFacade.duplicateRepository(model, srcModel);
 
                 // Open the brand new model repository
-                try (ContentConnector modelRepo = new ContentConnector(model.getId(), ContentConnector.WorkspaceType.FILES)) {
+                try {
+                    ContentConnector modelRepo = jCRConnectorProvider.getContentConnector(model.getId(), ContentConnector.WorkspaceType.FILES);
                     logger.error("JCR FILES");
 
                     // open all other repositories but the one whose modelRepo is a copy of
                     List<ContentConnector> repositories = new ArrayList<>(scenarios.size());
                     for (GameModel scenario : scenarios) {
-                        repositories.add(new ContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES));
+                        repositories.add(jCRConnectorProvider.getContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES));
                     }
 
-                    try {
-                        List<AbstractContentDescriptor> fileQueue = new LinkedList<>();
-                        fileQueue.add(DescriptorFactory.getDescriptor("/", modelRepo));
+                    List<AbstractContentDescriptor> fileQueue = new LinkedList<>();
+                    fileQueue.add(DescriptorFactory.getDescriptor("/", modelRepo));
 
-                        while (!fileQueue.isEmpty()) {
-                            AbstractContentDescriptor item = fileQueue.remove(0);
-                            logger.error("Process {}", item);
-                            String path = item.getFullPath();
-                            boolean exists = true;
-                            for (ContentConnector otherRepository : repositories) {
-                                logger.error(" other repo: path {}", path);
-                                AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, otherRepository);
-                                if (!descriptor.exist() || !descriptor.getClass().equals(item.getClass())) {
-                                    logger.error("BREAK");
-                                    exists = false;
-                                    break;
-                                }
+                    while (!fileQueue.isEmpty()) {
+                        AbstractContentDescriptor item = fileQueue.remove(0);
+                        logger.error("Process {}", item);
+                        String path = item.getFullPath();
+                        boolean exists = true;
+                        for (ContentConnector otherRepository : repositories) {
+                            logger.error(" other repo: path {}", path);
+                            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, otherRepository);
+                            if (!descriptor.exist() || !descriptor.getClass().equals(item.getClass())) {
+                                logger.error("BREAK");
+                                exists = false;
+                                break;
                             }
-                            if (exists) {
-                                logger.error(" item exists");
-                                item.setVisibility(ModelScoped.Visibility.INHERITED);
+                        }
+                        if (exists) {
+                            logger.error(" item exists");
+                            item.setVisibility(ModelScoped.Visibility.INHERITED);
 
-                                item.setContentToRepository();
-                                item.getContentFromRepository();
+                            item.setContentToRepository();
+                            item.getContentFromRepository();
 
-                                if (item instanceof DirectoryDescriptor) {
-                                    // directory exists in all scenarios: process children
-                                    fileQueue.addAll(((DirectoryDescriptor) item).list());
-                                }
-                            } else {
-                                // item does not exists in all scenario -> delete
-                                logger.error(" item does not exist");
-                                item.delete(true);
+                            if (item instanceof DirectoryDescriptor) {
+                                // directory exists in all scenarios: process children
+                                fileQueue.addAll(((DirectoryDescriptor) item).list());
                             }
+                        } else {
+                            // item does not exists in all scenario -> delete
+                            logger.error(" item does not exist");
+                            item.delete(true);
+                        }
 
-                        }
-                    } finally {
-                        for (ContentConnector connector : repositories) {
-                            connector.close();
-                        }
                     }
 
                 } catch (RepositoryException ex) {
@@ -537,26 +536,24 @@ public class ModelFacade {
 
             if (reference != null) {
 
-                try (ContentConnector modelRepo = new ContentConnector(model.getId(), ContentConnector.WorkspaceType.FILES);
-                        ContentConnector refRepo = new ContentConnector(reference.getId(), ContentConnector.WorkspaceType.FILES)) {
+                ContentConnector modelRepo = jCRConnectorProvider.getContentConnector(model.getId(), ContentConnector.WorkspaceType.FILES);
+                ContentConnector refRepo = jCRConnectorProvider.getContentConnector(reference.getId(), ContentConnector.WorkspaceType.FILES);
 
-                    AbstractContentDescriptor modelRoot = DescriptorFactory.getDescriptor("/", modelRepo);
-                    AbstractContentDescriptor refRoot = DescriptorFactory.getDescriptor("/", refRepo);
+                AbstractContentDescriptor modelRoot = DescriptorFactory.getDescriptor("/", modelRepo);
+                AbstractContentDescriptor refRoot = DescriptorFactory.getDescriptor("/", refRepo);
 
-                    //diff from ref to model files
-                    WegasPatch patch = new WegasEntityPatch(refRoot, modelRoot, Boolean.TRUE);
+                //diff from ref to model files
+                WegasPatch patch = new WegasEntityPatch(refRoot, modelRoot, Boolean.TRUE);
 
-                    for (GameModel scenario : implementations) {
-                        // apply patch to each implementations
-                        try (ContentConnector repo = new ContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES)) {
-                            AbstractContentDescriptor root = DescriptorFactory.getDescriptor("/", repo);
-                            patch.apply(scenario, root);
-                        }
-                    }
-
-                    // and patch the reference
-                    patch.apply(reference, refRoot);
+                for (GameModel scenario : implementations) {
+                    // apply patch to each implementations
+                    ContentConnector repo = jCRConnectorProvider.getContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES);
+                    AbstractContentDescriptor root = DescriptorFactory.getDescriptor("/", repo);
+                    patch.apply(scenario, root);
                 }
+
+                // and patch the reference
+                patch.apply(reference, refRoot);
             }
         } else {
             throw WegasErrorMessage.error("GameModel " + model + " is not a model (sic)");

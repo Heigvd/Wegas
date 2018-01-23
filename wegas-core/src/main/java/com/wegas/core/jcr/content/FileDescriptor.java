@@ -242,7 +242,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
 
     /**
      * File content purpose is to define equals methods against the content
-     *
      */
     public static class FileContent {
 
