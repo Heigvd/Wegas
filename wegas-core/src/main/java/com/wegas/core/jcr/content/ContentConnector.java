@@ -428,6 +428,7 @@ public class ContentConnector implements JTARepositoryConnector {
         try {
             this.getNode("/").remove();
             this.session.save();
+            connector.session.save();
 
             // TODO copy reposity without saving the workspace !
             this.session.getWorkspace().copy(connector.workspaceRoot + "/", this.workspaceRoot + "/");

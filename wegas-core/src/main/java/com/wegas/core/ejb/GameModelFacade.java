@@ -412,7 +412,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
                 patch.applyForce(newGameModel, newRoot);
             } catch (RepositoryException ex) {
-                throw WegasErrorMessage.error("Duplicating repository " + srcGameModel.getId() + " failure: " + ex);
+                throw WegasErrorMessage.error("Duplicating repository gm_" + srcGameModel.getId() + " failure: " + ex);
             }
         }
     }
