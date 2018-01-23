@@ -9,6 +9,7 @@ package com.wegas.core.jcr.content;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.SessionManager;
+import com.wegas.core.jcr.jta.JTARepositoryConnector;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +24,6 @@ import java.util.zip.ZipOutputStream;
 import javax.jcr.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.jcr.jta.JTARepositoryConnector;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -382,6 +382,7 @@ public class ContentConnector implements JTARepositoryConnector {
         try {
             this.getNode("/").remove();
             this.session.save();
+            connector.session.save();
 
             // TODO copy reposity without saving the workspace !
             this.session.getWorkspace().copy(connector.workspaceRoot + "/", this.workspaceRoot + "/");
