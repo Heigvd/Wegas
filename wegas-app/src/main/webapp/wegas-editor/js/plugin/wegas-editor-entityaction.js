@@ -795,18 +795,19 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 searchField = Y.one('.wegas-filter-input input'),
                 searchBtn = Y.one('.wegas-filter-input button'),
                 currentSearch = searchField.get('value'),
+                variableTV = Y.Widget.getByNode(".wegas-editor-variabletreeview"),
                 searchValue = '"' + scriptAlias + '"';
             if (currentSearch === searchValue) {
                 // Seems we are already searching for this entity. Removing search
                 searchField.set('value', '');
-                Y.Widget.getByNode(searchField).checkSearchField({
+                variableTV.checkSearchField({
                     prevVal: searchValue,
                     newVal: ''
                 });
             } else {
                 searchField.set('value', searchValue);
-                Y.Widget.getByNode(searchField).checkSearchField({ prevVal: currentSearch, newVal: searchValue }, true);
-                Y.Widget.getByNode(searchField).serverSearch();
+                variableTV.checkSearchField({ prevVal: currentSearch, newVal: searchValue }, true);
+                variableTV.serverSearch();
             }
         }
     }, {
