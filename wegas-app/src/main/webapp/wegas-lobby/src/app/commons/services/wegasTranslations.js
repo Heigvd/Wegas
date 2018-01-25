@@ -84,6 +84,16 @@ angular.module('wegas.service.wegasTranslations', [])
                             fr: "scénaristes"
                         }
                     },
+                    'modeler': {
+                        singular: {
+                            en: "modeler",
+                            fr: "modeleur"
+                        },
+                        plural: {
+                            en: "modelers",
+                            fr: "modeleurs"
+                        }
+                    },
                     'admin': {
                         singular: {
                             en: "administrator",
@@ -122,6 +132,16 @@ angular.module('wegas.service.wegasTranslations', [])
                         plural: {
                             en: "scenarios",
                             fr: "scénarios"
+                        }
+                    },
+                    'model': {
+                        singular: {
+                            en: "model",
+                            fr: "modèle"
+                        },
+                        plural: {
+                            en: "models",
+                            fr: "modèles"
                         }
                     },
                     'token': {
@@ -950,6 +970,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': startSentence(keywords.scenarist.singular.en),
                             'fr': startSentence(keywords.scenarist.singular.fr)
                         },
+                        'PRIVATE-WS-MODELER-BTN': {
+                            'en': startSentence(keywords.modeler.singular.en),
+                            'fr': startSentence(keywords.modeler.singular.fr)
+                        },
                         'PRIVATE-WS-ADMIN-BTN': {
                             'en': startSentence(keywords.admin.singular.en),
                             'fr': startSentence(keywords.admin.singular.fr)
@@ -1436,7 +1460,112 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "No archived " + keywords.session.singular.en + " corresponds to search string ",
                             'fr': "Aucune " + keywords.session.singular.fr + " archivée répondant au critère "
                         },
-
+                        // Private Modeler
+                        'MODELER-INDEX-ADD-TITLE': {
+                            'en': "New " + keywords.model.singular.en,
+                            'fr': "Nouveau " + keywords.model.singular.fr
+                        },
+                        'MODELER-INDEX-EXTRACT-TITLE': {
+                            'en': "Extract " + keywords.model.singular.en,
+                            'fr': "Extraire un " + keywords.model.singular.fr
+                        },
+                        'MODELER-INDEX-ME-FIRST-TITLE': {
+                            'en': "List my " + keywords.model.plural.en + " first",
+                            'fr': "Lister mes " + keywords.model.plural.fr + " en premier"
+                        },
+                        'MODELER-INDEX-ME-FIRST-TOOLTIP': {
+                            'en': startSentence(keywords.model.plural.en) + " are always ordered by creation date, optionally starting with my own",
+                            'fr': "Les " + keywords.model.plural.fr + " sont ordonnés par date de création, en option avec les miens en premier"
+                        },
+                        'MODELER-INDEX-ADD-NAME-INPUT': {
+                            'en': startSentence(keywords.model.singular.en) + " name",
+                            'fr': "Nom du " + keywords.model.singular.fr
+                        },
+                        'MODELER-INDEX-ADD-SCENARIO-INPUT': {
+                            'en': "Based on " + keywords.model.singular.en,
+                            'fr': "Basé sur le " + keywords.model.singular.fr
+                        },
+                        'MODELER-INDEX-ARCHIVE-BTN': {
+                            'en': "Archived " + keywords.model.singular.en,
+                            'fr': startSentence(keywords.model.singular.fr) + " archivé"
+                        },
+                        'MODELER-INDEX-ARCHIVES-BTN': {
+                            'en': "archived " + keywords.model.plural.en,
+                            'fr': keywords.model.plural.fr + " archivés"
+                        },
+                        'MODELER-INDEX-LIST-TITLE': {
+                            'en': startSentence(keywords.model.plural.en),
+                            'fr': startSentence(keywords.model.plural.fr)
+                        },
+                        'MODELER-INDEX-LIST-NO-MODEL': {
+                            'en': "No current " + keywords.model.singular.en + " corresponds to your search string ",
+                            'fr': "Aucun " + keywords.model.singular.fr + " en cours répondant à votre critère de recherche "
+                        },
+                        'MODELER-MODALE-ARCHIVE-TITLE': {
+                            'en': "Archived " + keywords.model.plural.en,
+                            'fr': startSentence(keywords.model.plural.fr) + " archivés"
+                        },
+                        'MODELER-MODALE-ARCHIVE-SEARCH-INPUT': {
+                            'en': "Search " + keywords.model.singular.en,
+                            'fr': "Rechercher un " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-ARCHIVE-MOVE-CURRENT-BTN': {
+                            'en': "Move to current " + keywords.model.plural.en,
+                            'fr': "Déplacer vers les " + keywords.model.plural.fr + " en cours"
+                        },
+                        'MODELER-MODALE-ARCHIVE-DELETE-BTN': {
+                            'en': "Delete " + keywords.model.singular.en,
+                            'fr': "Supprimer le " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-ARCHIVE-DELETE-CONFIRM': {
+                            'en': "Are you sure you want to delete this archived " + keywords.model.singular.en +
+                                " ? This action is irreversible.",
+                            'fr': "Êtes-vous sûr de vouloir supprimer ce " + keywords.model.singular.fr +
+                                " ? Cette action est irréversible."
+                        },
+                        'MODELER-MODALE-ARCHIVE-NO-SCENARIO': {
+                            'en': "No archived " + keywords.model.singular.en + " corresponds to search string ",
+                            'fr': "Aucun " + keywords.model.singular.fr + " archivé répondant au critère "
+                        },
+                        'MODELER-CARD-DUPLICATE-BTN': {
+                            'en': "Duplicate this " + keywords.model.singular.en,
+                            'fr': "Dupliquer ce " + keywords.model.singular.fr
+                        },
+                        'MODELER-CARD-EDIT-BTN': {
+                            'en': "Edit " + keywords.model.singular.en,
+                            'fr': "Modifier le " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-USERS-TITLE': {
+                            'en': "Co-" + keywords.modeler.plural.en,
+                            'fr': "Co-" + keywords.modeler.plural.fr
+                        },
+                        'MODELER-MODALE-USERS-EDIT-CHECKBOX': {
+                            'en': "Edit " + keywords.model.singular.en,
+                            'fr': "Modifier le " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-USERS-DUPLICATE-CHECKBOX': {
+                            'en': "Duplicate " + keywords.model.singular.en,
+                            'fr': "Dupliquer le " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-VERSIONS-NEW-TITLE-BTN': {
+                            'en': "This action will store a new version of the " + keywords.model.singular.en +
+                                ". The new version can later be restored as a new scenario.",
+                            'fr': "Cette action va enregistrer une nouvelle version du " +
+                                keywords.model.singular.fr + ". La nouvelle version peut être restaurée plus tard sous forme de nouveau scénario."
+                        },
+                        'MODELER-MODALE-VERSIONS-DUPLICATE-TITLE-BTN': {
+                            'en': "This will generate a new " + keywords.model.singular.en + " based on this one.",
+                            'fr': "Cette action génère un nouveau " + keywords.model.singular.fr +
+                                " basé sur celui-ci"
+                        },
+                        'MODELER-MODALE-VERSIONS-NO-VERSION': {
+                            'en': "No version available for this " + keywords.model.singular.en + ".",
+                            'fr': "Ce " + keywords.model.singular.fr + " n'a pas encore de version."
+                        },
+                        'MODELER-MODALE-VERSIONS-CREATE-BTN': {
+                            'en': "Create a new " + keywords.model.singular.en + " from this version",
+                            'fr': "Créer un nouveau " + keywords.model.singular.fr + " depuis cette version"
+                        },
                         // Private Scenarist
                         'SCENARIST-INDEX-ADD-TITLE': {
                             'en': "New " + keywords.scenario.singular.en,
@@ -1826,6 +1955,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'SCENARIST': {
                             'en': startSentence(keywords.scenarist.singular.en),
                             'fr': startSentence(keywords.scenarist.singular.fr)
+                        },
+                        'MODELER': {
+                            'en': startSentence(keywords.modeler.singular.en),
+                            'fr': startSentence(keywords.modeler.singular.fr)
                         },
                         'ADMIN': {
                             'en': startSentence(keywords.admin.singular.en),

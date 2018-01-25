@@ -1,0 +1,6 @@
+<div 
+	ng-repeat="color in colors" 
+	ng-class="{true:'color--selected', false: ''}[color == activeColor]" 
+	class="color illustration illustration--medium illustration--{{color}}"
+	ng-click="change(color)">
+</div>

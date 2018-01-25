@@ -1,17 +1,17 @@
-angular.module('private.scenarist.settings.directives', [
+angular.module('private.modeler.settings.directives', [
     'wegas.service.customize'
 ])
-    .directive('scenaristSettingsIndex', function() {
+    .directive('modelerSettingsIndex', function() {
         "use strict";
         return {
             scope: {
                 close: "&"
             },
-            templateUrl: 'app/private/scenarist/settings/directives.tmpl/index.html',
-            controller: "ScenaristSettingsIndexController as settingsIndexCtrl"
+            templateUrl: 'app/private/modeler/settings/directives.tmpl/index.html',
+            controller: "ModelerSettingsIndexController as settingsIndexCtrl"
         };
     })
-    .controller("ScenaristSettingsIndexController", function ScenaristSettingsIndexController($rootScope, $scope, $stateParams, ScenariosModel, Flash) {
+    .controller("ModelerSettingsIndexController", function ModelerSettingsIndexController($rootScope, $scope, $stateParams, ScenariosModel, Flash) {
         "use strict";
         var ctrl = this,
             initTabs = function() {
@@ -54,8 +54,7 @@ angular.module('private.scenarist.settings.directives', [
         ctrl.tabs = initTabs();
 
         ctrl.updateScenario = function() {
-
-            ScenariosModel.getScenario("LIVE", $stateParams.scenarioId).then(function(response) {
+            ScenariosModel.getScenario("LIVE", $stateParams.scenarioId, "MODEL").then(function(response) {
                 ctrl.scenario = response.data || {};
                 if (response.isErroneous()) {
                     response.flash();
@@ -154,7 +153,7 @@ angular.module('private.scenarist.settings.directives', [
         };
 
         ctrl.save = function() {
-            ScenariosModel.updateScenario(ctrl.scenario.id, ctrl.infos).then(function(response) {
+            ScenariosModel.updateScenario(ctrl.scenario.id, ctrl.infos, "MODEL").then(function(response) {
                 if (!response.isErroneous()) {
                     $rootScope.$emit("changeScenarios", true);
                     $scope.close();
@@ -181,28 +180,28 @@ angular.module('private.scenarist.settings.directives', [
         ctrl.updateScenario();
         ctrl.activeTab("infos");
     })
-    .directive('scenaristCustomizeInfos', function() {
+    .directive('modelerCustomizeInfos', function() {
         "use strict";
         return {
             scope: {
                 activeInfos: "="
             },
-            templateUrl: 'app/private/scenarist/settings/directives.tmpl/infos-form.html'
+            templateUrl: 'app/private/modeler/settings/directives.tmpl/infos-form.html'
         };
     })
-    .directive('scenaristCustomizeAdvanced', function() {
+    .directive('modelerCustomizeAdvanced', function() {
         "use strict";
         return {
             scope: {
                 activeInfos: "="
             },
-            templateUrl: 'app/private/scenarist/settings/directives.tmpl/infos-advanced.html'
+            templateUrl: 'app/private/modeler/settings/directives.tmpl/infos-advanced.html'
         };
     })
-    .directive('scenaristCustomizeIcons', function(Customize) {
+    .directive('modelerCustomizeIcons', function(Customize) {
         "use strict";
         return {
-            templateUrl: 'app/private/scenarist/settings/directives.tmpl/icons-picker.html',
+            templateUrl: 'app/private/modeler/settings/directives.tmpl/icons-picker.html',
             scope: {
                 activeIcon: "=",
                 change: "="
@@ -212,10 +211,10 @@ angular.module('private.scenarist.settings.directives', [
             }
         };
     })
-    .directive('scenaristCustomizeColors', function(Customize) {
+    .directive('modelerCustomizeColors', function(Customize) {
         "use strict";
         return {
-            templateUrl: 'app/private/scenarist/settings/directives.tmpl/colors-picker.html',
+            templateUrl: 'app/private/modeler/settings/directives.tmpl/colors-picker.html',
             scope: {
                 activeColor: "=",
                 change: "="

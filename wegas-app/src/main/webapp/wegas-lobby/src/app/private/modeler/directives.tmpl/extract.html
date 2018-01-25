@@ -1,0 +1,28 @@
+<div style="max-width:30em; margin:auto;">
+    <a class="non-collapsible-close-button button button--medium button--round button--default-reverse button--label-off button--close" ng-click="cancelScenario()">
+        <span class="button__label">X</span>
+    </a>
+    <h3>{{'MODELER-INDEX-EXTRACT-TITLE'| translate}}</h3>
+    <form class="form form__extract-model">
+        <div class="form__row">
+            <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newScenario.name" placeholder="{{'MODELER-INDEX-ADD-NAME-INPUT'| translate}}" autocomplete="off" style="background:#fff">
+        </div>
+        <div class="form__row">
+            <span  ng-repeat="scenario in scenariomenu" >
+                <input type='checkbox' ng-model="selectedIds[scenario.id]" value="{{scenario.id}}" id="{{scenario.id}}"><label for="{{scenario.id}}">{{scenario.name}}</label>
+            </span>
+            <!--<select class="form__row__entry input input--small" ng-model="newScenario.templateId">
+                <option value="0" disabled>{{'MODELER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
+                <option ng-repeat="scenario in scenariomenu" value="{{scenario.id}}">{{scenario.name}}</option>
+            </select>-->
+        </div>
+        <div class="form__row form__row--right">
+            <a class="modal__tools__button button button--small button--default" ng-click="cancelScenario()">
+                <span class="button__label">{{'PRIVATE-MODALE-SETTINGS-CANCEL-BTN'| translate}}</span>
+            </a>
+            <a ng-click="extractModel()" class="form__row__btn form__submit button button--success" style="margin-left:8px">
+                <span class="button__label">{{'SCENARIST-INDEX-ADD-BTN'| translate}}</span>
+            </a>
+        </div>
+    </form>
+</div>

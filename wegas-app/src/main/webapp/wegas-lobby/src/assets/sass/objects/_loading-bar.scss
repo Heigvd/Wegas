@@ -21,6 +21,12 @@ div#loading-bar .bar {
     }
 }
 
+.modeler{
+    div#loading-bar .bar {
+        background: $modeler-color;
+    }
+}
+
 .admin{
     div#loading-bar .bar {
         background: $admin-color;

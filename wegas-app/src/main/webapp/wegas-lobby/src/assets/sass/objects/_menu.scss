@@ -156,6 +156,12 @@ $color-bg-hover: #eee;
         }
     }
 
+    .button--modeler{
+        &:before, &:hover:before, &:active:before, &:visited:before{
+            color:$modeler-color;
+        }
+    }
+
     .button--admin{
         &:before, &:hover:before, &:active:before, &:visited:before{
             color:$admin-color;

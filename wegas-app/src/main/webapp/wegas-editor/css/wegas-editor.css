@@ -579,3 +579,25 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-uploadfile input {
     display: none;
 }
+
+/*
+ * Modeler
+ */
+/* from wegas-layout-resizeable */
+.yui3-skin-sam.wegas-modeler-mode .wegas-layout-resizable,
+.yui3-skin-sam.wegas-modeler-mode .wegas-layout-resizable .yui3-resize-handle{
+    background-color: palevioletred;
+}
+/* wegas-presence.css */
+.yui3-skin-sam.wegas-modeler-mode .yui3-wegas-editorchat {
+    background-color: palevioletred;
+    border: 1px solid palevioletred;
+    /*border: 1px solid #2f3642;*/
+}
+
+/* wegas-presence.css 
+.yui3-skin-sam.wegas-modeler-mode .yui3-wegas-editorchat .conversation {
+    background-color: #daa8bd;
+}
+*/
+

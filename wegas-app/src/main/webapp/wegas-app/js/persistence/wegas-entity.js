@@ -68,9 +68,6 @@ YUI.add("wegas-entity", function(Y) {
                 type: STRING,
                 optional: true, // The refId is optional for entites that have not been persisted
                 writeOnce: "initOnly",
-                setter: function(val) {
-                    return val * 1;
-                },
                 _inputex: {
                     _type: "uneditable",
                     wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",

@@ -872,6 +872,20 @@
     }
 }
 
+
+.modeler {
+    @extend .centered-page;
+    min-height: 50%;
+    .view {
+        &.view--menu {
+            border-color: $modeler-color;
+            transition: .3s;
+        }
+    }
+}
+
+
+
 .admin {
     @extend .centered-page;
     .view {

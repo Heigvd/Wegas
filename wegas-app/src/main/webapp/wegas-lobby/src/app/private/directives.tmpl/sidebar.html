@@ -4,8 +4,8 @@
         <label class="btn--menu" for="menu-toggler">
             <span></span>
             <h2 id="roleMenuTitle" class="view__headding-workspace" ng-click="menuClick($event)">
-                <a id="roleMenuTitleBtn" class="button button--default-reverse" ng-class="'button--'+currentRole.toLowerCase()"
-                   style="line-height:16px">{{'PRIVATE-WS-TITLE-NAME' | translate: translationWorkspace}}</a>
+                <a id="roleMenuTitleBtn" class="button button--default-reverse" ng-class="'button--' + currentRole.toLowerCase()"
+                   style="line-height:16px">{{'PRIVATE-WS-TITLE-NAME'| translate: translationWorkspace}}</a>
             </h2>
         </label>
         <div class="menu">
@@ -13,37 +13,43 @@
                 <li>
                     <a ui-sref-active="button--active" ui-sref="wegas.private.player"
                        class="button button--default-reverse button--player">
-                        <span class="button__label">{{'PRIVATE-WS-PLAYER-BTN' | translate}}</span>
+                        <span class="button__label">{{'PRIVATE-WS-PLAYER-BTN'| translate}}</span>
                     </a>
                 </li>
                 <li ng-if="user.isTrainer || user.isScenarist || user.isAdmin">
                     <a ui-sref-active="button--active" ui-sref="wegas.private.trainer"
-                       class="button button--default-reverse button--trainer"><span class="button__label">{{'PRIVATE-WS-TRAINER-BTN' | translate}}</span></a>
+                       class="button button--default-reverse button--trainer"><span class="button__label">{{'PRIVATE-WS-TRAINER-BTN'| translate}}</span></a>
                 </li>
                 <li ng-if="user.isScenarist || user.isAdmin">
                     <a ui-sref-active="button--active" ui-sref="wegas.private.scenarist"
-                       class="button button--default-reverse button--scenarist"><span class="button__label">{{'PRIVATE-WS-SCENARIST-BTN' | translate}}</span></a>
+                       class="button button--default-reverse button--scenarist"><span class="button__label">{{'PRIVATE-WS-SCENARIST-BTN'| translate}}</span></a>
                 </li>
+
+                <li ng-if="user.isAdmin">
+                    <a ui-sref-active="button--active" ui-sref="wegas.private.modeler"
+                       class="button button--default-reverse button--modeler"><span class="button__label">{{'PRIVATE-WS-MODELER-BTN'| translate}}</span></a>
+                </li>
+
                 <li ng-if="user.isAdmin">
                     <a ui-sref-active="button--active" ui-sref="wegas.private.admin"
-                       class="button button--default-reverse button--admin"><span class="button__label">{{'PRIVATE-WS-ADMIN-BTN' | translate}}</span></a>
+                       class="button button--default-reverse button--admin"><span class="button__label">{{'PRIVATE-WS-ADMIN-BTN'| translate}}</span></a>
                 </li>
             </ul>
         </div>
     </div>
 
     <div ng-if="!(user.isTrainer || user.isScenarist || user.isAdmin)">
-        <h2 class="view__headding-workspace" style="margin-left:42px; cursor:default">{{'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS' | translate}} </h2>
+        <h2 class="view__headding-workspace" style="margin-left:42px; cursor:default">{{'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS'| translate}} </h2>
     </div>
 
     <ul class="view__sub-menu">
         <li class="action">
             <a ng-if="user.hasAgreed" ng-click="logout()" class="button button--default-reverse button--label-off button--sign-out"
-               title="{{'PRIVATE-WS-LOGOUT-BTN' | translate}}"><span class="button__label">{{'PRIVATE-WS-LOGOUT-BTN' | translate}}</span></a>
+               title="{{'PRIVATE-WS-LOGOUT-BTN'| translate}}"><span class="button__label">{{'PRIVATE-WS-LOGOUT-BTN'| translate}}</span></a>
         </li>
         <li class="action action--language" ng-if="languages.length > 1">
-            <a class="button button--default-reverse button--language" title="{{'CHOOSE-LANGUAGE-BTN' | translate}}"><span
-                class="button__label">{{currentLanguage}}</span></a>
+            <a class="button button--default-reverse button--language" title="{{'CHOOSE-LANGUAGE-BTN'| translate}}"><span
+                    class="button__label">{{currentLanguage}}</span></a>
             <ul class="subactions">
                 <li class="subaction" ng-repeat="language in languages"><a class="button button--default-reverse"
                                                                            ng-class="{'button--active': language.key == currentLanguage}"
@@ -53,14 +59,14 @@
         </li>
         <li ng-if="user.isLocalAccount && !user.isGuest" class="action">
             <a ng-click="editProfile()" class="button button--default-reverse button--user button-without-label"
-               title="{{'PRIVATE-WS-PROFILE-BTN' | translate}}"><span
-                class="button__label">{{ user.username }}</span></a>
+               title="{{'PRIVATE-WS-PROFILE-BTN'| translate}}"><span
+                    class="button__label">{{ user.username}}</span></a>
         </li>
         <li ng-if="user.isGuest" class="action" style="cursor: default">
             <a class="button button--default-reverse button--user button-without-label unclickable"><span class="button__label">GUEST</span></a>
         </li>
         <li ng-if="!user.isLocalAccount" class="action" style="cursor: default">
-            <a class="button button--default-reverse button--user button-without-label unclickable"><span class="button__label">{{ user.username }}</span></a>
+            <a class="button button--default-reverse button--user button-without-label unclickable"><span class="button__label">{{ user.username}}</span></a>
         </li>
     </ul>
 
