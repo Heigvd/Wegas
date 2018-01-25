@@ -9,12 +9,14 @@ import commonView from '../HOC/commonView';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
 
-const Wegas = getY().Wegas;
+const { Wegas } = getY();
 const tinymceStyle = css({
     '& .mce-tinymce': {
         boxShadow: 'none',
         boxSizing: 'border-box',
     },
+    // Fix horizontal resize...
+    '& .mce-container > iframe': { width: '100% !important' },
 });
 function onFileBrowserClick(fieldName, url, type, win) {
     const filePanel = new Wegas.FileSelect();
@@ -72,7 +74,7 @@ const TINY_CONFIG = {
     // contextmenu: 'link image inserttable | cell row
     // column deletetable | formatselect forecolor',
     menubar: false,
-    resize: true,
+    resize: 'both',
     max_height: 500,
     statusbar: true,
     branding: false,
