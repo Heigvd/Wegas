@@ -87,10 +87,10 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
      */
     @JsonIgnore
     public List<AbstractContentDescriptor> list() throws RepositoryException {
-        NodeIterator nodeIterator = this.connector.listChildren(this.fileSystemAbsolutePath);
+        NodeIterator nodeIterator = this.getConnector().listChildren(this.fileSystemAbsolutePath);
         List<AbstractContentDescriptor> files = new ArrayList<>();
         while (nodeIterator.hasNext()) {
-            files.add(DescriptorFactory.getDescriptor(nodeIterator.nextNode(), this.connector));
+            files.add(DescriptorFactory.getDescriptor(nodeIterator.nextNode(), this.getConnector()));
         }
         return files;
     }

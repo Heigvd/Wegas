@@ -85,7 +85,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * The so-called visibility
      */
-    @WegasEntityProperty(cascadeOverride = {Visibility.INTERNAL})
+    @WegasEntityProperty
     private ModelScoped.Visibility visibility = ModelScoped.Visibility.PRIVATE;
     /**
      *
@@ -96,7 +96,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      *
      */
     @JsonIgnore
-    protected ContentConnector connector;
+    private ContentConnector connector;
 
     /**
      * @param absolutePath
@@ -143,6 +143,15 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         this.mimeType = mimeType;
     }
 
+    @JsonIgnore
+    protected ContentConnector getConnector() throws RepositoryException{
+        if (this.connector != null) {
+            return connector;
+        } else {
+            throw new RepositoryException("No Connector available");
+        }
+    }
+
     @Override
     @JsonIgnore
     public String getRefId() {
@@ -180,6 +189,10 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      */
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
+        try {
+            getConnector().setMimeType(fileSystemAbsolutePath, mimeType);
+        } catch (RepositoryException ex) {
+        }
     }
 
     /**
@@ -213,6 +226,10 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      */
     public void setNote(String note) {
         this.note = note == null ? "" : note;
+        try {
+            getConnector().setNote(fileSystemAbsolutePath, this.note);
+        } catch (RepositoryException ex) {
+        }
     }
 
     /**
@@ -227,6 +244,10 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      */
     public void setDescription(String description) {
         this.description = description == null ? "" : description;
+        try {
+            getConnector().setDescription(fileSystemAbsolutePath, this.description);
+        } catch (RepositoryException ex) {
+        }
     }
 
     /**
@@ -243,6 +264,10 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @Override
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
+        try {
+            getConnector().setVisibility(fileSystemAbsolutePath, this.visibility.toString());
+        } catch (RepositoryException ex) {
+        }
     }
 
     /**
@@ -260,7 +285,11 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      */
     @JsonIgnore
     public boolean exist() throws RepositoryException {
-        return connector.nodeExist(fileSystemAbsolutePath);
+        if (connector != null) {
+            return connector.nodeExist(fileSystemAbsolutePath);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -270,7 +299,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      */
     @JsonIgnore
     public boolean hasChildren() throws RepositoryException {
-        return connector.getNode(fileSystemAbsolutePath).hasNodes();
+        return getConnector().getNode(fileSystemAbsolutePath).hasNodes();
     }
 
     /**
@@ -302,7 +331,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      */
     @JsonIgnore
     public AbstractContentDescriptor addChild(AbstractContentDescriptor file) throws RepositoryException {
-        Node parent = connector.getNode(fileSystemAbsolutePath);
+        Node parent = getConnector().getNode(fileSystemAbsolutePath);
         parent.addNode(file.getName());
         file.setContentToRepository();
         return file;
@@ -324,7 +353,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     public void delete(boolean force) throws RepositoryException {
         if (this.exist()) {
             if (!this.hasChildren() || force) {
-                connector.deleteNode(fileSystemAbsolutePath);
+                getConnector().deleteNode(fileSystemAbsolutePath);
             } else {
                 throw new ItemExistsException("Save the children ! Preventing collateral damage !");
             }
@@ -336,12 +365,13 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      */
     @JsonIgnore
     public void getContentFromRepository() throws RepositoryException {
-        this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
-        this.note = connector.getNote(fileSystemAbsolutePath);
-        this.description = connector.getDescription(fileSystemAbsolutePath);
+        ContentConnector myConnector = getConnector();
+        this.mimeType = myConnector.getMimeType(fileSystemAbsolutePath);
+        this.note = myConnector.getNote(fileSystemAbsolutePath);
+        this.description = myConnector.getDescription(fileSystemAbsolutePath);
         Visibility visib;
         try {
-            visib = ModelScoped.Visibility.valueOf(connector.getVisibility(fileSystemAbsolutePath));
+            visib = ModelScoped.Visibility.valueOf(myConnector.getVisibility(fileSystemAbsolutePath));
         } catch (IllegalArgumentException ex) {
             visib = Visibility.PRIVATE;
         }
@@ -353,10 +383,12 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      */
     @JsonIgnore
     public void setContentToRepository() throws RepositoryException {
-        connector.setMimeType(fileSystemAbsolutePath, mimeType);
-        connector.setNote(fileSystemAbsolutePath, note);
-        connector.setDescription(fileSystemAbsolutePath, description);
-        connector.setVisibility(fileSystemAbsolutePath, visibility.toString());
+        ContentConnector myConnector = getConnector();
+
+        myConnector.setMimeType(fileSystemAbsolutePath, mimeType);
+        myConnector.setNote(fileSystemAbsolutePath, note);
+        myConnector.setDescription(fileSystemAbsolutePath, description);
+        myConnector.setVisibility(fileSystemAbsolutePath, visibility.toString());
         //connector.save();
     }
 
@@ -366,7 +398,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @JsonIgnore
     public void saveToRepository() throws RepositoryException {
         String parentPath = this.getPath();
-        AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
+        AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, getConnector());
         parent.addChild(this);
     }
 

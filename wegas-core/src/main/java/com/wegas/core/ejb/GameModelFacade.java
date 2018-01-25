@@ -481,8 +481,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         final Long id = gameModel.getId();
         userFacade.deletePermissions(gameModel);
 
-        TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class
-        );
+        TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
         query.setParameter("id", id);
         List<GameModel> instantiations = query.getResultList();
 
@@ -541,8 +540,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     @Override
     public List<GameModel> findAll() {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findAll", GameModel.class
-        );
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findAll", GameModel.class);
         return query.getResultList();
     }
 
@@ -633,7 +631,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         for (Map.Entry<Long, List<String>> entry : pMatrix.entrySet()) {
             Long id = entry.getKey();
             GameModel gm = this.find(id);
-            if (gm != null && gm.getStatus() == status) {
+            if (gm != null && gm.getType() == type && gm.getStatus() == status) {
                 List<String> perm = entry.getValue();
                 this.detach(gm);
                 gm.setCanView(perm.contains("View") || perm.contains("*"));
@@ -731,11 +729,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @return looked-up EJB
      */
-    public static GameModelFacade
-            lookup() {
+    public static GameModelFacade lookup() {
         try {
-            return Helper.lookupBy(GameModelFacade.class
-            );
+            return Helper.lookupBy(GameModelFacade.class);
         } catch (NamingException ex) {
             logger.error("Error retrieving gamemodelfacade", ex);
             return null;

@@ -10,11 +10,11 @@ package com.wegas.core.jcr.page;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.SessionManager;
 import com.wegas.core.jcr.content.WFSConfig;
+import com.wegas.core.jcr.jta.JTARepositoryConnector;
 import javax.jcr.*;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.jcr.jta.JTARepositoryConnector;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -67,12 +67,17 @@ public class PageConnector implements JTARepositoryConnector {
         return WFSConfig.PAGES_ROOT.apply(this.gameModelId);
     }
 
+    protected NodeIterator listChildren() throws RepositoryException {
+        Node rootNode = this.getRootNode();
+        return rootNode.getNodes();
+    }
+
     /**
      * @return childre NodeIterator
      *
      * @throws RepositoryException
      */
-    protected NodeIterator listChildren() throws RepositoryException {
+    protected NodeIterator listChildren_query() throws RepositoryException {
         return this.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" + WFSConfig.PAGES_ROOT.apply(this.gameModelId) + "') order by n.index, localname(n)");
     }
 

@@ -80,7 +80,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @JsonIgnore
     public long getLength() {
         try {
-            return connector.getLength(this.fileSystemAbsolutePath);
+            return getConnector().getLength(this.fileSystemAbsolutePath);
         } catch (PathNotFoundException ex) {
             logger.debug("Node does not exist or has no content, nothing to return");
         } catch (RepositoryException ex) {
@@ -98,7 +98,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @JsonIgnore
     public InputStream getBase64Data(long from, int len) {
         try {
-            return connector.getData(this.fileSystemAbsolutePath, from, len);
+            return getConnector().getData(this.fileSystemAbsolutePath, from, len);
         } catch (PathNotFoundException ex) {
             logger.debug("Node does not exist or has no content, nothing to return");
         } catch (RepositoryException | IOException ex) {
@@ -113,7 +113,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @JsonIgnore
     public InputStream getBase64Data() {
         try {
-            return connector.getData(this.fileSystemAbsolutePath);
+            return getConnector().getData(this.fileSystemAbsolutePath);
         } catch (PathNotFoundException ex) {
             logger.debug("Node does not exist or has no content, nothing to return");
         } catch (RepositoryException ex) {
@@ -135,18 +135,19 @@ public class FileDescriptor extends AbstractContentDescriptor {
         try {
             this.mimeType = mimeType;
             this.sync();
-            connector.setData(this.fileSystemAbsolutePath, mimeType, data);
-            this.bytes = connector.getBytesSize(fileSystemAbsolutePath);
+            ContentConnector c = getConnector();
+            c.setData(this.fileSystemAbsolutePath, mimeType, data);
+            this.bytes = c.getBytesSize(fileSystemAbsolutePath);
             if (WFSConfig.MAX_FILE_SIZE < this.bytes) {
                 this.delete(true);
                 throw WegasErrorMessage.error(this.getName() + "[" + ContentConnector.bytesToHumanReadable(this.bytes) + "] file max size exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
             }
-            Long totalSize = DescriptorFactory.getDescriptor("/", connector).getBytes();
+            Long totalSize = DescriptorFactory.getDescriptor("/", c).getBytes();
             if (totalSize > WFSConfig.MAX_REPO_SIZE) {
                 this.delete(true);
                 throw WegasErrorMessage.error("Exceeds total files storage capacity for this scenario [" + ContentConnector.bytesToHumanReadable(totalSize) + "/" + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_REPO_SIZE) + "].");
             }
-            this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
+            this.dataLastModified = c.getLastModified(fileSystemAbsolutePath);
             this.mimeType = mimeType;
         } catch (PathNotFoundException ex) {
             logger.error("Parent directory ({}) does not exist, consider checking the way you try to store datas", ex.getMessage());
@@ -180,6 +181,10 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @JsonProperty("dataLastModified")
     public void setDataLastModified(Calendar date) {
         this.dataLastModified = date;
+        try {
+            getConnector().setLastModified(fileSystemAbsolutePath, dataLastModified);
+        } catch (RepositoryException ex) {
+        }
     }
 
     /**
@@ -200,14 +205,14 @@ public class FileDescriptor extends AbstractContentDescriptor {
             //DirectorDescriptor
             throw new ClassCastException("Trying to retrieve a directory as a file");
         }
-        this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
-        this.bytes = connector.getBytesSize(fileSystemAbsolutePath);
+        this.dataLastModified = getConnector().getLastModified(fileSystemAbsolutePath);
+        this.bytes = getConnector().getBytesSize(fileSystemAbsolutePath);
         super.getContentFromRepository();
     }
 
     @Override
     public void setContentToRepository() throws RepositoryException {
-        connector.setLastModified(fileSystemAbsolutePath, dataLastModified);
+        getConnector().setLastModified(fileSystemAbsolutePath, dataLastModified);
         super.setContentToRepository();
     }
 
@@ -217,7 +222,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @JsonIgnore
     public byte[] getBytesData() throws IOException {
         try {
-            return connector.getBytesData(this.fileSystemAbsolutePath);
+            return getConnector().getBytesData(this.fileSystemAbsolutePath);
         } catch (PathNotFoundException ex) {
             logger.debug("Node does not exist or has no content, nothing to return");
         } catch (RepositoryException ex) {
@@ -227,7 +232,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     public void setBytesData(byte[] bytesData) throws RepositoryException {
-        connector.setData(this.fileSystemAbsolutePath, bytesData);
+        getConnector().setData(this.fileSystemAbsolutePath, bytesData);
     }
 
     @JsonIgnore

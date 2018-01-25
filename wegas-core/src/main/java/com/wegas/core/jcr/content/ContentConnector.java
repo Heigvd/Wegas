@@ -110,12 +110,7 @@ public class ContentConnector implements JTARepositoryConnector {
      * @throws RepositoryException
      */
     protected Node getNode(String absolutePath) throws RepositoryException {
-        try {
-            return session.getNode(this.workspaceRoot + absolutePath);
-        } catch (PathNotFoundException ex) {
-            logger.debug("Could not retrieve node ({})", ex.getMessage());
-            return null;
-        }
+        return session.getNode(this.workspaceRoot + absolutePath);
     }
 
     /**
@@ -155,15 +150,10 @@ public class ContentConnector implements JTARepositoryConnector {
      * Property getters and setters
      */
     private Property getProperty(String absolutePath, String propertyName) throws RepositoryException {
-        Node node = this.getNode(absolutePath);
-        if (node == null) {
-            return null;
-        } else {
-            try {
-                return node.getProperty(propertyName);
-            } catch (PathNotFoundException ex) {
-                logger.debug("Inexistant property ({}) on Node[{}]", propertyName, absolutePath);
-            }
+        try {
+            return this.getNode(absolutePath).getProperty(propertyName);
+        } catch (PathNotFoundException ex) {
+            logger.debug("Inexistant property ({}) on Node[{}]", propertyName, absolutePath);
         }
         return null;
     }
@@ -318,7 +308,6 @@ public class ContentConnector implements JTARepositoryConnector {
     protected void setDescription(String absolutePath, String description) throws RepositoryException {
         description = description == null ? "" : description;
         this.getNode(absolutePath).setProperty(WFSConfig.WFS_DESCRIPTION, description);
-
     }
 
     /**

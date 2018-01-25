@@ -233,7 +233,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
         modelFacade.propagateModel(model.getId());
 
         Assert.assertEquals("DefaultLogId1", model.getProperties().getLogID());
@@ -341,7 +341,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
         modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
@@ -393,7 +393,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
         modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
@@ -489,7 +489,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
 
         VariableDescriptor descriptor = getDescriptor(model, "anOtherNumber");
 
@@ -652,7 +652,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel3);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
         modelFacade.propagateModel(model.getId());
 
         List<VariableDescriptor> children = new ArrayList<>();
@@ -974,7 +974,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
         modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());

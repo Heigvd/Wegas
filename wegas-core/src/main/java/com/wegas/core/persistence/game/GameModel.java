@@ -808,7 +808,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
                 return this.pages;
             } else if (this.getId() != null) {
                 try {
-                    return this.jcrProvider.getPages(this.id).getPagesContent();
+                    Pages pagesDAO = this.jcrProvider.getPages(this.id);
+                    try {
+                        return pagesDAO.getPagesContent();
+                    } finally {
+                        if (!pagesDAO.getManaged()) {
+                            pagesDAO.rollback();
+                        }
+                    }
                 } catch (RepositoryException ex) {
                     logger.error("getPages() EXCEPTION {}", ex);
                 }
@@ -861,8 +868,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
                 }
                 // As soon as repository is up to date, clear local pages
-                this.pages = null;
-
                 this.pages = null;
             } catch (RepositoryException ex) {
                 logger.error("Failed to create repository for GameModel " + this.id);

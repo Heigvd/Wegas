@@ -18,9 +18,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Patch List or Map of AbstrctEntities
@@ -227,22 +229,33 @@ public final class WegasChildrenPatch extends WegasPatch {
                         }
 
                         if (parentMode == PatchMode.OVERRIDE) {
-                            /*
-                             first delete all children (and collect them) in order to keep only those which exists in the "toList"
-                             */
 
+                            // effective children keys from patches
+                            Set<Object> effectiveChildrenKeys = new HashSet<>();
+
+                            for (WegasPatch patch : patches) {
+                                effectiveChildrenKeys.add(patch.getIdentifier());
+                            }
+
+                            /* delete all children which does not exist any longer in the new children list */
                             for (Entry<Object, Object> entry : tmpMap.entrySet()) {
                                 WegasPatch patch;
                                 Object key = entry.getKey();
-                                Object toBeDeleted = entry.getValue();
-                                if (primitive) {
-                                    patch = new WegasPrimitivePatch(key, 0, null, null, null, null, toBeDeleted, null, false, false, false, cascade);
-                                } else {
-                                    patch = new WegasEntityPatch(key, 0, null, null, null, (Mergeable) toBeDeleted, null, recursive, false, false, false, cascade);
+
+                                if (!effectiveChildrenKeys.contains(key)) {
+                                    Object toBeDeleted = entry.getValue();
+                                    if (primitive) {
+                                        patch = new WegasPrimitivePatch(key, 0, null, null, null, null, toBeDeleted, null, false, false, false, cascade);
+                                    } else {
+                                        // DELETE and COLLECT toBeDeleted and all its children but register them within the collector with payload =
+
+                                        patch = new WegasEntityPatch(key, 0, null, null, null, (Mergeable) toBeDeleted, null, recursive, false, false, false, cascade);
+                                    }
+                                    patch.apply(targetGameModel, toBeDeleted, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                                 }
-                                patch.apply(targetGameModel, toBeDeleted, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                             }
 
+                            // force sub-patches to create nodes
                         }
 
                         logger.info("Pre Patch: target: {} from: {} to: {}", children, from, to);

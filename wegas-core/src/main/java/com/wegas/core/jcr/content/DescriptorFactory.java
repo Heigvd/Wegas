@@ -8,6 +8,7 @@
 package com.wegas.core.jcr.content;
 
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +64,9 @@ public class DescriptorFactory {
         AbstractContentDescriptor abstractContentDescriptor = new AbstractContentDescriptor(absolutePath, contentConnector) {
         };
         Node node;
-
-        node = contentConnector.getNode(abstractContentDescriptor.fileSystemAbsolutePath);
-        if (node == null) {
+        try {
+            node = contentConnector.getNode(abstractContentDescriptor.fileSystemAbsolutePath);
+        } catch (PathNotFoundException ex) {
             return new DirectoryDescriptor(absolutePath, contentConnector);     //return a directory (inexistant)
         }
         return getDescriptor(node, contentConnector);

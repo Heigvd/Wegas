@@ -52,7 +52,7 @@ public class GameModelController {
      *
      */
     @Inject
-    private ModelFacade mergeFacade;
+    private ModelFacade modelFacade;
 
     /**
      *
@@ -88,16 +88,17 @@ public class GameModelController {
      * Create a model
      *
      * @param ids comma separated list of gameModel id to base the new model on
+     * @param template
      *
-     * @return a unpersisted model
+     * @return a brand new model, not yet propagated
      *
      * @throws IOException
      */
     @POST
     @Path("extractModel/{ids}")
-    public GameModel createModel(@PathParam("ids") String ids) throws IOException {
+    public GameModel createModel(@PathParam("ids") String ids, GameModel template) throws IOException {
 
-        GameModel model = mergeFacade.createModelFromCommonContentFromIds(getIdsFromString(ids));
+        GameModel model = modelFacade.createModelFromCommonContentFromIds(template, getIdsFromString(ids));
 
         return model;
     }
@@ -115,7 +116,7 @@ public class GameModelController {
     @PUT
     @Path("propagateModel/{modelId : [1-9][0-9]*}")
     public GameModel propagateModel(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
-        return mergeFacade.propagateModel(modelId);
+        return modelFacade.propagateModel(modelId);
     }
 
     /**
@@ -129,7 +130,7 @@ public class GameModelController {
      */
     @POST
     @Path("{templateGameModelId : [1-9][0-9]*}")
-    public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws CloneNotSupportedException  {
+    public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws CloneNotSupportedException {
         // logger.info(Level.INFO, "POST GameModel");
 
         GameModel duplicate = gameModelFacade.duplicateWithDebugGame(templateGameModelId);
@@ -152,6 +153,7 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
+
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -179,6 +181,7 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
+
     @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -255,7 +258,7 @@ public class GameModelController {
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
-    public GameModel duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException{
+    public GameModel duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException {
         return gameModelFacade.duplicateWithDebugGame(entityId);
     }
 
@@ -296,7 +299,9 @@ public class GameModelController {
                     gameModelFacade.delete(gm);
                 }
                 break;
-
+            case SUPPRESSED:
+                // nothing to do since this status does not exists
+                break;
         }
         return gm;
     }
@@ -312,6 +317,23 @@ public class GameModelController {
     @Path("status/{status: [A-Z]*}")
     public Collection<GameModel> findByStatus(@PathParam("status") final GameModel.Status status) {
         return gameModelFacade.findByTypeStatusAndUser(GameModel.GmType.SCENARIO, status);
+    }
+
+    /**
+     *
+     * Get all gameModel of given type with given status
+     *
+     * @param type
+     * @param status
+     *
+     * @return all gameModels of type with given status the user has access too
+     */
+    @GET
+    @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}")
+    public Collection<GameModel> findByTypeAndStatus(
+            @PathParam("type") final GameModel.GmType type,
+            @PathParam("status") final GameModel.Status status) {
+        return gameModelFacade.findByTypeStatusAndUser(type, status);
     }
 
     /**

@@ -76,7 +76,6 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
 
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     private Visibility visibility = Visibility.PRIVATE;
 

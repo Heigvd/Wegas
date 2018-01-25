@@ -189,7 +189,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     private Visibility visibility = Visibility.PRIVATE;
 

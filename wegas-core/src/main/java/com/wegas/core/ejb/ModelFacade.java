@@ -88,8 +88,8 @@ public class ModelFacade {
      *
      * @return
      */
-    public GameModel createModelFromCommonContentFromIds(List<Long> scenarioIds) {
-        return createModelFromCommonContent(loadGameModelsFromIds(scenarioIds));
+    public GameModel createModelFromCommonContentFromIds(GameModel template, List<Long> scenarioIds) {
+        return createModelFromCommonContent(template, loadGameModelsFromIds(scenarioIds));
     }
 
     /**
@@ -118,7 +118,7 @@ public class ModelFacade {
      *
      * @return a game model which contains what all given scenario have in common
      */
-    public GameModel createModelFromCommonContent(List<GameModel> scenarios) {
+    public GameModel createModelFromCommonContent(GameModel template, List<GameModel> scenarios) {
 
         logger.info("Extract Common Content");
         GameModel model = null;
@@ -546,10 +546,12 @@ public class ModelFacade {
                 WegasPatch patch = new WegasEntityPatch(refRoot, modelRoot, Boolean.TRUE);
 
                 for (GameModel scenario : implementations) {
-                    // apply patch to each implementations
-                    ContentConnector repo = jCRConnectorProvider.getContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES);
-                    AbstractContentDescriptor root = DescriptorFactory.getDescriptor("/", repo);
-                    patch.apply(scenario, root);
+                    if (scenario.getType().equals(GmType.SCENARIO)) {
+                        // apply patch to each implementations
+                        ContentConnector repo = jCRConnectorProvider.getContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES);
+                        AbstractContentDescriptor root = DescriptorFactory.getDescriptor("/", repo);
+                        patch.apply(scenario, root);
+                    }
                 }
 
                 // and patch the reference
