@@ -409,14 +409,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     label: "Description",
                         height: '50px'
                     }
-            }/*,
-             container: {
-             type: "evaluationdescriptorcontainer",
-             optional: true,
-             _inputex: {
-             _type: HIDDEN
-             }
-             }*/
+            }
         },
         EDITMENU: [{
                 type: BUTTON,
