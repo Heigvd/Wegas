@@ -9,14 +9,18 @@ const removeButtonStyle = css({
     opacity: 0,
     display: 'inline-block',
     transition: 'opacity 300ms 300ms',
+    position: 'absolute',
+    top: 0,
+    right: 0,
 });
 
 const removeContainerStyle = css({
     // borderLeft: 'solid 1px lightsteelblue',
     // marginTop: '2em',
     backgroundColor: '#f0f0ff',
-    marginBottom: '4px',
-    padding: '0 5px',
+    position: 'relative',
+    marginBottom: '0.5em',
+    padding: '3px 34px 3px 3px',
     [`:hover > .${removeButtonStyle}`]: {
         opacity: 1,
     },

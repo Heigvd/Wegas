@@ -21,7 +21,7 @@ const shapeStyle = css({
     width: 'auto',
     margin: '3px',
     // minWidth: '16px',
-    height: '16px',
+    // height: '16px',
     textAlign: 'center',
     display: 'inline-block',
     cursor: 'pointer',
