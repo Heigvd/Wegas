@@ -99,7 +99,7 @@ class ViewSrc extends React.Component<
                     icon="fa fa-play"
                     tooltip={this.state.error || 'Run code'}
                     onClick={this.runCode}
-                    className={`${runButton.toString()} ${className}`}
+                    className={`${runButton.toString()} ${className} run-code`}
                 />
                 {child}
             </span>

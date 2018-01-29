@@ -55,12 +55,6 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                         "do": function() {
                             this.close();
                         }
-                    }, {
-                        "label": "View src",
-                        "types": ["secondary", "advanced"],
-                        "do": function() {
-                            this.item(0).viewSrc();
-                        }
                     }];
                 this.set("title", gameLevel ?
                     "Global impact on game \"" + game.get("name") + "\"" :

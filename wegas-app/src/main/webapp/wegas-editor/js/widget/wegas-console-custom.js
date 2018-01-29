@@ -57,7 +57,7 @@ YUI.add('wegas-console-custom', function(Y) {
                         contents = cb.append("" +
                                              "<div class='modal--content-tabs'>" +
                                              "<div class='modal--content-basics modal--content-tab modal--content-selected'></div>" +
-                                             "<div class='modal--content-advanced modal--content-tab'><div class='content-advanced-script'></div><div class='content-advanced-script-add'><span class='button__label'><i class='fa fa-plus-circle same-color-larger' style='padding-right: 0.5em;'></i>Add Impact</span></div></div>" +
+                                             "<div class='modal--content-advanced modal--content-tab'><div class='content-advanced-script'></div></div>" +
                                              "</div>");
                         contentBasics = cb.one(".modal--content-basics");
                         contentAdvanced = cb.one(".modal--content-advanced .content-advanced-script");
@@ -79,9 +79,9 @@ YUI.add('wegas-console-custom', function(Y) {
                         }, this));
                     } else {
                         cb.addClass("modal--content-advanced modal--without-menu");
-                        contentAdvanced = cb.append(
-                            "<div class='content-advanced-script'></div><div class='content-advanced-script-add'><span class='button__label'><i class='fa fa-plus-circle same-color-larger' style='padding-right: 0.5em;'></i>Add Impact</span></div>").one(
-                            ".content-advanced-script");
+                        // contentAdvanced = cb.append(
+                        //     "<div class='content-advanced-script'></div><div class='content-advanced-script-add'><span class='button__label'><i class='fa fa-plus-circle same-color-larger' style='padding-right: 0.5em;'></i>Add Impact</span></div>").one(
+                        //     ".content-advanced-script");
                     }
                     // this.srcField = new Y.inputEx.WysiwygScript({
                     //     parentEl: contentAdvanced
@@ -132,19 +132,19 @@ YUI.add('wegas-console-custom', function(Y) {
                             this.get(CONTENTBOX).one("#advanced-impacts-btn").addClass("modal--tab-btn-selected");
                         }
                     }, "#advanced-impacts-btn", this);
-                    this.get(CONTENTBOX).delegate("click", function(e) {
-                        var impacts = this.get(CONTENTBOX).all(".wegas-inputex-variabledescriptorselect-group");
+                    // this.get(CONTENTBOX).delegate("click", function(e) {
+                    //     var impacts = this.get(CONTENTBOX).all(".wegas-inputex-variabledescriptorselect-group");
 
-                        if (impacts.size() < 5) {
-                            this.add();
-                        }
-                        if (impacts.size() === 0) {
-                            this.get(CONTENTBOX).one(".content-advanced-script-add").addClass("secondary");
-                        }
-                        if (impacts.size() === 4) {
-                            e.currentTarget.remove();
-                        }
-                    }, ".content-advanced-script-add", this);
+                    //     if (impacts.size() < 5) {
+                    //         this.add();
+                    //     }
+                    //     if (impacts.size() === 0) {
+                    //         this.get(CONTENTBOX).one(".content-advanced-script-add").addClass("secondary");
+                    //     }
+                    //     if (impacts.size() === 4) {
+                    //         e.currentTarget.remove();
+                    //     }
+                    // }, ".content-advanced-script-add", this);
                     this.get(CONTENTBOX).delegate("keyup", function(e) {
                         if (this.get("value").length > 0) {
                             if (!this.hasClass("selected")) {
@@ -157,12 +157,12 @@ YUI.add('wegas-console-custom', function(Y) {
                         }
                     }, "input[type='text']");
                 },
-                viewSrc: function() {
-                    this.srcField.viewSrc.fire("click");
-                },
-                add: function() {
-                    this.srcField.addButton.fire("click");
-                },
+                // viewSrc: function() {
+                //     this.srcField.viewSrc.fire("click");
+                // },
+                // add: function() {
+                //     this.srcField.addButton.fire("click");
+                // },
                 setStatus: function(status) {
                     this.get(CONTENTBOX).one(".wegas-status-bar .status").set("text", status);
                 },
@@ -174,7 +174,7 @@ YUI.add('wegas-console-custom', function(Y) {
                     return this.extractForm();
                 },
                 getAdvancedImpactsScript: function() {
-                    if (!this.srcField.validate()) {
+                    if (this.srcField.validate().length) {
                         this.showMessage("error", "Some fields are invalid", 1000);
                         return false;
                     }
