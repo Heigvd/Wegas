@@ -144,7 +144,7 @@ YUI.add('wegas-text-input', function(Y) {
                         autoresize_max_height: 500,
                         content_css: [
                                     Wegas.app.get('base') +
-                                        'wegas-editor/css/wegas-inputex-rte.css'
+                                        'wegas-editor/css/wegas-tinymce-editor.css'
                         ],
                                 style_formats: [
                                     {

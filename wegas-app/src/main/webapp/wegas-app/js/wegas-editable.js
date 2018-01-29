@@ -264,7 +264,7 @@ YUI.add('wegas-editable', function(Y) {
             Y.use(modules, cb);
         },
         /**
-         * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
+         * Return recursively the modules from their 'type' property using (modulesByType from loader.js)
          * @function
          * @static
          * @private

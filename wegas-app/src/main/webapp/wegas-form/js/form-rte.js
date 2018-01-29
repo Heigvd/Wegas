@@ -94,7 +94,7 @@ YUI.add('form-rte', function(Y) {
                     content_css: [
                         // "http://yui.yahooapis.com/combo?3.17.2/build/cssreset/cssreset-min.css&amp;3.17.2/build/cssfonts/cssfonts-min.css&amp;3.17.2/build/cssgrids/cssgrids-min.css",
                         // Y.Wegas.app.get("base") + "wegas-app/css/wegas-app-min.css"
-                        //Y.Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
+                        //Y.Wegas.app.get("base") + "wegas-editor/css/wegas-tinymce-editor.css"
                     ],
                     style_formats: [{// Style formats
                             title: 'Title 1',

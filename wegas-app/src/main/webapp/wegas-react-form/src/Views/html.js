@@ -85,7 +85,7 @@ const TINY_CONFIG = {
     image_advtab: true,
     content_css: [
         '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
-        `${Wegas.app.get('base')}wegas-editor/css/wegas-inputex-rte.css`,
+        `${Wegas.app.get('base')}wegas-editor/css/wegas-tinymce-editor.css`,
     ],
     style_formats: [
         {
