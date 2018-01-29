@@ -48,7 +48,7 @@ const errorStyle = css({
 });
 
 const borderTopStyle = css({
-    borderTop: '2px solid #D3ECF6',
+    borderTop: '3px solid #6aacf1',
     paddingTop: '0.5em',
     marginTop: '1em',
 });
