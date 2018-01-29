@@ -95,7 +95,12 @@ const AsyncForm = load<{
                     w.plug(targetPlg);
                     const cfg = (w as any)[targetPlg.NS].getFormCfg();
                     cfg.name = targetPlg.NAME;
-                    cfg.view = { label: friendlyName(targetPlg.NAME) };
+                    cfg.view = {
+                        label:
+                            // @ts-ignore
+                            targetPlg.EDITORNAME ||
+                            friendlyName(targetPlg.NAME),
+                    };
                     schema = updateCfg(cfg);
                     resolve(props => <Form schema={schema} {...props} />);
                 });
