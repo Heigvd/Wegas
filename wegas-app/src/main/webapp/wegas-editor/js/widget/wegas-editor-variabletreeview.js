@@ -20,7 +20,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         Wegas = Y.Wegas,
         Plugin = Y.Plugin,
         VariableTreeView,
-        scriptCheckLabel = "<span class='fa fa-check-circle'></span> <span title='Search for errors (May take some time)'>Find errors</span>",
+        scriptCheckLabel = "<span class='fa fa-bug'></span> <span title='Search for errors (May take some time)'>Find errors</span>",
         searchFn = function(val) {
             var e = this.get("data.entity");
             return !val.length || ((e.getEditorLabel) && (new RegExp(val, "i")).test(e.getEditorLabel()));
