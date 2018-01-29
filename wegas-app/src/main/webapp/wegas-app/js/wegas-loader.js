@@ -959,22 +959,6 @@ YUI().use(function (Y) {
             }
         }
     });
-    //YUI.addGroup("wegas-form", {
-    //    base: "./wegas-form/",
-    //    root: "/wegas-form/",
-    //    modules: {
-    //        form: {
-    //            requires: ["base", "widget", "widget-parent", "widget-child",
-    //                "formcss"]
-    //        },
-    //        formcss: {
-    //            requires: ["base", "widget", "widget-parent", "widget-child"]
-    //        },
-    //        "form-rte": {
-    //            requires: ["form", "tinymce"]
-    //        }
-    //    }
-    //});
     YUI.addGroup("wegas-others", {
         base: "./",
         root: "/",
