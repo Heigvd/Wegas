@@ -134,7 +134,7 @@
                                             "children": [
                                                 {
                                                     "type": "NewDescriptorButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                                    "label": "<span class=\"fa fa-plus-circle\"></span> New",
                                                     "cssClass": "editor-newVariable-button",
                                                     "targetClass": "VariableDescriptor"
                                                 }
