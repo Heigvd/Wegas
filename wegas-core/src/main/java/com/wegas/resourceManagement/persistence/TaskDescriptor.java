@@ -8,7 +8,6 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -17,7 +16,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.Views;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +48,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @JsonView(Views.ExtendedI.class)
     @WegasEntityProperty
+    //@JsonView(Views.ExtendedI.class)
     private String description;
     /**
      *
