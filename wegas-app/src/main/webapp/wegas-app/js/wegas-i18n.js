@@ -137,45 +137,12 @@ YUI.add("wegas-i18n", function(Y) {
             }
         }
 
-        function add(module, lang, table) {
+        function add(module, lang, table, deepMerge) {
             var currentTable;
             Y.Wegas.I18n._modules[module] = true;
             currentTable = Y.Wegas.I18n._tables[lang] || {};
-            Y.Wegas.I18n._tables[lang] = Y.merge(currentTable, table);
-        }
-
-        function isObject(item) {
-            return (item && typeof item === 'object' && !Array.isArray(item));
-        }
-
-        function mergeDeep(target, source) {
-            if (isObject(target) && isObject(source)) {
-                for (var key in source) {
-                    if (isObject(source[key])) {
-                        if (!target[key]) {
-                            var empty = {};
-                            empty[key] = {};
-                            Object.assign(target, empty);
-                        }
-                        mergeDeep(target[key], source[key]);
-                    } else {
-                        var empty = {};
-                        empty[key] = source[key];
-                        Object.assign(target, empty);
-                    }
-                }
-            }
-        }
-
-        /*
-        ** Merges an existing table with the given new table, without deleting any existing keys, only inserting or
-        ** modifying keys from the given table.
-         */
-        function update(module, lang, table) {
-            var currentTable;
-            Y.Wegas.I18n._modules[module] = true;
-            currentTable = Y.Wegas.I18n._tables[lang] || {};
-            mergeDeep(currentTable, table);
+            Y.Wegas.I18n._tables[lang] =
+                deepMerge ? Y.mix(currentTable, table, true, undefined, 0, true) : Y.merge(currentTable, table);
         }
 
         function setLang(lang) {
@@ -203,10 +170,10 @@ YUI.add("wegas-i18n", function(Y) {
                 return Y.Wegas.I18n._tables[Y.Wegas.I18n._currentLocale];
             },
             register: function(module, lang, table) {
-                add(module, lang, table);
+                add(module, lang, table, false);
             },
             update: function(module, lang, table) {
-                update(module, lang, table);
+                add(module, lang, table, true);
             },
             lang: function() {
                 return currentLocale();
