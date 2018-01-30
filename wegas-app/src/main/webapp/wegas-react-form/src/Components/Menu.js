@@ -5,6 +5,11 @@ import Menu, { Item, SubMenu } from 'rc-menu';
 // eslint-disable-next-line
 import '!!style-loader!css-loader!rc-menu/assets/index.css';
 
+// Fix visibility
+css.global('body .rc-menu-submenu-popup', {
+    zIndex: 10000,
+});
+
 const MENU_STYLE = css({
     display: 'inline-block',
     backgroundColor: 'white',
@@ -16,8 +21,8 @@ const rightPadding = css({
 });
 function genItems(o, i) {
     const hasSubMenu = Array.isArray(o.children);
+    const key = o.value || i;
     if (hasSubMenu) {
-        const key = o.value || i;
         const titleRight = <span {...rightPadding}>{o.label}</span>;
         return (
             <SubMenu key={JSON.stringify(key)} title={titleRight}>
@@ -26,7 +31,7 @@ function genItems(o, i) {
         );
     }
     return (
-        <Item key={JSON.stringify(o.value)} disabled={o.disabled}>
+        <Item key={JSON.stringify(key)} disabled={o.disabled}>
             {o.label}
         </Item>
     );
