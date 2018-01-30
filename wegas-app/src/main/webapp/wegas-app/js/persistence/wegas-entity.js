@@ -105,7 +105,7 @@ YUI.add("wegas-entity", function(Y) {
                 },
                 choices: [{
                         value: "INTERNAL",
-                        label: "Internal"
+                        label: "Model"
                     }, {
                         value: "PROTECTED",
                         label: "Protected"
@@ -118,7 +118,7 @@ YUI.add("wegas-entity", function(Y) {
                     }],
                 _inputex: {
                     maxWritableVisibility: "NONE",
-                    wrapperClassName: "wegas-advanced-feature"
+                    wrapperClassName: "wegas-entity--visibility-attribute"
                 }
             },
         }
