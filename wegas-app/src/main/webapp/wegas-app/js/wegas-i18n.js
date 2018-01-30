@@ -45,7 +45,7 @@ YUI.add("wegas-i18n", function(Y) {
         /**
          * String extension with additional methods
          * to transform given string
-         * 
+         *
          * @constructor I18nString
          * @extends String
          * @param String str the given string
@@ -59,7 +59,7 @@ YUI.add("wegas-i18n", function(Y) {
         }
         I18nString.prototype.valueOf = I18nString.prototype.toString
         /**
-         * Capitalize sentence's first letter. 
+         * Capitalize sentence's first letter.
          * Uppercase first letter, language dependant
          */
         I18nString.prototype.capitalize = function() {
@@ -81,11 +81,11 @@ YUI.add("wegas-i18n", function(Y) {
             return this;
         }
         /*
-         * Take the initial string and replace ALL parameters by theirs argument value 
+         * Take the initial string and replace ALL parameters by theirs argument value
          * provided by k/v in args object.
-         * 
+         *
          * All paramters (i.e. identifier [a-zA-Z0-9_] surrounded by '{{' and '}}') are mandatory
-         * 
+         *
          */
         function mapArguments(str, args, tName) {
             var pattern = /.*\{\{([a-zA-Z0-9_]*)\}\}/,
@@ -108,7 +108,7 @@ YUI.add("wegas-i18n", function(Y) {
         }
         /**
          * Return the translation for the key messages, according to current locale
-         * 
+         *
          * @param {type} key the message identifier
          * @param {type} object contains message arguments to replace {k: value, etc}
          * @returns {String} the translated string filled with provided arguments
@@ -144,6 +144,40 @@ YUI.add("wegas-i18n", function(Y) {
             Y.Wegas.I18n._tables[lang] = Y.merge(currentTable, table);
         }
 
+        function isObject(item) {
+            return (item && typeof item === 'object' && !Array.isArray(item));
+        }
+
+        function mergeDeep(target, source) {
+            if (isObject(target) && isObject(source)) {
+                for (var key in source) {
+                    if (isObject(source[key])) {
+                        if (!target[key]) {
+                            var empty = {};
+                            empty[key] = {};
+                            Object.assign(target, empty);
+                        }
+                        mergeDeep(target[key], source[key]);
+                    } else {
+                        var empty = {};
+                        empty[key] = source[key];
+                        Object.assign(target, empty);
+                    }
+                }
+            }
+        }
+
+        /*
+        ** Merges an existing table with the given new table, without deleting any existing keys, only inserting or
+        ** modifying keys from the given table.
+         */
+        function update(module, lang, table) {
+            var currentTable;
+            Y.Wegas.I18n._modules[module] = true;
+            currentTable = Y.Wegas.I18n._tables[lang] || {};
+            mergeDeep(currentTable, table);
+        }
+
         function setLang(lang) {
             var module,
                 deps = [];
@@ -170,6 +204,9 @@ YUI.add("wegas-i18n", function(Y) {
             },
             register: function(module, lang, table) {
                 add(module, lang, table);
+            },
+            update: function(module, lang, table) {
+                update(module, lang, table);
             },
             lang: function() {
                 return currentLocale();
