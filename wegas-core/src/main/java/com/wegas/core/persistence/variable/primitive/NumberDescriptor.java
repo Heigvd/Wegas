@@ -166,6 +166,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      *
      * @param value
      */
+    @Deprecated
     public void setDefaultValue(double value) {
         // only used to explicitely ignore while serializing
     }

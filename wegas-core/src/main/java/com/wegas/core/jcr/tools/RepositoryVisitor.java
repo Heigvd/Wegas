@@ -48,7 +48,7 @@ public abstract class RepositoryVisitor {
     public void visitGameModelFiles(GameModel gameModel) throws RepositoryException {
         ContentConnector connector = null;
         try {
-            connector = (ContentConnector) JCRConnectorProviderTx.getDetachedConnector(gameModel.getId(), JCRConnectorProvider.RepositoryType.FILES);
+            connector = (ContentConnector) JCRConnectorProviderTx.getDetachedConnector(gameModel, JCRConnectorProvider.RepositoryType.FILES);
             this.visitRepository(connector);
         } finally {
             if (connector != null) {

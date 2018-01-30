@@ -313,6 +313,11 @@ public class GameAdmin extends AbstractEntity {
         return prevTeamCount;
     }
 
+    @Override
+    public boolean isProtected() {
+        return false;
+    }
+
     /**
      * GameAdmin status
      * {

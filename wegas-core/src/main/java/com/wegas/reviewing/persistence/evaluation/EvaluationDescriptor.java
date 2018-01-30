@@ -11,14 +11,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.*;
 
 /**
@@ -216,6 +214,11 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
 
     public void removeInstance(EvaluationInstance instance) {
         this.evaluationInstances.remove(instance);
+    }
+
+    @Override
+    public boolean isProtected() {
+        return this.getContainer().isProtected();
     }
 
     @Override

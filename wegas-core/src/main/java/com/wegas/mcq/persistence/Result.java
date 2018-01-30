@@ -404,6 +404,11 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     }
 
     @Override
+    public boolean isProtected() {
+        return this.getChoiceDescriptor().isProtected();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getChoiceDescriptor().getRequieredUpdatePermission();
     }

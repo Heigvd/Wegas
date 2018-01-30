@@ -98,7 +98,7 @@ public class GameModelController {
     @Path("extractModel/{ids}")
     public GameModel createModel(@PathParam("ids") String ids, GameModel template) throws IOException {
 
-        GameModel model = modelFacade.createModelFromCommonContentFromIds(template, getIdsFromString(ids));
+        GameModel model = modelFacade.createModelFromCommonContentFromIds(template.getName(), getIdsFromString(ids));
 
         return model;
     }

@@ -113,6 +113,11 @@ public class Workload extends AbstractEntity implements Serializable {
     }
 
     @Override
+    public boolean isProtected() {
+        return this.getIteration().isProtected();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getIteration().getRequieredUpdatePermission();
     }

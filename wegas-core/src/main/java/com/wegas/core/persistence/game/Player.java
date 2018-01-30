@@ -464,4 +464,9 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     public WegasPermission getAssociatedWritePermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.PLAYER);
     }
+
+    @Override
+    public boolean isProtected() {
+        return false;
+    }
 }

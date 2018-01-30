@@ -84,12 +84,13 @@ public class ModelFacade {
 
     /**
      *
+     * @param modelName
      * @param scenarioIds
      *
      * @return
      */
-    public GameModel createModelFromCommonContentFromIds(GameModel template, List<Long> scenarioIds) {
-        return createModelFromCommonContent(template, loadGameModelsFromIds(scenarioIds));
+    public GameModel createModelFromCommonContentFromIds(String modelName, List<Long> scenarioIds) {
+        return createModelFromCommonContent(modelName, loadGameModelsFromIds(scenarioIds));
     }
 
     /**
@@ -114,11 +115,12 @@ public class ModelFacade {
      * To eventually create and persist the model, method {@link #createModel(com.wegas.core.persistence.game.GameModel, java.util.List)  createModel} must be called
      *
      *
+     * @param modelName name of the new model
      * @param scenarios list of gameModel to model, the first acts as reference for descriptors structure
      *
      * @return a game model which contains what all given scenario have in common
      */
-    public GameModel createModelFromCommonContent(GameModel template, List<GameModel> scenarios) {
+    public GameModel createModelFromCommonContent(String modelName, List<GameModel> scenarios) {
 
         logger.info("Extract Common Content");
         GameModel model = null;
@@ -132,6 +134,7 @@ public class ModelFacade {
                 logger.info("Create model, based on first scenario");
                 GameModel srcModel = scenarios.remove(0);
                 model = (GameModel) srcModel.clone();
+                model.setName(modelName);
 
                 /**
                  * Filter gameModelContents
@@ -269,13 +272,13 @@ public class ModelFacade {
 
                 // Open the brand new model repository
                 try {
-                    ContentConnector modelRepo = jCRConnectorProvider.getContentConnector(model.getId(), ContentConnector.WorkspaceType.FILES);
+                    ContentConnector modelRepo = jCRConnectorProvider.getContentConnector(model, ContentConnector.WorkspaceType.FILES);
                     logger.error("JCR FILES");
 
                     // open all other repositories but the one whose modelRepo is a copy of
                     List<ContentConnector> repositories = new ArrayList<>(scenarios.size());
                     for (GameModel scenario : scenarios) {
-                        repositories.add(jCRConnectorProvider.getContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES));
+                        repositories.add(jCRConnectorProvider.getContentConnector(scenario, ContentConnector.WorkspaceType.FILES));
                     }
 
                     List<AbstractContentDescriptor> fileQueue = new LinkedList<>();
@@ -466,10 +469,10 @@ public class ModelFacade {
                                     try {
                                         VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
                                         VariableDescriptor clone;
-                                        clone = (VariableDescriptor) vd.clone();
+                                        clone = (VariableDescriptor) vd.shallowClone();
                                         variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone);
 
-                                        logger.info(" CREATE AT ROOL LEVEL");
+                                        logger.info(" CREATE AT as {} child", parent);
                                         it.remove();
                                         restart = true;
                                     } catch (WegasNoResultException ex) {
@@ -477,7 +480,7 @@ public class ModelFacade {
                                     }
                                 } else {
                                     logger.info(" CREATE AT ROOL LEVEL");
-                                    VariableDescriptor clone = (VariableDescriptor) vd.clone();
+                                    VariableDescriptor clone = (VariableDescriptor) vd.shallowClone();
                                     variableDescriptorFacade.createChild(scenario, scenario, clone);
                                     it.remove();
                                     restart = true;
@@ -536,8 +539,8 @@ public class ModelFacade {
 
             if (reference != null) {
 
-                ContentConnector modelRepo = jCRConnectorProvider.getContentConnector(model.getId(), ContentConnector.WorkspaceType.FILES);
-                ContentConnector refRepo = jCRConnectorProvider.getContentConnector(reference.getId(), ContentConnector.WorkspaceType.FILES);
+                ContentConnector modelRepo = jCRConnectorProvider.getContentConnector(model, ContentConnector.WorkspaceType.FILES);
+                ContentConnector refRepo = jCRConnectorProvider.getContentConnector(reference, ContentConnector.WorkspaceType.FILES);
 
                 AbstractContentDescriptor modelRoot = DescriptorFactory.getDescriptor("/", modelRepo);
                 AbstractContentDescriptor refRoot = DescriptorFactory.getDescriptor("/", refRepo);
@@ -548,7 +551,7 @@ public class ModelFacade {
                 for (GameModel scenario : implementations) {
                     if (scenario.getType().equals(GmType.SCENARIO)) {
                         // apply patch to each implementations
-                        ContentConnector repo = jCRConnectorProvider.getContentConnector(scenario.getId(), ContentConnector.WorkspaceType.FILES);
+                        ContentConnector repo = jCRConnectorProvider.getContentConnector(scenario, ContentConnector.WorkspaceType.FILES);
                         AbstractContentDescriptor root = DescriptorFactory.getDescriptor("/", repo);
                         patch.apply(scenario, root);
                     }
@@ -606,6 +609,7 @@ public class ModelFacade {
      * @param gameModelId
      *
      * @return
+     * @throws javax.jcr.RepositoryException
      *
      */
     public GameModel propagateModel(Long gameModelId) throws RepositoryException {

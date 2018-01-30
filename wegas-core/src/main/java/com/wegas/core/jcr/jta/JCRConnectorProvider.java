@@ -9,6 +9,7 @@ package com.wegas.core.jcr.jta;
 
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.persistence.game.GameModel;
 import java.io.Serializable;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -43,14 +44,14 @@ public class JCRConnectorProvider implements Serializable {
      * <p>
      * If a transaction is running in the caller context, the returned connector will be managed by JTA.
      *
-     * @param gameModelId if of the gameModel
+     * @param gameModel the gameModel
      *
      * @return Pages connector
      *
      * @throws RepositoryException something went wrong
      */
-    public Pages getPages(Long gameModelId) throws RepositoryException {
-        return (Pages) this.getConnector(gameModelId, RepositoryType.PAGES);
+    public Pages getPages(GameModel gameModel) throws RepositoryException {
+        return (Pages) this.getConnector(gameModel, RepositoryType.PAGES);
     }
 
     /**
@@ -58,32 +59,32 @@ public class JCRConnectorProvider implements Serializable {
      * <p>
      * If a transaction is running in the caller context, the returned connector will be managed by JTA.
      *
-     * @param gameModelId if of the gameModel
-     * @param wsType      FILES or HISTORY
+     * @param gameModel the gameModel
+     * @param wsType    FILES or HISTORY
      *
      * @return content connector
      *
      * @throws RepositoryException
      */
-    public ContentConnector getContentConnector(Long gameModelId, ContentConnector.WorkspaceType wsType) throws RepositoryException {
-        return (ContentConnector) this.getConnector(gameModelId, RepositoryType.valueOf(wsType.toString()));
+    public ContentConnector getContentConnector(GameModel gameModel, ContentConnector.WorkspaceType wsType) throws RepositoryException {
+        return (ContentConnector) this.getConnector(gameModel, RepositoryType.valueOf(wsType.toString()));
     }
 
     /**
      * Get a connector. Returns a managed connector if a transaction is available, a non managed otherwise.
      *
-     * @param gameModelId if of the gameModel
-     * @param type        which type of repository ? pages, files or history.
+     * @param gameModel the gameModel
+     * @param type      which type of repository ? pages, files or history.
      *
      * @return a JTARepositoryConnector
      *
      * @throws RepositoryException oups...
      */
-    private JTARepositoryConnector getConnector(Long gameModelId, RepositoryType type) throws RepositoryException {
+    private JTARepositoryConnector getConnector(GameModel gameModel, RepositoryType type) throws RepositoryException {
         try {
-            return txBean.getConnector(gameModelId, type);
+            return txBean.getConnector(gameModel, type);
         } catch (ContextNotActiveException ex) {
-            return JCRConnectorProviderTx.getDetachedConnector(gameModelId, type);
+            return JCRConnectorProviderTx.getDetachedConnector(gameModel, type);
         }
     }
 

@@ -8,9 +8,9 @@
 package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
@@ -153,8 +153,8 @@ public class Review extends AbstractEntity implements DatedEntity {
         return reviewState;
     }
 
-    public ReviewState getInitialReviewState(){
-         return initialState != null ? initialState : getReviewState();
+    public ReviewState getInitialReviewState() {
+        return initialState != null ? initialState : getReviewState();
     }
 
     /**
@@ -251,7 +251,6 @@ public class Review extends AbstractEntity implements DatedEntity {
         }
     }
 
-
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         switch (getInitialReviewState()) {
@@ -281,6 +280,10 @@ public class Review extends AbstractEntity implements DatedEntity {
         return p;
     }
      */
+    @Override
+    public boolean isProtected() {
+        return this.getAuthor().isProtected();
+    }
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {

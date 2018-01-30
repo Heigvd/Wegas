@@ -41,12 +41,12 @@ public class PageFacade {
     static final private Logger logger = LoggerFactory.getLogger(PageFacade.class);
 
     public List<HashMap<String, String>> getPageIndex(GameModel gm) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         return pagesDAO.getIndex();
     }
 
     public Page getPage(GameModel gm, String pageId) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         if (pageId.equals("default")) {
             return pagesDAO.getDefaultPage();
         } else {
@@ -55,7 +55,7 @@ public class PageFacade {
     }
 
     public Page createPage(GameModel gm, String pId, JsonNode content) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
 
         if (Helper.isNullOrEmpty(pId)) {
             Integer pageId = 1;
@@ -83,7 +83,7 @@ public class PageFacade {
     }
 
     public void addPages(GameModel gm, Map<String, JsonNode> pageMap) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
 
         for (Entry<String, JsonNode> p : pageMap.entrySet()) {
             pagesDAO.store(new Page(p.getKey(), p.getValue()));
@@ -91,35 +91,35 @@ public class PageFacade {
     }
 
     public void setPage(GameModel gm, String pageId, JsonNode content) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         Page page = new Page(pageId, content);
         pagesDAO.store(page);
     }
 
     public void setPageMeta(GameModel gm, String pageId, Page page) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         page.setId(pageId);
         pagesDAO.setMeta(page);
     }
 
     public void movePage(GameModel gm, String pageId, int pos) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         pagesDAO.move(pageId, pos);
     }
 
     public void deletePages(GameModel gm) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         pagesDAO.delete();
     }
 
     public void deletePage(GameModel gm, String pageId) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         pagesDAO.deletePage(pageId);
     }
 
     public Page patchPage(GameModel gm, String pageId, JsonNode patch) throws RepositoryException, IOException, JsonPatchException {
 
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm.getId());
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
 
         Page page = this.getPage(gm, pageId);
 

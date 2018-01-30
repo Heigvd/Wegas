@@ -43,4 +43,9 @@ public class DestroyedEntity extends AbstractEntity {
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return null;
     }
+
+    @Override
+    public boolean isProtected() {
+        return false;
+    }
 }

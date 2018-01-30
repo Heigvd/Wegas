@@ -262,4 +262,9 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         //Sign-Up
         return null;
     }
+
+    @Override
+    public boolean isProtected() {
+        return false;
+    }
 }

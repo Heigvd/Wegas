@@ -17,7 +17,6 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
 import java.util.Collection;
-import java.util.Objects;
 import javax.persistence.*;
 
 /**
@@ -219,6 +218,11 @@ public abstract class EvaluationInstance extends AbstractEntity {
             }
         }
         super.updateCacheOnDelete(beans);
+    }
+
+    @Override
+    public boolean isProtected() {
+        return this.getEffectiveReview().isProtected();
     }
 
     @Override

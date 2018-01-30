@@ -242,7 +242,7 @@ public class MergeTest extends AbstractArquillianTest {
         }
     }
 
-    @Test
+    //@Test
     public void printEntity() {
         Set<Class<? extends Mergeable>> classes = reflections.getSubTypesOf(Mergeable.class);
 

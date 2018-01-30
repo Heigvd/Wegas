@@ -318,4 +318,9 @@ public abstract class AbstractAccount extends AbstractEntity {
     public void setAgreedTime(Date agreedTime) {
         this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
     }
+
+    @Override
+    public boolean isProtected() {
+        return false;
+    }
 }

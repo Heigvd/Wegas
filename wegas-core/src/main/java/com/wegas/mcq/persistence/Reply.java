@@ -13,10 +13,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -275,6 +274,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
         }
          */
         super.updateCacheOnDelete(beans);
+    }
+
+    @Override
+    public boolean isProtected() {
+        return this.getChoiceInstance().isProtected();
     }
 
     @Override

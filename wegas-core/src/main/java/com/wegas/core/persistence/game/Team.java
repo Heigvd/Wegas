@@ -185,7 +185,6 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         }
     }
 
-
     public GameTeams getGameTeams() {
         return gameTeams;
     }
@@ -423,6 +422,11 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
             default:
                 return WegasPermission.FORBIDDEN; // nobody can create
         }
+    }
+
+    @Override
+    public boolean isProtected() {
+        return false;
     }
 
     @Override

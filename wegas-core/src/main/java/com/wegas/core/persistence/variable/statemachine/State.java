@@ -247,6 +247,11 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
     }
 
     @Override
+    public boolean isProtected() {
+        return this.getStateMachine().isProtected();
+    }
+
+    @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getStateMachine().getEntities();
     }

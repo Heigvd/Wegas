@@ -7,12 +7,9 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
-import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,6 +127,10 @@ public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstract
 
     public void removeAbstractEntity(AbstractEntity entity) {
         this.getEntityManager().remove(entity);
+    }
+
+    public void persistAbstractEntity(AbstractEntity entity) {
+        this.getEntityManager().persist(entity);
     }
 
     /**

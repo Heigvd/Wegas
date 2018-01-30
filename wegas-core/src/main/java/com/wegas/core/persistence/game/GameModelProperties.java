@@ -230,4 +230,8 @@ public class GameModelProperties implements Serializable, Mergeable {
         this.clientScriptUri = clientScriptUri;
     }
 
+    @Override
+    public boolean isProtected() {
+        return false;
+    }
 }

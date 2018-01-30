@@ -10,6 +10,7 @@ package com.wegas.core.jcr.content;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.SessionManager;
 import com.wegas.core.jcr.jta.JTARepositoryConnector;
+import com.wegas.core.persistence.game.GameModel;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +32,8 @@ import org.slf4j.LoggerFactory;
 public class ContentConnector implements JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
+
+    private final GameModel gameModel;
 
     private final long gameModelId;
 
@@ -62,13 +65,14 @@ public class ContentConnector implements JTARepositoryConnector {
     }
 
     /**
-     * @param gameModelId
+     * @param gameModel
      * @param workspaceType
      *
      * @throws RepositoryException
      */
-    public ContentConnector(long gameModelId, WorkspaceType workspaceType) throws RepositoryException {
-        this.gameModelId = gameModelId;
+    public ContentConnector(GameModel gameModel, WorkspaceType workspaceType) throws RepositoryException {
+        this.gameModel = gameModel;
+        this.gameModelId = gameModel.getId();
         this.workspaceType = workspaceType;
         switch (workspaceType) {
             case FILES:
@@ -100,6 +104,10 @@ public class ContentConnector implements JTARepositoryConnector {
     @Override
     public boolean getManaged() {
         return this.managed;
+    }
+
+    public GameModel getGameModel() {
+        return this.gameModel;
     }
 
     /**
@@ -144,6 +152,15 @@ public class ContentConnector implements JTARepositoryConnector {
      */
     protected NodeIterator listChildren(String path) throws RepositoryException {
         return this.getNode(path).getNodes("*");
+    }
+
+    private String getPropertyAsString(String absolutePath, String propertyName, String defaultValue) throws RepositoryException {
+        Property property = this.getProperty(absolutePath, propertyName);
+        if (property != null) {
+            return property.getString();
+        } else {
+            return defaultValue;
+        }
     }
 
     /*
@@ -240,12 +257,7 @@ public class ContentConnector implements JTARepositoryConnector {
      * @throws RepositoryException
      */
     protected String getMimeType(String absolutePath) throws RepositoryException {
-        try {
-            return this.getProperty(absolutePath, WFSConfig.WFS_MIME_TYPE).getString();
-        } catch (NullPointerException ex) {
-            //root
-            return DirectoryDescriptor.MIME_TYPE;
-        }
+        return this.getPropertyAsString(absolutePath, WFSConfig.WFS_MIME_TYPE, DirectoryDescriptor.MIME_TYPE);
     }
 
     /**
@@ -266,11 +278,7 @@ public class ContentConnector implements JTARepositoryConnector {
      * @throws RepositoryException
      */
     protected String getNote(String absolutePath) throws RepositoryException {
-        try {
-            return this.getProperty(absolutePath, WFSConfig.WFS_NOTE).getString();
-        } catch (NullPointerException ex) {
-            return "";
-        }
+        return this.getPropertyAsString(absolutePath, WFSConfig.WFS_NOTE, "");
     }
 
     /**
@@ -292,11 +300,7 @@ public class ContentConnector implements JTARepositoryConnector {
      * @throws RepositoryException
      */
     protected String getDescription(String absolutePath) throws RepositoryException {
-        try {
-            return this.getProperty(absolutePath, WFSConfig.WFS_DESCRIPTION).getString();
-        } catch (NullPointerException ex) {
-            return "";
-        }
+        return this.getPropertyAsString(absolutePath, WFSConfig.WFS_DESCRIPTION, "");
     }
 
     /**
@@ -318,11 +322,7 @@ public class ContentConnector implements JTARepositoryConnector {
      * @throws RepositoryException
      */
     protected String getVisibility(String absolutePath) throws RepositoryException {
-        try {
-            return this.getProperty(absolutePath, WFSConfig.WFS_VISIBILITY).getString();
-        } catch (NullPointerException ex) {
-            return "PRIVATE";
-        }
+        return this.getPropertyAsString(absolutePath, WFSConfig.WFS_VISIBILITY, "PRIVATE");
     }
 
     /**
@@ -405,26 +405,6 @@ public class ContentConnector implements JTARepositoryConnector {
      */
     public void deleteRoot() throws RepositoryException {
         this.getNode("/").remove();
-    }
-
-    /**
-     * @param fromGameModel
-     *
-     * @throws RepositoryException
-     */
-    public void cloneRoot(Long fromGameModel) throws RepositoryException {
-        ContentConnector connector = new ContentConnector(fromGameModel, workspaceType);
-        try {
-            this.getNode("/").remove();
-            this.session.save();
-            connector.session.save();
-
-            // TODO copy reposity without saving the workspace !
-            this.session.getWorkspace().copy(connector.workspaceRoot + "/", this.workspaceRoot + "/");
-        } finally {
-            // do not modify source repository ever
-            connector.rollback();
-        }
     }
 
     /**

@@ -354,6 +354,11 @@ public class Message extends NamedEntity implements DatedEntity {
     }
 
     @Override
+    public boolean isProtected() {
+        return this.getInboxInstance().isProtected();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getInboxInstance().getRequieredUpdatePermission();
     }

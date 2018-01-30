@@ -7,6 +7,8 @@
  */
 package com.wegas.core.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author maxence
@@ -21,4 +23,7 @@ public interface Mergeable {
     String getRefId();
 
     void setRefId(String refId);
+
+    @JsonIgnore
+    boolean isProtected();
 }

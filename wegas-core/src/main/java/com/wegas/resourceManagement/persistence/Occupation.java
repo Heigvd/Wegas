@@ -155,6 +155,10 @@ public class Occupation extends AbstractEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+    @Override
+    public boolean isProtected() {
+        return this.getResourceInstance().isProtected();
+    }
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {

@@ -87,7 +87,7 @@ public class GameTeams extends AbstractEntity {
             default:
                 return game.getRequieredUpdatePermission();
         }
-        */
+         */
         // case TWO no restriction
         return null;
     }
@@ -95,5 +95,10 @@ public class GameTeams extends AbstractEntity {
     @Override
     public Collection<WegasPermission> getRequieredDeletePermission() {
         return game.getRequieredDeletePermission();
+    }
+
+    @Override
+    public boolean isProtected() {
+        return false;
     }
 }

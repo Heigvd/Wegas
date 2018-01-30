@@ -62,6 +62,11 @@ public abstract class AbstractAssignement extends AbstractEntity {
     }
 
     @Override
+    public boolean isProtected() {
+        return this.getResourceInstance().isProtected();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getResourceInstance().getRequieredUpdatePermission();
     }

@@ -23,7 +23,6 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.io.IOException;
 import java.io.Serializable;
@@ -116,6 +115,20 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
         }
     }
 
+    /**
+     *
+     * @param other
+     */
+    public final void mergeForce(AbstractEntity other) {
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);
+        logger.debug(wegasEntityPatch.toString());
+        if (this instanceof GameModel) {
+            wegasEntityPatch.applyForce((GameModel) this, this);
+        } else {
+            wegasEntityPatch.applyForce(null, this);
+        }
+    }
+
     public final void deepMerge(AbstractEntity other) {
         WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, true);
         logger.debug(wegasEntityPatch.toString());
@@ -140,7 +153,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
     @Override
     public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + (getId() != null ? getId().hashCode() : 0);
+        hash = 31 * hash + (getId() != null ? getId().hashCode() : super.hashCode());
         hash = 31 * hash + getClass().hashCode();
         return hash;
     }
@@ -172,7 +185,28 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
     }
 
     /**
-     * {@inheritDoc }
+     * clone but skip includeByDefault=false properties
+     *
+     * @return
+     *
+     * @throws java.lang.CloneNotSupportedException
+     */
+    public AbstractEntity shallowClone() throws CloneNotSupportedException {
+        try {
+            AbstractEntity clone = this.getClass().getDeclaredConstructor().newInstance();
+            clone.mergeForce(this);
+            return clone;
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new CloneNotSupportedException(ex.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * clone and include skip includeByDefault=false properties
+     *
+     * @return
+     *
+     * @throws java.lang.CloneNotSupportedException
      */
     @Override
     public AbstractEntity clone() throws CloneNotSupportedException {
@@ -183,36 +217,6 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
             throw new CloneNotSupportedException(ex.getLocalizedMessage());
         }
-    }
-
-    /**
-     * Duplicate an entity by using Jackson Mapper and provided view
-     *
-     * @param view
-     *
-     * @return copy of this
-     *
-     * @throws IOException
-     */
-    public AbstractEntity duplicate_serialise(Class<? extends Views> view) throws IOException {
-        //AnonymousEntity ae = (AnonymousEntity)super.clone();
-        //AbstractEntity ae = (AbstractEntity) SerializationUtils.clone(this);
-        //ae.setId(null);
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-        String serialized = mapper.writerWithView(view).
-                writeValueAsString(this);                                       // Serialize the entity
-
-        return mapper.readValue(serialized, AbstractEntity.class);              // and deserialize it
-    }
-
-    /**
-     *
-     * @return copy of this
-     *
-     * @throws IOException
-     */
-    public AbstractEntity duplicate_serialise() throws IOException {
-        return this.duplicate_serialise(Views.Export.class);
     }
 
     /**

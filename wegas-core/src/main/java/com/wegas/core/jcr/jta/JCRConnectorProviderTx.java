@@ -7,10 +7,12 @@
  */
 package com.wegas.core.jcr.jta;
 
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRConnectorProvider.RepositoryType;
 import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.persistence.game.GameModel;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,7 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import javax.transaction.TransactionScoped;
@@ -44,6 +47,9 @@ public class JCRConnectorProviderTx implements Serializable {
      */
     @Resource
     private transient TransactionSynchronizationRegistry jtaSyncRegistry;
+
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      * The JCR synchroniser for the current transaction
@@ -95,24 +101,25 @@ public class JCRConnectorProviderTx implements Serializable {
     /**
      * Get a new detached connector.
      *
-     * @param gameModelId id of the gameModel
-     * @param type        repository type
+     * @param gameModel the gameModel
+     * @param type      repository type
      *
      * @return a detached connector or null
      *
      * @throws RepositoryException something when wrong (no store ?)
      */
-    public static JTARepositoryConnector getDetachedConnector(Long gameModelId, RepositoryType type) throws RepositoryException {
+    public static JTARepositoryConnector getDetachedConnector(GameModel gameModel, RepositoryType type) throws RepositoryException {
+
         JTARepositoryConnector repo;
         switch (type) {
             case PAGES:
-                repo = new Pages(gameModelId);
+                repo = new Pages(gameModel.getId());
                 break;
             case FILES:
-                repo = new ContentConnector(gameModelId, ContentConnector.WorkspaceType.FILES);
+                repo = new ContentConnector(gameModel, ContentConnector.WorkspaceType.FILES);
                 break;
             case HISTORY:
-                repo = new ContentConnector(gameModelId, ContentConnector.WorkspaceType.HISTORY);
+                repo = new ContentConnector(gameModel, ContentConnector.WorkspaceType.HISTORY);
                 break;
             default:
                 repo = null;
@@ -128,19 +135,19 @@ public class JCRConnectorProviderTx implements Serializable {
     /**
      * Get a managed connector
      *
-     * @param gameModelId id of the gameModel
+     * @param gameModel the gameModel
      * @param type        repository type
      *
      * @return a managed connector
      *
      * @throws RepositoryException seems the data store is not available...
      */
-    protected JTARepositoryConnector getConnector(Long gameModelId, RepositoryType type) throws RepositoryException {
-        String key = type + "::" + gameModelId;
+    protected JTARepositoryConnector getConnector(GameModel gameModel, RepositoryType type) throws RepositoryException {
+        String key = type + "::" + gameModel.getId();
 
         if (!this.connectors.containsKey(key)) {
             logger.debug("new connector: {}", key);
-            this.connectors.put(key, JCRConnectorProviderTx.getDetachedConnector(gameModelId, type));
+            this.connectors.put(key, JCRConnectorProviderTx.getDetachedConnector(gameModel, type));
         }
 
         JTARepositoryConnector repo = this.connectors.get(key);

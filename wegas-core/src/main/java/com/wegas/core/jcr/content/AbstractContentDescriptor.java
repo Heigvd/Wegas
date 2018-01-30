@@ -456,4 +456,9 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     public String toString() {
         return "AbstractContentDescriptor{" + "mimeType=" + mimeType + ", name=" + name + ", path=" + path + ", fsAbsPath=" + fileSystemAbsolutePath + ", note=" + note + ", desc=" + description + "}";
     }
+
+    @Override
+    public boolean isProtected() {
+        return this.connector.getGameModel().isProtected();
+    }
 }

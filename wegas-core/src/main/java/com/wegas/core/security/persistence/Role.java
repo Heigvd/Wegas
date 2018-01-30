@@ -253,4 +253,9 @@ public class Role extends AbstractEntity implements PermissionOwner {
     public Collection<WegasPermission> getRequieredReadPermission() {
         return null;
     }
+
+    @Override
+    public boolean isProtected() {
+        return false;
+    }
 }

@@ -93,7 +93,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty
     private String name;
 
     /**
@@ -108,14 +108,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      *
      */
-    @Enumerated(value = EnumType.STRING)
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
+    @Enumerated(value = EnumType.STRING)
     private Status status = Status.LIVE;
 
-    @Enumerated(value = EnumType.STRING)
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'SCENARIO'::character varying")
+    @Enumerated(value = EnumType.STRING)
     private GmType type = GmType.SCENARIO;
 
     /**
@@ -497,17 +495,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonProperty
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
-        if (this.childVariableDescriptors != variableDescriptors) {
-            this.childVariableDescriptors.clear();
-
-            for (VariableDescriptor vd : variableDescriptors) {
-                this.addItem(vd);
-            }
-        } else {
-            for (VariableDescriptor vd : variableDescriptors) {
-                this.registerItems(vd);
-            }
-        }
+        this.setItems(variableDescriptors);
 
         this.variableDescriptors.clear();
         this.propagateGameModel();
@@ -808,7 +796,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
                 return this.pages;
             } else if (this.getId() != null) {
                 try {
-                    Pages pagesDAO = this.jcrProvider.getPages(this.id);
+                    Pages pagesDAO = this.jcrProvider.getPages(this);
                     try {
                         return pagesDAO.getPagesContent();
                     } finally {
@@ -846,8 +834,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     @Override
-    public void setItems(List<VariableDescriptor> items) {
-        this.setChildVariableDescriptors(items);
+    public void resetItemsField() {
+        this.childVariableDescriptors = new ArrayList<>();
     }
 
     @Override
@@ -860,7 +848,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     private void storePages() {
         if (this.pages != null) {
             try {
-                Pages pagesDAO = this.jcrProvider.getPages(this.id);
+                Pages pagesDAO = this.jcrProvider.getPages(this);
                 pagesDAO.delete();                                              // Remove existing pages
                 // Pay Attention: this.pages != this.getPages() ! 
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
@@ -971,6 +959,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     @Override
+    public boolean isProtected() {
+        // only scenarios which are based on a model are protected
+        return (this.getType().equals(GmType.SCENARIO) && this.getBasedOn() != null);
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredCreatePermission() {
         if (this.getType() == GmType.PLAY) {
             return WegasMembership.TRAINER;
@@ -1028,7 +1022,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonIgnore
     public ContentConnector getFilesConnector() throws RepositoryException {
         if (jcrProvider != null) {
-            return jcrProvider.getContentConnector(this.getId(), ContentConnector.WorkspaceType.FILES);
+            return jcrProvider.getContentConnector(this, ContentConnector.WorkspaceType.FILES);
         }
         return null;
     }
@@ -1066,4 +1060,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      in.defaultReadObject();
      this.pages = new HashMap<>();
      }*/
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getType() + ", " + getName() + ")";
+    }
 }

@@ -189,6 +189,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     private Visibility visibility = Visibility.PRIVATE;
 
@@ -651,7 +652,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ")";
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) +" )";
     }
 
     @Override
@@ -717,6 +718,11 @@ abstract public class VariableDescriptor<T extends VariableInstance>
                 vd.getVariableDescriptorFacade().preDestroy(vd.getGameModel(), vd);
             }
         }
+    }
+
+    @Override
+    public boolean isProtected() {
+        return this.getGameModel() != null && this.getGameModel().isProtected();
     }
 
     public void revive(Beanjection beans) {

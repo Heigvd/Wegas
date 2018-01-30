@@ -144,6 +144,11 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     }
 
     @Override
+    public boolean isProtected() {
+        return this.getEffectiveDescriptor().isProtected();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getEffectiveDescriptor().getRequieredUpdatePermission();
     }

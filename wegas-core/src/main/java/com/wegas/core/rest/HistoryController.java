@@ -63,20 +63,19 @@ public class HistoryController {
 
     /**
      * @param gameModelId
-     * @param directory
      *
      * @return list of directory content
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<AbstractContentDescriptor> listDirectory(@PathParam("gameModelId") Long gameModelId) {
-        return jcrFacade.listDirectory(gameModelId, ContentConnector.WorkspaceType.HISTORY, "/");
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        return jcrFacade.listDirectory(gameModel, ContentConnector.WorkspaceType.HISTORY, "/");
     }
 
     /**
      * @param gameModelId
      * @param absolutePath
-     * @param force
      *
      * @return the destroyed element or HTTP not modified
      *
@@ -89,7 +88,10 @@ public class HistoryController {
     public Object delete(@PathParam("gameModelId") Long gameModelId,
             @PathParam("absolutePath") String absolutePath){
 
-        return jcrFacade.delete(gameModelId, ContentConnector.WorkspaceType.HISTORY, absolutePath, "true");
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        return jcrFacade.delete(gameModel, ContentConnector.WorkspaceType.HISTORY, absolutePath, "true");
     }
 
     /**
@@ -128,7 +130,7 @@ public class HistoryController {
             name = name + ".json";
         }
 
-        jcrFacade.createFile(gameModelId, ContentConnector.WorkspaceType.HISTORY, name + ".json", "/",
+        jcrFacade.createFile(gameModel, ContentConnector.WorkspaceType.HISTORY, name + ".json", "/",
                 "application/octet-stream", null, null,
                 new ByteArrayInputStream(gameModelFacade.find(gameModelId).toJson(Views.Export.class).getBytes("UTF-8")), false);
     }
@@ -165,7 +167,10 @@ public class HistoryController {
     public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
             @PathParam("path") String path) throws IOException {
 
-        InputStream file = jcrFacade.getFile(gameModelId, WorkspaceType.HISTORY, path);           // Retrieve file from content repository
+        GameModel original = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(original);
+
+        InputStream file = jcrFacade.getFile(original, WorkspaceType.HISTORY, path);           // Retrieve file from content repository
 
         ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
         GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
@@ -173,7 +178,6 @@ public class HistoryController {
         gm.setName(gameModelFacade.findUniqueName(gm.getName()));               // Find a unique name for this new game
         gameModelFacade.createWithDebugGame(gm);
         
-        GameModel original = gameModelFacade.find(gameModelId);
 
         // TODO
 

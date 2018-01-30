@@ -12,7 +12,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
@@ -111,23 +110,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         return this.items;
     }
 
-    /**
-     * @param items
-     */
     @Override
-    public void setItems(List<VariableDescriptor> items) {
-        if (this.items != items) {
-            // do not clear new list if it's the same
-            this.items.clear();
-
-            for (VariableDescriptor cd : items) {
-                this.addItem(cd);
-            }
-        } else {
-            for (VariableDescriptor cd : items) {
-                this.registerItems(cd);
-            }
-        }
+    public void resetItemsField() {
+        this.items = new ArrayList<>();
     }
 
     @Override

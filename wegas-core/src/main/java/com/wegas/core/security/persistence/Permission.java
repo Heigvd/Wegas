@@ -197,4 +197,9 @@ public class Permission extends AbstractEntity {
     public Collection<WegasPermission> getRequieredReadPermission() {
         return null;
     }
+
+    @Override
+    public boolean isProtected() {
+        return false;
+    }
 }

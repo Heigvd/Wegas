@@ -135,6 +135,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @Enumerated(value = EnumType.STRING)
+
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -179,7 +180,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     public void preUpdate() {
         this.setUpdatedTime(new Date());
     }
-
 
     public GameTeams getGameTeams() {
         if (gameTeams == null) {
@@ -541,7 +541,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
         return WegasMembership.ADMIN;
     }
 
-
     @Override
     public WegasPermission getAssociatedReadPermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAME);
@@ -550,5 +549,10 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @Override
     public WegasPermission getAssociatedWritePermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME);
+    }
+
+    @Override
+    public boolean isProtected() {
+        return false;
     }
 }

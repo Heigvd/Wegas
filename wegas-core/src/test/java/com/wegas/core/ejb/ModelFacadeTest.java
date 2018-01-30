@@ -233,15 +233,27 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
         modelFacade.propagateModel(model.getId());
+
+        Assert.assertEquals("model", model.getName());
+        Assert.assertEquals("gamemodel #1", gameModel1.getName());
+        Assert.assertEquals("gamemodel #2", gameModel2.getName());
 
         Assert.assertEquals("DefaultLogId1", model.getProperties().getLogID());
         Assert.assertEquals("DefaultLogId1", gameModel1.getProperties().getLogID());
         Assert.assertEquals("DefaultLogId2", gameModel2.getProperties().getLogID());
 
         model.getProperties().setLogID("NewLogId");
+        model.setName("My Model");
         model = gameModelFacade.update(model.getId(), model);
+
+        gameModel1.setName("My first scenario");
+        gameModel1 = gameModelFacade.update(gameModel1.getId(), gameModel1);
+
+        Assert.assertEquals("My Model", model.getName());
+        Assert.assertEquals("My first scenario", gameModel1.getName());
+        Assert.assertEquals("gamemodel #2", gameModel2.getName());
 
         /**
          * Update gameModel properties
@@ -255,6 +267,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals("NewLogId", gameModel1.getProperties().getLogID());
         Assert.assertEquals("DefaultLogId2", gameModel2.getProperties().getLogID());
 
+        Assert.assertEquals("My Model", model.getName());
+        Assert.assertEquals("My first scenario", gameModel1.getName());
+        Assert.assertEquals("gamemodel #2", gameModel2.getName());
     }
 
     private void createCss(GameModel theModel, String uniqueToken) {
@@ -341,7 +356,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
         modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
@@ -393,7 +408,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
         modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
@@ -489,7 +504,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
 
         VariableDescriptor descriptor = getDescriptor(model, "anOtherNumber");
 
@@ -652,7 +667,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel3);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
         modelFacade.propagateModel(model.getId());
 
         List<VariableDescriptor> children = new ArrayList<>();
@@ -936,6 +951,127 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("FINI");
     }
 
+    private void checkNumber(GameModel gm, NumberDescriptor nd, Double expectedMin, Double expectedMax, Double expectedValue) throws WegasNoResultException {
+        NumberDescriptor desc = (NumberDescriptor) variableDescriptorFacade.find(gm, nd.getName());
+        NumberInstance instance = desc.getDefaultInstance();
+
+        Assert.assertEquals("Min Value does not match", expectedMin, desc.getMinValue(), 0.01);
+        Assert.assertEquals("Max Value does not match", expectedMax, desc.getMaxValue(), 0.01);
+
+        Assert.assertEquals("Default value does not match", expectedValue, instance.getValue(), 0.1);
+    }
+
+    private void updateNumber(GameModel gm, NumberDescriptor desc, Double min, Double max, Double value) throws WegasNoResultException {
+        NumberDescriptor nd = (NumberDescriptor) variableDescriptorFacade.find(gm, desc.getName());
+        nd.setMinValue(min);
+        nd.setMaxValue(max);
+        nd.getDefaultInstance().setValue(value);
+
+        variableDescriptorFacade.update(nd.getId(), nd);
+    }
+
+    @Test
+    public void testProtectedNumberDescriptorChange() throws RepositoryException, WegasNoResultException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+        modelFacade.propagateModel(model.getId());
+
+        Double initialMin = -10.0;
+        Double initialMax = 10.0;
+        Double initialValue = 1.0;
+
+        NumberDescriptor x = createNumberDescriptor(model, null, "x", "X", ModelScoped.Visibility.INTERNAL, initialMin, initialMax, initialValue);
+        NumberDescriptor y = createNumberDescriptor(model, null, "y", "Y", ModelScoped.Visibility.PROTECTED, initialMin, initialMax, initialValue);
+        NumberDescriptor z = createNumberDescriptor(model, null, "z", "Z", ModelScoped.Visibility.INHERITED, initialMin, initialMax, initialValue);
+
+        checkNumber(model, x, initialMin, initialMax, initialValue);
+        checkNumber(model, y, initialMin, initialMax, initialValue);
+        checkNumber(model, z, initialMin, initialMax, initialValue);
+
+        /* Propgate x, y and z */
+        modelFacade.propagateModel(model.getId());
+
+        /*
+         * assert x, y, and z exists
+         */
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        Assert.assertEquals("number of descriptor does not match for gm1", 3, gameModel1.getChildVariableDescriptors().size());
+        Assert.assertEquals("number of descriptor does not match for gm2", 3, gameModel2.getChildVariableDescriptors().size());
+
+        /*
+         * verify descriptor order
+         */
+        Assert.assertEquals("GM1 1st descriptor does no match", "x", gameModel1.getChildVariableDescriptors().get(0).getName());
+        Assert.assertEquals("GM1 2nd descriptor does no match", "y", gameModel1.getChildVariableDescriptors().get(1).getName());
+        Assert.assertEquals("GM1 3rd descriptor does no match", "z", gameModel1.getChildVariableDescriptors().get(2).getName());
+
+        Assert.assertEquals("GM2 1st descriptor does no match", "x", gameModel2.getChildVariableDescriptors().get(0).getName());
+        Assert.assertEquals("GM2 2nd descriptor does no match", "y", gameModel2.getChildVariableDescriptors().get(1).getName());
+        Assert.assertEquals("GM2 3rd descriptor does no match", "z", gameModel2.getChildVariableDescriptors().get(2).getName());
+
+
+        /* create private t in gameModel1 */
+        NumberDescriptor t = createNumberDescriptor(gameModel1, null, "t", "T", ModelScoped.Visibility.PRIVATE, initialMin, initialMax, initialValue);
+
+        checkNumber(gameModel1, x, initialMin, initialMax, initialValue);
+        checkNumber(gameModel1, y, initialMin, initialMax, initialValue);
+        checkNumber(gameModel1, z, initialMin, initialMax, initialValue);
+        checkNumber(gameModel1, t, initialMin, initialMax, initialValue);
+
+        Double newMin = -20.0;
+        Double newMax = 20.0;
+        Double newValue = 2.0;
+
+        updateNumber(gameModel1, x, newMin, newMax, newValue); // INTERNAL: read-only
+        updateNumber(gameModel1, y, newMin, newMax, newValue); // PROTECTED: bounds ro, value writable
+        updateNumber(gameModel1, z, newMin, newMax, newValue); // INHERITED: writable
+        updateNumber(gameModel1, t, newMin, newMax, newValue); // PRIVATE: writable
+
+        checkNumber(gameModel1, x, initialMin, initialMax, initialValue);
+        checkNumber(gameModel1, y, initialMin, initialMax, newValue);
+        checkNumber(gameModel1, z, newMin, newMax, newValue);
+        checkNumber(gameModel1, t, newMin, newMax, newValue);
+
+
+        /* Update and propagate model */
+        Double modelNewMin = -30.0;
+        Double modelNewMax = 30.0;
+        Double modelNewValue = 3.0;
+
+        updateNumber(model, x, modelNewMin, modelNewMax, modelNewValue);
+        updateNumber(model, y, modelNewMin, modelNewMax, modelNewValue);
+        updateNumber(model, z, modelNewMin, modelNewMax, modelNewValue);
+
+        checkNumber(model, x, modelNewMin, modelNewMax, modelNewValue);
+        checkNumber(model, y, modelNewMin, modelNewMax, modelNewValue);
+        checkNumber(model, z, modelNewMin, modelNewMax, modelNewValue);
+
+        modelFacade.propagateModel(model.getId());
+
+        checkNumber(gameModel1, x, modelNewMin, modelNewMax, modelNewValue); // update all
+        checkNumber(gameModel1, y, modelNewMin, modelNewMax, newValue); // override bounds but keep default value modification
+        checkNumber(gameModel1, z, newMin, newMax, newValue); // should keep scenario modification
+        checkNumber(gameModel1, t, newMin, newMax, newValue); // private is private :-\
+    }
+
     @Test
     public void testModelise_GameModelFiles() throws RepositoryException, IOException, IOException {
         GameModel gameModel1 = new GameModel();
@@ -974,7 +1110,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent(new GameModel("model"), scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
         modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
@@ -1010,14 +1146,11 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         ls.visitGameModelFiles(gameModel1);
         ls.visitGameModelFiles(gameModel2);
 
-
         Assert.assertArrayEquals(update,
                 jcrFacade.getFileBytes(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
         Assert.assertArrayEquals(update,
                 jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
-
-
 
         logger.info("update gm1 /dir/1/binFile1 to -1 -2 -3 2 10");
         byte[] update1 = {-1, -2, -3, 2, 10};

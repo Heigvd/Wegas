@@ -75,8 +75,8 @@ public class FileController {
 
     private ContentConnector getContentConnector(long gameModelId) throws RepositoryException {
         // find the gameModel to check readRight
-        gameModelFacade.find(gameModelId);
-        return jCRConnectorProvider.getContentConnector(gameModelId, WorkspaceType.FILES);
+        GameModel find = gameModelFacade.find(gameModelId);
+        return jCRConnectorProvider.getContentConnector(find, WorkspaceType.FILES);
     }
 
     /**
@@ -118,9 +118,9 @@ public class FileController {
         try {
             if (details.getContentDisposition().getFileName() == null
                     || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
-                detachedFile = jcrFacade.createDirectory(gameModelId, WorkspaceType.FILES, name, path, note, description);
+                detachedFile = jcrFacade.createDirectory(gameModel, WorkspaceType.FILES, name, path, note, description);
             } else {
-                detachedFile = jcrFacade.createFile(gameModelId, WorkspaceType.FILES, name, path, details.getMediaType().toString(),
+                detachedFile = jcrFacade.createFile(gameModel, WorkspaceType.FILES, name, path, details.getMediaType().toString(),
                         note, description, file, override);
             }
         } catch (final WegasRuntimeException ex) {
@@ -264,7 +264,7 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        return jcrFacade.listDirectory(gameModelId, ContentConnector.WorkspaceType.FILES, directory);
+        return jcrFacade.listDirectory(gameModel, ContentConnector.WorkspaceType.FILES, directory);
     }
 
     /**
@@ -431,7 +431,7 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        return jcrFacade.delete(gameModelId, ContentConnector.WorkspaceType.FILES, absolutePath, force);
+        return jcrFacade.delete(gameModel, ContentConnector.WorkspaceType.FILES, absolutePath, force);
     }
 
     /**

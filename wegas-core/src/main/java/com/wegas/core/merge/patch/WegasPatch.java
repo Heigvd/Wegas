@@ -166,13 +166,28 @@ public abstract class WegasPatch {
         this.apply(gameModel, target, null, PatchMode.UPDATE, null, null, null, false);
     }
 
-
+    /**
+     * Like apply but ignore visiblity related restrictions
+     *
+     * @param gameModel
+     * @param target
+     */
     public void applyForce(GameModel gameModel, Mergeable target) {
         this.apply(gameModel, target, null, PatchMode.UPDATE, null, null, null, true);
     }
 
     protected abstract LifecycleCollector apply(GameModel targetGameModel, Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
 
+    /**
+     * Guess current mode according to current visibility, and parent mode and visibility
+     *
+     * @param parentMode          mode of parent
+     * @param inheritedVisibility visibility of parent
+     * @param visibility          optional current visibility
+     *
+     * @return current mode OVERRIDE if visibility equals INTERNAL or PROTECTED or if parent mode is OVERRIDE and the parent child link allow to cascade OVERRIDE
+     *         , UPDATE in all other case
+     */
     private PatchMode getWithParent(PatchMode parentMode, Visibility inheritedVisibility, Visibility visibility) {
         logger.debug("GET MODE (parentMode {}; inheritedV: {}, v: {}", parentMode, inheritedVisibility, visibility);
         PatchMode mode = PatchMode.UPDATE;
@@ -259,7 +274,7 @@ public abstract class WegasPatch {
                                 mode = getWithParent(parentMode, inheritedVisibility, visibility);
                             } else {
                                 // change from not private to not private
-                                mode = PatchMode.OVERRIDE;
+                                mode = PatchMode.OVERRIDE;// really ?
                             }
                         }
                     } else {

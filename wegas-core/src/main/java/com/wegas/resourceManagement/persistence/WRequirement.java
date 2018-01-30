@@ -330,6 +330,11 @@ public class WRequirement extends AbstractEntity {
     }
 
     @Override
+    public boolean isProtected() {
+        return this.getTaskInstance().isProtected();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getTaskInstance().getRequieredUpdatePermission();
     }

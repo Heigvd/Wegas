@@ -242,23 +242,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         return items;
     }
 
-    /**
-     * @param items
-     */
     @Override
-    public void setItems(List<ChoiceDescriptor> items) {
-        if (this.items != items) {
-            // do not clear new list if it's the same 
-            this.items.clear();
-
-            for (ChoiceDescriptor cd : items) {
-                this.addItem(cd);
-            }
-        } else {
-            for (ChoiceDescriptor cd : items) {
-                this.registerItems(cd);
-            }
-        }
+    public void resetItemsField() {
+        this.items = new ArrayList<>();
     }
 
     /**

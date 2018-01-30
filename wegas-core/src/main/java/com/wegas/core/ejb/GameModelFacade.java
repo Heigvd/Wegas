@@ -361,7 +361,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return new unique name
      */
     public String findUniqueName(String oName) {
-        String newName = oName;
+        String newName = oName != null ? oName : "";
 
         Pattern p = Pattern.compile("(.*)\\((\\d*)\\)");
         Matcher matcher = p.matcher(oName);
@@ -395,17 +395,17 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     private void openRepositories(GameModel gameModel) throws RepositoryException {
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
-            ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel.getId(), wt);
+            ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, wt);
         }
     }
 
     public void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
             try {
-                ContentConnector srcRepo = jcrConnectorProvider.getContentConnector(srcGameModel.getId(), wt);
+                ContentConnector srcRepo = jcrConnectorProvider.getContentConnector(srcGameModel, wt);
                 AbstractContentDescriptor srcRoot = DescriptorFactory.getDescriptor("/", srcRepo);
 
-                ContentConnector newRepo = jcrConnectorProvider.getContentConnector(newGameModel.getId(), wt);
+                ContentConnector newRepo = jcrConnectorProvider.getContentConnector(newGameModel, wt);
                 AbstractContentDescriptor newRoot = DescriptorFactory.getDescriptor("/", newRepo);
 
                 WegasPatch patch = new WegasEntityPatch(newRoot, srcRoot, true);
@@ -503,7 +503,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
             try {
-                ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel.getId(), wt);
+                ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, wt);
                 connector.deleteRoot();
             } catch (RepositoryException ex) {
                 logger.error("Error suppressing repository {}, {}", id, ex.getMessage());

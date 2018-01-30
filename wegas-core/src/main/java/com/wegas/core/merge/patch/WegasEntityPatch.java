@@ -324,6 +324,8 @@ public final class WegasEntityPatch extends WegasPatch {
                                 case SKIP:
                                     logger.debug("SKIP");
                                     break;
+                                case OVERRIDE:
+                                case UPDATE:
                                 default:
                                     if (shouldApplyPatch(target, toEntity)) {
                                         if (numPass > 1) {
@@ -396,7 +398,21 @@ public final class WegasEntityPatch extends WegasPatch {
                         cb.persist(entity, identifier);
                     }
                 }
+
+                /*
+                if (entity instanceof AbstractEntity) {
+                    AbstractEntity ae = (AbstractEntity) entity;
+                    if (ae.getId() == null) {
+                        if (vdf == null) {
+                            vdf = VariableDescriptorFacade.lookup();
+                        }
+                        vdf.persistAbstractEntity(ae);
+                    }
+                }
+                 */
             }
+
+            logger.info("PostCollect: {}", collector);
         }
 
         logger.unindent();

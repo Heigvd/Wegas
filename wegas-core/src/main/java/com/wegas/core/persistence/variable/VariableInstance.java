@@ -607,6 +607,11 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         this.gameModelScope = gameModelScope;
     }
 
+    @Override
+    public boolean isProtected() {
+        return this.isDefaultInstance() && this.getDefaultDescriptor().isProtected();
+    }
+
 
     public void revive(Beanjection beans) {
     }

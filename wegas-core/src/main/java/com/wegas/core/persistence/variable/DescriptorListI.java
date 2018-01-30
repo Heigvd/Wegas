@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,7 +73,22 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      *
      * @param items new list of children
      */
-    void setItems(List<T> items);
+    default void setItems(List<T> items) {
+        // a new list prevent eclipselink making sh*t with items (like replacing some by null...)
+        List<T> newItems = new ArrayList<>();
+        newItems.addAll(items);
+
+        this.resetItemsField();
+
+        for (T item : newItems) {
+            this.addItem(item);
+        }
+    }
+
+    /**
+     * Re-init items fields to an empty new list
+     */
+    void resetItemsField();
 
     /**
      * Update child in order to maintain cache integrity.
@@ -90,15 +106,9 @@ public interface DescriptorListI<T extends VariableDescriptor> {
         this.addItem(null, item);
     }
 
-    default void registerItems(T item) {
-        if (this.getGameModel() != null) {
-            this.getGameModel().addToVariableDescriptors(item);
-        }
-        this.setChildParent(item);
-    }
-
     /**
-     * Add a new child
+     * Add a new child. Register the new child within the gameModel (global variable descriptor list)
+     * and within its parent.
      *
      * @param index new child position, null means last position
      * @param item  the new child to add

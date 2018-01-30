@@ -559,6 +559,11 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }
 
     @Override
+    public boolean isProtected() {
+        return this.getBurndownInstance().isProtected();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getBurndownInstance().getRequieredUpdatePermission();
     }

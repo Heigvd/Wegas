@@ -307,6 +307,11 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     @Override
+    public boolean isProtected() {
+        return this.getVariableDescriptor().isProtected();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getVariableDescriptor().getGameModel().getRequieredUpdatePermission();
     }
