@@ -466,7 +466,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         selected: selected,
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
                         iconCSS: "fa fa-users fa-1",
-                        cssClass: "wegas-editor-questionitem " + advancedClass
+                        cssClass: "wegas-editor-listitem wegas-editor-questionitem " + advancedClass
                     };
                 default:
                     return {
