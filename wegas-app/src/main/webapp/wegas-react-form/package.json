@@ -16,7 +16,6 @@
   "author": "CiGit",
   "license": "MIT",
   "dependencies": {
-    "@babel/plugin-transform-spread": "^7.0.0-beta.38",
     "brace": "^0.11.0",
     "classnames": "^2.2.5",
     "core-js": "^2.5.3",
@@ -35,11 +34,12 @@
     "rm": "^0.1.8"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-beta.38",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.38",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0-beta.38",
-    "@babel/preset-env": "^7.0.0-beta.38",
-    "@babel/preset-react": "^7.0.0-beta.38",
+    "@babel/core": "^7.0.0-beta.39",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.39",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0-beta.39",
+    "@babel/plugin-transform-spread": "^7.0.0-beta.39",
+    "@babel/preset-env": "^7.0.0-beta.39",
+    "@babel/preset-react": "^7.0.0-beta.39",
     "@types/lodash-es": "^4.17.0",
     "@types/prop-types": "^15.5.2",
     "@types/react": "^16.0.35",
