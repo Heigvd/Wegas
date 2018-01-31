@@ -239,4 +239,14 @@
 .yui3-treeview-content .yui3-sortable-widget {
     opacity: 0.5;
     border: dashed 1px grey;
+    position: relative;
+}
+/* Layer to prevent element click.
+mousedown / mouseup on different targets */
+.yui3-treeview-content .yui3-sortable-widget:before{
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
 }
