@@ -323,7 +323,7 @@ YUI.add('wegas-react-form', Y => {
                             action: 'submit',
                             cssClass: wegasSimpleButtonStyle.toString(),
                             label:
-                                '<span class="wegas-save-form-button fa fa-cloud-upload ' +
+                                '<span class="wegas-save-form-button fa fa-floppy-o ' +
                                 inactiveSaveBtnStyle.toString() +
                                 '" title="No changes to save"></span>',
                         },
