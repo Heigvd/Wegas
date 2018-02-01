@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
@@ -146,6 +147,11 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @Override
     public boolean isProtected() {
         return this.getEffectiveDescriptor().isProtected();
+    }
+
+    @Override
+    public ModelScoped.Visibility getInheritedVisibility() {
+        return this.getEffectiveDescriptor().getVisibility();
     }
 
     @Override

@@ -38,7 +38,7 @@ public class MessageFacade extends BaseFacade<Message> {
 
     @Override
     public void remove(Message entity) {
-        getEntityManager().remove(entity);
+        this.removeAbstractEntity(entity);
         entity.getInboxInstance().getMessages().remove(entity);
     }
 }

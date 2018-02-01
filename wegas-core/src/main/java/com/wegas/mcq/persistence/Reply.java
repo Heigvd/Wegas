@@ -17,6 +17,7 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
@@ -90,7 +91,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @JoinColumn(name = "choiceinstance_id", nullable = false)
     @JsonBackReference
     private ChoiceInstance choiceInstance;
-
 
     /**
      * @return the ignored status.
@@ -279,6 +279,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @Override
     public boolean isProtected() {
         return this.getChoiceInstance().isProtected();
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return getChoiceInstance().getInheritedVisibility();
     }
 
     @Override

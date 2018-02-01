@@ -19,6 +19,8 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
+import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -392,6 +394,12 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @return all descriptor names already in use within the gameModel
      */
     public List<String> findDistinctNames(final GameModel gameModel) {
+        /*List<String> names =new ArrayList<>(gameModel.getVariableDescriptors().size());
+        for (VariableDescriptor vd : gameModel.getVariableDescriptors()){
+            names.add(vd.getName());
+        }
+        return names;
+        */
         TypedQuery<String> distinctNames = getEntityManager().createQuery("SELECT DISTINCT(var.name) FROM VariableDescriptor var WHERE var.gameModel.id = :gameModelId", String.class);
         distinctNames.setParameter("gameModelId", gameModel.getId());
         return distinctNames.getResultList();
@@ -526,12 +534,34 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         //return findVariableDescriptorsByClass.getResultList();
     }
 
+    /**
+     *
+     * @param descriptorId         id of the descriptor to move
+     * @param targetListDescriptor new parent
+     * @param index                index in new parent
+     *
+     */
     private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final int index) {
-        final VariableDescriptor vd = this.find(descriptorId);                  // Remove from the previous list
+
+        final VariableDescriptor vd = this.find(descriptorId);
         DescriptorListI from = vd.getParent();
 
-        from.localRemove(vd);
-        targetListDescriptor.addItem(index, vd);
+        Visibility targetVisibility = targetListDescriptor instanceof ModelScoped ? ((ModelScoped) targetListDescriptor).getVisibility() : Visibility.INHERITED;
+
+        if (!vd.isProtected() || (vd.getVisibility() == ModelScoped.Visibility.PRIVATE)) {
+            if (!vd.isProtected() || targetVisibility == Visibility.INHERITED || targetVisibility == Visibility.PRIVATE) {
+                from.localRemove(vd);
+                targetListDescriptor.addItem(index, vd);
+            } else {
+                if (targetListDescriptor instanceof VariableDescriptor) {
+                    throw WegasErrorMessage.error("Updating " + ((VariableDescriptor<VariableInstance>) targetListDescriptor).getLabel() + " is not authorized");
+                } else {
+                    throw WegasErrorMessage.error("Updating " + targetListDescriptor + " is not authorized");
+                }
+            }
+        } else {
+            throw WegasErrorMessage.error("Moving " + vd.getLabel() + " is not authorized");
+        }
     }
 
     /**

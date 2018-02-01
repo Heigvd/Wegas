@@ -18,6 +18,7 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
@@ -406,6 +407,11 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     @Override
     public boolean isProtected() {
         return this.getChoiceDescriptor().isProtected();
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return getChoiceDescriptor().getVisibility();
     }
 
     @Override

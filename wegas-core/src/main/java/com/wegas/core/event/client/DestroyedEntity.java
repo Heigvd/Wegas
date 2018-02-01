@@ -9,6 +9,7 @@ package com.wegas.core.event.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 
@@ -48,4 +49,10 @@ public class DestroyedEntity extends AbstractEntity {
     public boolean isProtected() {
         return false;
     }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
+    }
+
 }

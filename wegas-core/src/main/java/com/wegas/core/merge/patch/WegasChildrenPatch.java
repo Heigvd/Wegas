@@ -13,16 +13,14 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Patch List or Map of AbstrctEntities
@@ -30,8 +28,6 @@ import java.util.Set;
  * @author maxence
  */
 public final class WegasChildrenPatch extends WegasPatch {
-
-    private final Visibility[] cascade;
 
     private Object from;
     private final Mergeable referenceEntity;
@@ -45,14 +41,13 @@ public final class WegasChildrenPatch extends WegasPatch {
             Method getter, Method setter,
             Object from, Object to,
             boolean recursive, boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
-            Visibility[] cascade) {
+            ProtectionLevel protectionLevel) {
 
-        super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, cascade);
+        super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, protectionLevel);
         this.patches = new ArrayList<>();
         this.from = from;
         this.to = to;
         this.referenceEntity = referenceEntity;
-        this.cascade = cascade;
 
         Map<Object, Object> fromMap = asMap(from);
         Map<Object, Object> toMap = asMap(to);
@@ -68,12 +63,12 @@ public final class WegasChildrenPatch extends WegasPatch {
 
             // this patch handles delete and update cases
             if (primitive) {
-                patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, fromEntity, toEntity, false, false, false, cascade));
+                patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, fromEntity, toEntity, false, false, false, this.protectionLevel));
             } else {
                 patches.add(new WegasEntityPatch(key, 0, null, null, null,
                         (Mergeable) fromEntity,
                         (Mergeable) toEntity, // null -> DELETE ; not null -> UPDATE
-                        recursive, false, false, false, cascade));
+                        recursive, false, false, false, this.protectionLevel));
             }
 
             if (to != null) {
@@ -87,11 +82,11 @@ public final class WegasChildrenPatch extends WegasPatch {
             Object key = entry.getKey();
             Object toEntity = entry.getValue();
             if (primitive) {
-                patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, null, toEntity, false, false, false, cascade));
+                patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, null, toEntity, false, false, false, this.protectionLevel));
             } else {
                 patches.add(new WegasEntityPatch(key, 0, userCallback, null, null,
                         null, (Mergeable) toEntity, // from null to no null  -> CREATE
-                        recursive, false, false, false, cascade));
+                        recursive, false, false, false, this.protectionLevel));
             }
         }
     }
@@ -228,6 +223,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                             cb.preUpdate(targetEntity, to, identifier);
                         }
 
+                        /*
                         if (parentMode == PatchMode.OVERRIDE) {
 
                             // effective children keys from patches
@@ -237,7 +233,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                                 effectiveChildrenKeys.add(patch.getIdentifier());
                             }
 
-                            /* delete all children which does not exist any longer in the new children list */
+                            // delete all children which does not exist any longer in the new children list
                             for (Entry<Object, Object> entry : tmpMap.entrySet()) {
                                 WegasPatch patch;
                                 Object key = entry.getKey();
@@ -245,18 +241,18 @@ public final class WegasChildrenPatch extends WegasPatch {
                                 if (!effectiveChildrenKeys.contains(key)) {
                                     Object toBeDeleted = entry.getValue();
                                     if (primitive) {
-                                        patch = new WegasPrimitivePatch(key, 0, null, null, null, null, toBeDeleted, null, false, false, false, cascade);
+                                        patch = new WegasPrimitivePatch(key, 0, null, null, null, null, toBeDeleted, null, false, false, false, this.protectionLevel);
                                     } else {
                                         // DELETE and COLLECT toBeDeleted and all its children but register them within the collector with payload =
 
-                                        patch = new WegasEntityPatch(key, 0, null, null, null, (Mergeable) toBeDeleted, null, recursive, false, false, false, cascade);
+                                        patch = new WegasEntityPatch(key, 0, null, null, null, (Mergeable) toBeDeleted, null, recursive, false, false, false, this.protectionLevel);
                                     }
                                     patch.apply(targetGameModel, toBeDeleted, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                                 }
                             }
 
                             // force sub-patches to create nodes
-                        }
+                        }*/
 
                         logger.info("Pre Patch: target: {} from: {} to: {}", children, from, to);
                         for (WegasPatch patch : patches) {
@@ -329,6 +325,16 @@ public final class WegasChildrenPatch extends WegasPatch {
                             }
 
                             logger.info("sorted: {}", childrenList);
+                        }
+
+                        if (parentMode == PatchMode.DELETE
+                                && ((childrenList != null && childrenList.size() > 0)
+                                || (childrenMap != null && childrenMap.size() > 0))) {
+                            logger.info("orphans: {}", children);
+
+                            for (WegasCallback cb : callbacks) {
+                                cb.registerOrphans(children);
+                            }
                         }
 
                         setter.invoke(targetEntity, children);

@@ -129,6 +129,15 @@ public class WegasEntityFields {
         return fields;
     }
 
+    public WegasFieldProperties getField(String name) {
+        for (WegasFieldProperties f : this.fields) {
+            if (f.getField().getName().equals(name)) {
+                return f;
+            }
+        }
+        return null;
+    }
+
     /**
      * Get the list of all callback defined at class level for theClass
      *

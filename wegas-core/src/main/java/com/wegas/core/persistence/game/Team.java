@@ -14,6 +14,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
@@ -428,6 +429,13 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     public boolean isProtected() {
         return false;
     }
+
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
+    }
+
 
     @Override
     public Collection<WegasPermission> getRequieredDeletePermission() {

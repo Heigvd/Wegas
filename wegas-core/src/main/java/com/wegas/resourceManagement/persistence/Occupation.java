@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
@@ -158,6 +159,11 @@ public class Occupation extends AbstractEntity {
     @Override
     public boolean isProtected() {
         return this.getResourceInstance().isProtected();
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return getResourceInstance().getInheritedVisibility();
     }
 
     @Override

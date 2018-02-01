@@ -85,7 +85,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * The so-called visibility
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
     private ModelScoped.Visibility visibility = ModelScoped.Visibility.PRIVATE;
     /**
      *
@@ -144,7 +144,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     }
 
     @JsonIgnore
-    protected ContentConnector getConnector() throws RepositoryException{
+    protected ContentConnector getConnector() throws RepositoryException {
         if (this.connector != null) {
             return connector;
         } else {
@@ -460,5 +460,15 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @Override
     public boolean isProtected() {
         return this.connector.getGameModel().isProtected();
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        try {
+            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, connector);
+            return descriptor.getVisibility();
+        } catch (RepositoryException ex) {
+            return Visibility.INHERITED;
+        }
     }
 }

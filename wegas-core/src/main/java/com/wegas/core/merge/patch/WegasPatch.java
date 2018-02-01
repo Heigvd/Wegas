@@ -14,6 +14,7 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public abstract class WegasPatch {
      */
     protected WegasCallback fieldCallback;
 
-    protected List<Visibility> cascadeOverride = new ArrayList<>();
+    protected final ProtectionLevel protectionLevel;
 
     protected boolean ignoreNull;
     protected boolean sameEntityOnly;
@@ -91,7 +92,7 @@ public abstract class WegasPatch {
             WegasCallback fieldCallback,
             boolean ignoreNull, boolean sameEntityOnly,
             boolean initOnly, boolean recursive,
-            Visibility[] cascade) {
+            ProtectionLevel protectionLevel) {
         this.identifier = identifier;
         this.order = order;
         this.getter = getter;
@@ -101,11 +102,7 @@ public abstract class WegasPatch {
         this.sameEntityOnly = sameEntityOnly;
         this.initOnly = initOnly;
         this.recursive = recursive;
-
-        for (Visibility v : cascade) {
-            cascadeOverride.add(v);
-        }
-
+        this.protectionLevel = protectionLevel;
     }
 
     /**
@@ -179,31 +176,36 @@ public abstract class WegasPatch {
     protected abstract LifecycleCollector apply(GameModel targetGameModel, Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
 
     /**
-     * Guess current mode according to current visibility, and parent mode and visibility
+     * Guess current mode according to protectionLevel, current visibility, and parent mode and visibility
      *
-     * @param parentMode          mode of parent
      * @param inheritedVisibility visibility of parent
      * @param visibility          optional current visibility
      *
      * @return current mode OVERRIDE if visibility equals INTERNAL or PROTECTED or if parent mode is OVERRIDE and the parent child link allow to cascade OVERRIDE
      *         , UPDATE in all other case
      */
-    private PatchMode getWithParent(PatchMode parentMode, Visibility inheritedVisibility, Visibility visibility) {
-        logger.debug("GET MODE (parentMode {}; inheritedV: {}, v: {}", parentMode, inheritedVisibility, visibility);
-        PatchMode mode = PatchMode.UPDATE;
-        if (visibility != null) {
-            if (visibility.equals(Visibility.INTERNAL) || visibility.equals(Visibility.PROTECTED)) {
-                // current entity has its own visibility which requires override mode
-                mode = PatchMode.OVERRIDE;
-            }
-        } else {
-            // parent request to override and cascading override mode is permitted
-            if (parentMode.equals(PatchMode.OVERRIDE) && this.cascadeOverride.contains(inheritedVisibility)) {
-                mode = PatchMode.OVERRIDE;
-            }
+    protected PatchMode updateOrOverride(Visibility inheritedVisibility, Visibility visibility) {
+        logger.trace("override ? (inheritedV: {}, ownVisibility: {}; protection: {}", inheritedVisibility, visibility, protectionLevel);
+        Visibility eVisibility = visibility != null ? visibility : inheritedVisibility;
+
+        switch (protectionLevel) {
+            case CASCADED:
+                logger.error("CASCADED SHOULD HAVE BEEN REPLACED BY PARENT ENTITY ONE");
+            case PROTECTED:
+                if (eVisibility == Visibility.INTERNAL || eVisibility == Visibility.PROTECTED) {
+                    return PatchMode.OVERRIDE;
+                }
+                break;
+            case INTERNAL:
+                if (eVisibility == Visibility.INTERNAL) {
+                    return PatchMode.OVERRIDE;
+                }
+                break;
+            case ALL:
+                return PatchMode.OVERRIDE;
         }
 
-        return mode;
+        return PatchMode.UPDATE;
     }
 
     /**
@@ -257,7 +259,7 @@ public abstract class WegasPatch {
 
                         if (bypassVisibility || from.equals(target)) {
                             // same entity -> Update or override
-                            mode = getWithParent(parentMode, inheritedVisibility, visibility);
+                            mode = updateOrOverride(inheritedVisibility, visibility);
                         } else {
                             Visibility fromScope = ((ModelScoped) from).getVisibility();
                             Visibility toScope = ((ModelScoped) to).getVisibility();
@@ -271,14 +273,14 @@ public abstract class WegasPatch {
                                 mode = PatchMode.CREATE;
                             } else if (toScope.equals(fromScope)) {
                                 // no change -> UPDATE
-                                mode = getWithParent(parentMode, inheritedVisibility, visibility);
+                                mode = updateOrOverride(inheritedVisibility, visibility);
                             } else {
                                 // change from not private to not private
                                 mode = PatchMode.OVERRIDE;// really ?
                             }
                         }
                     } else {
-                        mode = getWithParent(parentMode, inheritedVisibility, visibility);
+                        mode = updateOrOverride(inheritedVisibility, visibility);
                     }
                 }
             } else {
@@ -304,11 +306,11 @@ public abstract class WegasPatch {
      */
     protected StringBuilder print(int ident) {
         StringBuilder sb = new StringBuilder();
-        indent(sb, ident);
+        newLine(sb, ident);
         sb.append("Patch ").append(this.getClass().getSimpleName()).append(" ").append(identifier);
         if (fieldCallback != null) {
-            newLine(sb, ident);
-            sb.append("FieldCallback").append(fieldCallback);
+            newLine(sb, ident + 1);
+            sb.append("FieldCallback: ").append(fieldCallback);
         }
 
         return sb;

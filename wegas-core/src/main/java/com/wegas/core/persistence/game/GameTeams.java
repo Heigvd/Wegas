@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,4 +102,10 @@ public class GameTeams extends AbstractEntity {
     public boolean isProtected() {
         return false;
     }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
+    }
+
 }

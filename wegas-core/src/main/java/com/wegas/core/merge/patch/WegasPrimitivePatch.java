@@ -12,7 +12,7 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -57,8 +57,8 @@ public final class WegasPrimitivePatch extends WegasPatch {
             WegasCallback userCallback, Mergeable entity,
             Method getter, Method setter, Object fromValue, Object toValue,
             boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
-            Visibility[] cascade) {
-        super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, false, cascade);
+            ProtectionLevel protectionLevel) {
+        super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, false, protectionLevel);
         this.identifier = identifier;
         this.fromValue = fromValue;
         this.toValue = toValue;
@@ -74,7 +74,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
         return isField // not yet implemented for primitive lists
                 && !bypassVisibility // target is never protected when bypassing visibilities
                 && target.isProtected() // and target is protected
-                && this.toEntity.isProtected(); // toEntity is also protected (ie allows changes from upstream)
+                && this.toEntity != null && this.toEntity.isProtected(); // toEntity is also protected (ie allows changes from upstream)
     }
 
     @Override
@@ -94,9 +94,12 @@ public final class WegasPrimitivePatch extends WegasPatch {
                     } else {
                         oldTargetValue = target;
                     }
+                    PatchMode myMode = this.updateOrOverride(visibility, null);
+                    logger.trace("MyMode: {}", myMode);
+
                     if (!initOnly || oldTargetValue == null) { // do no overwrite non-null value if initOnly is set
-                        if (parentMode.equals(PatchMode.OVERRIDE) || (Objects.equals(oldTargetValue, fromValue))) { // do not override user-change but in protected mode
-                            if (!parentMode.equals(PatchMode.OVERRIDE) || !isProtected(targetEntity, bypassVisibility)) { // prevent protected changes
+                        if (myMode.equals(PatchMode.OVERRIDE) || (Objects.equals(oldTargetValue, fromValue))) { // do not override user-change but in protected mode
+                            if (!myMode.equals(PatchMode.OVERRIDE) || !isProtected(targetEntity, bypassVisibility)) { // prevent protected changes
                                 if (!ignoreNull || toValue != null) {
 
                                     logger.debug("Apply {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);

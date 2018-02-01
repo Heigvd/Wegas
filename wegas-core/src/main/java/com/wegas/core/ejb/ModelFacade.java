@@ -22,6 +22,7 @@ import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
 import com.wegas.core.persistence.game.GameModelContent;
@@ -347,11 +348,41 @@ public class ModelFacade {
     }
 
     /**
+     * reset recursively target visibility to the given one.
+     *
+     * @param target
+     * @param visibility
+     */
+    public static void resetVisibility(Mergeable target, ModelScoped.Visibility visibility) {
+        if (target != null) {
+            if (target instanceof ModelScoped) {
+                ((ModelScoped) target).setVisibility(visibility);
+            }
+
+            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
+
+            for (WegasFieldProperties field : entityIterator.getFields()) {
+                if (field.getType().equals(WegasFieldProperties.FieldType.CHILD)) {
+                    Method readMethod = field.getPropertyDescriptor().getReadMethod();
+                    try {
+                        AbstractEntity targetChild = (AbstractEntity) readMethod.invoke(target);
+
+                        ModelFacade.resetVisibility(targetChild, visibility);
+
+                    } catch (Exception ex) {
+                        throw new WegasErrorMessage("error", "Invocation Failure: should never appends");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      *
      * @param target
      * @param reference
      */
-    public void resetRefIds(AbstractEntity target, AbstractEntity reference) {
+    public static void resetRefIds(AbstractEntity target, AbstractEntity reference) {
         if (target != null) {
             if (reference != null) {
                 target.forceRefId(reference.getRefId());
@@ -373,7 +404,7 @@ public class ModelFacade {
                             referenceChild = (AbstractEntity) readMethod.invoke(reference);
                         }
 
-                        this.resetRefIds(targetChild, referenceChild);
+                        ModelFacade.resetRefIds(targetChild, referenceChild);
 
                     } catch (Exception ex) {
                         throw new WegasErrorMessage("error", "Invocation Failure: should never appends");
@@ -409,6 +440,9 @@ public class ModelFacade {
                 // set scenarios refId to model refId
                 for (GameModel scenario : scenarios) {
                     scenario.forceRefId(model.getRefId());
+                    if (scenario.getType().equals(GmType.SCENARIO)) {
+                        scenario.setOnGoingPropagation(Boolean.TRUE);
+                    }
                 }
 
                 /*
@@ -523,6 +557,12 @@ public class ModelFacade {
 
                 this.syncRepository(model);
 
+                for (GameModel scenario : scenarios) {
+                    if (scenario.getType().equals(GmType.SCENARIO)) {
+                        scenario.setOnGoingPropagation(Boolean.FALSE);
+                    }
+                }
+
                 logger.info("PROCESS COMPLETED");
             }
         }
@@ -609,6 +649,7 @@ public class ModelFacade {
      * @param gameModelId
      *
      * @return
+     *
      * @throws javax.jcr.RepositoryException
      *
      */
@@ -654,12 +695,13 @@ public class ModelFacade {
 
                 WegasPatch patch = new WegasEntityPatch(reference, gameModel, Boolean.TRUE);
 
-                logger.info("PropagatePatch: {}" + patch);
+                logger.info("PropagatePatch: {}", patch);
 
                 Collection<GameModel> implementations = gameModelFacade.getImplementations(gameModel);
                 for (GameModel scenario : implementations) {
                     // avoid propagating to game's scenarios or to the model
                     if (scenario.getType().equals(GmType.SCENARIO)) {
+                        scenario.setOnGoingPropagation(Boolean.TRUE);
                         patch.apply(scenario, scenario);
 
                         logger.info("Revive {}", scenario);
@@ -673,6 +715,13 @@ public class ModelFacade {
                 //reference.propagateGameModel();
 
                 this.syncRepository(gameModel);
+
+                for (GameModel scenario : implementations) {
+                    // avoid propagating to game's scenarios or to the model
+                    if (scenario.getType().equals(GmType.SCENARIO)) {
+                        scenario.setOnGoingPropagation(Boolean.FALSE);
+                    }
+                }
             }
             return gameModel;
         } else {

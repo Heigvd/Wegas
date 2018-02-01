@@ -45,4 +45,15 @@ public @interface WegasEntity {
      * @return list of properties to exclude from the merge process.
      */
     String[] ignoreProperties() default {};
+
+    /*
+     * depict a property ef the entity which have getter and setter but no field.
+     */
+    //WegasExtraProperty[] extraProperties() default {};
+    /*
+        with public @interface WegasExtraProperty {
+            public String propertyName();
+            public WegasEntityProperty property();
+        }
+     */
 }

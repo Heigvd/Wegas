@@ -7,11 +7,15 @@
  */
 package com.wegas.core.merge.utils;
 
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.Mergeable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,11 +23,48 @@ import java.util.Map.Entry;
  */
 public class LifecycleCollector {
 
+    private static final Logger logger = LoggerFactory.getLogger(LifecycleCollector.class);
+
     Map<String, CollectedEntity> deleted = new HashMap<>();
     Map<String, CollectedEntity> created = new HashMap<>();
 
+    //  PARENT         IDENTIFIER, ORPHANS
+    Map<Mergeable, Map<Object, OrphanContainer>> orphansMap = new HashMap<>();
+
     public Map<String, CollectedEntity> getDeleted() {
         return deleted;
+    }
+
+    public void adopt(Mergeable parent) {
+        if (orphansMap.containsKey(parent)) {
+            orphansMap.remove(parent);
+        }
+    }
+
+    /**
+     *
+     * @param parent     used to be orphans parent
+     * @param identifier parent property which contains orphans
+     * @param orphans    orphans themselves
+     */
+    public void registerOrphans(Mergeable parent, Object identifier, Object orphans) {
+        orphansMap.putIfAbsent(parent, new HashMap<>());
+        Map<Object, OrphanContainer> parentOrphans = orphansMap.get(parent);
+
+        parentOrphans.putIfAbsent(identifier, new OrphanContainer());
+
+        OrphanContainer container = parentOrphans.get(identifier);
+        if (orphans instanceof List) {
+            container.addAll((List<Object>) orphans);
+        } else if (orphans instanceof Map) {
+            container.addAll((Map<Object, Object>) orphans);
+        } else {
+            throw WegasErrorMessage.error("Unknown Type: " + orphans);
+        }
+    }
+
+    public Map<Mergeable, Map<Object, OrphanContainer>> getCollectedOrphans() {
+        return this.orphansMap;
     }
 
     public void setDeleted(Map<String, CollectedEntity> deleted) {
@@ -42,22 +83,69 @@ public class LifecycleCollector {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\n");
+        sb.append(System.lineSeparator());
         sb.append("New Entities ").append(created.size()).append(":");
-        sb.append("\n");
+        sb.append(System.lineSeparator());
         for (Entry<String, CollectedEntity> entry : created.entrySet()) {
-            sb.append(" * ").append(entry.getKey()).append(" ->" ).append(entry.getValue().getEntity().toString());
-            sb.append("\n");
+            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry.getValue().getEntity().toString());
+            sb.append(System.lineSeparator());
         }
 
         sb.append("Destroyed Entities ").append(deleted.size()).append(":");
-        sb.append("\n");
+        sb.append(System.lineSeparator());
         for (Entry<String, CollectedEntity> entry : deleted.entrySet()) {
-            sb.append(" * ").append(entry.getKey()).append(" ->" ).append(entry.getValue().getEntity().toString());
-            sb.append("\n");
+            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry.getValue().getEntity().toString());
+            sb.append(System.lineSeparator());
+        }
+
+        sb.append("Orphans Entities ").append(orphansMap.size()).append(":");
+        sb.append(System.lineSeparator());
+        for (Entry<Mergeable, Map<Object, OrphanContainer>> entry : orphansMap.entrySet()) {
+            sb.append(" Parent ").append(entry.getKey()).append(":").append(System.lineSeparator());
+            for (Entry<Object, OrphanContainer> entry2 : entry.getValue().entrySet()) {
+                sb.append("  * ").append(entry2.getKey()).append(" -> ").append(entry2.getValue()).append(System.lineSeparator());
+            }
         }
 
         return sb.toString();
+    }
+
+    public static final class OrphanContainer {
+
+        private List<Object> orphansList;
+        private Map<Object, Object> orphansMap;
+
+        public Object getOrphans() {
+            return orphansList != null ? orphansList : orphansMap;
+        }
+
+        private void addAll(List<Object> list) {
+            if (this.orphansList == null) {
+                this.orphansList = new ArrayList<>();
+            }
+            this.orphansList.addAll(list);
+        }
+
+        private void addAll(Map<Object, Object> map) {
+            if (this.orphansMap == null) {
+                this.orphansMap = new HashMap<>();
+            }
+            this.orphansMap.putAll(map);
+        }
+
+        public Boolean areOrphansInstanceOf(Class<? extends Mergeable> klass) {
+            if (orphansList != null && !orphansList.isEmpty()) {
+                return klass.isAssignableFrom(orphansList.get(0).getClass());
+            } else if (orphansMap != null && !orphansMap.isEmpty()) {
+                return klass.isAssignableFrom(orphansMap.values().iterator().next().getClass());
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return "" + (orphansList != null ? orphansList : orphansMap);
+        }
     }
 
     public static final class CollectedEntity {

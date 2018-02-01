@@ -21,6 +21,7 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -74,6 +75,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     private Boolean canInstantiate = null;
     @Transient
     private Boolean canDuplicate = null;
+
+    @Transient
+    private Boolean onGoingPropagation = false;
 
     @Transient
     @JsonIgnore
@@ -961,7 +965,22 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Override
     public boolean isProtected() {
         // only scenarios which are based on a model are protected
-        return (this.getType().equals(GmType.SCENARIO) && this.getBasedOn() != null);
+        // but do no protect a gameModel when the propagation process is ongoing
+        return (this.getType().equals(GmType.SCENARIO) && this.getBasedOn() != null && !this.onGoingPropagation);
+    }
+
+    /**
+     * Inform the game model the propagation process in ongoing
+     *
+     * @param onGoingPropagation
+     */
+    public void setOnGoingPropagation(Boolean onGoingPropagation) {
+        this.onGoingPropagation = onGoingPropagation;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
     }
 
     @Override

@@ -17,6 +17,7 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.ejb.UserFacade;
@@ -469,4 +470,11 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     public boolean isProtected() {
         return false;
     }
+
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
+    }
+
 }

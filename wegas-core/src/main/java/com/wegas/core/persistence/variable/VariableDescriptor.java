@@ -27,7 +27,6 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
@@ -156,7 +155,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     @JsonView(value = Views.EditorI.class)
-    @WegasEntityProperty(cascadeOverride = {Visibility.INTERNAL})
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.INTERNAL)
     private VariableInstance defaultInstance;
 
     /**
@@ -187,10 +186,10 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @JsonIgnore
     private GameModel rootGameModel;
 
-    @Enumerated(value = EnumType.STRING)
-    @WegasEntityProperty
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
+    @Enumerated(value = EnumType.STRING)
+
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
     private Visibility visibility = Visibility.PRIVATE;
 
     /**
@@ -652,7 +651,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) +" )";
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) + " )";
     }
 
     @Override
@@ -717,6 +716,16 @@ abstract public class VariableDescriptor<T extends VariableInstance>
                 VariableDescriptor vd = (VariableDescriptor) entity;
                 vd.getVariableDescriptorFacade().preDestroy(vd.getGameModel(), vd);
             }
+        }
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        DescriptorListI<? extends VariableDescriptor> parent = getParent();
+        if (parent instanceof VariableDescriptor) {
+            return ((VariableDescriptor<VariableInstance>) parent).getVisibility();
+        } else {
+            return Visibility.INHERITED;
         }
     }
 

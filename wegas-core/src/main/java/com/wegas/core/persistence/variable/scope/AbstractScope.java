@@ -20,6 +20,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
@@ -162,6 +163,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      *
      * @return {@link #getVariableInstance(Player)} with the current player
+     *
      * @deprecated
      */
     @Deprecated
@@ -309,6 +311,11 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     @Override
     public boolean isProtected() {
         return this.getVariableDescriptor().isProtected();
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return this.getVariableDescriptor().getVisibility();
     }
 
     @Override

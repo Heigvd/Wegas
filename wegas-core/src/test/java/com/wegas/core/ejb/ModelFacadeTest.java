@@ -625,6 +625,132 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
+    public void testModelise_changeDirectoryVisibility() throws NamingException, WegasNoResultException, IOException, RepositoryException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        ListDescriptor list1_1 = createList(gameModel1, null, "myFirstFolder", "My First Folder");
+        //                                           N,   L,  Min, Max,   Def, History...
+        createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        ListDescriptor list1_2 = createList(gameModel2, null, "myFirstFolder", "My First Folder");
+        createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+        modelFacade.propagateModel(model.getId());
+
+        /*
+         * Add y to gameModel2 list1_2
+         */
+        createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
+
+        logger.info("MyFirstFolder becomes INTERNAL");
+        VariableDescriptor modelList = getDescriptor(model, "myFirstFolder");
+        modelList.setVisibility(ModelScoped.Visibility.INTERNAL);
+        variableDescriptorFacade.update(modelList.getId(), modelList);
+
+        model = modelFacade.propagateModel(model.getId());
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        Assert.assertEquals("model #rootdescriptors fails", 1, model.getChildVariableDescriptors().size()); // the list
+        Assert.assertEquals("model #descriptors fails", 2, model.getVariableDescriptors().size()); //the list + x
+
+        Assert.assertEquals("gameModel1 #rootdescriptors fails", 1, gameModel1.getChildVariableDescriptors().size()); // the list
+        Assert.assertEquals("gameModel1 #descriptors fails", 2, gameModel1.getVariableDescriptors().size()); // the list + x
+
+        Assert.assertEquals("gameModel2 #rootdescriptors fails", 1, gameModel2.getChildVariableDescriptors().size()); //the list
+        Assert.assertEquals("gameModel2 #descriptors fails", 3, gameModel2.getVariableDescriptors().size()); //the list + x + y
+
+        logger.info("MyFirstFolder becomes PRIVATE");
+        modelList = getDescriptor(model, "myFirstFolder");
+        modelList.setVisibility(ModelScoped.Visibility.PRIVATE);
+        variableDescriptorFacade.update(modelList.getId(), modelList);
+
+        model = modelFacade.propagateModel(model.getId());
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        Assert.assertEquals("model #rootdescriptors fails", 1, model.getChildVariableDescriptors().size()); // the list
+        Assert.assertEquals("model #descriptors fails", 2, model.getVariableDescriptors().size()); //the list + x
+
+        Assert.assertEquals("gameModel1 #rootdescriptors fails", 0, gameModel1.getChildVariableDescriptors().size()); // none
+
+        Assert.assertEquals("gameModel2 #rootdescriptors fails", 1, gameModel2.getChildVariableDescriptors().size()); //the substitute list
+        Assert.assertEquals("gameModel2 #descriptors fails", 2, gameModel2.getVariableDescriptors().size()); //the list + y
+
+    }
+
+    @Test
+    public void testModelise_deleteDirectory() throws NamingException, WegasNoResultException, IOException, RepositoryException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        ListDescriptor list1_1 = createList(gameModel1, null, "myFirstFolder", "My First Folder");
+        //                                           N,   L,  Min, Max,   Def, History...
+        createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        ListDescriptor list1_2 = createList(gameModel2, null, "myFirstFolder", "My First Folder");
+        createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+        modelFacade.propagateModel(model.getId());
+
+        /*
+         * Add y to gameModel2 list1_2
+         */
+        createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
+
+        logger.info("DeleteMyFirstFolder");
+        variableDescriptorFacade.remove(variableDescriptorFacade.find(model, "myFirstFolder").getId());
+
+        model = modelFacade.propagateModel(model.getId());
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        logger.info("here we are");
+
+        Assert.assertEquals("model #descriptors fails", 0, model.getChildVariableDescriptors().size());
+        Assert.assertEquals("gameModel1 #descriptors fails", 0, gameModel1.getChildVariableDescriptors().size());
+        Assert.assertEquals("gameModel2 #descriptors fails", 1, gameModel2.getChildVariableDescriptors().size());
+
+        Assert.assertEquals("gameModel2 substitute folder label does not match", "My First Folder", gameModel2.getChildVariableDescriptors().get(0).getLabel());
+
+        Assert.assertNotNull("Y does not exists any longer in gameModel2", getDescriptor(gameModel2, "y"));
+    }
+
+    @Test
     public void testModelise() throws NamingException, WegasNoResultException, IOException, RepositoryException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");

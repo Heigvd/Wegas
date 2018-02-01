@@ -10,6 +10,7 @@ package com.wegas.core.security.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
@@ -257,5 +258,10 @@ public class Role extends AbstractEntity implements PermissionOwner {
     @Override
     public boolean isProtected() {
         return false;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
     }
 }

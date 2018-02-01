@@ -7,22 +7,31 @@
  */
 package com.wegas.core.merge.patch;
 
+import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
 import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
+import com.wegas.core.merge.utils.LifecycleCollector.CollectedEntity;
+import com.wegas.core.merge.utils.LifecycleCollector.OrphanContainer;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.merge.utils.WegasFactory;
 import com.wegas.core.merge.utils.WegasFieldProperties;
+import static com.wegas.core.merge.utils.WegasFieldProperties.FieldType.CHILD;
+import static com.wegas.core.merge.utils.WegasFieldProperties.FieldType.CHILDREN;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -31,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -79,7 +89,7 @@ public final class WegasEntityPatch extends WegasPatch {
      * @param recursive
      */
     public WegasEntityPatch(Mergeable from, Mergeable to, Boolean recursive) {
-        this(null, 0, null, null, null, from, to, recursive, false, false, false, new Visibility[]{Visibility.INTERNAL, Visibility.PROTECTED});
+        this(null, 0, null, null, null, from, to, recursive, false, false, false, ProtectionLevel.PROTECTED);
     }
 
     /**
@@ -100,9 +110,9 @@ public final class WegasEntityPatch extends WegasPatch {
             WegasCallback userCallback, Method getter, Method setter,
             Mergeable from, Mergeable to, boolean recursive,
             boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
-            Visibility[] cascade) {
+            ProtectionLevel protectionLevel) {
 
-        super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, cascade);
+        super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, protectionLevel);
 
         if ((from == null && to == null) // both entity are null
                 || (from != null && to != null && !from.getClass().equals(to.getClass()))) {
@@ -153,6 +163,11 @@ public final class WegasEntityPatch extends WegasPatch {
                         Object fromValue = fromEntity != null ? fGetter.invoke(fromEntity) : null;
                         Object toValue = toEntity != null ? fGetter.invoke(toEntity) : null;
 
+                        ProtectionLevel propertyProtectionLevel = wegasProperty.protectionLevel();
+                        if (propertyProtectionLevel == ProtectionLevel.CASCADED) {
+                            propertyProtectionLevel = this.protectionLevel;
+                        }
+
                         // Which case ?
                         switch (fieldProperties.getType()) {
                             case PROPERTY:
@@ -161,7 +176,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                 patches.add(new WegasPrimitivePatch(fieldName, wegasProperty.order(),
                                         userFieldCallback, to,
                                         fGetter, fSetter, fromValue, toValue,
-                                        wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), wegasProperty.cascadeOverride()));
+                                        wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), propertyProtectionLevel));
                                 break;
                             case CHILD:
                                 // the property is an abstract entity -> register patch
@@ -169,7 +184,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                         userFieldCallback,
                                         fGetter, fSetter,
                                         (Mergeable) fromValue, (Mergeable) toValue,
-                                        recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), wegasProperty.cascadeOverride()));
+                                        recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), propertyProtectionLevel));
 
                                 break;
                             case CHILDREN:
@@ -178,7 +193,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                         userFieldCallback, to,
                                         fGetter, fSetter,
                                         fromValue, toValue,
-                                        recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), wegasProperty.cascadeOverride()));
+                                        recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), propertyProtectionLevel));
                                 break;
                         }
                     }
@@ -220,7 +235,11 @@ public final class WegasEntityPatch extends WegasPatch {
         do {
             if (rootPatch) {
                 numPass++;
+                if (numPass == 2) {
+                    logger.unindent();
+                }
                 logger.info("Start pass #{}", numPass);
+                logger.indent();
             }
             try {
                 Mergeable oTarget = target;
@@ -260,12 +279,15 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                             target = remove.getEntity();
 
+                                            // adoption process: restored entity children are no longer orphans
+                                            collector.adopt(target);
+
                                             for (WegasCallback cb : callbacks) {
                                                 cb.preUpdate(target, this.toEntity, identifier);
                                             }
 
                                             // Force update
-                                            WegasEntityPatch createPatch = new WegasEntityPatch(remove.getPayload(), toEntity, true);
+                                            WegasEntityPatch createPatch = new WegasEntityPatch(null, 0, null, null, null, remove.getPayload(), toEntity, true, false, false, false, this.protectionLevel);
                                             createPatch.apply(targetGameModel, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                             for (WegasCallback cb : callbacks) {
@@ -304,7 +326,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                             // DELETE CHILDREN TOO TO COLLECT THEM
                                             for (WegasPatch patch : patches) {
-                                                patch.apply(targetGameModel, target, null, myMode, visibility, collector, numPass, bypassVisibility);
+                                                patch.apply(targetGameModel, target, new OrphanCollector(collector, target, patch.getIdentifier()), myMode, visibility, collector, numPass, bypassVisibility);
                                             }
 
                                             String refId = fromEntity.getRefId();
@@ -362,6 +384,10 @@ public final class WegasEntityPatch extends WegasPatch {
             }
         } while (rootPatch && numPass < 2);
 
+        if (rootPatch) {
+            logger.unindent();
+        }
+
         logger.info("  ** DONE {} (from {} to {}) on {}", this.getClass().getSimpleName(), fromEntity, toEntity, target);
 
         if (processCollectedData) {
@@ -369,7 +395,44 @@ public final class WegasEntityPatch extends WegasPatch {
             logger.info("Collect: {}", collector);
             VariableDescriptorFacade vdf = null;
 
-            for (Entry<String, LifecycleCollector.CollectedEntity> entry : collector.getDeleted().entrySet()) {
+            Map<String, LifecycleCollector.CollectedEntity> deleted = collector.getDeleted();
+            Map<Mergeable, Map<Object, LifecycleCollector.OrphanContainer>> orphans = collector.getCollectedOrphans();
+
+            /**
+             * Move orphans to root level.
+             * <p>
+             * To keep orphan in the Entitymanager context
+             * It prevents entityManager flush to remove those orphans
+             */
+            for (Entry<Mergeable, Map<Object, OrphanContainer>> entry : orphans.entrySet()) {
+                Mergeable parent = entry.getKey();
+                for (Entry<Object, OrphanContainer> entry2 : entry.getValue().entrySet()) {
+                    Object fieldId = entry2.getKey();
+                    OrphanContainer value = entry2.getValue();
+                    if (value.areOrphansInstanceOf(VariableDescriptor.class)) {
+                        logger.info("  RESCUE ORPHAN PHASE I: {}.{} := {}", parent, fieldId, value);
+                        Object theOrphans = value.getOrphans();
+                        if (vdf == null) {
+                            vdf = VariableDescriptorFacade.lookup();
+                        }
+
+                        if (theOrphans instanceof List) {
+                            for (VariableDescriptor orphan : (List<VariableDescriptor>) theOrphans) {
+                                vdf.move(orphan.getId(), 0);
+                            }
+                        } else if (theOrphans instanceof Map) {
+                            for (VariableDescriptor orphan : ((Map<Object, VariableDescriptor>) theOrphans).values()) {
+                                vdf.move(orphan.getId(), 0);
+                            }
+                        }
+                    }
+                }
+            }
+
+            /**
+             * Delete callbacks
+             */
+            for (Entry<String, LifecycleCollector.CollectedEntity> entry : deleted.entrySet()) {
                 LifecycleCollector.CollectedEntity collectedEntity = entry.getValue();
                 Mergeable entity = collectedEntity.getEntity();
 
@@ -388,6 +451,88 @@ public final class WegasEntityPatch extends WegasPatch {
                 }
             }
 
+            if (vdf != null) {
+                vdf.flush();
+            }
+
+            for (Entry<Mergeable, Map<Object, OrphanContainer>> entry : orphans.entrySet()) {
+                Mergeable parent = entry.getKey();
+                for (Entry<Object, OrphanContainer> entry2 : entry.getValue().entrySet()) {
+                    Object fieldId = entry2.getKey();
+                    OrphanContainer value = entry2.getValue();
+                    if (value.areOrphansInstanceOf(VariableDescriptor.class)) {
+                        logger.info("  RESCUE ORPHAN PHASE II: {}.{} := {}", parent, fieldId, value);
+                        if (parent instanceof VariableDescriptor) {
+                            VariableDescriptor p = (VariableDescriptor) parent;
+                            if (deleted.containsKey(p.getRefId())) {
+                                // should restore p
+                                p.getName();
+                                DescriptorListI grandparent = p.getParent();
+                                try {
+
+                                    if (vdf == null) {
+                                        vdf = VariableDescriptorFacade.lookup();
+                                    }
+
+                                    /*
+                                     * restore default instance to clone
+                                     */
+                                    for (CollectedEntity candidate : deleted.values()) {
+                                        if (candidate.getEntity() instanceof VariableInstance) {
+                                            VariableInstance vi = (VariableInstance) candidate.getEntity();
+                                            if (vi.getDefaultDescriptor() != null && vi.getDefaultDescriptor() == p) {
+                                                p.setDefaultInstance(vi);
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    VariableDescriptor substituteParent = (VariableDescriptor) p.shallowClone();
+
+                                    // Privatise substitue parent
+                                    ModelFacade.resetRefIds(substituteParent, null);
+                                    // and make sure it and all its children are private
+                                    ModelFacade.resetVisibility(substituteParent, Visibility.PRIVATE);
+
+                                    p.setDefaultInstance(null);
+
+                                    if (grandparent instanceof GameModel) {
+                                        // root level substitute
+                                        vdf.create(grandparent.getId(), substituteParent);
+                                    } else {
+                                        // depper level substitute
+                                        vdf.createChild(grandparent.getId(), substituteParent);
+                                    }
+                                    Object theOrphans = value.getOrphans();
+
+                                    if (theOrphans instanceof List) {
+                                        for (VariableDescriptor orphan : (List<VariableDescriptor>) theOrphans) {
+                                            vdf.move(orphan.getId(), 0);
+                                        }
+                                    } else if (theOrphans instanceof Map) {
+                                        for (VariableDescriptor orphan : ((Map<Object, VariableDescriptor>) theOrphans).values()) {
+                                            vdf.move(orphan.getId(), 0);
+                                        }
+                                    }
+
+                                    WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(substituteParent.getClass());
+                                    WegasFieldProperties field = entityIterator.getField(fieldId.toString());
+                                    field.getPropertyDescriptor().getWriteMethod().invoke(substituteParent, theOrphans);
+
+                                    // restore label
+                                    substituteParent.setLabel(p.getLabel());
+                                } catch (CloneNotSupportedException | SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
+                                    logger.error("EPIC FAIL");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            /**
+             * Create callback
+             */
             for (Entry<String, LifecycleCollector.CollectedEntity> entry : collector.getCreated().entrySet()) {
                 LifecycleCollector.CollectedEntity collectedEntity = entry.getValue();
                 Mergeable entity = collectedEntity.getEntity();
@@ -430,8 +575,9 @@ public final class WegasEntityPatch extends WegasPatch {
     @Override
     protected StringBuilder print(int ident) {
         StringBuilder sb = super.print(ident);
+        ident++;
         newLine(sb, ident);
-        sb.append("Entity ").append(toEntity);
+        sb.append("ToEntity ").append(toEntity);
         if (entityCallbacks.size() > 0) {
             newLine(sb, ident);
             sb.append("EntityCallback:");
@@ -441,9 +587,26 @@ public final class WegasEntityPatch extends WegasPatch {
             }
         }
         for (WegasPatch patch : patches) {
-            newLine(sb, ident);
-            sb.append(patch.print(ident + 1));
+            sb.append(patch.print(ident));
         }
         return sb;
+    }
+
+    private static class OrphanCollector implements WegasCallback {
+
+        private final LifecycleCollector collector;
+        private final Mergeable target;
+        private final Object identifier;
+
+        public OrphanCollector(LifecycleCollector collector, Mergeable target, Object identifier) {
+            this.collector = collector;
+            this.target = target;
+            this.identifier = identifier;
+        }
+
+        @Override
+        public void registerOrphans(Object orphans) {
+            collector.registerOrphans(target, identifier, orphans);
+        }
     }
 }

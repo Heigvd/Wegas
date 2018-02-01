@@ -12,6 +12,7 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.*;
@@ -284,6 +285,12 @@ public class Review extends AbstractEntity implements DatedEntity {
     public boolean isProtected() {
         return this.getAuthor().isProtected();
     }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return this.getAuthor().getInheritedVisibility();
+    }
+
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
@@ -332,6 +333,11 @@ public class WRequirement extends AbstractEntity {
     @Override
     public boolean isProtected() {
         return this.getTaskInstance().isProtected();
+    }
+
+    @Override
+    public Visibility getInheritedVisibility(){
+        return this.getTaskInstance().getInheritedVisibility();
     }
 
     @Override

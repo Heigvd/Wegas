@@ -74,5 +74,8 @@ public @interface WegasEntityProperty {
      *
      * @return list of visibility for which OVERRIDE mode is allowed to be propagated
      */
-    public ModelScoped.Visibility[] cascadeOverride() default {ModelScoped.Visibility.INTERNAL, ModelScoped.Visibility.PROTECTED};
+    //public ModelScoped.Visibility[] cascadeOverride() default {ModelScoped.Visibility.INTERNAL, ModelScoped.Visibility.PROTECTED};
+    public ModelScoped.ProtectionLevel protectionLevel() default ModelScoped.ProtectionLevel.CASCADED;
+
+
 }

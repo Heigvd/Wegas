@@ -46,6 +46,26 @@ public interface ModelScoped {
         PRIVATE
     }
 
+    public static enum ProtectionLevel {
+        /**
+         * Fetch from parent
+         */
+        CASCADED,
+        /**
+         * standard level for everything but default instances
+         * INTERNAL and PROTECTED are readonly for scenarist
+         */
+        PROTECTED,
+        /**
+         * open protected world to scenarist
+         */
+        INTERNAL,
+        /**
+         * Always protected
+         */
+        ALL
+    }
+
     Visibility getVisibility();
 
     void setVisibility(Visibility visibility);

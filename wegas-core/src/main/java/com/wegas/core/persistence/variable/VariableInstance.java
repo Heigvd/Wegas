@@ -18,6 +18,7 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
@@ -609,9 +610,17 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Override
     public boolean isProtected() {
-        return this.isDefaultInstance() && this.getDefaultDescriptor().isProtected();
+        return this.isDefaultInstance() && this.getDefaultDescriptor() != null && this.getDefaultDescriptor().isProtected();
     }
 
+    @Override
+    public Visibility getInheritedVisibility() {
+        if (this.isDefaultInstance() && this.getDefaultDescriptor() != null) {
+            return this.getDefaultDescriptor().getVisibility();
+        } else {
+            return Visibility.INHERITED;
+        }
+    }
 
     public void revive(Beanjection beans) {
     }

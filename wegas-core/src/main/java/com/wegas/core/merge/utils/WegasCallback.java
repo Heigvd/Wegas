@@ -82,4 +82,7 @@ public interface WegasCallback {
     default public void destroy(Mergeable entity, Object identifier) {
 
     }
+
+    default public void registerOrphans(Object orphans) {
+    }
 }

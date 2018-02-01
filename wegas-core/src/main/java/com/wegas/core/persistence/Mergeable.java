@@ -8,6 +8,7 @@
 package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 
 /**
  *
@@ -26,4 +27,7 @@ public interface Mergeable {
 
     @JsonIgnore
     boolean isProtected();
+
+    @JsonIgnore
+    Visibility getInheritedVisibility();
 }

@@ -75,9 +75,9 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     private String content = "";
 
     @Enumerated(value = EnumType.STRING)
-    @WegasEntityProperty
 
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
     private Visibility visibility = Visibility.PRIVATE;
 
     /**
@@ -257,4 +257,8 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
         return this.getGameModel().isProtected();
     }
 
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
+    }
 }

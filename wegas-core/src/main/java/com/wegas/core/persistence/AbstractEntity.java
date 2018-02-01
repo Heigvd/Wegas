@@ -102,6 +102,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
     }
 
     public void forceRefId(String refId) {
+        logger.error("ForceRefId {} => {}", this, refId);
         this.refId = refId;
     }
 
