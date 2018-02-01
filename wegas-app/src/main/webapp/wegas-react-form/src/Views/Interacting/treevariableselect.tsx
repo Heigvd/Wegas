@@ -190,7 +190,7 @@ class TreeVariableSelect extends React.Component<
     public static defaultProps = {
         value: '',
     };
-    tree: TreeSelect | null;
+    tree: TreeSelect | null = null;
     items: Item[];
     constructor(props: ITreeSelectProps) {
         super(props);

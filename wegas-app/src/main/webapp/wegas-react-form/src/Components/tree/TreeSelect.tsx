@@ -20,7 +20,7 @@ class TreeSelect extends React.Component<
     TreeSelectProps,
     { items: Item[]; selected?: string }
 > {
-    keyHandler: HandleUpDown | null;
+    keyHandler: HandleUpDown | null = null;
     constructor(props: TreeSelectProps) {
         super(props);
         this.state = {
