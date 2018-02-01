@@ -30,7 +30,7 @@ angular.module('private.admin', [
                     $state.go("wegas.private.scenarist");
                 }
                 $rootScope.currentRole = "ADMIN";
-                $("body").removeClass("player scenarist trainer").addClass("admin");
+                $("body").removeClass("player scenarist trainer modeler").addClass("admin");
                 $rootScope.translationWorkspace = {
                     workspace: WegasTranslations.workspaces.ADMIN[$translate.use()]
                 };

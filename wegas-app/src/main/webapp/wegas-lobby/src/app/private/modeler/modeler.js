@@ -30,7 +30,7 @@ angular.module('private.modeler', [
                         $state.go("wegas.private.player");
                     }
                 }
-                $("body").removeClass("player admin trainer").addClass("modeler");
+                $("body").removeClass("player admin trainer scenarist").addClass("modeler");
                 $rootScope.translationWorkspace = {
                     workspace: WegasTranslations.workspaces.MODELER[$translate.use()]
                 };
