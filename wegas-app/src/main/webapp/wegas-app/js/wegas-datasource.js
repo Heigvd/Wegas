@@ -993,7 +993,7 @@ YUI.add('wegas-datasource', function(Y) {
                         failure: Y.bind(function(entity, parentEntity) {
                             Y.log("Error moving item", "error");
                             // Rollback move since TV was too optimistic
-                            if (parentEntity.get("@class") === "GameModel" || entity.getParent().get("@class") === "GameModel") {
+                            if (!parentEntity || parentEntity.get("@class") === "GameModel" || entity.getParent().get("@class") === "GameModel") {
                                 this.get(HOST).fire("rootUpdate");
                             } else {
                                 this.get(HOST).fire("updatedDescriptor", {entity: parentEntity});
