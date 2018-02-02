@@ -45,11 +45,11 @@ function PageLoaderSelect({
             suggest
             data={plId}
             value={value}
-            onChange={function(value) {
-                if (typeof value === 'string') {
-                    onChange(value);
+            onChange={v => {
+                if (typeof v === 'string') {
+                    onChange(v);
                 } else {
-                    onChange(value.value);
+                    onChange(v.value);
                 }
             }}
         />
