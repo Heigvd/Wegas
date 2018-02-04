@@ -63,15 +63,27 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             //    cacheRegion: false                                              //scroll changes region
             //});
             this._resizeNode.before("mousedown", function(e) {
-                this.detachHandlers();
-                this._resizeNode.show();
-                this._dd.con.set("constrain", this.get("host").get("widget").get(CONTENTBOX));
-                this._resize._widget = this.shownOverlay._widget.get(BOUNDINGBOX);
+                    var unsaved = Y.Plugin.EditEntityAction.isUnsaved();
+                    Y.Plugin.EditEntityAction.allowDiscardingEdits(
+                        Y.bind(function () {
+                            this.detachHandlers();
+                            this._resizeNode.show();
+                            this._dd.con.set("constrain", this.get("host").get("widget").get(CONTENTBOX));
+                            this._resize._widget = this.shownOverlay._widget.get(BOUNDINGBOX);
+                            if (unsaved) {
+                                // Reload the form to discard any edits:
+                                this._syncWidgetEdition(this.shownOverlay._widget);
+                            }
+                        }, this));
             }, this);
             this._resizeNode.after("mouseup", function(e) {
                 this.bind();
             }, this);
             this._resize.on("drag:drag", function(e) {
+                if (Y.Plugin.EditEntityAction.isUnsaved()) {
+                    e.halt(true);
+                    return false;
+                }
                 var bb = this._resize._widget;
                 bb.setStyles({
                     width: parseInt(bb.getComputedStyle(WIDTH), 10) + e.info.delta[0],
@@ -89,6 +101,10 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
 //                bindedFixedOverlay(Y.Widget.getByNode(bb));
 //            });
             this._resize.on("drag:end", function(e) {
+                if (Y.Plugin.EditEntityAction.isUnsaved()) {
+                    e.halt(true);
+                    return false;
+                }
                 var widget = this.shownOverlay._widget, bb = widget.get(BOUNDINGBOX);
                 widget.CSSSize.setAttrs({
                     styles: {

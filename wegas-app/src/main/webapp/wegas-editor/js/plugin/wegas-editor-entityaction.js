@@ -81,13 +81,13 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         /**
          * Transform labeled menu items into an icon button.
          * HACK ?!?!
-         * 
+         *
          * @param {Array<{}>} menuItems list of actions
          * @param {{}} entity entity associated with the action
          */
         processMenu: function(menuItems, entity){
             Y.Array.each(menuItems, function(i) {                      // @hack add icons to some buttons
-                var allowedChildren; 
+                var allowedChildren;
                 if (! i.label) {                                        // @Overhack to centralize more icon definitions here
                     switch (i.type) {
                         case "DeleteEntityButton":
@@ -122,7 +122,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             break;
                         case "Delete":
                             i = EditEntityAction.stackedIcon(i, 'fa-trash');
-                            i.tooltip = 'Delete';                            
+                            i.tooltip = 'Delete';
                             break;
                         case "Sort":
                             i = EditEntityAction.stackedIcon(i, 'fa-sort-alpha-asc');
@@ -177,7 +177,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         allowedChildren;
 
                     EditEntityAction.processMenu(menuItems, entity);
-                    
+
                     form.toolbar.add(menuItems);
                     //if (form.toolbar.item(0)) { form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px"); }
                     resolve(form);
@@ -226,7 +226,76 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             // 'Other' may contain additional properties, which will be ignored.
             // In fact, 'Other' is normally a Yui3 object containing a copy of the properties of 'Ref'.
             function isDifferent(ref, other) {
-                if (ref && !other) {
+
+                // Returns the index of plugin inside arr or -1 if not found
+                function pluginIndex(arr, pluginName) {
+                    for (var i=0; i<arr.length; i++) {
+                        if (arr[i] && arr[i].fn === pluginName) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                }
+
+                // Check if no plugins are different, even if the cfg property points to the plugin's 'host'
+                function cfgIsDifferent(currProp, otherProp) {
+                    for (var i=0; i<currProp.length; i++) {
+                        var elemc = currProp[i],
+                            elemo = otherProp[i];
+                        if (elemo && elemc && elemo.fn === elemc.fn && elemo.cfg && elemc.cfg) {
+                            if (!elemc.cfg.host && elemo.cfg.host && typeof elemo.cfg.host === "object") {
+                                try {
+                                    if (isDifferent(elemc.cfg, elemo.cfg.host.get("plugins")[i].cfg)) {
+                                        return true;
+                                    }
+                                } catch(e) {
+                                    return true; // Different structures
+                                }
+                            } else {
+                                if (isDifferent(elemc, elemo))
+                                    return true;
+                            }
+                        } else {
+                            if (isDifferent(elemc, elemo))
+                                return true;
+                        }
+                    }
+                    return false;
+                }
+
+                // In the case of an AbsoluteLayout or its children, two standard plugins may be regenerated at each display.
+                // See "AbsoluteLayout" widget, method bindUI().
+                function differentAbsoluteLayoutPlugins(currProp, otherProp) {
+                    var posIndex = pluginIndex(currProp, "CSSPosition");
+                    if (posIndex !== pluginIndex(otherProp, "CSSPosition")) {
+                        if (posIndex === -1) {
+                            return true;
+                        }
+                        var pos = currProp[posIndex].cfg.styles;
+                        // If new, this object should be equal to { position: "absolute", top: "0px", left: "0px" }
+                        if (pos.position === "absolute" && pos.top === "0px" && pos.left === "0px") {
+                            otherProp[posIndex] = currProp[posIndex];
+                        } else {
+                            return true;
+                        }
+                    }
+                    var sizeIndex = pluginIndex(currProp, "CSSSize");
+                    if (sizeIndex !== pluginIndex(otherProp, "CSSSize")) {
+                        if (posIndex === -1) {
+                            return true;
+                        }
+                        var size = currProp[sizeIndex].cfg.styles;
+                        // If new, this object should be empty:
+                        if (Object.keys(size).length === 0) {
+                            otherProp[sizeIndex] = currProp[sizeIndex];
+                        } else {
+                            return true;
+                        }
+                    }
+                }
+
+                // BEGIN isDifferent(ref, other)
+                if ((ref && !other) || (!ref && other)) {
                     return true;
                 }
                 for (var name in ref) {
@@ -235,13 +304,32 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             otherProp = other._yuid ? other.get(name) : other[name];
                         if (typeof currProp === "object") {
                             if (currProp === otherProp) continue;
-                            // Special case where the plugins property is an empty array in the form but undefined in the widget.
-                            // We might also try to detect when a variable is created but not yet edited, but that would be pretty messy.
-                            if (name === "plugins" && otherProp === undefined && Array.isArray(currProp) && currProp.length === 0) {
+                            // Check if the form's plugins property is different from the one inside the widget.
+                            if (name === "plugins" && Array.isArray(currProp)) {
+                                if (otherProp && !Array.isArray(otherProp)) {
+                                    return true;
+                                }
+                                if (otherProp === undefined) {
+                                    otherProp = [];
+                                }
+                                if (currProp.length === 0 && otherProp.length === 0) {
+                                    continue;
+                                }
+                                if (differentAbsoluteLayoutPlugins(currProp, otherProp)) {
+                                    return true;
+                                }
+                                if (cfgIsDifferent(currProp, otherProp)) {
+                                    return true;
+                                } else {
+                                    continue;
+                                }
+                            }
+                            if (isDifferent(currProp, otherProp))
+                                return true;
+                        } else if (currProp != otherProp) { // Allow conversions like string/int, undefined/null
+                            if (currProp === "" && otherProp == null) { // Tolerate clicking in and out of an empty field
                                 continue;
                             }
-                            if (isDifferent(currProp, otherProp)) return true;
-                        } else if (currProp !== otherProp) {
                             return true;
                         }
                     }
@@ -356,6 +444,9 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         },
         setUnsaved: function(unsaved) {
             EditEntityAction.unsaved = unsaved;
+        },
+        isUnsaved: function() {
+            return EditEntityAction.unsaved;
         },
         allowDiscardingEdits: function(okCb, cancelCb) {
             if (EditEntityAction.unsaved === true) {
