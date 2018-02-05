@@ -30,7 +30,7 @@ const treeCss = css({
     position: 'absolute',
     zIndex: 1000,
     minWidth: '100%',
-    maxWidth: '200%',
+    maxWidth: '350%',
     maxHeight: '20em',
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',

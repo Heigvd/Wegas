@@ -49,7 +49,7 @@ const treeNodeContainerStyle = css({
 
     '& &': {
         // margin: '0 0 0.5em 0',
-        padding: '0 1.5em',
+        paddingLeft: '1em',
         lineHeight: '2em',
         position: 'relative',
 
