@@ -197,12 +197,13 @@ YUI.add("treeview-sortable", function(Y) {
             var diffX = pos[0] - lastXY[0];
             var tmp;
             var over = Y.Widget.getByNode(ev.target);
-            // Move at least 10px to enable drag
-            if(!moveWidget.get(BOUNDINGBOX).hasClass(CLASSES.move) && diffX * diffX + diffY * diffY < 100){ 
-                console.log("DONT MOVE", diffX, diffY);
-                return;
+            if(!moveWidget.get(BOUNDINGBOX).hasClass(CLASSES.move)){
+                // Move at least 10px to enable drag
+                if(diffX * diffX + diffY * diffY < 100){ 
+                    return;
+                }
+                moveWidget.get(BOUNDINGBOX).addClass(CLASSES.move);
             }
-            moveWidget.get(BOUNDINGBOX).addClass(CLASSES.move);
             if (!over || over instanceof Y.TreeView) {
                 return;
             }
