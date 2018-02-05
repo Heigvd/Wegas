@@ -400,7 +400,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             index: {
                 type: NUMBER,
-                view: { label: "index" }
+                view: { label: "Index" }
             },
             description: {
                 type: NULLSTRING,
