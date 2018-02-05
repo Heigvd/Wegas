@@ -197,15 +197,6 @@
                                     "children": [
                                         {
                                             "type": "OpenTabButton",
-                                            "label": "Attributes",
-                                            "cssClass": "wegas-editor-menu-item-center",
-                                            "wchildren": [
-                                                {
-                                                    "content": "<div class=\"empty-edit-panel\"></div>"
-                                                }
-                                            ]
-                                        }, {
-                                            "type": "OpenTabButton",
                                             "label": "Preview",
                                             "wchildren": [
                                                 {
@@ -305,6 +296,15 @@
                                             "wchildren": [
                                                 {
                                                     "type": "Log"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Attributes",
+                                            "cssClass": "wegas-editor-menu-item-center",
+                                            "wchildren": [
+                                                {
+                                                    "content": "<div class=\"empty-edit-panel\"></div>"
                                                 }
                                             ]
                                         }
@@ -385,16 +385,6 @@
                                     "children": [
                                         {
                                             "type": "OpenTabButton",
-                                            "label": "Attributes",
-                                            "cssClass": "wegas-editor-menu-item-right",
-                                            "tabSelector": "#rightTabView",
-                                            "wchildren": [
-                                                {
-                                                    "content": "<div class=\"empty-edit-panel\"></div>"
-                                                }
-                                            ]
-                                        }, {
-                                            "type": "OpenTabButton",
                                             "label": "Preview",
                                             "tabSelector": "#rightTabView",
                                             "wchildren": [
@@ -504,8 +494,19 @@
                                                     "type": "Log"
                                                 }
                                             ]
-                                        }
-                                    ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Attributes",
+                                            "cssClass": "wegas-editor-menu-item-right",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "content": "<div class=\"empty-edit-panel\"></div>"
+                                                }
+                                            ]
+                                    }
+
+                                            ]
                                 }
                             }
                         ]
