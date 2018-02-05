@@ -27,6 +27,7 @@ import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModel.GmType;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -446,7 +447,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             requestManager.assertCanDuplicateGameModel(this.find(entityId));
             GameModel newGameModel = (GameModel) srcGameModel.clone();
             newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
+
             this.create(newGameModel);
+
+            if (srcGameModel.getType().equals(GmType.MODEL)) {
+                // duplicating a model leads to a new model
+                newGameModel.setType(GmType.MODEL);
+                // new refIds
+                ModelFacade.resetRefIds(newGameModel, null);
+            } else if (srcGameModel.getType().equals(GmType.SCENARIO) && srcGameModel.getBasedOn() != null) {
+                // duplicating a scenario which is based on a model
+                newGameModel.setBasedOn(srcGameModel.getBasedOn());
+            }
 
             this.duplicateRepository(newGameModel, srcGameModel);
             return newGameModel;

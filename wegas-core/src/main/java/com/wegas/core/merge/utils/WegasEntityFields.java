@@ -81,7 +81,7 @@ public class WegasEntityFields {
                         if (!toIgnore.contains(f.getName())) {
                             fields.add(new WegasFieldProperties(f, wegasProperty));
                         } else {
-                            logger.error("Ignore {}", f);
+                            logger.trace("Ignore {}.{}", klass, f);
                         }
                     }
                 }

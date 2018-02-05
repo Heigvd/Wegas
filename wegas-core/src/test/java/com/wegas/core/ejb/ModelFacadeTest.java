@@ -698,6 +698,49 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
+    public void testModelise_variableNamesUniqueness() throws NamingException, WegasNoResultException, IOException, RepositoryException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+        model = modelFacade.propagateModel(model.getId());
+
+        // x in model
+        NumberDescriptor xModel = createNumberDescriptor(model, null, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        Assert.assertEquals("XModel name does not match", "x", xModel.getName());
+
+        // x in scenarios -> renamed
+        NumberDescriptor x1 = createNumberDescriptor(gameModel1, null, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        NumberDescriptor x2 = createNumberDescriptor(gameModel2, null, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        Assert.assertNotEquals("X1 name does not match", "x", x1.getName());
+        Assert.assertNotEquals("X2 name does not match", "x", x2.getName());
+
+        // y in scenarios
+        NumberDescriptor y1 = createNumberDescriptor(gameModel1, null, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        NumberDescriptor y2 = createNumberDescriptor(gameModel2, null, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        Assert.assertEquals("Y1 name does not match", "y", y1.getName());
+        Assert.assertEquals("Y2 name does not match", "y", y2.getName());
+
+        // y in model -> renamed
+        NumberDescriptor yModel = createNumberDescriptor(model, null, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        Assert.assertNotEquals("YModel name does not match", "y", yModel.getName());
+    }
+
+    @Test
     public void testModelise_deleteDirectory() throws NamingException, WegasNoResultException, IOException, RepositoryException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");

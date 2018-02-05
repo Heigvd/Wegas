@@ -347,6 +347,63 @@ public class ModelFacade {
         }
     }
 
+    private static interface MergeableVisitor {
+        public void visit(Mergeable target, Mergeable reference);
+    }
+
+    /**
+     *
+     *
+     * @param target
+     * @param reference
+     * @param forceRecursion do not follow includeByDefault=false properted unless forceRecursion is true
+     * @param visitor
+     */
+    private static void visitMergeable(Mergeable target, Mergeable reference, Boolean recursive, MergeableVisitor visitor) {
+
+        if (target != null) {
+            visitor.visit(target, reference);
+
+            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
+
+            for (WegasFieldProperties field : entityIterator.getFields()) {
+                if (field.getType().equals(WegasFieldProperties.FieldType.CHILD)) {
+                    Method readMethod = field.getPropertyDescriptor().getReadMethod();
+                    if (field.getAnnotation().includeByDefault() || recursive) {
+                        try {
+                            AbstractEntity targetChild = (AbstractEntity) readMethod.invoke(target);
+                            AbstractEntity referenceChild = null;
+
+                            if (reference != null) {
+                                referenceChild = (AbstractEntity) readMethod.invoke(reference);
+                            }
+
+                            ModelFacade.visitMergeable(targetChild, referenceChild, recursive, visitor);
+                        } catch (Exception ex) {
+                            throw new WegasErrorMessage("error", "Invocation Failure: should never appends");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static class VisibilityResetter implements MergeableVisitor {
+
+        private ModelScoped.Visibility visibility;
+
+        public VisibilityResetter(ModelScoped.Visibility visibility) {
+            this.visibility = visibility;
+        }
+
+        @Override
+        public void visit(Mergeable target, Mergeable reference) {
+            if (target instanceof ModelScoped) {
+                ((ModelScoped) target).setVisibility(this.visibility);
+            }
+        }
+    }
+
     /**
      * reset recursively target visibility to the given one.
      *
@@ -354,24 +411,22 @@ public class ModelFacade {
      * @param visibility
      */
     public static void resetVisibility(Mergeable target, ModelScoped.Visibility visibility) {
-        if (target != null) {
-            if (target instanceof ModelScoped) {
-                ((ModelScoped) target).setVisibility(visibility);
-            }
+        ModelFacade.visitMergeable(target, null, Boolean.TRUE, new VisibilityResetter(visibility));
+    }
 
-            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
+    private static class RefidResetter implements MergeableVisitor {
 
-            for (WegasFieldProperties field : entityIterator.getFields()) {
-                if (field.getType().equals(WegasFieldProperties.FieldType.CHILD)) {
-                    Method readMethod = field.getPropertyDescriptor().getReadMethod();
-                    try {
-                        AbstractEntity targetChild = (AbstractEntity) readMethod.invoke(target);
+        @Override
+        public void visit(Mergeable target, Mergeable reference) {
 
-                        ModelFacade.resetVisibility(targetChild, visibility);
-
-                    } catch (Exception ex) {
-                        throw new WegasErrorMessage("error", "Invocation Failure: should never appends");
-                    }
+            if (target instanceof AbstractEntity) {
+                AbstractEntity entity = (AbstractEntity) target;
+                if (reference != null) {
+                    entity.forceRefId(reference.getRefId());
+                } else {
+                    ((AbstractEntity) target).forceRefId(null);
+                    entity.forceRefId(null);
+                    entity.assertRefId();
                 }
             }
         }
@@ -383,35 +438,7 @@ public class ModelFacade {
      * @param reference
      */
     public static void resetRefIds(AbstractEntity target, AbstractEntity reference) {
-        if (target != null) {
-            if (reference != null) {
-                target.forceRefId(reference.getRefId());
-            } else {
-                target.forceRefId(null);
-                target.assertRefId();
-            }
-
-            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
-
-            for (WegasFieldProperties field : entityIterator.getFields()) {
-                if (field.getType().equals(WegasFieldProperties.FieldType.CHILD)) {
-                    Method readMethod = field.getPropertyDescriptor().getReadMethod();
-                    try {
-                        AbstractEntity targetChild = (AbstractEntity) readMethod.invoke(target);
-                        AbstractEntity referenceChild = null;
-
-                        if (reference != null) {
-                            referenceChild = (AbstractEntity) readMethod.invoke(reference);
-                        }
-
-                        ModelFacade.resetRefIds(targetChild, referenceChild);
-
-                    } catch (Exception ex) {
-                        throw new WegasErrorMessage("error", "Invocation Failure: should never appends");
-                    }
-                }
-            }
-        }
+        ModelFacade.visitMergeable(target, reference, Boolean.TRUE, new RefidResetter());
     }
 
     public GameModel getReference(GameModel model) {

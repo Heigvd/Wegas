@@ -978,6 +978,16 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.onGoingPropagation = onGoingPropagation;
     }
 
+    @JsonIgnore
+    public boolean isModel() {
+        return this.getType().equals(GmType.MODEL);
+    }
+
+    @JsonIgnore
+    public boolean isScenarioBasedOnModel() {
+        return this.getType().equals(GmType.SCENARIO) && this.getBasedOn() != null;
+    }
+
     @Override
     public Visibility getInheritedVisibility() {
         return Visibility.INHERITED;

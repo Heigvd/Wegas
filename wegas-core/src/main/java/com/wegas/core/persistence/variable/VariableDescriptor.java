@@ -79,6 +79,33 @@ import org.slf4j.LoggerFactory;
 })
 @NamedQueries({
     @NamedQuery(
+            name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
+            query = "SELECT DISTINCT(vd.name)"
+            + "FROM GameModel model "
+            + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+            + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+            + "WHERE model.id = :gameModelId"
+    ),
+    /*@NamedQuery(
+            name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
+            query = "SELECT DISTINCT(vd.name)"
+            + " FROM GameModel scen "
+            + " LEFT JOIN GameModel model ON (scen.basedOn = model)"
+            + " LEFT JOIN GameModel other ON (scen.basedOn IS NOT NULL "
+            + "                               AND other.basedOn = model "
+            + "                               AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+            + " JOIN VariableDescriptor vd ON (vd.gameModel = other OR vd.gameModel = model)"
+            + " WHERE scen.id = :gameModelId"
+    ),*/
+    @NamedQuery(
+            name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
+            query = "SELECT DISTINCT(vd.name)"
+            + " FROM GameModel scen "
+            + " LEFT JOIN GameModel model ON (model = scen.basedOn)"
+            + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+            + " WHERE scen.id = :gameModelId"
+    ),
+    @NamedQuery(
             name = "VariableDescriptor.findByRootGameModelId",
             query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
     ),
@@ -89,6 +116,7 @@ import org.slf4j.LoggerFactory;
                 @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
     )
+
 })
 @CacheIndexes(value = {
     @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
@@ -188,7 +216,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     @Enumerated(value = EnumType.STRING)
-
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
     private Visibility visibility = Visibility.PRIVATE;
 

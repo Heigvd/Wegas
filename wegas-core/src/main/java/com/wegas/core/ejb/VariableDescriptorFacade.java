@@ -394,15 +394,18 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @return all descriptor names already in use within the gameModel
      */
     public List<String> findDistinctNames(final GameModel gameModel) {
-        /*List<String> names =new ArrayList<>(gameModel.getVariableDescriptors().size());
-        for (VariableDescriptor vd : gameModel.getVariableDescriptors()){
-            names.add(vd.getName());
+        TypedQuery<String> query;
+        if (gameModel.isModel()) {
+            // names from the models and all scenarios
+            query = getEntityManager().createNamedQuery("VariableDescriptor.findAllNamesInModelAndItsScenarios", String.class);
+        } else {
+            // names from the gamemodel and its model
+            query = getEntityManager().createNamedQuery("VariableDescriptor.findAllNamesInScenarioAndItsModel", String.class);
         }
-        return names;
-        */
-        TypedQuery<String> distinctNames = getEntityManager().createQuery("SELECT DISTINCT(var.name) FROM VariableDescriptor var WHERE var.gameModel.id = :gameModelId", String.class);
-        distinctNames.setParameter("gameModelId", gameModel.getId());
-        return distinctNames.getResultList();
+
+        query.setParameter("gameModelId", gameModel.getId());
+
+        return query.getResultList();
     }
 
     /**
