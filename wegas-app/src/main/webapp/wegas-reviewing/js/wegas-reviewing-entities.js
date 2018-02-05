@@ -399,7 +399,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 }
             },
             index: {
-                type: NUMBER
+                type: NUMBER,
+                view: { label: "index" }
             },
             description: {
                 type: NULLSTRING,
