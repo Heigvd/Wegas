@@ -257,25 +257,24 @@ YUI.add('wegas-gaugedisplay', function(Y) {
              */
             label: {
                 type: "string",
-                optional: true,
-                index:0,
+                index: 0,
                 validator: Y.Lang.isString,
                 view: {
                     label: "Label"
                 }
             },
             minValue: {
-                type: "number",
-                optional: true,
-                index:1,
+                type: ["number", "string"],
+                index: 1,
+                maxLength: 0,
                 view: {
                     label: "Display from"
                 }
             },
             maxValue: {
-                type: "number",
-                optional: true,
-                index:2,
+                type: ["number", "string"],
+                index: 2,
+                maxLength: 0,
                 view: {
                     label: "to"
                 }
