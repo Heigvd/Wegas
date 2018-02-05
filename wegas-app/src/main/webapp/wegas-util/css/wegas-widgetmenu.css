@@ -96,7 +96,7 @@
 .yui3-menu .wegas-editor-menu-item-center,
 .yui3-menu .wegas-editor-menu-item-right {
     font-style: normal;
-    border-bottom: 1px solid lightgrey;
+    border-top: 1px solid lightgrey;
 }
 
 .yui3-menu .wegas-editor-menu-item-center:after {
