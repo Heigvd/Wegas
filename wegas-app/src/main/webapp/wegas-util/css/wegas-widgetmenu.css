@@ -114,3 +114,7 @@
     font-size: 18px;
     letter-spacing: -1px;
 }
+
+.yui3-widget .editor-newVariable-button {
+    border-right: 0.5em solid white;
+}
