@@ -453,7 +453,7 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
         duplicate = (DescriptorListI) variableDescriptorFacade.duplicate(list3.getId());             // Duplicate a sub child variable
         Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) duplicate.item(0)).item(0)).getInstance(player).getValue(), 0.0001);
 
-        GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(scenario.getId());
+        GameModel duplicateGm = gameModelFacade.createScenarioWithDebugGame(scenario.getId());
         DescriptorListI find = (DescriptorListI) variableDescriptorFacade.find(duplicateGm, LISTNAME1);
 
         Collection<VariableInstance> instances = variableDescriptorFacade.getInstances(((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0)).values();

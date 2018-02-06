@@ -251,9 +251,9 @@ angular.module('private.modeler.directives', [
         };
 
 
-        ctrl.createScenario = function(name, templateId) {
+        ctrl.createModel = function(name, templateId) {
             var deferred = $q.defer();
-            ScenariosModel.createScenario(name, templateId).then(function(response) {
+            ScenariosModel.createModel(name, templateId).then(function(response) {
                 if (!response.isErroneous()) {
                     $scope.$emit('collapse');
                     ctrl.search = "";
@@ -347,7 +347,7 @@ angular.module('private.modeler.directives', [
                 var loadScenarios = function() {
                     // Reload list from cache each time the window is opened:
                     scope.loadingScenarios = true;
-                    ScenariosModel.getScenarios("LIVE").then(function(response) {
+                    ScenariosModel.getModels("LIVE").then(function(response) {
                         if (!response.isErroneous()) {
                             scope.loadingScenarios = false;
                             var expression = {canDuplicate: true},
@@ -357,7 +357,7 @@ angular.module('private.modeler.directives', [
                     });
                 };
 
-                var resetNewScenario = function() {
+                var resetNewModel = function() {
                     scope.newScenario = {
                         name: '',
                         templateId: 0
@@ -365,8 +365,8 @@ angular.module('private.modeler.directives', [
                     scope.selectedIds = [];
                 };
 
-                scope.cancelScenario = function() {
-                    resetNewScenario();
+                scope.cancelModel = function() {
+                    resetNewModel();
                     scope.$emit('collapse');
                 };
 
@@ -385,7 +385,7 @@ angular.module('private.modeler.directives', [
 
                                 scope.modelerIndexCtrl.extractModel(scope.newScenario.name, ids).then(function() {
                                     button.removeClass("button--disable button--spinner button--rotate");
-                                    resetNewScenario();
+                                    resetNewModel();
                                 });
                             }
                         } else {
@@ -401,7 +401,7 @@ angular.module('private.modeler.directives', [
                 };
 
                 scope.$on('expand', function() {
-                    resetNewScenario();
+                    resetNewModel();
                     loadScenarios();
                 });
             }
@@ -429,27 +429,27 @@ angular.module('private.modeler.directives', [
                     });
                 };
 
-                var resetNewScenario = function() {
+                var resetNewModel = function() {
                     scope.newScenario = {
                         name: '',
                         templateId: 0
                     };
                 };
 
-                scope.cancelScenario = function() {
-                    resetNewScenario();
+                scope.cancelModel = function() {
+                    resetNewModel();
                     scope.$emit('collapse');
                 };
 
-                scope.createScenario = function() {
+                scope.createModel = function() {
                     var button = $(element).find(".form__submit");
                     if (scope.newScenario.name !== '') {
                         if (scope.newScenario.templateId !== 0) {
                             if (!button.hasClass("button--disable")) {
                                 button.addClass("button--disable button--spinner button--rotate");
-                                scope.modelerIndexCtrl.createScenario(scope.newScenario.name, scope.newScenario.templateId).then(function() {
+                                scope.modelerIndexCtrl.createModel(scope.newScenario.name, scope.newScenario.templateId).then(function() {
                                     button.removeClass("button--disable button--spinner button--rotate");
-                                    resetNewScenario();
+                                    resetNewModel();
                                 });
                             }
                         } else {
@@ -465,7 +465,7 @@ angular.module('private.modeler.directives', [
                 };
 
                 scope.$on('expand', function() {
-                    resetNewScenario();
+                    resetNewModel();
                     loadScenarios();
                 });
             }

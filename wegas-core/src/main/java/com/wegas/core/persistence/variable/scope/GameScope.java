@@ -90,7 +90,7 @@ public class GameScope extends AbstractScope<Game> {
         VariableDescriptor vd = this.getVariableDescriptor();
         if (create) {
             try {
-                VariableInstance clone = vd.getDefaultInstance().clone();
+                VariableInstance clone = vd.getDefaultInstance().duplicate();
                 g.getPrivateInstances().add(clone);
                 this.setVariableInstance(g, clone);
 

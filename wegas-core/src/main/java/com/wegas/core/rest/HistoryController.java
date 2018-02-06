@@ -53,7 +53,6 @@ public class HistoryController {
 
     @Inject
     private RequestManager requestManager;
-    
 
     @Inject
     private UserFacade userFacade;
@@ -86,7 +85,7 @@ public class HistoryController {
     @Path("{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object delete(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String absolutePath){
+            @PathParam("absolutePath") String absolutePath) {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
@@ -170,17 +169,18 @@ public class HistoryController {
         GameModel original = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(original);
 
-        InputStream file = jcrFacade.getFile(original, WorkspaceType.HISTORY, path);           // Retrieve file from content repository
+        // Retrieve file from content repository
+        InputStream file = jcrFacade.getFile(original, WorkspaceType.HISTORY, path);
 
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-        GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
+        // Retrieve a jackson mapper instance and deserialize file
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        GameModel gm = mapper.readValue(file, GameModel.class);
 
-        gm.setName(gameModelFacade.findUniqueName(gm.getName()));               // Find a unique name for this new game
+        // Find a unique name for this new gameModel
+        gm.setName(gameModelFacade.findUniqueName(gm.getName(), gm.getType()));
         gameModelFacade.createWithDebugGame(gm);
-        
 
         // TODO
-
         return gm;
     }
 }

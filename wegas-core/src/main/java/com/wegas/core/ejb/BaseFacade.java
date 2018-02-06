@@ -114,7 +114,7 @@ public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstract
      */
     @Override
     public T duplicate(final Long entityId) throws CloneNotSupportedException {
-        final T newEntity = (T) this.find(entityId).clone();
+        final T newEntity = (T) this.find(entityId).duplicate();
         this.create(newEntity);
         return newEntity;
     }

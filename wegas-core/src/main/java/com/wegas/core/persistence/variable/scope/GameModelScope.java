@@ -47,7 +47,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
             try {
-                VariableInstance clone = vd.getDefaultInstance().clone();
+                VariableInstance clone = vd.getDefaultInstance().duplicate();
                 gameModel.getPrivateInstances().add(clone);
                 this.setVariableInstance(gameModel, clone);
             } catch (CloneNotSupportedException ex) {

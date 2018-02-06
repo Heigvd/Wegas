@@ -741,6 +741,72 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
+    public void testModelise_duplicate() throws NamingException, WegasNoResultException, IOException, RepositoryException, CloneNotSupportedException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        ListDescriptor list1_1 = createList(gameModel1, null, "myFirstFolder", "My First Folder");
+        //                                           N,   L,  Min, Max,   Def, History...
+        createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        ListDescriptor list1_2 = createList(gameModel2, null, "myFirstFolder", "My First Folder");
+        createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+        modelFacade.propagateModel(model.getId());
+
+        ListDescriptor modelList = (ListDescriptor) getDescriptor(model, "myFirstFolder");
+        createNumberDescriptor(model, modelList, "yMod", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        // Model: list: x y
+        // Gm1&2: list/x
+
+        // new model based on model
+        // exact copy, including private content
+        GameModel newModel = gameModelFacade.createModel(model.getId());
+
+        Assert.assertNotNull("MyFirstFolder does not exist in the new model", getDescriptor(newModel, "myFirstFolder"));
+        Assert.assertNotNull("x does not exist in the new model", getDescriptor(newModel, "x"));
+        Assert.assertNotNull("yMod does not exist in the new model", getDescriptor(newModel, "yMod"));
+
+        // new scenario based on the model (do not include nmodel private content)
+        GameModel newScenario_model = gameModelFacade.createScenario(model.getId());
+
+        Assert.assertNotNull("MyFirstFolder does not exist in the new model", getDescriptor(newScenario_model, "myFirstFolder"));
+        Assert.assertNotNull("x does not exist in the new model", getDescriptor(newScenario_model, "x"));
+        Assert.assertNull("yMod exist in the new model", getDescriptor(newScenario_model, "yMod"));
+
+        // new scenario based on a scenario (should include src scenario private content)
+
+        ListDescriptor gm1List = (ListDescriptor) getDescriptor(gameModel1, "myFirstFolder");
+        createNumberDescriptor(gameModel1, gm1List, "yGm1", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        GameModel newScenario_scen = gameModelFacade.createScenario(gameModel1.getId());
+        Assert.assertNotNull("MyFirstFolder does not exist in the new model", getDescriptor(newScenario_scen, "myFirstFolder"));
+        Assert.assertNotNull("x does not exist in the new model", getDescriptor(newScenario_scen, "x"));
+        Assert.assertNull("yMod exist in the new model", getDescriptor(newScenario_scen, "yMod"));
+        Assert.assertNotNull("yGm1 does not exist in the new model", getDescriptor(newScenario_scen, "yGm1"));
+
+
+
+        logger.info("Helloooo");
+    }
+
+    @Test
     public void testModelise_deleteDirectory() throws NamingException, WegasNoResultException, IOException, RepositoryException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");

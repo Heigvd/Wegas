@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 @MappedSuperclass
 @Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
-public abstract class AbstractEntity implements Serializable, Mergeable, Cloneable, WithPermission {
+public abstract class AbstractEntity implements Serializable, Mergeable, WithPermission {
 
     private static final long serialVersionUID = -2538440276749623728L;
 
@@ -106,38 +106,81 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
         this.refId = refId;
     }
 
+    /**
+     * Default Merge. "shallow" and follow visibilities.
+     * <ul>
+     * <li>Only include default properties (includeByDefault = true)</li>
+     * <li>Ignore visibilities restrictions (eg. copy PRIVATE)</li>
+     * </ul>
+     *
+     * @param other
+     */
     public final void merge(AbstractEntity other) {
-        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);
-        logger.debug(wegasEntityPatch.toString());
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);// no deep
+        logger.debug("Merge", wegasEntityPatch);
         if (this instanceof GameModel) {
-            wegasEntityPatch.apply((GameModel) this, this);
+            wegasEntityPatch.apply((GameModel) this, this); //no force
         } else {
-            wegasEntityPatch.apply(null, this);
+            wegasEntityPatch.apply(null, this); // no force
         }
     }
 
     /**
+     * Merge without forcing recursion but forcing visibilities.
+     * <ul>
+     * <li>Only include default properties (includeByDefault = true)</li>
+     * <li>Force visibilities restrictions (eg. cross-merge PRIVATE)</li>
+     * </ul>
      *
      * @param other
      */
     public final void mergeForce(AbstractEntity other) {
-        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);
-        logger.debug(wegasEntityPatch.toString());
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false); //no deep
+        logger.debug("MergeForce", wegasEntityPatch);
         if (this instanceof GameModel) {
-            wegasEntityPatch.applyForce((GameModel) this, this);
+            wegasEntityPatch.applyForce((GameModel) this, this); // force
         } else {
-            wegasEntityPatch.applyForce(null, this);
+            wegasEntityPatch.applyForce(null, this); // force
         }
     }
 
+    /**
+     * Merge including all properties and following visibilities restriction
+     * <ul>
+     * <li>Include all properties (even includeByDefault = false)</li>
+     * <li>Follow visibilities restrictions (eg. do not cross-merge PRIVATE)</li>
+     * </ul>
+     *
+     * @param other
+     */
     public final void deepMerge(AbstractEntity other) {
-        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, true);
-        logger.debug(wegasEntityPatch.toString());
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, true); // deep
+        logger.debug("DeepMerge {}", wegasEntityPatch);
 
         if (this instanceof GameModel) {
-            wegasEntityPatch.applyForce((GameModel) this, this);
+            wegasEntityPatch.apply((GameModel) this, this);  //no force
         } else {
-            wegasEntityPatch.applyForce(null, this);
+            wegasEntityPatch.apply(null, this); // no force
+        }
+    }
+
+    /**
+     * Merge including all properties and ignoring visibilities restriction
+     * <ul>
+     * <li>Include all properties (even includeByDefault = false)</li>
+     * <li>Force visibilities restrictions (eg. cross-merge PRIVATE)</li>
+     * </ul>
+     *
+     * @param other
+     */
+    public final void deepMergeForce(AbstractEntity other) {
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, true); // deep
+        logger.debug("DeepMerge {}", wegasEntityPatch);
+
+        if (this instanceof GameModel) {
+            wegasEntityPatch.applyForce((GameModel) this, this); // force
+        } else {
+            wegasEntityPatch.applyForce(null, this); // force
         }
     }
 
@@ -209,11 +252,10 @@ public abstract class AbstractEntity implements Serializable, Mergeable, Cloneab
      *
      * @throws java.lang.CloneNotSupportedException
      */
-    @Override
-    public AbstractEntity clone() throws CloneNotSupportedException {
+    public AbstractEntity duplicate() throws CloneNotSupportedException {
         try {
             AbstractEntity clone = this.getClass().getDeclaredConstructor().newInstance();
-            clone.deepMerge(this);
+            clone.deepMergeForce(this);
             return clone;
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
             throw new CloneNotSupportedException(ex.getLocalizedMessage());

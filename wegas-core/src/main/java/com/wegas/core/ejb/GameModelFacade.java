@@ -15,6 +15,7 @@ import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
@@ -23,11 +24,13 @@ import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
+import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
+import static com.wegas.core.persistence.game.GameModel.GmType.*;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -322,7 +325,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     public GameModel createFromPlayer(Long gameModelId, Long playerId) {
         try {
-            GameModel duplicata = this.duplicate(gameModelId);
+            GameModel duplicata = this.createScenario(gameModelId);
             //this.getEntityManager().flush();
 
             GameModel source = this.find(gameModelId);
@@ -361,7 +364,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @return new unique name
      */
-    public String findUniqueName(String oName) {
+    public String findUniqueName(String oName, GmType type) {
         String newName = oName != null ? oName : "";
 
         Pattern p = Pattern.compile("(.*)\\((\\d*)\\)");
@@ -377,7 +380,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             suffix = 2l;
         }
 
-        while (this.countByName(newName) > 0) {
+        while (this.countByName(newName, type) > 0) {
             newName = baseName + " (" + suffix + ")";
             suffix++;
         }
@@ -418,16 +421,16 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
-    public GameModel createGameGameModel(final Long entityId) throws CloneNotSupportedException {
+    public GameModel createPlayGameModel(final Long entityId) throws CloneNotSupportedException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
-        if (srcGameModel != null) {
-            final GameModel newGameModel = (GameModel) srcGameModel.clone();
+        GameModel newGameModel = this.duplicate(entityId);
+        if (srcGameModel != null && newGameModel != null) {
 
             // Clear comments
             newGameModel.setComments("");
             // to right restriction for trainer, status PLAY/LIVE must be set before persisting the gameModel
             newGameModel.setStatus(GameModel.Status.LIVE);
-            newGameModel.setType(GameModel.GmType.PLAY);
+            newGameModel.setType(PLAY);
             newGameModel.setBasedOn(srcGameModel);
 
             this.create(newGameModel);
@@ -440,31 +443,138 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
+    /**
+     *
+     * @param entityId
+     *
+     * @return
+     *
+     * @throws CloneNotSupportedException
+     */
     @Override
     public GameModel duplicate(final Long entityId) throws CloneNotSupportedException {
         final GameModel srcGameModel = this.find(entityId);
         if (srcGameModel != null) {
-            requestManager.assertCanDuplicateGameModel(this.find(entityId));
-            GameModel newGameModel = (GameModel) srcGameModel.clone();
-            newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
+            return (GameModel) srcGameModel.duplicate();
+        }
+        return null;
+    }
 
-            this.create(newGameModel);
+    /**
+     * Duplicate a model to create a brand new one.
+     * The srcGameModel must be a model.
+     *
+     * @param entityId id of the model to duplicate must be a MODEL gameModel.
+     *
+     * @return
+     *
+     * @throws CloneNotSupportedException
+     */
+    public GameModel createModel(final Long entityId) throws CloneNotSupportedException {
+        final GameModel srcGameModel = this.find(entityId);
 
-            if (srcGameModel.getType().equals(GmType.MODEL)) {
-                // duplicating a model leads to a new model
-                newGameModel.setType(GmType.MODEL);
-                // new refIds
-                ModelFacade.resetRefIds(newGameModel, null);
-            } else if (srcGameModel.getType().equals(GmType.SCENARIO) && srcGameModel.getBasedOn() != null) {
-                // duplicating a scenario which is based on a model
-                newGameModel.setBasedOn(srcGameModel.getBasedOn());
+        if (srcGameModel != null) {
+            if (srcGameModel.getType().equals(MODEL)) {
+                requestManager.assertCanDuplicateGameModel(this.find(entityId));
+
+                GameModel newGameModel = this.duplicate(entityId);
+                if (newGameModel != null) {
+
+                    // make sure the new GameModel is a MODEL
+                    newGameModel.setType(MODEL);
+
+                    // add a suffix to the name
+                    newGameModel.setName(this.findUniqueName(srcGameModel.getName(), MODEL));
+
+                    // new refIds
+                    MergeHelper.resetRefIds(newGameModel, null);
+
+                    // persist
+                    this.create(newGameModel);
+
+                    this.duplicateRepository(newGameModel, srcGameModel);
+                    return newGameModel;
+                } else {
+                    throw WegasErrorMessage.error("Unable to duplicate srcModel");
+                }
+            } else {
+                throw WegasErrorMessage.error("Model to duplicate is not a model");
             }
-
-            this.duplicateRepository(newGameModel, srcGameModel);
-            return newGameModel;
         } else {
             throw new WegasNotFoundException("GameModel not found");
         }
+    }
+
+    /**
+     * Create a new scenario based on another gameModel (the source).
+     * The source GameModel must be either a MODEL or a SCENARIO.
+     * <ul>
+     * <li><b>MODEL:</b> the new scenario will be a copy of the model,
+     * whithout any PRIVATE content.</li>
+     * <li><b>SCENARIO:</b> the new scenario will be a copy of the source, including PRIVATE content</li>
+     * </ul>
+     *
+     * @param sourceId id of the gameModel to based the new one on
+     *
+     * @return a new SCENARIO gameModel
+     *
+     * @throws CloneNotSupportedException
+     */
+    public GameModel createScenario(final Long sourceId) throws CloneNotSupportedException {
+        final GameModel srcGameModel = this.find(sourceId);
+
+        if (srcGameModel != null) {
+
+            GameModel newGameModel = null;
+            switch (srcGameModel.getType()) {
+                case MODEL:
+                    requestManager.assertCanInstantiateGameModel(srcGameModel);
+                    newGameModel = new GameModel();
+                    // merge deep but skip PRIVATE content
+                    newGameModel.deepMerge(srcGameModel);
+                    newGameModel.setBasedOn(srcGameModel);
+                    break;
+                case SCENARIO:
+                    requestManager.assertCanDuplicateGameModel(srcGameModel);
+                    newGameModel = this.duplicate(sourceId);
+                    // duplicating a scenario which is based on a model
+                    newGameModel.setBasedOn(srcGameModel.getBasedOn());
+                    break;
+                default:
+                    throw new WegasIncompatibleType("Couldn not create a new scenatrio from " + srcGameModel);
+            }
+
+            if (newGameModel != null) {
+                newGameModel.setName(this.findUniqueName(srcGameModel.getName(), SCENARIO));
+
+                this.create(newGameModel);
+
+                newGameModel.setType(SCENARIO);
+
+                this.duplicateRepository(newGameModel, srcGameModel);
+                return newGameModel;
+            } else {
+                throw WegasErrorMessage.error("Something went wrong");
+            }
+        } else {
+            throw new WegasNotFoundException("GameModel not found");
+        }
+    }
+
+    /**
+     * Create a new model based on the given one.
+     *
+     * @param gameModelId id of the model to duplicate
+     *
+     * @return a new model
+     *
+     * @throws CloneNotSupportedException
+     */
+    public GameModel createModelWithDebugGame(final Long gameModelId) throws CloneNotSupportedException {
+        GameModel gm = this.createModel(gameModelId);
+
+        this.addDebugGame(gm);
+        return gm;
     }
 
     /**
@@ -475,8 +585,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @throws java.lang.CloneNotSupportedException
      *
      */
-    public GameModel duplicateWithDebugGame(final Long gameModelId) throws CloneNotSupportedException {
-        GameModel gm = this.duplicate(gameModelId);
+    public GameModel createScenarioWithDebugGame(final Long gameModelId) throws CloneNotSupportedException {
+        GameModel gm = this.createScenario(gameModelId);
         this.addDebugGame(gm);
 //        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());
         return gm;
@@ -571,11 +681,19 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     /**
      * @param name
+     * @param type
      *
      * @return the number of gamemodel having the given name
      */
-    public long countByName(final String name) {
-        final TypedQuery<Long> query = getEntityManager().createNamedQuery("GameModel.countByName", Long.class);
+    public long countByName(final String name, GmType type) {
+        final TypedQuery<Long> query;
+
+        if (type == MODEL) {
+            query = getEntityManager().createNamedQuery("GameModel.countModelByName", Long.class);
+        } else {
+            query = getEntityManager().createNamedQuery("GameModel.countByName", Long.class);
+        }
+
         query.setParameter("name", name);
         try {
             return query.getSingleResult();
@@ -758,7 +876,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             logger.info("deleteGameModels(): want to delete gameModels");
             if (lock.tryLock()) {
                 try {
-                    List<GameModel> byStatus = this.findByTypeAndStatus(GameModel.GmType.SCENARIO, Status.DELETE);
+                    List<GameModel> byStatus = this.findByTypeAndStatus(SCENARIO, Status.DELETE);
                     for (GameModel gm : byStatus) {
                         this.remove(gm);
                     }

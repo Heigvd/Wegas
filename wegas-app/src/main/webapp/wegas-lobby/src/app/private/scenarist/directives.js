@@ -28,7 +28,6 @@ angular.module('private.scenarist.directives', [
             prevFilter = "",
             filtered = [],
             prevSource = null,
-
             // Adjusts layout constants to the current window size.
             checkWindowSize = function() {
                 if (winheight !== $window.innerHeight) {
@@ -71,7 +70,7 @@ angular.module('private.scenarist.directives', [
                 updateDisplay(list);
             },
             // Returns an array containing the occurrences of 'needle' in rawScenarios:
-            doSearch = function(needle){
+            doSearch = function(needle) {
                 var len = rawScenarios.length,
                     res = [];
                 for (var i = 0; i < len; i++) {
@@ -88,11 +87,12 @@ angular.module('private.scenarist.directives', [
             };
 
         /*
-        ** Updates the listing when the user has clicked on the "My scenarios first" checkbox,
-        ** and also during initial page rendering.
+         ** Updates the listing when the user has clicked on the "My scenarios first" checkbox,
+         ** and also during initial page rendering.
          */
         ctrl.setMeFirst = function(mefirst, updateDisplay) {
-            if (mefirst === undefined) return;
+            if (mefirst === undefined)
+                return;
             ctrl.mefirst = mefirst;
             // Update the checkbox in the UI:
             var cbx = $('#mefirst');
@@ -139,8 +139,8 @@ angular.module('private.scenarist.directives', [
          **    so that the output automatically follows the same ordering.
          */
         ctrl.filterScenarios = function(search) {
-            if (!search || search.length === 0){
-                if (isFiltering){
+            if (!search || search.length === 0) {
+                if (isFiltering) {
                     isFiltering = false;
                     initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching
                 }
@@ -265,22 +265,22 @@ angular.module('private.scenarist.directives', [
         $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (e.currentScope.currentRole === "SCENARIST") {
                 extendDisplayedItems();
-                if ( ! $rootScope.$$phase) {
+                if (!$rootScope.$$phase) {
                     $scope.$apply();
                 }
             }
         });
 
         // This is jQuery code for detecting window resizing:
-        $(window).on("resize.doResize", _.debounce(function (){
-            $scope.$apply(function(){
+        $(window).on("resize.doResize", _.debounce(function() {
+            $scope.$apply(function() {
                 initMaxItemsDisplayed();
                 updateDisplay(currentList());
             });
-        },100));
+        }, 100));
 
         // When leaving, remove the window resizing handler:
-        $scope.$on("$destroy",function (){
+        $scope.$on("$destroy", function() {
             //$(window).off("resize.doResize");
         });
 
@@ -289,7 +289,7 @@ angular.module('private.scenarist.directives', [
             if (user !== false) {
                 ctrl.user = user;
                 if (user.isAdmin) {
-                    UsersModel.getFullUser(user.id).then(function (response) {
+                    UsersModel.getFullUser(user.id).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {
@@ -330,10 +330,16 @@ angular.module('private.scenarist.directives', [
                     scope.loadingScenarios = true;
                     ScenariosModel.getScenarios("LIVE").then(function(response) {
                         if (!response.isErroneous()) {
-                            scope.loadingScenarios = false;
-                            var expression = { canDuplicate: true },
+                            var expression = {canDuplicate: true},
                                 filtered = $filter('filter')(response.data, expression) || [];
-                            scope.scenariomenu = $filter('orderBy')(filtered, 'name');
+                            ScenariosModel.getModels("LIVE").then(function(response) {
+                                if (!response.isErroneous()) {
+                                    scope.loadingScenarios = false;
+                                    var expr = {canInstantiate: true},
+                                        filtered2 = $filter("filter")(response.data, expr) || [];
+                                    scope.scenariomenu = $filter('orderBy')(filtered.concat(filtered2), 'name');
+                                }
+                            });
                         }
                     });
                 };

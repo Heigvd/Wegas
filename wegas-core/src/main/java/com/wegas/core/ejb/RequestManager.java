@@ -1537,11 +1537,29 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * has the currentUser the right to restore the given gameModel from the bin
+     * has the currentUser the right to instantiate the given gameModel
      *
-     * @param gameModel the game model to restore
+     * @param gameModel the game model to instantiate
      *
-     * @return whether or not the user can move gameModel from the bin
+     * @return whether or not the user can instantiate the gameModel
+     */
+    public boolean canInstantiateGameModel(final GameModel gameModel) {
+        GameModel theOne;
+        if (gameModel.getType().equals(GameModel.GmType.PLAY) && gameModel.getBasedOn() != null) {
+            theOne = gameModel.getBasedOn();
+        } else {
+            theOne = gameModel;
+        }
+        String id = "gm" + theOne.getId();
+        return this.isPermitted("GameModel:Instantiate:" + id);
+    }
+
+    /**
+     * has the currentUser the right to duplicate the given gameModel
+     *
+     * @param gameModel the game model to duplicate
+     *
+     * @return whether or not the user can duplicate gameModel
      */
     public boolean canDuplicateGameModel(final GameModel gameModel) {
         GameModel theOne;
@@ -1616,6 +1634,17 @@ public class RequestManager implements RequestManagerI {
     public void assertCanReadGameModel(final GameModel gameModel) {
         if (!hasGameModelReadRight(gameModel)) {
             throw new WegasAccessDenied(gameModel, "Read", gameModel.getRequieredReadPermission().toString(), this.getCurrentUser());
+        }
+    }
+
+    /**
+     * Assert currentUser has the right to instantiate gameModel
+     *
+     * @param gameModel the GameModel to check right against
+     */
+    public void assertCanInstantiateGameModel(final GameModel gameModel) {
+        if (!canInstantiateGameModel(gameModel)) {
+            throw new WegasAccessDenied(gameModel, "Duplicate", "Not allowed to duplicate the scenario", this.getCurrentUser());
         }
     }
 

@@ -70,7 +70,7 @@ public class TeamScope extends AbstractScope<Team> {
         VariableDescriptor vd = this.getVariableDescriptor();
         if (create) {
             try {
-                VariableInstance newInstance = vd.getDefaultInstance().clone();
+                VariableInstance newInstance = vd.getDefaultInstance().duplicate();
                 //t.setPrivateInstance(ListUtils.cloneAdd(t.getPrivateInstances(), newInstance));
                 t.getPrivateInstances().add(newInstance);
                 this.setVariableInstance(t, newInstance);

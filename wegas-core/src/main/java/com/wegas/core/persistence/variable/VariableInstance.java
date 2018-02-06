@@ -241,8 +241,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     private Team team;
 
     @Override
-    public VariableInstance clone() throws CloneNotSupportedException {
-        return (VariableInstance) super.clone();
+    public VariableInstance duplicate() throws CloneNotSupportedException {
+        return (VariableInstance) super.duplicate();
     }
 
     /**

@@ -18,18 +18,14 @@ import com.wegas.core.jcr.content.DirectoryDescriptor;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
-import com.wegas.core.merge.utils.WegasEntitiesHelper;
-import com.wegas.core.merge.utils.WegasEntityFields;
-import com.wegas.core.merge.utils.WegasFieldProperties;
+import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -134,7 +130,7 @@ public class ModelFacade {
 
                 logger.info("Create model, based on first scenario");
                 GameModel srcModel = scenarios.remove(0);
-                model = (GameModel) srcModel.clone();
+                model = (GameModel) srcModel.duplicate();
                 model.setName(modelName);
 
                 /**
@@ -347,100 +343,6 @@ public class ModelFacade {
         }
     }
 
-    private static interface MergeableVisitor {
-        public void visit(Mergeable target, Mergeable reference);
-    }
-
-    /**
-     *
-     *
-     * @param target
-     * @param reference
-     * @param forceRecursion do not follow includeByDefault=false properted unless forceRecursion is true
-     * @param visitor
-     */
-    private static void visitMergeable(Mergeable target, Mergeable reference, Boolean recursive, MergeableVisitor visitor) {
-
-        if (target != null) {
-            visitor.visit(target, reference);
-
-            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
-
-            for (WegasFieldProperties field : entityIterator.getFields()) {
-                if (field.getType().equals(WegasFieldProperties.FieldType.CHILD)) {
-                    Method readMethod = field.getPropertyDescriptor().getReadMethod();
-                    if (field.getAnnotation().includeByDefault() || recursive) {
-                        try {
-                            AbstractEntity targetChild = (AbstractEntity) readMethod.invoke(target);
-                            AbstractEntity referenceChild = null;
-
-                            if (reference != null) {
-                                referenceChild = (AbstractEntity) readMethod.invoke(reference);
-                            }
-
-                            ModelFacade.visitMergeable(targetChild, referenceChild, recursive, visitor);
-                        } catch (Exception ex) {
-                            throw new WegasErrorMessage("error", "Invocation Failure: should never appends");
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private static class VisibilityResetter implements MergeableVisitor {
-
-        private ModelScoped.Visibility visibility;
-
-        public VisibilityResetter(ModelScoped.Visibility visibility) {
-            this.visibility = visibility;
-        }
-
-        @Override
-        public void visit(Mergeable target, Mergeable reference) {
-            if (target instanceof ModelScoped) {
-                ((ModelScoped) target).setVisibility(this.visibility);
-            }
-        }
-    }
-
-    /**
-     * reset recursively target visibility to the given one.
-     *
-     * @param target
-     * @param visibility
-     */
-    public static void resetVisibility(Mergeable target, ModelScoped.Visibility visibility) {
-        ModelFacade.visitMergeable(target, null, Boolean.TRUE, new VisibilityResetter(visibility));
-    }
-
-    private static class RefidResetter implements MergeableVisitor {
-
-        @Override
-        public void visit(Mergeable target, Mergeable reference) {
-
-            if (target instanceof AbstractEntity) {
-                AbstractEntity entity = (AbstractEntity) target;
-                if (reference != null) {
-                    entity.forceRefId(reference.getRefId());
-                } else {
-                    ((AbstractEntity) target).forceRefId(null);
-                    entity.forceRefId(null);
-                    entity.assertRefId();
-                }
-            }
-        }
-    }
-
-    /**
-     *
-     * @param target
-     * @param reference
-     */
-    public static void resetRefIds(AbstractEntity target, AbstractEntity reference) {
-        ModelFacade.visitMergeable(target, reference, Boolean.TRUE, new RefidResetter());
-    }
-
     public GameModel getReference(GameModel model) {
         Collection<GameModel> implementations = gameModelFacade.getImplementations(model);
         for (GameModel gm : implementations) {
@@ -493,7 +395,7 @@ public class ModelFacade {
                         try {
                             // get corresponding descriptor in the scenrio
                             VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
-                            this.resetRefIds(vd, modelVd); // make sure corresponding descriptors share the same refId
+                            MergeHelper.resetRefIds(vd, modelVd); // make sure corresponding descriptors share the same refId
                             String parentRef = this.getParentRef(vd);
                             if (!parentRef.equals(modelParentRef)) {
                                 logger.info("Descriptor {} will be moved from {} to {}", vd, vd.getParent(), modelVd.getParent());
@@ -702,7 +604,7 @@ public class ModelFacade {
                  */
                 logger.info("Create Reference");
                 try {
-                    reference = (GameModel) gameModel.clone();
+                    reference = (GameModel) gameModel.duplicate();
                 } catch (CloneNotSupportedException ex) {
                     throw WegasErrorMessage.error("Could not create reference by cloning " + gameModel);
                 }

@@ -12,6 +12,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -303,10 +304,13 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     @Override
     public VariableDescriptor duplicate(final Long entityId) throws CloneNotSupportedException {
         final VariableDescriptor oldEntity = this.find(entityId); // Retrieve the entity to duplicate
-        final VariableDescriptor newEntity = (VariableDescriptor) oldEntity.clone();
+        final VariableDescriptor newEntity = (VariableDescriptor) oldEntity.duplicate();
 
         // reset reference id for all new entites within newEntity
-        mergeFacade.resetRefIds(newEntity, null);
+        MergeHelper.resetRefIds(newEntity, null);
+        if (oldEntity.isProtected()){
+            MergeHelper.resetVisibility(newEntity, Visibility.PRIVATE);
+        }
 
         final DescriptorListI list = oldEntity.getParent();
         this.createChild(oldEntity.getGameModel(), list, newEntity);

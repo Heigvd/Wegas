@@ -61,7 +61,7 @@ public class PlayerScope extends AbstractScope<Player> {
         VariableDescriptor vd = getVariableDescriptor();
         if (create) {
             try {
-                VariableInstance clone = vd.getDefaultInstance().clone();
+                VariableInstance clone = vd.getDefaultInstance().duplicate();
                 p.getPrivateInstances().add(clone);
                 this.setVariableInstance(p, clone);
                 //vif.create(clone);

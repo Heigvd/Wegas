@@ -116,11 +116,12 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param gameModelId id of the gameModel to create a new game for
      * @param game        the game to persist
+     *
      * @throws java.lang.CloneNotSupportedException
      *
      */
     public void publishAndCreate(final Long gameModelId, final Game game) throws CloneNotSupportedException {
-        GameModel gm = gameModelFacade.createGameGameModel(gameModelId);
+        GameModel gm = gameModelFacade.createPlayGameModel(gameModelId);
         this.create(gm, game);
 
         // Since Permission on gameModel is provided through game induced permission, revoke initial permission on gamemodel:
@@ -153,6 +154,8 @@ public class GameFacade extends BaseFacade<Game> {
      * @param game      the game to persist within the gameModel
      */
     private void create(final GameModel gameModel, final Game game) {
+        requestManager.assertCanInstantiateGameModel(gameModel);
+
         final User currentUser = userFacade.getCurrentUser();
 
         if (game.getToken() == null) {

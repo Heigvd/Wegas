@@ -87,7 +87,7 @@ public class GameModelController {
     /**
      * Create a model
      *
-     * @param ids comma separated list of gameModel id to base the new model on
+     * @param ids      comma separated list of gameModel id to base the new model on
      * @param template
      *
      * @return a brand new model, not yet propagated
@@ -121,6 +121,27 @@ public class GameModelController {
 
     /**
      *
+     * Duplicate model
+     *
+     * @param templateGameModelId id of the gameModel to duplicate
+     * @param gm                  template to fetch the new name in
+     *
+     * @return the new game model
+     */
+    @POST
+    @Path("model/{templateGameModelId : [1-9][0-9]*}")
+    public GameModel templateCreateModel(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws CloneNotSupportedException {
+        // logger.info(Level.INFO, "POST GameModel");
+
+        GameModel duplicate = gameModelFacade.createModelWithDebugGame(templateGameModelId);
+        // restore original name
+        duplicate.setName(gm.getName());
+
+        return duplicate;
+    }
+
+    /**
+     *
      * Duplicate and set new gameModel name
      *
      * @param templateGameModelId id of the gameModel to duplicate
@@ -133,7 +154,7 @@ public class GameModelController {
     public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws CloneNotSupportedException {
         // logger.info(Level.INFO, "POST GameModel");
 
-        GameModel duplicate = gameModelFacade.duplicateWithDebugGame(templateGameModelId);
+        GameModel duplicate = gameModelFacade.createScenarioWithDebugGame(templateGameModelId);
         // restore original name
         duplicate.setName(gm.getName());
 
@@ -205,10 +226,13 @@ public class GameModelController {
     public GameModel upload(@FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws IOException {
 
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-        GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
+        // Retrieve a jackson mapper instance and deserialize file
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        GameModel gm = mapper.readValue(file, GameModel.class);
 
-        gm.setName(gameModelFacade.findUniqueName(gm.getName()));               // Find a unique name for this new game
+        gm.setType(GameModel.GmType.SCENARIO);
+        // Find a unique name for this new game
+        gm.setName(gameModelFacade.findUniqueName(gm.getName(), GameModel.GmType.SCENARIO));
 
         gameModelFacade.createWithDebugGame(gm);
         return gm;
@@ -259,7 +283,7 @@ public class GameModelController {
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     public GameModel duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException {
-        return gameModelFacade.duplicateWithDebugGame(entityId);
+        return gameModelFacade.createScenarioWithDebugGame(entityId);
     }
 
     /**

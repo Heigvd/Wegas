@@ -7,7 +7,6 @@
  */
 package com.wegas.core.merge.patch;
 
-import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -16,6 +15,7 @@ import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.LifecycleCollector.CollectedEntity;
 import com.wegas.core.merge.utils.LifecycleCollector.OrphanContainer;
+import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;
@@ -490,9 +490,9 @@ public final class WegasEntityPatch extends WegasPatch {
                                     VariableDescriptor substituteParent = (VariableDescriptor) p.shallowClone();
 
                                     // Privatise substitue parent
-                                    ModelFacade.resetRefIds(substituteParent, null);
+                                    MergeHelper.resetRefIds(substituteParent, null);
                                     // and make sure it and all its children are private
-                                    ModelFacade.resetVisibility(substituteParent, Visibility.PRIVATE);
+                                    MergeHelper.resetVisibility(substituteParent, Visibility.PRIVATE);
 
                                     p.setDefaultInstance(null);
 

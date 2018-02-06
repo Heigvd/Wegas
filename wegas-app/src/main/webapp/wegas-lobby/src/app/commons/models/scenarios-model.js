@@ -337,9 +337,17 @@ angular.module('wegas.models.scenarios', [])
                 return deferred.promise;
             };
 
+            model.createModel = function(name, templateId) {
+                return model.abstractCreate(name, "model", templateId);
+            };
+
             model.createScenario = function(name, templateId) {
+                return model.abstractCreate(name, null, templateId);
+            };
+
+            model.abstractCreate = function(name, restPath, templateId) {
                 var deferred = $q.defer(),
-                    url = "rest/Lobby/GameModel/" + templateId;
+                    url = "rest/Lobby/GameModel/" + (restPath ? restPath + "/" : "") + templateId;
                 if (name && templateId) {
                     if (name !== "") {
                         if (templateId !== 0) {

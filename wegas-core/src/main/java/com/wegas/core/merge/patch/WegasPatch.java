@@ -159,12 +159,17 @@ public abstract class WegasPatch {
         this.fieldCallback = userCallback;
     }
 
+    /**
+     * Apply patch with default behaviour (following visibility restriction)
+     * @param gameModel
+     * @param target
+     */
     public void apply(GameModel gameModel, Mergeable target) {
         this.apply(gameModel, target, null, PatchMode.UPDATE, null, null, null, false);
     }
 
     /**
-     * Like apply but ignore visiblity related restrictions
+     * Like apply but ignore visibility related restrictions
      *
      * @param gameModel
      * @param target

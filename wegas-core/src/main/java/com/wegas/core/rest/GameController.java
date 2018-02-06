@@ -28,7 +28,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
@@ -101,9 +100,6 @@ public class GameController {
      */
     @POST
     public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws CloneNotSupportedException {
-        // Special instantiate permission is not handled by automatic permission system
-        SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
-
         gameFacade.publishAndCreate(gameModelId, game);
         //@Dirty: those lines exist to get a new game pointer. Cache is messing with it
         // removing debug team will stay in cache as this game pointer is new. work around
@@ -128,9 +124,6 @@ public class GameController {
     @Path("ShadowCreate")
     @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
-        // Special instantiate permission is not handled by automatic permission system
-        SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
-
         gameFacade.create(gameModelId, entity);
         return gameFacade.getGameWithoutDebugTeam(entity);
     }

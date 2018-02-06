@@ -260,7 +260,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, param);"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
-        GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(scenario.getId());
+        GameModel duplicateGm = gameModelFacade.createScenarioWithDebugGame(scenario.getId());
         TriggerDescriptor find = (TriggerDescriptor) variableDescriptorFacade.find(duplicateGm, "trigger");
         Assert.assertEquals(find.getStates().size(), trigger.getStates().size());
     }
