@@ -42,22 +42,34 @@ function condition(Comp) {
     function Condition(props) {
         const { code, onChange } = props;
         const expr = [];
+        if (code.length > 1) {
+            throw Error('Unhandled');
+        }
         visit(code, {
-            visitLogicalExpression(path) {
-                expr.splice(0, 0, path.node.right);
-                this.traverse(path);
-                if (!isMatch(path.node.left, { type: 'LogicalExpression' })) {
-                    expr.splice(0, 0, path.node.left);
-                }
-            },
             visitExpressionStatement(path) {
-                if (isMatch(path.node.expression, { type: 'LogicalExpression' })) {
-                    this.traverse(path);
-                    return undefined;
-                }
-                expr.splice(0, 0, path.node.expression);
+                this.traverse(path);
                 return false;
-            }
+            },
+            visitLogicalExpression(path) {
+                if (path.node.operator === AND) {
+                    this.traverse(path);
+                } else {
+                    throw Error(`Unhandled operator '${path.node.operator}'`);
+                }
+                return false;
+            },
+            visitNode(path) {
+                // the rest
+                throw Error(`Unhandled '${path.node.type}'`);
+            },
+            visitCallExpression(path) {
+                expr.push(path.node);
+                return false;
+            },
+            visitBinaryExpression(path) {
+                expr.push(path.node);
+                return false;
+            },
         });
 
         return (
@@ -71,7 +83,7 @@ function condition(Comp) {
     }
     Condition.propTypes = {
         code: PropTypes.array.isRequired,
-        onChange: PropTypes.func.isRequired
+        onChange: PropTypes.func.isRequired,
     };
     return Condition;
 }

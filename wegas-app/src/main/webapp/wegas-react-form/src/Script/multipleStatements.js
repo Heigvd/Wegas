@@ -5,7 +5,7 @@ import addStatement, { removeStatement } from './addStatement';
 
 const TYPE = {
     GETTER: 'getter',
-    CONDITION: 'condition'
+    CONDITION: 'condition',
 };
 function collector(coll) {
     return path => {
@@ -28,15 +28,15 @@ function multipleStatement(Comp) {
         const rootExpression = [];
         if (type === TYPE.GETTER) {
             visit(code, {
-                visitNode: collector(rootExpression)
+                visitNode: collector(rootExpression),
                 // visitExpressionStatement: collector(rootExpression),
                 // visitEmptyStatement: collector(rootExpression)
             });
         } else if (type === TYPE.CONDITION) {
             visit(code, {
-                visitBinaryExpression: collector(rootExpression),
-                visitCallExpression: collector(rootExpression),
-                visitEmptyStatement: collector(rootExpression)
+                visitNode: collector(rootExpression),
+                // visitCallExpression: collector(rootExpression),
+                // visitEmptyStatement: collector(rootExpression),
             });
         }
         const children = rootExpression.map((path, i) => (
@@ -58,19 +58,15 @@ function multipleStatement(Comp) {
             />
         ));
 
-        return (
-            <div>
-                {children}
-            </div>
-        );
+        return <div>{children}</div>;
     }
     MultipleStatement.defaultProps = {
-        type: TYPE.GETTER
+        type: TYPE.GETTER,
     };
     MultipleStatement.propTypes = {
         code: PropTypes.array,
         onChange: PropTypes.func,
-        type: PropTypes.oneOf([TYPE.CONDITION, TYPE.GETTER])
+        type: PropTypes.oneOf([TYPE.CONDITION, TYPE.GETTER]),
     };
     return addStatement(MultipleStatement);
 }

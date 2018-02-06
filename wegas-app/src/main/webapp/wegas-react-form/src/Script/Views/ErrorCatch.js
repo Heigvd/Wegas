@@ -1,5 +1,13 @@
 import * as React from 'react';
+import { css } from 'glamor';
 import JSEditor from './asyncJSEditor';
+
+const errorStyle = css({
+    color: '#999',
+    fontSize: '12px',
+    fontStyle: 'italic',
+    paddingTop: '3px',
+});
 // eslint-disable-next-line
 export class ErrorCatch extends React.Component {
     constructor(props) {
@@ -29,7 +37,7 @@ export class ErrorCatch extends React.Component {
                         height="200px"
                         onBlur={this.onErrorBlur}
                     />
-                    <div>{this.state.error.message}</div>
+                    <div {...errorStyle}>{this.state.error.message}</div>
                 </>
             );
         }
