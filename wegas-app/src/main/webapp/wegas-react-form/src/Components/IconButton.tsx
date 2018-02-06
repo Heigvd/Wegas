@@ -9,6 +9,7 @@ interface Props {
     disabled?: boolean;
     opacity?: boolean;
     grey?: boolean;
+    active?: boolean;
     iconColor?: string;
     tooltip?: string;
     className?: string;
@@ -43,7 +44,7 @@ const disabledStyle = css({
 const opacityStyle = css({
     opacity: 0,
 });
-
+const activeStyle = css({ textShadow: '0 0 4px' });
 const grayStyle = css({
     color: 'darkslategray',
     fontWeight: 'bold',
@@ -91,6 +92,7 @@ function IconButton({
     iconColor,
     tooltip,
     opacity,
+    active,
     className,
     label,
     prefixedLabel,
@@ -104,6 +106,7 @@ function IconButton({
                 [`${disabledStyle}`]: disabled,
                 [`${opacityStyle}`]: opacity,
                 [`${grayStyle}`]: grey,
+                [`${activeStyle}`]: active,
             })}
             title={tooltip}
         >

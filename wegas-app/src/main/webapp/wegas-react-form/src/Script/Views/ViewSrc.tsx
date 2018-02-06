@@ -17,17 +17,16 @@ const red = css({ color: 'red' });
 const green = css({ color: 'green' });
 const viewSourceTooltip = 'Open source code';
 const hideSourceTooltip = 'Hide source code';
-
 /**
  * Toggle view between parsed and code
  */
 class ViewSrc extends React.Component<
     IViewSrcProps,
-    { src: boolean; error?: string }
+    { src: boolean; error?: string; evaluating: boolean }
 > {
     constructor(props: IViewSrcProps) {
         super(props);
-        this.state = { src: false };
+        this.state = { src: false, evaluating: false };
         this.toggleState = this.toggleState.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.runCode = this.runCode.bind(this);
@@ -45,16 +44,19 @@ class ViewSrc extends React.Component<
         const context = (Y.Plugin.EditEntityAction as any).currentEntity
             ? (Y.Plugin.EditEntityAction as any).currentEntity.get('id')
             : null;
+        this.setState({ evaluating: true, error: undefined });
         Y.Wegas.Facade.Variable.script.remoteEval(
             this.props.value,
             {
                 on: {
-                    success: () => this.setState({ error: '' }),
+                    success: () =>
+                        this.setState({ error: '', evaluating: false }),
                     failure: (e: any) =>
                         this.setState({
                             error: e.response.results.events[0]
                                 .get('val.exceptions.0')
                                 .get('val.localizedMessage'),
+                            evaluating: false,
                         }),
                 },
             },
@@ -94,12 +96,14 @@ class ViewSrc extends React.Component<
                     tooltip={
                         this.state.src ? hideSourceTooltip : viewSourceTooltip
                     }
+                    active={this.state.src}
                 />
                 <IconButton
                     icon="fa fa-play"
                     tooltip={this.state.error || 'Run code'}
                     onClick={this.runCode}
                     className={`${runButton.toString()} ${className} run-code`}
+                    active={this.state.evaluating}
                 />
                 {child}
             </span>
