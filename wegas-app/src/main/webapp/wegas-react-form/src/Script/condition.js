@@ -43,7 +43,7 @@ function condition(Comp) {
         const { code, onChange } = props;
         const expr = [];
         if (code.length > 1) {
-            throw Error('Unhandled');
+            throw Error('Expecting 1 expression');
         }
         visit(code, {
             visitExpressionStatement(path) {
