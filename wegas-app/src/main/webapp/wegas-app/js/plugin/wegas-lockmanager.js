@@ -146,7 +146,8 @@ YUI.add('wegas-lockmanager', function(Y) {
             token: {
                 type: "string",
                 label: "Lock name",
-                value: "myToken"
+                value: "myToken",
+                view:{ label: "Token" }
             }
         }
     });

@@ -577,10 +577,11 @@ YUI.add('wegas-mcq-view', function(Y) {
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Question",
                     classFilter: ["QuestionDescriptor"]
                 }
@@ -590,9 +591,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                 type: "boolean",
                 value: false,
                 optional: true,
-                _inputex: {
-                    _type: "script",
-                    expects: "condition"
+                view: {
+                    type: "scriptcondition"
                 }
             }
         }

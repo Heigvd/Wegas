@@ -372,13 +372,33 @@ YUI.add("wegas-editor-treeview", function(Y) {
     Plugin.EditorTVDefaultMenuClick = Y.Base.create("admin-menu", Plugin.EditorTVToolbarMenu, [], {
         onTreeViewSelection: function(e) {
             var menuItems = this.getMenuItems(e.target.get("data"));
+            var entity = Plugin.EditEntityAction ? Plugin.EditEntityAction.currentEntity : undefined;
 
-            if (menuItems && menuItems.length) {
-                var button = Wegas.Widget.create(menuItems[0]);
-                button.fire("click");
-                button.destroy();
+            function cancelNewSelection(e) {
+                e.stopImmediatePropagation();
+                if (entity) {
+                    setTimeout(function () {
+                        Y.fire("edit-entity:edit", {entity: entity})
+                    }, 0);
+                }
+            }
+
+            if (Plugin.EditEntityAction) {
+                Plugin.EditEntityAction.allowDiscardingEdits(
+                    Y.bind(function() {
+                        if (menuItems && menuItems.length) {
+                            var button = Wegas.Widget.create(menuItems[0]);
+                            button.fire("click");
+                            button.destroy();
+                        } else {
+                            Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
+                        }
+                    }, this),
+                    Y.bind(function() {
+                        cancelNewSelection(e);
+                    }, this));
             } else {
-                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
+                cancelNewSelection(e);
             }
         }
     }, {

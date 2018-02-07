@@ -26,20 +26,21 @@
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="30 days" />
         <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i" rel="stylesheet"/>
 
         <!-- YUI -->
         <ui:fragment rendered="#{wegasConfig.useYUICDN}">
             <!-- CDN  -->
             <ui:fragment rendered="#{request.scheme == 'http'}">
-                <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.17.2/build/cssreset/cssreset-min.css&amp;3.17.2/build/cssfonts/cssfonts-min.css&amp;3.17.2/build/cssgrids/cssgrids-min.css" />
+                <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.17.2/build/cssreset/cssreset-min.css&amp;3.17.2/build/cssgrids/cssgrids-min.css" />
             </ui:fragment>
             <ui:fragment rendered="#{request.scheme == 'https'}">
-                <link rel="stylesheet" type="text/css" href="https://yui-s.yahooapis.com/combo?3.17.2/build/cssreset/cssreset-min.css&amp;3.17.2/build/cssfonts/cssfonts-min.css&amp;3.17.2/build/cssgrids/cssgrids-min.css" />
+                <link rel="stylesheet" type="text/css" href="https://yui-s.yahooapis.com/combo?3.17.2/build/cssreset/cssreset-min.css&amp;3.17.2/build/cssgrids/cssgrids-min.css" />
             </ui:fragment>
         </ui:fragment>
         <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
             <!-- Self hosted -->
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/lib/yui3/build/cssreset/cssreset-min.css&amp;/lib/yui3/build/cssfonts/cssfonts-min.css&amp;/lib/yui3/build/cssgrids/cssgrids-min.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/lib/yui3/build/cssreset/cssreset-min.css&amp;/lib/yui3/build/cssgrids/cssgrids-min.css" />
         </ui:fragment>
 
         <!-- Those styles are placed here, since they should be above any other in the CSS cascading

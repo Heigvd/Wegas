@@ -894,7 +894,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Droits de l'" + keywords.trainer.singular.fr + " enlevés"
                         },
                         'COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-ERROR': {
-                            'en': "Error while removiong " + keywords.trainer.singular.en,
+                            'en': "Error while removing " + keywords.trainer.singular.en,
                             'fr': "Une erreur est survenue durant la suppression des droits de l'" +
                                 keywords.trainer.singular.fr
                         },
@@ -921,7 +921,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Permissions enlevées"
                         },
                         'COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-ERROR': {
-                            'en': "Error while removiong permissions",
+                            'en': "Error while removing permissions",
                             'fr': "Une erreur est survenue durant l'édition des permissions"
                         },
 

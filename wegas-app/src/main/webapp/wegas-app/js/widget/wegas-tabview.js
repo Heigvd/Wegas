@@ -12,10 +12,16 @@
 YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
-    var RemoveRightTab, TabDocker,
+    var RemoveTabView,
         Plugin = Y.Plugin, Wegas = Y.Wegas,
         CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
         TabView, Tab, RemoveTab;
+
+    var EDITOR_TAB_LABEL = "Attributes",
+        PREVIEW_TAB_LABEL = "Preview",
+        DEFAULT_EDIT_COLUMN = "#centerTabView",
+        WEGAS_EDITOR_COL_LOCALSTORAGE = "wegas-editor-col";
+
     /**
      * @name Y.Wegas.TabView
      * @extends Y.TabView
@@ -113,9 +119,10 @@ YUI.add('wegas-tabview', function(Y) {
                 ]
             }],
         /**
-         * References to tab
+         * References to tabs
          */
         tabs: {},
+
         /**
          * Return A tab from tabview selected by id.
          * @function
@@ -124,7 +131,13 @@ YUI.add('wegas-tabview', function(Y) {
          * @return A tab from tabview
          */
         getTab: function(id) {
-            return TabView.tabs[id];
+            return this.tabs[id];
+        },
+        /**
+         * Setter for the tabs structure
+         */
+        setTab: function(id, value) {
+            this.tabs[id] = value;
         },
         /**
          * @function
@@ -138,22 +151,139 @@ YUI.add('wegas-tabview', function(Y) {
          *  tabview reference and the configuration of the new tab.
          */
         createTab: function(id, tabViewSelector, tabCfg, tabIndex) {
-            if (!TabView.tabs[id]) {                                            // If the tab does not exist,
+            if (id === EDITOR_TAB_LABEL) {
+                this.setDefaultEditorTabView(tabViewSelector);
+            }
+            tabCfg = tabCfg || {};
+            var existingTab = this.getTab(id);
+            if (!existingTab) {                                                 // If the tab does not exist,
                 var tabs, tabView = Y.Widget.getByNode(tabViewSelector);        // Look for the parent
-                tabCfg = tabCfg || {};
                 Y.mix(tabCfg, {
                     label: tabCfg.label || id,
-                    id: id
+                    id: id,
+                    tabSelector: tabViewSelector
                 });
+                tabView.deselectAll();
+                if (!tabIndex) {
+                    tabIndex = tabView.size() - 1;                              // Insert tab just before the + button
+                }
                 tabs = tabView.add(tabCfg, tabIndex);                           // Instantiate a new tab
                 return tabs.item(0);
-            } else {                                                            // Otherwise,
-                TabView.tabs[id].setAttrs(tabCfg);                            // update the tab config
+            } else {                                                            // If the tab exists ...
+                var prevSelector = existingTab.get("tabSelector");
+                if (prevSelector !== tabViewSelector) {                         // ... and is on another tabview, move it
+                    return this.moveToTabView(id, tabViewSelector, tabCfg, tabIndex, true);
+                } else {                                                        // The tab exists in the correct tabView:
+                    existingTab.setAttrs(tabCfg);                               // just update the tab config
+                }
             }
-            return TabView.tabs[id];
+            return existingTab;
         },
-        findTab: function(id) {
-            return TabView.tabs[id];
+
+        // Sets the given tab as selected (inside its current tabView):
+        setSelected: function(tab) {
+            var tabView = Y.Widget.getByNode(tab.get("tabSelector"));
+            tabView.deselectAll();
+            tab.set("selected", 1);
+            tab.get("panelNode").addClass("yui3-tab-panel-selected");
+        },
+
+        // Returns the tab, which is currently selected inside the given tabView.
+        // May return undefined if no tab is currently selected.
+        getSelected: function(tabViewSelector) {
+            var res;
+            for (var tab in this.tabs) {
+                var currTab = this.tabs[tab];
+                if (currTab && currTab.get("tabSelector") === tabViewSelector && currTab.get("selected") >= 1) {
+                    res = currTab;
+                }
+            }
+            return res;
+        },
+
+        // Moves all tabs away (except 'keepThisTab') from the given tabView to the opposite one.
+        // The order of tabs is preserved, but not the "selected" state of tabs.
+        moveTabsAwayFrom: function(tabView, keepThisTab) {
+            // Move all other tabs while keep their original order
+            var tabsToMove = Y.Widget.getByNode(tabView),
+                nbTabsToMove = tabsToMove.size(),
+                otherTabView = this.getOppositeTabView(tabView),
+                keepThisTabId = keepThisTab ? keepThisTab.get("id") : "",
+                firstTabIndex = 0;
+            // Append the tabs one by one from left to right, at the last - 1 position in the target tabView:
+            for (var i = 0; i < nbTabsToMove; i++) {
+                var currTab = tabsToMove.item(firstTabIndex),
+                    currTabLabel = currTab.get("id") || currTab.get("label");
+
+                // Skip buttons and other stuff, as well as the 'keepThisTab' tab:
+                if (currTab.name !== "tab" || currTabLabel === keepThisTabId) {
+                    firstTabIndex++;
+                    continue;
+                }
+                this.moveToTabView(currTabLabel, otherTabView, {});
+            }
+        },
+
+        // Move the given tab to the given tabView (right or center).
+        // @return the new tab.
+        moveToTabView: function(id, tabViewSelector, tabCfg, tabIndex, forceSelect) {
+            var tabs,
+                existingTab = this.getTab(id),
+                newTabView = Y.Widget.getByNode(tabViewSelector);
+            // Temporarily remove a reference to this tab:
+            this.setTab(id, undefined);
+            tabCfg = tabCfg || {};
+            Y.mix(tabCfg, {
+                label: tabCfg.label || id,
+                id: id,
+                tabSelector: tabViewSelector,
+                panelNode: existingTab.get("panelNode")
+            });
+            tabIndex = tabIndex || newTabView.size() - 1;
+            tabs = newTabView.add(tabCfg, tabIndex);                    // Instantiate new tab with old panel
+            var newTab = tabs.item(0),
+                newPanelNode = newTab.get("panelNode");
+            if (existingTab.hasPlugin("hideable")) {
+                newTab.plug(Hideable);
+            }
+            if (existingTab.hasPlugin("removeable")) {
+                newTab.plug(Removeable);
+            }
+            forceSelect = forceSelect || existingTab.get("selected") >= 1;
+            if (forceSelect) {
+                newTabView.deselectAll();
+                newTab.set("selected", 1);
+                newPanelNode.addClass("yui3-tab-panel-selected");
+            } else {
+                newTab.set("selected", 0);
+            }
+            // @HACK Special treatment for the Preview panel, which needs reloading to become fully usable,
+            // especially because of TinyMce:
+            if (id === PREVIEW_TAB_LABEL) {
+                Y.Wegas.PageLoader.find("previewPageLoader").reload();
+            }
+            // Make the old tab coherent to enable its deletion:
+            existingTab.set("panelNode", Y.Node.create('<div class="yui3-tab-panel">To delete</div>'));
+            existingTab.set("selected", 0);
+            this.setTab(id, newTab);
+            // @HACK Special treatment for the editor/attributes panel: the EditEntityAction plugin needs to be informed
+            if (id === EDITOR_TAB_LABEL) {
+                Plugin.EditEntityAction.setEditionTab(newTab);
+            }
+            existingTab.remove(); //.destroy();
+
+            return newTab;
+        },
+        /**
+         * Destroy and remove given tab id
+         * @param {string} id tab to destroy
+         */
+        destroyTab: function(id) {
+            var tab = this.getTab(id);
+            if (tab && typeof tab.remove === 'function') {
+                tab.remove().destroy();
+                delete this.tabs[id];
+            }
         },
         /**
          * @function
@@ -166,13 +296,141 @@ YUI.add('wegas-tabview', function(Y) {
          * @description Load a tab corresponding with the given parameters.
          */
         findTabAndLoadWidget: function(id, tabViewSelector, tabCfg, widgetCfg, fn) {
-            var nTab = TabView.createTab(id, tabViewSelector, tabCfg);          // create a new one
+            var isNew = !(this.getTab(id));
+            var nTab = this.createTab(id, tabViewSelector, tabCfg);          // create a new one
 
-            nTab.destroyAll();                                                  // Empty it
-            nTab.load(widgetCfg, fn);                                           // Load target widget
-
+            if (isNew || widgetCfg.type === "StateMachineViewer") {
+                nTab.destroyAll();                                                  // Empty it
+                nTab.load(widgetCfg, fn);                                           // Load target widget
+            }
+            this.restoreColumn(tabViewSelector);
             return nTab;
-        }
+        },
+        // Re-opens the given column/tabview if it's hidden:
+        restoreColumn: function(tabViewSelector) {
+            if (!Wegas.app.widget) {
+                Y.log("*** Wegas.app.widget is not yet available");
+                return;
+            }
+            var tabView = this.getShortPositionName(tabViewSelector);
+            if (Wegas.app.widget.isHidden(tabView)) {
+                Wegas.app.widget.showPosition(tabView);
+                // Hide icons for restoring this tabview from other tabview
+                //var tabviewNode = Y.Widget.getByNode(this.getOppositeTabView(tabViewSelector));
+                //tabviewNode.get(CONTENTBOX).one('.wegas-open-' + tabView + '-tabview').addClass("hidden");
+            }
+        },
+
+        /*
+        ** Shows the plus-menu of the given tabView and hides the other one.
+        ** If we are showing the menu of the editor tabView, hide its first entry (for moving the editor),
+        ** otherwise show its first entry.
+         */
+        showPlusMenu: function(tabViewId, hideFirstEntry) {
+            tabViewId = this.getLongPositionName(tabViewId);
+            var editorTabView = this.getCurrentEditorTabViewId() || this.getDefaultEditorTabView(),
+                isEditorTabView = editorTabView.indexOf(tabViewId) > -1,
+                plusMenu = Y.one(tabViewId + " .wegas-plus-tab");
+            if (!plusMenu) return;
+            var menu = Y.Widget.getByNode(plusMenu).hasPlugin("menu"),
+                firstEntry = menu.getMenu().item(0);
+            Y.one(tabViewId + " .wegas-plus-tab").show();
+            Y.one(TabView.getOppositeTabView(tabViewId) + " .wegas-plus-tab").hide();
+            if (isEditorTabView || hideFirstEntry === true) {
+                firstEntry.hide();
+            } else {
+                firstEntry.show();
+            }
+        },
+
+        // Returns the default tabView identifier for the editor tab, taking the user's last setting if available:
+        getDefaultEditorTabView: function() {
+            var colId = localStorage.getItem(WEGAS_EDITOR_COL_LOCALSTORAGE);
+            if (colId === "center") {
+                return "#centerTabView";
+            } else if (colId === "right") {
+                return "#rightTabView";
+            } else {
+                return DEFAULT_EDIT_COLUMN;
+            }
+        },
+
+        // Persists to localStorage the given tabView identifier as the default for the editor tab:
+        setDefaultEditorTabView: function(newCol) {
+            localStorage.setItem(WEGAS_EDITOR_COL_LOCALSTORAGE, this.getShortPositionName(newCol));
+        },
+
+        // NB: Returns undefined if the editor tab is not currently displayed!
+        getCurrentEditorTabViewId: function() {
+            var tab = this.getTab(EDITOR_TAB_LABEL);
+            return tab ? tab.get("tabSelector") : undefined;
+        },
+
+        // Returns the Id of the tabView, which is opposite to the given one ("right" vs "center").
+        getOppositeTabView: function(tabViewSelector) {
+            if (tabViewSelector.indexOf("center") >= 0) {
+                return "#rightTabView";
+            } else if (tabViewSelector.indexOf("right") >= 0) {
+                return "#centerTabView";
+            }
+        },
+
+        // Returns the Id of the tabView, which is NOT occupied NOR targeted by the editor tab ("center" vs "right").
+        getNonEditorTabViewId: function() {
+            var editorTabView = this.getCurrentEditorTabViewId() || this.getDefaultEditorTabView();
+            return this.getOppositeTabView(editorTabView);
+        },
+
+        // Translates '#centerTabView' into 'center' etc.
+        getShortPositionName: function(position) {
+            if (position.indexOf('center') >= 0) {
+                return 'center';
+            } else if (position.indexOf('right') >= 0) {
+                return 'right';
+            } else if(position.indexOf('left') >= 0) {
+                return 'left';
+            } else if(position.indexOf('top') >= 0) {
+                return 'top';
+            }
+        },
+
+        // Translates 'center' into '#centerTabView' etc.
+        getLongPositionName: function(position) {
+            if (position.indexOf('center') >= 0) {
+                return '#centerTabView';
+            } else if (position.indexOf('right') >= 0) {
+                return '#rightTabView';
+            } else if(position.indexOf('left') >= 0) {
+                return '#leftTabView';
+            } else if(position.indexOf('top') >= 0) {
+                return '.wegas-layout-hd';
+            }
+        },
+
+        // Global getter for this constant.
+        getEditorTabLabel: function() {
+            return EDITOR_TAB_LABEL;
+        },
+
+        // Convenience function. Returns the tab object of the editor, or undefined if the editor is not currently open.
+        getEditorTab: function() {
+            return this.getTab(EDITOR_TAB_LABEL);
+        },
+
+        // Global getter for this constant.
+        getPreviewTabLabel: function() {
+            return PREVIEW_TAB_LABEL;
+        },
+
+        // Public method used in games to display messages in the correct editor column.
+        // Returns the widget corresponding to #centerTabView or #rightTabView depending on user preferences.
+        // Returns null if no suitable tabView is found.
+        getPreviewTabView: function() {
+            // Try to make this work even if the Preview tab is not yet rendered:
+            var previewTabView = this.getNonEditorTabViewId();
+            return Y.Widget.getByNode(previewTabView);
+        },
+
     });
     Wegas.TabView = TabView;
 
@@ -251,8 +509,11 @@ YUI.add('wegas-tabview', function(Y) {
          * assign this tab in owner TabView.
          */
         initializer: function(cfg) {
+            if (!cfg.id) {
+                cfg.id = cfg.label;
+            }
             Tab.superclass.initializer.apply(this, arguments);
-            TabView.tabs[cfg.id || cfg.label] = this;
+            TabView.tabs[cfg.id] = this;
             this._witems = [];
             this.on("addChild", function(e) {
                 this._witems.push(e.child);
@@ -265,6 +526,14 @@ YUI.add('wegas-tabview', function(Y) {
                     alignAttr: "panelNode",
                     filter: ["success"]
                 });
+            }
+
+            if (cfg.selected === true) {
+                this.set("selected", 1);     // Make this tab selected by default
+            }
+
+            if (cfg.tabSelector) {
+                this.set("tabSelector", cfg.tabSelector);   // Remember where the tab is placed
             }
         },
         /**
@@ -384,7 +653,7 @@ YUI.add('wegas-tabview', function(Y) {
         /**
          * Html template added in host's contentbox
          */
-        REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
+        REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="Close tab"><i class="fa fa-times"></i></a>',
         /**
          * @function
          * @private
@@ -414,7 +683,21 @@ YUI.add('wegas-tabview', function(Y) {
             this.onceAfterHostEvent('tab:render', this.afterTabRender, this);
         },
         afterTabRender: function(e) {
-            this.get("host").get(BOUNDINGBOX).append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
+            var tab = this.get("host");
+            tab.get(BOUNDINGBOX).append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
+            // Unhide the tabView closing button and the first entry "Attributes" in the plus-menu:
+            var tabView = tab.get("tabSelector");
+            if (!tabView) {
+                // The tab is not yet being rendered, it's only the instantiation of the plugin...
+                return;
+            }
+            var cross = Y.Widget.getByNode(tabView).get(CONTENTBOX).one('.wegas-removeTabview');
+            if (cross) {
+                cross.show();
+            }
+            if (e.target.get("label") !== EDITOR_TAB_LABEL) {
+                Wegas.TabView.showPlusMenu(tabView);
+            }
         },
         /**
          * @function
@@ -423,8 +706,24 @@ YUI.add('wegas-tabview', function(Y) {
          * @description stop event propagation and remove host.
          */
         onRemoveClick: function(e) {
-            this.get("host").remove().destroy();
+            var tab = this.get("host"),
+                tabView = tab.get("tabSelector"),
+                isEditTab = tab.get("label") === EDITOR_TAB_LABEL, // Must be true even if the form is empty.
+                doDelete = function() {
+                    tab.remove().destroy();
+                    delete TabView.tabs[tab.get("id")];
+                };
             e.stopPropagation();
+            if (isEditTab) {
+                Plugin.EditEntityAction.allowDiscardingEdits(doDelete);
+                // Also close the tabView:
+                var cross = Y.Widget.getByNode(tabView).get(CONTENTBOX).one(".wegas-removeTabview");
+                if (cross) {
+                    cross.simulate("click");
+                }
+            } else {
+                doDelete();
+            }
         },
         destructor: function() {
             if (this.get("closeCallback")) {
@@ -441,39 +740,46 @@ YUI.add('wegas-tabview', function(Y) {
         }
     });
     Plugin.Removeable = Removeable;
+
     /**
-     * Remove host tab and creates a button to restore it.
+     * Hide the tab (and its corresponding panel) instead of deleting it when the user closes it.
      * @constructor
      */
-    TabDocker = function() {
-        TabDocker.superclass.constructor.apply(this, arguments);
+    var Hideable = function() {
+        Hideable.superclass.constructor.apply(this, arguments);
     };
-    Y.extend(TabDocker, Removeable, {
+    Y.extend(Hideable, Removeable, {
+        initializer: function() {
+            // Empty for the time being...
+        },
         onRemoveClick: function(e) {
-            var host = this.get("host"), parent = host.get("parent"),
-                cfg = host.toObject(), label = host.get("label"),
-                button = (new Y.Wegas.Button({
-                    label: label
-                })).render(Y.one(this.get("dockTarget")));
-            //get old children config
-            cfg.children = host.get("children");
-            button.on("click", function() {
-                parent.add(cfg).item(0).set('selected', 1).plug(TabDocker);
-                this.destroy();
-            });
-            this.get("host").remove().destroy();
+            this.close();
             e.stopPropagation();
+        },
+        close: function() {
+            var tab = this.get("host");
+            tab.hide();
+            tab.get("panelNode").hide();
+        },
+        expand: function() {
+            var tab = this.get("host");
+            tab.show();
+            tab.get("panelNode").show();
+            // Unhide the tabView closing button and the first entry "Attributes" in the plus-menu:
+            var tabView = tab.get("tabSelector");
+            var cross = Y.Widget.getByNode(tabView).get(CONTENTBOX).one('.wegas-removeTabview');
+            if (cross) {
+                cross.show();
+            }
+            Wegas.TabView.showPlusMenu(tabView);
         }
     }, {
-        NS: "docker",
-        NAME: "TabDocker",
+        NS: "hideable",
+        NAME: "HideableTabs",
         ATTRS: {
-            dockTarget: {
-                value: ".wegas-layout-hd"
-            }
         }
     });
-    Plugin.TabDocker = TabDocker;
+    Plugin.Hideable = Hideable;
 
     /**
      * Plugin to toggle visibility of a tab
@@ -533,51 +839,6 @@ YUI.add('wegas-tabview', function(Y) {
     };
 
     /**
-     * Plugin for an empty tabview
-     *
-     * @name Y.Plugin.EmptyTab
-     * @extends Y.Plugin.Base
-     * @class plugin with an empty tab
-     * @constructor
-     */
-    //    var EmptyTab = function() {
-    //        EmptyTab.superclass.constructor.apply(this, arguments);
-    //    };
-    //    Y.extend(EmptyTab, Plugin.Base, {
-    //        /** @lends Y.Wegas.EmptyTab# */
-    //
-    //        // *** Private fields *** //
-    //        /**
-    //         * @function
-    //         * @private
-    //         */
-    //        initializer: function() {
-    //            var noItem;
-    //            this.onceAfterHostEvent("render", function() {
-    //                Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
-    //            });
-    //            this.afterHostEvent("removeChild", function() {
-    //                if (this.get("host").isEmpty()) {
-    //                    Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
-    //                }
-    //            });
-    //            this.onHostEvent("addChild", function() {
-    //                noItem = Y.one("#rightTabView .wegas-noItem");
-    //                if (noItem) {
-    //                    noItem.remove();
-    //                }
-    //                if (this.get("host").isEmpty()) {
-    //                    Wegas.app.widget.showPosition("right");
-    //                }
-    //            });
-    //        }
-    //    }, {
-    //        NS: "EmptyTab",
-    //        NAME: "EmptyTab"
-    //    });
-    //    Plugin.EmptyTab = EmptyTab;
-
-    /**
      * Plugin add a tab for remove tabview
      *
      * @name Y.Plugin.Removetab
@@ -592,7 +853,7 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<div class="wegas-removeTabview" title="Close tab"><a>x</a></div>',
+        ADD_TEMPLATE: '<div class="wegas-removeTabview fa fa-times" title="Close %name% column"></div>',
         /**
          * @function
          * @private
@@ -602,12 +863,16 @@ YUI.add('wegas-tabview', function(Y) {
         initializer: function() {
             var tabview = this.get('host');
             tabview.after('render', this.afterRender, this);
-            tabview.get(CONTENTBOX).delegate('click', this.onClick, '.wegas-removeTabview a', this);
+            // This will call the onClick method of RemoveTabView:
+            tabview.get(CONTENTBOX).delegate('click', this.onClick, '.wegas-removeTabview', this);
         },
         afterRender: function(e) {
-            var tabview = this.get('host');
-            tabview.get(CONTENTBOX).one('> ul').append(this.ADD_TEMPLATE);
+            var tabview = this.get('host'),
+                side = tabview.get("id"),
+                name = Wegas.TabView.getShortPositionName(side);
+            tabview.get(CONTENTBOX).one('> ul').append(this.ADD_TEMPLATE.replace("%name%", name));
         },
+        // This should normally never be called, as sub-classes will redefine it and call stopPropagation:
         onClick: function(e) {
             e.stopPropagation();
             this.get('host').destroyAll();
@@ -617,50 +882,100 @@ YUI.add('wegas-tabview', function(Y) {
         NAME: "removetab"
     });
     Plugin.RemoveTab = RemoveTab;
+
     /**
-     * Right tab management
-     * @name Y.Plugin.RemoveRightTab
+     * Tabview (tab group) management.
+     * @name Y.Plugin.RemoveTabView
      * @extends Y.Plugin.RemoveTab
      * @constructor
      */
-    RemoveRightTab = function() {
-        RemoveRightTab.superclass.constructor.apply(this, arguments);
+    RemoveTabView = function() {
+        RemoveTabView.superclass.constructor.apply(this, arguments);
     };
 
-    Y.extend(RemoveRightTab, RemoveTab, {
-        /** @lends Y.Wegas.RemoveRightTab# */
+    Y.extend(RemoveTabView, RemoveTab, {
+        /** @lends Y.Wegas.RemoveTabView# */
         /**
          * @function
          * @private
-         * @description Create a tab for remove tabview.
-         * If this tab is clicked, remove host tabview.
+         * @description Create a button for *hiding* this tabview.
          */
         initializer: function() {
             Wegas.app.after("render", function() {
                 if (this.get("host").isEmpty()) {
-                    Wegas.app.widget.hidePosition("right");
+                    Wegas.app.widget.hidePosition(this.get("tabViewName"));
                 }
             }, this);
             this.onHostEvent("addChild", function() {
                 if (Wegas.app.widget) {
-                    Wegas.app.widget.showPosition("right");
+                    var tabViewId = this.get("tabViewName");
+                    Wegas.app.widget.showPosition(tabViewId);
+                    // Display the tabView removal icon in the other tabView in case it was empty (no tabs)
+                    var otherTabView = Wegas.TabView.getOppositeTabView(tabViewId),
+                        cross = Y.Widget.getByNode(otherTabView).get(CONTENTBOX).one('.wegas-removeTabview');
+                    if (cross) {
+                        cross.show();
+                    }
                 }
             });
         },
         onClick: function(e) {
             e.stopPropagation();
-            this.get('host').destroyAll();
-            Y.later(100, this, function() {
-                if (this.get("host").isEmpty()) {
-                    Wegas.app.widget.hidePosition("right");
+            var tabView = this.get("tabViewName"),
+                editorTabView = Wegas.TabView.getCurrentEditorTabViewId();
+            // Are we closing the tabView containing the edit/form tab?
+            if ((editorTabView && editorTabView.indexOf(tabView) > -1) ||
+                Wegas.TabView.getDefaultEditorTabView().indexOf(tabView) > -1) {
+                // We are closing the tabview with the edit/form tab. Make it close itself properly:
+                Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                    Plugin.EditEntityAction.discardEdits();
+                    var tab = Wegas.TabView.getTab(EDITOR_TAB_LABEL);
+                    if (tab) {
+                        tab.get("boundingBox").one('.yui3-tab-remove').simulate("click");
+                    }
+
+                    // If the other column is NOT visible, show it and activate its plus-menu
+                    var otherTabView = Wegas.TabView.getOppositeTabView(tabView);
+                    if (Wegas.app.widget.isHidden(otherTabView)) {
+                        Wegas.app.widget.showPosition(otherTabView);
+                        Wegas.TabView.showPlusMenu(otherTabView, true);
+                    }
+                    Wegas.app.widget.hidePosition(tabView);
+                }));
+            } else {
+                // It's the other tabView (Preview, plus-menu, ...)
+                // Keep the tabView open, but do the following: (1) hide the close button, (2) close all its tabs, (3) hide the "Attributes" entry of the plus-menu
+                e.target.hide();
+                var tabViewObj = this.get("host"),
+                    nbTabs = tabViewObj.size(),
+                    index = 0;
+                for (var i = nbTabs-1; i >= 0; i--) {
+                    var currTab = tabViewObj.item(i);
+                    if (currTab.name === "tab") {
+                        var cross = currTab.get("boundingBox").one('.yui3-tab-remove');
+                        if (cross) {
+                            cross.simulate("click");
+                        }
+                    }
                 }
-            });
+                // If the other column is visible, activate its plus-menu
+                var otherTabView = Wegas.TabView.getOppositeTabView(tabView);
+                if (Wegas.app.widget.isHidden(otherTabView) === false) {
+                    Wegas.TabView.showPlusMenu(otherTabView);
+                    Wegas.app.widget.hidePosition(tabView);
+                } else {
+                    Wegas.TabView.showPlusMenu(tabView, true);
+                }
+            }
         }
     }, {
         NS: "removetab",
-        NAME: "removetab"
+        NAME: "removetab",
+        ATTRS: {
+            tabViewName: ''
+        }
     });
-    Plugin.RemoveRightTab = RemoveRightTab;
+    Plugin.RemoveTabView = RemoveTabView;
 
     /**
      * Plugin that resizes the tabview's button if required
@@ -689,6 +1004,8 @@ YUI.add('wegas-tabview', function(Y) {
             Y.once("domready", function() {
                 tabView.get(CONTENTBOX).addClass("wegas-tabview-resizetabs");
                 tabView.get(CONTENTBOX).all("> ul > li").setStyle("width", (100 / tabView.size()) + "%");
+                //var plusMenu = new Y.Node.create('<span class="wegas-plus-menu">+</span>');
+                //tabView.get(CONTENTBOX).append(plusMenu);
             });
         }
     }, {
@@ -697,6 +1014,11 @@ YUI.add('wegas-tabview', function(Y) {
     });
     Plugin.ResizeTabViewLinks = ResizeTabViewLinks;
 
+    /**
+     * Plugin that allows games to add their own tabs (Statistics, Orchestrator, Properties, etc).
+     * Items are added to the "plus" menu of all tabViews
+     * @extends Y.Plugin.Base
+     */
     var ExtraTabs = Y.Base.create("wegas-extratabs", Plugin.Base, [], {
         initializer: function() {
             if (this.get("host") instanceof TabView) {
@@ -706,12 +1028,30 @@ YUI.add('wegas-tabview', function(Y) {
             }
         },
         addExtraTabs: function() {
-            var tabs = this.get("extraTabs"), dock = this.get("dock"), addTab = function(cfg) {
-                var t = this.get("host").add(cfg).item(0);
-                if (dock) {
-                    t.plug(TabDocker);
-                }
-            };
+            var tabs = this.get("extraTabs"),
+                addTab = function(cfg) {
+                    var target = Wegas.TabView.getPreviewTabView();
+                    if (target) {
+                        var t = target.add(cfg, target.size() - 1).item(0),
+                            // Complete the 'plus' menus:
+                            menu1 = Y.Widget.getByNode("#centerTabView .wegas-plus-tab").hasPlugin("menu"),
+                            menu2 = Y.Widget.getByNode("#rightTabView .wegas-plus-tab").hasPlugin("menu"),
+                            menuCfg = {
+                                type: "OpenTabButton",
+                                label: cfg.label,
+                                tabSelector: "#centerTabView",
+                                cssClass: "wegas-editor-menu-separator-above",
+                                wchildren: cfg.children
+                            };
+                        menu1.add(menuCfg, menu1.size()-1); // Insert before the "Attributes" entry
+                        menuCfg.tabSelector = "#rightTabView";
+                        menu2.add(menuCfg, menu2.size()-1); // Insert before the "Attributes" entry
+                        t.plug(Hideable);
+                    } else {
+                        // This is not the scenario editor, just add the given tab to the center tabView:
+                        Y.Widget.getByNode("#centerTabView").add(cfg);
+                    }
+                };
             for (var i = 0; i < tabs.length; i += 1) {
                 Y.Wegas.Widget.use(tabs[i], Y.bind(addTab, this, tabs[i]));
             }

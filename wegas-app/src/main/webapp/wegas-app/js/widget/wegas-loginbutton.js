@@ -109,7 +109,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             forcedLabel: {
                 type: "string",
                 optional: true,
-                _inputex: {
+                view: {
                     label: "Label",
                     description: "Player name is used if blank"
                 }
@@ -121,12 +121,12 @@ YUI.add("wegas-loginbutton", function(Y) {
              * targetPageLoader: Zone to display the page which contains widget userPreferences
              */
             targetPageLoader: {
+                type: "string",
                 value: "maindisplayarea",
-                _inputex: {
+                view: {
                     label: "Target zone",
-                    _type: "string",
                     //_type: "pageloaderselect",//@fixme There a bug with this widget when the target page is not loaded
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    className: 'wegas-advanced-feature'
                 }
             }
         }
@@ -159,7 +159,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             autologin: {
                 value: true,
                 type: "boolean",
-                _inputex: {
+                view: {
                     label: "Auto login",
                     description: "If allowed, will try to login with a new guest."
                 }
@@ -282,6 +282,7 @@ YUI.add("wegas-loginbutton", function(Y) {
         syncUI: function() {
             Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
+            /*
             var cUser = Wegas.Facade.User.get("currentUser"),
                 name = cUser.get("name") || "undefined",
                 mainAccount = cUser.getMainAccount();
@@ -289,7 +290,8 @@ YUI.add("wegas-loginbutton", function(Y) {
             if (mainAccount) {
                 name = "<img src=\"//www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
             }
-            this.set("label", name);
+            */
+            this.set("label", '<i class="fa fa-sign-out" title="Logout"></i>');
         },
         destructor: function() {
             for (var k in this.handlers) {
