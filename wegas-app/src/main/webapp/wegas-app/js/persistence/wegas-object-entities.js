@@ -9,40 +9,47 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-object-entities', function (Y) {
+YUI.add('wegas-object-entities', function(Y) {
     "use strict";
 
-    var STRING = "string", HIDDEN = "hidden", NAME = "name", HTML = "html",
-        VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
+    var STRING = "string",
+        NUMBER = "number",
+        HIDDEN = "hidden",
+        NAME = "Key", //"Name",
+        HTML = "html",
+        VALUE = "Value",
+        HASHLIST = "hashlist",
+        COMBINE = "combine",
         persistence = Y.Wegas.persistence,
-        VERSION_ATTR_DEF,
-        IDATTRDEF;
-
-    VERSION_ATTR_DEF = {
-        type: "number",
-        optional: true,
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
-
-    IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
+        IDATTRDEF = {
+            type: NUMBER,
+            optional: true, //                                                  // The id is optional for entites that
+            // have not been persisted
+            view: {
+                type: HIDDEN
+            }
+        },
+        SELFARG = {
+            type: 'identifier',
+            value: 'self',
+            view: { type: HIDDEN }
+        },
+        VERSION_ATTR_DEF = {
+            type: NUMBER,
+            view: {
+                type: HIDDEN
+            }
+        };
 
 
     /**
      * ObjectDescriptor mapper
      */
     persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", persistence.VariableDescriptor, [], {
-        getProperty: function (player, key) {
+        getProperty: function(player, key) {
             return this.getInstance(player).get("properties." + key);
         },
-        getIconCss: function () {
+        getIconCss: function() {
             return "fa fa-database";
         }
     }, {
@@ -51,24 +58,18 @@ YUI.add('wegas-object-entities', function (Y) {
                 value: "ObjectDescriptor"
             },
             properties: {
-                optional: false,
-                _inputex: {
-                    label: "Descriptor properties",
-                    _type: HASHLIST,
-                    keyField: NAME,
-                    valueField: VALUE,
-                    wrapperClassName: "inputEx-fieldWrapper",
-                    elementType: {
-                        type: COMBINE,
-                        fields: [{
-                                name: NAME,
-                                typeInvite: NAME,
-                                size: 10
-                            }, {
-                                name: VALUE,
-                                typeInvite: VALUE
-                            }]
+                type: "object",
+                additionalProperties: {
+                    type: STRING,
+                    required: true,
+                    view: {
+                        label: VALUE
                     }
+                },
+                view: {
+                    label: "Descriptor properties",
+                    type: HASHLIST,
+                    keyLabel: NAME
                 }
             },
             defaultInstance: {
@@ -76,41 +77,37 @@ YUI.add('wegas-object-entities', function (Y) {
                 properties: {
                     '@class': {
                         type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: 'ObjectInstance'
+                        value: 'ObjectInstance',
+                        view: {
+                            type: HIDDEN
                         }
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
                     properties: {
-                        optional: false,
-                        _inputex: {
-                            label: "Default properties",
-                            _type: HASHLIST,
-                            keyField: NAME,
-                            valueField: VALUE,
-                            elementType: {
-                                type: COMBINE,
-                                fields: [{
-                                        name: NAME,
-                                        typeInvite: NAME,
-                                        size: 10
-                                    }, {
-                                        name: VALUE,
-                                        typeInvite: VALUE
-                                    }]
+                        type: "object",
+                        additionalProperties: {
+                            type: STRING,
+                            required: true,
+                            view: {
+                                label: VALUE
                             }
+                        },
+                        view: {
+                            label: "Default properties",
+                            type: HASHLIST,
+                            keyLabel: NAME
                         }
                     }
                 }
             },
             description: {
-                type: STRING,
-                format: HTML,
-                optional: true,
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                type: ["null", STRING],
+                view: {
+                    type: HTML,
+                    label: "Description",
+                    className: 'wegas-advanced-feature'
                 }
             }
         },
@@ -118,34 +115,26 @@ YUI.add('wegas-object-entities', function (Y) {
             size: {
                 label: "size",
                 returns: "number",
-                arguments: [{
-                        type: HIDDEN,
-                        value: "self"
-                    }]
+                arguments: [SELFARG]
             },
             getProperty: {
-                label: "property equals",
+                label: "property",  // "property equals"
                 returns: STRING,
-                arguments: [{
-                        type: HIDDEN,
-                        value: "self"
-                    }, {
-                        typeInvite: NAME,
-                        scriptType: STRING
-                    }]
+                arguments: [SELFARG, {
+                    view: { label: NAME },
+                    type: STRING
+                }]
             },
             setProperty: {
                 label: "set property",
-                arguments: [{
-                        type: HIDDEN,
-                        value: "self"
-                    }, {
-                        typeInvite: NAME,
-                        scriptType: STRING
-                    }, {
-                        typeInvite: VALUE,
-                        scriptType: STRING
-                    }]
+                arguments: [SELFARG, {
+                    view: { label: NAME },
+                    required: true,
+                    type: STRING
+                }, {
+                    view: { label: VALUE },
+                    type: STRING
+                }]
             }
         }
     });
@@ -159,23 +148,17 @@ YUI.add('wegas-object-entities', function (Y) {
                 value: "ObjectInstance"
             },
             properties: {
-                optional: false,
-                _inputex: {
-                    label: "Properties",
-                    _type: HASHLIST,
-                    keyField: NAME,
-                    valueField: VALUE,
-                    elementType: {
-                        type: COMBINE,
-                        fields: [{
-                                name: NAME,
-                                typeInvite: NAME,
-                                size: 10
-                            }, {
-                                name: VALUE,
-                                typeInvite: VALUE
-                            }]
+                additionalProperties: {
+                    type: STRING,
+                    required: true,
+                    view: {
+                        label: VALUE
                     }
+                },
+                view: {
+                    label: "Default properties",
+                    type: HASHLIST,
+                    keyLabel: NAME
                 }
             }
         }

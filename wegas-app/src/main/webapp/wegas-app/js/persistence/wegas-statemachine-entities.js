@@ -9,7 +9,7 @@
  * @fileoverview
  */
 /*global YUI*/
-YUI.add("wegas-statemachine-entities", function(Y) {
+YUI.add("wegas-statemachine-entities", function (Y) {
     "use strict";
 
     var STRING = "string",
@@ -17,12 +17,20 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         SELF = "self",
         BOOLEAN = "boolean",
         NUMBER = "number",
+        NULL = "null",
+        ARRAY = "array",
+        OBJECT = "object",
         BUTTON = "Button",
         SCRIPT = "script",
         TEXT = "text",
         STATES = "states",
         ID = "id",
         HTML = "html",
+        SELFARG = {
+            type: 'identifier',
+            value: SELF,
+            view: { type: HIDDEN }
+        },
         Wegas = Y.Wegas,
         persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
@@ -30,19 +38,19 @@ YUI.add("wegas-statemachine-entities", function(Y) {
 
     VERSION_ATTR_DEF = {
         type: NUMBER,
-        optional: true,
-        _inputex: {
-            _type: "uneditable",
-            wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature"
-                //_type: HIDDEN
+        view: {
+            label: 'Version',
+            type: "uneditable",
+            className: "wegas-advanced-feature"
+            //_type: HIDDEN
         }
     };
 
     IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
+        type: NUMBER,
+        view: {
+            label: 'Id',
+            type: HIDDEN
         }
     };
 
@@ -58,8 +66,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             currentStateId: {
                 value: 1,
                 type: NUMBER,
-                _inputex: {
-                    label: "Current state id"
+                view: {
+                    label: "Current state id",
+                    className: "wegas-advanced-feature"
                 }
             },
             currentState: {
@@ -69,20 +78,22 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             enabled: {
                 type: BOOLEAN,
                 value: true,
-                _inputex: {
+                view: {
                     label: 'Active'
                 }
             },
             transitionHistory: {
                 value: [],
-                type: "uneditable",
-                _inputex: {
-                    label: "Transition History"
-                        //,
-                        //elementType:{
-                        //    type:NUMBER,
-                        //    readonly:true
-                        //}
+                type: ARRAY,
+                view: {
+                    label: "Transition History",
+                    disabled: true,
+                },
+                items: {
+                    type: "number",
+                    view: {
+                        disabled: true
+                    }
                 }
             }
         },
@@ -98,7 +109,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          * @param {Integer} id The queried transition's id
          * @return {Transition|null} the transition if it exists
          */
-        getTransitionById: function(id) {
+        getTransitionById: function (id) {
             var i, t,
                 states = this.get(STATES),
                 trs;
@@ -119,7 +130,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          *  for current user.
          *  @return {Array} An array containing alternatively state/transition.
          */
-        getFullHistory: function(transitionHistory) {
+        getFullHistory: function (transitionHistory) {
             var i,
                 trH = transitionHistory || this.getInstance().get("transitionHistory"),
                 fullHistory = [],
@@ -134,199 +145,226 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             return fullHistory;
         },
         // *** Private methods *** //
-        getCurrentState: function() {
+        getCurrentState: function () {
             return this.getInstance().get("currentState");
         },
-        getInitialStateId: function() {
+        getInitialStateId: function () {
             return this.get("defaultInstance").get("currentStateId");
         },
-        setInitialStateId: function(initialStateId) {
+        setInitialStateId: function (initialStateId) {
             this.get("defaultInstance").set("currentStateId", initialStateId);
         },
-        getState: function(identifier) {
+        getState: function (identifier) {
             return this.get(STATES)[identifier];
         },
-        getIconCss: function() {
+        getIconCss: function () {
             return "fa fa-sitemap fa-rotate-270";
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "FSMDescriptor"
-            },
-            defaultInstance: {
-                valueFn: function() {
-                    return new persistence.FSMInstance();
+            ATTRS: {
+                "@class": {
+                    value: "FSMDescriptor"
                 },
-                validator: function(o) {
-                    return o instanceof persistence.FSMInstance;
+                defaultInstance: {
+                    valueFn: function () {
+                        return new persistence.FSMInstance();
+                    },
+                    validator: function (o) {
+                        return o instanceof persistence.FSMInstance;
+                    },
+                    properties: {
+                        '@class': {
+                            type: STRING,
+                            value: 'FSMInstance',
+                            view: {
+                                type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        descriptorId: {
+                            view: {
+                                type: HIDDEN
+                            }
+                        },
+                        version: VERSION_ATTR_DEF,
+                        currentStateId: {
+                            type: NUMBER,
+                            value: 1,
+                            view: {
+                                label: "Current state id",
+                                className: "wegas-advanced-feature"
+                            }
+                        },
+                        enabled: {
+                            type: BOOLEAN,
+                            value: true,
+                            view: {
+                                label: 'Active by default'
+                            }
+                        },
+                        transitionHistory: {
+                            type: ARRAY,
+                            value: [],
+                            view: {
+                                type: HIDDEN
+                            }
+                        }
+                    }
                 },
-                properties: {
-                    '@class': {
-                        type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: 'FSMInstance'
-                        }
+                states: {
+                    valueFn: function () {
+                        return {
+                            1: new persistence.State({})
+                        };
                     },
-                    id: IDATTRDEF,
-                    version: VERSION_ATTR_DEF,
-                    currentStateId: {
-                        type: NUMBER,
-                        _inputex: {
-                            label: "Default state id",
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                            value: 1
-                        }
-                    },
-                    enabled: {
-                        type: BOOLEAN,
-                        value: true,
-                        _inputex: {
-                            label: 'Active by default'
-                        }
+                    //writeOnce: "initOnly",
+                    view: {
+                        type: HIDDEN
                     }
                 }
             },
-            states: {
-                valueFn: function() {
-                    return {
-                        1: new persistence.State({})
-                    };
-                },
-                //writeOnce: "initOnly",
-                _inputex: {
-                    _type: HIDDEN
-                }
-            }
-        },
-        EDITORNAME: "State Machine",
-        EDITMENU: [{
+            EDITORNAME: "State Machine",
+            EDITMENU: [{
                 type: "EditEntityButton",
                 plugins: [{
-                        fn: "EditFSMAction"
-                    }]
+                    fn: "EditFSMAction"
+                }]
             }, {
                 type: BUTTON,
                 label: "Copy",
                 plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
+                    fn: "DuplicateEntityAction"
+                }]
             }, {
                 type: "DeleteEntityButton"
             }, {
                 type: BUTTON,
                 label: "Export",
                 plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                    type: "PrintButton",
-                                    label: "Html"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Html (Players document)",
-                                    mode: "player"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf",
-                                    outputType: "pdf"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf (Players document)",
-                                    outputType: "pdf",
-                                    mode: "player"
-                                }, {
-                                    type: "OpenEntityButton",
-                                    label: "Json",
-                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
-                                }]
-                        }
-                    }]
+                    fn: "WidgetMenu",
+                    cfg: {
+                        children: [{
+                            type: "PrintButton",
+                            label: "Html"
+                        }, {
+                            type: "PrintButton",
+                            label: "Html (Players document)",
+                            mode: "player"
+                        }, {
+                            type: "PrintButton",
+                            label: "Pdf",
+                            outputType: "pdf"
+                        }, {
+                            type: "PrintButton",
+                            label: "Pdf (Players document)",
+                            outputType: "pdf",
+                            mode: "player"
+                        }, {
+                            type: "OpenEntityButton",
+                            label: "Json",
+                            url: "rest/Export/GameModel/VariableDescriptor/{id}"
+                        }]
+                    }
+                }]
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }
-        ],
-        METHODS: {
-            enable: {
-                label: "activate",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            disable: {
-                label: "desactivate",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            isEnabled: {
-                label: "is active",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
-                returns: BOOLEAN,
-                localEval: function(self) {
-                    return this.getInstance(self).get("enabled");
-                }
-            },
-            isDisabled: {
-                label: "is inactive",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
-                returns: BOOLEAN,
-                localEval: function(self) {
-                    return !this.getInstance(self).get("enabled");
+            ],
+            METHODS: {
+                enable: {
+                    label: "activate",
+                    arguments: [SELFARG]
+                },
+                disable: {
+                    label: "deactivate",
+                    arguments: [SELFARG]
+                },
+                isEnabled: {
+                    label: "is active",
+                    arguments: [SELFARG],
+                    returns: BOOLEAN,
+                    localEval: function (self) {
+                        return this.getInstance(self).get("enabled");
+                    }
+                },
+                isDisabled: {
+                    label: "is inactive",
+                    arguments: [SELFARG],
+                    returns: BOOLEAN,
+                    localEval: function (self) {
+                        return !this.getInstance(self).get("enabled");
+                    }
                 }
             }
-        }
-    });
+        });
     /*
      * State Entity
      */
     persistence.State = Y.Base.create("State", persistence.Entity, [], {
         // *** Lifecycle methods *** //
-        initializer: function() {}
+        initializer: function () {
+        }
 
         // *** Private methods *** //
     }, {
-        ATTRS: {
-            "@class": {
-                value: "State"
-            },
-            stateMachineId: VERSION_ATTR_DEF,
-            version: VERSION_ATTR_DEF,
-            label: {
-                type: STRING,
-                "transient": false,
-                optional: true,
-                _inputex: {
-                    label: "Name"
-                }
-            },
-            onEnterEvent: {
-                optional: true,
-                _inputex: {
-                    _type: "script",
-                    label: "On enter impact"
-                }
-            },
-            transitions: {
-                value: []
-            },
-            editorPosition: {
-                valueFn: function() {
-                    return new persistence.Coordinate({
-                        x: 30,
-                        y: 30
-                    });
+            ATTRS: {
+                "@class": {
+                    value: "State"
+                },
+                stateMachineId: IDATTRDEF,
+                version: VERSION_ATTR_DEF,
+                label: {
+                    type: STRING,
+                    "transient": false,
+                    view: {
+                        label: "Name"
+                    }
+                },
+                onEnterEvent: {
+                    type: [NULL, OBJECT],
+                    properties: {
+                        "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                        content: {
+                            type: STRING
+                        }
+                    },
+                    view: {
+                        label: "On enter impact",
+                        type: SCRIPT
+                    }
+                },
+                transitions: {
+                    type: ARRAY,
+                    value: [],
+                    view: { type: HIDDEN }
+                },
+                editorPosition: {
+                    valueFn: function () {
+                        return new persistence.Coordinate({
+                            x: 30,
+                            y: 30
+                        });
+                    },
+                    view: {
+                        label: 'Box position',
+                        className: 'wegas-advanced-feature'
+                    },
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            value: "Coordinate",
+                            view: { type: HIDDEN }
+                        }
+                    }
                 }
             }
-        }
-    });
+        });
     /*
      * TransitionDescriptor Entity
      */
@@ -334,38 +372,47 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         ATTRS: {
             "@class": {
                 value: "Transition",
-                _inputex: {
-                    _type: HIDDEN
+            },
+            triggerCondition: {
+                type: [NULL, OBJECT],
+                properties: {
+                    "@class": { type: STRING, value: "Script" },
+                    content: {
+                        type: STRING
+                    }
+                },
+                view: {
+                    type: 'scriptcondition',
+                    label: 'Conditions'
                 }
             },
             version: VERSION_ATTR_DEF,
-            triggerCondition: {
-                optional: true,
-                _inputex: {
-                    _type: SCRIPT,
-                    label: 'Condition',
-                    expects: "condition"
-                }
-            },
-            stateId: VERSION_ATTR_DEF,
-            stateMachineId: VERSION_ATTR_DEF,
+            stateId: IDATTRDEF,
+            stateMachineId: IDATTRDEF,
             preStateImpact: {
-                optional: true,
-                _inputex: {
-                    _type: SCRIPT,
-                    label: 'Impact'
+                type: [NULL, OBJECT],
+                properties: {
+                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                    content: {
+                        type: STRING
+                    }
+                },
+                view: {
+                    label: 'Impacts',
+                    type: SCRIPT
                 }
             },
             nextStateId: {
-                _inputex: {
-                    _type: HIDDEN
+                type: NUMBER,
+                view: {
+                    type: HIDDEN
                 }
             },
             index: {
                 type: NUMBER,
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                    value: 0
+                value: 0,
+                view: {
+                    className: 'wegas-advanced-feature'
                 }
             }
         }
@@ -378,94 +425,135 @@ YUI.add("wegas-statemachine-entities", function(Y) {
      * TriggerDescriptor Entity
      */
     persistence.TriggerDescriptor = Y.Base.create("TriggerDescriptor", persistence.FSMDescriptor, [], {
-        getIconCss: function() {
+        getIconCss: function () {
             return "fa fa-cogs";
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "TriggerDescriptor"
-            },
-            defaultInstance: {
-                valueFn: function() {
-                    return new persistence.TriggerInstance();
+            ATTRS: {
+                "@class": {
+                    value: "TriggerDescriptor"
                 },
-                properties: {
-                    '@class': {
-                        type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: 'TriggerInstance'
-                        }
+                defaultInstance: {
+                    valueFn: function () {
+                        return new persistence.TriggerInstance();
                     },
-                    id: IDATTRDEF,
-                    version: VERSION_ATTR_DEF,
-                    currentStateId: {
-                        type: NUMBER,
-                        optional: true,
-                        _inputex: {
-                            label: 'Initial state id',
-                            _type: HIDDEN
-                        }
-                    },
-                    enabled: {
-                        type: BOOLEAN,
-                        _inputex: {
-                            label: 'Active by default'
+                    properties: {
+                        '@class': {
+                            type: STRING,
+                            value: 'TriggerInstance',
+                            view: {
+                                type: HIDDEN
+                            }
+                        },
+                        version: VERSION_ATTR_DEF,
+                        currentStateId: {
+                            type: NUMBER,
+                            view: {
+                                label: 'Initial state id',
+                                type: HIDDEN
+                            }
+                        },
+                        descriptorId: {
+                            type: NUMBER,
+                            view: { type: HIDDEN }
+                        },
+                        id: {
+                            type: NUMBER,
+                            view: {
+                                type: 'uneditable',
+                                className: 'wegas-advanced-feature'
+                            }
+                        },
+                        enabled: {
+                            type: BOOLEAN,
+                            value: true,
+                            view: {
+                                label: 'Active by default'
+                            }
+                        },
+                        transitionHistory: {
+                            value: [],
+                            type: ARRAY,
+                            view: { type: HIDDEN }
                         }
                     }
+                },
+                disableSelf: {
+                    type: BOOLEAN,
+                    value: true,
+                    index: 1,
+                    view: {
+                        label: 'Disable itself',
+                        description: 'Disable once triggered. May be rearmed afterwards'
+                    }
+                },
+                oneShot: {
+                    type: BOOLEAN,
+                    value: false,
+                    index: 2,
+                    view: {
+                        label: 'Only once',
+                        description: 'Allowed to trigger only once',
+                    }
+                },
+                triggerEvent: {
+                    type: [NULL, OBJECT],
+                    index: 3,
+                    properties: {
+                        "@class": { type: STRING, value: "Script" },
+                        content: {
+                            type: STRING
+                        }
+                    },
+                    view: {
+                        type: 'scriptcondition',
+                        label: 'Conditions'
+                    }
+                },
+                postTriggerEvent: {
+                    type: ["null", OBJECT],
+                    properties: {
+                        "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                        content: {
+                            errored: function(val){
+                                if(!val){
+                                    return "Required";
+                                }
+                            },
+                            type: STRING
+                        }
+                    },
+                    required: true,
+                    index: 4,
+                    view: {
+                        type: SCRIPT,
+                        label: 'Impacts'
+                    }
+                },
+                states: {
+                    "transient": true
                 }
             },
-            disableSelf: {
-                type: BOOLEAN,
-                value: true,
-                _inputex: {
-                    label: 'Disable itself',
-                    description: 'Disable once triggered.<br> May be rearmed afterwards',
-                    index: 1
-                }
-            },
-            oneShot: {
-                type: BOOLEAN,
-                value: false,
-                _inputex: {
-                    label: 'Only once',
-                    description: 'Allowed to trigger only once',
-                    index: 2
-                }
-            },
-            triggerEvent: {
-                optional: true,
-                _inputex: {
-                    _type: SCRIPT,
-                    label: 'Condition',
-                    expects: "condition",
-                    index: 3
-                }
-            },
-            postTriggerEvent: {
-                _inputex: {
-                    _type: SCRIPT,
-                    label: 'Impact',
-                    index: 4
-                }
-            },
-            states: {
-                "transient": true
-            }
-        },
-        EDITMENU: [{
+            EDITMENU: [{
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
                 label: "Copy",
                 plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
+                    fn: "DuplicateEntityAction"
+                }]
             }, {
                 type: "DeleteEntityButton"
+            },{
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }]
-    });
+        });
     /*
      * TriggerInstance Entity
      */
@@ -475,11 +563,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: "TriggerInstance"
             },
             currentStateId: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    label: "Trigger state",
-                    disabled: true
+                type: NUMBER,
+                view: {
+                    type: HIDDEN
                 }
             }
         }
@@ -498,7 +584,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          * @param {Object} callbacks - {success:Function|String, failure:Function|String} - the callback functions to
          *     execute.
          */
-        doTransition: function(transition, callbacks) {
+        doTransition: function (transition, callbacks) {
             var request;
             if (transition instanceof persistence.DialogueTransition) {
                 if (!this.get(ID) || !transition.get(ID)) {
@@ -524,57 +610,61 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 return false;
             }
         },
-        getIconCss: function() {
+        getIconCss: function () {
             return "fa fa-comments-o";
         }
     }, {
-        ATTRS: {
-            "@class": {
-                value: "DialogueDescriptor"
-            },
-            title: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    label: "Label",
-                    description: "Displayed to players",
-                    index: -1
-                }
-            },
-            states: {
-                valueFn: function() {
-                    return {
-                        1: new persistence.DialogueState({})
-                    };
+            ATTRS: {
+                "@class": {
+                    value: "DialogueDescriptor"
                 },
-                /*writeOnce: "initOnly",*/
-                _inputex: {
-                    _type: HIDDEN
+                title: {
+                    type: [NULL, STRING],
+                    index: 0,
+                    view: {
+                        label: "Label",
+                        description: "Displayed to players"
+                    }
+                },
+                states: {
+                    valueFn: function () {
+                        return {
+                            1: new persistence.DialogueState({})
+                        };
+                    }
+                    /*writeOnce: "initOnly",*/
                 }
-            }
-        },
-        EDITORNAME: "Dialog",
-        EDITMENU: [{
+            },
+            EDITORNAME: "Dialog",
+            EDITMENU: [{
                 type: "EditEntityButton",
                 plugins: [{
-                        fn: "EditFSMAction",
-                        cfg: {
-                            viewerCfg: {
-                                availableStates: [/*"State",*/ "DialogueState"],
-                                availableTransitions: [/*"Transition",*/ "DialogueTransition"]
-                            }
+                    fn: "EditFSMAction",
+                    cfg: {
+                        viewerCfg: {
+                            availableStates: [/*"State",*/ "DialogueState"],
+                            availableTransitions: [/*"Transition",*/ "DialogueTransition"]
                         }
-                    }]
+                    }
+                }]
             }, {
                 type: BUTTON,
                 label: "Copy",
                 plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
+                    fn: "DuplicateEntityAction"
+                }]
             }, {
                 type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }]
-    });
+        });
 
     /**
      * DialogueTransition Entity
@@ -587,21 +677,14 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             actionText: {
                 type: STRING,
-                format: HTML,
+                index: -1,
                 value: null,
-                optional: true,
-                validator: function(s) {
+                validator: function (s) {
                     return s === null || Y.Lang.isString(s);
                 },
-                _inputex: {
-                    index: -1,
+                view: {
+                    type: HTML,
                     label: "Text"
-                }
-            },
-            index: {
-                type: NUMBER,
-                _inputex: {
-                    value: 0
                 }
             }
         }
@@ -614,7 +697,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         /*
          *
          */
-        getAvailableActions: function(callback) {
+        getAvailableActions: function (callback) {
             var i,
                 transitions = this.get("transitions"),
                 availableActions = [];
@@ -625,17 +708,17 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     } else {
                         availableActions.push(
                             transitions[i].get("triggerCondition").localEval()
-                            .then(Y.bind(function(transition, res) {
-                                if (res) {
-                                    return transition;
-                                }
-                                return false;
-                            }, null, transitions[i])));
+                                .then(Y.bind(function (transition, res) {
+                                    if (res) {
+                                        return transition;
+                                    }
+                                    return false;
+                                }, null, transitions[i])));
                     }
                 }
             }
-            Y.Promise.all(availableActions).then(function(transitions) {
-                callback(Y.Array.filter(transitions, function(element) {
+            Y.Promise.all(availableActions).then(function (transitions) {
+                callback(Y.Array.filter(transitions, function (element) {
                     return !!element;
                 }).sort(function(a, b) {
                     return a.get("index") - b.get("index");
@@ -646,7 +729,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          * Get an array of texts from the state's text, split by a token
          * @param {String} token The token to split by
          */
-        getTexts: function(token) {
+        getTexts: function (token) {
             return this.get(TEXT).split(token);
         },
         /**
@@ -655,35 +738,35 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          * @param {Array} a Strings to join
          * @param {String} token Token to join the array
          */
-        setText: function(a, token) {
+        setText: function (a, token) {
             this.set(TEXT, a.join(token));
         }
     }, {
-        EDITORNAME: "server text",
-        ATTRS: {
-            "@class": {
-                value: "DialogueState"
-            },
-            version: VERSION_ATTR_DEF,
-            text: {
-                type: STRING,
-                format: HTML,
-                value: null,
-                optional: true,
-                validator: function(s) {
-                    return s === null || Y.Lang.isString(s);
+            EDITORNAME: "server text",
+            ATTRS: {
+                "@class": {
+                    value: "DialogueState"
                 },
-                _inputex: {
-                    index: -1
-                }
-            },
-            label: {
-                _inputex: {
-                    _type: HIDDEN
+                version: VERSION_ATTR_DEF,
+                text: {
+                    type: STRING,
+                    value: null,
+                    index: -1,
+                    validator: function (s) {
+                        return s === null || Y.Lang.isString(s);
+                    },
+                    view: {
+                        type: HTML,
+                        label: "Text"
+                    }
+                },
+                label: {
+                    view: {
+                        type: HIDDEN
+                    }
                 }
             }
-        }
-    });
+        });
     /**
      * Coordinate embeddable mapper
      **/

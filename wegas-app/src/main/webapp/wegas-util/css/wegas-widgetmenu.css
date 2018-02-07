@@ -84,3 +84,37 @@
     top: 9px;
     background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 -20px;
 }
+
+.yui3-menu .wegas-editor-menu-separator-above {
+    border-top: 1px solid lightgrey;
+}
+
+.yui3-menu .wegas-editor-menu-separator-above ~ .wegas-editor-menu-separator-above {
+    border-top: none;
+}
+
+.yui3-menu .wegas-editor-menu-item-center,
+.yui3-menu .wegas-editor-menu-item-right {
+    font-style: normal;
+    border-top: 1px solid lightgrey;
+}
+
+.yui3-menu .wegas-editor-menu-item-center:after {
+    content: "◧⬸";
+    vertical-align: -3px;
+    padding-left: 10px;
+    font-size: 18px;
+    letter-spacing: -1px;
+}
+
+.yui3-menu .wegas-editor-menu-item-right:after {
+    content: "⤑◨";
+    vertical-align: -3px;
+    padding-left: 10px;
+    font-size: 18px;
+    letter-spacing: -1px;
+}
+
+.yui3-widget .editor-newVariable-button {
+    border-right: 0.5em solid white;
+}

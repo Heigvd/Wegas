@@ -11,7 +11,9 @@
 
 /* Wegas Layout Widget Styles */
 .yui3-skin-sam .wegas-layout-resizable {
-    background-color: hsla(199,89%,12%,1);
+    /* background-color: hsla(199,89%,12%,1); */
+    /* background-color: #D3ECF6; */ /* New green background */
+    /* background-color: rgba(183, 203, 144, 0.9); */ /* New green background with transparency */
     /*overflow: hidden;*/
 }
 .yui3-skin-sam .wegas-layout-hd > div {
@@ -31,7 +33,7 @@
     overflow: hidden;
 }
 .yui3-skin-sam .wegas-layout-right > .yui3-widget{
-     margin-left:8px;
+     /* margin-left:8px; */
 }
 .yui3-skin-sam .wegas-layout-left > .yui3-widget,
 .yui3-skin-sam .wegas-layout-center > .yui3-widget,
@@ -52,6 +54,7 @@
     right: 0;
 }
 .yui3-skin-sam .wegas-layout-resizable .yui3-resize-handle {
-    background: #03283A;
+    background: #6AACF1;
+    margin-top: 38px; /* Hide vertical bar in the tab bar */
     width: 4px;
 }

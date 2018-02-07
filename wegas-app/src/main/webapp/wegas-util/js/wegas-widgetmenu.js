@@ -56,10 +56,11 @@ YUI.add('wegas-widgetmenu', function(Y) {
         bind: function() {
             var node = this.get("targetNode");
             node.delegate(this.get("event"), function(e) {                      // Target event listener
-                this.show(e.target);
                 e.halt(true);                                                   // Prevent event from bubbling
-                this.fire("menuOpen", {domEvent: e});                           // Notify the parent the menu has been
-                                                                                // opened
+                Y.Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                    this.show(e.target);
+                    this.fire("menuOpen", {domEvent: e});                        // Notify the parent the menu has been
+                }, this));                                                       // opened
             }, this.get("selector"), this);
 
             node.addClass("wegas-widgetmenu-hassubmenu");                       // Add submenu class
@@ -170,7 +171,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
     /**
      *
      */
-    MenuBar = Y.Base.create("menubar", Y.Widget, [Y.WidgetParent], {
+    MenuBar = Y.Base.create("menubar", Y.Widget, [Y.WidgetParent, Y.Wegas.Parent], {
         CONTENT_TEMPLATE: null
     }, {
         ATTRS: {
@@ -191,9 +192,10 @@ YUI.add('wegas-widgetmenu', function(Y) {
      * @augments Y.WidgetParent
      * @augments Y.WidgetPositionConstrain
      */
-    Menu = Y.Base.create("menu", MenuBar,
-        [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetPositionConstrain, Y.WidgetStack], {
+    Menu = Y.Base.create("menu", Y.Widget,
+        [Y.WidgetParent, Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetPositionConstrain, Y.WidgetStack], {
             /** @lends Y.Wegas.Menu# */
+            CONTENT_TEMPLATE: null,
             // *** Lifecycle methods *** //
             initializer: function() {
                 this.publish("cancelMenuTimer", {
@@ -274,6 +276,9 @@ YUI.add('wegas-widgetmenu', function(Y) {
         {
             /** @lends Y.Wegas.Menu */
             ATTRS: {
+                defaultChildType: {
+                    value: Y.Wegas.Button
+                },
                 points: {
                     value: ["tl", "bl"]
                 },

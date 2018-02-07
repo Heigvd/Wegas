@@ -689,11 +689,11 @@ YUI.add("wegas-review-widgets", function(Y) {
              */
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                type: "object",
+                view: {
+                    type: "variableselect",
                     label: "Peer Review Descriptor",
                     classFilter: ["PeerReviewDescriptor"],
-                    wrapperClassName: "inputEx-fieldWrapper"
                 }
             }
         }
@@ -849,17 +849,17 @@ YUI.add("wegas-review-widgets", function(Y) {
         ATTRS: {
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                type : "object",
+                view: {
+                    type: "variableselect",
                     label: "Peer Review Descriptor",
-                    classFilter: ["PeerReviewDescriptor"],
-                    wrapperClassName: "inputEx-fieldWrapper"
+                    classFilter: ["PeerReviewDescriptor"]
                 }
             },
             showSubmitButton: {
                 type: "boolean",
                 value: true,
-                _inputex: {
+                view: {
                     label: "Display submit button"
                 }
             }
@@ -1107,17 +1107,17 @@ YUI.add("wegas-review-widgets", function(Y) {
         ATTRS: {
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                type: "object",
+                view: {
+                    type: "variableselect",
                     label: "Peer Review Descriptor",
-                    classFilter: ["PeerReviewDescriptor"],
-                    wrapperClassName: "inputEx-fieldWrapper"
+                    classFilter: ["PeerReviewDescriptor"]
                 }
             },
             showSubmitButton: {
                 type: "boolean",
                 value: true,
-                _inputex: {
+                view: {
                     label: "Display submit button"
                 }
             }
@@ -1476,16 +1476,16 @@ YUI.add("wegas-review-widgets", function(Y) {
             },
             showPage: {
                 type: "string",
-                _inputex: {
+                view: {
                     label: "Show page",
-                    _type: "pageselect",
-                    required: true
-                }
+                    type: "pageselect"
+                },
+                required: true
             },
             showSubmitButton: {
                 type: "boolean",
                 value: true,
-                _inputex: {
+                view: {
                     label: "Display submit button"
                 }
             }

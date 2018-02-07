@@ -561,40 +561,45 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 .set("title", impact ? "<b>Impact</b><br />" + impact : "").plug(Y.Plugin.Tooltip);
         },
         showForm: function(state) {
-            var form;
-            state = state || this.get(ENTITY);
-            Plugin.EditEntityAction.hideRightTabs();
-            this.editionHighlight();
+            Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                var form;
+                state = state || this.get(ENTITY);
+                Plugin.EditEntityAction.destroyEditionTab();
+                this.editionHighlight();
 
-            form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
-            form.toolbar.add(new Y.Wegas.Button({
-                label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
-                on: {
-                    click: Y.bind(function() {
-                        var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
-                            "transitions"), newNode;
-                        state.editorPosition = new Wegas.persistence.Coordinate(state.editorPosition);
-                        state.editorPosition.set("x", state.editorPosition.get("x") + 10);
-                        state.editorPosition.set("y", state.editorPosition.get("y") + 10);
-                        newNode = editor.onNewState(this.get(ENTITY).get("@class"), state);
-                        newNode.get(BOUNDING_BOX).simulate(CLICK);
-                    }, this)
-                }
-            }));
-            form.toolbar.add(new Y.Wegas.Button({
-                label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                on: {
-                    click: Y.bind(this.deleteSelf, this)
-                }
-            }));
-            if (this.get(PARENT).get(ENTITY).getInitialStateId() !== this.get(SID)) {
+                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
                 form.toolbar.add(new Y.Wegas.Button({
-                    label: '<span class="wegas-icon state-initial"></span>Initial State',
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
-                        click: Y.bind(this.setAsInitial, this)
+                        click: Y.bind(function () {
+                            var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
+                                "transitions"), newNode;
+                            state.editorPosition = new Wegas.persistence.Coordinate(state.editorPosition);
+                            state.editorPosition.set("x", state.editorPosition.get("x") + 10);
+                            state.editorPosition.set("y", state.editorPosition.get("y") + 10);
+                            newNode = editor.onNewState(this.get(ENTITY).get("@class"), state);
+                            newNode.get(BOUNDING_BOX).simulate(CLICK);
+                        }, this)
                     }
                 }));
-            }
+                form.toolbar.add(new Y.Wegas.Button({
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                    on: {
+                        click: Y.bind(this.deleteSelf, this)
+                    }
+                }));
+                if (this.get(PARENT).get(ENTITY).getInitialStateId() !== this.get(SID)) {
+                    form.toolbar.add(new Y.Wegas.Button({
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-flag-checkered', 'Make this the initial state'), // '<span class="wegas-icon state-initial"></span>Initial State',
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                        on: {
+                            click: Y.bind(this.setAsInitial, this)
+                        }
+                    }));
+                }
+            }, this));
         },
         bindUI: function() {
             var stateMachine = this.get(PARENT),
@@ -754,6 +759,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 fsmViewer.showMessage("info", "Unable to delete initial state");
                 return;
             }
+            if (this.get("boundingBox").hasClass("wegas-editing")) { //Currently editing
+                Plugin.EditEntityAction.destroyEditionTab();
+            }
             Y.Array.each(this.transitionsTarget.slice(0), function(t) {
                 t.disconnect();
             });
@@ -794,33 +802,35 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             this.connection = cfg.connection;
         },
         showForm: function(transition) {
-            var form;
-            Plugin.EditEntityAction.hideRightTabs();
-            this.editionHighlight();
+            Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                var form;
+                Plugin.EditEntityAction.destroyEditionTab();
+                this.editionHighlight();
 
-            transition = transition || this.get(ENTITY);
+                transition = transition || this.get(ENTITY);
 
-            form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
-            form.toolbar.add(new Y.Wegas.Button({
-                label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
-                on: {
-                    click: Y.bind(function() {
-                        var entity = this.get(ENTITY).toObject("id"), tr;
-                        tr = this.get(PARENT).addTransition(this.getTargetState(),
-                            new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
+                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
+                form.toolbar.add(new Y.Wegas.Button({
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                    on: {
+                        click: Y.bind(function () {
+                            var entity = this.get(ENTITY).toObject("id"), tr;
+                            tr = this.get(PARENT).addTransition(this.getTargetState(),
+                                new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
                             );
-                        Y.one(tr.connection.getLabelOverlay().getElement()).simulate(CLICK);
-                    }, this)
-                }
-            }));
-            form.toolbar.add(new Y.Wegas.Button({
-                label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                on: {
-                    click: Y.bind(this.disconnect, this)
-                }
-            }));
-
-
+                            Y.one(tr.connection.getLabelOverlay().getElement()).simulate(CLICK);
+                        }, this)
+                    }
+                }));
+                form.toolbar.add(new Y.Wegas.Button({
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                    on: {
+                        click: Y.bind(this.disconnect, this)
+                    }
+                }));
+            }, this));
         },
         renderUI: function() {
             var connection, parentTransitions,
@@ -875,7 +885,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 con = this.connection,
                 transitions;
             if (Y.one(con.getLabelOverlay().getElement()).hasClass("wegas-editing")) { //Currently editing
-                Plugin.EditEntityAction.hideRightTabs();
+                Plugin.EditEntityAction.destroyEditionTab();
             }
             this.connection = null;
             jp.detach(con, {

@@ -184,7 +184,7 @@ YUI.add("wegas-pageloader", function(Y) {
                 type: "string",
                 value: "maindisplayarea",
                 //value: "PageLoader" + Y.Lang.now(), //generate a default pageLoaderId
-                _inputex: {
+                view: {
                     label: "Page display id"
                 }
             },
@@ -193,10 +193,9 @@ YUI.add("wegas-pageloader", function(Y) {
              */
             defaultPageId: {
                 type: "string",
-                _inputex: {
+                view: {
                     label: "Default page",
-                    _type: "pageselect",
-                    required: false
+                    type: "pageselect"
                 }
             },
             /**
@@ -271,21 +270,21 @@ YUI.add("wegas-pageloader", function(Y) {
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
-                _inputex: {
-                    _type: "hidden"
+                view: {
+                    type: "hidden"
                 }
             },
             /**
              *
              */
             page: {
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                optional: true,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Variable",
                     classFilter: ["NumberDescriptor", "TextDescriptor"],
-                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    className: "wegas-advanced-feature"
                 }
             },
             /**
