@@ -1775,7 +1775,8 @@ YUI.add('wegas-datasource', function(Y) {
                         callback(e.response.results);
                     };
                 }
-                return this.sendRequest(cfg);
+                // @FIXME: let some time for servers to sync.
+                Y.later(1000, this, this.sendRequest, cfg);
             }
         },
         _successHandler: function(e) {
