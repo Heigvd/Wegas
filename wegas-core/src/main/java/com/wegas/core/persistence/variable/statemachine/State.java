@@ -51,7 +51,6 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
     private static final long serialVersionUID = 1L;
 
     @ManyToOne
-    @JoinColumn(name = "statemachine_id")
     @JsonIgnore
     private StateMachineDescriptor stateMachine;
 
@@ -77,7 +76,7 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
      *
      */
     @Id
-    @Column(name = "state_id")
+    @Column(name = "id")
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
@@ -97,8 +96,7 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
     /**
      *
      */
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "state_id", referencedColumnName = "state_id")
+    @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transition> transitions = new ArrayList<>();
 
     /**

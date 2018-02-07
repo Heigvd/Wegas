@@ -78,9 +78,9 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     @JsonView(Views.ExtendedI.class)
     @JoinTable(name = "users_roles",
             joinColumns = {
-                @JoinColumn(name = "users_id", referencedColumnName = "id")},
+                @JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {
-                @JoinColumn(name = "roles_id", referencedColumnName = "id")})
+                @JoinColumn(name = "role_id", referencedColumnName = "id")})
     private Collection<Role> roles = new ArrayList<>();
 
     /**

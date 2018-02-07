@@ -23,7 +23,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
@@ -36,11 +35,10 @@ import javax.validation.constraints.NotNull;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
-
 @Table(uniqueConstraints = @UniqueConstraint(
-        columnNames = {"requirements_variableinstance_id", "wrequirement_name"}),
+        columnNames = {"taskinstance_id", "wrequirement_name"}),
         indexes = {
-            @Index(columnList = "requirements_variableinstance_id")
+            @Index(columnList = "taskinstance_id")
         }
 )
 public class WRequirement extends AbstractEntity {
@@ -50,7 +48,7 @@ public class WRequirement extends AbstractEntity {
      *
      */
     @Id
-    @Column(name = "wrequirement_id")
+    @Column(name = "id")
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
@@ -79,7 +77,6 @@ public class WRequirement extends AbstractEntity {
      *
      */
     @ManyToOne
-    @JoinColumn(name = "requirements_variableinstance_id")
     private TaskInstance taskInstance;
     /*
      *
@@ -268,6 +265,7 @@ public class WRequirement extends AbstractEntity {
      *
      * @deprecated (I hope so)
      * @param variable
+     *
      * @return just not a clue...
      */
     public double getVariableValue(String variable) {

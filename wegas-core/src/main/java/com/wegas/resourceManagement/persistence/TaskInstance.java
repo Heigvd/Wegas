@@ -9,16 +9,14 @@ package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +36,8 @@ import javax.persistence.Transient;
 
 /*@Table(indexes = {
 
-    @Index(columnList = "plannification.taskinstance_variableinstance_id"),
-    @Index(columnList = "properties.taskinstance_variableinstance_id")
+    @Index(columnList = "plannification.taskinstance_id"),
+    @Index(columnList = "properties.taskinstance_id")
 })*/
 public class TaskInstance extends VariableInstance implements Propertable {
 
@@ -82,7 +80,6 @@ public class TaskInstance extends VariableInstance implements Propertable {
      *
      */
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    //@JoinColumn(referencedColumnName = "variableinstance_id")
     private List<WRequirement> requirements = new ArrayList<>();
 
     /**

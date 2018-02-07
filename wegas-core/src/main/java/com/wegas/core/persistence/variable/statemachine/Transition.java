@@ -75,7 +75,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = {})
-    @JoinColumn(name = "state_id", referencedColumnName = "state_id")
     private State state;
 
     /**

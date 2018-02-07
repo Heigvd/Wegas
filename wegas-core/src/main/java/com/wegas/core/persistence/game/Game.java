@@ -38,7 +38,7 @@ import javax.validation.constraints.Pattern;
             //    @UniqueConstraint(columnNames = {"name"}),
             @UniqueConstraint(columnNames = {"token"})},
         indexes = {
-            @Index(columnList = "gamemodelid"),
+            @Index(columnList = "gamemodel_id"),
             @Index(columnList = "createdby_id")
         }
 )
@@ -57,7 +57,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @Id
-    @Column(name = "game_id")
     @GeneratedValue
     private Long id;
 
@@ -113,14 +112,9 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
      *
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "gamemodelid", nullable = false)
+    @JoinColumn(nullable = false)
     private GameModel gameModel;
 
-    /**
-     *
-     * @Column(name = "gamemodelid", nullable = false, insertable = false,
-     * updatable = false) private Long gameModelId;
-     */
     /**
      *
      */

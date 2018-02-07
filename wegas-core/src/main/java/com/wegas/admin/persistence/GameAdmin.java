@@ -38,7 +38,7 @@ import org.codehaus.jettison.json.JSONException;
 })
 @Table(
         indexes = {
-            @Index(columnList = "game_game_id")
+            @Index(columnList = "game_id")
         }
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -56,7 +56,6 @@ public class GameAdmin extends AbstractEntity {
     private String comments;
 
     @OneToOne
-    @JoinColumn(nullable = true)
     private Game game;
 
     private String creator;

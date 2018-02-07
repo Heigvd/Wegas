@@ -64,7 +64,7 @@ import javax.validation.constraints.NotNull;
 @Table(
         indexes = {
             @Index(columnList = "fbcomments_id"),
-            @Index(columnList = "toreview_variabledescriptor_id"),
+            @Index(columnList = "toreview_id"),
             @Index(columnList = "feedback_id")
         }
 )

@@ -88,25 +88,18 @@ import org.slf4j.LoggerFactory;
     )
 })
 @CacheIndexes(value = {
-    @CacheIndex(columnNames = {"GAMESCOPE_ID", "GAMEVARIABLEINSTANCES_KEY"}),
-    @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAMVARIABLEINSTANCES_KEY"}),
-    @CacheIndex(columnNames = {"PLAYERSCOPE_ID", "VARIABLEINSTANCES_KEY"})
+    @CacheIndex(columnNames = {"GAMESCOPE_ID", "GAME_ID"}),
+    @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAM_ID"}),
+    @CacheIndex(columnNames = {"PLAYERSCOPE_ID", "PLAYER_ID"})
 })
-/*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
-
- @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
- @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
- @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
- })*/
-/* JPA2.1 (GlassFish4) Indexes */
 @Table(indexes = {
+    @Index(columnList = "gamemodel_id"),
     @Index(columnList = "gamescope_id"),
+    @Index(columnList = "game_id"),
     @Index(columnList = "teamscope_id"),
+    @Index(columnList = "team_id"),
     @Index(columnList = "playerscope_id"),
-    @Index(columnList = "variableinstances_key"),
-    @Index(columnList = "teamvariableinstances_key"),
-    @Index(columnList = "gamevariableinstances_key"),
-    @Index(columnList = "gamemodelvariableinstances_key")
+    @Index(columnList = "player_id")
 })
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
@@ -151,7 +144,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      *
      */
     @Id
-    @Column(name = "variableinstance_id")
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
@@ -161,7 +153,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "gamescope_id")
     private GameScope gameScope;
 
     /**
@@ -169,7 +160,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "teamscope_id")
     private TeamScope teamScope;
 
     /**
@@ -177,7 +167,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "playerscope_id")
     private PlayerScope playerScope;
 
     /**
@@ -195,43 +184,24 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     /**
      *
-     * @Column(name = "variableinstances_key", insertable = false, updatable =
-     * false, columnDefinition = "bigint") private Long playerScopeKey;
      */
-    /**
-     *
-     */
-    @JoinColumn(name = "variableinstances_key")
     @ManyToOne
     @JsonIgnore
     private Player player;
     /**
      *
-     * @Column(name = "gamevariableinstances_key", insertable = false, updatable
-     * = false, columnDefinition = "bigint") private Long gameScopeKey;
      */
-    /**
-     *
-     */
-    @JoinColumn(name = "gamevariableinstances_key")
     @ManyToOne
     @JsonIgnore
     private Game game;
 
-    @JoinColumn(name = "gamemodelvariableinstances_key")
     @ManyToOne
     @JsonIgnore
     private GameModel gameModel;
 
     /**
      *
-     * @Column(name = "teamvariableinstances_key", insertable = false, updatable
-     * = false, columnDefinition = "bigint") private Long teamScopeKey;
      */
-    /**
-     *
-     */
-    @JoinColumn(name = "teamvariableinstances_key")
     @ManyToOne
     @JsonIgnore
     private Team team;

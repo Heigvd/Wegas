@@ -64,14 +64,14 @@ import org.slf4j.LoggerFactory;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
-// @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
-// @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
+    @UniqueConstraint(columnNames = {"gamemodel_id", "name"}) // Name has to be unique for the whole game model
+// @UniqueConstraint(columnNames = {"parentlist_id", "name"}) // Name has to be unique within a list
+// @UniqueConstraint(columnNames = {"root_id", "name"})       // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-    @Index(columnList = "defaultinstance_variableinstance_id"),
-    @Index(columnList = "items_variabledescriptor_id"),
-    @Index(columnList = "rootgamemodel_id"),
-    @Index(columnList = "gamemodel_gamemodelid"),
+    @Index(columnList = "defaultinstance_id"),
+    @Index(columnList = "parentlist_id"),
+    @Index(columnList = "root_id"),
+    @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
     @Index(columnList = "scope_id")
 })
@@ -89,7 +89,7 @@ import org.slf4j.LoggerFactory;
     )
 })
 @CacheIndexes(value = {
-    @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
+    @CacheIndex(columnNames = {"GAMEMODEL_ID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
@@ -136,7 +136,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @Lob
     @JsonView(value = Views.EditorI.class)
-    @Column(name = "Descriptor_comments")
+    @Column(name = "comments")
     private String comments;
 
     /**
@@ -152,7 +152,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     //@JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "gamemodel_gamemodelid")
     @CacheIndex
     private GameModel gameModel;
 
@@ -160,20 +159,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      */
     @Id
-    @Column(name = "variabledescriptor_id")
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "items_variabledescriptor_id")
     @JsonIgnore
     private ListDescriptor parentList;
 
     @ManyToOne
-    @JoinColumn(name = "rootgamemodel_id")
     @JsonIgnore
-    private GameModel rootGameModel;
+    private GameModel root;
 
     /**
      *
@@ -181,11 +177,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@JsonView(Views.EditorI.class)
     private String label;
 
-    /*
-     * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
-     * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
-     * updatable = true)
-     */
     //@BatchFetch(BatchFetchType.JOIN)
     //@JsonManagedReference
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
@@ -221,15 +212,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.version = version;
     }
 
-    /**
-     *
-     */
-    //@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    //@JoinTable(joinColumns = {
-    //    @JoinColumn(referencedColumnName = "variabledescriptor_id")},
-    //        inverseJoinColumns = {
-    //    @JoinColumn(referencedColumnName = "tag_id")})
-    //private List<Tag> tags;
     /**
      *
      */
@@ -297,13 +279,13 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     @JsonIgnore
-    public GameModel getRootGameModel() {
-        return rootGameModel;
+    public GameModel getRoot() {
+        return root;
     }
 
-    public void setRootGameModel(GameModel rootGameModel) {
-        this.rootGameModel = rootGameModel;
-        if (this.rootGameModel != null) {
+    public void setRoot(GameModel rootGameModel) {
+        this.root = rootGameModel;
+        if (this.root != null) {
             this.setParentList(null);
         }
     }
@@ -315,7 +297,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public void setParentList(ListDescriptor parentList) {
         this.parentList = parentList;
         if (this.parentList != null) {
-            this.setRootGameModel(null);
+            this.setRoot(null);
         }
     }
 
@@ -323,8 +305,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (parentList != null) {
             return parentList;
-        } else if (rootGameModel != null) {
-            return rootGameModel;
+        } else if (root != null) {
+            return root;
         } else {
             throw new WegasNotFoundException("ORPHAN DESCRIPTOR");
         }
@@ -332,7 +314,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     @JsonView(Views.IndexI.class)
     public String getParentDescriptorType() {
-        if (this.getRootGameModel() != null) {
+        if (this.getRoot() != null) {
             return "GameModel";
         } else {
             return "VariableDescriptor";
