@@ -931,8 +931,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             description: {
                 type: STRING,
-                format: HTML,
-                index:-1
+                optional: true,
+                index: -1,
+                view: {
+                    label: "Description",
+                    type: HTML
+                }
             },
             defaultInstance: {
                 properties: {
