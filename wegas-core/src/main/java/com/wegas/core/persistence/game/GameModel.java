@@ -168,7 +168,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * Holds all the scripts contained in current game model.
      */
-    @OneToMany(mappedBy = "csslibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "scriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
