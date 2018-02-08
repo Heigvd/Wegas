@@ -398,7 +398,7 @@
                         <configuration>
                             <executable>yarn</executable>
                             <arguments>
-                                <argument>exec</argument>
+                                <argument>run</argument>
                                 <argument>build</argument>
                             </arguments>
                         </configuration>
