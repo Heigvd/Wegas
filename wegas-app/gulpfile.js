@@ -26,11 +26,11 @@ gulp.task("setup-dev", function (cb) {
     rootPath = "/Wegas/";
     cb();
 });
-gulp.task("submodule", ["npm install"], function () {
+gulp.task("submodule", ["yarn install"], function () {
     "use strict";
     return gulp.src([
-            'target/Wegas/*/gulpfile.js'
-        ], {
+        'target/Wegas/*/gulpfile.js'
+    ], {
             read: false
         })
         .pipe(chug());
@@ -38,12 +38,12 @@ gulp.task("submodule", ["npm install"], function () {
 gulp.task("compress-css", ["submodule"], function () {
     "use strict";
     return gulp.src(["target/Wegas/**/*.css",
-            "!target/Wegas/lib/**",
-            "!**/node_modules/**",
-            "!target/Wegas/wegas-lobby/**",
-            "!target/Wegas/wegas-react-form/**",
-            "!target/Wegas/wegas-stats/**/*.css",
-            "!**/*-min.css"],
+        "!target/Wegas/lib/**",
+        "!**/node_modules/**",
+        "!target/Wegas/wegas-lobby/**",
+        "!target/Wegas/wegas-react-form/**",
+        "!target/Wegas/wegas-stats/**/*.css",
+        "!**/*-min.css"],
         {
             base: "target/Wegas"
         })
@@ -68,14 +68,14 @@ gulp.task("compress-css", ["submodule"], function () {
 gulp.task("compress-js", ["submodule"], function () {
     "use strict";
     return gulp.src(["target/Wegas/**/*.js",
-            "!target/Wegas/lib/**",
-            "!**/*-min.js",
-            "!**/gulpfile.js",
-            "!**/node_modules/**",
-            "!target/Wegas/wegas-lobby/**",
-            "!target/Wegas/wegas-react-form/**",
-            "!target/Wegas/wegas-stats/**",
-            "!target/Wegas/scripts/*.js"],
+        "!target/Wegas/lib/**",
+        "!**/*-min.js",
+        "!**/gulpfile.js",
+        "!**/node_modules/**",
+        "!target/Wegas/wegas-lobby/**",
+        "!target/Wegas/wegas-react-form/**",
+        "!target/Wegas/wegas-stats/**",
+        "!target/Wegas/scripts/*.js"],
         {
             base: "target/Wegas"
         })
@@ -101,8 +101,13 @@ gulp.task("compress-js", ["submodule"], function () {
 
         .pipe(gulp.dest("target/Wegas"));
 });
-gulp.task('npm install', function () {
-    return gulp.src('target/Wegas/*/package.json').pipe(require("gulp-install")({npm:'--production=false'}))
+gulp.task('yarn install', function () {
+    return gulp.src('target/Wegas/*/package.json').pipe(require("gulp-install")({
+        commands: {
+            'package.json': 'yarn'
+        },
+        yarn: ['--frozen-lockfile', '--production=false']
+    }))
 })
 gulp.task('clear', function (done) {
     "use strict";
