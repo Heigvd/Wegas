@@ -12,7 +12,7 @@ services: postgresql
 cache:
   directories:
   - $HOME/.m2
-#  - wegas-app/node_modules
+  - $HOME/.cache/yarn
 git:
   submodules: false
 branches:
@@ -20,7 +20,7 @@ branches:
   - master
 env:
   global:
-  - NODE_VERSION=8.8 CC=clang CXX=clang++
+  - NODE_VERSION=9.5 CC=clang CXX=clang++ YARN_VERSION=1.3.2
   - secure: IldKSO+pk6RwzzF8iZt0qwh3yx1v49FAis/vJgUIDNWwDVQhOm7T5aJ4MUmbrGZgOFr9cCvlAO4A6qolf2Zn1cipaHzpyGzg5vhVlN1SEYh/WYYm9bTrDS0LqG6xL1Kp+YJD8B48rteEFG7dAL9au9w8ipoTO+PW66CbcoxDR5o=
   #- secure: dc1+zvl7dLsaietPU2/s/MKyIopVry5BTS5sS6z+D2e50JH1zvhFoLD92UDJM0rs8zDWa4nzrwG0yYj8roDlVzCj+VJ+VMyQFspHtcHle109Uqo+V0Ac3BSfugkchbJfO2I545CiVXnJGR/SxOfiLPwPy7rRUU0YT34xyW5A8b0=
   #- secure: PHeQHurKoerHNWSRsORNIZd/nFFw5WqOCqYUj0VX1xCq+GdMNuPpe8UEln4/hFU53XVeSMEbF2Mjrs+5g6CoeeMw16VcUYJvpdZaty2dquyXZN7PVPROf1yaptEb4nxD2oiaQ2X0jQDSmF56sGxA15kA/EoYSLnGkA5eBv2wFfA=
@@ -31,6 +31,8 @@ before_install:
   - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
   - git submodule update --init --recursive
   - nvm install $NODE_VERSION
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
+  - export PATH="$HOME/.yarn/bin:$PATH"
   - perl -pi -e "s/(wegas.build.number)=/\$1=$TRAVIS_BUILD_NUMBER/;s/(wegas.build.branch)=/\$1=$TRAVIS_BRANCH/;s/(wegas.build.pr_branch)=/\$1=$TRAVIS_PULL_REQUEST_BRANCH/;s/(wegas.build.pr_number)=/\$1=$TRAVIS_PULL_REQUEST/;" wegas-core/src/main/resources/wegas.properties
 before_script:
   - psql -c 'create database wegas_test;' -U postgres

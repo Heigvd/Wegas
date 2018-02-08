@@ -377,13 +377,13 @@
                 <version>1.4.0</version>
                 <executions>
                     <execution>
-                        <id>npm install</id>
+                        <id>yarn install</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>npm</executable>
+                            <executable>yarn</executable>
                             <arguments>
                                 <argument>install</argument>
                             </arguments>
@@ -396,7 +396,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>npm</executable>
+                            <executable>yarn</executable>
                             <arguments>
                                 <argument>run</argument>
                                 <argument>build</argument>
