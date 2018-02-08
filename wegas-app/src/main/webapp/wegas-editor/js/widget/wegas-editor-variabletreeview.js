@@ -483,7 +483,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             }
                             iconFa = "fa-group";
                             break;
-                        case 'GameScope':
                         case 'GameModelScope':
                             label = 'Global';
                             iconFa = "fa-globe";

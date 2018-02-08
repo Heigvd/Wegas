@@ -459,7 +459,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         List<VariableInstance> instances = new ArrayList<>();
         instances.addAll(getPrivateInstances());
         for (Game g : getGames()) {
-            instances.addAll(g.getAllInstances());
+            for (Team t : g.getTeams()) {
+                instances.addAll(t.getAllInstances());
+            }
         }
         return instances;
     }

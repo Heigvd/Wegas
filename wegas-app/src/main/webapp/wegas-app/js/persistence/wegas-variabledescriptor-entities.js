@@ -166,9 +166,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     case 'TeamScope':
                         key = player.get('team').get('id');
                         break;
-                    case 'GameScope':
-                        key = player.get('team').get('gameId');
-                        break;
                     case 'GameModelScope':
                         key = 0;
                         break;
@@ -301,46 +298,44 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     properties: {
                         '@class': {
                             type: STRING,
+                            value: "TeamScope",
                             view: {
                                 type: SELECT,
                                 choices: [
                                     {
-                                        value: 'TeamScope',
-                                        label: 'different for each team'
-                                    },
-                                    {
                                         value: 'PlayerScope',
-                                        label: 'different for each user'
+                                        label: 'each player'
                                     },
                                     {
-                                        value: 'GameScope',
-                                        label: 'different for each game'
+                                        value: 'TeamScope',
+                                        label: 'each team'
                                     },
                                     {
                                         value: 'GameModelScope',
-                                        label: 'the same for everybody'
+                                        label: 'the whole game'
                                     }
                                 ],
-                                label: 'Variable is'
+                                label: 'One variable for'
                             }
                         },
                         broadcastScope: {
                             type: STRING,
+                            value: "TeamScope",
                             view: {
                                 type: SELECT,
                                 label: 'Variable is visible by',
                                 choices: [
                                     {
-                                        value: 'TeamScope',
-                                        label: "anyone in the player's team"
+                                        value: 'PlayerScope',
+                                        label: 'the player only'
                                     },
                                     {
-                                        value: 'PlayerScope',
-                                        label: 'the current player only'
+                                        value: 'TeamScope',
+                                        label: "team members"
                                     },
                                     {
                                         value: 'GameScope',
-                                        label: 'anybody in the game'
+                                        label: 'everybody'
                                     }
                                 ]
                             }
@@ -499,33 +494,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             ATTRS: {
                 '@class': {
                     value: 'GameModelScope'
-                }
-            }
-        }
-    );
-    /**
-     * GameScope mapper
-     */
-    persistence.GameScope = Base.create(
-        'GameScope',
-        persistence.Scope,
-        [],
-        {
-            getInstance: function() {
-                return this.get('variableInstances')[
-                    String(Wegas.Facade.Game.get('currentGameId'))
-                ];
-            },
-            setPromise: function(player, instance) {
-                this.get('variableInstances')[
-                    String(Wegas.Facade.Game.get('currentGameId'))
-                ] = promise;
-            }
-        },
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'GameScope'
                 }
             }
         }

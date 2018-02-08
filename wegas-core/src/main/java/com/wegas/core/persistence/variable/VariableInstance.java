@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -66,14 +65,6 @@ import org.slf4j.LoggerFactory;
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
             }
     ),
-    @NamedQuery(name = "VariableInstance.findGameInstance",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.game.id = :gameId AND vi.gameScope.id = :scopeId)",
-            hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
-            }
-    ),
     @NamedQuery(name = "VariableInstance.findAllPlayerInstances",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.playerScope.id = :scopeId)"
@@ -81,21 +72,16 @@ import org.slf4j.LoggerFactory;
     @NamedQuery(name = "VariableInstance.findAllTeamInstances",
             query = "SELECT vi FROM VariableInstance vi WHERE "
             + "(vi.teamScope.id = :scopeId)"
-    ),
-    @NamedQuery(name = "VariableInstance.findAllGameInstances",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.gameScope.id = :scopeId)"
     )
 })
 @CacheIndexes(value = {
-    @CacheIndex(columnNames = {"GAMESCOPE_ID", "GAME_ID"}),
+    @CacheIndex(columnNames = {"GAMEMODELSCOPE_ID", "GAMEMODEL_ID"}),
     @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAM_ID"}),
     @CacheIndex(columnNames = {"PLAYERSCOPE_ID", "PLAYER_ID"})
 })
 @Table(indexes = {
+    @Index(columnList = "gamemodelscope_id"),
     @Index(columnList = "gamemodel_id"),
-    @Index(columnList = "gamescope_id"),
-    @Index(columnList = "game_id"),
     @Index(columnList = "teamscope_id"),
     @Index(columnList = "team_id"),
     @Index(columnList = "playerscope_id"),
@@ -153,13 +139,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
      */
     @ManyToOne
     @JsonIgnore
-    private GameScope gameScope;
-
-    /**
-     *
-     */
-    @ManyToOne
-    @JsonIgnore
     private TeamScope teamScope;
 
     /**
@@ -172,7 +151,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     /**
      *
      */
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "variableInstance")
+    @OneToOne
     @JsonIgnore
     private GameModelScope gameModelScope;
     /**
@@ -188,12 +167,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @ManyToOne
     @JsonIgnore
     private Player player;
-    /**
-     *
-     */
-    @ManyToOne
-    @JsonIgnore
-    private Game game;
 
     @ManyToOne
     @JsonIgnore
@@ -225,8 +198,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
                 return this.getTeam();
             } else if (this.getPlayer() != null) {
                 return this.getPlayer();
-            } else if (this.getGame() != null) {
-                return this.getGame();
             } else {
                 return this.getGameModel();
                 //return this.findDescriptor().getGameModel();
@@ -246,8 +217,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             return this.getTeam();
         } else if (this.getPlayer() != null) {
             return this.getPlayer();
-        } else if (this.getGame() != null) {
-            return this.getGame();
         } else {
             //return this.getGameModel();
             return this.findDescriptor().getGameModel();
@@ -286,8 +255,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             } else {
                 return this.getPlayer();
             }
-        } else if (this.getGame() != null) {
-            return this.getGame();
         } else if (this.gameModelScope != null) {
             // this.getGameModel().getChannel();
             return this.getGameModelScope().getVariableDescriptor().getGameModel();
@@ -330,8 +297,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             return this.getTeamScope();
         } else if (this.getPlayerScope() != null) {
             return this.getPlayerScope();
-        } else if (this.getGameScope() != null) {
-            return this.getGameScope();
         } else if (this.getGameModelScope() != null) {
             return this.getGameModelScope();
         } else {
@@ -345,8 +310,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             return this.getTeam().getId();
         } else if (this.getPlayerScope() != null) {
             return this.getPlayer().getId();
-        } else if (this.getGameScope() != null) {
-            return this.getGame().getId();
         } else if (this.getGameModelScope() != null) {
             return 0l; // hack -> see datasource instance cache mechanism
         } else {
@@ -403,13 +366,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         return player;
     }
 
-    /**
-     * @return game if any
-     */
-    public Game getGame() {
-        return game;
-    }
-
     public GameModel getGameModel() {
         return gameModel;
     }
@@ -429,10 +385,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         this.player = player;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
     public void setTeam(Team team) {
         this.team = team;
     }
@@ -443,53 +395,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @Override
     public Long getId() {
         return id;
-    }
-
-    /*public void setId(Long id) {
-        //Thread.dumpStack();
-        this.id = id;
-    }*/
-    /**
-     * Id of the team owning the instance
-     *
-     * @return team's id or null if instance is not a team instance
-     *
-     * @JsonIgnore public Long getTeamScopeKey() { return teamScopeKey; }
-     */
-    /**
-     * @param teamScopeKey public void setTeamScopeKey(Long teamScopeKey) {
-     *                     this.teamScopeKey = teamScopeKey; }
-     */
-    /**
-     * Id of player owning the instance
-     *
-     * @return player's id or null if this is not a player instance
-     *
-     * @JsonIgnore public Long getPlayerScopeKey() { return playerScopeKey; }
-     */
-    /**
-     *
-     * @return the gameScope or null if this instance doesn't belong to a game
-     */
-    @JsonIgnore
-    public GameScope getGameScope() {
-        return gameScope;
-    }
-
-    /**
-     * @param playerScopeKey public void setPlayerScopeKey(Long playerScopeKey)
-     *                       { this.playerScopeKey = playerScopeKey; }
-     */
-    /**
-     * @param gameScopeKey public void setGameScopeKey(Long gameScopeKey) {
-     *                     this.gameScopeKey = gameScopeKey; }
-     */
-    /**
-     * @param gameScope the gameScope to set
-     */
-    @JsonIgnore
-    public void setGameScope(GameScope gameScope) {
-        this.gameScope = gameScope;
     }
 
     /**
@@ -609,7 +514,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         } else {
             if (this.getTeamScope() != null || this.getPlayerScope() != null) {
                 return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedWritePermission());
-            } else if (this.getGameScope() != null || this.getGameModelScope() != null) {
+            } else if (this.getGameModelScope() != null) {
                 return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedReadPermission());
             }
         }
@@ -634,11 +539,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             } else {
                 perm = this.getPlayer().getAssociatedWritePermission();
             }
-        } else if (this.getGame() != null) {
-            perm = this.getGame().getAssociatedReadPermission();
         } else if (this.gameModelScope != null) {
-            // this.getGameModel().getChannel();
-            perm = this.getGameModelScope().getVariableDescriptor().getGameModel().getAssociatedReadPermission();
+            perm = this.getGameModel().getAssociatedReadPermission();
         } else {
             return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
         }

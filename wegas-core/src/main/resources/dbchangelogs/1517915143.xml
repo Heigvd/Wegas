@@ -146,4 +146,48 @@
         <renameColumn tableName="activity" oldColumnName="wrequirement_id" newColumnName="requirement_id" />
         <renameColumn tableName="fsm_state" oldColumnName="state_id" newColumnName="id" />
     </changeSet>
+
+    <!-- replace GameScope by GameModelScope -->
+    <changeSet author="maxence" id="1517915152522-9">
+        <addColumn tableName="variableinstance">
+            <column name="gamemodelscope_id" type="int8"/>
+        </addColumn>
+        <createIndex indexName="index_variableinstance_gamemodelscope_id" tableName="variableinstance">
+            <column name="gamemodelscope_id"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="gamemodelscope_id" baseTableName="variableinstance" constraintName="fk_variableinstance_gamemodelscope_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="abstractscope"/>
+
+        <sql>
+            UPDATE variableinstance SET
+            gamemodelscope_id = sub.scope_id
+            FROM( SELECT id as scope_id, variableinstance_id as vi_id FROM abstractscope WHERE dtype = 'GameModelScope') as sub
+            WHERE sub.vi_id = variableinstance.id;
+        </sql>
+
+        <sql>
+            UPDATE variableinstance SET
+            gamemodelscope_id = sub.scope_id,
+            gamemodel_id = sub.gamemodel_id,
+            gamescope_id = null,
+            game_id = null
+            FROM (SELECT vd.gamemodel_id, aa.id AS scope_id, vi.id AS vi_id
+            FROM abstractscope aa
+            JOIN variabledescriptor vd ON vd.scope_id = aa.id
+            JOIN variableinstance vi ON vi.gamescope_id = aa.id) as sub
+            WHERE id = sub.vi_id;
+        </sql>
+        <sql>
+            UPDATE abstractscope set dtype='GameModelScope' where dtype = 'GameScope';
+        </sql>
+        <dropForeignKeyConstraint baseTableName="variableinstance" constraintName="fk_variableinstance_gamescope_id"/>
+        <dropForeignKeyConstraint baseTableName="variableinstance" constraintName="fk_variableinstance_gamevariableinstances_key"/>
+        <dropIndex indexName="index_variableinstance_gamescope_id" tableName="variableinstance"/>
+        <dropIndex indexName="index_variableinstance_gamevariableinstances_key" tableName="variableinstance"/>
+        <dropColumn columnName="game_id" tableName="variableinstance"/>
+        <dropColumn columnName="gamescope_id" tableName="variableinstance"/>
+
+        <dropForeignKeyConstraint baseTableName="abstractscope" constraintName="fk_abstractscope_variableinstance_variableinstance_id"/>
+        <dropIndex indexName="index_abstractscope_variableinstance_variableinstance_id" tableName="abstractscope"/>
+        <dropColumn columnName="variableinstance_id" tableName="abstractscope"/>
+    </changeSet>
 </databaseChangeLog>

@@ -23,7 +23,6 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
-import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -592,8 +591,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         AbstractScope scope = vd.getScope();
         if (scope instanceof TeamScope) {
             return variableInstanceFacade.getTeamInstance((TeamScope) scope, player.getTeam());
-        } else if (scope instanceof GameScope) {
-            return variableInstanceFacade.getGameInstance((GameScope) scope, player.getGame());
         } else if (scope instanceof PlayerScope) {
             return variableInstanceFacade.getPlayerInstance((PlayerScope) scope, player);
         } else if (scope instanceof GameModelScope) {

@@ -549,8 +549,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         int sFlag = 0;
         if (scope instanceof GameModelScope) { // gms
             sFlag = 4;
-        } else if (scope instanceof GameScope) { // gs
-            sFlag = 3;
         } else if (scope instanceof TeamScope) { // ts
             sFlag = 2;
         } else if (scope instanceof PlayerScope) { // ps
@@ -568,7 +566,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     public void createInstances(InstanceOwner instanceOwner) {
         if ((scope instanceof GameModelScope && instanceOwner instanceof GameModel)
-                || (scope instanceof GameScope && instanceOwner instanceof Game)
                 || (scope instanceof TeamScope && instanceOwner instanceof Team)
                 || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
             scope.propagateDefaultInstance(instanceOwner, true);

@@ -104,10 +104,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @JsonIgnore
     private GameTeams gameTeams;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
-    private List<VariableInstance> privateInstances = new ArrayList<>();
-
     /**
      *
      */
@@ -418,32 +414,18 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
         // So jersey don't yell
     }
 
-    /**
-     * Retrieve all variableInstances that belongs to this game only (ie.
-     * gameScoped)
-     *
-     * @return all game gameScoped instances
-     */
     @Override
     public List<VariableInstance> getPrivateInstances() {
-        return privateInstances;
+        return new ArrayList<>();
     }
 
     @Override
     public List<VariableInstance> getAllInstances() {
         List<VariableInstance> instances = new ArrayList<>();
-        instances.addAll(getPrivateInstances());
         for (Team t : getTeams()) {
             instances.addAll(t.getAllInstances());
         }
         return instances;
-    }
-
-    /**
-     * @param privateInstances
-     */
-    public void setPrivateInstances(List<VariableInstance> privateInstances) {
-        this.privateInstances = privateInstances;
     }
 
     /**
@@ -538,7 +520,6 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     public Collection<WegasPermission> getRequieredDeletePermission() {
         return WegasMembership.ADMIN;
     }
-
 
     @Override
     public WegasPermission getAssociatedReadPermission() {
