@@ -12,7 +12,7 @@ services: postgresql
 cache:
   directories:
   - $HOME/.m2
-  - wegas-app/node_modules
+  - $HOME/.npm/_cacache
 git:
   submodules: false
 branches:
