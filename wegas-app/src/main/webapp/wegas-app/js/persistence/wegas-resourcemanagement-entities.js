@@ -561,6 +561,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             index: {
                 type: STRING,
                 index: -1,
+                required: true,
                 view: {
                     label: "Task number",
                 }
@@ -597,7 +598,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 }
             },
             description: {
-                type: STRING,
+                type: NULLSTRING,
                 optional: true,
                 index: -1,
                 view: {
