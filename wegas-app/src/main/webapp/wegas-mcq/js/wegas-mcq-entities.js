@@ -71,6 +71,31 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     label: 'Allow multiple replies'
                 }
             },
+            maxReplies : {
+                type: ['null', NUMBER],
+                optional: true,
+                index: 8,
+                visible: function(val, formVal) {
+                    return formVal.allowMultipleReplies && ! formVal.cbx;
+                },
+                errored: function(val, formVal) {
+                    var errors = [],
+                        max = typeof val === 'number' ? val : Infinity;
+                    if (max < 0) {
+                        errors.push('Value must be positive');
+                    }
+                    if (max < 2) {
+                        errors.push('Value must be greater than 1');
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Max. number of replies',
+                    description: "Optional value",
+                    indent: true,
+                    layout: 'shortInline'
+                }
+            },
             cbx: {
                 type: BOOLEAN,
                 value: false,
@@ -89,10 +114,34 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 view: {
                     label: "Tabular layout",
                     description: "Replies are presented horizontally",
-                    // className: 'wegas-advanced-feature',
                     indent: true
                 },
-                    index: 10
+                index: 10
+            },
+            minReplies : {
+                type: ['null', NUMBER],
+                optional: true,
+                visible: function(val, formVal) {
+                    return formVal.cbx;
+                },
+                errored: function(val, formVal) {
+                    var errors = [],
+                        min = typeof val === 'number' ? val : 1;
+                    if (min < 0) {
+                        errors.push('Value must be positive');
+                    }
+                    if (min > 1 && !formVal.allowMultipleReplies) {
+                        errors.push('Value cannot be greater than 1');
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Minimum number of replies',
+                    description: "Optional, default value = 1",
+                    indent: true,
+                    layout: 'shortInline'
+                },
+                index: 10
             },
             description: {
                 type: NULLSTRING,

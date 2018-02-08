@@ -71,6 +71,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Column(columnDefinition = "boolean default false")
     private Boolean tabular = FALSE;
     /**
+     * Total number of replies allowed. No default value.
+     */
+    private Integer maxReplies;
+    /**
+     * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
+     */
+    private Integer minReplies;
+    /**
      *
      */
     @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
@@ -196,6 +204,34 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     public void setTabular(Boolean tab) {
         this.tabular = tab;
+    }
+
+    /**
+     * @return the total maximum number of replies allowed
+     */
+    public Integer getMaxReplies() {
+        return maxReplies;
+    }
+
+    /**
+     * @param maxReplies the maximum number of replies allowed
+     */
+    public void setMaxReplies(Integer maxReplies) {
+        this.maxReplies = maxReplies;
+    }
+
+    /**
+     * @return the minimum number of replies required
+     */
+    public Integer getMinReplies() {
+        return minReplies;
+    }
+
+    /**
+     * @param minReplies the minimum number of replies required
+     */
+    public void setMinReplies(Integer minReplies) {
+        this.minReplies = minReplies;
     }
 
     /**

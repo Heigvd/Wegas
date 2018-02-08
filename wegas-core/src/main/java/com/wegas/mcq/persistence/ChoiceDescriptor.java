@@ -78,6 +78,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      */
     private Long cost = 0L;
 
+    /**
+     * Total number of replies allowed. No default value.
+     */
+    private Integer maxReplies;
+
     @Override
     @JsonIgnore
     public List<Script> getScripts() {
@@ -127,7 +132,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             // Default instance has already been merged,
             // has its currentResult been removed ?
             /*ChoiceInstance defaultInstance = this.getDefaultInstance();
-            
+
             if (defaultInstance.getCurrentResult() != null && !this.getResults().contains(defaultInstance.getCurrentResult())) {
                 defaultInstance.setCurrentResult(null);
             }*/
@@ -252,6 +257,20 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     /**
+     * @return the maximum number of replies allowed
+     */
+    public Integer getMaxReplies() {
+        return maxReplies;
+    }
+
+    /**
+     * @param maxReplies the maximum number of replies allowed
+     */
+    public void setMaxReplies(Integer maxReplies) {
+        this.maxReplies = maxReplies;
+    }
+
+    /**
      * @return the results
      */
     public List<Result> getResults() {
@@ -327,7 +346,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     public boolean hasNotBeenSelected(Player p) {
         if (this.getQuestion().getCbx()) {
             if (!this.getQuestion().getInstance(p).getValidated()) {
-                //Check box not yet validated -> no chocie have been selected 
+                //Check box not yet validated -> no chocie have been selected
                 return true;
             } else {
                 for (Reply r : this.getInstance(p).getReplies()) {
