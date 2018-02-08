@@ -690,6 +690,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         }
                     },
                     properties: {
+                        type: OBJECT,
                         index: 3,
                         additionalProperties: {
                             view: { label: VALUE }
