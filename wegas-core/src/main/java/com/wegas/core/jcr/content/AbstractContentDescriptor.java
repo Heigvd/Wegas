@@ -10,12 +10,11 @@ package com.wegas.core.jcr.content;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.slf4j.LoggerFactory;
-
+import java.util.zip.ZipEntry;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import java.util.zip.ZipEntry;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -192,7 +191,7 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     * @return truc if node exists
+     * @return true if node exists
      * @throws RepositoryException
      */
     @JsonIgnore
@@ -282,7 +281,6 @@ abstract public class AbstractContentDescriptor {
         connector.setMimeType(fileSystemAbsolutePath, mimeType);
         connector.setNote(fileSystemAbsolutePath, note);
         connector.setDescription(fileSystemAbsolutePath, description);
-        connector.save();
     }
 
     /**

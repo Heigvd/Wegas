@@ -10,18 +10,18 @@ package com.wegas.core.jcr.page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.AlphanumericComparator;
-import org.codehaus.jettison.json.JSONException;
-import org.slf4j.LoggerFactory;
-
+import java.util.*;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-import java.util.*;
+import org.codehaus.jettison.json.JSONException;
+import org.slf4j.LoggerFactory;
+import com.wegas.core.jcr.jta.JTARepositoryConnector;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class Pages implements AutoCloseable {
+public class Pages implements JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
 
@@ -30,14 +30,26 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param gameModelId
+     *
      * @throws RepositoryException
      */
     public Pages(Long gameModelId) throws RepositoryException {
         this.connector = new PageConnector(gameModelId);
     }
 
+    @Override
+    public void setManaged(boolean managed) {
+        connector.setManaged(managed);
+    }
+
+    @Override
+    public boolean getManaged() {
+        return connector.getManaged();
+    }
+
     /**
      * @return Page index
+     *
      * @throws RepositoryException
      * @throws JSONException
      */
@@ -68,6 +80,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @return Map complete pages.
+     *
      * @throws RepositoryException
      */
     public Map<String, JsonNode> getPagesContent() throws RepositoryException {
@@ -90,7 +103,9 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param id
+     *
      * @return the page
+     *
      * @throws RepositoryException
      */
     public Page getPage(String id) throws RepositoryException {
@@ -105,6 +120,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param page
+     *
      * @throws RepositoryException
      */
     public void store(Page page) throws RepositoryException {
@@ -115,6 +131,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param page
+     *
      * @throws RepositoryException
      */
     public void setMeta(Page page) throws RepositoryException {
@@ -129,6 +146,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param pageId
+     *
      * @throws RepositoryException
      */
     public void deletePage(String pageId) throws RepositoryException {
@@ -145,8 +163,24 @@ public class Pages implements AutoCloseable {
     }
 
     @Override
-    public void close() throws RepositoryException {
-        this.connector.close();
+    public void prepare() {
+        this.connector.prepare();
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void commit() {
+        this.connector.commit();
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void rollback() {
+        this.connector.rollback();
     }
 
     /**
@@ -154,6 +188,7 @@ public class Pages implements AutoCloseable {
      *
      * @param pageId page's id to move
      * @param pos    position to move page to.
+     *
      * @throws RepositoryException
      */
     public void move(final String pageId, final int pos) throws RepositoryException {
@@ -178,7 +213,6 @@ public class Pages implements AutoCloseable {
 //        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" + this.gameModelId + "') order by n.index, localname(n)," +
 //            " LIMIT " + (Math.abs(pos - oldPos) + 1L) + " OFFSET " + Math.min(pos, oldPos));
 
-
     }
 
     private void updateIndex(Page page) throws RepositoryException {
@@ -197,12 +231,24 @@ public class Pages implements AutoCloseable {
         return pages;
     }
 
+    /**
+     * Return the first page or null is there is no pages
+     *
+     * @return
+     *
+     * @throws RepositoryException
+     */
     public Page getDefaultPage() throws RepositoryException {
-        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" +
-                this.connector.getRootPath() + "') order by n.index, localname(n)", 1);
+        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('"
+                + this.connector.getRootPath() + "') order by n.index, localname(n)", 1);
         if (query.hasNext()) {
             return new Page(query.nextNode());
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Pages(" + connector.getRootPath() + ")";
     }
 }

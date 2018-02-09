@@ -8,11 +8,10 @@
 package com.wegas.core.jcr;
 
 import com.wegas.core.Helper;
-
-import javax.jcr.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.jcr.*;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

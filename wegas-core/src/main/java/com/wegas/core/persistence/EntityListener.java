@@ -11,6 +11,8 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.jcr.jta.JCRClient;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -45,6 +47,9 @@ public class EntityListener {
     private RequestManager requestManager;
 
     @Inject
+    private JCRConnectorProvider jcrProvider;
+
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
 
     @Inject
@@ -76,6 +81,9 @@ public class EntityListener {
     void onPrePersist(Object o) {
         //Do not remove this empty method nor its @PrePersist annotation !!!!
         // Remove this method  makes CDI injection fails ...
+        if (o instanceof JCRClient) {
+            this.injectJTABean((JCRClient) o);
+        }
     }
 
     @PostPersist
@@ -172,5 +180,13 @@ public class EntityListener {
             AcceptInjection id = (AcceptInjection) o;
             id.setBeanjection(getBeansjection());
         }
+
+        if (o instanceof JCRClient) {
+            this.injectJTABean((JCRClient) o);
+        }
+    }
+
+    private void injectJTABean(JCRClient o) {
+        o.inject(jcrProvider);
     }
 }

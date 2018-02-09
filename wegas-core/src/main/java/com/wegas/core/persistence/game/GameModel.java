@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.jcr.jta.JCRClient;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
@@ -54,7 +56,7 @@ import org.apache.shiro.SecurityUtils;
             @Index(columnList = "basedon_gamemodelid")
         }
 )
-public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable {
+public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, JCRClient {
 
     private static final long serialVersionUID = 1L;
 
@@ -66,6 +68,10 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     private Boolean canInstantiate = null;
     @Transient
     private Boolean canDuplicate = null;
+
+    @Transient
+    @JsonIgnore
+    private JCRConnectorProvider jcrProvider;
 
     /**
      *
@@ -717,19 +723,23 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     * @return the pages
+    * @return the pages
      */
     public Map<String, JsonNode> getPages() {
         // do not even try to fetch pages from repository if the gamemodel define a pagesURI
         if (Helper.isNullOrEmpty(getProperties().getPagesUri())) {
-            try (final Pages pagesDAO = new Pages(this.id)) {
-                return pagesDAO.getPagesContent();
-            } catch (RepositoryException ex) {
-                return new HashMap<>();
+            if (this.pages != null) {
+                // pages have been set but not yet saved to repository
+                return this.pages;
+            } else if (this.getId() != null) {
+                try {
+                    return this.jcrProvider.getPages(this.id).getPagesContent();
+                } catch (RepositoryException ex) {
+                    System.out.println("getPages() EXCEPTION {}" + ex);
+                }
             }
-        } else {
-            return new HashMap<>();
         }
+        return new HashMap<>();
     }
 
     /**
@@ -737,7 +747,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public final void setPages(Map<String, JsonNode> pageMap) {
         this.pages = pageMap;
+
         if (this.id != null) {
+            // no id means not persisted
+            // no id means no JCR repository
+            // no repository means no store
+            // let @PostPersist storePaged
             this.storePages();
         }
     }
@@ -762,13 +777,16 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @PostPersist
     private void storePages() {
         if (this.pages != null) {
-            try (final Pages pagesDAO = new Pages(this.id)) {
+            try {
+                Pages pagesDAO = this.jcrProvider.getPages(this.id);
                 pagesDAO.delete();                                              // Remove existing pages
                 // Pay Attention: this.pages != this.getPages() ! 
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
                 for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
                 }
+                // As soon as repository is up to date, clear local pages
+                this.pages = null;
 
             } catch (RepositoryException ex) {
                 System.err.println("Failed to create repository for GameModel " + this.id);
@@ -903,6 +921,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         entities.add(this);
         map.put(this.getChannel(), entities);
         return map;
+    }
+
+    @Override
+    public void inject(JCRConnectorProvider jcrProvider) {
+        this.jcrProvider = jcrProvider;
     }
 
     /**
