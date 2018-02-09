@@ -3560,8 +3560,8 @@ jsonify@~0.0.0:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
 
 "jsoninput@github:cigit/JSONInput":
-  version "0.0.1"
-  resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/8dd2d2ed3110f2399f5f9cb7a591197f89548087"
+  version "0.0.2"
+  resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/8e4d7a42013ef93516fb141e5bf719eef17310e4"
   dependencies:
     baobab "^2.5.0"
     baobab-react "^3.0.0"
