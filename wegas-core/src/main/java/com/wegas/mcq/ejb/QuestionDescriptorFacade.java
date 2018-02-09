@@ -204,7 +204,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         return oldEntity;
     }
 
-    private Reply createReply(Long choiceId, Player player, Long startTime) {
+    private Reply createReply(Long choiceId, Player player, Long startTime, boolean ignored) {
         ChoiceDescriptor choice = (ChoiceDescriptor) variableDescriptorFacade.find(choiceId);
         ChoiceInstance choiceInstance = choice.getInstance(player);
 
@@ -213,16 +213,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
         Boolean isCbx = questionDescriptor.getCbx();
         if (!isCbx
-                && !questionDescriptor.getAllowMultipleReplies()
-                && !questionInstance.getReplies(player).isEmpty()) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
-            //&& this.findReplyCount(questionInstance) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
-            //if (!questionDescriptor.getAllowMultipleReplies()
-            //&& !questionInstance.getReplies().isEmpty()) {                    // Does not work when sending 2 requests at once
+                && questionDescriptor.getMaxReplies() != null
+                && questionInstance.getReplies(player).size() >= questionDescriptor.getMaxReplies()) {
+            //if (questionDescriptor.getMaxReplies() == 1) { } else {}; specific message ??? 
             throw WegasErrorMessage.error("You have already answered this question");
         }
 
         Reply reply = new Reply();
-        if (isCbx && startTime < 0) { // Hack to signal ignoration
+        if (isCbx && ignored) {
             reply.setStartTime(0L);
             reply.setIgnored(true);
         } else {
@@ -277,7 +275,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             logger.error("ignoreChoice() invoked on a Question which is not of checkbox type");
         }
 
-        Reply reply = this.createReply(choiceId, player, -1L); // Negative startTime: hack to signal ignoration
+        Reply reply = this.createReply(choiceId, player, -1L, true);
         try {
             scriptEvent.fire(player, "replyIgnore", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
@@ -303,23 +301,49 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
         requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
-        //getEntityManager().refresh(questionInstance);
-        //requestFacade.getRequestManager().lock("MCQ-" + reply.getQuestionInstance().getId());
-        if (questionDescriptor.getCbx() && !questionDescriptor.getAllowMultipleReplies()) {
+
+        Integer maxQ = questionDescriptor.getMaxReplies();
+        Integer maxC;
+        if (questionDescriptor.getCbx()) {
+            maxC = 1;
+        } else {
+            maxC = choice.getMaxReplies();
+        }
+
+        // radio-like checkbox ?
+        if (questionDescriptor.getCbx() && maxQ != null && maxQ == 1) {
+
             // mutually exclusive replies must be cancelled:
             List<Reply> toCancel = new ArrayList<>();
-            for (Reply r : questionDescriptor.getInstance(player).getReplies(player)) {
+            for (Reply r : questionInstance.getReplies(player)) {
                 toCancel.add(r);
             }
+
             /*
-             * Two steps deletion avoids concurrent modification exception 
+             * Two steps deletion avoids concurrent modification exception
              */
             for (Reply r : toCancel) {
                 this.cancelReply(player.getId(), r.getId());
             }
         }
 
-        Reply reply = this.createReply(choiceId, player, startTime);
+        /**
+         * Could not create a new reply if the maximum number has already been reached for the whole question
+         */
+        List<Reply> replies = questionInstance.getReplies(player);
+        if (maxQ != null && replies.size() >= maxQ) {
+            throw WegasErrorMessage.error("You can select up to " + maxQ + " answers" + (maxQ > 1 ? "s" : ""));
+        }
+
+        /**
+         * Could not create a new reply if the maximum number has already been reached for the specific choice
+         */
+        List<Reply> cReplies = choice.getInstance(player).getReplies();
+        if (maxC != null && cReplies.size() >= maxC) {
+            throw WegasErrorMessage.error("You can not select this choice more than " + maxC + " time" + (maxC > 1 ? "s" : ""));
+        }
+
+        Reply reply = this.createReply(choiceId, player, startTime, false);
         try {
             scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
         } catch (WegasScriptException e) {
@@ -460,21 +484,21 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         } else {
             scriptManager.eval(player, validateReply.getResult().getImpact(), choiceDescriptor);
         }
-        final ReplyValidate replyValidate = new ReplyValidate(validateReply,
+        final ReplyValidate replyV = new ReplyValidate(validateReply,
                 choiceDescriptor.getInstance(player),
                 (QuestionInstance) ((ChoiceDescriptor) validateReply.getChoiceInstance().findDescriptor()).getQuestion().getInstance(player),
                 player);
         try {
             if (validateReply.getIgnored()) {
-                scriptEvent.fire(player, "replyIgnore", replyValidate);
+                scriptEvent.fire(player, "replyIgnore", replyV);
             } else {
-                scriptEvent.fire(player, "replyValidate", replyValidate);
+                scriptEvent.fire(player, "replyValidate", replyV);
             }
         } catch (WegasRuntimeException e) {
             logger.error("EventListener error (\"replyValidate\")", e);
             // GOTCHA no eventManager is instantiated
         }
-        this.replyValidate.fire(replyValidate);
+        this.replyValidate.fire(replyV);
     }
 
     /**
@@ -514,9 +538,24 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             return;
         }
 
-        // Don't validate questions with no replies
-        if (validateQuestion.getReplies(player).isEmpty()) {
-            throw new WegasErrorMessage(WegasErrorMessage.ERROR, "Please select a reply");
+        int min = questionDescriptor.getMinReplies() != null ? questionDescriptor.getMinReplies() : 1;
+        Integer max = questionDescriptor.getMaxReplies();
+
+        List<Reply> replies = validateQuestion.getReplies(player);
+
+        // not enough replies
+        if (replies.size() < min) {
+            if (min == 1) {
+                throw WegasErrorMessage.error("Please select a reply");
+            } else {
+                throw WegasErrorMessage.error("Please select at least " + min + " replies");
+            }
+        }
+
+        // too many replies
+        if (replies.size() > max) {
+            // note that this case should be unreachable since #selectChoice prenvent select too much choices...
+            throw WegasErrorMessage.error("You can not select more than " + max + (max == 1 ? "reply" : "replies"));
         }
 
         // Loop on all choices: validate all replies (checked choices) and "ignore" all unchecked choices.

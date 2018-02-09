@@ -14,7 +14,7 @@ import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

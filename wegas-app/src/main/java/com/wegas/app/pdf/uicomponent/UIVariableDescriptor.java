@@ -8,7 +8,6 @@
 package com.wegas.app.pdf.uicomponent;
 
 import com.wegas.app.pdf.helper.UIHelper;
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -499,14 +498,15 @@ public class UIVariableDescriptor extends UIComponentBase {
             UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, question.getDescription(), false, editorMode);
 
             if (editorMode) {
-                UIHelper.printProperty(context, writer, "Allow Multiple Replies", question.getAllowMultipleReplies());
+                UIHelper.printProperty(context, writer, "Min: ", question.getMinReplies());
+                UIHelper.printProperty(context, writer, "Max: ", question.getMaxReplies());
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
             }
 
             UIHelper.endDiv(writer); // end COLUMN
             UIHelper.endDiv(writer); // end COLUMNS
 
-            if (question.getAllowMultipleReplies() || instance.getSortedReplies(player).isEmpty()) {
+            if (question.getMaxReplies() == null || instance.getSortedReplies(player).size() < question.getMaxReplies()) {
                 for (ChoiceDescriptor choice : question.getItems()) {
                     encode(context, writer, choice);
                 }
@@ -550,6 +550,8 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
+
+                UIHelper.printProperty(context, writer, "Max: ", choice.getMaxReplies());
 
                 if (choice instanceof SingleResultChoiceDescriptor == false) {
                     // Not a "single result" choice ? print the default result name

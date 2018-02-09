@@ -17,8 +17,11 @@ YUI.add('wegas-editable', function(Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push("type", "properties", "view", /* should vanish once */ "_inputex", "required", "format", "errored",
-        "choices", "items", "enum", "pattern", "maxLength", "minLength", "index", "default", "transient", "visible", "additionalProperties", "minItems", "maxItems");
+    Y.Base._ATTR_CFG.push("type", "properties", "view", 
+    /* should vanish once */ "_inputex", "required", "format", "errored",
+        "choices", "items", "enum", "pattern", "maxLength", "minLength", "index",
+        "default", "transient", "visible", "additionalProperties", 
+        "minItems", "maxItems", "minimum", "maximum");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
     /**

@@ -9,4 +9,17 @@
             <column name="maxreplies" type="int4"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="maxence" id="1518094136-2">
+        <sql>
+            UPDATE mcqquestiondescriptor
+            SET maxreplies = 1
+            WHERE NOT allowmultiplereplies;
+        </sql>
+    </changeSet>
+
+    <changeSet author="maxence" id="1518094136-3">
+        <dropColumn tableName="mcqquestiondescriptor" columnName="allowmultiplereplies;"></dropColumn>
+    </changeSet>
+
 </databaseChangeLog>
