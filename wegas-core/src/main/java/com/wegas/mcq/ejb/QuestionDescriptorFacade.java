@@ -553,7 +553,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         }
 
         // too many replies
-        if (replies.size() > max) {
+        if (max != null && replies.size() > max) {
             // note that this case should be unreachable since #selectChoice prenvent select too much choices...
             throw WegasErrorMessage.error("You can not select more than " + max + (max == 1 ? "reply" : "replies"));
         }
