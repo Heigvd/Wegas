@@ -190,4 +190,11 @@
         <dropIndex indexName="index_abstractscope_variableinstance_variableinstance_id" tableName="abstractscope"/>
         <dropColumn columnName="variableinstance_id" tableName="abstractscope"/>
     </changeSet>
+
+
+    <!-- fix broadcast scope consistence -->
+    <changeSet author="maxence" id="1517915152522-10">
+        <sql>update abstractscope set broadcastscope = 'GameScope' where dtype = 'GameModelScope';</sql>
+        <sql>update abstractscope set broadcastscope = 'TeamScope' where dtype = 'TeamScope' and broadcastscope ='PlayerScope';</sql>
+    </changeSet>
 </databaseChangeLog>

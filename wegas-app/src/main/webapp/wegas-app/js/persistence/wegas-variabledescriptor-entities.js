@@ -320,6 +320,16 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         broadcastScope: {
                             type: STRING,
                             value: "TeamScope",
+                            errored: function(val, formVal) {
+                                var errors = [],
+                                    scope = formVal.scope;
+
+                                if (scope["@class"] === "TeamScope" && val === "PlayerScope" ||
+                                    scope["@class"] === "GameModelScope" && (val === "PlayerScope" || val === "TeamScope")) {
+                                    errors.push('Invalid combination');
+                                }
+                                return errors.join(', ');
+                            },
                             view: {
                                 type: SELECT,
                                 label: 'Variable is visible by',
