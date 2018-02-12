@@ -22,6 +22,8 @@ YUI.add("wegas-i18n-mcq-en", function(Y) {
             unanswered : "",    // Customizable per scenario
             notDone: "",        // Customizable per scenario
             noReply: "Please select an answer first.",
+            notEnoughReply: "Please select at least {{min}} answers",
+            maximumReached: "You can't select more than {{max}} answers",
             conflict: "Your request has been cancelled because one of your team mates made the same request at the same time."
         }
     });

@@ -842,6 +842,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     },
                     view: {
                         label: 'Minimum',
+                        placeholder: "-∞",
                         layout: 'shortInline'
                     }
                 },
@@ -864,6 +865,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     },
                     view: {
                         label: 'Maximum',
+                        placeholder: "∞",
                         layout: 'shortInline'
                     }
                 },

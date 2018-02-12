@@ -7,32 +7,32 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import static java.lang.Boolean.FALSE;
-import javax.persistence.Column;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 
 /**
  *
@@ -40,11 +40,9 @@ import javax.persistence.NamedQuery;
  */
 @Entity
 @Table(name = "MCQQuestionDescriptor")
-
 @NamedQueries({
     @NamedQuery(name = "QuestionDescriptor.findDistinctChildrenLabels", query = "SELECT DISTINCT(cd.label) FROM ChoiceDescriptor cd WHERE cd.question.id = :containerId")
 })
-
 public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -56,10 +54,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@JsonView(Views.ExtendedI.class)
     private String description;
     /**
-     *
-     */
-    private boolean allowMultipleReplies = false;
-    /**
      * Set this to true when the choice is to be selected with an HTML
      * radio/checkbox
      */
@@ -70,6 +64,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Column(columnDefinition = "boolean default false")
     private Boolean tabular = FALSE;
+    /**
+     * Total number of replies allowed. No default value.
+     */
+    private Integer maxReplies = null;
+    /**
+     * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
+     */
+    private Integer minReplies = null;
     /**
      *
      */
@@ -97,7 +99,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
             super.merge(a);
             QuestionDescriptor other = (QuestionDescriptor) a;
             this.setDescription(other.getDescription());
-            this.setAllowMultipleReplies(other.getAllowMultipleReplies());
+            this.setMinReplies(other.getMinReplies());
+            this.setMaxReplies(other.getMaxReplies());
             this.setCbx(other.getCbx());
             this.setTabular(other.getTabular());
             this.setPictures(other.getPictures());
@@ -119,6 +122,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param p
+     *
      * @return the player instance active status
      */
     public boolean isActive(Player p) {
@@ -157,17 +161,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     * @return the multipleReplies
-     */
-    public boolean getAllowMultipleReplies() {
-        return allowMultipleReplies;
-    }
-
-    /**
+     * Backwardcompat for deserialisation
+     *
      * @param allowMultipleReplies
      */
     public void setAllowMultipleReplies(boolean allowMultipleReplies) {
-        this.allowMultipleReplies = allowMultipleReplies;
+        if (!allowMultipleReplies) {
+            this.maxReplies = 1;
+        }
     }
 
     /**
@@ -199,6 +200,34 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
+     * @return the total maximum number of replies allowed
+     */
+    public Integer getMaxReplies() {
+        return maxReplies;
+    }
+
+    /**
+     * @param maxReplies the maximum number of replies allowed
+     */
+    public void setMaxReplies(Integer maxReplies) {
+        this.maxReplies = maxReplies;
+    }
+
+    /**
+     * @return the minimum number of replies required
+     */
+    public Integer getMinReplies() {
+        return minReplies;
+    }
+
+    /**
+     * @param minReplies the minimum number of replies required
+     */
+    public void setMinReplies(Integer minReplies) {
+        this.minReplies = minReplies;
+    }
+
+    /**
      * @return the pictures
      */
     public List<String> getPictures() {
@@ -223,6 +252,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param p
+     *
      * @return true if the player has already answers this question
      */
     public boolean isReplied(Player p) {
@@ -238,6 +268,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * {@link #isReplied ...}
      *
      * @param p
+     *
      * @return true if the player has not yet answers this question
      */
     public boolean isNotReplied(Player p) {

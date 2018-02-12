@@ -238,19 +238,23 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     }
 
     /**
-     * @param variableDescriptorId
-     * @param entity
+     * Create a new descriptor as a child of another
+     *
+     * @param parentDescriptorId owner of the descriptor
+     * @param entity the new descriptor to create
      *
      * @return the new child
      */
-    public VariableDescriptor createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
-        VariableDescriptor find = this.find(variableDescriptorId);
-        return this.createChild(find.getGameModel(), (DescriptorListI) find, entity);
+    public VariableDescriptor createChild(final Long parentDescriptorId, final VariableDescriptor entity) {
+        VariableDescriptor parent = this.find(parentDescriptorId);
+        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity);
     }
 
     /**
-     * @param gameModelId
-     * @param variableDescriptor
+     * Create a root level descriptor.
+     *
+     * @param gameModelId owner of the descriptor
+     * @param variableDescriptor descriptor to add to the gameModel
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
         GameModel find = this.gameModelFacade.find(gameModelId);

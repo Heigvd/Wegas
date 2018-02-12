@@ -116,17 +116,29 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.get(CONTENTBOX).delegate("click", function(e) {
 
                 Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    var minQ, maxQ;
                     this.beforeRequest();
                     // Determine if the submit concerns a question or a choice:
                     // If it's a question then call validateQuestion() else call selectAndValidateChoice()
                     var receiver = Wegas.Facade.Variable.cache.findById(e.target.get('id'));
                     if (receiver instanceof Wegas.persistence.QuestionDescriptor) {
                         var instance = receiver.getInstance();
-                        // Prevent validation of questions with no checked answers:
-                        if (receiver.get("cbx") && instance.get("replies").length === 0) {
-                            this.onFailure();
-                            Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.noReply'));
-                            return;
+                        // Prevent validation of questions with too few replies
+                        if (receiver.get("cbx")) {
+                            if (Y.Lang.isNumber(receiver.get("minReplies"))) {
+                                minQ = receiver.get("minReplies");
+                            } else {
+                                minQ = 1;
+                            }
+                            if (instance.get("replies").length < minQ) {
+                                this.onFailure();
+                                if (minQ === 1) {
+                                    Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.noReply'));
+                                } else {
+                                    Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.notEnoughReply', {min: minQ}));
+                                }
+                                return;
+                            }
                         }
                         this.dataSource.sendRequest({
                             request: "/QuestionDescriptor/ValidateQuestion/" + instance.get('id')
@@ -262,15 +274,22 @@ YUI.add('wegas-mcq-view', function(Y) {
         genMarkup: function(question) {
             var i, ret,
                 readonly = this.get("readonly.evaluated"),
-                allowMultiple = question.get("allowMultipleReplies"),
+                minQ = question.get("minReplies"),
+                maxQ = question.get("maxReplies"),
+                maxC,
+                description,
+                checkbox = (maxQ !== 1) || (minQ !== null && minQ !== 1),
                 cbxType = question.get("cbx"),
                 cQuestion = this.dataSource.cache.find("id", question.get("id")),
                 choices = cQuestion.get("items"), choiceD, choiceI, choiceID,
                 questionInstance = cQuestion.getInstance(),
                 questionScriptAlias = cQuestion.get("name"),
                 allReplies = questionInstance.get("replies"),
+                choiceReplies,
                 totalNumberOfReplies = allReplies.length,
-                answerable = (cbxType ? !questionInstance.get('validated') : allowMultiple || totalNumberOfReplies === 0),
+                maximumReached = maxQ && totalNumberOfReplies >= maxQ,
+                qAnswerable = (cbxType ? !questionInstance.get('validated') : !maximumReached),
+                cAnswerable,
                 tabularMCQ = cbxType && question.get("tabular"),
                 checked, reply, title, currDescr, isChosenReply;
             Y.log("RENDER TAB");
@@ -282,10 +301,11 @@ YUI.add('wegas-mcq-view', function(Y) {
             // Display choices
 
             if (this.get("disabled")) {
-                answerable = false;
+                qAnswerable = false;
             }
 
             if (cbxType) {
+                // 
                 if (tabularMCQ) {
                     // First find how many choices are active and if there is any description field to be displayed:
                     var hasDescription = false;
@@ -293,7 +313,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                     for (i = 0; i < choices.length; i += 1) {
                         if (choices[i].getInstance().get("active")) {
                             nbActiveChoices++;
-                            if (question.get("items")[i].get("description").length !== 0) {
+                            description = question.get("items")[i].get("description");
+
+                            if (description && description.length !== 0) {
                                 hasDescription = true;
                             }
                         }
@@ -307,7 +329,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         choiceID = choiceD.get("id");
                         if (choiceI.get("active")) {
                             checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
-                            ret.push('<div class="mcq-choice', (answerable || checked ? '' : ' spurned'), '" style="width:', cellWidth, '% !important">');
+                            ret.push('<div class="mcq-choice', (qAnswerable || checked ? '' : ' spurned'), '" style="width:', cellWidth, '% !important">');
                             title = (choiceD.get("title").trim() !== '') ? choiceD.get("title") : "&nbsp;";
                             ret.push('<div class="mcq-choice-name" style="text-align:center"><label for="', choiceID, '">', title, '</label></div>');
                             currDescr = '';
@@ -317,7 +339,11 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     currDescr = "&nbsp;";
                             }
                             ret.push('<div class="mcq-choice-description" style="text-align:center"><label for="', choiceID, '">', currDescr, '</label></div>');
-                            ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled style="cursor:default"'), ' id="', choiceID, '" name="', questionScriptAlias, '">');
+                            cAnswerable = qAnswerable && (!checkbox || !maximumReached || checked);
+
+                            ret.push('<input class="mcq-checkbox"', (checkbox ? ' type="checkbox"' : ' type="radio"'),
+                                ((checkbox && qAnswerable && maximumReached && !checked) ? ' title="' + I18n.t('mcq.maximumReached', {max: maxQ}) + '"' : ''),
+                                (checked ? ' checked' : ''), (cAnswerable ? '' : ' disabled style="cursor:default"'), ' id="', choiceID, '" name="', questionScriptAlias, '">');
                             ret.push('</div>'); // end mcq-choice
                         }
                     }
@@ -329,7 +355,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         ret.push('<div class="mcq-choices-horizontal-finalsubmit">&nbsp;</div>');
                     }
                     ret.push('<div class="mcq-choices-horizontal-finalsubmit">');
-                    ret.push('<button class="yui3-button"', (answerable && !readonly ? '' : ' disabled'), ' id="', cQuestion.get("id"), '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
+                    ret.push('<button class="yui3-button"', (qAnswerable && !readonly ? '' : ' disabled'), ' id="', cQuestion.get("id"), '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                     ret.push('</div>'); // end mcq-choices-horizontal-finalsubmit
                     ret.push('</div>'); // end mcq-last-horizontal
                     ret.push('</div>'); // end mcq-choices-horizontal
@@ -341,23 +367,26 @@ YUI.add('wegas-mcq-view', function(Y) {
                         choiceD = choices[i];
                         choiceI = choiceD.getInstance();
                         choiceID = choiceD.get("id");
-                        currDescr = question.get("items")[i].get("description");
+                        currDescr = question.get("items")[i].get("description") || '';
                         if (choiceI.get("active")) {
                             ret.push('<div class="mcq-choice-vertical">');
                             checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
-                            ret.push('<div class="mcq-choice', (answerable || checked ? '' : ' spurned'), '">');
+                            ret.push('<div class="mcq-choice', (qAnswerable || checked ? '' : ' spurned'), '">');
                             title = (choiceD.get("title").trim() !== '') ? choiceD.get("title") : "&nbsp;";
                             ret.push('<div class="mcq-choice-name"><label for="', choiceID, '">', title, '</label></div>');
                             if (currDescr !== '') {
                                 ret.push('<div class="mcq-choice-description"><label for="', choiceID, '">', currDescr, '</label></div>');
                             }
                             ret.push('</div>'); // end cell mcq-choice
-                            ret.push('<div class="mcq-choices-vertical-checkbox', (answerable || checked) ? '' : ' spurned', (currDescr === '' ? ' nodescr' : ''), '">');
+                            ret.push('<div class="mcq-choices-vertical-checkbox', (qAnswerable || checked) ? '' : ' spurned', (currDescr === '' ? ' nodescr' : ''), '">');
                             if (currDescr !== '') {
                                 ret.push('<div class="mcq-choice-name" style="padding:0">&nbsp;</div>'); // Finish line with same style
                             }
                             ret.push('<div class="mcq-checkbox-container">');
-                            ret.push('<input class="mcq-checkbox"', (allowMultiple ? ' type="checkbox"' : ' type="radio"'), (checked ? ' checked' : ''), (answerable ? '' : ' disabled style="cursor:default"'),
+                            cAnswerable = qAnswerable && (!checkbox || !maximumReached || checked);
+                            ret.push('<input class="mcq-checkbox"', (checkbox ? ' type="checkbox"' : ' type="radio"'), 
+                                ((checkbox && qAnswerable && maximumReached && !checked) ? ' title="' + I18n.t('mcq.maximumReached', {max: maxQ}) + '"' : ''),
+                            (checked ? ' checked' : ''), (cAnswerable ? '' : ' disabled style="cursor:default"'),
                                 ' id="', choiceID, '" name="', questionScriptAlias, '">');
                             ret.push('</div>'); // end div mcq-checkbox-container
                             ret.push('</div>'); // end cell mcq-choices-vertical-checkbox
@@ -371,7 +400,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     //ret.push('<div class="mcq-last-vertical">');
                     //ret.push('<div class="mcq-choice">&nbsp;</div>');
                     //ret.push('<div class="mcq-choices-vertical-finalsubmit">');
-                    ret.push('<button class="yui3-button"', (answerable && !readonly ? '' : ' disabled'), ' id="', cQuestion.get("id"), '" style="font-weight:bold">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
+                    ret.push('<button class="yui3-button"', (qAnswerable && !readonly ? '' : ' disabled'), ' id="', cQuestion.get("id"), '" style="font-weight:bold">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
                     //ret.push('</div>'); // end cell with submit button
                     //ret.push('</div>'); // end table-row
                     ret.push('</div>'); // end mcq-finalsubmit
@@ -384,13 +413,18 @@ YUI.add('wegas-mcq-view', function(Y) {
                     choiceI = choiceD.getInstance();
                     choiceID = choiceD.get("id");
                     currDescr = question.get("items")[i].get("description") || "";
-                    isChosenReply = answerable || (allReplies[0] && allReplies[0].getChoiceDescriptor().get("id") === choiceID);
+
+                    maxC = choiceD.get("maxReplies");
+                    choiceReplies = choiceI.get("replies");
+                    cAnswerable = qAnswerable && (!maxC || maxC > choiceReplies.length);
+
+                    isChosenReply = choiceReplies.length > 0;
                     if (choiceI.get("active")) {
                         var noTitle = (choiceD.get("title").trim() == '');
                         var noDescr = (currDescr.trim() == '');
 
                         ret.push('<div class="mcq-choice-vertical', (noTitle && noDescr ? ' nohover' : ''), '">');
-                        ret.push('<div class="mcq-choice', (answerable || isChosenReply) ? (noTitle && noDescr ? ' notitle' : '') : ' spurned', '">');
+                        ret.push('<div class="mcq-choice', (cAnswerable || isChosenReply) ? (noTitle && noDescr ? ' notitle' : '') : ' spurned', '">');
                         title = noTitle ? "&nbsp;" : choiceD.get("title");
                         ret.push('<div class="mcq-choice-name', (noTitle && noDescr ? ' notitle' : (!noTitle && !noDescr ? ' colspan' : '')), '">', title, '</div>');
 
@@ -400,7 +434,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                         ret.push('</div>'); // end cell mcq-choice
                         ret.push('<div class="mcq-choices-vertical-submit',
-                            (answerable || isChosenReply) ? '' : ' spurned',
+                            (cAnswerable || isChosenReply) ? '' : ' spurned',
                             (noTitle ? ' notitle' : ''),
                             (noDescr ? ' nodescr' : ''),
                             (!noTitle && !noDescr ? ' colspan' : ''), '">');
@@ -410,8 +444,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                         }
 
                         ret.push('<div class="mcq-checkbox-container">');
-                        ret.push('<button class="yui3-button"', (answerable && !readonly ? '' : ' disabled'), ' id="', choiceID, '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
-                        if (allowMultiple) {
+                        ret.push('<button class="yui3-button"', (cAnswerable && !readonly ? '' : ' disabled'), ' id="', choiceID, '">', Y.Wegas.I18n.t('mcq.submit'), '</button>');
+                        if (!maxQ || maxQ > 1) {
                             ret.push('<span class="numberOfReplies">',
                                 this.getNumberOfReplies(questionInstance, choiceD),
                                 '<span class="symbole">x</span></span>');

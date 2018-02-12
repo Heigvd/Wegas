@@ -54,7 +54,8 @@ const borderTopStyle = css({
 });
 
 const indentStyle = css({
-    marginLeft: '22px !important',
+    label: 'commonView indentStyle',
+    marginLeft: '44px !important',
 });
 
 interface ICommonViewProps {

@@ -21,6 +21,8 @@ YUI.add("wegas-i18n-mcq-fr", function(Y) {
             unanswered : "",    // Customizable per scenario
             notDone: "",        // Customizable per scenario
             noReply: "Merci de d'abord sélectionner une réponse&thinsp;!",
+            notEnoughReply: "Merci de d'abord sélectionner au moins {{min}} réponses&thinsp;!",
+            maximumReached: "Vous ne pouvez pas sélectionner plus de {{max}} réponses",
             conflict: "Votre requête n'a pas été prise en compte car un de vos coéquipiers a tenté la même opération en même temps.<br />"
         }
     });
