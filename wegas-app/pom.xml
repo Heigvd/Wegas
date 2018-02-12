@@ -386,6 +386,7 @@
                             <executable>yarn</executable>
                             <arguments>
                                 <argument>install</argument>
+                                <argument>--frozen-lockfile</argument>
                             </arguments>
                         </configuration>
                     </execution>

@@ -78,6 +78,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      */
     private Long cost = 0L;
 
+    /**
+     * Total number of replies allowed. No default value.
+     */
+    private Integer maxReplies = null;
+
     @Override
     @JsonIgnore
     public List<Script> getScripts() {
@@ -99,6 +104,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             ChoiceDescriptor other = (ChoiceDescriptor) a;
             this.setDescription(other.getDescription());
             super.merge(a);
+            this.setMaxReplies(other.getMaxReplies());
             this.setDuration(other.getDuration());
             this.setCost(other.getCost());
 
@@ -127,7 +133,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             // Default instance has already been merged,
             // has its currentResult been removed ?
             /*ChoiceInstance defaultInstance = this.getDefaultInstance();
-            
+
             if (defaultInstance.getCurrentResult() != null && !this.getResults().contains(defaultInstance.getCurrentResult())) {
                 defaultInstance.setCurrentResult(null);
             }*/
@@ -252,6 +258,20 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     /**
+     * @return the maximum number of replies allowed
+     */
+    public Integer getMaxReplies() {
+        return maxReplies;
+    }
+
+    /**
+     * @param maxReplies the maximum number of replies allowed
+     */
+    public void setMaxReplies(Integer maxReplies) {
+        this.maxReplies = maxReplies;
+    }
+
+    /**
      * @return the results
      */
     public List<Result> getResults() {
@@ -282,6 +302,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
     /**
      * has the choice been explicitely ignored ?
+     * <p>
+     * ie. the choice has not been selected and is no longer selectable
      *
      * @param p
      *
@@ -302,13 +324,38 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 return false;
             }
         } else {
-            // Choice is linked to at least a reply => not ignored
+            // Is the Choice linked to at least a reply => not ignored
             if (!this.getInstance(p).getReplies().isEmpty()) {
                 return false;
             }
+
+            // this choice has not been selected
+            if (this.getQuestion().getMaxReplies() != null) {
+                // maximum number of choice is set. reached ?
+                return qi.getReplies(p).size() >= this.getQuestion().getMaxReplies();
+            } else {
+                // no limit, the choice is still selectable
+                return false;
+            }
         }
-        // this choice has not been selected and no choices are selectable any longer
-        return !(this.getQuestion().getAllowMultipleReplies() || qi.getReplies(p).isEmpty());
+    }
+
+    /**
+     * Is the choice selectable.
+     * This method only cares about the choice itself not the whole question.
+     * It means is will return true even when the question is no longer anserable
+     *
+     * @param p
+     *
+     * @return
+     */
+    public boolean isSelectable(Player p) {
+        if (this.getMaxReplies() != null) {
+            // maximum limit reached ?
+            return this.getInstance(p).getReplies().size() < this.getMaxReplies();
+        }
+        // no-limit
+        return true;
     }
 
     /**
@@ -327,7 +374,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     public boolean hasNotBeenSelected(Player p) {
         if (this.getQuestion().getCbx()) {
             if (!this.getQuestion().getInstance(p).getValidated()) {
-                //Check box not yet validated -> no chocie have been selected 
+                //Check box not yet validated -> no chocie have been selected
                 return true;
             } else {
                 for (Reply r : this.getInstance(p).getReplies()) {

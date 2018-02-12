@@ -540,8 +540,8 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.102.tgz#586a3e22385fc79b07cef9c5a1c8a5387986fbc8"
 
 "@types/node@*":
-  version "9.4.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.2.tgz#b109a6c4f64147ccf9476d9e1a6fbf69a10faeb8"
+  version "8.9.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.9.1.tgz#5a329d73a97f3c5a626dfe0ed8c0b831fee5357a"
 
 "@types/prop-types@^15.5.2":
   version "15.5.2"
@@ -1052,8 +1052,8 @@ bowser@^1.7.3:
   resolved "https://registry.yarnpkg.com/bowser/-/bowser-1.9.2.tgz#d66fc868ca5f4ba895bee1363c343fe7b37d3394"
 
 brace-expansion@^1.1.7:
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.8.tgz#c07b211c7c952ec1f8efd51a77ef0d1d3990a292"
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.9.tgz#acdc7dde0e939fb3b32fe933336573e2a7dc2b7c"
   dependencies:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
@@ -1269,12 +1269,12 @@ caniuse-api@^2.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000804"
-  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000804.tgz#84feb42018fc64cf6aff6371e43115f292c00179"
+  version "1.0.30000805"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000805.tgz#8f1ad9264c835989b5055dd9b009513ce6d95338"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000791, caniuse-lite@^1.0.30000792:
-  version "1.0.30000804"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000804.tgz#8729a143d65378e8936adbb161f550e9c49fc09d"
+  version "1.0.30000805"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000805.tgz#83a5f21ead01486e67bccca6fae5dca7cde496de"
 
 caseless@~0.11.0:
   version "0.11.0"
@@ -1592,9 +1592,9 @@ copy-descriptor@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
 
-copy-webpack-plugin@^4.3.1:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/copy-webpack-plugin/-/copy-webpack-plugin-4.4.0.tgz#93c9ded7f821a747a5b617087dd6191abfefb9be"
+copy-webpack-plugin@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/copy-webpack-plugin/-/copy-webpack-plugin-4.4.1.tgz#1e8c366211db6dc2ddee40e5a3e4fc661dd149e8"
   dependencies:
     cacache "^10.0.1"
     find-cache-dir "^1.0.0"
@@ -1603,7 +1603,6 @@ copy-webpack-plugin@^4.3.1:
     loader-utils "^0.2.15"
     minimatch "^3.0.4"
     p-limit "^1.0.0"
-    pify "^3.0.0"
     serialize-javascript "^1.4.0"
 
 core-js@^1.0.0:
@@ -3561,8 +3560,8 @@ jsonify@~0.0.0:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
 
 "jsoninput@github:cigit/JSONInput":
-  version "0.0.1"
-  resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/6a3cad3829409d75bfe1a6828d2624d43d926536"
+  version "0.0.2"
+  resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/8e4d7a42013ef93516fb141e5bf719eef17310e4"
   dependencies:
     baobab "^2.5.0"
     baobab-react "^3.0.0"

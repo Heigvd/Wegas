@@ -314,6 +314,12 @@
     line-height: normal !important;
 }
 
+@-moz-document url-prefix() {
+    .mcq-checkbox[type='checkbox'][disabled]{
+        opacity :0.3;
+    }
+}
+
 .mcq-checkbox[type='checkbox'],
 .mcq-checkbox[type='radio'] {
     margin-bottom:8px;

@@ -8,7 +8,7 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-mcq-entities', function (Y) {
+YUI.add('wegas-mcq-entities', function(Y) {
     "use strict";
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
@@ -34,17 +34,17 @@ YUI.add('wegas-mcq-entities', function (Y) {
     SELFARG = {
         type: 'identifier',
         value: 'self',
-        view: { type: HIDDEN }
+        view: {type: HIDDEN}
     };
 
     /**
      * QuestionDescriptor mapper
      */
     persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
-        getRepliesByStartTime: function (startTime) {
+        getRepliesByStartTime: function(startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
         },
-        getIconCss: function () {
+        getIconCss: function() {
             return 'fa fa-question-circle';
         }
     }, {
@@ -63,12 +63,58 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     description: "Displayed to players"
                 }
             },
-            allowMultipleReplies: {
-                value: false,
-                type: BOOLEAN,
-                index: 8,
+            minReplies: {
+                type: ['null', NUMBER],
+                optional: true,
+                value: 1,
+                minimum: 0,
+                index: 11,
+                visible: function(val, formVal) {
+                    return formVal.cbx;
+                },
+                errored: function(val, formVal) {
+                    var errors = [],
+                        min = typeof val === 'number' ? val : 1,
+                        max = formVal.maxReplies;
+                    if (min < 0) {
+                        errors.push('Value must be positive');
+                    }
+                    if (formVal.cbx && Y.Lang.isNumber(max) && min > max) {
+                        errors.push('Value cannot be greater than the maximum nunber of replies');
+                    }
+                    return errors.join(', ');
+                },
                 view: {
-                    label: 'Allow multiple replies'
+                    label: 'Min. number of replies',
+                    description: "Optional value",
+                    placeholder: "1",
+                    layout: 'shortInline'
+                }
+            },
+            maxReplies: {
+                type: ['null', NUMBER],
+                optional: true,
+                value: 1,
+                index: 12,
+                errored: function(val, formVal) {
+                    var errors = [];
+                    if (Y.Lang.isNumber(val)) {
+                        if (val < 1) {
+                            errors.push('Value must be striclty positive or empty');
+                        }
+                        if (formVal.cbx && Y.Lang.isNumber(formVal.minReplies)) {
+                            if (val < formVal.minReplies) {
+                                errors.push('Value must be greater or equals than minimum');
+                            }
+                        }
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Max. number of replies',
+                    description: "Optional value",
+                    placeholder: "∞",
+                    layout: 'shortInline'
                 }
             },
             cbx: {
@@ -78,27 +124,25 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     label: "Checkbox answer",
                     description: "For standard multiple-choice questions",
                 },
-                    index: 9
+                index: 9
             },
             tabular: {
                 type: BOOLEAN,
                 value: false,
-                visible: function (val, formVal) {
+                visible: function(val, formVal) {
                     return formVal.cbx;
                 },
                 view: {
                     label: "Tabular layout",
                     description: "Replies are presented horizontally",
-                    // className: 'wegas-advanced-feature',
-                    indent: true
                 },
-                    index: 10
+                index: 10
             },
             description: {
                 type: NULLSTRING,
                 format: HTML,
-                index: 11,
-                view: { type: HTML, label: "Description" }
+                index: 12,
+                view: {type: HTML, label: "Description"}
             },
             defaultInstance: {
                 type: "object",
@@ -117,12 +161,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     unread: {
                         value: true,
                         type: BOOLEAN,
-                        view: { type: HIDDEN }
+                        view: {type: HIDDEN}
                     },
                     validated: {
                         value: false,
                         type: BOOLEAN,
-                        view: { type: HIDDEN }
+                        view: {type: HIDDEN}
                     },
                     replies: {
                         value: [],
@@ -139,7 +183,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         }
                     }
                 },
-                    index: 3
+                index: 3
             },
             pictures: {
                 type: ARRAY,
@@ -193,7 +237,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     }]
             }, {
                 type: "DeleteEntityButton"
-            },{
+            }, {
                 type: BUTTON,
                 label: 'Search for usages',
                 plugins: [
@@ -234,7 +278,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * QuestionInstance mapper
      */
     Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Wegas.persistence.VariableInstance, [], {
-        getRepliesByStartTime: function (startTime) {
+        getRepliesByStartTime: function(startTime) {
             var i, ret = [], replies = this.get("replies");
             for (i = 0; i < replies.length; i = i + 1) {
                 if (replies[i].get("startTime") === startTime) {
@@ -288,7 +332,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
     Wegas.persistence.ChoiceDescriptor = Y.Base.create("ChoiceDescriptor",
         Wegas.persistence.VariableDescriptor,
         [], {
-            getIconCss: function () {
+        getIconCss: function() {
             return "fa fa-check-square-o";
         }
     },
@@ -330,7 +374,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         unread: {
                             type: BOOLEAN,
                             value: true,
-                            view: { type: HIDDEN }
+                            view: {type: HIDDEN}
                         },
                         active: {
                             type: BOOLEAN,
@@ -357,7 +401,29 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             }
                         }
                     },
-                        index: 2
+                    index: 2
+                },
+                maxReplies: {
+                    type: ['null', NUMBER],
+                    minimum: 1,
+                    optional: true,
+                    index: 8,
+                    visible: function(val, formVal) {
+                        var parent;
+                        if (formVal.id) {
+                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
+                            // not applicable for checkboxed questions and useless if q.maxReplies equals 1
+                            return !parent.get("cbx") && parent.get("maxReplies") !== 1;
+                        }
+                        return true;
+                    },
+                    view: {
+                        label: 'Max. number of replies',
+                        placeholder: "∞",
+                        description: "Optional value",
+                        //indent: true,
+                        layout: 'shortInline'
+                    }
                 },
                 duration: {
                     value: 1,
@@ -443,9 +509,9 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         SELFARG, {
                             type: STRING,
                             view: {
-                            type: "entityarrayfieldselect",
-                            returnAttr: "name",
-                            field: "results",
+                                type: "entityarrayfieldselect",
+                                returnAttr: "name",
+                                field: "results",
                             }
                         }]
                 },
@@ -457,18 +523,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 hasNotBeenSelected: {
                     label: "has not been selected",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 hasBeenIgnored: {
                     label: "has been ignored",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 hasResultBeenApplied: {
                     label: "has result been applied",
@@ -477,10 +537,10 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         SELFARG, {
                             type: STRING,
                             view: {
-                            type: "entityarrayfieldselect",
-                            returnAttr: "name",
-                            field: "results",
-                        }
+                                type: "entityarrayfieldselect",
+                                returnAttr: "name",
+                                field: "results",
+                            }
                         }
                     ]
                 }
@@ -493,7 +553,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
         Wegas.persistence.ChoiceDescriptor,
         [],
         {
-            getIconCss: function () {
+            getIconCss: function() {
                 return "fa fa-check-square-o";
             }
         },
@@ -517,7 +577,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                         unread: {
                             type: BOOLEAN,
                             value: true,
-                            view: { type: HIDDEN }
+                            view: {type: HIDDEN}
                         },
                         active: {
                             type: BOOLEAN,
@@ -543,12 +603,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 },
                 results: {
                     type: ARRAY,
-                    maxItems:1,
-                    minItems:1,
+                    maxItems: 1,
+                    minItems: 1,
                     value: [{
                             "@class": "Result"
                         }],
-                    view: { type: ARRAY },
+                    view: {type: ARRAY},
                     items: {
                         type: OBJECT,
                         optional: true,
@@ -568,9 +628,9 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 view: {
                                     type: "uneditable",
                                     className: "wegas-advanced-feature",
-                                    label:"Version"
+                                    label: "Version"
                                 },
-                                    index: -1
+                                index: -1
                             },
                             name: {
                                 type: STRING,
@@ -601,11 +661,11 @@ YUI.add('wegas-mcq-entities', function (Y) {
                                 index: 2,
                                 type: ["null", OBJECT],
                                 properties: {
-                                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
                                     content: {
                                         type: STRING
-                                }
-                            },
+                                    }
+                                },
                                 view: {
                                     label: "Impact on variables",
                                     type: SCRIPT
@@ -614,7 +674,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             ignorationAnswer: {
                                 type: NULLSTRING,
                                 index: 4,
-                                visible: function (val, formVal) {
+                                visible: function(val, formVal) {
                                     return Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent().get("cbx");
                                 },
                                 view: {
@@ -627,18 +687,18 @@ YUI.add('wegas-mcq-entities', function (Y) {
                             ignorationImpact: {
                                 type: ["null", OBJECT],
                                 properties: {
-                                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
                                     content: {
                                         type: STRING
-                                }
-                            },
-                                visible: function (val, formVal) {
+                                    }
+                                },
+                                visible: function(val, formVal) {
                                     return Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent().get("cbx");
-                            },
+                                },
                                 view: {
                                     label: "Impact on variables when ignored",
                                     type: SCRIPT
-                            },
+                                },
                                 index: 5,
 
                             },
@@ -708,18 +768,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 hasNotBeenSelected: {
                     label: "has not been selected",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 hasBeenIgnored: {
                     label: "has been ignored",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 isActive: {
                     label: "is active",
@@ -732,16 +786,16 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * MCQ Result mapper
      */
     persistence.Result = Y.Base.create("Result", persistence.Entity, [], {
-        getChoiceDescriptor: function () {
+        getChoiceDescriptor: function() {
             return Wegas.Facade.Variable.cache.findById(this.get("choiceDescriptorId"));
         },
-        getLabel: function () {
+        getLabel: function() {
             return this.get("label");
         },
-        getEditorLabel: function () {
+        getEditorLabel: function() {
             return this.get("label");
         },
-        getIconCss: function () {
+        getIconCss: function() {
             return "fa fa-cog";
         }
     }, {
@@ -758,12 +812,12 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     className: "wegas-advanced-feature",
                     label: "Version"
                 },
-                    index: -1
+                index: -1
             },
             label: {
                 type: STRING,
                 "transient": false,
-                getter: function (val) {
+                getter: function(val) {
                     return val || this.get("name");
                 },
                 index: -1,
@@ -782,7 +836,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
                     description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
                 },
-                validator: function (s) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
@@ -793,17 +847,17 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     type: HTML,
                     label: "Feedback",
                     borderTop: true
-            },
+                },
                 index: 10
             },
             impact: {
                 type: ["null", OBJECT],
                 properties: {
-                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
                     content: {
                         type: STRING
-                }
-            },
+                    }
+                },
                 view: {
                     label: "Impact",
                     type: SCRIPT
@@ -813,7 +867,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
             ignorationAnswer: {
                 type: NULLSTRING,
                 optional: true,
-                visible: function (val, formVal) {
+                visible: function(val, formVal) {
                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
                     return parent ? parent.getParent().get("cbx") : false;
                 },
@@ -822,17 +876,17 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     label: "Feedback when ignored",
                     borderTop: true
                 },
-                index:12
+                index: 12
             },
             ignorationImpact: {
                 type: ["null", OBJECT],
                 properties: {
-                    "@class": { type: "string", value: "Script", view: { type: HIDDEN } },
+                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
                     content: {
                         type: STRING
-                }
-            },
-                visible: function (val, formVal) {
+                    }
+                },
+                visible: function(val, formVal) {
                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
                     return parent ? parent.getParent().get("cbx") : false;
                 },
@@ -840,7 +894,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                     label: "Impact on variables when ignored",
                     type: SCRIPT
                 },
-                index:13
+                index: 13
             },
             choiceDescriptorId: {
                 type: NUMBER,
@@ -919,7 +973,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
             unread: {
                 value: true,
                 type: BOOLEAN,
-                view: { type: HIDDEN }
+                view: {type: HIDDEN}
             },
             replies: {
                 value: [],
@@ -946,7 +1000,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      * MCQ Reply mapper
      */
     persistence.Reply = Y.Base.create("Reply", persistence.Entity, [], {
-        getChoiceDescriptor: function () {
+        getChoiceDescriptor: function() {
             if (this.get("choiceName")) {
                 return Y.Wegas.Facade.Variable.cache.find("name", this.get("choiceName"));
             }
@@ -962,7 +1016,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
         /**
          *  @return 0 if is finished, 1 if ongoing and 2 if planified
          */
-        getStatus: function (time) {
+        getStatus: function(time) {
             var choiceDescriptor = this.getChoiceDescriptor();
             if ((this.get("startTime") + choiceDescriptor.get("duration")) <= time) {
                 return 0;
@@ -993,7 +1047,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
             },
             startTime: {
                 type: STRING,
-                setter: function (val) {
+                setter: function(val) {
                     return val * 1;
                 }
             },

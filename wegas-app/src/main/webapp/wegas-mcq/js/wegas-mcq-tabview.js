@@ -118,12 +118,13 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 if (validatedCbx)
                     label = ""; // Dummy status string
             } else if (nbReplies > 0) {
-                if (question.get("allowMultipleReplies")) {
-                    label = questionInstance.get("replies").length + "x";
-                } else { // Find the last selected replies
+                if (question.get("maxReplies") === 1) {
+                    // Find the last selected replies
                     choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
                     label = choiceDescriptor.get("title") || "";
                     label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
+                } else {
+                    label = questionInstance.get("replies").length + "x";
                 }
             }
 
