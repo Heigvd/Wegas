@@ -15,7 +15,6 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
-import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.test.arquillian.AbstractArquillianTest;
@@ -53,11 +52,6 @@ public class ScopeTest extends AbstractArquillianTest {
         gmScoped.setScope(new GameModelScope());
         gmScoped.setDefaultInstance(new TextInstance());
 
-        TextDescriptor gScoped = new TextDescriptor();
-        gScoped.setName("gScoped");
-        gScoped.setScope(new GameScope());
-        gScoped.setDefaultInstance(new TextInstance());
-
         TextDescriptor tScoped = new TextDescriptor();
         tScoped.setName("tScoped");
         tScoped.setScope(new TeamScope());
@@ -71,7 +65,6 @@ public class ScopeTest extends AbstractArquillianTest {
         logger.error("CREATE NEW DESCRIPTORS");
 
         variableDescriptorFacade.create(scenario.getId(), gmScoped);
-        variableDescriptorFacade.create(scenario.getId(), gScoped);
         variableDescriptorFacade.create(scenario.getId(), tScoped);
         variableDescriptorFacade.create(scenario.getId(), pScoped);
 
@@ -79,13 +72,11 @@ public class ScopeTest extends AbstractArquillianTest {
 
         pScoped = (TextDescriptor) variableDescriptorFacade.find(pScoped.getId());
         tScoped = (TextDescriptor) variableDescriptorFacade.find(tScoped.getId());
-        gScoped = (TextDescriptor) variableDescriptorFacade.find(gScoped.getId());
         gmScoped = (TextDescriptor) variableDescriptorFacade.find(gmScoped.getId());
 
         // Get owner test
         Assert.assertEquals(player, pScoped.getInstance(player).getOwner());
         Assert.assertEquals(team, tScoped.getInstance(player).getOwner());
-        Assert.assertEquals(game, gScoped.getInstance(player).getOwner());
         Assert.assertEquals(scenario, gmScoped.getInstance(player).getOwner());
 
         Assert.assertEquals(null, pScoped.getDefaultInstance().getOwner());
@@ -98,7 +89,6 @@ public class ScopeTest extends AbstractArquillianTest {
         // test getScopeKey
         Assert.assertEquals(player.getId(), pScoped.getInstance(player).getScopeKey());
         Assert.assertEquals(team.getId(), tScoped.getInstance(player).getScopeKey());
-        Assert.assertEquals(game.getId(), gScoped.getInstance(player).getScopeKey());
         Assert.assertEquals(new Long(0), gmScoped.getInstance(player).getScopeKey());// hack -> scopeKey for gameModel is always 0 !
 
         Assert.assertEquals(null, pScoped.getDefaultInstance().getScopeKey());
@@ -106,8 +96,8 @@ public class ScopeTest extends AbstractArquillianTest {
         /* One global instance */
         Assert.assertEquals(1, gameModelFacade.find(scenario.getId()).getPrivateInstances().size());
 
-        /* One quite-global instance */
-        Assert.assertEquals(1, gameFacade.find(game.getId()).getPrivateInstances().size());
+        // no more GameScope !
+        Assert.assertEquals(0, gameFacade.find(game.getId()).getPrivateInstances().size());
 
         /* each team own one instance */
         Assert.assertEquals(1, teamFacade.find(team.getId()).getPrivateInstances().size());
@@ -118,7 +108,7 @@ public class ScopeTest extends AbstractArquillianTest {
         Assert.assertEquals(1, playerFacade.find(player21.getId()).getPrivateInstances().size());
         Assert.assertEquals(1, playerFacade.find(player22.getId()).getPrivateInstances().size());
 
-        Assert.assertEquals(4, instances.size());
+        Assert.assertEquals(3, instances.size());
     }
 
     @Test
@@ -130,11 +120,6 @@ public class ScopeTest extends AbstractArquillianTest {
         gmScoped.setName("gmScoped");
         gmScoped.setScope(new GameModelScope());
         gmScoped.setDefaultInstance(new TextInstance());
-
-        TextDescriptor gScoped = new TextDescriptor();
-        gScoped.setName("gScoped");
-        gScoped.setScope(new GameScope());
-        gScoped.setDefaultInstance(new TextInstance());
 
         TextDescriptor tScoped = new TextDescriptor();
         tScoped.setName("tScoped");
@@ -165,7 +150,6 @@ public class ScopeTest extends AbstractArquillianTest {
         pScoped_gs.setDefaultInstance(new TextInstance());
 
         variableDescriptorFacade.create(scenario.getId(), gmScoped);
-        variableDescriptorFacade.create(scenario.getId(), gScoped);
         variableDescriptorFacade.create(scenario.getId(), tScoped);
         variableDescriptorFacade.create(scenario.getId(), tScoped_gs);
         variableDescriptorFacade.create(scenario.getId(), pScoped);
@@ -177,10 +161,6 @@ public class ScopeTest extends AbstractArquillianTest {
         // GameModelScope -> everybody got the same instance
         Assert.assertEquals(variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player), variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player21));
         Assert.assertEquals(variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player21), variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player22));
-
-        // GameScope -> everybody got the same instance
-        Assert.assertEquals(variableDescriptorFacade.find(scenario, "gScoped").getInstance(player), variableDescriptorFacade.find(scenario, "gScoped").getInstance(player21));
-        Assert.assertEquals(variableDescriptorFacade.find(scenario, "gScoped").getInstance(player21), variableDescriptorFacade.find(scenario, "gScoped").getInstance(player22));
 
         // TeamScope
         // player in team2 got the same instance
@@ -234,7 +214,6 @@ public class ScopeTest extends AbstractArquillianTest {
         // Assert updates permissions
         updateVariable(player21, "pScoped", "some other value");
         updateVariable(player21, "tScoped", "some other value");
-        updateVariable(player21, "gScoped", "some other value");
         updateVariable(player21, "gmScoped", "some other value");
 
         try {
@@ -259,26 +238,16 @@ public class ScopeTest extends AbstractArquillianTest {
 
         Assert.assertEquals(instance, pScoped.findInstance(pScoped.getInstance(player), user.getUser()));
         Assert.assertEquals(instance, pScoped.findInstance(tScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, pScoped.findInstance(gScoped.getInstance(player), user.getUser()));
         Assert.assertEquals(instance, pScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
-
 
         instance = tScoped.getInstance(player);
         Assert.assertEquals(instance, tScoped.findInstance(pScoped.getInstance(player), user.getUser()));
         Assert.assertEquals(instance, tScoped.findInstance(tScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, tScoped.findInstance(gScoped.getInstance(player), user.getUser()));
         Assert.assertEquals(instance, tScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
-
-        instance = gScoped.getInstance(player);
-        Assert.assertEquals(instance, gScoped.findInstance(pScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, gScoped.findInstance(tScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, gScoped.findInstance(gScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, gScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
 
         instance = gmScoped.getInstance(player);
         Assert.assertEquals(instance, gmScoped.findInstance(pScoped.getInstance(player), user.getUser()));
         Assert.assertEquals(instance, gmScoped.findInstance(tScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, gmScoped.findInstance(gScoped.getInstance(player), user.getUser()));
         Assert.assertEquals(instance, gmScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
     }
 

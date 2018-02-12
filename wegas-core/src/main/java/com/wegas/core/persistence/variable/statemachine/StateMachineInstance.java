@@ -7,19 +7,19 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.persistence.*;
 
 /**
  *
@@ -28,7 +28,7 @@ import com.wegas.core.persistence.EntityComparators;
 @Entity
 @Table(name = "FSMinstance"/*, 
         indexes = {
-            @Index(columnList = "transitionHistory.statemachineinstance_variableinstance_id")
+            @Index(columnList = "transitionHistory.statemachineinstance_id")
         }*/
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

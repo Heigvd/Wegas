@@ -7,44 +7,39 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import static java.lang.Boolean.FALSE;
-import javax.persistence.Column;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@Table(name = "MCQQuestionDescriptor")
-
 @NamedQueries({
     @NamedQuery(name = "QuestionDescriptor.findDistinctChildrenLabels", query = "SELECT DISTINCT(cd.label) FROM ChoiceDescriptor cd WHERE cd.question.id = :containerId")
 })
-
 public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -75,9 +70,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
     //@BatchFetch(BatchFetchType.IN)
-    @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
-    @OrderColumn
+    @OrderColumn(name = "qd_items_order")
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *

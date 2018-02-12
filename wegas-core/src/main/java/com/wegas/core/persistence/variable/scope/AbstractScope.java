@@ -36,13 +36,12 @@ import org.slf4j.LoggerFactory;
 @Entity // Database serialization
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
-    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
+    @JsonSubTypes.Type(name = "GameScope", value = GameModelScope.class), // force GameScope to be deserialized as GameModelScope
     @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
-    @Index(columnList = "variableinstance_variableinstance_id"),
-    @Index(columnList = "variabledescriptor_variabledescriptor_id")
+    @Index(columnList = "variabledescriptor_id")
 })
 abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEntity implements AcceptInjection {
 

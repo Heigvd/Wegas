@@ -24,9 +24,6 @@ import javax.persistence.OneToMany;
  */
 @Entity
 
-/*@Table(indexes = {
- @Index(columnList = "variableinstance_id")
- })*/
 public class BurndownInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
