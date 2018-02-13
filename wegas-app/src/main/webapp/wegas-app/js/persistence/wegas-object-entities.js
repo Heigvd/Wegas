@@ -84,7 +84,7 @@ YUI.add('wegas-object-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
-                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                    refId: persistence.Entity.ATTRS_DEF.REF_ID,
                     descriptorId: IDATTRDEF,
                     properties: {
                         type: "object",
