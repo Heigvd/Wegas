@@ -23,6 +23,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         BUTTON = 'Button',
         VALUE = 'value',
         TEXT = 'text',
+        INTERNAL = "INTERNAL",
+        PROTECTED = "PROTECTED",
+        INHERITED = "INHERITED",
+        PRIVATE = "PRIVATE",
+        NONE = "NONE",
         HTML = 'html',
         AVAILABLE_TYPES,
         OPTIONAL_AVAILABLE_TYPES,
@@ -277,6 +282,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 name: {
                     type: STRING,
                     index: -1,
+                    maxWriteableVisibility: PRIVATE,
                     view: {
                         className: 'wegas-advanced-feature',
                         label: 'Script alias',
@@ -299,6 +305,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         className: 'wegas-advanced-feature'
                     },
                     properties: {
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         '@class': {
                             type: STRING,
                             view: {
@@ -351,7 +358,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: {},
                     validator: function(o) {
                         return o instanceof persistence.VariableInstance;
-                    }
+                    },
+                    maxWriteableVisibility: PROTECTED
                 }
             },
             EDITMENU: {
@@ -416,13 +424,16 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     }
                 },
                 usagesBtn: {
-                    type: BUTTON,
-                    label: 'Search for usages',
-                    plugins: [
-                        {
-                            fn: 'SearchEntityAction'
-                        }
-                    ]
+                    index: 40,
+                    cfg: {
+                        type: BUTTON,
+                        label: 'Search for usages',
+                        plugins: [
+                            {
+                                fn: 'SearchEntityAction'
+                            }
+                        ]
+                    }
                 }
             }
         });
@@ -638,6 +649,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         value: {
                             type: STRING,
                             optional: true,
@@ -736,6 +748,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         descriptorId: IDATTRDEF,
                         value: {
                             type: STRING,
@@ -900,6 +913,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         descriptorId: IDATTRDEF,
                         value: {
                             type: NUMBER,
@@ -1126,6 +1140,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         descriptorId: IDATTRDEF
                     }
                 },
@@ -1259,7 +1274,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     index: 2,
                     cfg: {
                         type: BUTTON,
-                        label: '<span class="wegas-icon wegas-icon-sort"></span>Sort',
+                        label: 'Sort',
                         plugins: [{
                                 fn: "SortEntityAction"
                             }]
@@ -1319,6 +1334,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         descriptorId: IDATTRDEF
                     }
                 }
@@ -1669,6 +1685,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         descriptorId: IDATTRDEF,
                         value: {
                             type: BOOLEAN,

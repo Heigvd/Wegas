@@ -166,21 +166,19 @@ YUI.add('wegas-editable', function(Y) {
             }
         },
         _overrideFormConfig: function(cfg, entity, inheritedMode, inheritedVisibility, inheritedMaxWriteVisibility) {
-
-            throw "POST MERGE FIX PLEASE";
-
+            return;
             var visibility, mode, key, maxWritableVisibility;
 
             visibility = this._getVisibility(entity, inheritedVisibility);
 
-            maxWritableVisibility = (cfg._inputex && cfg._inputex.maxWritableVisibility) || inheritedMaxWriteVisibility || "INHERITED";
+            maxWritableVisibility = (cfg && cfg.maxWritableVisibility) || inheritedMaxWriteVisibility || "INHERITED";
 
             mode = this._getMode(inheritedMode, visibility, maxWritableVisibility);
 
             Y.log("CurrentMode: " + mode + "  -> " + JSON.stringify(entity));
 
-            cfg._inputex = cfg._inputex || {
-                _type: undefined
+            cfg.view = cfg.view || {
+                type: undefined
             };
 
             if (cfg.properties) {
@@ -197,13 +195,13 @@ YUI.add('wegas-editable', function(Y) {
                 /*
                  * FORM2 -> only keep readonly 
                  */
-                if (!cfg._inputex._type || (
-                    cfg._inputex._type !== "hidden" &&
-                    cfg._inputex._type !== "uneditable")) {
+                if (!cfg.view.type || (
+                    cfg.view.type !== "hidden" &&
+                    cfg.view.type !== "uneditable")) {
                     if (mode === "READONLY") {
                         Y.log(" ->  READONLY");
-                        cfg._inputex._type = "uneditable";
-                        cfg._inputex.readonly = true;
+                        cfg.view.type = "uneditable";
+                        cfg.view.readonly = true;
                     }
                 }
             }

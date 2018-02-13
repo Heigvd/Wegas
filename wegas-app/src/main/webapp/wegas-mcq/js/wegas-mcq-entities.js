@@ -157,6 +157,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     descriptorId: IDATTRDEF,
                     unread: {
                         value: true,
@@ -359,6 +360,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         descriptorId: IDATTRDEF,
                         unread: {
                             type: BOOLEAN,
@@ -549,6 +551,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         descriptorId: IDATTRDEF,
                         unread: {
                             type: BOOLEAN,

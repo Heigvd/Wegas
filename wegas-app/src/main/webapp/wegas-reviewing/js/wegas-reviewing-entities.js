@@ -143,6 +143,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     descriptorId: IDATTRDEF,
                     reviewState: {
                         type: STRING,

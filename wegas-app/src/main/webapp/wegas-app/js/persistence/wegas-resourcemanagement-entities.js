@@ -18,7 +18,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         SELFARG = {
             type: 'identifier',
             value: 'self',
-            view: { type: HIDDEN }
+            view: {type: HIDDEN}
         },
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
@@ -36,8 +36,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         optional: true, // The id is optional for entites that have not been persisted
         view: {
             type: HIDDEN
-            }
-        };
+        }
+    };
     Y.namespace("Wegas.persistence.Resources"); // Create namespace
 
     /**
@@ -122,66 +122,67 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 value: "ResourceDescriptor"
             },
             title: {
-                    type: NULLSTRING,
+                type: NULLSTRING,
                 optional: true,
-                    view: {
+                view: {
                     label: "Label",
                     description: "Displayed to players",
-                        lengthType:"short"
-                    },
-                    index: -1
+                    lengthType: "short"
+                },
+                index: -1
             },
             description: {
-                    type: NULLSTRING,
-                    view: { type: HTML, label: "Description" },
+                type: NULLSTRING,
+                view: {type: HTML, label: "Description"},
                 optional: true,
-                    index: -1
-                },
-                properties: {
-                    type: OBJECT,
-                    additionalProperties: {
-                        type: STRING,
-                        required: true,
-                        view: {
-                            label: NAME
-                }
+                index: -1
             },
+            properties: {
+                type: OBJECT,
+                additionalProperties: {
+                    type: STRING,
+                    required: true,
                     view: {
+                        label: NAME
+                    }
+                },
+                view: {
                     label: "Properties",
-                        className: 'wegas-advanced-feature',
-                        type: HASHLIST,
-                        keyLabel: VALUE
+                    className: 'wegas-advanced-feature',
+                    type: HASHLIST,
+                    keyLabel: VALUE
                 }
             },
             defaultInstance: {
                 properties: {
                     '@class': {
                         type: STRING,
-                            value: 'ResourceInstance',
-                            view: {
-                                type: HIDDEN,
+                        value: 'ResourceInstance',
+                        view: {
+                            type: HIDDEN,
                         }
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
-                        descriptorId: IDATTRDEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                    descriptorId: IDATTRDEF,
                     active: {
                         type: BOOLEAN,
-                            value: true,
-                            view: {
-                                label: "Active from start",
+                        value: true,
+                        view: {
+                            label: "Active from start",
                         }
                     },
                     /*
-                    confidence: {
-                            required: true,
-                            type: NUMBER,
-                            value: 100,
-                            view: {
-                                className: 'wegas-advanced-feature',
-                                label: "Initial confidence"
-                        }
-                    },
+                     confidence: {
+                     required: true,
+                     type: NUMBER,
+                     value: 100,
+                     view: {
+                     className: 'wegas-advanced-feature',
+                     label: "Initial confidence"
+                     }
+                     },
                      */
                     assignments: {
                         type: ARRAY,
@@ -215,58 +216,58 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                      */
                     occupations: {
                         type: ARRAY,
-                            items: {
-                                type: OBJECT,
-                                properties: {
-                                    "@class": {
-                                        type: STRING,
-                                        value: "Occupation",
-                                        view: { type: HIDDEN }
-                                    },
-                                    id: IDATTRDEF,
-                                    editable: {
-                                        type: BOOLEAN,
-                                        value: false,
-                                        view: { type: HIDDEN }
-                                    },
-                                    time: {
-                                        type: NUMBER,
-                                        required: true,
-                                        view: {
-                                            className: "short-input",
-                                            label: "Period number"
+                        items: {
+                            type: OBJECT,
+                            properties: {
+                                "@class": {
+                                    type: STRING,
+                                    value: "Occupation",
+                                    view: {type: HIDDEN}
+                                },
+                                id: IDATTRDEF,
+                                editable: {
+                                    type: BOOLEAN,
+                                    value: false,
+                                    view: {type: HIDDEN}
+                                },
+                                time: {
+                                    type: NUMBER,
+                                    required: true,
+                                    view: {
+                                        className: "short-input",
+                                        label: "Period number"
+                                    }
+                                }
                             }
-                            }
-                            }
-                    },
-                            view: {
-                                className: 'wegas-advanced-feature editor-resources-occupations',
-                                label: "Unavailabilities",
-                                description: "[periods]"
+                        },
+                        view: {
+                            className: 'wegas-advanced-feature editor-resources-occupations',
+                            label: "Unavailabilities",
+                            description: "[periods]"
                         }
                     },
                     properties: {
-                            type: OBJECT,
-                            additionalProperties: {
-                                type: STRING,
-                                required: true,
-                                view: {
-                                    label: VALUE
-                                }
-                            },
+                        type: OBJECT,
+                        additionalProperties: {
+                            type: STRING,
+                            required: true,
                             view: {
+                                label: VALUE
+                            }
+                        },
+                        view: {
                             label: "Default properties",
-                                type: HASHLIST,
-                                keyLabel: NAME
+                            type: HASHLIST,
+                            keyLabel: NAME
                         }
-                        },
-                        assignments: {
-                            type: ARRAY,
-                            view: { type: HIDDEN }
-                        },
-                        activities: {
-                            type: ARRAY,
-                            view: { type: HIDDEN }
+                    },
+                    assignments: {
+                        type: ARRAY,
+                        view: {type: HIDDEN}
+                    },
+                    activities: {
+                        type: ARRAY,
+                        view: {type: HIDDEN}
                     }
                 }
             }
@@ -275,15 +276,15 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             getActive: {
                 label: "is active",
                 returns: BOOLEAN,
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             activate: {
                 label: "activate",
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             desactivate: {
                 label: "deactivate",
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             separator1: {
                 label: "\u2501\u2501\u2501\u2501"
@@ -291,77 +292,77 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             getConfidence: {
                 label: "Get confidence",
                 returns: NUMBER,
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             addAtConfidence: {
                 label: "Add to confidence",
-                    arguments: [
-                        SELFARG,
-                        {
-                            type: STRING,
-                            required: true,
-                            value: "1"
+                arguments: [
+                    SELFARG,
+                    {
+                        type: STRING,
+                        required: true,
+                        value: "1"
                     }]
             },
             setConfidence: {
                 label: "Set confidence",
-                    arguments: [
-                        SELFARG,
-                        {
-                            type: STRING,
-                            required: true,
-                            value: "1"
+                arguments: [
+                    SELFARG,
+                    {
+                        type: STRING,
+                        required: true,
+                        value: "1"
                     }]
             },
             getNumberInstanceProperty: {
                 label: "Get number property",
                 returns: NUMBER,
-                    arguments: [
-                        SELFARG, {
+                arguments: [
+                    SELFARG, {
                         type: STRING,
-                            view: {
-                                label: KEY
-                            }
+                        view: {
+                            label: KEY
+                        }
                     }]
             },
             getStringInstanceProperty: {
                 label: "Get text property",
                 returns: STRING,
-                    arguments: [
-                        SELFARG, {
+                arguments: [
+                    SELFARG, {
                         type: STRING,
-                            view: {
-                                label: KEY
-                            }
+                        view: {
+                            label: KEY
+                        }
                     }]
             },
             addNumberAtInstanceProperty: {
                 label: "Add to property",
-                    arguments: [
-                        SELFARG, {
+                arguments: [
+                    SELFARG, {
                         type: STRING,
-                            required: true,
-                            view: {
-                                label: KEY
-                            }
+                        required: true,
+                        view: {
+                            label: KEY
+                        }
                     }, {
                         type: STRING,
-                            required: true,
-                            view: { label: VALUE }
+                        required: true,
+                        view: {label: VALUE}
                     }]
             },
             setInstanceProperty: {
                 label: "Set property",
-                    arguments: [SELFARG,
-                        {
-                            type: STRING,
-                            required: true,
-                            view: {
-                                label: KEY
-                            }
+                arguments: [SELFARG,
+                    {
+                        type: STRING,
+                        required: true,
+                        view: {
+                            label: KEY
+                        }
                     }, {
                         type: STRING,
-                            view: { label: VALUE }
+                        view: {label: VALUE}
                     }]
             },
             separator2: {
@@ -369,101 +370,101 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             addOccupation: {
                 label: "Add occupation",
-                    arguments: [
-                        SELFARG, {
+                arguments: [
+                    SELFARG, {
                         type: NUMBER,
-                            required: true,
-                            view: { label: "Period" }
+                        required: true,
+                        view: {label: "Period"}
                     }, {
-                            type: BOOLEAN,
-                            value: false,
-                            view: {
-                        label: "Editable",
-                                type: HIDDEN
-                            }
+                        type: BOOLEAN,
+                        value: false,
+                        view: {
+                            label: "Editable",
+                            type: HIDDEN
+                        }
                     }, {
-                            type: STRING,
-                            view: {
-                        label: "Description",
-                                type: HIDDEN
-                    }
+                        type: STRING,
+                        view: {
+                            label: "Description",
+                            type: HIDDEN
+                        }
                     }
                 ]
             },
             removeOccupationsAtTime: {
                 label: "Remove occupation",
-                    arguments: [SELFARG, {
+                arguments: [SELFARG, {
                         type: NUMBER,
-                        view: { label: "Time" }
+                        view: {label: "Time"}
                     }]
             },
             getSalary: {
                 label: "Get salary",
                 returns: NUMBER,
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             addAtSalary: {
                 label: "Add to salary",
-                    arguments: [SELFARG,
-                        {
-                            type: STRING,
-                            required: true,
-                            value: "1"
+                arguments: [SELFARG,
+                    {
+                        type: STRING,
+                        required: true,
+                        value: "1"
                     }]
             },
             setSalary: {
                 label: "Set salary",
-                    arguments: [
-                        SELFARG, {
-                            type: STRING,
-                            required: true,
-                            value: "1"
+                arguments: [
+                    SELFARG, {
+                        type: STRING,
+                        required: true,
+                        value: "1"
                     }]
             },
             getExperience: {
                 label: "Get experience",
                 returns: NUMBER,
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             addAtExperience: {
                 label: "Add to experience",
-                    arguments: [
-                        SELFARG, {
-                            type: STRING,
-                            required: true,
-                            value: "1"
+                arguments: [
+                    SELFARG, {
+                        type: STRING,
+                        required: true,
+                        value: "1"
                     }]
             },
             setExperience: {
                 label: "Set experience",
-                    arguments: [
-                        SELFARG, {
-                            type: STRING,
-                            required: true,
-                            value: "1"
+                arguments: [
+                    SELFARG, {
+                        type: STRING,
+                        required: true,
+                        value: "1"
                     }]
             },
             getLeadershipLevel: {
                 label: "Get leadership level",
                 returns: NUMBER,
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             addAtLeadershipLevel: {
                 label: "Add to leadership level",
-                    arguments: [
-                        SELFARG, {
-                            type: STRING,
-                            required: true,
-                            value: "1"
+                arguments: [
+                    SELFARG, {
+                        type: STRING,
+                        required: true,
+                        value: "1"
                     }]
             },
             setLeadershipLevel: {
                 label: "Set leadership level",
-                    arguments: [
-                        SELFARG, {
-                            type: STRING,
-                            required: true,
-                            value: "1"
+                arguments: [
+                    SELFARG, {
+                        type: STRING,
+                        required: true,
+                        value: "1"
                     }]
             }
         }
@@ -478,7 +479,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             active: {
                 type: BOOLEAN,
-                view:{ label: 'Active' }
+                view: {label: 'Active'}
             },
             properties: {
                 type: OBJECT,
@@ -497,8 +498,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             assignments: {
                 type: ARRAY,
-                items: { type: OBJECT, view: { type: "uneditable" } },
-                view: { label: "Assignments", type: HIDDEN }
+                items: {type: OBJECT, view: {type: "uneditable"}},
+                view: {label: "Assignments", type: HIDDEN}
             },
             occupations: {
                 type: ARRAY,
@@ -515,8 +516,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             activities: {
                 type: ARRAY,
-                items: { type: OBJECT, view: { type: "uneditable" } },
-                view: { label: "Activities", type: HIDDEN }
+                items: {type: OBJECT, view: {type: "uneditable"}},
+                view: {label: "Activities", type: HIDDEN}
             }
         }
     });
@@ -586,7 +587,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 value: [],
                 items: {
                     type: STRING,
-                        required: true,
+                    required: true,
                     view: {
                         type: "flatvariableselect",
                         classFilter: "TaskDescriptor"
@@ -617,6 +618,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     descriptorId: IDATTRDEF,
                     requirements: {
                         type: ARRAY,
@@ -628,11 +630,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             properties: {
                                 "@class": {
                                     type: STRING,
-                                        value: "WRequirement",
-                                    view: { type: HIDDEN }
+                                    value: "WRequirement",
+                                    view: {type: HIDDEN}
                                 },
                                 id: IDATTRDEF,
-                                name: { type: STRING, view: { type: HIDDEN } },
+                                name: {type: STRING, view: {type: HIDDEN}},
                                 work: {
                                     type: STRING,
                                     view: {
@@ -648,8 +650,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     }
                                 },
                                 quantity: {
-                                        type: NUMBER,
-                                        required: true,
+                                    type: NUMBER,
+                                    required: true,
                                     value: 1,
                                     view: {
                                         label: 'Quantity'
@@ -657,7 +659,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                 },
                                 limit: {
                                     type: NUMBER,
-                                        required: true,
+                                    required: true,
                                     value: 100,
                                     view: {
                                         label: 'Limit'
@@ -666,12 +668,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                 completeness: {
                                     type: NUMBER,
                                     value: 0,
-                                    view: { type: HIDDEN }
+                                    view: {type: HIDDEN}
                                 },
                                 quality: {
                                     type: NUMBER,
                                     value: 100,
-                                    view: { type: HIDDEN }
+                                    view: {type: HIDDEN}
                                 }
                             }
                         }
@@ -694,7 +696,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         type: OBJECT,
                         index: 3,
                         additionalProperties: {
-                            view: { label: VALUE }
+                            view: {label: VALUE}
                         },
                         view: {
                             label: "Instance properties",
@@ -723,11 +725,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         METHODS: {
             activate: {
                 label: "activate",
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             desactivate: {
                 label: "deactivate",
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             separator1: {
                 label: "\u2501\u2501\u2501\u2501"
@@ -735,46 +737,46 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             getActive: {
                 label: "is active",
                 returns: BOOLEAN,
-                    arguments: [SELFARG]
+                arguments: [SELFARG]
             },
             getNumberInstanceProperty: {
                 label: "Get number property",
                 returns: NUMBER,
-                    arguments: [
-                        SELFARG, {
+                arguments: [
+                    SELFARG, {
                         type: STRING,
-                            view: { label: KEY }
+                        view: {label: KEY}
                     }]
             },
             getStringInstanceProperty: {
                 label: "Get text property",
                 returns: STRING,
-                    arguments: [
-                        SELFARG, {
+                arguments: [
+                    SELFARG, {
                         type: STRING,
-                            view: { label: KEY }
+                        view: {label: KEY}
                     }]
             },
             addNumberAtInstanceProperty: {
                 label: "Add to property",
-                    arguments: [
-                        SELFARG, {
+                arguments: [
+                    SELFARG, {
                         type: STRING,
-                            view: { label: KEY }
+                        view: {label: KEY}
                     }, {
                         type: STRING,
-                            view: { label: VALUE }
+                        view: {label: VALUE}
                     }]
             },
             setInstanceProperty: {
                 label: "Set property",
-                    arguments: [
-                        SELFARG, {
+                arguments: [
+                    SELFARG, {
                         type: STRING,
-                            view: { label: KEY }
+                        view: {label: KEY}
                     }, {
                         type: STRING,
-                            view: { label: VALUE }
+                        view: {label: VALUE}
                     }]
             }
         }
@@ -929,12 +931,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     label: "Label",
                     description: "Displayed to players",
                 },
-                    index: -1
+                index: -1
             },
             description: {
                 type: STRING,
                 format: HTML,
-                index:-1
+                index: -1
             },
             defaultInstance: {
                 properties: {
@@ -947,6 +949,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     iterations: {
                         type: ARRAY,
                         value: [],
@@ -1029,26 +1032,26 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             /*
              var tasks = this.getTaskInstances(),
              i, taskI, started = false, completed = tasks.length > 0,
-                completeness;
-
+             completeness;
+             
              //started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
-
-            for (i = 0; i < tasks.length; i += 1) {
+             
+             for (i = 0; i < tasks.length; i += 1) {
              taskI = tasks[i];
-                completeness = taskI.get("properties.completeness");
-                if (completeness < 100) {
-                    completed = false;
-                }
-                if (completeness > 0) {
-                    started = true;
-                }
-            }
-            if (completed) {
-                return "COMPLETED";
-            } else if (started) {
-                return "STARTED";
-            } else {
-                return "NOT_STARTED";
+             completeness = taskI.get("properties.completeness");
+             if (completeness < 100) {
+             completed = false;
+             }
+             if (completeness > 0) {
+             started = true;
+             }
+             }
+             if (completed) {
+             return "COMPLETED";
+             } else if (started) {
+             return "STARTED";
+             } else {
+             return "NOT_STARTED";
              }*/
             return this.get("status");
         },
