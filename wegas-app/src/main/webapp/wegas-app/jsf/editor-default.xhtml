@@ -50,7 +50,10 @@
                                 source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
-                                        fn: "VariableDescriptorCache"
+                                        fn: "VariableDescriptorCache",
+                                        cfg: {
+                                            indexes: ["id", "name"]
+                                        }
                                     }, {
                                         fn: "ScriptEval"
                                     }, {/*

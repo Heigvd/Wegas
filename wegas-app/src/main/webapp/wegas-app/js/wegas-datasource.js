@@ -349,7 +349,7 @@ YUI.add('wegas-datasource', function(Y) {
             var i, ds;
             for (i = 0; i < entities.length; i += 1) {
                 this.updateCache(POST, entities[i], collector);
-            }
+                }
         },
         __showMessage: function(level, message) {
             Wegas.Alerts.showMessage(level, message);
@@ -427,10 +427,10 @@ YUI.add('wegas-datasource', function(Y) {
                             entity = response.get("updatedEntities")[i];
                             if (Lang.isObject(entity)) {
                                 this.updateCache(POST, entity, collector);
+                                }
                             }
                         }
                     }
-                }
 
                 if (response.get("events")) {
                     for (i = 0; i < response.get("events").length; i += 1) {
@@ -464,15 +464,14 @@ YUI.add('wegas-datasource', function(Y) {
             }
         },
         insertIntoIndexes: function(entity) {
-            var insert = function(stack) {
+            this.insert([entity]);
+        },
+        insert: function insert(stack) {
                 return Y.Array.each(stack, function(item) {
                     this._insertIntoIndexes(item);
-                    this.walkEntity(item, insert);
+                this.walkEntity(item, this.insert);
                     return false;
                 }, this);
-            };
-
-            insert.call(this, [entity]);
         },
         _deleteFromIndexes: function(entity) {
             var indexedKey, index, key;
@@ -487,20 +486,21 @@ YUI.add('wegas-datasource', function(Y) {
             }
         },
         deleteFromIndexes: function(entity) {
-            var drop = function(stack) {
+            this.drop([entity]);
+        },
+        drop: function drop(stack) {
                 return Y.Array.each(stack, function(item) {
                     this._deleteFromIndexes(item);
-                    this.walkEntity(item, drop);
+                this.walkEntity(item, this.drop);
                 }, this);
-            };
-
-            drop.call(this, [entity]);
         },
         _updateIndexes: function(oldAtts, newAttrs) {
 
         },
         updateIndexes: function(oldAttrs, newAttrs) {
             var indexedKey, index, oldKey, newKey;
+            this.drop(this._getChildren(oldAttrs) || []);
+            this.insert(this._getChildren(newAttrs) || []);
             for (indexedKey in this._indexes) {
                 if (this._indexes.hasOwnProperty(indexedKey)) {
                     index = this._indexes[indexedKey];
@@ -551,15 +551,15 @@ YUI.add('wegas-datasource', function(Y) {
                     newAttrs = entity.getAttrs();
 
                     /*
-                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor
+                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor 
                      * if newAttrs.version attrs is missing, it means entity is not versioned -> update in all case
                      * otherwise, only update if newAttrs is not older
                      */
                     if (!newAttrs.version || newAttrs.version >= oldAttrs.version) {
                         inCacheEntity.setAttrs(newAttrs);
 
-                        this.updateIndexes(oldAttrs, newAttrs); // OK
-                        // Update Entity (anywhere)
+                            this.updateIndexes(oldAttrs, newAttrs); // OK
+                            // Update Entity (anywhere)
                         if (inCacheEntity instanceof Wegas.persistence.VariableDescriptor) {
                             eventsCollector[dsid].events.updatedDescriptor = eventsCollector[dsid].events.updatedDescriptor || [];
                             eventsCollector[dsid].events.updatedDescriptor.push({"entity": inCacheEntity});
@@ -569,10 +569,10 @@ YUI.add('wegas-datasource', function(Y) {
                 } else {
 
                     // New entitiy
-                    this.addToCache(entity); // In case we still have not found anything
+                this.addToCache(entity); // In case we still have not found anything
 
-                    // Index the new entity and its children
-                    this.insertIntoIndexes(entity);
+                // Index the new entity and its children
+                this.insertIntoIndexes(entity);
 
                     eventsCollector[dsid].events.added = eventsCollector[dsid].events.added || [];
                     eventsCollector[dsid].events.added.push({
@@ -685,30 +685,32 @@ YUI.add('wegas-datasource', function(Y) {
         },
         /**
          *
-         *  Recursively walk the provided stack, looking for an object with an
-         *  id corresponding to needle's and apply an operation based method.
+         *  Find an entity in the cache with a key's value correspongin to neelde or needle's value
          *
          *  @function
          *  @private
-         *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
-         *  @param {page} The entity to update in the cache
-         *  @return {Boolean} `true` if object could be located and method applied
+         *  @param {String} key the Key to match
+         *  @param {Object|String|Number|Boolean} needle needle to search for
+         *  @param {function(Object, any):void} onFindFn callback function with found entity and needle
+         *  @return {Object} Found entity if any
          */
-        doFind: function(key, needle, onFindFn) {
-            // Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.WegasCache');
-            var ret, doFind = function(stack) { // @fixme speedup
-                return Y.Array.find(stack, function(item, index, array) { // @fixme speedup
-                    if (this.testEntity(item, key, needle)) { // We check the current element if it's a match
+        doFind: function doFind(key, needle, onFindFn) {
+            var ret,
+                testFn = this.get("testFn"),
+                walkEntity = this.walkEntity.bind(this),
+                findFn = function findFn(stack) {
+                    stack.find(function find(item) { // @fixme speedup
+                        if (testFn(item, key, needle)) { // We check the current element if it's a match
                         ret = item;
-                        if (onFindFn) {
-                            onFindFn(item, needle);
+                            return item;
                         }
-                        return item;
+                        return walkEntity(item, findFn);
+                    });
+                        }
+            findFn(this.getCache());
+            if (ret !== undefined && onFindFn) {
+                onFindFn(ret, needle);
                     }
-                    return this.walkEntity(item, doFind);
-                }, this);
-            };
-            doFind.call(this, this.getCache());
             return ret;
         },
         _getChildren: function(entity) {
@@ -975,7 +977,7 @@ YUI.add('wegas-datasource', function(Y) {
             if (entity.get("parentDescriptorType") === "GameModel") {
                 return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentDescriptorId"));
             } else {
-                return this.find("id", entity.get("parentDescriptorId"));
+            return this.find("id", entity.get("parentDescriptorId"));
             }
         },
         move: function(entity, parentEntity, index, localOnly) {
@@ -998,7 +1000,7 @@ YUI.add('wegas-datasource', function(Y) {
                             } else {
                                 this.get(HOST).fire("updatedDescriptor", {entity: parentEntity});
                                 this.get(HOST).fire("updatedDescriptor", {entity: entity.getParent()});
-                            }
+                        }
                         }, this, entity, parentEntity)
                     }
                 });
@@ -1130,7 +1132,7 @@ YUI.add('wegas-datasource', function(Y) {
                         }
                     }
 
-                }
+                    }
                 return true;
             } else {
                 if (!scope) {
@@ -1147,7 +1149,7 @@ YUI.add('wegas-datasource', function(Y) {
                 if (scope.variableInstances[scopeKey]) {
 
                     /*
-                     * Updated instance already exists in the cache, due to pusher
+                     * Updated instance already exists in the cache, due to pusher 
                      * asynchronoussness, make sure not overwritting up-to-date instance
                      */
                     if (entity.get("version") >= scope.variableInstances[scopeKey].get("version")) {
@@ -1773,7 +1775,8 @@ YUI.add('wegas-datasource', function(Y) {
                         callback(e.response.results);
                     };
                 }
-                return this.sendRequest(cfg);
+                // @FIXME: let some time for servers to sync.
+                Y.later(1000, this, this.sendRequest, cfg);
             }
         },
         _successHandler: function(e) {

@@ -13,29 +13,39 @@ YUI.add('wegas-mcq-entities', function(Y) {
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
+        NULLSTRING = ["null", STRING],
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
+        SELFARG,
         IDATTRDEF;
     VERSION_ATTR_DEF = {
         type: NUMBER,
-        optional: true,
-        _inputex: {
-            _type: HIDDEN
+        view: {
+            type: HIDDEN
         }
     };
     IDATTRDEF = {
-        type: STRING,
+        type: NUMBER,
         optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
+        view: {
+            type: HIDDEN
         }
     };
+    SELFARG = {
+        type: 'identifier',
+        value: 'self',
+        view: {type: HIDDEN}
+    };
+
     /**
      * QuestionDescriptor mapper
      */
     persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
         getRepliesByStartTime: function(startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
+        },
+        getIconCss: function() {
+            return 'fa fa-question-circle';
         }
     }, {
         ATTRS: {
@@ -44,85 +54,148 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 value: "QuestionDescriptor"
             },
             title: {
-                type: STRING,
+                type: NULLSTRING,
                 optional: true,
-                _inputex: {
+                value: "",
+                index: -1,
+                view: {
                     label: "Label",
-                    description: "Displayed to players",
-                    index: -1
+                    description: "Displayed to players"
                 }
             },
-            allowMultipleReplies: {
-                value: false,
-                type: BOOLEAN,
-                _inputex: {
-                    label: 'Allow multiple replies',
-                    index: 8
+            minReplies: {
+                type: ['null', NUMBER],
+                optional: true,
+                value: 1,
+                minimum: 0,
+                index: 11,
+                visible: function(val, formVal) {
+                    return formVal.cbx;
+                },
+                errored: function(val, formVal) {
+                    var errors = [],
+                        min = typeof val === 'number' ? val : 1,
+                        max = formVal.maxReplies;
+                    if (min < 0) {
+                        errors.push('Value must be positive');
+                    }
+                    if (formVal.cbx && Y.Lang.isNumber(max) && min > max) {
+                        errors.push('Value cannot be greater than the maximum nunber of replies');
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Min. number of replies',
+                    description: "Optional value",
+                    placeholder: "1",
+                    layout: 'shortInline'
+                }
+            },
+            maxReplies: {
+                type: ['null', NUMBER],
+                optional: true,
+                value: 1,
+                index: 12,
+                errored: function(val, formVal) {
+                    var errors = [];
+                    if (Y.Lang.isNumber(val)) {
+                        if (val < 1) {
+                            errors.push('Value must be striclty positive or empty');
+                        }
+                        if (formVal.cbx && Y.Lang.isNumber(formVal.minReplies)) {
+                            if (val < formVal.minReplies) {
+                                errors.push('Value must be greater or equals than minimum');
+                            }
+                        }
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Max. number of replies',
+                    description: "Optional value",
+                    placeholder: "∞",
+                    layout: 'shortInline'
                 }
             },
             cbx: {
                 type: BOOLEAN,
                 value: false,
-                _inputex: {
-                    label: "Checkbox answers",
+                view: {
+                    label: "Checkbox answer",
                     description: "For standard multiple-choice questions",
-                    index: 9
-                }
+                },
+                index: 9
             },
             tabular: {
                 type: BOOLEAN,
                 value: false,
-                _inputex: {
+                visible: function(val, formVal) {
+                    return formVal.cbx;
+                },
+                view: {
                     label: "Tabular layout",
                     description: "Replies are presented horizontally",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                    index: 10
-                }
+                },
+                index: 10
             },
             description: {
-                type: STRING,
+                type: NULLSTRING,
                 format: HTML,
-                optional: true,
-                _inputex: {
-                    index: 11
-                }
+                index: 12,
+                view: {type: HTML, label: "Description"}
             },
             defaultInstance: {
+                type: "object",
+                required: true,
                 properties: {
                     "@class": {
                         type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: "QuestionInstance"
+                        value: "QuestionInstance",
+                        view: {
+                            type: HIDDEN
                         }
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
+                    unread: {
+                        value: true,
+                        type: BOOLEAN,
+                        view: {type: HIDDEN}
+                    },
+                    validated: {
+                        value: false,
+                        type: BOOLEAN,
+                        view: {type: HIDDEN}
+                    },
+                    replies: {
+                        value: [],
+                        type: ARRAY,
+                        view: {
+                            type: HIDDEN
+                        }
+                    },
                     active: {
                         type: BOOLEAN,
-                        _inputex: {
-                            label: 'Active from start',
-                            value: true
+                        value: true,
+                        view: {
+                            label: 'Active from start'
                         }
                     }
                 },
-                _inputex: {
-                    index: 3
-                }
+                index: 3
             },
             pictures: {
-                optional: true,
                 type: ARRAY,
                 items: {
                     type: STRING,
-                    optional: true,
-                    _inputex: {
-                        _type: "wegasurl",
-                        label: ""
+                    view: {
+                        type: "wegasimageurl",
+                        label: "URL"
                     }
                 },
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                view: {
+                    className: 'wegas-advanced-feature'
                 }
             }
         },
@@ -137,7 +210,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             cfg: {
                                 children: [{
                                         type: BUTTON,
-                                        label: "Standard",
+                                        label: "<span class='fa fa-check-square-o'></span> Standard",
                                         plugins: [{
                                                 fn: "AddEntityChildAction",
                                                 cfg: {
@@ -146,7 +219,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                             }]
                                     }, {
                                         type: BUTTON,
-                                        label: "Conditional results",
+                                        label: "<span class='fa fa-check-square-o'></span> Conditional results",
                                         plugins: [{
                                                 fn: "AddEntityChildAction",
                                                 cfg: {
@@ -167,40 +240,26 @@ YUI.add('wegas-mcq-entities', function(Y) {
          */
         METHODS: {
             activate: {
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                arguments: [SELFARG]
             },
             desactivate: {
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                label: "deactivate",
+                arguments: [SELFARG]
             },
             isReplied: {
                 label: "has been replied",
                 returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                arguments: [SELFARG]
             },
             isNotReplied: {
                 label: "has not been replied",
                 returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                arguments: [SELFARG]
             },
             isActive: {
                 label: "is active",
                 returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                arguments: [SELFARG]
             }
         }
     });
@@ -250,8 +309,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     return replies;
                 },
                 type: ARRAY,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             }
         }
@@ -273,97 +332,118 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 title: {
                     type: STRING,
+                    value: "",
                     optional: true,
-                    _inputex: {
+                    index: -1,
+                    view: {
                         label: "Label",
-                        description: "Displayed to players",
-                        index: -1
+                        description: "Displayed to players"
                     }
                 },
                 description: {
-                    type: STRING,
-                    format: HTML,
+                    type: NULLSTRING,
                     optional: true,
-                    _inputex: {
-                        opts: {
-                            height: '50px'
-                        }
+                    view: {
+                        type: HTML,
+                        label: "Description"
                     }
                 },
                 defaultInstance: {
                     properties: {
                         '@class': {
                             type: STRING,
-                            _inputex: {
-                                _type: HIDDEN,
-                                value: 'ChoiceInstance'
+                            value: 'ChoiceInstance',
+                            view: {
+                                type: HIDDEN,
                             }
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        descriptorId: IDATTRDEF,
+                        unread: {
+                            type: BOOLEAN,
+                            value: true,
+                            view: {type: HIDDEN}
+                        },
                         active: {
                             type: BOOLEAN,
-                            _inputex: {
-                                label: 'Active from start',
-                                value: true
-                            }
-                        },
-                        unread: {
                             value: true,
-                            type: BOOLEAN
+                            view: {
+                                label: 'Active from start',
+                            }
                         },
                         replies: {
                             type: ARRAY,
-                            _inputex: {
-                                _type: HIDDEN,
-                                value: []
+                            value: [],
+                            view: {
+                                type: HIDDEN,
                             }
                         },
                         currentResultName: {
-                            type: NUMBER,
+                            type: NULLSTRING,
                             optional: true,
-                            _inputex: {
-                                _type: "entityarrayfieldselect",
+                            view: {
+                                type: "entityarrayfieldselect",
                                 label: "Default result",
                                 returnAttr: "name",
                                 field: "results"
                             }
                         }
                     },
-                    _inputex: {
-                        index: 2
+                    index: 2
+                },
+                maxReplies: {
+                    type: ['null', NUMBER],
+                    minimum: 1,
+                    optional: true,
+                    index: 8,
+                    visible: function(val, formVal) {
+                        var parent;
+                        if (formVal.id) {
+                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
+                            // not applicable for checkboxed questions and useless if q.maxReplies equals 1
+                            return !parent.get("cbx") && parent.get("maxReplies") !== 1;
+                        }
+                        return true;
+                    },
+                    view: {
+                        label: 'Max. number of replies',
+                        placeholder: "∞",
+                        description: "Optional value",
+                        //indent: true,
+                        layout: 'shortInline'
                     }
                 },
                 duration: {
                     value: 1,
-                    type: STRING,
+                    type: NUMBER,
                     optional: true,
-                    _inputex: {
-                        _type: HIDDEN
+                    view: {
+                        type: HIDDEN
                     }
                 },
                 cost: {
-                    type: STRING,
+                    type: NUMBER,
                     optional: true,
                     value: 0,
-                    _inputex: {
-                        _type: HIDDEN
+                    view: {
+                        type: HIDDEN
                     }
                 },
                 results: {
                     type: ARRAY,
                     value: [],
-                    _inputex: {
-                        _type: HIDDEN,
-                        index: 3
+                    index: 3,
+                    view: {
+                        type: HIDDEN,
                     }
                 },
                 addShortcut: {
                     type: STRING,
                     "transient": true,
                     value: "Result",
-                    _inputex: {
-                        _type: HIDDEN
+                    view: {
+                        type: HIDDEN
                     }
                 }
             },
@@ -388,72 +468,55 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             METHODS: {
                 activate: {
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 desactivate: {
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    label: "deactivate",
+                    arguments: [SELFARG]
                 },
                 isActive: {
                     label: "is active",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 setCurrentResult: {
                     label: "set current result",
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }, {
-                            type: "entityarrayfieldselect",
-                            returnAttr: "name",
-                            field: "results",
-                            scriptType: STRING
+                    arguments: [
+                        SELFARG, {
+                            type: STRING,
+                            view: {
+                                type: "entityarrayfieldselect",
+                                returnAttr: "name",
+                                field: "results",
+                            }
                         }]
                 },
                 hasBeenSelected: {
                     label: "has been selected",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 hasNotBeenSelected: {
                     label: "has not been selected",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 hasBeenIgnored: {
                     label: "has been ignored",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 hasResultBeenApplied: {
                     label: "has result been applied",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }, {
-                            type: "entityarrayfieldselect",
-                            returnAttr: "name",
-                            field: "results",
-                            scriptType: STRING
+                    arguments: [
+                        SELFARG, {
+                            type: STRING,
+                            view: {
+                                type: "entityarrayfieldselect",
+                                returnAttr: "name",
+                                field: "results",
+                            }
                         }
                     ]
                 }
@@ -479,163 +542,168 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     properties: {
                         '@class': {
                             type: STRING,
-                            _inputex: {
-                                _type: HIDDEN,
-                                value: 'ChoiceInstance'
+                            value: 'ChoiceInstance',
+                            view: {
+                                type: HIDDEN
                             }
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
+                        descriptorId: IDATTRDEF,
+                        unread: {
+                            type: BOOLEAN,
+                            value: true,
+                            view: {type: HIDDEN}
+                        },
                         active: {
                             type: BOOLEAN,
-                            _inputex: {
-                                label: 'Active from start',
-                                value: true
-                            }
-                        },
-                        unread: {
                             value: true,
-                            type: BOOLEAN
+                            view: {
+                                label: 'Active from start'
+                            }
                         },
                         replies: {
                             type: ARRAY,
-                            _inputex: {
-                                _type: HIDDEN,
-                                value: []
+                            value: [],
+                            view: {
+                                type: HIDDEN,
                             }
                         },
                         currentResultName: {
-                            type: STRING,
-                            optional: true,
-                            _inputex: {
-                                _type: HIDDEN
+                            type: NULLSTRING,
+                            view: {
+                                type: HIDDEN
                             }
                         }
                     }
                 },
                 results: {
                     type: ARRAY,
+                    maxItems: 1,
+                    minItems: 1,
                     value: [{
                             "@class": "Result"
                         }],
+                    view: {type: ARRAY},
                     items: {
                         type: OBJECT,
                         optional: true,
                         properties: {
                             id: IDATTRDEF,
                             "@class": {
+                                value: "Result",
                                 type: STRING,
-                                _inputex: {
-                                    _type: HIDDEN
+                                view: {
+                                    type: HIDDEN
                                 }
                             },
                             version: {
                                 type: NUMBER,
                                 optional: true,
                                 value: 0,
-                                _inputex: {
-                                    _type: "uneditable",
-                                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
-                                    index: -1
-                                }
+                                view: {
+                                    type: "uneditable",
+                                    className: "wegas-advanced-feature",
+                                    label: "Version"
+                                },
+                                index: -1
                             },
                             name: {
                                 type: STRING,
                                 optional: true,
-                                _inputex: {
-                                    _type: HIDDEN
+                                view: {
+                                    type: HIDDEN
                                 }
                             },
                             label: {
-                                type: STRING,
+                                type: NULLSTRING,
                                 optional: true,
-                                _inputex: {
-                                    _type: HIDDEN
+                                view: {
+                                    type: HIDDEN
                                 }
                             },
                             answer: {
-                                type: STRING,
+                                type: NULLSTRING,
                                 optional: true,
-                                format: HTML,
-                                _inputex: {
+                                index: 1,
+                                view: {
+                                    type: HTML,
                                     label: "Feedback",
-                                    index: 1
+                                    borderTop: true
                                 }
                             },
                             impact: {
                                 optional: true,
-                                _inputex: {
-                                    _type: SCRIPT,
+                                index: 2,
+                                type: ["null", OBJECT],
+                                properties: {
+                                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
+                                    content: {
+                                        type: STRING
+                                    }
+                                },
+                                view: {
                                     label: "Impact on variables",
-                                    index: 2
-                                }
-                            },
-                            "": {
-                                optional: true,
-                                type: "uneditable",
-                                transient: true,
-                                _inputex: {
-                                    label: "<div style=\"height:60px\"><div style=\"position:absolute;margin-top:30px;\"><b>ONLY&nbsp;FOR&nbsp;CHECKBOX&nbsp;REPLIES:</b></div></div>",
-                                    index: 3
+                                    type: SCRIPT
                                 }
                             },
                             ignorationAnswer: {
-                                type: STRING,
-                                optional: true,
-                                format: HTML,
-                                _inputex: {
-                                    label: "Feedback<br/>when ignored",
-                                    index: 4
+                                type: NULLSTRING,
+                                index: 4,
+                                visible: function(val, formVal) {
+                                    return Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent().get("cbx");
+                                },
+                                view: {
+                                    type: HTML,
+                                    label: "Feedback when ignored",
+                                    description: "Only for checkbox replies",
+                                    borderTop: true
                                 }
                             },
                             ignorationImpact: {
-                                optional: true,
-                                _inputex: {
-                                    _type: SCRIPT,
-                                    label: "Impact on variables<br/>when ignored",
-                                    index: 5
-                                }
+                                type: ["null", OBJECT],
+                                properties: {
+                                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
+                                    content: {
+                                        type: STRING
+                                    }
+                                },
+                                visible: function(val, formVal) {
+                                    return Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent().get("cbx");
+                                },
+                                view: {
+                                    label: "Impact on variables when ignored",
+                                    type: SCRIPT
+                                },
+                                index: 5,
+
                             },
-                            choiceDescriptorId: {
-                                type: STRING,
-                                optional: true,
-                                _inputex: {
-                                    _type: HIDDEN
-                                }
-                            },
+                            choiceDescriptorId: IDATTRDEF,
                             files: {
                                 optional: true,
+                                value: [],
                                 type: ARRAY,
                                 items: {
                                     type: STRING,
-                                    optional: false,
-                                    _inputex: {
-                                        _type: "wegasurl",
+                                    required: true,
+                                    view: {
+                                        type: "wegasurl",
                                         label: ""
                                     }
                                 },
-                                _inputex: {
-                                    _type: HIDDEN,
-                                    value: []
+                                view: {
+                                    type: HIDDEN
                                 }
                             }
                         }
-                    },
-                    _inputex: {
-                        label: null,
-                        index: 4,
-                        useButtons: false,
-                        listAddLabel: " ",
-                        listRemoveLabel: " ",
-                        wrapperClassName: "inputEx-fieldWrapper-nomargin"
                     }
                 },
                 addShortcut: {
                     type: STRING,
                     "transient": true,
                     value: "",
-                    _inputex: {
-                        _type: HIDDEN
+                    view: {
+                        type: HIDDEN
                     }
                 }
             },
@@ -645,48 +713,31 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             METHODS: {
                 activate: {
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 desactivate: {
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    label: "deactivate",
+                    arguments: [SELFARG]
                 },
                 hasBeenSelected: {
                     label: "has been selected",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 hasNotBeenSelected: {
                     label: "has not been selected",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 hasBeenIgnored: {
                     label: "has been ignored",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 },
                 isActive: {
                     label: "is active",
                     returns: BOOLEAN,
-                    arguments: [{
-                            type: HIDDEN,
-                            value: SELF
-                        }]
+                    arguments: [SELFARG]
                 }
             }
         });
@@ -715,11 +766,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: NUMBER,
                 optional: false,
                 value: 0,
-                _inputex: {
-                    _type: "uneditable",
-                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature",
-                    index: -1
-                }
+                view: {
+                    type: "uneditable",
+                    className: "wegas-advanced-feature",
+                    label: "Version"
+                },
+                index: -1
             },
             label: {
                 type: STRING,
@@ -727,81 +779,102 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 getter: function(val) {
                     return val || this.get("name");
                 },
-                _inputex: {
-                    label: "Name",
-                    index: -1
+                index: -1,
+                view: {
+                    label: "Name"
                 }
             },
             name: {
-                value: null,
+                value: "",
                 type: STRING,
                 optional: true,
-                _inputex: {
-                    wrapperClassName: "wegas-advanced-feature",
+                index: -1,
+                view: {
+                    className: "wegas-advanced-feature",
                     label: "Script alias",
-                    index: -1,
                     //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
-                    description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
+                    description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
                 },
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
             answer: {
-                type: STRING,
+                type: NULLSTRING,
                 optional: true,
-                format: HTML,
-                _inputex: {
-                    label: "Feedback when selected",
-                    index: 3
-                }
+                view: {
+                    type: HTML,
+                    label: "Feedback",
+                    borderTop: true
+                },
+                index: 10
             },
             impact: {
-                optional: true,
-                _inputex: {
-                    _type: SCRIPT,
-                    label: "Impact when selected",
-                    index: 4
-                }
+                type: ["null", OBJECT],
+                properties: {
+                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
+                    content: {
+                        type: STRING
+                    }
+                },
+                view: {
+                    label: "Impact",
+                    type: SCRIPT
+                },
+                index: 11
             },
             ignorationAnswer: {
-                type: STRING,
+                type: NULLSTRING,
                 optional: true,
-                format: HTML,
-                _inputex: {
+                visible: function(val, formVal) {
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    return parent ? parent.getParent().get("cbx") : false;
+                },
+                view: {
+                    type: HTML,
                     label: "Feedback when ignored",
-                    index: 6
-                }
+                    borderTop: true
+                },
+                index: 12
             },
             ignorationImpact: {
-                optional: true,
-                _inputex: {
-                    _type: SCRIPT,
+                type: ["null", OBJECT],
+                properties: {
+                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
+                    content: {
+                        type: STRING
+                    }
+                },
+                visible: function(val, formVal) {
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    return parent ? parent.getParent().get("cbx") : false;
+                },
+                view: {
                     label: "Impact on variables when ignored",
-                    index: 7
-                }
+                    type: SCRIPT
+                },
+                index: 13
             },
             choiceDescriptorId: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    _type: HIDDEN
+                type: NUMBER,
+                view: {
+                    type: HIDDEN
                 }
             },
             files: {
                 optional: true,
                 type: ARRAY,
+                value: [],
                 items: {
                     type: STRING,
                     optional: true,
-                    _inputex: {
-                        _type: "wegasurl",
+                    view: {
+                        type: "wegasurl",
                         label: ""
                     }
                 },
-                _inputex: {
-                    _type: HIDDEN,
-                    value: []
+                view: {
+                    type: HIDDEN
                 }
             }
         },
@@ -863,7 +936,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             unread: {
                 value: true,
-                type: BOOLEAN
+                type: BOOLEAN,
+                view: {type: HIDDEN}
             },
             replies: {
                 value: [],
@@ -874,14 +948,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     return v;
                 },
                 type: ARRAY,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             currentResultName: {
                 type: STRING,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             }
         }
@@ -924,14 +998,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
             choiceDescriptorId: {
                 type: STRING,
                 optional: true,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             unread: {
                 type: BOOLEAN,
                 value: true,
-                _inputex: {
+                view: {
                     label: 'Is unread'
                 }
             },
@@ -943,38 +1017,38 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             ignored: {
                 type: BOOLEAN,
-                _inputex: {
+                view: {
                     label: 'Is ignored'
                 }
             },
             resultName: {
                 type: STRING,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             choiceName: {
                 type: STRING,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             answer: {
                 type: STRING,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             ignorationAnswer: {
                 type: STRING,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             files: {
                 type: ARRAY,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             createdTime: {

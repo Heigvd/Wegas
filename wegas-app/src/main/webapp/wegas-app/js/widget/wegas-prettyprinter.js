@@ -107,9 +107,9 @@ YUI.add("wegas-prettyprinter", function(Y) {
             },
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
-                    label: "variable"
+                view: {
+                    type: "variableselect",
+                    label: "Variable"
                 }
             }
         }

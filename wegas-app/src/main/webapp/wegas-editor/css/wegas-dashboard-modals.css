@@ -107,7 +107,9 @@
 .wegas-dashboard-infos{
     height:100%;
 }
-
+.modal--content-advanced .run-code{
+    display: none;
+}
 .wegas-dashboard-infos .mce-tinymce{
     height:100%;
     border:none;

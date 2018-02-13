@@ -5,103 +5,134 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-YUI.add("wegas-content-entities", function(Y) {
-    "use strict";
+YUI.add('wegas-content-entities', function(Y) {
+    'use strict';
     var persistence = Y.Wegas.persistence;
 
-    persistence.Content = Y.Base.create("Content", persistence.Entity, [], {}, {
-        ATTRS: {
-            "@class": {
-                "transient": true
-            },
-            id: {
-                "transient": true
-            },
-            mimeType: {
-                type: "string",
-                _inputex: {
-                    _type: "uneditable"
-                }
-            },
-            name: {
-                type: "string",
-                optional: true,
-                _inputex: {
-                    _type: "uneditable"
-                }
-            },
+    persistence.Content = Y.Base.create(
+        'Content',
+        persistence.Entity,
+        [],
+        {},
+        {
+            ATTRS: {
+                '@class': {
+                    transient: true
+                },
+                id: {
+                    transient: true
+                },
+                mimeType: {
+                    type: 'string',
+                    view: {
+                        label: 'Mime type',
+                        type: 'uneditable'
+                    }
+                },
+                name: {
+                    type: 'string',
+                    optional: true,
+                    view: {
+                        label: 'Name',
+                        type: 'uneditable'
+                    }
+                },
             visibility: Y.Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY,
-            path: {
-                type: "string",
-                _inputex: {
-                    _type: "uneditable"
-                }
-            },
-            fullPath: {
-                type: "string",
-                valueFn: function() {
-                    return this.get("path") + (this.get("path").match(/\/$/) ? "" : "/") + this.get("name");
+                path: {
+                    type: 'string',
+                    view: {
+                        type: 'hidden'
+                    }
                 },
-                _inputex: {
-                    _type: "uneditable"
-                }
-            },
-            note: {
-                type: "string",
-                optional: true,
-                _inputex: {
-                    label: "Private notes",
-                    _type: "text"
-                }
-            },
-            description: {
-                type: "string",
-                optional: true,
-                _inputex: {
-                    label: "Public description",
-                    _type: "text"
+                fullPath: {
+                    type: 'string',
+                    valueFn: function() {
+                        return (
+                            this.get('path') +
+                            (this.get('path').match(/\/$/) ? '' : '/') +
+                            this.get('name')
+                        );
+                    },
+                    view: {
+                        label: 'Path',
+                        type: 'uneditable'
+                    }
+                },
+                note: {
+                    type: 'string',
+                    optional: true,
+                    view: {
+                        label: 'Private notes',
+                        type: 'textarea'
+                    }
+                },
+                description: {
+                    type: 'string',
+                    optional: true,
+                    view: {
+                        label: 'Public description',
+                        type: 'textarea'
+                    }
                 }
             }
         }
-    });
-    persistence.Directory = Y.Base.create("Directory", persistence.Content, [], {}, {
-        ATTRS: {
-            "@class": {
-                value: "Directory"
-            }
-        }
-    });
-    persistence.File = Y.Base.create("File", persistence.Content, [], {}, {
-        ATTRS: {
-            "@class": {
-                value: "File"
-            },
-            bytes: {
-                writeOnce: "initOnly",
-                "transient": true,
-                setter: function(bytes) {
-                    var precision = 2,
-                        sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'],
-                        i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-                    return (bytes / Math.pow(1024, i)).toFixed(precision) + ' ' + sizes[i];
-                },
-                _inputex: {
-                    label: "Size",
-                    _type: "uneditable"
-                }
-            },
-            dataLastModified: {
-                writeOnce: "initOnly",
-                "transient": true,
-                setter: function(d) {
-                    var date = new Date(d);
-                    return date.toLocaleString();
-                },
-                _inputex: {
-                    label: "File last uploaded",
-                    _type: "uneditable"
+    );
+    persistence.Directory = Y.Base.create(
+        'Directory',
+        persistence.Content,
+        [],
+        {},
+        {
+            ATTRS: {
+                '@class': {
+                    value: 'Directory'
                 }
             }
         }
-    });
+    );
+    persistence.File = Y.Base.create(
+        'File',
+        persistence.Content,
+        [],
+        {},
+        {
+            ATTRS: {
+                '@class': {
+                    value: 'File'
+                },
+                bytes: {
+                    writeOnce: 'initOnly',
+                    transient: true,
+                    setter: function(bytes) {
+                        var precision = 2,
+                            sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'],
+                            i = parseInt(
+                                Math.floor(Math.log(bytes) / Math.log(1024))
+                            );
+                        return (
+                            (bytes / Math.pow(1024, i)).toFixed(precision) +
+                            ' ' +
+                            sizes[i]
+                        );
+                    },
+                    view: {
+                        label: 'Size',
+                        type: 'uneditable'
+                    }
+                },
+                dataLastModified: {
+                    writeOnce: 'initOnly',
+                    transient: true,
+                    setter: function(d) {
+                        var date = new Date(d);
+                        return date.toLocaleString();
+                    },
+                    view: {
+                        label: 'File last uploaded',
+                        type: 'uneditable'
+                    }
+                }
+            }
+        }
+    );
 });

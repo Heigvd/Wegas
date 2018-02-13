@@ -158,16 +158,32 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      * @param name
      */
     public Result(String name) {
-        this.name = name;
-        this.label = name;
+        this(name, name);
     }
 
     /**
      * @param name
+     * @param label
      */
     public Result(String name, String label) {
         this.name = name;
         this.label = label;
+    }
+
+    public Result(String name, Script impact) {
+        this(name, impact, null);
+    }
+    /**
+     *
+     * @param name
+     * @param impact
+     * @param ignorationImpact
+     */
+    public Result(String name, Script impact, Script ignorationImpact) {
+        this.name = name;
+        this.label = name;
+        this.impact = impact;
+        this.ignorationImpact = ignorationImpact;
     }
 
     @Override

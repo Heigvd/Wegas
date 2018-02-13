@@ -52,7 +52,7 @@ YUI.add("wegas-slideshow", function(Y) {
                 type: "number",
                 validator: Y.Lang.isNumber,
                 lazyAdd: false,
-                _inputex: {
+                view: {
                     label: "Delay ms"
                 },
                 setter: function(v) {

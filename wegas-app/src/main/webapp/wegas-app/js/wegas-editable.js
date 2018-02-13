@@ -15,8 +15,11 @@ YUI.add('wegas-editable', function(Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format",
-        "choices", "items", "enum", "default", "transient");
+    Y.Base._ATTR_CFG.push("type", "properties", "view", 
+    /* should vanish once */ "_inputex", "required", "format", "errored",
+        "choices", "items", "enum", "pattern", "maxLength", "minLength", "index",
+        "default", "transient", "visible", "additionalProperties", 
+        "minItems", "maxItems", "minimum", "maximum");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
     /**
      * @name Y.Wegas.Editable
@@ -77,7 +80,7 @@ YUI.add('wegas-editable', function(Y) {
             return this.toObject(["id", "variableInstances"]);
         },
         /**
-         * Returns the form configuration associated to this object, to be used a an inputex object.
+         * Returns the form configuration associated to this object, to be used a Form schema.
          * @param {Array} fieldsToIgnore (optional), don't create these inputs.
          */
         getFormCfg: function(fieldsToIgnore) {
@@ -91,7 +94,9 @@ YUI.add('wegas-editable', function(Y) {
             if (!form) {                                                        // If no edit form could be found, we generate one based on the ATTRS parameter.
                 attrCfgs = JSON.parse(JSON.stringify(this.getAttrCfgs()));
                 for (i in attrCfgs) {
-                    attrCfgs[i]["default"] = attrCfgs[i].value; // Use the value as default (useful form json object serialization)
+                    // if ("value" in attrCfgs[i]) {
+                    //     attrCfgs[i]["defaultValue"] = attrCfgs[i].value; // Use the value as default (useful form json object serialization)
+                    // }
 
                     if (attrCfgs[i]["transient"] || Y.Array.indexOf(fieldsToIgnore, i) > -1) {
                         delete attrCfgs[i];
@@ -99,24 +104,16 @@ YUI.add('wegas-editable', function(Y) {
                 }
 
                 schemaMap = {
-                    Entity: {
+                    type: 'object',
                         properties: attrCfgs
-                    }
                 };
                 if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
 
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
-                    this._overrideFormConfig(schemaMap.Entity, this, "PRIVATE");
+                    this._overrideFormConfig(schemaMap, this, "PRIVATE");
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
                 }
-
-                builder = new Y.inputEx.JsonSchema.Builder({
-                    schemaIdentifierMap: schemaMap,
-                    defaultOptions: {
-                        showMsg: true
-                    }
-                });
-                form = builder.schemaToInputEx(schemaMap.Entity);
+                return schemaMap;
             }
             return form || [];
         },
@@ -169,6 +166,9 @@ YUI.add('wegas-editable', function(Y) {
             }
         },
         _overrideFormConfig: function(cfg, entity, inheritedMode, inheritedVisibility, inheritedMaxWriteVisibility) {
+
+            throw "POST MERGE FIX PLEASE";
+
             var visibility, mode, key, maxWritableVisibility;
 
             visibility = this._getVisibility(entity, inheritedVisibility);
@@ -311,7 +311,9 @@ YUI.add('wegas-editable', function(Y) {
          * @returns {Array}
          */
         getStatic: function(key, withExtensions) {
-            var c = this.constructor, ret = [], i;
+            var c = this.constructor,
+                ret = [], i;
+
             while (c) {
                 if (c[key]) {                                                   // Add to attributes
                     ret[ret.length] = c[key];
@@ -414,7 +416,7 @@ YUI.add('wegas-editable', function(Y) {
             Y.use(modules, cb);
         },
         /**
-         * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
+         * Return recursively the modules from their 'type' property using (modulesByType from loader.js)
          * @function
          * @static
          * @private
@@ -422,7 +424,8 @@ YUI.add('wegas-editable', function(Y) {
          * @returns {Array}
          */
         getRawModulesFromDefinition: function(cfg) {
-            var i, props, type = cfg.type || cfg["@class"],
+            var i, props,
+                type = cfg.type || cfg["@class"],
                 module = YUI_config.Wegas.modulesByType[type],
                 modules = [];
             if (Y.Lang.isArray(cfg)) {

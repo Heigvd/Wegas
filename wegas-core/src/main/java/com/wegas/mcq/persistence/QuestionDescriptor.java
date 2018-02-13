@@ -54,11 +54,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @WegasEntityProperty
     private String description;
     /**
-     *
-     */
-    @WegasEntityProperty
-    private boolean allowMultipleReplies = false;
-    /**
      * Set this to true when the choice is to be selected with an HTML
      * radio/checkbox
      */
@@ -71,6 +66,16 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty
     private Boolean tabular = FALSE;
+    /**
+     * Total number of replies allowed. No default value.
+     */
+    @WegasEntityProperty
+    private Integer maxReplies = null;
+    /**
+     * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
+     */
+    @WegasEntityProperty
+    private Integer minReplies = null;
     /**
      *
      */
@@ -144,17 +149,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     * @return the multipleReplies
-     */
-    public boolean getAllowMultipleReplies() {
-        return allowMultipleReplies;
-    }
-
-    /**
+     * Backwardcompat for deserialisation
+     *
      * @param allowMultipleReplies
      */
     public void setAllowMultipleReplies(boolean allowMultipleReplies) {
-        this.allowMultipleReplies = allowMultipleReplies;
+        if (!allowMultipleReplies) {
+            this.maxReplies = 1;
+        }
     }
 
     /**
@@ -183,6 +185,34 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     public void setTabular(Boolean tab) {
         this.tabular = tab;
+    }
+
+    /**
+     * @return the total maximum number of replies allowed
+     */
+    public Integer getMaxReplies() {
+        return maxReplies;
+    }
+
+    /**
+     * @param maxReplies the maximum number of replies allowed
+     */
+    public void setMaxReplies(Integer maxReplies) {
+        this.maxReplies = maxReplies;
+    }
+
+    /**
+     * @return the minimum number of replies required
+     */
+    public Integer getMinReplies() {
+        return minReplies;
+    }
+
+    /**
+     * @param minReplies the minimum number of replies required
+     */
+    public void setMinReplies(Integer minReplies) {
+        this.minReplies = minReplies;
     }
 
     /**

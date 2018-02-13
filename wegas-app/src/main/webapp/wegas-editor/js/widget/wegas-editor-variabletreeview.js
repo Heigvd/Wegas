@@ -20,7 +20,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         Wegas = Y.Wegas,
         Plugin = Y.Plugin,
         VariableTreeView,
-        scriptCheckLabel = "<span title='Search for errors (May take some time)'>Check</span>",
+        scriptCheckLabel = "<span class='fa fa-bug'></span> <span title='Search for errors (May take some time)'>Find errors</span>",
         searchFn = function(val) {
             var e = this.get("data.entity");
             return !val.length || ((e.getEditorLabel) && (new RegExp(val, "i")).test(e.getEditorLabel()));
@@ -54,29 +54,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
 
             });
-            this.handlers.push(this.get("contentBox").prepend(
-                "<div class='wegas-filter-input' style='display: none'><input placeholder='Search...'/></div>")
-                .one(".wegas-filter-input input").on("valueChange", function(e) {
-                //var arrSearch;
-                if (e.prevVal === "") {
-                    savedState = this.treeView.saveState();
-                }
-                searchVal = Y.Lang.trim(e.newVal);
-                /*
-                 * Search AND element splited by ", "
-                 */
-                /*arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
-                 arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
-                 return Y.Wegas.Helper.RegExpQuote(item);
-                 });
-                 searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";*/
-                searchRE = Y.Wegas.Helper.RegExpQuote(searchVal);
-                //                if (searchVal.length) {
-                this._timer.reset();
-                //                } else {
-                //                    this._timer.timeOut();
-                //                }
-            }, this));
+            this.handlers.push(
+                this.toolbar.get("header")
+                    .prepend("<div class='wegas-filter-input'><input type='search' placeholder='Search...'/></div>")
+                    .one('.wegas-filter-input input')
+                    .on('valueChange', this.checkSearchField, this));
+            /*
             this._toggleSearchBtn = new Y.ToggleButton({
                 render: this.toolbar.get("header"),
                 label: "<span class='wegas-icon wegas-icon-zoom'></span>",
@@ -99,34 +82,20 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     }, this)
                 }
             });
+            */
+            
             this._searchBttn = new Y.Button({
                 render: this.get("boundingBox").one(".wegas-filter-input"),
-                label: "<span title='Search in every fields'>Full</span>",
+                label: "<span title='Search in all fields'>In-depth</span>",
                 on: {
-                    click: Y.bind(function() {
-                        var btnBox = this._searchBttn.get("boundingBox");
-                        Y.Wegas.DataSource.abort(req);
-                        if (!searchVal) {
-                            return;
-                        }
-                        btnBox.addClass("loading");
-                        req = Y.Wegas.Facade.Variable.cache.remoteSearch(searchVal, Y.bind(function(results) {
-                            btnBox.removeClass("loading");
-                            this.setAttrs({
-                                testFn: function(val) {
-                                    return val.indexOf(this.get("data.entity").get("id")) > -1;
-                                },
-                                searchVal: "--" + results.join("--")
-                            });
-                        }, this.treeView.filter), false /*Exact match*/);
-                    }, this)
+                    click: Y.bind(this.serverSearch, this)
                 }
             });
             this._timer.on("timeOut", function() {
-                if (!searchRE.length) {
-                    this.treeView.applyState(savedState);
+                if (!this.searchRE.length) {
+                    this.treeView.applyState(this.savedState);
                 }
-                this.treeView.filter.set("searchVal", searchRE);
+                this.treeView.filter.set("searchVal", this.searchRE);
                 this.treeView.filter.set("testFn", searchFn);
             }, this);
             this._validateBttn = new Y.ToggleButton({
@@ -157,7 +126,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     }, this)
                 }
             });
-            this._validateBttn.get(CONTENTBOX).setStyle("marginLeft", "8px");
+            // this._validateBttn.get(CONTENTBOX).setStyle("float", "right").setStyle("marginRight", "3px");
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
                         nodeClass: "wegas-editor-questionitem",
@@ -312,7 +281,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             var children,
                 elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity),
-                selected = (this.currentSelection === entity.get(ID)) ? 2 : 0,
+                selected = (this.currentSelection === entity.get(ID)) ? 1 : 0,
                 text = entity.getEditorLabel(),
                 node,
                 /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"
@@ -352,7 +321,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
                         //iconCSS: "wegas-icon-variabledescriptor wegas-icon-" + elClass.toLowerCase(),
                         iconCSS: entity.getIconCss(),
-                        cssClass: "wegas-editor-listitem " + advancedClass
+                        cssClass: "wegas-editor-listitem wegas-treeview-advanced-children" + advancedClass
                     };
                 case 'ListDescriptor':
                     node = {
@@ -383,7 +352,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         data: {
                             entity: entity
                         },
-                        iconCSS: "fa fa-question-circle",
+                        iconCSS: entity.getIconCss(),
                         cssClass: "wegas-editor-listitem wegas-editor-question " + advancedClass
                     };
                 case 'ChoiceDescriptor':
@@ -466,7 +435,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         selected: selected,
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
                         iconCSS: "fa fa-users fa-1",
-                        cssClass: "wegas-editor-questionitem " + advancedClass
+                        cssClass: "wegas-editor-listitem wegas-editor-questionitem " + advancedClass
                     };
                 default:
                     return {
@@ -541,6 +510,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 label: label,
                 selected: selected,
                 iconCSS: iconCss,
+                cssClass: 'wegas-advanced-feature',
                 data: {
                     entity: el
                 }
@@ -572,6 +542,55 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 default:
             }
             return node;
+        },
+        serverSearch :function() {
+            var btnBox = this._searchBttn.get("boundingBox");
+            Y.Wegas.DataSource.abort(this.req);
+            if (!this.searchVal) {
+                var inputValue = Y.one(".wegas-filter-input input").get("value");
+                if (inputValue === "") {
+                    return;
+                } else {
+                    this.searchVal = inputValue;
+                    this.checkSearchField({
+                        newVal: inputValue,
+                        prevVal: ""
+                    }, true);
+                }
+            }
+            btnBox.addClass("loading");
+            this.req = Y.Wegas.Facade.Variable.cache.remoteSearch(this.searchVal, Y.bind(function(results) {
+                btnBox.removeClass("loading");
+                this.setAttrs({
+                    testFn: function(val) {
+                        return val.indexOf(this.get("data.entity").get("id")) > -1;
+                    },
+                    searchVal: "--" + results.join("--")
+                });
+            }, this.treeView.filter), false /*Exact match*/);
+        },
+        checkSearchField: function(e, noTimer) {
+            //var arrSearch;
+            if (e.prevVal === "") {
+                this.savedState = this.treeView.saveState();
+            }
+            this.searchVal = Y.Lang.trim(e.newVal);
+            /*
+             * Search AND element splited by ", "
+             */
+            /*arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
+             arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
+             return Y.Wegas.Helper.RegExpQuote(item);
+             });
+             searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";*/
+            this.searchRE = Y.Wegas.Helper.RegExpQuote(this.searchVal);
+            //                if (searchVal.length) {
+            if (!noTimer) {
+                this._timer.reset();
+            }
+            //                } else {
+            //                    this._timer.timeOut();
+            //                }
         }
     }, {
         ATTRS: {

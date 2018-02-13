@@ -7,6 +7,9 @@
  */
 package com.wegas.mcq.ejb;
 
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -15,6 +18,7 @@ import com.wegas.mcq.persistence.*;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.ejb.EJB;
 import javax.naming.NamingException;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import org.junit.Test;
@@ -27,27 +31,60 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
 
+    private QuestionDescriptor createCbxQuestion(long gmId, String name, Integer min, Integer max) {
+        QuestionDescriptor question = new QuestionDescriptor();
+        question.setDefaultInstance(new QuestionInstance());
+        question.setName(name);
+        question.setCbx(Boolean.TRUE);
+        question.setMinReplies(min);
+        question.setMaxReplies(max);
+        variableDescriptorFacade.create(gmId, question);
+
+        return question;
+    }
+
+    private QuestionDescriptor createQuestion(long gmId, String name, Integer max) {
+        QuestionDescriptor question = new QuestionDescriptor();
+        question.setDefaultInstance(new QuestionInstance());
+        question.setName(name);
+        question.setMaxReplies(max);
+        variableDescriptorFacade.create(gmId, question);
+
+        return question;
+    }
+
+    private ChoiceDescriptor createChoice(QuestionDescriptor question, String name, Integer max, String defaultResultName, Result... results) {
+        ChoiceDescriptor choice = new ChoiceDescriptor();
+        choice.setDefaultInstance(new ChoiceInstance());
+        choice.setMaxReplies(max);
+        choice.setName(name);
+
+        for (Result r : results) {
+            choice.addResult(r);
+        }
+        choice.getDefaultInstance().setCurrentResultName(defaultResultName);
+
+        variableDescriptorFacade.createChild(question.getId(), choice);
+
+        return choice;
+    }
+
     /**
      * Test of selectChoice method, of class QuestionController.
      */
     @Test
     public void testSelectAndValidateChoice() throws Exception {
-        final NumberDescriptor myNumber = new NumberDescriptor();              // Create a number descriptor
+        final NumberDescriptor myNumber = new NumberDescriptor();
         myNumber.setName("mynumber");
         myNumber.setDefaultInstance(new NumberInstance(0));
         variableDescriptorFacade.create(scenario.getId(), myNumber);
 
-        QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
-        question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(scenario.getId(), question);
+        QuestionDescriptor question = createQuestion(scenario.getId(), "question", null);
 
-        ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
-        choice.setDefaultInstance(new ChoiceInstance());
-        choice.setName("testChoice");
-        Result r = new Result("result");
-        r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);"));
-        choice.addResult(r);
-        variableDescriptorFacade.createChild(question.getId(), choice);
+        ChoiceDescriptor choice = createChoice(question, "choice", null, "result",
+                new Result("result",
+                        new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);"))
+        );
 
         questionDescriptorFacade.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
         assertEquals(10.0, ((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0.1);
@@ -56,6 +93,152 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.duplicate(choice.getId());
 
         variableDescriptorFacade.remove(question.getId());                                           // Clean up
+    }
+
+    private void assertQuestion(Long questionId, Player p, boolean hasBeenReplied) {
+        QuestionDescriptor question = (QuestionDescriptor) variableDescriptorFacade.find(questionId);
+        Assert.assertEquals(hasBeenReplied, question.isReplied(p));
+        Assert.assertEquals(!hasBeenReplied, question.isNotReplied(p));
+
+    }
+
+    private void assertChoice(Long choiceId, Player p, boolean hasBeenSelected, boolean hasBeenIgnored) {
+        ChoiceDescriptor choice = (ChoiceDescriptor) variableDescriptorFacade.find(choiceId);
+        Assert.assertEquals(hasBeenSelected, choice.hasBeenSelected(p));
+        Assert.assertEquals(!hasBeenSelected, choice.hasNotBeenSelected(p));
+        Assert.assertEquals(hasBeenIgnored, choice.hasBeenIgnored(p));
+
+    }
+
+    private void assertChoiceIsPreselected(Long choiceId, Player p, boolean preselected) {
+        ChoiceDescriptor choice = (ChoiceDescriptor) variableDescriptorFacade.find(choiceId);
+        ChoiceInstance ci = (ChoiceInstance) variableDescriptorFacade.getInstance(choice, p);
+
+        Assert.assertEquals(!preselected, ci.getReplies().isEmpty());
+        boolean ok = false;
+
+        for (Reply r : ci.getReplies()){
+            if (!r.getIgnored()){
+                ok = true;
+                break;
+            }
+        }
+        Assert.assertEquals(preselected, ok);
+    }
+
+    public void testQuestion_choiceMaxLimit() throws Exception {
+        final NumberDescriptor myNumber = new NumberDescriptor();
+        myNumber.setName("x");
+        myNumber.setDefaultInstance(new NumberInstance(0));
+        variableDescriptorFacade.create(scenario.getId(), myNumber);
+
+        // total number of replies is unlimited
+        QuestionDescriptor question = createQuestion(scenario.getId(), "question",
+                null);
+
+        // but each choice is only selectable once
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", 1, "result",
+                new Result("result",
+                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
+        );
+
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", 1, "result",
+                new Result("result",
+                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
+        );
+
+        assertQuestion(question.getId(), player, false);
+        assertChoice(choice1.getId(), player, false, false);
+        assertChoice(choice2.getId(), player, false, false);
+
+        // select&validate the first choice
+        questionDescriptorFacade.selectAndValidateChoice(choice1.getId(), player.getId());
+        assertEquals(1, ((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0.1);
+
+        assertQuestion(question.getId(), player, false);
+        assertChoice(choice1.getId(), player, true, false);
+        assertChoice(choice2.getId(), player, false, false);
+
+        // select&validate the second choice
+        questionDescriptorFacade.selectAndValidateChoice(choice2.getId(), player.getId());
+        assertEquals(2, ((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0.1);
+
+        assertQuestion(question.getId(), player, false);
+        assertChoice(choice1.getId(), player, true, false);
+        assertChoice(choice2.getId(), player, true, false);
+
+        // select&validate the first choice
+        try {
+            questionDescriptorFacade.selectAndValidateChoice(choice1.getId(), player.getId());
+            Assert.fail("Overpassing the limit");
+        } catch (WegasErrorMessage ex) {
+            // expected exception
+        }
+
+        // select&validate the second choice
+        try {
+            questionDescriptorFacade.selectAndValidateChoice(choice2.getId(), player.getId());
+            Assert.fail("Overpassing the limit");
+        } catch (WegasErrorMessage ex) {
+            // expected exception
+        }
+    }
+
+    public void testQuestion_questionMaxLimit() throws Exception {
+        final NumberDescriptor myNumber = new NumberDescriptor();
+        myNumber.setName("x");
+        myNumber.setDefaultInstance(new NumberInstance(0));
+        variableDescriptorFacade.create(scenario.getId(), myNumber);
+
+        // total number of replies is limited to two
+        QuestionDescriptor question = createQuestion(scenario.getId(), "question", 2);
+
+        // but choices are unlimited
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result",
+                new Result("result",
+                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
+        );
+
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result",
+                new Result("result",
+                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
+        );
+
+        assertQuestion(question.getId(), player, false);
+        assertChoice(choice1.getId(), player, false, false);
+        assertChoice(choice2.getId(), player, false, false);
+
+        // select&validate the first choice
+        questionDescriptorFacade.selectAndValidateChoice(choice1.getId(), player.getId());
+        assertEquals(1, ((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0.1);
+
+        assertQuestion(question.getId(), player, true);
+        assertChoice(choice1.getId(), player, true, false);
+        assertChoice(choice2.getId(), player, false, false);
+
+        // select&validate the first choice again
+        questionDescriptorFacade.selectAndValidateChoice(choice1.getId(), player.getId());
+        assertEquals(2, ((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0.1);
+
+        assertQuestion(question.getId(), player, true);
+        assertChoice(choice1.getId(), player, true, false);
+        assertChoice(choice2.getId(), player, false, true);
+
+        // select&validate the first choice
+        try {
+            questionDescriptorFacade.selectAndValidateChoice(choice1.getId(), player.getId());
+            Assert.fail("Overpassing the limit");
+        } catch (WegasErrorMessage ex) {
+            // expected exception
+        }
+
+        // select&validate the second choice
+        try {
+            questionDescriptorFacade.selectAndValidateChoice(choice2.getId(), player.getId());
+            Assert.fail("Overpassing the limit");
+        } catch (WegasErrorMessage ex) {
+            // expected exception
+        }
     }
 
     /**
@@ -74,30 +257,17 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         myNumber2.setDefaultInstance(new NumberInstance(0));
         variableDescriptorFacade.create(scenario.getId(), myNumber2);
 
-        QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
-        question.setDefaultInstance(new QuestionInstance());
-        question.setCbx(true);
-        variableDescriptorFacade.create(scenario.getId(), question);
+        QuestionDescriptor question = createCbxQuestion(scenario.getId(), "cbxQuestion", null, null);
 
-        ChoiceDescriptor choice1 = new ChoiceDescriptor();                       // Add a choice descriptor
-        choice1.setDefaultInstance(new ChoiceInstance());
-        choice1.setName("testChoice1");
-        Result r1 = new Result("result1");
-        r1.setImpact(new Script("Variable.find(gameModel, \"mynumber1\").setValue(self, 10);"));
-        choice1.addResult(r1);
-        variableDescriptorFacade.createChild(question.getId(), choice1);
+        ChoiceDescriptor choice1 = createChoice(question, "testChoice1", null, "result1",
+                new Result("result1", new Script("Variable.find(gameModel, \"mynumber1\").setValue(self, 10);")));
 
-        ChoiceDescriptor choice2 = new ChoiceDescriptor();                       // Add a 2nd choice descriptor for ignored answer
-        choice2.setDefaultInstance(new ChoiceInstance());
-        choice2.setName("testChoice2");
-        Result r2 = new Result("result2");
-        //r2.setIgnorationImpact(new Script("mynumber2.value = 50;"));
-        r2.setIgnorationImpact(new Script("Variable.find(gameModel, \"mynumber2\").setValue(self, 50);"));
-        choice2.addResult(r2);
-        variableDescriptorFacade.createChild(question.getId(), choice2);
+        ChoiceDescriptor choice2 = createChoice(question, "testChoice2", null, "result1",
+                new Result("result1", null, new Script("Variable.find(gameModel, \"mynumber2\").setValue(self, 50);")));
 
         login(user);
-        questionDescriptorFacade.selectChoice(choice1.getId(), player.getId());                       // Select reply and validate question
+        questionDescriptorFacade.selectChoice(choice1.getId(), player.getId());
+
         QuestionInstance qi = question.getInstance(player);
         questionDescriptorFacade.validateQuestion(qi.getId(), player.getId());
         assertEquals(10.0, ((NumberInstance) variableInstanceFacade.find(myNumber1.getId(), player.getId())).getValue(), 0.1);
@@ -107,9 +277,112 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         assertEquals(2, qi.getReplies().size());
 
         login(trainer);
-        variableDescriptorFacade.duplicate(question.getId());                                        // Test duplication of question
+        variableDescriptorFacade.duplicate(question.getId());
 
-        variableDescriptorFacade.remove(question.getId());                                           // Clean up
+        variableDescriptorFacade.remove(question.getId());
+    }
+
+
+    @Test
+    public void testRadioChocie() throws Exception {
+        QuestionDescriptor question = createCbxQuestion(scenario.getId(), "question", 1, 1);
+
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", new Result("result"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", "label"));
+        ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", new Result("result"));
+
+        login(user);
+
+        QuestionInstance qi = (QuestionInstance) variableDescriptorFacade.getInstance(question, player);
+
+        assertQuestion(question.getId(), player, false);
+        assertChoice(choice1.getId(), player, false, false);
+        assertChoice(choice2.getId(), player, false, false);
+        assertChoice(choice3.getId(), player, false, false);
+
+        try {
+            questionDescriptorFacade.validateQuestion(qi.getId(), player.getId());
+            Assert.fail("question validated altough minimum not reached");
+        } catch (WegasErrorMessage ex) {
+            //expecting error
+        }
+
+        questionDescriptorFacade.selectChoice(choice1.getId(), player.getId());
+
+        assertChoiceIsPreselected(choice1.getId(), player, true);
+        assertChoiceIsPreselected(choice2.getId(), player, false);
+        assertChoiceIsPreselected(choice3.getId(), player, false);
+
+        questionDescriptorFacade.selectChoice(choice2.getId(), player.getId());
+
+        assertChoiceIsPreselected(choice1.getId(), player, false);
+        assertChoiceIsPreselected(choice2.getId(), player, true);
+        assertChoiceIsPreselected(choice3.getId(), player, false);
+
+        questionDescriptorFacade.selectChoice(choice3.getId(), player.getId());
+
+        assertChoiceIsPreselected(choice1.getId(), player, false);
+        assertChoiceIsPreselected(choice2.getId(), player, false);
+        assertChoiceIsPreselected(choice3.getId(), player, true);
+
+        questionDescriptorFacade.validateQuestion(qi.getId(), player.getId());
+
+        assertQuestion(question.getId(), player, true);
+        assertChoice(choice1.getId(), player, false, true);
+        assertChoice(choice2.getId(), player, false, true);
+        assertChoice(choice3.getId(), player, true, false);
+    }
+
+    @Test
+    public void testSelectAndValidateCBXLimit() throws Exception {
+        QuestionDescriptor question = createCbxQuestion(scenario.getId(), "question", 2, 3);
+
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", new Result("result"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", "label"));
+        ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", new Result("result"));
+        ChoiceDescriptor choice4 = createChoice(question, "choice4", null, "result", new Result("result"));
+
+        login(user);
+
+        QuestionInstance qi = (QuestionInstance) variableDescriptorFacade.getInstance(question, player);
+
+        assertQuestion(question.getId(), player, false);
+        assertChoice(choice1.getId(), player, false, false);
+        assertChoice(choice2.getId(), player, false, false);
+        assertChoice(choice3.getId(), player, false, false);
+        assertChoice(choice4.getId(), player, false, false);
+
+        try {
+            questionDescriptorFacade.validateQuestion(qi.getId(), player.getId());
+            Assert.fail("question validated altough minimum not reached");
+        } catch (WegasErrorMessage ex) {
+            //expecting error
+        }
+
+        questionDescriptorFacade.selectChoice(choice1.getId(), player.getId());
+        questionDescriptorFacade.selectChoice(choice2.getId(), player.getId());
+        questionDescriptorFacade.selectChoice(choice3.getId(), player.getId());
+
+        assertQuestion(question.getId(), player, false);
+        assertChoice(choice1.getId(), player, false, false);
+        assertChoice(choice2.getId(), player, false, false); // not selected until the whole question is validated
+        assertChoice(choice3.getId(), player, false, false);
+        assertChoice(choice4.getId(), player, false, false);
+
+        try {
+            questionDescriptorFacade.selectChoice(choice4.getId(), player.getId());
+            Assert.fail("select choice maximum exedeed but not execption thrown");
+        } catch (WegasErrorMessage ex) {
+            //expecting error
+        }
+
+        questionDescriptorFacade.validateQuestion(qi.getId(), player.getId());
+
+        assertQuestion(question.getId(), player, true);
+        assertChoice(choice1.getId(), player, true, false);
+        assertChoice(choice2.getId(), player, true, false);
+        assertChoice(choice3.getId(), player, true, false);
+        assertChoice(choice4.getId(), player, false, true);
     }
 
     @Test
@@ -118,18 +391,12 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         myNumber.setName("mynumber");
         myNumber.setDefaultInstance(new NumberInstance(0));
         variableDescriptorFacade.create(scenario.getId(), myNumber);
-        QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
-        question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(scenario.getId(), question);
 
-        ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
-        choice.setDefaultInstance(new ChoiceInstance());
-        choice.setName("testChoice");
-        Result r = new Result("result");
-        r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10"));
-        choice.addResult(r);
-        
-        variableDescriptorFacade.createChild(question.getId(), choice);
+        QuestionDescriptor question = createQuestion(scenario.getId(), "question", null);
+
+        ChoiceDescriptor choice = createChoice(question, "testChoice", null, "result",
+                new Result("result", new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);")));
+
         this.wipeEmCache();
 
         final Reply reply = questionDescriptorFacade.selectChoice(choice.getId(), player.getId());
@@ -166,23 +433,17 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
     @Test
     public void testCurrentResult() throws Exception {
         // Create a question descriptor
-        QuestionDescriptor question = new QuestionDescriptor();
-        question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(scenario.getId(), question);
+        QuestionDescriptor question = this.createQuestion(scenario.getId(), "question", null);
 
-        // Add a choice descriptor w/ 2 replies
-        ChoiceDescriptor choice = new ChoiceDescriptor();
-        choice.setDefaultInstance(new ChoiceInstance());
-        Result r = new Result("result");
-        choice.addResult(r);
-        Result r2 = new Result("result_2");
-        choice.addResult(r2);
+        // Add a choice descriptor w/ 2 results
+        ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result",
+                new Result("result"),
+                new Result("result_2"));
+
         // And the default reply is the second
-        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2);
-        variableDescriptorFacade.createChild(question.getId(), choice);
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
-        r = choice.getResultByName("result");
-        r2 = choice.getResultByName("result_2");
+        Result r = choice.getResultByName("result");
+        Result r2 = choice.getResultByName("result_2");
 
         // Set the default reply to the second one
         //((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(null);
@@ -215,18 +476,11 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testRemoveResponse() throws NamingException {
-        QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
-        question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(scenario.getId(), question);
+        QuestionDescriptor question = this.createQuestion(scenario.getId(), "question", null);
 
-        ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
-        choice.setDefaultInstance(new ChoiceInstance());
-        Result r = new Result("result");                                      // w/ 2 replies
-        choice.addResult(r);
-        Result r2 = new Result("result");
-        choice.addResult(r2);
-        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2); // And the default reply is the second
-        variableDescriptorFacade.createChild(question.getId(), choice);
+        ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result",
+                new Result("result"),
+                new Result("result"));
 
         choice.getResults().remove(0);
         variableDescriptorFacade.update(choice.getId(), choice);
@@ -236,72 +490,55 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testRemoveCurrentResult() throws NamingException {
-        // Create a question descriptor
-        QuestionDescriptor question = new QuestionDescriptor();
-        question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(scenario.getId(), question);
+    public void testRemoveCurrentResult() throws NamingException, WegasNoResultException {
+        QuestionDescriptor question = this.createQuestion(scenario.getId(), "question", null);
 
-        // Add a choice descriptor and 3 replies
-        ChoiceDescriptor choice = new ChoiceDescriptor();
-        choice.setDefaultInstance(new ChoiceInstance());
-        Result r = new Result("result");
-        choice.addResult(r);
-        Result r2 = new Result("result");
-        choice.addResult(r2);
-        Result r3 = new Result("result");
-        choice.addResult(r3);
+        ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result1",
+                new Result("result1"),
+                new Result("result2"),
+                new Result("result3"));
 
-        variableDescriptorFacade.createChild(question.getId(), choice);
+        Result r2 = choice.getResultByName("result2");
 
         // Set the second as default
         choice.changeCurrentResult(choice.getDefaultInstance(), r2);
         choice = (ChoiceDescriptor) variableDescriptorFacade.update(choice.getId(), choice);
-        
+
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
-        
+
         // and remove it
         choice.getResults().remove(1);
         variableDescriptorFacade.update(choice.getId(), choice);
 
-        assertEquals("result", ((ChoiceDescriptor) variableDescriptorFacade.find(choice.getId())).getResults().get(0).getName());
+        assertEquals("result1", ((ChoiceDescriptor) variableDescriptorFacade.find(choice.getId())).getResults().get(0).getName());
         variableDescriptorFacade.remove(question.getId());
     }
 
     @Test
-    public void testChangeResultAndScope() throws NamingException {
+    public void testChangeResultAndScope() throws NamingException, WegasNoResultException {
         this.createSecondTeam();
-        // Create a question descriptor
-        QuestionDescriptor question = new QuestionDescriptor();
-        question.setDefaultInstance(new QuestionInstance());
-        variableDescriptorFacade.create(scenario.getId(), question);
 
-        // Add a choice descriptor and 3 replies
-        ChoiceDescriptor choice = new ChoiceDescriptor();
-        choice.setDefaultInstance(new ChoiceInstance());
-        Result r = new Result("result");
-        choice.addResult(r);
-        Result r2 = new Result("result");
-        choice.addResult(r2);
-        Result r3 = new Result("result");
-        choice.addResult(r3);
-        choice.getDefaultInstance().setCurrentResultName("result");
+        QuestionDescriptor question = this.createQuestion(scenario.getId(), "question", null);
 
-        variableDescriptorFacade.createChild(question.getId(), choice);
+        // Add a choice descriptor and 3 results
+        ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result_1",
+                new Result("result_1"),
+                new Result("result_2"),
+                new Result("result_3"));
 
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
         ChoiceInstance instance20 = choice.getInstance(player21);
         ChoiceInstance instance21 = choice.getInstance(player22);
 
         assertEquals("TeamScoped instance is no the same !", instance20, instance21);
-        assertEquals("Current result does not match", "result", instance20.getCurrentResult().getName());
+        assertEquals("Current result does not match", "result_1", instance20.getCurrentResult().getName());
 
         // Set the second result as default
         // Change from teamScope to playerscope
-        choice.changeCurrentResult(choice.getDefaultInstance(), r2);
+        choice.changeCurrentResult(choice.getDefaultInstance(), choice.getResultByName("result_2"));
         choice.setScope(new PlayerScope());
         choice = (ChoiceDescriptor) variableDescriptorFacade.update(choice.getId(), choice);
-        
+
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
         instance20 = choice.getInstance(player21);
         instance21 = choice.getInstance(player22);
@@ -315,7 +552,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         choice.getResults().remove(1);
         variableDescriptorFacade.update(choice.getId(), choice);
 
-        assertEquals("result", ((ChoiceDescriptor) variableDescriptorFacade.find(choice.getId())).getResults().get(0).getName());
+        assertEquals("result_1", ((ChoiceDescriptor) variableDescriptorFacade.find(choice.getId())).getResults().get(0).getName());
         variableDescriptorFacade.remove(question.getId());
     }
 }

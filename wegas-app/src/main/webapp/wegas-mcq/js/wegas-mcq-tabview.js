@@ -118,12 +118,13 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 if (validatedCbx)
                     label = ""; // Dummy status string
             } else if (nbReplies > 0) {
-                if (question.get("allowMultipleReplies")) {
-                    label = questionInstance.get("replies").length + "x";
-                } else { // Find the last selected replies
+                if (question.get("maxReplies") === 1) {
+                    // Find the last selected replies
                     choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
                     label = choiceDescriptor.get("title") || "";
                     label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
+                } else {
+                    label = questionInstance.get("replies").length + "x";
                 }
             }
 
@@ -294,9 +295,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                required: true,
+                view: {
+                    type: "variableselect",
                     label: "Question folder",
                     classFilter: ["ListDescriptor"]
                 }
@@ -304,9 +307,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             highlightUnanswered: {
                 type: "boolean",
                 value: true,
-                _inputex: {
+                view: {
                     label: "Higlight Unanswered",
-                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    className: "wegas-advanced-feature"
                 }
             }
         }

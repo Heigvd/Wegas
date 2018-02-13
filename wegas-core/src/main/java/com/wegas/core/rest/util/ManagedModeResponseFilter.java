@@ -23,6 +23,8 @@ import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.http.HttpStatus;
@@ -200,6 +202,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             serverResponse.setDeletedEntities(deletedEntities);
 
             response.setEntity(serverResponse);
+
+            // Be sure it is json, a void method won't add this.
+            response.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
         }
         //requestFacade.flushClear();

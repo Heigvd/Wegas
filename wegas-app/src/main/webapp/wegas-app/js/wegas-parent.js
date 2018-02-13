@@ -71,7 +71,10 @@ YUI.add("wegas-parent", function(Y) {
                 "transient": true
             },
             children: {
-                "transient": true
+                "transient": true,
+                type: "array",
+                value: [],
+                view: {type: "hidden"}
             },
             root: {
                 "transient": true
@@ -174,7 +177,6 @@ YUI.add("wegas-parent", function(Y) {
                                     }, {
                                         type: BUTTON,
                                         label: "Input",
-                                        cssClass: "wegas-advanced-feature",
                                         plugins: [{
                                                 fn: "WidgetMenu",
                                                 cfg: {

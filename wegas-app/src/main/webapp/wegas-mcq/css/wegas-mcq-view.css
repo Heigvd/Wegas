@@ -218,7 +218,7 @@
     text-align:center;
     line-height:24px;
     font-size:11px;
-    top:0;
+    top: 2px;
     left:0;
 }
 .wegas-mcqview .mcq-question button:disabled {
@@ -312,6 +312,12 @@
 
 .wegas-mcqview .numberOfReplies {
     line-height: normal !important;
+}
+
+@-moz-document url-prefix() {
+    .mcq-checkbox[type='checkbox'][disabled]{
+        opacity :0.3;
+    }
 }
 
 .mcq-checkbox[type='checkbox'],

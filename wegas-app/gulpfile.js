@@ -13,7 +13,7 @@ var gulp = require('gulp'),
     rootPath = "/",
     BROWSERLIST = ['last 2 versions', '> 1%', 'Firefox ESR', 'Firefox >= 18'];
 
-gulp.task('default', ["submodule", "compress-css", "compress-js"], function() {
+gulp.task('default', ["submodule", "compress-css", "compress-js"], function () {
     "use strict";
     /*@Hack combo support ...*/
     gulp.src("target/Wegas/**/*-min.js")
@@ -21,33 +21,34 @@ gulp.task('default', ["submodule", "compress-css", "compress-js"], function() {
         .pipe(gulp.dest("target/Wegas"));
 });
 gulp.task("dev", ["setup-dev", "default"]);
-gulp.task("setup-dev", function(cb) {
+gulp.task("setup-dev", function (cb) {
     "use strict";
     rootPath = "/Wegas/";
     cb();
 });
-gulp.task("submodule", function() {
+gulp.task("submodule", ["yarn install"], function () {
     "use strict";
     return gulp.src([
-            'target/Wegas/*/gulpfile.js'
-        ], {
+        'target/Wegas/*/gulpfile.js'
+    ], {
             read: false
         })
         .pipe(chug());
 });
-gulp.task("compress-css", ["submodule"], function() {
+gulp.task("compress-css", ["submodule"], function () {
     "use strict";
     return gulp.src(["target/Wegas/**/*.css",
-            "!target/Wegas/lib/**",
-            "!**/node_modules/**",
-            "!target/Wegas/wegas-lobby/**",
-            "!target/Wegas/wegas-stats/**/*.css",
-            "!**/*-min.css"],
+        "!target/Wegas/lib/**",
+        "!**/node_modules/**",
+        "!target/Wegas/wegas-lobby/**",
+        "!target/Wegas/wegas-react-form/**",
+        "!target/Wegas/wegas-stats/**/*.css",
+        "!**/*-min.css"],
         {
             base: "target/Wegas"
         })
         .pipe(newer({
-            map: function(path) {
+            map: function (path) {
                 return "target/Wegas" + path.split(".css")[0] + "-min.css";
             }
         }))
@@ -64,21 +65,22 @@ gulp.task("compress-css", ["submodule"], function() {
 
         .pipe(gulp.dest("target/Wegas"));
 });
-gulp.task("compress-js", ["submodule"], function() {
+gulp.task("compress-js", ["submodule"], function () {
     "use strict";
     return gulp.src(["target/Wegas/**/*.js",
-            "!target/Wegas/lib/**",
-            "!**/*-min.js",
-            "!**/gulpfile.js",
-            "!**/node_modules/**",
-            "!target/Wegas/wegas-lobby/**",
-            "!target/Wegas/wegas-stats/**",
-            "!target/Wegas/scripts/*.js"],
+        "!target/Wegas/lib/**",
+        "!**/*-min.js",
+        "!**/gulpfile.js",
+        "!**/node_modules/**",
+        "!target/Wegas/wegas-lobby/**",
+        "!target/Wegas/wegas-react-form/**",
+        "!target/Wegas/wegas-stats/**",
+        "!target/Wegas/scripts/*.js"],
         {
             base: "target/Wegas"
         })
         .pipe(newer({
-            map: function(rp) {
+            map: function (rp) {
                 return "target/Wegas/" + rp.split(".js")[0] + "-min.js";
             }
         }))
@@ -87,7 +89,7 @@ gulp.task("compress-js", ["submodule"], function() {
         .pipe(uglify().on('error', function (e) {
             console.log(e.message);
             throw e;
-         }))
+        }))
         .pipe(rename({
             suffix: "-min"
         }))
@@ -99,7 +101,15 @@ gulp.task("compress-js", ["submodule"], function() {
 
         .pipe(gulp.dest("target/Wegas"));
 });
-gulp.task('clear', function(done) {
+gulp.task('yarn install', function () {
+    return gulp.src('target/Wegas/*/package.json').pipe(require("gulp-install")({
+        commands: {
+            'package.json': 'yarn'
+        },
+        yarn: ['--frozen-lockfile', '--production=false']
+    }))
+})
+gulp.task('clear', function (done) {
     "use strict";
     return cache.clearAll(done);
 });

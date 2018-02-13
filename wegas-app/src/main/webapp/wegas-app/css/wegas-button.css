@@ -8,7 +8,6 @@
 
 /* YUI3 Button Widget styles redefinition */
 .yui3-button {
-    vertical-align: top;
     padding: 0.2em 0.6em .1em;
     min-height: 26px;
     margin: 0;
@@ -25,10 +24,8 @@
 .yui3-button[disabled], .yui3-button-disabled, .yui3-button-disabled:hover, .yui3-button-disabled:active {
     box-shadow: none;
 }
-.yui3-button > * {
-    vertical-align: top;
-}
 .yui3-button .wegas-icon {
+    vertical-align: top;
     margin: -2px 2px 0 0;
 }
 .yui3-skin-sam .yui3-button-hidden, .yui3-skin-sam .yui3-togglebutton-hidden {

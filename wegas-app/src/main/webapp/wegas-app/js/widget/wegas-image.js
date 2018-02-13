@@ -99,8 +99,9 @@ YUI.add("wegas-image", function(Y) {
                         val);
                     return val;
                 },
-                _inputex: {
-                    _type: "wegasimageurl"
+                view: {
+                    label: "URL",
+                    type: "wegasimageurl"
                 }
             },
             complete: {

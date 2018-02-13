@@ -9,23 +9,33 @@
 .yui3-skin-sam .yui3-wegas-editorchat {
     z-index: 200;
     position: relative;
-    background-color: #03283A;
-    border: 1px solid #03283A;
+    /*background-color: #D3ECF6;*/
+    /*border: 1px solid #D3ECF6;*/
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .conversation {
     position: relative;
-    background-color: #27576E;
+    background-color: #D3ECF6;
     color: black;
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer {
-    color: white;
+    color: #4c4c4c;
     cursor: pointer;
-    padding: 3px;
+    padding: 0 10px 3px;
+    float: right;
+    background-color: #D3ECF6;
+    user-select: none;
+}
+
+.yui3-skin-sam .yui3-wegas-editorchat .closed + .editorchat-footer {
+    color: #4c4c4c;
+    background: transparent;
+    margin-top: 9px;
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .msgs .notification {
+    /*color: white;*/
     text-align: center;
     font-style: italic;
     font-size: 90%;
@@ -81,9 +91,12 @@
     border-radius: 5px;
     border: 2px solid #D07000;
 }
-
+.yui3-skin-sam .chat-icon.disabled{
+    opacity: 0.3
+}
 .yui3-skin-sam .yui3-wegas-editorchat.new-message .chat-icon {
     color: #D07000;
+    opacity: 1;
     transform-origin: 50% 0%;
     animation: msg-icon-pulse 1.2s 1;
 }

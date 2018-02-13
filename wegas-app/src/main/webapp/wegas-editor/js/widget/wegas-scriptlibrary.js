@@ -205,7 +205,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     this.visibilityField.enable();
                 }
                 this.deleteButton.set('disabled', isEmpty);
-                cb.one('.empty').set('visible', isEmpty);
+                isEmpty ? cb.one('.empty').show(): cb.one('.empty').hide();
 
                 this.hideOverlay();
             },

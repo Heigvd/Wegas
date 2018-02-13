@@ -10,19 +10,39 @@
 */
 
 
+.wegas-editor-treeview .yui3-treenode-content-extra {
+    display: none;
+}
 
+.wegas-editor-treeview .yui3-treenode.selected .yui3-treenode .yui3-treenode-content-extra .add-child-shortcut:hover,
+.wegas-editor-treeview .yui3-treenode.selected .yui3-treenode-content-extra .add-child-shortcut:hover,
 .wegas-editor-treeview .yui3-treenode-content-extra .add-child-shortcut:hover {
     color: #4E525E;
 }
 
 .wegas-editor-treeview .yui3-treenode-content-extra .add-child-shortcut {
     font-size: 1.3em;
-    color: #D3D3D3;
+    color: #d4d4d4;
     float: right;
     position: absolute;
-    right: 0px;
+    right: 4px;
+    top: 7px;
 }
 
+.wegas-editor-treeview .yui3-treenode.selected .yui3-treenode-content-label,
+.wegas-editor-treeview .yui3-treeleaf.selected .yui3-treeleaf-content-label,
+.wegas-editor-treeview .yui3-treenode.selected .yui3-treenode-content-extra .add-child-shortcut {
+    color: #4E525E;
+}
+
+.wegas-editor-treeview .yui3-treenode.selected .yui3-treenode .yui3-treenode-content-extra .add-child-shortcut {
+    color: #d4d4d4;
+}
+
+.wegas-editor-treeview .yui3-treenode.selected .yui3-treenode .yui3-treenode-content-label,
+.wegas-editor-treeview .yui3-treenode.selected .yui3-treeleaf .yui3-treeleaf-content-label {
+    color: black;
+}
 
 /* Editor treeview styles */
 .wegas-editor-treeview .yui3-treenode-content-header,
@@ -37,6 +57,10 @@
 .wegas-editor-treeview-content .yui3-treeview > ul > li,
 .wegas-page-editor .yui3-treeview > ul > li {
     box-shadow: 0px -1px 0px #f1f1f1;
+}
+
+.wegas-editor-treeview-content .yui3-treeview > ul > li .content-header:hover .yui3-treenode-content-extra {
+    display: inline;
 }
 
 .wegas-editor-treeview-content .yui3-treeview > ul > li:last-child,
@@ -72,46 +96,30 @@
     padding-bottom: 4px;
 }
 
-.wegas-editor-treeview-tablehd .yui3-u-col1 {
-    font-family: Verdana, Geneva, sans-serif;
-}
-
 .wegas-editor-treeview-tablehd .yui3-u-col2 > div {
     padding-top: 6px;
 }
 
 /* FILTER */
-.wegas-editor-treeview div.wegas-editor-treeview-content {
-    overflow: hidden;
-}
 
-.wegas-editor-treeview-content .yui3-treeview {
-    position: absolute;
+.wegas-editor-treeview .wegas-filter-input {
     width: 100%;
-    bottom: 0;
-    top: 0;
-    overflow: auto;
-}
-
-.wegas-editor-treeview-content .wegas-filter-input {
-    width: 100%;
-    white-space: nowrap;
-    padding-right: 45px; /*space for right button*/
+    display: flex;
+    flex-flow: row;
     box-sizing: border-box;
+    margin-bottom: 0.5em;
 }
 
-.wegas-editor-treeview-content .wegas-filter-input input {
+.wegas-editor-treeview .wegas-filter-input input {
     width: 100%;
     min-width: 80px;
     box-sizing: border-box;
 }
 
-/*.yui3-u-selected {
-    background: url("../../wegas-app/images/wegas-icon-toggle.png") no-repeat 56px 11px;
-}*/
 
 /** Variable Treeview **/
 
+.wegas-editor-variabletreeview,
 .wegas-editor-variabletreeview .yui3-treenode-content-icon,
 .wegas-editor-variabletreeview .yui3-treeleaf-content-icon {
     color: #4E525E;
@@ -119,7 +127,6 @@
 
 .wegas-editor-variabletreeview .yui3-dd-drop > div > .yui3-treenode-content-icon,
 .wegas-editor-variabletreeview .yui3-dd-drop > div > div > .yui3-treeleaf-content-icon {
-    /* cursor: url(../images/openhand.cur) 7 5, default; */
     cursor: move;
 }
 
@@ -178,10 +185,26 @@
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -649px no-repeat;
 }
 
+/* .yui3-skin-sam .fa-sitemap {
+    height: 10px;
+    margin-left: -3px;
+    margin-right: 11px;
+} */
+
 .yui3-skin-sam .wegas-icon-numberdescriptor:before {
-    content: "\211d"; 
+    content: "\211d";
     font-weight: bold;
 }
+
+/* .yui3-skin-sam .wegas-icon-numberdescriptor {
+    margin-left: 3px;
+    margin-right: 6px;
+}
+
+.yui3-skin-sam .fa-paragraph {
+    margin-left: 2px;
+    margin-right: 7px;
+} */
 
 .yui3-skin-sam .wegas-icon-textdescriptor,
 .yui3-skin-sam .wegas-page-editor .wegas-icon-text {

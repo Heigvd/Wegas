@@ -165,8 +165,25 @@ public class QuestionInstance extends VariableInstance {
     @JsonIgnore
     public boolean isSelectable() {
         QuestionDescriptor qd = (QuestionDescriptor) this.findDescriptor();
-        return (qd.getCbx() && !this.getValidated()) // a not yet validated cbx question
-                || qd.getAllowMultipleReplies() // OR several answers are allowed 
-                || this.getReplies().isEmpty(); // OR no reply yet
+        Integer maxReplies = qd.getMaxReplies();
+        // the question must be selectable
+        boolean selectable = (qd.getCbx() && !this.getValidated()) // a not yet validated cbx question
+                || maxReplies == null // OR number of answers is unlimited
+                || this.getReplies().size() < maxReplies; // OR maximum number not reached
+        if (selectable) {
+            //and at least one choice should bee selectable too
+            InstanceOwner owner = this.getOwner();
+            Player p = owner != null ? owner.getAnyLivePlayer() : null;
+
+            for (ChoiceDescriptor cd : qd.getItems()) {
+                if (cd.isSelectable(p)) {
+                    // at least 1 choice is still selectable -> OK
+                    return true;
+                }
+            }
+            // no selectable left
+            return false;
+        }
+        return selectable;
     }
 }
