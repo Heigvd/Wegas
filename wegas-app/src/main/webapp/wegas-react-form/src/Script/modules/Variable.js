@@ -26,14 +26,27 @@ export const varExist = name =>
 export const extractVar = node => {
     let ret;
     visit(node, {
-        visitCallExpression: function visitCallExpression(path) {
+        visitNode() {
+            throw Error('Unhandled');
+        },
+        visitExpressionStatement(path) {
+            this.traverse(path);
+        },
+        visitCallExpression(path) {
             const nod = path.node;
             if (isVariable(nod)) {
                 if (nod.arguments.length) {
                     // get last argument. Handle (self, var) and (var)
                     ret = nod.arguments[nod.arguments.length - 1].value;
+                    if (typeof ret !== 'string') {
+                        throw Error('Unhandled');
+                    }
+                    return false;
                 }
             }
+            throw Error('Unhandled');
+        },
+        visitEmptyStatement() {
             return false;
         },
     });
