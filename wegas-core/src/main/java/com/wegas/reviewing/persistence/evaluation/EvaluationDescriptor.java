@@ -16,9 +16,9 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.*;
 
 /**
@@ -77,11 +77,19 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     private String description;
 
     /**
-     * the parent
+     * the parent,
      */
     @ManyToOne
     @JsonBackReference
     private EvaluationDescriptorContainer container;
+
+
+    /**
+     * the parent WhQuestion, if any
+     */
+    @ManyToOne
+    @JsonBackReference
+    private WhQuestionDescriptor whQuestionContainer;
 
     /**
      * Basic constructor
@@ -116,29 +124,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof EvaluationDescriptor) {
-            EvaluationDescriptor ed = (EvaluationDescriptor) o;
-
-            if (ed.getId() == null || this.getId() == null) {
-                return false;
-            } else {
-                return this.getId().equals(ed.getId());
-            }
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.id);
-        hash = 53 * hash + Objects.hashCode(this.name);
-        return hash;
     }
 
     /**
@@ -199,7 +184,21 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      * @param container the parent
      */
     public void setContainer(EvaluationDescriptorContainer container) {
+        if (container != null){
+            this.setWhQuestionContainer(null);
+        }
         this.container = container;
+    }
+
+    public WhQuestionDescriptor getWhQuestionContainer() {
+        return whQuestionContainer;
+    }
+
+    public void setWhQuestionContainer(WhQuestionDescriptor whQuestionContainer) {
+        if (whQuestionContainer != null){
+            this.setContainer(null);
+        }
+        this.whQuestionContainer = whQuestionContainer;
     }
 
     @JsonIgnore

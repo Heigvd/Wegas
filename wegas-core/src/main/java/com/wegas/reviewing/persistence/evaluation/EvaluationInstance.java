@@ -14,6 +14,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
 import java.util.Collection;
@@ -69,6 +70,12 @@ public abstract class EvaluationInstance extends AbstractEntity {
     @ManyToOne
     @JsonIgnore
     private Review commentsReview;
+
+
+    @ManyToOne
+    @JsonIgnore
+    private WhQuestionInstance whQuestion;
+
 
     /**
      * Corresponding evaluation descriptor
@@ -213,6 +220,14 @@ public abstract class EvaluationInstance extends AbstractEntity {
         this.feedbackReview = rd;
     }
 
+    public WhQuestionInstance getWhQuestion() {
+        return whQuestion;
+    }
+
+    public void setWhQuestion(WhQuestionInstance whQuestion) {
+        this.whQuestion = whQuestion;
+    }
+
     /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         if (feedbackReview != null) {
@@ -248,6 +263,15 @@ public abstract class EvaluationInstance extends AbstractEntity {
                 theReview.getComments().remove(this);
             }
         }
+
+        WhQuestionInstance theQuestion = this.getWhQuestion();
+        if (theQuestion != null){
+            theQuestion = (WhQuestionInstance) beans.getVariableInstanceFacade().find(theQuestion.getId());
+            if (theQuestion != null){
+                theQuestion.getAnswers().remove(this);
+            }
+        }
+
         super.updateCacheOnDelete(beans);
     }
 
