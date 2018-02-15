@@ -67,6 +67,9 @@ export function typeToValue(value, schema) {
         case 'number':
             // handle negative values.
             visit(value, {
+                visitNode() {
+                    throw Error('Unhandled');
+                },
                 visitUnaryExpression: function visitUnaryExpression(path) {
                     tmp.push(path.node.operator);
                     this.traverse(path);
@@ -77,7 +80,7 @@ export function typeToValue(value, schema) {
                 },
             });
             tmpNum = tmp.join('');
-            return isNaN(tmpNum) ? tmpNum : Number(tmpNum);
+            return Number.isNaN(Number(tmpNum)) ? tmpNum : Number(tmpNum);
         case 'identifier':
             return value.name;
         case 'array':
@@ -117,7 +120,8 @@ export function matchSchema(value, schema) {
  * @param {{type:string}} descriptor The schema for the given node
  * @param {function(Object):void} onChange Callback for a value change.
  * @param {?=} entity An optional entity to merge into schema's view
- * @param {string=} key An optional key for React. In case this form is in an array
+ * @param {string=} key An optional key for React.
+ * In case this form is in an array
  * @returns {JSX.Element} Form element
  */
 export function renderForm(astValue, descriptor, onChange, entity, key) {
@@ -136,7 +140,8 @@ export function renderForm(astValue, descriptor, onChange, entity, key) {
  * Generate an array of forms for each function's arguments
  * @param {{arguments:{type:string}[]}} methodDescr a Wegas method descriptor
  * @param {Object[]} args An array of AST nodes
- * @param {function(Object[]):void} onChange Callback function receiving updated AST array
+ * @param {function(Object[]):void} onChange Callback function receiving
+ * updated AST array
  * @param {?=} entity An optional entity to merge into each form schema's view
  * @returns {JSX.Element[]} An array of form elements.
  */
@@ -147,21 +152,6 @@ export function handleMethodArgs(methodDescr, args, onChange, entity) {
     const argDescr = methodDescr.arguments;
     const ret = argDescr.map((v, i) => args[i] || valueToType(undefined, v));
 
-    // if (args.length !== argDescr.length) { // remove/create unknown arguments
-    //     setTimeout(() => onChange(ret), 0); // delay to let react's render end.
-    //     return [];
-    // }
-    // let changed = false;
-    // ret.forEach((val, i) => {
-    //     if (!matchSchema(val, argDescr[i])) {
-    //         ret[i] = valueToType(undefined, argDescr[i]);
-    //         changed = true;
-    //     }
-    // });
-    // if (changed) {
-    //     setTimeout(() => onChange(ret), 0); // delay to let react's render end.
-    //     return [];
-    // }
     return argDescr.map((a, i) => {
         const val = ret[i];
         return renderForm(
