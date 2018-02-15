@@ -81,7 +81,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "choiceinstance_id", nullable = false)
+    @JoinColumn(nullable = false)
     @JsonBackReference
     private ChoiceInstance choiceInstance;
 

@@ -36,7 +36,7 @@ public class GameModelScope extends AbstractScope<GameModel> {
     /**
      *
      */
-    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "gameModelScope", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JsonIgnore
     private VariableInstance variableInstance;
 

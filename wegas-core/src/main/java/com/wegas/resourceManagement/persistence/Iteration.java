@@ -37,7 +37,7 @@ import javax.persistence.*;
 @Entity
 
 @Table(indexes = {
-    @Index(columnList = "burndowninstance_variableinstance_id")
+    @Index(columnList = "burndowninstance_id")
 })
 public class Iteration extends AbstractEntity implements DatedEntity {
 
@@ -123,7 +123,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
                 @JoinColumn(name = "iteration_id", referencedColumnName = "id")
             },
             inverseJoinColumns = {
-                @JoinColumn(name = "tasks_variableinstance_id", referencedColumnName = "variableinstance_id")
+                @JoinColumn(name = "taskinstance_id", referencedColumnName = "id")
             }
     )
     private List<TaskInstance> tasks = new ArrayList<>();

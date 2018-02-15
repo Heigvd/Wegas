@@ -8,14 +8,14 @@
 package com.wegas.core.persistence.variable;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.game.GameModel;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,12 +33,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     /**
      *
      */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     //@BatchFetch(BatchFetchType.IN)
-    
-    @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
-    //@OrderBy("id")
-    @OrderColumn
+    @OneToMany(mappedBy = "parentList", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OrderColumn(name = "ld_items_order")
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**

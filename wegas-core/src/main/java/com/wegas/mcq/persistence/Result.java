@@ -121,7 +121,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      */
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "choicedescriptor_id")
     private ChoiceDescriptor choiceDescriptor;
 
     /**

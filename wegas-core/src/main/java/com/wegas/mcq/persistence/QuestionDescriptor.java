@@ -26,20 +26,17 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
-import javax.persistence.Table;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@Table(name = "MCQQuestionDescriptor")
 @NamedQueries({
     @NamedQuery(name = "QuestionDescriptor.findDistinctChildrenLabels", query = "SELECT DISTINCT(cd.label) FROM ChoiceDescriptor cd WHERE cd.question.id = :containerId")
 })
@@ -77,9 +74,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
     //@BatchFetch(BatchFetchType.IN)
-    @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
-    @OrderColumn
+    @OrderColumn(name = "qd_items_order")
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
     @Index(columnList = "user_id"),
-    @Index(columnList = "parentteam_id")
+    @Index(columnList = "team_id")
 })
 public class Player extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
 
@@ -90,7 +90,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JsonBackReference(value = "player-team")
-    @JoinColumn(name = "parentteam_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Team team;
 
     @Transient

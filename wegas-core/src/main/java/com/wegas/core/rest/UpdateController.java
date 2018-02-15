@@ -20,13 +20,9 @@ import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
-import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
-import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
-import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.Transition;
@@ -52,7 +48,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -61,11 +56,7 @@ import javax.persistence.criteria.Root;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.eclipse.persistence.config.CacheUsage;
-import org.eclipse.persistence.config.QueryHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -491,7 +482,7 @@ public class UpdateController {
             ret.append(pmg.getName());
             ret.append("/");
             ret.append(pmg.getId());
-            status = addVariable(pmg, "{\"@class\":\"BooleanDescriptor\",\"comments\":\"\",\"defaultInstance\":{\"@class\":\"BooleanInstance\",\"value\":false},\"label\":\"burndownEnabled\",\"scope\":{\"@class\":\"GameScope\",\"broadcastScope\":\"TeamScope\"},\"title\":null,\"name\":\"burndownEnabled\"}", "burndownEnabled", "properties");
+            status = addVariable(pmg, "{\"@class\":\"BooleanDescriptor\",\"comments\":\"\",\"defaultInstance\":{\"@class\":\"BooleanInstance\",\"value\":false},\"label\":\"burndownEnabled\",\"scope\":{\"@class\":\"GameModelScope\",\"broadcastScope\":\"TeamScope\"},\"title\":null,\"name\":\"burndownEnabled\"}", "burndownEnabled", "properties");
             ret.append(" burndownEnabled: ");
             ret.append(status);
 
@@ -651,80 +642,6 @@ public class UpdateController {
         return noDebugTeamGames;
     }
 
-    @GET
-    @Path("Duplicata")
-    public String getDuplicata() {
-        return this.deleteDuplicata();
-    }
-
-    private String deleteDuplicata() {
-
-        StringBuilder sb = new StringBuilder();
-
-        String sql = "SELECT vi.gameScope, vi.game FROM VariableInstance vi WHERE vi.gameScope IS NOT NULL GROUP BY vi.gameScope.id, vi.game.id HAVING count(vi) > 1";
-        Query createQuery = this.getEntityManager().createQuery(sql);
-
-        List resultList = createQuery.getResultList();
-        int i = 0;
-        for (Object o : resultList) {
-            Object[] array = (Object[]) o;
-            GameScope scope = (GameScope) array[0];
-            Game game = (Game) array[1];
-            //VariableInstance variableInstance = scope.getVariableInstance(game);
-            //System.out.println("DELETE: " + variableInstance);
-
-            sb.append("DELETE: ");
-            sb.append(i++);
-            sb.append(". ");
-
-            String sql2 = "SELECT vi from VariableInstance vi WHERE vi.gameScope.id = :scopeId and vi.game.id = :gameId";
-
-            TypedQuery<VariableInstance> query2 = this.getEntityManager().createQuery(sql2, VariableInstance.class);
-            query2.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
-
-            query2.setParameter("scopeId", scope.getId());
-            query2.setParameter("gameId", game.getId());
-
-            List<VariableInstance> list = query2.getResultList();
-
-            sb.append(list.get(0));
-            sb.append(" SCOPE - TEAM ").append(scope.getId()).append("   ").append(game.getId());
-
-            sb.append(("<br />"));
-
-            if (list.size() != 2) {
-                sb.append("   -> NOT 2 but ").append(list.size());
-            } else {
-
-                VariableInstance get = list.get(0);
-                VariableInstance get2 = list.get(1);
-                if (get instanceof BooleanInstance) {
-                    if (((BooleanInstance) get).getValue() != ((BooleanInstance) get2).getValue()) {
-                        sb.append(("   -> NOT EQUALS"));
-                    } else {
-                        this.getEntityManager().remove(get2);
-                    }
-                } else if (get instanceof NumberInstance) {
-                    if (((NumberInstance) get).getValue() != ((NumberInstance) get2).getValue()) {
-                        sb.append(("   -> NOT EQUALS"));
-                    } else {
-                        this.getEntityManager().remove(get2);
-                    }
-                } else if (get instanceof StringInstance) {
-                    if (!((StringInstance) get).getValue().equals(((StringInstance) get2).getValue())) {
-                        sb.append(("   -> NOT EQUALS"));
-                    } else {
-                        this.getEntityManager().remove(get2);
-                    }
-                }
-
-            }
-            sb.append(("<br />"));
-        }
-        return sb.toString();
-    }
-
     private Long countOrphans() {
         String sql = "SELECT count(variableinstance) FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
         TypedQuery<Long> query = this.getEntityManager().createQuery(sql, Long.class);
@@ -735,28 +652,5 @@ public class UpdateController {
         String sql = "SELECT variableinstance FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
         TypedQuery<VariableInstance> query = this.getEntityManager().createQuery(sql, VariableInstance.class).setMaxResults(3000);
         return query.getResultList();
-    }
-
-    @GET
-    @Path("ErrPlayers")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Player> getPlayerWithoutPermissions() {
-        // Find player without Game:View permission
-        EntityManager entityManager = this.getEntityManager();
-        String sqlQuery = "SELECT DISTINCT p.* "
-                + "FROM player as p "
-                + "JOIN users AS u on u.id = p.user_id "
-                + "JOIN team AS t ON (p.parentteam_id = t.id AND t.dtype = 'Team') "
-                + "JOIN game AS g ON t.parentgame_id = g.game_id "
-                + "LEFT JOIN permission as perm ON ("
-                + "   perm.permissions = 'Game:View:g' || g.game_id "
-                + "   AND p.user_id = perm.user_id)"
-                + "WHERE perm.id IS NULL";
-
-        Query query = entityManager.createNativeQuery(sqlQuery, Player.class);
-
-        List<Player> players = query.getResultList();
-
-        return players;
     }
 }

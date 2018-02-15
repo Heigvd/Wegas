@@ -31,7 +31,7 @@ import javax.persistence.*;
 @JsonTypeName(value = "Message")
 
 @Table(indexes = {
-    @Index(columnList = "inboxinstance_variableinstance_id")
+    @Index(columnList = "inboxinstance_id")
 })
 
 public class Message extends NamedEntity implements DatedEntity {

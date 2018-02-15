@@ -20,7 +20,7 @@ import javax.persistence.*;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id"),
+    @Index(columnList = "resourceinstance_id"),
     @Index(columnList = "taskinstance_id")
 })
 @NamedQueries({
@@ -43,14 +43,13 @@ public class Assignment extends AbstractAssignement {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "taskinstance_id")
     private TaskInstance taskInstance;
 
     /**
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "variableinstance_id", nullable = false)
+    @JoinColumn(nullable = false)
     @JsonBackReference
     @JsonIgnore
     private ResourceInstance resourceInstance;

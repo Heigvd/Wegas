@@ -24,9 +24,9 @@ import javax.persistence.*;
 @Entity
 
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id"),
+    @Index(columnList = "resourceinstance_id"),
     @Index(columnList = "taskinstance_id"),
-    @Index(columnList = "wrequirement_id")
+    @Index(columnList = "requirement_id")
 })
 public class Activity extends AbstractAssignement {
 
@@ -64,14 +64,13 @@ public class Activity extends AbstractAssignement {
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "taskinstance_id")
     private TaskInstance taskInstance;
 
     /**
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "variableinstance_id", nullable = false)
+    @JoinColumn(nullable = false)
     @JsonBackReference
     @JsonIgnore
     private ResourceInstance resourceInstance;
@@ -80,7 +79,6 @@ public class Activity extends AbstractAssignement {
      *
      */
     @ManyToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "wrequirement_id", nullable = true)
     @JsonIgnore
     private WRequirement requirement;
 
