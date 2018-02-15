@@ -1092,5 +1092,211 @@ YUI.add('wegas-mcq-entities', function(Y) {
             }
         }
     });
+
+
+
+    /*
+     * Wh-Questions
+     */
+
+    /**
+     * QuestionDescriptor mapper
+     */
+    persistence.WhQuestionDescriptor = Y.Base.create("WhQuestionDescriptor", persistence.VariableDescriptor, [], {
+        getIconCss: function() {
+            return 'fa fa-pencil-square';
+        }
+    }, {
+        ATTRS: {
+            "@class": {
+                type: STRING,
+                value: "WhQuestionDescriptor"
+            },
+            title: {
+                type: NULLSTRING,
+                optional: true,
+                value: "",
+                index: -1,
+                view: {
+                    label: "Label",
+                    description: "Displayed to players"
+                }
+            },
+            description: {
+                type: NULLSTRING,
+                format: HTML,
+                index: 12,
+                view: {type: HTML, label: "Description"}
+            },
+            evaluations: { // hack to have the same relations name as for EvaluationDescriptorContainer
+                type: ARRAY,
+                transient: true,
+                getter: function(){
+                    return this.get("answers");
+                },
+                setter: function(val){
+                    return this.set("answers", val);
+                }
+            },
+            answers: {
+                type: ARRAY,
+                value: [],
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("index") - b.get("index");
+                    });
+                    return v;
+                },
+                index: 1,
+                view: {
+                    type: HIDDEN
+                }
+            },
+            defaultInstance: {
+                type: "object",
+                required: true,
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "WhQuestionInstance",
+                        view: {
+                            type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
+                    validated: {
+                        value: false,
+                        type: BOOLEAN,
+                        view: {type: HIDDEN}
+                    },
+                    active: {
+                        type: BOOLEAN,
+                        value: true,
+                        view: {
+                            label: 'Active from start'
+                        }
+                    }
+                },
+                index: 3
+            }
+        },
+        EDITMENU: [{
+                type: "EditEntityButton"
+            },
+            {
+                type: BUTTON,
+                label: "Add",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: [
+                                {
+                                    type: BUTTON,
+                                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Number",
+                                    plugins: [{
+                                            fn: "EditEntityArrayFieldAction",
+                                            cfg: {
+                                                targetClass: "GradeDescriptor",
+                                                method: "POST",
+                                                attributeKey: "answers",
+                                                showEditionAfterRequest: true
+                                            }
+                                        }]
+                                }, {
+                                    type: BUTTON,
+                                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Text",
+                                    plugins: [{
+                                            fn: "EditEntityArrayFieldAction",
+                                            cfg: {
+                                                targetClass: "TextEvaluationDescriptor",
+                                                method: "POST",
+                                                attributeKey: "answers",
+                                                showEditionAfterRequest: true
+                                            }
+                                        }]
+                                }, {
+                                    type: BUTTON,
+                                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Categorization",
+                                    plugins: [{
+                                            fn: "EditEntityArrayFieldAction",
+                                            cfg: {
+                                                targetClass: "CategorizedEvaluationDescriptor",
+                                                method: "POST",
+                                                attributeKey: "answers",
+                                                showEditionAfterRequest: true
+                                            }
+                                        }]
+                                }
+                            ]
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
+                type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
+            }],
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {
+            activate: {
+                arguments: [SELFARG]
+            },
+            desactivate: {
+                label: "deactivate",
+                arguments: [SELFARG]
+            },
+            isReplied: {
+                label: "has been replied",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isNotReplied: {
+                label: "has not been replied",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isActive: {
+                label: "is active",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            }
+        }
+    });
+
+
+    /**
+     * WhQuestionInstance mapper
+     */
+    Wegas.persistence.WhQuestionInstance = Y.Base.create("WhQuestionInstance",
+        Wegas.persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "WhQuestionInstance"
+            },
+            active: {
+                value: true,
+                type: BOOLEAN
+            },
+            validated: {
+                value: false,
+                type: BOOLEAN
+            }
+        }
+    });
 });
 

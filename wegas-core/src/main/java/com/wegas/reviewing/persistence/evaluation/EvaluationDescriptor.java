@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
@@ -37,7 +38,7 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(
         uniqueConstraints = {},
-        indexes= {
+        indexes = {
             @Index(columnList = "container_id")
         }
 )
@@ -83,12 +84,11 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     @JsonBackReference
     private EvaluationDescriptorContainer container;
 
-
     /**
      * the parent WhQuestion, if any
      */
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("whq_answer")
     private WhQuestionDescriptor whQuestionContainer;
 
     /**
@@ -184,7 +184,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      * @param container the parent
      */
     public void setContainer(EvaluationDescriptorContainer container) {
-        if (container != null){
+        if (container != null) {
             this.setWhQuestionContainer(null);
         }
         this.container = container;
@@ -195,7 +195,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     }
 
     public void setWhQuestionContainer(WhQuestionDescriptor whQuestionContainer) {
-        if (whQuestionContainer != null){
+        if (whQuestionContainer != null) {
             this.setContainer(null);
         }
         this.whQuestionContainer = whQuestionContainer;
@@ -234,13 +234,21 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.evaluationInstances.remove(instance);
     }
 
+    private WithPermission getEffectiveContainer() {
+        if (this.getContainer() != null) {
+            return this.getContainer();
+        } else {
+            return this.getWhQuestionContainer();
+        }
+    }
+
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getContainer().getRequieredUpdatePermission();
+        return this.getEffectiveContainer().getRequieredUpdatePermission();
     }
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getContainer().getRequieredReadPermission();
+        return this.getEffectiveContainer().getRequieredUpdatePermission();
     }
 }

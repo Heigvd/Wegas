@@ -38,7 +38,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
     SELFARG = {
         type: 'identifier',
         value: 'self',
-        view: { type: HIDDEN }
+        view: {type: HIDDEN}
     };
 
     /**
@@ -48,7 +48,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         helloWorld: function() {
             return "hello, world!\n";
         },
-        getIconCss: function () {
+        getIconCss: function() {
             return 'fa fa-users fa-1';
         }
     }, {
@@ -69,7 +69,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 type: STRING,
                 value: "",
                 "transient": true,
-                view: { type: HIDDEN },
+                view: {type: HIDDEN},
                 getter: function() {
                     return Wegas.Facade.Variable.cache.find("name", this.get("toReviewName"));
                 }
@@ -102,10 +102,10 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     "@class": {
                         type: STRING,
                         value: "EvaluationDescriptorContainer"
-                }
-            },
+                    }
+                },
                 index: 1,
-                view: { type: HIDDEN }
+                view: {type: HIDDEN}
             },
             fbComments: {
                 type: OBJECT,
@@ -116,10 +116,10 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     "@class": {
                         type: STRING,
                         value: "EvaluationDescriptorContainer"
-                }
-            },
+                    }
+                },
                 index: 1,
-                view: { type: HIDDEN }
+                view: {type: HIDDEN}
             },
             includeEvicted: {
                 type: BOOLEAN,
@@ -147,22 +147,22 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     reviewState: {
                         type: STRING,
                         value: "NOT_STARTED",
-                        view: { type: HIDDEN }
-                },
+                        view: {type: HIDDEN}
+                    },
                     reviewed: {
                         type: ARRAY,
                         value: [],
-                        view: { type: HIDDEN }
+                        view: {type: HIDDEN}
                     },
                     toReview: {
                         type: ARRAY,
                         value: [],
-                        view: { type: HIDDEN }
+                        view: {type: HIDDEN}
                     },
 
                 },
-                    index: 3
-                }
+                index: 3
+            }
         },
         EDITMENU: [{
                 type: "EditEntityButton"
@@ -174,7 +174,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     }]
             }, {
                 type: "DeleteEntityButton"
-            },{
+            }, {
                 type: BUTTON,
                 label: 'Search for usages',
                 plugins: [
@@ -198,7 +198,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                         type: "select",
                         choices: [{
                                 label: "",
-                                value:""
+                                value: ""
                             }, {
                                 value: "NOT_STARTED",
                                 label: "restart"
@@ -400,7 +400,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             index: {
                 type: NUMBER,
-                view: { label: "Index" }
+                view: {label: "Index"}
             },
             description: {
                 type: NULLSTRING,
@@ -408,8 +408,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 view: {
                     type: HTML,
                     label: "Description",
-                        height: '50px'
-                    }
+                    height: '50px'
+                }
             }
         },
         EDITMENU: [{
@@ -448,6 +448,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * TextEvaluationDescriptor
      */
     persistence.TextEvaluationDescriptor = Y.Base.create("TextEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+        getIconCss: function() {
+            return 'fa fa-paragraph';
+        }
     }, {
         ATTRS: {
             "@class": {
@@ -464,6 +467,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         },
         getMinValue: function() {
             return this.get("minValue");
+        },
+        getIconCss: function() {
+            return 'fa wegas-icon-numberdescriptor';
         }
     }, {
         ATTRS: {
@@ -471,14 +477,13 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 value: "GradeDescriptor"
             },
             minValue: {
-                type: NUMBER,
-                optional: true,
+                type: ["null", NUMBER],
                 view: {
                     label: "Minimum"
                 }
             },
             maxValue: {
-                type: NUMBER,
+                type: ["null", NUMBER],
                 optional: true,
                 view: {
                     label: "Maximum"
@@ -490,6 +495,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * CategorizedEvaluationDescriptor
      */
     persistence.CategorizedEvaluationDescriptor = Y.Base.create("CategorizedEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+        getIconCss: function() {
+            return "fa fa-list-ul";
+        }
     }, {
         ATTRS: {
             "@class": {
@@ -498,15 +506,15 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             categories: {
                 type: ARRAY,
                 items: {
-                        required: true,
-                        type: STRING
+                    required: true,
+                    type: STRING
                 },
                 view: {
                     label: "Categories",
                     type: ARRAY
-                    }
                 }
             }
+        }
     });
     /**
      * EvaluationDescriptor

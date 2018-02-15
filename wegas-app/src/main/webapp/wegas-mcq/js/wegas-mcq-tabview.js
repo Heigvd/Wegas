@@ -97,22 +97,22 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             /*
              * The followinbg seciton may replace  the next one
              */
-            /*
-             if (nbReplies > 0 || validatedCbx) {
-             label = ""; // make sure the label is no null
-             if (question.get("allowMultipleReplies")) {
-             if (cbxType) {
-             label = Wegas.I18n.t('mcq.answered').capitalize();
-             } else {
-             label = questionInstance.get("replies").length + "x";
-             }
-             } else { // Find the last selected replies
-             choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-             label = choiceDescriptor.get("title") || "";
-             label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
-             }
-             }
-             */
+            if (false) {
+                if (nbReplies > 0 || validatedCbx) {
+                    label = ""; // make sure the label is no null
+                    if (question.get("allowMultipleReplies")) {
+                        if (cbxType) {
+                            label = Wegas.I18n.t('mcq.answered').capitalize();
+                        } else {
+                            label = questionInstance.get("replies").length + "x";
+                        }
+                    } else { // Find the last selected replies
+                        choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
+                        label = choiceDescriptor.get("title") || "";
+                        label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
+                    }
+                }
+            }
 
             if (cbxType) {
                 if (validatedCbx)
@@ -166,7 +166,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
             index = 0;
             while (question = queue.shift()) {
-                if (question instanceof Wegas.persistence.QuestionDescriptor) {
+                if (question instanceof Wegas.persistence.QuestionDescriptor) { //
                     oldTab = Y.Array.find(tabs, function(item) {
                         return item.cQuestion && item.cQuestion.get("id") === question.get("id");
                     });
@@ -248,6 +248,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             if (e.newVal && e.newVal.cQuestion
                 && !this.isRemovingTabs && !e.newVal.loaded) {
                 e.newVal.loaded = true;
+
+// Select correct widget here !
+
                 widget = new Y.Wegas.MCQView({
                     variable: {
                         "name": e.newVal.cQuestion.get("name")

@@ -7,6 +7,7 @@
  */
 package com.wegas.mcq.persistence.wh;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
@@ -40,6 +41,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     private String description;
 
     @OneToMany(mappedBy = "whQuestionContainer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("whq_answer")
     private List<EvaluationDescriptor> answers = new ArrayList<>();
 
 
@@ -63,6 +65,11 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
 
     public void setAnswers(List<EvaluationDescriptor> answers) {
         this.answers = answers;
+        if (answers != null){
+            for (EvaluationDescriptor ed : answers){
+                ed.setWhQuestionContainer(this);
+            }
+        }
     }
 
     /**
@@ -155,5 +162,6 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     @Override
     public void revive(Beanjection beans) {
         super.revive(beans);
+        beans.getQuestionDescriptorFacade().reviveWhQuestionDescriptor(this);
     }
 }

@@ -34,6 +34,7 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
+import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
@@ -102,6 +103,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
     @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
     @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "WhQuestionDescriptor", value = WhQuestionDescriptor.class),
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),

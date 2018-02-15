@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -275,9 +276,17 @@ public abstract class EvaluationInstance extends AbstractEntity {
         super.updateCacheOnDelete(beans);
     }
 
+    private WithPermission getEffectiveParent(){
+        if (this.getEffectiveReview()!= null){
+            return getEffectiveReview();
+        } else {
+            return this.getWhQuestion();
+        }
+    }
+
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getEffectiveReview().getRequieredUpdatePermission();
+        return this.getEffectiveParent().getRequieredUpdatePermission();
     }
 
     /*
@@ -288,6 +297,6 @@ public abstract class EvaluationInstance extends AbstractEntity {
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getEffectiveReview().getRequieredReadPermission();
+        return this.getEffectiveParent().getRequieredReadPermission();
     }
 }

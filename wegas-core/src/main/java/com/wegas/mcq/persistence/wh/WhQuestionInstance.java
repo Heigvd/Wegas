@@ -41,7 +41,7 @@ public class WhQuestionInstance extends VariableInstance {
     private Boolean validated = FALSE;
 
 
-    @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "whQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EvaluationInstance> answers = new ArrayList<>();
 
     /**

@@ -88,6 +88,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             value: 'QuestionDescriptor'
         },
         {
+            label: 'Wh-Question',
+            value: 'WhQuestionDescriptor'
+        },
+        {
             label: 'Task',
             value: 'TaskDescriptor'
         },
@@ -1186,6 +1190,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                         type: 'AddEntityChildButton',
                                         label: '<span class="fa fa-question-circle"></span> Question',
                                         targetClass: 'QuestionDescriptor'
+                                    },
+                                    {
+                                        type: 'AddEntityChildButton',
+                                        label: '<span class="fa fa-pencil-square"></span> Wh-Question',
+                                        targetClass: 'WhQuestionDescriptor'
                                     },
                                     {
                                         type: 'AddEntityChildButton',

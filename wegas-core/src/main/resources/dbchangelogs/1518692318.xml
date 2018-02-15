@@ -1,0 +1,48 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence (generated)" id="1518692327877-1">
+        <createTable tableName="whquestiondescriptor">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+        </createTable>
+
+        <createTable tableName="whquestioninstance">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="validated" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1518692327877-3">
+        <addColumn tableName="evaluationinstance">
+            <column name="whquestion_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1518692327877-4">
+        <addColumn tableName="evaluationdescriptor">
+            <column name="whquestioncontainer_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1518692327877-5">
+        <addPrimaryKey columnNames="id" constraintName="whquestiondescriptor_pkey" tableName="whquestiondescriptor"/>
+        <addPrimaryKey columnNames="id" constraintName="whquestioninstance_pkey" tableName="whquestioninstance"/>
+    </changeSet>
+
+
+    <changeSet author="maxence (generated)" id="1518692327877-7">
+        <addForeignKeyConstraint baseColumnNames="whquestioncontainer_id" baseTableName="evaluationdescriptor" constraintName="fk_evaluationdescriptor_whquestioncontainer_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
+        <addForeignKeyConstraint baseColumnNames="whquestion_id" baseTableName="evaluationinstance" constraintName="fk_evaluationinstance_whquestion_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="whquestiondescriptor" constraintName="fk_whquestiondescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="whquestioninstance" constraintName="fk_whquestioninstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance"/>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1518692327877-12">
+        <addDefaultValue columnDataType="boolean" columnName="unread" defaultValueBoolean="false" tableName="mcqreply"/>
+    </changeSet>
+</databaseChangeLog>
