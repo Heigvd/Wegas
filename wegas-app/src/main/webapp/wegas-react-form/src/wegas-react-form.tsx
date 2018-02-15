@@ -1,6 +1,3 @@
-// polyfill injection point
-import 'core-js';
-// end polyfill injection point
 import { Schema } from 'jsoninput';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
