@@ -70,6 +70,9 @@ export const schema = optView => ({
  */
 function Variable({ node, onChange, view }) {
     const value = extractVar(node);
+    if (value && !varExist(value)) {
+        throw Error(`Unknown variable '${value}'`);
+    }
     return (
         <Form
             schema={schema(view)}
