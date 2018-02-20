@@ -49,7 +49,7 @@ import javax.validation.constraints.Pattern;
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game extends NamedEntity implements Broadcastable, InstanceOwner, DatedEntity {
+public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity{
 
     private static final long serialVersionUID = 1L;
 
@@ -170,7 +170,7 @@ public class Game extends NamedEntity implements Broadcastable, InstanceOwner, D
     @Override
     public void merge(AbstractEntity a) {
         Game other = (Game) a;
-        super.merge(a);
+        this.setName(other.getName());
         this.setAccess(other.getAccess());
         this.setToken(other.getToken());
     }

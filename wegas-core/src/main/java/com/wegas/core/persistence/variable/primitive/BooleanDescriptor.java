@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> {
+public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> implements PrimitiveDescriptorI<Boolean> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(BooleanDescriptor.class);
@@ -47,11 +47,13 @@ public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> {
      * @param p
      * @return value of player p instance
      */
-    public boolean getValue(Player p) {
+    @Override
+    public Boolean getValue(Player p) {
         return this.getInstance(p).getValue();
     }
 
-    public void setValue(Player p, boolean v){
+    @Override
+    public void setValue(Player p, Boolean v){
         this.getInstance(p).setValue(v);
     }
 }

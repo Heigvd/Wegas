@@ -834,8 +834,7 @@ YUI().use(function(Y) {
         root: "/wegas-mcq/",
         modules: {
             "wegas-mcq-entities": {
-                requires: ["wegas-variabledescriptor-entities",
-                    "wegas-reviewing-entities"],
+                requires: ["wegas-variabledescriptor-entities"],
                 ws_provides: ["QuestionDescriptor", "QuestionInstance",
                     "WhQuestionDescriptor", "WhQuestionInstance"]
             },
@@ -846,8 +845,10 @@ YUI().use(function(Y) {
                 ws_provides: "MCQTabView"
             },
             "wegas-mcq-view": {
-                requires: ["wegas-alerts", "wegas-gallery", "wegas-mcq-viewcss", "wegas-mcq-printcss",
-                    "wegas-mcq-entities", "wegas-i18n-mcq", "wegas-alerts"],
+                requires: ["wegas-alerts", "wegas-gallery", "wegas-mcq-viewcss",
+                    "wegas-mcq-printcss", "wegas-mcq-entities", "wegas-i18n-mcq",
+                    "wegas-alerts", "wegas-text", "wegas-text-input",
+                    "wegas-number-input", "wegas-layout-list"],
                 ws_provides: ["MCQView", "WhView"]
             },
             "wegas-mcq-viewcss": {

@@ -153,7 +153,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
             // set names and labels unique
             for (Result r : newResults) {
-                Helper.setNameAndLabelForResult(r, names, labels);
+                Helper.setNameAndLabelForLabelledEntity(r, names, labels, "result");
             }
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");

@@ -16,7 +16,7 @@ YUI.add("wegas-review-widgets", function(Y) {
     var CONTENTBOX = "contentBox", WIDGET = "widget", PAGEID = "pageId",
         Wegas = Y.Wegas, ReviewVariableEditor, pageloaderErrorMessageClass = "wegas-pageloader-error",
         SUBPAGE = "wegas-review-subpage", BUTTON = "wegas-review-button",
-        ReviewOrchestrator, ReviewWidget, ReviewTabView, ReviewTreeView, ReviewTV,
+        ReviewOrchestrator, ReviewWidget, ReviewTreeView, ReviewTV,
         GradeInput, TextEvalInput, CategorizationInput;
 
     /**
@@ -872,7 +872,7 @@ YUI.add("wegas-review-widgets", function(Y) {
     Y.Wegas.ReviewTV = ReviewTV;
 
     /**
-     * @name Y.Wegas.ReviewTabView
+     * @name Y.Wegas.ReviewTreeView
      * @extends Y.Widget
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class
@@ -1205,7 +1205,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             return widget;
         },
         renderUI: function() {
-            var review = this.get("review"), widget,
+            var review = this.get("review"),
                 i, evls,
                 reviewer = this.get("reviewer"),
                 desc = this.get("descriptor"),

@@ -24,11 +24,10 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-
 /*@Table(indexes = {
  @Index(columnList = "allowedvalues.stringdescriptor_variabledescriptor_id")
  })*/
-public class StringDescriptor extends VariableDescriptor<StringInstance> {
+public class StringDescriptor extends VariableDescriptor<StringInstance> implements PrimitiveDescriptorI<String> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(StringDescriptor.class);
@@ -119,8 +118,10 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
     /**
      *
      * @param p
+     *
      * @return value of player instance
      */
+    @Override
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
     }
@@ -130,6 +131,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
      * @param p
      * @param value
      */
+    @Override
     public void setValue(Player p, String value) {
         this.getInstance(p).setValue(value);
     }

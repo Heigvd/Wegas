@@ -54,7 +54,7 @@ import org.apache.shiro.SecurityUtils;
             @Index(columnList = "basedon_id")
         }
 )
-public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable {
+public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, NamedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -299,10 +299,10 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public void merge(AbstractEntity n) {
         if (n instanceof GameModel) {
             GameModel other = (GameModel) n;
+            this.setName(other.getName());
             this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
             this.setComments(other.getComments());
             this.getProperties().merge(other.getProperties());
-            super.merge(n);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + n.getClass().getSimpleName() + ") is not possible");
         }

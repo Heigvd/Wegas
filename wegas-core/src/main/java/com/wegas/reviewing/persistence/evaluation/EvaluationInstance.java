@@ -10,12 +10,11 @@ package com.wegas.reviewing.persistence.evaluation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
 import java.util.Collection;
@@ -72,17 +71,14 @@ public abstract class EvaluationInstance extends AbstractEntity {
     @JsonIgnore
     private Review commentsReview;
 
-
-    @ManyToOne
-    @JsonIgnore
-    private WhQuestionInstance whQuestion;
-
-
     /**
      * Corresponding evaluation descriptor
      */
     @ManyToOne
     private EvaluationDescriptor evaluationDescriptor;
+
+    @Transient
+    private String descriptorName;
 
     /**
      * Simple constructor
@@ -117,12 +113,32 @@ public abstract class EvaluationInstance extends AbstractEntity {
         this.evaluationDescriptor = ed;
     }
 
+    /**
+     * @return the descriptorName
+     */
+    @JsonIgnore
+    public String getDescritproName() {
+        if (!Helper.isNullOrEmpty(descriptorName)) {
+            return descriptorName;
+        } else if (this.getDescriptor() != null) {
+            return getDescriptor().getName();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param descriptorName
+     */
+    public void setDescriptorName(String descriptorName) {
+        this.descriptorName = descriptorName;
+    }
+
     @Override
     public void merge(AbstractEntity a) {
-        //if (a instanceof EvaluationInstance) {
-        //EvaluationInstance o = (EvaluationInstance) a;
-        // Nothing to merge
-        //}
+        if (a instanceof EvaluationInstance) {
+            this.setDescriptorName(((EvaluationInstance) a).getDescritproName());
+        }
     }
 
     @Override
@@ -221,14 +237,6 @@ public abstract class EvaluationInstance extends AbstractEntity {
         this.feedbackReview = rd;
     }
 
-    public WhQuestionInstance getWhQuestion() {
-        return whQuestion;
-    }
-
-    public void setWhQuestion(WhQuestionInstance whQuestion) {
-        this.whQuestion = whQuestion;
-    }
-
     /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         if (feedbackReview != null) {
@@ -265,28 +273,12 @@ public abstract class EvaluationInstance extends AbstractEntity {
             }
         }
 
-        WhQuestionInstance theQuestion = this.getWhQuestion();
-        if (theQuestion != null){
-            theQuestion = (WhQuestionInstance) beans.getVariableInstanceFacade().find(theQuestion.getId());
-            if (theQuestion != null){
-                theQuestion.getAnswers().remove(this);
-            }
-        }
-
         super.updateCacheOnDelete(beans);
-    }
-
-    private WithPermission getEffectiveParent(){
-        if (this.getEffectiveReview()!= null){
-            return getEffectiveReview();
-        } else {
-            return this.getWhQuestion();
-        }
     }
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getEffectiveParent().getRequieredUpdatePermission();
+        return this.getEffectiveReview().getRequieredUpdatePermission();
     }
 
     /*
@@ -294,9 +286,8 @@ public abstract class EvaluationInstance extends AbstractEntity {
     public Collection<WegasPermission> getRequieredDeletePermission() {
         return this.getEffectiveReview().getRequieredDeletePermission();
     }*/
-
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getEffectiveParent().getRequieredReadPermission();
+        return this.getEffectiveReview().getRequieredReadPermission();
     }
 }

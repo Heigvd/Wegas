@@ -7,15 +7,17 @@
  */
 package com.wegas.mcq.persistence.wh;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
+import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
@@ -23,14 +25,19 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 
 /**
  *
  * @author Maxence
  */
 @Entity
-public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance> {
+@NamedQuery(name = "WhQuestionDescriptor.findDistinctChildrenLabels",
+        query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentWh.id = :containerId")
+public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
+        implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -40,10 +47,9 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     private String description;
 
-    @OneToMany(mappedBy = "whQuestionContainer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("whq_answer")
-    private List<EvaluationDescriptor> answers = new ArrayList<>();
-
+    @OneToMany(mappedBy = "parentWh", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OrderColumn(name = "whd_items_order")
+    private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
      * @return the description
@@ -59,16 +65,48 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         this.description = description;
     }
 
-    public List<EvaluationDescriptor> getAnswers() {
-        return answers;
+    /**
+     * @return the variableDescriptors
+     */
+    @Override
+    @JsonView(Views.ExportI.class)
+    public List<VariableDescriptor> getItems() {
+        return this.items;
     }
 
-    public void setAnswers(List<EvaluationDescriptor> answers) {
-        this.answers = answers;
-        if (answers != null){
-            for (EvaluationDescriptor ed : answers){
-                ed.setWhQuestionContainer(this);
-            }
+    /**
+     * @param items
+     */
+    @Override
+    public void setItems(List<VariableDescriptor> items) {
+        this.items = new ArrayList<>();
+        for (VariableDescriptor vd : items) {
+            this.addItem(vd);
+        }
+    }
+
+    /**
+     *
+     * @param gameModel
+     */
+    @Override
+    public void setGameModel(GameModel gameModel) {
+        super.setGameModel(gameModel);
+        for (VariableDescriptor item : this.getItems()) {
+            item.setGameModel(gameModel);
+        }
+    }
+
+    private boolean isAuthorized(VariableDescriptor child){
+        return child instanceof PrimitiveDescriptorI;
+    }
+
+    @Override
+    public void setChildParent(VariableDescriptor child) {
+        if (isAuthorized(child)) {
+            child.setParentWh(this);
+        } else {
+            throw WegasErrorMessage.error(child.getClass().getSimpleName() + " not allowed in a WhQuestion");
         }
     }
 
@@ -82,7 +120,6 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
             super.merge(a);
             WhQuestionDescriptor other = (WhQuestionDescriptor) a;
             this.setDescription(other.getDescription());
-            this.setAnswers(ListUtils.mergeLists(this.getAnswers(), other.getAnswers()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -157,11 +194,5 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     public int getUnreadCount(Player player) {
         WhQuestionInstance instance = this.getInstance(player);
         return instance.getActive() && !instance.isValidated() ? 1 : 0;
-    }
-
-    @Override
-    public void revive(Beanjection beans) {
-        super.revive(beans);
-        beans.getQuestionDescriptorFacade().reviveWhQuestionDescriptor(this);
     }
 }

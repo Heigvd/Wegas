@@ -187,11 +187,7 @@ YUI.add('wegas-text-input', function(Y) {
                             on: {
                                 click: Y.bind(this.onSave, this)
                             }
-                        }).render(
-                            this.get('contentBox').one(
-                            '.wegas-text-input-toolbar'
-                            )
-                            );
+                        }).render(this.get('contentBox').one('.wegas-text-input-toolbar'));
                     }
                 }
                 // }, this);
@@ -206,21 +202,13 @@ YUI.add('wegas-text-input', function(Y) {
             },
             bindUI: function() {
                 this.handlers.push(
-                    Y.Wegas.Facade.Instance.after(
-                        'updatedInstance',
-                        function(e) {
-                            var text = this.get('variable.evaluated');
-                            if (
-                                text &&
-                                text.getInstance().get('id') ===
-                                e.entity.get('id')
-                                ) {
-                                this.syncUI();
-                            }
-                        },
-                        this
-                        )
-                    );
+                    Y.Wegas.Facade.Instance.after('updatedInstance', function(e) {
+                        var text = this.get('variable.evaluated');
+                        if (text &&
+                            text.getInstance().get('id') === e.entity.get('id')) {
+                            this.syncUI();
+                        }
+                    }, this));
                 this.on('save', this._save);
             },
             syncUI: function() {

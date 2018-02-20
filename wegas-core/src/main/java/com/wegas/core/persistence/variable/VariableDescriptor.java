@@ -20,7 +20,6 @@ import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -71,6 +70,7 @@ import org.slf4j.LoggerFactory;
 }, indexes = {
     @Index(columnList = "defaultinstance_id"),
     @Index(columnList = "parentlist_id"),
+    @Index(columnList = "parentwh_id"),
     @Index(columnList = "root_id"),
     @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
@@ -111,7 +111,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 //@MappedSuperclass
-abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable, AcceptInjection {
+abstract public class VariableDescriptor<T extends VariableInstance> extends AbstractEntity implements Searchable, LabelledEntity, Broadcastable, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
 
@@ -168,6 +168,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @ManyToOne
     @JsonIgnore
     private ListDescriptor parentList;
+
+    @ManyToOne
+    @JsonIgnore
+    private WhQuestionDescriptor parentWh;
 
     @ManyToOne
     @JsonIgnore
@@ -289,6 +293,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.root = rootGameModel;
         if (this.root != null) {
             this.setParentList(null);
+            this.setParentWh(null);
         }
     }
 
@@ -300,6 +305,19 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.parentList = parentList;
         if (this.parentList != null) {
             this.setRoot(null);
+            this.setParentWh(null);
+        }
+    }
+
+    public WhQuestionDescriptor getParentWh() {
+        return parentWh;
+    }
+
+    public void setParentWh(WhQuestionDescriptor parentWh) {
+        this.parentWh = parentWh;
+        if (this.parentWh != null) {
+            this.setRoot(null);
+            this.setParentList(null);
         }
     }
 
@@ -307,6 +325,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (parentList != null) {
             return parentList;
+        } else if (parentWh != null) {
+            return parentWh;
         } else if (root != null) {
             return root;
         } else {
@@ -508,7 +528,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public void merge(AbstractEntity a) {
         if (a instanceof VariableDescriptor) {
             try {
-                super.merge(a);
                 VariableDescriptor other = (VariableDescriptor) a;
                 this.setVersion(other.getVersion());
                 this.setName(other.getName());

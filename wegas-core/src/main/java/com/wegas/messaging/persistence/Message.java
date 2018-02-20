@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import javax.persistence.*;
     @Index(columnList = "inboxinstance_id")
 })
 
-public class Message extends NamedEntity implements DatedEntity {
+public class Message extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -190,7 +189,6 @@ public class Message extends NamedEntity implements DatedEntity {
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof Message) {
-            super.merge(a);
             Message other = (Message) a;
             this.setBody(other.getBody());
             this.setFrom(other.getFrom());
@@ -245,17 +243,6 @@ public class Message extends NamedEntity implements DatedEntity {
      */
     public void setBody(String body) {
         this.body = body;
-    }
-
-    @Override
-    @JsonIgnore
-    public String getName() {
-        return this.subject;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.subject = name;
     }
 
     @Override

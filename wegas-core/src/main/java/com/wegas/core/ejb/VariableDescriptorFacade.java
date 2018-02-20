@@ -30,6 +30,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.reviewing.ejb.ReviewingFacade;
@@ -398,6 +399,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             return distinctLabels.getResultList();
         } else if (container instanceof QuestionDescriptor) {
             TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("QuestionDescriptor.findDistinctChildrenLabels", String.class);
+            distinctLabels.setParameter("containerId", container.getId());
+            return distinctLabels.getResultList();
+        } else if (container instanceof WhQuestionDescriptor) {
+            TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("WhQuestionDescriptor.findDistinctChildrenLabels", String.class);
             distinctLabels.setParameter("containerId", container.getId());
             return distinctLabels.getResultList();
         } else {

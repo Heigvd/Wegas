@@ -13,11 +13,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.*;
@@ -37,7 +36,9 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(
-        uniqueConstraints = {},
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"container_id", "name"}),
+            @UniqueConstraint(columnNames = {"container_id", "label"}),},
         indexes = {
             @Index(columnList = "container_id")
         }
@@ -47,7 +48,8 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = CategorizedEvaluationDescriptor.class),
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
-public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends NamedEntity {
+public abstract class EvaluationDescriptor<T extends EvaluationInstance>
+        extends AbstractEntity implements LabelledEntity {
 
     @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
@@ -67,9 +69,14 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     private Integer index;
 
     /**
-     * Evaluation name as displayed to players
+     * Evaluation internal identifier
      */
     private String name;
+
+    /**
+     * Evaluation label as displayed to players
+     */
+    private String label;
 
     /**
      * Textual descriptor to be displayed to players
@@ -83,13 +90,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     @ManyToOne
     @JsonBackReference
     private EvaluationDescriptorContainer container;
-
-    /**
-     * the parent WhQuestion, if any
-     */
-    @ManyToOne
-    @JsonBackReference("whq_answer")
-    private WhQuestionDescriptor whQuestionContainer;
 
     /**
      * Basic constructor
@@ -116,14 +116,25 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
 
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
         if (a instanceof EvaluationDescriptor) {
             EvaluationDescriptor o = (EvaluationDescriptor) a;
+            this.setName(o.getName());
+            this.setLabel(o.getLabel());
             this.setDescription(o.getDescription());
             this.setIndex(o.getIndex());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**
@@ -184,21 +195,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      * @param container the parent
      */
     public void setContainer(EvaluationDescriptorContainer container) {
-        if (container != null) {
-            this.setWhQuestionContainer(null);
-        }
         this.container = container;
-    }
-
-    public WhQuestionDescriptor getWhQuestionContainer() {
-        return whQuestionContainer;
-    }
-
-    public void setWhQuestionContainer(WhQuestionDescriptor whQuestionContainer) {
-        if (whQuestionContainer != null) {
-            this.setContainer(null);
-        }
-        this.whQuestionContainer = whQuestionContainer;
     }
 
     @JsonIgnore
@@ -235,11 +232,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     }
 
     private WithPermission getEffectiveContainer() {
-        if (this.getContainer() != null) {
-            return this.getContainer();
-        } else {
-            return this.getWhQuestionContainer();
-        }
+        return this.getContainer();
     }
 
     @Override

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
+public class NumberDescriptor extends VariableDescriptor<NumberInstance> implements PrimitiveDescriptorI<Double>{
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(NumberDescriptor.class);
@@ -141,7 +141,8 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      * @param p
      * @param value
      */
-    public void setValue(Player p, double value) {
+    @Override
+    public void setValue(Player p, Double value) {
         this.getInstance(p).setValue(value);
     }
 
@@ -204,7 +205,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      * @param p
      * @return value of player p instance
      */
-    public double getValue(Player p) {
+    public Double getValue(Player p) {
         return this.getInstance(p).getValue();
     }
 

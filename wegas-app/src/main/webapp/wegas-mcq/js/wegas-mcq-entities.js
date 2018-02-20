@@ -1102,7 +1102,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
     /**
      * QuestionDescriptor mapper
      */
-    persistence.WhQuestionDescriptor = Y.Base.create("WhQuestionDescriptor", persistence.VariableDescriptor, [], {
+    persistence.WhQuestionDescriptor = Y.Base.create("WhQuestionDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
         getIconCss: function() {
             return 'fa fa-pencil-square';
         }
@@ -1127,30 +1127,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 format: HTML,
                 index: 12,
                 view: {type: HTML, label: "Description"}
-            },
-            evaluations: { // hack to have the same relations name as for EvaluationDescriptorContainer
-                type: ARRAY,
-                transient: true,
-                getter: function(){
-                    return this.get("answers");
-                },
-                setter: function(val){
-                    return this.set("answers", val);
-                }
-            },
-            answers: {
-                type: ARRAY,
-                value: [],
-                setter: function(v) {
-                    v.sort(function(a, b) {
-                        return a.get("index") - b.get("index");
-                    });
-                    return v;
-                },
-                index: 1,
-                view: {
-                    type: HIDDEN
-                }
             },
             defaultInstance: {
                 type: "object",
@@ -1194,38 +1170,29 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             children: [
                                 {
                                     type: BUTTON,
-                                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Number",
+                                    label: '<span class="wegas-icon-numberdescriptor"></span> Number',
                                     plugins: [{
-                                            fn: "EditEntityArrayFieldAction",
+                                            fn: "AddEntityChildAction",
                                             cfg: {
-                                                targetClass: "GradeDescriptor",
-                                                method: "POST",
-                                                attributeKey: "answers",
-                                                showEditionAfterRequest: true
+                                                targetClass: "NumberDescriptor"
                                             }
                                         }]
                                 }, {
                                     type: BUTTON,
-                                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Text",
+                                    label: '<span class="fa fa-paragraph"></span> Text',
                                     plugins: [{
-                                            fn: "EditEntityArrayFieldAction",
+                                            fn: "AddEntityChildAction",
                                             cfg: {
-                                                targetClass: "TextEvaluationDescriptor",
-                                                method: "POST",
-                                                attributeKey: "answers",
-                                                showEditionAfterRequest: true
+                                                targetClass: "TextDescriptor"
                                             }
                                         }]
                                 }, {
                                     type: BUTTON,
-                                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Categorization",
+                                    label: '<span class="fa fa-font"></span> String',
                                     plugins: [{
-                                            fn: "EditEntityArrayFieldAction",
+                                            fn: "AddEntityChildAction",
                                             cfg: {
-                                                targetClass: "CategorizedEvaluationDescriptor",
-                                                method: "POST",
-                                                attributeKey: "answers",
-                                                showEditionAfterRequest: true
+                                                targetClass: "StringDescriptor"
                                             }
                                         }]
                                 }

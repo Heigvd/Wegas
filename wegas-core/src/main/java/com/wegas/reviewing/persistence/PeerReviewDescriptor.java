@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
@@ -171,6 +172,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             this.getFeedback().merge(other.getFeedback());
             this.getFbComments().merge(other.getFbComments());
             this.setIncludeEvicted(other.getIncludeEvicted());
+
+            Helper.setNamesAndLabelForEvaluationList(this.getFeedback().getEvaluations());
+            Helper.setNamesAndLabelForEvaluationList(this.getFbComments().getEvaluations());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

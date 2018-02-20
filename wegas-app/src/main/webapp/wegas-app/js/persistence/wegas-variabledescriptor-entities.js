@@ -36,10 +36,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     VERSION_ATTR_DEF = {
         type: NUMBER,
         optional: true,
+        index: -9,
         view: {
             type: 'uneditable',
             className: 'wegas-advanced-feature',
-            label: 'Version'
+            label: 'Version',
+            layout: 'shortInline'
                 //_type: HIDDEN
         }
     };
@@ -48,6 +50,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         optional: true, //                                                  // The id is optional for entites that
         // have not been persisted
         view: {
+            layout: 'shortInline',
             type: HIDDEN
         }
     };
@@ -304,6 +307,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             value: "TeamScope",
                             view: {
                                 type: SELECT,
+                                layout: 'shortInline',
                                 choices: [
                                     {
                                         value: 'PlayerScope',
@@ -337,6 +341,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             view: {
                                 type: SELECT,
                                 label: 'Variable is visible by',
+                                layout: 'shortInline',
                                 choices: [
                                     {
                                         value: 'PlayerScope',
@@ -1085,10 +1090,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     transient: true,
                     getter: function() {
                         var inst = this.getInstance();
-                        if (
-                            !Y.Lang.isUndefined(inst) &&
-                            this.get(ITEMS)[inst.get(VALUE)]
-                            ) {
+                        if (!Y.Lang.isUndefined(inst)
+                            && this.get(ITEMS)[inst.get(VALUE)]) {
                             return this.get(ITEMS)[inst.get(VALUE)];
                         } else {
                             return null;

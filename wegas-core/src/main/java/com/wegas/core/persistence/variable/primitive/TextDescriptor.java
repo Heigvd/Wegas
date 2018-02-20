@@ -16,7 +16,8 @@ import javax.persistence.Entity;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class TextDescriptor extends VariableDescriptor<TextInstance> {
+public class TextDescriptor extends VariableDescriptor<TextInstance>
+implements PrimitiveDescriptorI<String>{
 
     private static final long serialVersionUID = 1L;
 
@@ -27,6 +28,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance> {
      * @param p
      * @param value
      */
+    @Override
     public void setValue(Player p, String value) {
         this.getInstance(p).setValue(value);
     }
@@ -36,6 +38,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance> {
      * @param p
      * @return value of player instance
      */
+    @Override
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
     }

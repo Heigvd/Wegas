@@ -338,6 +338,22 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         cssClass: "wegas-editor-listitem wegas-editor-list " + advancedClass
                     };
                     return node;
+                case "WhQuestionDescriptor":
+                    node = {
+                        type: 'TreeNode',
+                        label: text,
+                        /*tooltip: tooltip,*/
+                        childrenShortcut: true, //entity.get("addShortcut"),
+                        collapsed: collapsed,
+                        selected: selected,
+                        children: this.genTreeViewElements(entity.get("items")),
+                        data: {
+                            entity: entity
+                        },
+                        iconCSS: entity.getIconCss(),
+                        cssClass: "wegas-editor-listitem wegas-editor-list " + advancedClass
+                    };
+                    return node;
                 case 'QuestionDescriptor':
                     return {
                         type: 'TreeNode',
@@ -394,34 +410,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         },
                         iconCSS: entity.getIconCss(),
                         cssClass: "wegas-editor-questionitem " + advancedClass
-                    };
-                case "WhQuestionDescriptor":
-                    children = Y.Array.map(entity.get("answers"), function(answer) {
-                        return {
-                            type: 'TreeLeaf',
-                            label: answer.get("name"),
-                            selected: (answer.get(ID) === this.currentSelection) ? 2 : 0,
-                            data: {
-                                entity: answer,
-                                parentEntity: entity
-                            },
-                            iconCSS: answer.getIconCss()
-                        };
-                    }, this);
-                    return {
-                        type: 'TreeNode',
-                        label: text,
-                        /*tooltip: tooltip,*/
-                        children: children,
-                        childrenShortcut: true,
-                        data: {
-                            entity: entity
-                        },
-                        collapsed: collapsed,
-                        selected: selected,
-                        //rightWidget: Y.Node.create(EDITBUTTONTPL),
-                        iconCSS: entity.getIconCss(),
-                        cssClass: "wegas-editor-listitem wegas-editor-question " + advancedClass
                     };
                 case 'PeerReviewDescriptor':
                     children = Y.Array.map(["feedback", "fbComments"], function(category) {
