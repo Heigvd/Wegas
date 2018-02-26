@@ -2,4 +2,4 @@
 /coverage
 
 # production
-/build
+/dist

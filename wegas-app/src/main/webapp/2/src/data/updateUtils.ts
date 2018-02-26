@@ -1,4 +1,4 @@
-import { set, get, unset } from 'lodash/fp';
+import { set, get, unset } from 'lodash-es';
 
 /**
  * Update object with value at given path. returns a newly created object.
@@ -11,10 +11,10 @@ import { set, get, unset } from 'lodash/fp';
 export function deepUpdate(
   entity: any = {},
   path: string[] = [],
-  value: any,
+  value: any
 ): any {
   if (path.length > 0) {
-    return set(path, value, entity);
+    return set(entity, path, value);
   }
   return value;
 }
@@ -35,11 +35,11 @@ export function deepRemove(object: any = {}, path: string[]): any {
   if (parentPath.length === 0) {
     parent = object;
   } else {
-    parent = get(parentPath, object);
+    parent = get(object, parentPath);
   }
   if (Array.isArray(parent)) {
     const updatedArray = parent.filter((_v, i) => i !== +path[path.length - 1]);
-    return set(parentPath, updatedArray, object);
+    return set(object, parentPath, updatedArray);
   }
-  return unset(path, object);
+  return unset(object, path);
 }

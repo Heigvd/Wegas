@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { debounce } from 'lodash';
+import { debounce } from 'lodash-es';
 import { Labeled } from './labeled';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView } from './commonView';

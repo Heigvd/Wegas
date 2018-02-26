@@ -5,7 +5,7 @@ import { State } from '../../../data/Reducer/reducers';
 import { Actions } from '../../../data';
 import { WithToolbar } from '../Views/Toolbar';
 import { varIsList, entityIs } from '../../../data/entities';
-import { get } from 'lodash';
+import { get } from 'lodash-es';
 import { Combobox, Specialization } from '../Views/Combobox';
 import { children } from '../../EntitiesConfig/ListDescriptor';
 import { Tree } from '../Views/Tree';

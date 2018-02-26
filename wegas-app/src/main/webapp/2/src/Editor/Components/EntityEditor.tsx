@@ -8,7 +8,7 @@ import { Actions } from '../../data';
 import './FormView';
 import { WithToolbar } from './Views/Toolbar';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { get } from 'lodash/fp';
+import { get } from 'lodash-es';
 import { deepUpdate } from '../../data/updateUtils';
 
 interface EditorProps {
@@ -44,7 +44,7 @@ class Form extends React.Component<FormProps, { val: any }> {
                 if (validation.length) {
                   console.log(
                     this.state.val,
-                    JSON.stringify(validation, null, 2),
+                    JSON.stringify(validation, null, 2)
                   );
                 } else {
                   this.props.update(this.state.val);
@@ -91,7 +91,7 @@ class Form extends React.Component<FormProps, { val: any }> {
 async function Editor({ entity, update, del, config, path }: EditorProps) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
-    pathEntity = get(path, entity);
+    pathEntity = get(entity, path);
   }
   if (pathEntity === undefined) {
     return <span>There is nothing to edit</span>;
@@ -127,12 +127,12 @@ async function Editor({ entity, update, del, config, path }: EditorProps) {
 const AsyncForm = asyncSFC(
   Editor,
   () => <div>load...</div>,
-  ({ err }) => <span>{err.message}</span>,
+  ({ err }) => <span>{err.message}</span>
 );
 
 export default connect(
   (
-    state: State,
+    state: State
   ): {
     entity?: Readonly<IVariableDescriptor>;
     path?: string[];
@@ -164,9 +164,9 @@ export default connect(
       },
       del(entity: IVariableDescriptor, path?: string[]) {
         return dispatch(
-          Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+          Actions.VariableDescriptorActions.deleteDescriptor(entity, path)
         );
       },
     };
-  },
+  }
 )(AsyncForm);

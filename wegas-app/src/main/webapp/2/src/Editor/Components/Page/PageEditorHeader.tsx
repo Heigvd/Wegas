@@ -5,7 +5,6 @@ import { Actions } from '../../../data/index';
 import { connect } from 'react-redux';
 import { Page } from '../../../data/selectors';
 import { State } from '../../../data/Reducer/reducers';
-import { Menu } from '../../../Components/Menu';
 
 const pressed = css({ borderStyle: 'inset', outline: 'none' });
 function press(value: boolean) {
@@ -39,28 +38,7 @@ function PageEditorHeader(props: PageEditorHeaderProps) {
       >
         Src
       </button>
-      <Menu
-        onSelect={a => console.log(a)}
-        items={[
-          {
-            label: 'hello',
-            disabled: true,
-            children: [
-              {
-                label: 'Yoo',
-                value: 'really',
-              },
-              {
-                label: 'Yoooo2',
-                value: 'really2',
-              },
-            ],
-          },
-          { label: 'None here', disabled: true },
-          { label: 'world', value: 'world' },
-        ]}
-        label={`Loaded:${label}`}
-      />
+      <span>{`Loaded: ${label}`}</span>
     </div>
   );
 }
