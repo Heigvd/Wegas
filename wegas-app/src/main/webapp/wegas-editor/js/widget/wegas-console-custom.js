@@ -79,9 +79,7 @@ YUI.add('wegas-console-custom', function(Y) {
                         }, this));
                     } else {
                         cb.addClass("modal--content-advanced modal--without-menu");
-                        // contentAdvanced = cb.append(
-                        //     "<div class='content-advanced-script'></div><div class='content-advanced-script-add'><span class='button__label'><i class='fa fa-plus-circle same-color-larger' style='padding-right: 0.5em;'></i>Add Impact</span></div>").one(
-                        //     ".content-advanced-script");
+                        contentAdvanced = cb.append("<div class='content-advanced-script'></div>");
                     }
                     // this.srcField = new Y.inputEx.WysiwygScript({
                     //     parentEl: contentAdvanced
