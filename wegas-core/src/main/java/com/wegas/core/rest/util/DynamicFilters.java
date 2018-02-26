@@ -9,8 +9,10 @@ package com.wegas.core.rest.util;
 
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import com.wegas.core.security.rest.UserController;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 
@@ -25,7 +27,11 @@ import javax.ws.rs.ext.Provider;
 public class DynamicFilters implements DynamicFeature {
 
     private static final CacheResponseFilter noCacheResponseFilter = new CacheResponseFilter(CacheResponseFilter.NO_CACHE);
+
     private static final String private_cache = "private, ";
+
+    @Context
+    HttpServletRequest httpRequestProxy;
 
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
@@ -68,7 +74,7 @@ public class DynamicFilters implements DynamicFeature {
          */
         if (resourceInfo.getResourceClass().equals(UserController.class)
                 && resourceInfo.getResourceMethod().getName().equals("guestLogin")) {
-            context.register(new GuestTracker());
+            context.register(new GuestTracker(httpRequestProxy));
         }
 
     }
@@ -78,7 +84,7 @@ public class DynamicFilters implements DynamicFeature {
      *
      * @param cma
      *
-     * @return the cache-control string 
+     * @return the cache-control string
      */
     private static String genCacheString(CacheMaxAge cma) {
         return (cma.private_cache() ? private_cache : "") + "max-age: " + cma.unit().toSeconds(cma.time());

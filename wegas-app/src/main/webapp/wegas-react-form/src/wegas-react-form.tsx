@@ -1,11 +1,8 @@
-// polyfill injection point
-import 'core-js';
-// end polyfill injection point
 import { Schema } from 'jsoninput';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { css } from 'glamor';
-import { debounce } from 'lodash-es';
+import { debounce, cloneDeep } from 'lodash-es';
 import promised from './HOC/loadAsyncComp';
 
 const FORM = 'form';
@@ -155,7 +152,7 @@ YUI.add('wegas-react-form', Y => {
                 // }
                 this.animateSaveBtn();
                 this.fire('submit', {
-                    value: JSON.parse(JSON.stringify(val)), // Immutability ...
+                    value: cloneDeep(val), // Immutability ...
                 });
             },
             validate() {

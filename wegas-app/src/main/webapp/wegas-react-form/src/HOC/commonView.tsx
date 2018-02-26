@@ -14,13 +14,13 @@ const extraShortStyle = css({
 });
 
 const shortStyle = css({
-    maxWidth: '10em',
+    maxWidth: '11em',
 });
 
 const shortInlineStyle = css(
     {
         display: 'inline-block',
-        marginRight: '1em',
+        marginRight: '2em',
     },
     shortStyle
 );

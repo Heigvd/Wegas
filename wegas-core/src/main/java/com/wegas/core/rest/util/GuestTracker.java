@@ -7,8 +7,11 @@
  */
 package com.wegas.core.rest.util;
 
+import com.wegas.core.Helper;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,13 +21,19 @@ import org.slf4j.LoggerFactory;
  */
 public class GuestTracker implements ContainerRequestFilter {
 
+    private HttpServletRequest httpRequest;
+
     private static Logger logger = LoggerFactory.getLogger(GuestTracker.class);
+
+    public GuestTracker(HttpServletRequest httpRequest) {
+        this.httpRequest = httpRequest;
+    }
     /**
      *
      * @param request
      */
     @Override
     public void filter(ContainerRequestContext request) {
-        logger.info("New Guest Login ({}) from {}", request.getHeaderString("user-agent"), request.getHeaderString("referer"));
+        logger.info("New Guest Login ({}) from {}", request.getHeaderString("user-agent"), Helper.getRequestingIP(httpRequest));
     }
 }
