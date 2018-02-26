@@ -628,6 +628,7 @@ public class UserFacade extends BaseFacade<User> {
      */
     public void sendNewPassword(String email) {
         try {
+            requestManager.su();
             JpaAccount acc = accountFacade.findJpaByEmail(email);
             EMailFacade emailFacade = new EMailFacade();
             RandomNumberGenerator rng = new SecureRandomNumberGenerator();
@@ -640,8 +641,11 @@ public class UserFacade extends BaseFacade<User> {
                 acc.setPasswordHex(null);                                           //force JPA update
                 emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain; charset=utf-8", true);
             }
+            this.flush();
         } catch (WegasNoResultException | MessagingException ex) {
             logger.error("Error while sending new password for email: {}", email);
+        } finally{
+            requestManager.releaseSu();
         }
     }
 

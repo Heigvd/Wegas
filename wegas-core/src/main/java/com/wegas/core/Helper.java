@@ -30,6 +30,7 @@ import javax.mail.internet.InternetAddress;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,9 +130,9 @@ public class Helper {
     /**
      * Copy and sort the given list
      *
-     * @param <T> list item type
+     * @param <T>  list item type
      * @param list the list to copy and sort
-     * @param c a compartor to sort the list
+     * @param c    a comparator to sort the list
      *
      * @return a unmodifiable copy of the list, sorted according to the comparator
      */
@@ -780,5 +781,24 @@ public class Helper {
         } else {
             logger.error("No cluster (null)");
         }
+    }
+
+    /**
+     * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
+     * Depending on local config, it may be necessary to check additional headers.
+     *
+     * @param request
+     *
+     * @return the IP address
+     */
+    public static String getRequestingIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-FORWARDED-FOR");
+        if (ip == null) {
+            ip = request.getHeader("X-Real-IP");
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
+        }
+        return ip;
     }
 }
