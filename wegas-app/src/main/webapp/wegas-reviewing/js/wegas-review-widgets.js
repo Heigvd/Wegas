@@ -849,7 +849,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         ATTRS: {
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                type : "object",
+                type: "object",
                 view: {
                     type: "variableselect",
                     label: "Peer Review Descriptor",
@@ -1496,14 +1496,14 @@ YUI.add("wegas-review-widgets", function(Y) {
 
     GradeInput = Y.Base.create("wegas-review-gradeinput", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div class=\"wegas-review-evaluation\">" +
-            "<div class=\"wegas-review-evaluation-label\"></div>" +
-            "<div class=\"wegas-review-evaluation-desc\"></div>" +
-            "<div class=\"wegas-review-evaluation-content\">" +
-            "<div class=\"wegas-review-grade-instance-slider\"></div>" +
-            "<div class=\"wegas-review-grade-instance-input-container\">" +
-            "<input class=\"wegas-review-grade-instance-input\" />" +
-            "</div>" +
-            "</div>" +
+            "  <div class=\"wegas-review-evaluation-label\"></div>" +
+            "  <div class=\"wegas-review-evaluation-desc\"></div>" +
+            "  <div class=\"wegas-review-evaluation-content\">" +
+            "    <div class=\"wegas-review-grade-instance-slider\"></div>" +
+            "    <div class=\"wegas-review-grade-instance-input-container\">" +
+            "      <input class=\"wegas-review-grade-instance-input\" />" +
+            "    </div>" +
+            "  </div>" +
             "</div>",
         initializer: function() {
             this.handlers = [];
@@ -1535,7 +1535,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 min = desc.get("minValue");
                 max = desc.get("maxValue");
                 if (Y.Lang.isNumber(min) && Y.Lang.isNumber(max)) {
-                    if (max - min < 10){
+                    if (max - min < 10) {
                         this.get(CONTENTBOX).addClass("small-range-grade");
                     }
 
@@ -1566,7 +1566,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (!this.get("readonly")) {
                 this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", value);
                 if (this.xSlider) {
-                    this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", value || "");
+                    this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", Y.Lang.isNumber(value) ? value : "");
                     this.xSlider.set("value", value);
                 }
             } else {
@@ -1637,7 +1637,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 value = this.xSlider.get("value");
 
             if (this.updateValue(value)) {
-                this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", value || "");
+                this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", Y.Lang.isNumber(value) ? value : "");
                 input.set("value", value);
             }
         },
@@ -1654,7 +1654,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.timer = null;
                 if (this.updateValue(value)) {
                     if (this.xSlider) {
-                        this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", value || "");
+                        this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", Y.Lang.isNumber(value) ? value : "");
                         this.xSlider.set("value", +value);
                     }
                 }

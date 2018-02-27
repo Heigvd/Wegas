@@ -1107,6 +1107,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             return 'fa fa-pencil-square';
         }
     }, {
+        EDITORNAME: "Open Question",
         ATTRS: {
             "@class": {
                 type: STRING,
@@ -1251,6 +1252,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
      */
     Wegas.persistence.WhQuestionInstance = Y.Base.create("WhQuestionInstance",
         Wegas.persistence.VariableInstance, [], {}, {
+        EDITORNAME: "Open Question",
         ATTRS: {
             "@class": {
                 value: "WhQuestionInstance"

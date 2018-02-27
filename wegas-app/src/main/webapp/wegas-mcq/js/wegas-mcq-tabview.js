@@ -267,6 +267,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 question;
             if (e.newVal && e.newVal.cQuestion
                 && !this.isRemovingTabs && !e.newVal.loaded) {
+                this.destroyWidget(e.prevVal);
                 e.newVal.loaded = true;
                 question = e.newVal.cQuestion;
 
@@ -285,6 +286,12 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 }
 
                 e.newVal.add(widget);
+            }
+        },
+        destroyWidget: function(prevVal) {
+            if (prevVal && prevVal.loaded) {
+                prevVal.loaded = false;
+                prevVal.destroyAll();
             }
         },
         getEditorLabel: function() {

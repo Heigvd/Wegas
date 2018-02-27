@@ -12,46 +12,101 @@
 
 .wegas-boxes-number-input .boxes {
     cursor: default;
+    border-radius :6px;
+    min-height: 24px;
+    padding: 2px 2px 0 2px;
+    display: inline-block;
 }
 .wegas-boxes-number-input .boxes.clickable .box {
     cursor: pointer;
 }
 
+.wegas-boxes-number-input .boxes.readonly .box {
+    -webkit-filter: grayscale(50%);
+    filter: grayscale(50%);
+}
+
 .wegas-boxes-number-input .boxes .box {
     float: left;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 2px;
     border : 1px solid darkgrey;
+    margin: 0px;
+    padding: 0px;
 }
 
 .wegas-boxes-number-input .boxes .box .value{
+    display: none;
     width: 100%;
     height:100%;
     text-align: center;
+    color: white;
+    margin-top: 2px;
 }
 
-.wegas-boxes-number-input .boxes .box[data-position="below"] .value {
-    color: #56626D;
+.wegas-boxes-number-input .boxes.boxes.clickable .box:hover .value{
+    display: block; 
 }
 
 .wegas-boxes-number-input .boxes .box[data-position="value"] .value {
-    color: #56626D;
+    color: white;
+    font-weight: bold;
+    display: block;
 }
 
-.wegas-boxes-number-input .boxes .box[data-position="above"] .value {
-    color: #56626D;
-}
-
-
-.wegas-boxes-number-input .boxes .box[data-position="below"] {
-    background-color: #4C4C4C;
+.wegas-boxes-number-input .boxes .box[data-position="below"], 
+.wegas-boxes-number-input .boxes .box[data-position="value"] {
+    background-color: #66b2ce;
 }
 
 .wegas-boxes-number-input .boxes .box[data-position="value"] {
-    background-color: #34386B;
+    filter: initial;
+    -webkit-filter: initial;
 }
 
 .wegas-boxes-number-input .boxes .box[data-position="above"] {
-    background-color: #DADADE;
+    background-color: #6B6B6B;
+}
+
+
+/*
+SLIDER
+*/
+
+
+.wegas-number-input .hide-input .wegas-input-container{
+    display: none;
+}
+
+.wegas-number-input .wegas-input-slider {
+    padding-top: 15px;
+}
+
+.yui3-skin-sam .wegas-number-input .yui3-slider-x .yui3-slider-rail,
+.yui3-skin-sam .wegas-number-input .yui3-slider-x .yui3-slider-rail-cap-left,
+.yui3-skin-sam .wegas-number-input .yui3-slider-x .yui3-slider-rail-cap-right {
+    background-image: url(../../lib/yui3/build/slider-base/assets/skins/sam/rail-x-lines.png);
+}
+
+.yui3-skin-sam .wegas-number-input  .yui3-slider-x .yui3-slider-rail-cap-left:after,
+.yui3-skin-sam .wegas-number-input  .yui3-slider-x .yui3-slider-rail-cap-right:after {
+    content: attr(data-value);
+    position:absolute;
+    top: -10px;
+    font-family: monospace;
+    font-size: 7pt;
+    text-align: center;
+    width:20px;
+}
+
+.wegas-number-input .hide-input .yui3-slider-x .yui3-slider-rail:after {
+    content: attr(data-value);
+    font-family: monospace;
+    font-size: 7pt;
+    position: absolute;
+    left: 160px;
+    top: 2px;
+    padding: 1px;
+    border-bottom: 1px solid #aaa;
 }

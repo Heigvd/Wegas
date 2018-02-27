@@ -104,6 +104,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     label: label,
                                     cssClass: classes,
                                     variable: {name: name},
+                                    selfSaving: false,
                                     readonly: {
                                         "content": "return " + this.readonly + ";"
                                     }
@@ -113,6 +114,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     label: label,
                                     cssClass: classes,
                                     variable: {name: name},
+                                    selfSaving: false,
                                     readonly: {
                                         "content": "return " + this.readonly + ";"
                                     }}));
@@ -352,6 +354,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
         },
         destructor: function() {
+            Y.log("Destroy WH-VIEW");
             var k;
             for (k in this.handlers) {
                 if (this.handlers.hasOwnProperty(k)) {
@@ -371,7 +374,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 view: {
                     type: "variableselect",
                     label: "Question",
-                    classFilter: ["ListDescriptor"]
+                    classFilter: ["WhQuestionDescriptor"]
                 }
             },
             readonly: {
@@ -951,6 +954,7 @@ YUI.add('wegas-mcq-view', function(Y) {
          *  by this widget
          */
         destructor: function() {
+            Y.log("Destroy MCQ-VIEW");
             var i,
                 length = this.handlers.length;
             if (this.gallery) {
