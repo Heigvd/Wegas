@@ -1,91 +1,20 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import JSONForm, { Schema } from 'jsoninput';
+import { get } from 'lodash-es';
+import { Schema } from 'jsoninput';
 import { State } from '../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../data/selectors';
-import getEditionConfig from '../editionConfig';
+import getEditionConfig, { ConfigurationSchema } from '../editionConfig';
 import { Actions } from '../../data';
-import './FormView';
-import { WithToolbar } from './Views/Toolbar';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { get } from 'lodash-es';
 import { deepUpdate } from '../../data/updateUtils';
-
+import { IForm } from './Form';
 interface EditorProps {
   entity?: IVariableDescriptor;
   update: (variable: IWegasEntity) => Promise<any>;
   del: (variable: IVariableDescriptor, path?: string[]) => void;
   path?: string[];
   config?: Schema;
-}
-
-interface FormProps extends EditorProps {
-  schema: Schema;
-}
-
-class Form extends React.Component<FormProps, { val: any }> {
-  form?: JSONForm;
-  constructor(props: FormProps) {
-    super(props);
-    this.state = { val: props.entity };
-  }
-  componentWillReceiveProps(nextProps: FormProps) {
-    this.setState({ val: nextProps.entity }); // check for others
-  }
-  render() {
-    return (
-      <WithToolbar>
-        <WithToolbar.Toolbar>
-          <button
-            disabled={this.state.val === this.props.entity}
-            onClick={() => {
-              if (this.state.val !== this.props.entity && this.form) {
-                const validation = this.form.validate();
-                if (validation.length) {
-                  console.log(
-                    this.state.val,
-                    JSON.stringify(validation, null, 2),
-                  );
-                } else {
-                  this.props.update(this.state.val);
-                }
-              }
-            }}
-          >
-            Save
-          </button>
-          <button
-            onClick={() => {
-              this.setState({ val: this.props.entity });
-            }}
-          >
-            reset
-          </button>
-          <button
-            onClick={() => {
-              this.props.del(this.state.val, this.props.path);
-            }}
-          >
-            delete
-          </button>
-        </WithToolbar.Toolbar>
-        <WithToolbar.Content>
-          <JSONForm
-            ref={n => {
-              if (n != null) {
-                this.form = n;
-              }
-            }}
-            value={this.state.val}
-            schema={this.props.schema}
-            onChange={val => {
-              this.setState({ val });
-            }}
-          />
-        </WithToolbar.Content>
-      </WithToolbar>
-    );
-  }
 }
 
 async function Editor({ entity, update, del, config, path }: EditorProps) {
@@ -103,17 +32,14 @@ async function Editor({ entity, update, del, config, path }: EditorProps) {
     if (entity) return del(entity, path);
     return Promise.resolve();
   }
-  if (config != null) {
-    return (
-      <Form
-        entity={pathEntity}
-        update={updatePath}
-        del={deletePath}
-        schema={{ type: 'object', properties: config }}
-      />
-    );
-  }
-  const schema = await getEditionConfig(pathEntity);
+
+  const [Form, schema] = await Promise.all<
+    IForm,
+    Schema | ConfigurationSchema<IVariableDescriptor<IVariableInstance>>
+  >([
+    import('./Form').then(m => m.Form),
+    config != null ? Promise.resolve(config) : getEditionConfig(pathEntity),
+  ]);
   return (
     <Form
       entity={pathEntity}
