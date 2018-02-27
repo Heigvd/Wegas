@@ -48,5 +48,5 @@ export default connect(
     src: state.global.pageSrc,
     edition: state.global.pageEdit,
   }),
-  dispatch => ({ dispatch })
+  dispatch => ({ dispatch }),
 )(PageEditorHeader);

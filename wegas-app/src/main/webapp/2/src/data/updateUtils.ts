@@ -11,7 +11,7 @@ import { set, get, unset } from 'lodash-es';
 export function deepUpdate(
   entity: any = {},
   path: string[] = [],
-  value: any
+  value: any,
 ): any {
   if (path.length > 0) {
     return set(entity, path, value);

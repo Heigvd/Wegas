@@ -61,12 +61,12 @@ const title: Choice = {
 
 function SelectView(props: ISelectProps) {
   const onChange = function onChange(
-    event: React.ChangeEvent<{ value: string }>
+    event: React.ChangeEvent<{ value: string }>,
   ) {
     props.onChange(JSON.parse(event.target.value));
   };
   const choices: (Choice | string)[] = ([title] as (Choice | string)[]).concat(
-    props.view.choices || []
+    props.view.choices || [],
   );
   const menuItems = choices.map(genItems);
   const value = JSON.stringify(props.value) || JSON.stringify(title.value);
@@ -97,7 +97,7 @@ function Sel(props: IAsyncSelectProps) {
   const { view } = props;
   const { choices } = view;
   return Promise.resolve(
-    typeof choices === 'function' ? choices() : choices
+    typeof choices === 'function' ? choices() : choices,
   ).then(ch => <SelectView {...props} view={{ ...view, choices: ch }} />);
 }
 export default asyncSFC(Sel);

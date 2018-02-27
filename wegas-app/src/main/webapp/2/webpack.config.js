@@ -12,7 +12,9 @@ const plugins = [
       to: 'vs',
     },
   ]),
-  new ForkTsCheckerWebpackPlugin(),
+  new ForkTsCheckerWebpackPlugin({
+    formatter: 'codeframe',
+  }),
 ];
 module.exports = {
   devtool: PROD ? 'source-map' : 'inline-source-map',

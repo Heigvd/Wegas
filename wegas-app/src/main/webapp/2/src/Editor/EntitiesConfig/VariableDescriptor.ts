@@ -113,7 +113,11 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
       }
       return '';
     },
-    view: { label: 'Script alias' },
+    view: {
+      label: 'Script alias',
+      description:
+        "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
+    },
   },
   scope: {
     index: -1,

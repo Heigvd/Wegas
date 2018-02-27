@@ -44,7 +44,7 @@ class Form extends React.Component<FormProps, { val: any }> {
                 if (validation.length) {
                   console.log(
                     this.state.val,
-                    JSON.stringify(validation, null, 2)
+                    JSON.stringify(validation, null, 2),
                   );
                 } else {
                   this.props.update(this.state.val);
@@ -127,12 +127,12 @@ async function Editor({ entity, update, del, config, path }: EditorProps) {
 const AsyncForm = asyncSFC(
   Editor,
   () => <div>load...</div>,
-  ({ err }) => <span>{err.message}</span>
+  ({ err }) => <span>{err.message}</span>,
 );
 
 export default connect(
   (
-    state: State
+    state: State,
   ): {
     entity?: Readonly<IVariableDescriptor>;
     path?: string[];
@@ -164,9 +164,9 @@ export default connect(
       },
       del(entity: IVariableDescriptor, path?: string[]) {
         return dispatch(
-          Actions.VariableDescriptorActions.deleteDescriptor(entity, path)
+          Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
         );
       },
     };
-  }
+  },
 )(AsyncForm);

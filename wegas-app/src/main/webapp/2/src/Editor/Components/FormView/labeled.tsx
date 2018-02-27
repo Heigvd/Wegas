@@ -7,13 +7,14 @@ export interface LabeledView {
 }
 interface LabeledProps extends LabeledView {
   children: (
-    inputProps: { inputId: string; labelNode: JSX.Element }
+    inputProps: { inputId: string; labelNode: JSX.Element },
   ) => React.ReactNode;
 }
 const titleStyle = css({
   '[title]': {
-    textDecoration: 'underline dotted',
-    // borderBottom: '1px dotted',
+    display: 'inline-block',
+    borderBottom: '1px dotted',
+    marginBottom: '2px',
     cursor: 'help',
   },
 });
@@ -34,6 +35,6 @@ export class Labeled extends React.Component<LabeledProps> {
           {label}
         </label>
       ),
-    })
+    });
   }
 }

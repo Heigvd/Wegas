@@ -47,7 +47,7 @@ export default class StringInput extends React.Component<
   onChange = (
     ev:
       | React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-      | React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>
+      | React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const value = ev.currentTarget.value;
     const type = ev.type;
