@@ -1,60 +1,37 @@
 import * as React from 'react';
 import { css } from 'glamor';
 
-const grid = css({
-  display: 'grid',
+const flex = css({
+  display: 'inline-flex',
+  flexDirection: 'column',
   height: '100%',
-  gridTemplateColumns: 'auto',
+  width: '100%',
 });
-const toolbarFirst = css({
-  gridTemplateRows: 'auto 1fr',
+const toolbar = css({
+  flex: 'none',
 });
-const toolbarLast = css({
-  gridTemplateRows: '1fr auto',
-});
-const autoOverflow = css({
-  height: '100%',
-  overflow: 'auto',
-  minHeight: '5em',
-  maxHeight: '100%',
+const content = css({
+  flex: '1 1 auto',
+  overflowY: 'auto',
+  height: 0,
 });
 
-export function WithToolbar(props: { children: React.ReactElement<{}>[] }) {
-  if (props.children.length !== 2) {
-    throw Error('WithToolbar requires exactly 2 children');
-  }
-
-  let clName;
-  if (
-    props.children[0].type === WithToolbar.Toolbar &&
-    props.children[1].type === WithToolbar.Content
-  ) {
-    clName = toolbarFirst.toString();
-  } else if (
-    props.children[1].type === WithToolbar.Toolbar &&
-    props.children[0].type === WithToolbar.Content
-  ) {
-    clName = toolbarLast.toString();
-  } else {
-    throw Error(
-      'WithToolbar requires a child of type WithToolbar.Toolbar and one of type WithToolbar.Content',
-    );
-  }
+export function Toolbar(props: { children: React.ReactElement<{}>[] }) {
   return (
-    <div {...grid} className={clName}>
+    <div {...flex}>
       {props.children}
     </div>
   );
 }
-export namespace WithToolbar {
-  export const Toolbar = function Toolbar(props: {
-    children: React.ReactNode[] | React.ReactNode;
+export namespace Toolbar {
+  export const Header = function Toolbar(props: {
+    children?: React.ReactNode[] | React.ReactNode;
   }) {
-    return <div>{props.children}</div>;
+    return <div {...toolbar}>{props.children}</div>;
   };
   export const Content = function Content(props: {
-    children: React.ReactNode[] | React.ReactNode;
+    children?: React.ReactNode[] | React.ReactNode;
   }) {
-    return <div {...autoOverflow}>{props.children}</div>;
+    return <div {...content}>{props.children}</div>;
   };
 }

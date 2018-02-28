@@ -3,7 +3,7 @@ import { connect, Dispatch } from 'react-redux';
 import { VariableDescriptor, GameModel } from '../../../data/selectors';
 import { State } from '../../../data/Reducer/reducers';
 import { Actions } from '../../../data';
-import { WithToolbar } from '../Views/Toolbar';
+import { Toolbar } from '../Views/Toolbar';
 import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
 import { Combobox, Specialization } from '../Views/Combobox';
@@ -29,8 +29,8 @@ function TreeView({ variables, dispatch }: TreeProps) {
     return () => dispatch(Actions.EditorActions.editVariable(variable, path));
   }
   return (
-    <WithToolbar>
-      <WithToolbar.Toolbar>
+    <Toolbar>
+      <Toolbar.Header>
         <VariableCreate
           items={items}
           searchKeys={['label']}
@@ -43,8 +43,8 @@ function TreeView({ variables, dispatch }: TreeProps) {
           }
           placeholder={'Create variable'}
         />
-      </WithToolbar.Toolbar>
-      <WithToolbar.Content>
+      </Toolbar.Header>
+      <Toolbar.Content>
         {variables ? (
           variables.map(v => (
             <CTree key={v} variableId={v} onSelectCreator={onSelectCreator} />
@@ -52,8 +52,8 @@ function TreeView({ variables, dispatch }: TreeProps) {
         ) : (
           <span>Loading ...</span>
         )}
-      </WithToolbar.Content>
-    </WithToolbar>
+      </Toolbar.Content>
+    </Toolbar>
   );
 }
 

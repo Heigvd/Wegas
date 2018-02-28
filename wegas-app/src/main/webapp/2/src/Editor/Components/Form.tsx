@@ -1,6 +1,6 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
-import { WithToolbar } from './Views/Toolbar';
+import { Toolbar } from './Views/Toolbar';
 import './FormView';
 
 interface EditorProps {
@@ -28,8 +28,8 @@ export class Form extends React.Component<FormProps, { val: any }> {
   }
   render() {
     return (
-      <WithToolbar>
-        <WithToolbar.Toolbar>
+      <Toolbar>
+        <Toolbar.Header>
           <button
             disabled={this.state.val === this.props.entity}
             onClick={() => {
@@ -62,8 +62,8 @@ export class Form extends React.Component<FormProps, { val: any }> {
           >
             delete
           </button>
-        </WithToolbar.Toolbar>
-        <WithToolbar.Content>
+        </Toolbar.Header>
+        <Toolbar.Content>
           <JSONForm
             ref={n => {
               if (n != null) {
@@ -76,8 +76,8 @@ export class Form extends React.Component<FormProps, { val: any }> {
               this.setState({ val });
             }}
           />
-        </WithToolbar.Content>
-      </WithToolbar>
+        </Toolbar.Content>
+      </Toolbar>
     );
   }
 }

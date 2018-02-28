@@ -5,7 +5,7 @@ import { State } from '../../../data/Reducer/reducers';
 import SrcEditor from '../SrcEditor';
 import { Page } from '../../../data/selectors';
 import PageEditorHeader from './PageEditorHeader';
-import { WithToolbar } from '../Views/Toolbar';
+import { Toolbar } from '../Views/Toolbar';
 import { Actions } from '../../../data';
 
 interface PageDisplayProps {
@@ -31,14 +31,14 @@ class PageDisplay extends React.Component<
   }
   render() {
     return (
-      <WithToolbar>
-        <WithToolbar.Toolbar>
+      <Toolbar>
+        <Toolbar.Header>
           <PageEditorHeader key="header" pageId={this.state.currentPageId} />
-        </WithToolbar.Toolbar>
-        <WithToolbar.Content>
+        </Toolbar.Header>
+        <Toolbar.Content>
           {this.props.srcMode ? (
-            <WithToolbar>
-              <WithToolbar.Toolbar>
+            <Toolbar>
+              <Toolbar.Header>
                 <button
                   onClick={() => {
                     if (this.editor) {
@@ -51,8 +51,8 @@ class PageDisplay extends React.Component<
                 >
                   Save
                 </button>
-              </WithToolbar.Toolbar>
-              <WithToolbar.Content>
+              </Toolbar.Header>
+              <Toolbar.Content>
                 <SrcEditor
                   ref={n => (this.editor = n)}
                   key="srcEditor"
@@ -63,13 +63,13 @@ class PageDisplay extends React.Component<
                   )}
                   language="json"
                 />
-              </WithToolbar.Content>
-            </WithToolbar>
+              </Toolbar.Content>
+            </Toolbar>
           ) : (
             <PageLoader id={this.state.currentPageId} key="pageloader" />
           )}
-        </WithToolbar.Content>
-      </WithToolbar>
+        </Toolbar.Content>
+      </Toolbar>
     );
   }
 }
