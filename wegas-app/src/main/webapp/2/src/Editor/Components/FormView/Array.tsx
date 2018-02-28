@@ -9,7 +9,6 @@ import { Labeled } from './labeled';
 
 const transparentStyle = css({
   opacity: 0,
-  marginTop: '1em',
   transition: 'opacity .5s .1s',
   'div:hover > &': {
     opacity: 1,
