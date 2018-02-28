@@ -55,8 +55,7 @@ const AsyncForm = promised(() => {
         }
     );
 });
-
-YUI.add('wegas-react-form', Y => {
+export function YUIload(Y: Y.YUI) {
     const Wegas: { [key: string]: any } = Y.Wegas;
     const Form = Y.Base.create(
         'wegas-react-form',
@@ -382,4 +381,4 @@ YUI.add('wegas-react-form', Y => {
     // });
 
     Wegas.RForm = Form;
-});
+}

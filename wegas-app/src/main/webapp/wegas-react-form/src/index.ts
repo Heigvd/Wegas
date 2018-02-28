@@ -8,9 +8,11 @@
 
 let Z: Y.YUI;
 /* global YUI */
-YUI.add('wegas-react-form-async', (Y: Y.YUI) => {
+YUI.add('wegas-react-form', (Y: Y.YUI) => {
     Z = Y;
-    import(/* webpackChunkName: "react-form", webpackMode: "eager" */ './wegas-react-form');
+    import(/* webpackChunkName: "react-form", webpackMode: "eager" */ './wegas-react-form').then(
+        ({ YUIload }) => YUIload(Z)
+    );
 });
 
 export function getY() {
