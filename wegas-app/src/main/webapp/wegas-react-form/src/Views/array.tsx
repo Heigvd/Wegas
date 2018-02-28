@@ -12,19 +12,19 @@ const arrayStyle = css({
     display: 'inline',
 });
 
-const transparentStyle = css({
-    opacity: 0,
-    fontSize: '18px',
+const binStyle = css({
+    // opacity: 0,
+    // transition: 'opacity .3s 100ms',
+    // 'div:hover > &': {
+    //     opacity: 1,
+    // },
 });
 
 const listElementContainerStyle = css({
-    clear: 'both',
+    display: 'flex',
+    flexDirection: 'row',
     ':first-of-type': {
         marginTop: '10px',
-    },
-    ':hover span': {
-        opacity: 1,
-        transition: 'opacity 2s',
     },
 });
 
@@ -75,7 +75,8 @@ class Adder extends React.Component<
                         onChange={(value: {}) =>
                             this.setState({ open: false }, () =>
                                 this.props.onChildAdd(value)
-                            )}
+                            )
+                        }
                     />
                 </Cover>
             ) : (
@@ -109,7 +110,7 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
         return (
             <div className={listElementContainerStyle.toString()}>
                 <span className={listElementStyle.toString()}>{child}</span>
-                <span className={transparentStyle.toString()}>
+                <span className={binStyle.toString()}>
                     {minItems < valueLength && !disabled ? (
                         <IconButton
                             icon="fa fa-trash"
