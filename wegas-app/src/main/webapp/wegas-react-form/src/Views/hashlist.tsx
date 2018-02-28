@@ -5,6 +5,7 @@ import ObjectView from './object';
 import IconButton from '../Components/IconButton';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { AddStatementButton } from '../Script/Views/Button';
+import { css } from 'glamor';
 
 const KEY_DEFAULT_VALUE = '';
 const halfWidth: CSSProperties = {
@@ -12,6 +13,13 @@ const halfWidth: CSSProperties = {
     position: 'relative',
     width: '50%',
 };
+const flex = css({
+    display: 'flex',
+    flexDirection: 'row',
+});
+const bottom = css({
+    alignSelf: 'flex-end',
+});
 type HashListProps = WidgetProps.ObjectProps & { id: string };
 class HashlistView extends React.Component<
     HashListProps,
@@ -45,18 +53,17 @@ class HashlistView extends React.Component<
             }
 
             function onKeyChange(value: string) {
-                alterKey(c.props.editKey, value);
+                try {
+                    alterKey(c.props.editKey, value);
+                } catch (_) {
+                    // duplicate key
+                }
             }
 
             return (
-                <div>
-                    <IconButton
-                        icon="fa fa-trash"
-                        tooltip="Remove property"
-                        onClick={remove}
-                    />
+                <div {...flex}>
                     <div
-                        style={{ position: 'relative' }}
+                        style={{ position: 'relative', flex: 1 }}
                         ref={node => {
                             if (node !== null) {
                                 this.child[c.props.editKey] = node;
@@ -74,6 +81,12 @@ class HashlistView extends React.Component<
                         />
                         <div style={halfWidth}>{child}</div>
                     </div>
+                    <IconButton
+                        icon="fa fa-trash"
+                        tooltip="Remove property"
+                        className={String(bottom)}
+                        onClick={remove}
+                    />
                 </div>
             );
         });
