@@ -1851,6 +1851,10 @@ deep-extend@^0.4.0, deep-extend@~0.4.0:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.4.2.tgz#48b699c27e334bf89f10892be432f6e4c7d34a7f"
 
+deep-freeze-strict@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/deep-freeze-strict/-/deep-freeze-strict-1.1.1.tgz#77d0583ca24a69be4bbd9ac2fae415d55523e5b0"
+
 define-properties@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/define-properties/-/define-properties-1.1.2.tgz#83a73f2fea569898fb737193c8f873caf6d45c94"
@@ -2002,9 +2006,9 @@ domain-browser@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
 
-downshift@^1.25.0:
-  version "1.28.1"
-  resolved "https://registry.yarnpkg.com/downshift/-/downshift-1.28.1.tgz#8e787eda4e31c8a5519dccaf0e16dd90787720a4"
+downshift@^1.28.2:
+  version "1.28.2"
+  resolved "https://registry.yarnpkg.com/downshift/-/downshift-1.28.2.tgz#ff5b4e89ff439943a8e58890993015199604e1e6"
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -3026,6 +3030,12 @@ iferr@^0.1.5:
 ignore@^3.3.5:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.7.tgz#612289bfb3c220e186a58118618d5be8c1bab021"
+
+immutable-assign@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/immutable-assign/-/immutable-assign-2.0.4.tgz#d08e0f1da5227149405c00deaebdd6d359b43af6"
+  optionalDependencies:
+    deep-freeze-strict "^1.1.1"
 
 import-local@^1.0.0:
   version "1.0.0"
@@ -5699,23 +5709,16 @@ spawn-sync@^1.0.15:
     concat-stream "^1.4.7"
     os-shim "^0.1.2"
 
-spdx-correct@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-2.0.4.tgz#d1652ad2ebc516f656f66ea93398558065f1b4a4"
+spdx-correct@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.0.0.tgz#05a5b4d7153a195bc92c3c425b69f3b2a9524c82"
   dependencies:
-    spdx-expression-parse "^2.0.1"
-    spdx-license-ids "^2.0.1"
+    spdx-expression-parse "^3.0.0"
+    spdx-license-ids "^3.0.0"
 
-spdx-exceptions@^2.0.0, spdx-exceptions@^2.1.0:
+spdx-exceptions@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/spdx-exceptions/-/spdx-exceptions-2.1.0.tgz#2c7ae61056c714a5b9b9b2b2af7d311ef5c78fe9"
-
-spdx-expression-parse@^2.0.1:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/spdx-expression-parse/-/spdx-expression-parse-2.0.2.tgz#e2e0f229c057eac704c5a6d1c687eed66aca034b"
-  dependencies:
-    spdx-exceptions "^2.0.0"
-    spdx-license-ids "^2.0.1"
 
 spdx-expression-parse@^3.0.0:
   version "3.0.0"
@@ -5723,10 +5726,6 @@ spdx-expression-parse@^3.0.0:
   dependencies:
     spdx-exceptions "^2.1.0"
     spdx-license-ids "^3.0.0"
-
-spdx-license-ids@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-2.0.1.tgz#02017bcc3534ee4ffef6d58d20e7d3e9a1c3c8ec"
 
 spdx-license-ids@^3.0.0:
   version "3.0.0"
@@ -6297,10 +6296,10 @@ v8-compile-cache@^1.1.0:
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-1.1.2.tgz#8d32e4f16974654657e676e0e467a348e89b0dc4"
 
 validate-npm-package-license@^3.0.1:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/validate-npm-package-license/-/validate-npm-package-license-3.0.2.tgz#ec39d030e27d1ee714515162c547f66356e49f41"
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/validate-npm-package-license/-/validate-npm-package-license-3.0.3.tgz#81643bcbef1bdfecd4623793dc4648948ba98338"
   dependencies:
-    spdx-correct "^2.0.4"
+    spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
 
 vary@~1.1.2:
@@ -6427,9 +6426,9 @@ webpack-dev-middleware@2.0.6:
     url-join "^2.0.2"
     webpack-log "^1.0.1"
 
-webpack-dev-server@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/webpack-dev-server/-/webpack-dev-server-3.0.0.tgz#0ca2d293dc7a7b1a94fc5fd62cfca2a9fa61bcf7"
+webpack-dev-server@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/webpack-dev-server/-/webpack-dev-server-3.1.0.tgz#5d2365514d9dfa0d415502742d2cc28afc4a32d8"
   dependencies:
     ansi-html "0.0.7"
     array-includes "^3.0.3"
@@ -6457,6 +6456,7 @@ webpack-dev-server@^3.0.0:
     strip-ansi "^3.0.0"
     supports-color "^5.1.0"
     webpack-dev-middleware "2.0.6"
+    webpack-log "^1.1.2"
     yargs "9.0.1"
 
 webpack-fork-yeoman-generator@^1.1.1:
@@ -6489,7 +6489,7 @@ webpack-fork-yeoman-generator@^1.1.1:
     through2 "^2.0.0"
     yeoman-environment "^1.1.0"
 
-webpack-log@^1.0.1:
+webpack-log@^1.0.1, webpack-log@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/webpack-log/-/webpack-log-1.1.2.tgz#cdc76016537eed24708dc6aa3d1e52189efee107"
   dependencies:

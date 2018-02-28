@@ -1,5 +1,5 @@
-import { set, get, unset } from 'lodash-es';
-
+import { omit, get } from 'lodash-es';
+import iassign from 'immutable-assign';
 /**
  * Update object with value at given path. returns a newly created object.
  * Immutable.
@@ -14,7 +14,7 @@ export function deepUpdate(
   value: any,
 ): any {
   if (path.length > 0) {
-    return set(entity, path, value);
+    return iassign(entity, e => get(e, path), () => value);
   }
   return value;
 }
@@ -39,7 +39,11 @@ export function deepRemove(object: any = {}, path: string[]): any {
   }
   if (Array.isArray(parent)) {
     const updatedArray = parent.filter((_v, i) => i !== +path[path.length - 1]);
-    return set(object, parentPath, updatedArray);
+    return iassign(object, e => get(e, parentPath), () => updatedArray);
   }
-  return unset(object, path);
+  return iassign(
+    object,
+    o => get(o, parentPath),
+    o => omit(o, [path[path.length - 1]]),
+  );
 }

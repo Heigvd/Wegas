@@ -8,9 +8,10 @@
     },
     "dependencies": {
         "classnames": "^2.2.5",
-        "downshift": "^1.25.0",
+        "downshift": "^1.28.2",
         "fast-json-patch": "^2.0.6",
         "glamor": "^2.20.40",
+        "immutable-assign": "^2.0.4",
         "jsoninput": "github:cigit/jsoninput",
         "lodash-es": "^4.17.5",
         "match-sorter": "^2.2.0",
@@ -57,6 +58,6 @@
         "typescript": "^2.7.2",
         "webpack": "^4.0.1",
         "webpack-cli": "^2.0.9",
-        "webpack-dev-server": "^3.0.0"
+        "webpack-dev-server": "^3.1.0"
     }
 }
