@@ -6,7 +6,7 @@ const config = require('./webpack.config');
 
 gulp.task('default', ['build']);
 gulp.task('build', callback => {
-    webpack(config, (err, stats) => {
+    webpack({ ...config, mode: 'production' }, (err, stats) => {
         // Seems we have troubles getting errors back.
         // Fail if an ERROR is found.
         if (err) throw err;
