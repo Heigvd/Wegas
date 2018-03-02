@@ -8,7 +8,7 @@
     "start": "webpack --watch --mode development",
     "clean": "rimraf dist",
     "build:webpack": "cross-env NODE_ENV=production webpack --mode production",
-    "build": "npm run clean && npm run lint && npm run build:webpack",
+    "build": "yarn run clean && yarn run lint && yarn run build:webpack",
     "lint": "tslint src/**/*.ts src/**/*.tsx",
     "eslint": "eslint src/**/*.js src/**/*.jsx",
     "dev:build": "webpack"
