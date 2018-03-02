@@ -5,46 +5,45 @@ import { css } from 'glamor';
 import FormStyles from './form-styles';
 
 const rootStyle = css({
-    clear: 'both'
+    clear: 'both',
 });
 
 const borderTopStyle = css({
-    borderTop: '1px solid #b3b3b3'
+    borderTop: '1px solid #b3b3b3',
 });
 
 const errorStyle = css({
     color: 'red',
     fontSize: '80%',
-    float: 'left'
+    float: 'left',
 });
 
 const legendStyle = css({
-    color: '#282',
+    color: FormStyles.labelColor,
     textAlign: 'center',
     padding: '0 12px',
     fontSize: FormStyles.labelFontSize,
-    fontFamily: FormStyles.labelFontFamily
+    fontFamily: FormStyles.labelFontFamily,
 });
-
 
 function ObjectView(props) {
     return (
         <fieldset
-            className={classNames(`${rootStyle}`,
+            className={classNames(
+                `${rootStyle}`,
                 { [`${borderTopStyle}`]: props.view.label },
-                props.view.className)}
+                props.view.className
+            )}
         >
-            <legend className={legendStyle}>
+            <legend className={legendStyle} align="center">
                 {props.view.label}
             </legend>
             {props.children}
-            {props.errorMessage.map(message => <div
-                key={message}
-                className={errorStyle}
-            >
-                {message}
-            </div>
-            )}
+            {props.errorMessage.map(message => (
+                <div key={message} className={errorStyle}>
+                    {message}
+                </div>
+            ))}
         </fieldset>
     );
 }
@@ -56,6 +55,5 @@ ObjectView.propTypes = {
         label: PropTypes.string,
     }),
     errorMessage: PropTypes.array,
-    editKey: PropTypes.string,
 };
 export default ObjectView;
