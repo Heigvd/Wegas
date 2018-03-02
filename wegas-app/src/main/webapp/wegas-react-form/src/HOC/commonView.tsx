@@ -7,6 +7,7 @@ const containerStyle = css({
     label: 'commonView-containerStyle',
     position: 'relative',
     marginTop: '0.8em',
+    clear: 'both',
 });
 
 const extraShortStyle = css({

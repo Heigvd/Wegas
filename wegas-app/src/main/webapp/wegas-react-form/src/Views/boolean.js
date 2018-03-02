@@ -50,11 +50,7 @@ BooleanView.defaultProps = {
 
 BooleanView.propTypes = {
     onChange: PropTypes.func.isRequired,
-    view: PropTypes.shape({
-        label: PropTypes.string
-    }).isRequired,
     value: PropTypes.bool,
-    path: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
 export default commonView(

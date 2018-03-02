@@ -853,7 +853,7 @@ code {
 
 .wegas-proggame-level .wegas-proggame-level-content .yui3-resize-handle-t {
     width: 100%;
-    background-color: transparent;
+    background-color: transparent !important;
     cursor: ns-resize;
 }
 

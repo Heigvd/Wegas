@@ -27,6 +27,7 @@ const legendStyle = css({
 });
 
 function ObjectView(props) {
+    const label = props.view.label === true ? props.editKey : props.view.label;
     return (
         <fieldset
             className={classNames(
@@ -36,7 +37,7 @@ function ObjectView(props) {
             )}
         >
             <legend className={legendStyle} align="center">
-                {props.view.label}
+                {label}
             </legend>
             {props.children}
             {props.errorMessage.map(message => (
@@ -50,6 +51,7 @@ function ObjectView(props) {
 
 ObjectView.propTypes = {
     children: PropTypes.node,
+    editKey: PropTypes.string,
     view: PropTypes.shape({
         className: PropTypes.string,
         label: PropTypes.string,

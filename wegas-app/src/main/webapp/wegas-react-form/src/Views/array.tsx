@@ -100,13 +100,18 @@ class Adder extends React.Component<
                 />
             );
         }
+        const label =
+            this.props.view.label === true
+                ? this.props.editKey
+                : this.props.view.label;
+
         return (
             <AddOptionButton
                 className={`${inlinePlusStyle}`}
                 icon="fa fa-plus-circle"
                 onClick={() => this.props.onChildAdd()}
                 tooltip={this.props.view.tooltip}
-                label={this.props.view.label}
+                label={label}
                 labelClassName={`${optionLabelStyle}`}
             />
         );
@@ -139,14 +144,14 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
     }
 
     const children = React.Children.map(props.children, renderChild);
-
+    const label = props.view.label === true ? props.editKey : props.view.label;
     return (
         <div className={arrayStyle.toString()}>
             {maxItems > valueLength && !disabled ? (
                 <Adder {...props} />
             ) : (
                 <label className={FormStyles.biggerLabelStyle.toString()}>
-                    {props.view.label}
+                    {label}
                 </label>
             )}
             {children}
