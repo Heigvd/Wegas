@@ -21,16 +21,22 @@ const binStyle = css({
 });
 
 const listElementContainerStyle = css({
+    padding: '3px',
     display: 'flex',
     flexDirection: 'row',
+    marginTop: '5px',
     ':first-of-type': {
         marginTop: '10px',
     },
 });
+const highlight = css({
+    backgroundColor: 'rgba(106, 172, 241, 0.2)',
+});
 
 const listElementStyle = css({
+    flex: '1 1 auto',
     // Reduce vertical space between array elements:
-    '& div': {
+    '& > div': {
         marginTop: 0,
     },
 });
@@ -50,6 +56,10 @@ interface IArrayProps {
     view: {
         choices?: {}[];
         tooltip?: string;
+        /**
+         * Composit bg color
+         */
+        highlight?: boolean;
     };
 }
 
@@ -108,7 +118,11 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
     const disabled = props.view.disabled;
     function renderChild(child: React.ReactChild, index: number) {
         return (
-            <div className={listElementContainerStyle.toString()}>
+            <div
+                className={`${listElementContainerStyle} ${
+                    props.view.highlight ? highlight : ''
+                }`}
+            >
                 <span className={listElementStyle.toString()}>{child}</span>
                 <span className={binStyle.toString()}>
                     {minItems < valueLength && !disabled ? (

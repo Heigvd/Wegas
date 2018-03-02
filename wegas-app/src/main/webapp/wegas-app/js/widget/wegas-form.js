@@ -208,9 +208,12 @@ YUI.add('wegas-form', function(Y) {
                     properties: {
                         fields: {
                             type: 'array',
+                            view: {
+                                label: 'Fields',
+                                highlight: true
+                            },
                             items: {
                                 type: 'object',
-                                required: true,
                                 value: {},
                                 properties: {
                                     type: {
@@ -244,11 +247,11 @@ YUI.add('wegas-form', function(Y) {
                                             properties: {
                                                 value: {
                                                     type: 'string',
-                                                    view: { label: 'Value' }
+                                                    view: { label: 'Value', layout: 'shortInline' }
                                                 },
                                                 label: {
                                                     type: 'string',
-                                                    view: { label: 'Label' }
+                                                    view: { label: 'Label', layout: 'shortInline' }
                                                 }
                                             }
                                         },
@@ -264,7 +267,8 @@ YUI.add('wegas-form', function(Y) {
                                             return curr.type === 'select';
                                         },
                                         view: {
-                                            label: 'Choices'
+                                            label: 'Choices',
+                                            highlight: true
                                         }
                                     },
                                     name: {
