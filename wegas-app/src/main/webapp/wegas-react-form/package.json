@@ -30,8 +30,7 @@
     "react-dom": "^16.2.0",
     "react-tinymce": "^0.7.0",
     "react-widgets": "^4.2.0",
-    "recast": "^0.14.4",
-    "rm": "^0.1.8"
+    "recast": "^0.14.4"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.40",
