@@ -4,6 +4,7 @@ import { render, unmountComponentAtNode } from 'react-dom';
 import { css } from 'glamor';
 import { debounce, cloneDeep } from 'lodash-es';
 import promised from './HOC/loadAsyncComp';
+import './index';
 
 const FORM = 'form';
 
@@ -43,19 +44,20 @@ const containerForm = css({
     },
 });
 const AsyncForm = promised(() => {
-    import(/* webpackChunkName: "reactForm" */ './defaultViews');
-    return import(/* webpackChunkName: "reactForm" */ 'jsoninput').then(
-        RForm => {
-            return (props: {
-                schema: Schema;
-                formRef: React.Ref<React.Component>;
-                value?: {};
-                onChange: (value: any) => void;
-            }) => <RForm.default ref={props.formRef} {...props} />;
-        }
-    );
+    return Promise.all([
+        import(/* webpackChunkName: "reactForm" */ 'jsoninput'),
+        import(/* webpackChunkName: "reactForm" */ './defaultViews'),
+    ]).then(([RForm]) => {
+        return (props: {
+            schema: Schema;
+            formRef: React.Ref<React.Component>;
+            value?: {};
+            onChange: (value: any) => void;
+        }) => <RForm.default ref={props.formRef} {...props} />;
+    });
 });
-export function YUIload(Y: Y.YUI) {
+
+YUI.add('wegas-react-form', Y => {
     const Wegas: { [key: string]: any } = Y.Wegas;
     const Form = Y.Base.create(
         'wegas-react-form',
@@ -349,25 +351,28 @@ export function YUIload(Y: Y.YUI) {
             );
         },
         MultiVariableMethod(...args: any[]) {
-            import(/* webpackChunkName: "reactForm" */ './defaultViews');
-            return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
-                ({ IndependantMultiVariableMethod }) =>
-                    IndependantMultiVariableMethod(...args)
+            return Promise.all([
+                import(/* webpackChunkName: "reactForm" */ './Script/index'),
+                import(/* webpackChunkName: "reactForm" */ './defaultViews'),
+            ]).then(([{ IndependantMultiVariableMethod }]) =>
+                IndependantMultiVariableMethod(...args)
             );
         },
 
         MultiVariableCondition(...args: any[]) {
-            import(/* webpackChunkName: "reactForm" */ './defaultViews');
-            return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
-                ({ IndependantMultiVariableCondition }) =>
-                    IndependantMultiVariableCondition(...args)
+            return Promise.all([
+                import(/* webpackChunkName: "reactForm" */ './Script/index'),
+                import(/* webpackChunkName: "reactForm" */ './defaultViews'),
+            ]).then(([{ IndependantMultiVariableCondition }]) =>
+                IndependantMultiVariableCondition(...args)
             );
         },
         VariableStatement(...args: any[]) {
-            import(/* webpackChunkName: "reactForm" */ './defaultViews');
-            return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
-                ({ IndependantVariableStatement }) =>
-                    IndependantVariableStatement(...args)
+            return Promise.all([
+                import(/* webpackChunkName: "reactForm" */ './Script/index'),
+                import(/* webpackChunkName: "reactForm" */ './defaultViews'),
+            ]).then(([{ IndependantVariableStatement }]) =>
+                IndependantVariableStatement(...args)
             );
         },
     };
@@ -381,4 +386,4 @@ export function YUIload(Y: Y.YUI) {
     // });
 
     Wegas.RForm = Form;
-}
+});
