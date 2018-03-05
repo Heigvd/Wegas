@@ -13,8 +13,12 @@ const labelTextStyle = css({
 });
 
 interface ILabelProps {
+    editKey?: string;
     view: {
-        label?: string;
+        /**
+         * Using 'true' is usefull for additional{Properties,Items}
+         */
+        label?: string | boolean;
         [propName: string]: undefined | {};
     };
 }
@@ -36,7 +40,8 @@ export default function labeled<P extends { id: string }>(
         }
         render() {
             const props = this.props;
-
+            const label =
+                props.view.label === true ? props.editKey : props.view.label;
             if (suffixed) {
                 return (
                     <div className={cssContainer}>
@@ -45,7 +50,7 @@ export default function labeled<P extends { id: string }>(
                             htmlFor={this.id}
                             {...FormStyles.biggerLabelStyle}
                         >
-                            {props.view.label}
+                            {label}
                         </label>
                     </div>
                 );
@@ -55,9 +60,9 @@ export default function labeled<P extends { id: string }>(
                     <label
                         htmlFor={this.id}
                         {...prefixedLabelStyle}
-                        className={props.view.label ? `${labelTextStyle}` : ''}
+                        className={label ? `${labelTextStyle}` : ''}
                     >
-                        {props.view.label}
+                        {label}
                     </label>
                     <Comp id={this.id} {...props} />
                 </div>

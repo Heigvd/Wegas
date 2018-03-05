@@ -12,25 +12,29 @@ const arrayStyle = css({
     display: 'inline',
 });
 
-const transparentStyle = css({
-    opacity: 0,
-    fontSize: '18px',
+const binStyle = css({
+    // opacity: 0,
+    // transition: 'opacity .3s 100ms',
+    // 'div:hover > &': {
+    //     opacity: 1,
+    // },
 });
 
 const listElementContainerStyle = css({
-    clear: 'both',
-    ':first-of-type': {
-        marginTop: '10px',
-    },
-    ':hover span': {
-        opacity: 1,
-        transition: 'opacity 2s',
-    },
+    padding: '3px',
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: '5px',
+});
+const highlight = css({
+    backgroundColor: 'rgba(106, 172, 241, 0.2)',
+    marginRight: '2px',
 });
 
 const listElementStyle = css({
+    flex: '1 1 auto',
     // Reduce vertical space between array elements:
-    '& div': {
+    '& > div': {
         marginTop: 0,
     },
 });
@@ -38,8 +42,13 @@ const listElementStyle = css({
 const inlinePlusStyle = css({
     fontSize: '18px',
     verticalAlign: '-1px',
+    width: '100%',
+    textAlign: 'left',
 });
-
+const horizontal = css({
+    display: 'flex',
+    flexWrap: 'wrap',
+});
 const optionLabelStyle = css(FormStyles.labelStyle, {
     fontSize: FormStyles.labelBigFontSize,
     paddingRight: '5px',
@@ -50,6 +59,11 @@ interface IArrayProps {
     view: {
         choices?: {}[];
         tooltip?: string;
+        /**
+         * Composit bg color
+         */
+        highlight?: boolean;
+        horizontal?: boolean;
     };
 }
 
@@ -75,7 +89,8 @@ class Adder extends React.Component<
                         onChange={(value: {}) =>
                             this.setState({ open: false }, () =>
                                 this.props.onChildAdd(value)
-                            )}
+                            )
+                        }
                     />
                 </Cover>
             ) : (
@@ -89,13 +104,18 @@ class Adder extends React.Component<
                 />
             );
         }
+        const label =
+            this.props.view.label === true
+                ? this.props.editKey
+                : this.props.view.label;
+
         return (
             <AddOptionButton
                 className={`${inlinePlusStyle}`}
                 icon="fa fa-plus-circle"
                 onClick={() => this.props.onChildAdd()}
                 tooltip={this.props.view.tooltip}
-                label={this.props.view.label}
+                label={label}
                 labelClassName={`${optionLabelStyle}`}
             />
         );
@@ -107,9 +127,13 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
     const disabled = props.view.disabled;
     function renderChild(child: React.ReactChild, index: number) {
         return (
-            <div className={listElementContainerStyle.toString()}>
+            <div
+                className={`${
+                    props.view.highlight ? highlight : ''
+                } ${listElementContainerStyle}`}
+            >
                 <span className={listElementStyle.toString()}>{child}</span>
-                <span className={transparentStyle.toString()}>
+                <span className={binStyle.toString()}>
                     {minItems < valueLength && !disabled ? (
                         <IconButton
                             icon="fa fa-trash"
@@ -124,14 +148,18 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
     }
 
     const children = React.Children.map(props.children, renderChild);
-
+    const label = props.view.label === true ? props.editKey : props.view.label;
     return (
-        <div className={arrayStyle.toString()}>
+        <div
+            className={`${arrayStyle} ${
+                props.view.horizontal ? horizontal : ''
+            }`}
+        >
             {maxItems > valueLength && !disabled ? (
                 <Adder {...props} />
             ) : (
                 <label className={FormStyles.biggerLabelStyle.toString()}>
-                    {props.view.label}
+                    {label}
                 </label>
             )}
             {children}

@@ -308,8 +308,7 @@ YUI.add('wegas-widget', function(Y) {
             id: {
                 transient: false,
                 value: undefined,
-                optional: true,
-                type: 'string',
+                type: ['string', 'number'],
                 getter: function(v) {
                     if (v === '' || ('' + v).indexOf('yui') === 0) {
                         return undefined;
