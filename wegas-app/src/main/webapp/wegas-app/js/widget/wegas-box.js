@@ -35,7 +35,7 @@ YUI.add('wegas-box', function(Y) {
             EDITORNAME: 'Box',
             ATTRS: {
                 name: {
-                    value: 'folder',
+                    value: 'box',
                     type: 'string',
                     view: { label: 'Name' }
                 }
