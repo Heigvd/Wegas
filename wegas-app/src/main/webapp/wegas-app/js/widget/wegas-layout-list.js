@@ -14,7 +14,7 @@ YUI.add('wegas-layout-list', function (Y) {
 
     var BOUNDINGBOX = 'boundingBox',
         CONTENTBOX = 'contentBox',
-        List;
+        List, FlexList;
 
     /**
      * @name Y.Wegas.List
@@ -30,7 +30,7 @@ YUI.add('wegas-layout-list', function (Y) {
         // *** Private fields *** //
         // -
 
-        // ** Lifecycle Methods ** /
+        // ** Lifecycle Methods ** /w
         /**
          * @function
          * @private
@@ -93,5 +93,9 @@ YUI.add('wegas-layout-list', function (Y) {
 
         });
     Y.Wegas.List = List;
+
+
+    FlexList = Y.Base.create("wegas-flexlist", Y.Wegas.List, [], {});
+    Y.Wegas.FlexList = FlexList;
 
 });

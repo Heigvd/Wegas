@@ -42,6 +42,34 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             noMessages: "You have no messages",
             noMessageSelected: "Select an item on the left"
         }
+    }, {
+        base: {
+            prefix: "",
+            suffix: "",
+            decimalPlaces: "",
+            thousandsSeparator: ",",
+            decimalSeparator: "."
+        },
+        extra: {
+            chf: {
+                prefix: "CHF ",
+                decimalPlaces: 2
+            },
+            euro:{
+                prefix: "€",
+                decimalPlaces: 2
+            },
+            pounds: {
+                prefix: "£",
+                decimalPlaces: 2
+            },
+            int: {
+                decimalPlaces: 0
+            },
+            fixed2: {
+                decimalPlaces: 2
+            }
+        }
     });
 });
 

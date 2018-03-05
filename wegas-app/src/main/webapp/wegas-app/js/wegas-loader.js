@@ -70,7 +70,7 @@ YUI().use(function(Y) {
             },
             "wegas-i18n-global": {
                 path: 'js/i18n/i18n-global-min.js',
-                requires: ['wegas-i18n']
+                requires: ['wegas-i18n', 'datatype-number']
             },
             "wegas-i18n": {},
             /**
@@ -165,7 +165,7 @@ YUI().use(function(Y) {
             "wegas-layout-list": {
                 path: "js/widget/wegas-layout-list-min.js",
                 requires: "wegas-parent",
-                ws_provides: "List"
+                ws_provides: ["List", "FlexList"]
             },
             "wegas-layout-absolute": {
                 path: "js/widget/wegas-layout-absolute-min.js",

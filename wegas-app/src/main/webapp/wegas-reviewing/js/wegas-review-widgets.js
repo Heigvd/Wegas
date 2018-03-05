@@ -14,8 +14,8 @@
 YUI.add("wegas-review-widgets", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox", WIDGET = "widget", PAGEID = "pageId",
-        Wegas = Y.Wegas, ReviewVariableEditor, pageloaderErrorMessageClass = "wegas-pageloader-error",
-        SUBPAGE = "wegas-review-subpage", BUTTON = "wegas-review-button",
+        Wegas = Y.Wegas, ReviewVariableEditor,
+        BUTTON = "wegas-review-button",
         ReviewOrchestrator, ReviewWidget, ReviewTreeView, ReviewTV,
         GradeInput, TextEvalInput, CategorizationInput;
 
@@ -520,9 +520,9 @@ YUI.add("wegas-review-widgets", function(Y) {
             var min, max, data, options, i, bar,
                 formatNumber = function(x) {
                     if (Number.isInteger(x)) {
-                        return x;
+                        return I18n.formatNumber(x);
                     } else {
-                        return x.toFixed(2);
+                        return I18n.formatNumber(x, 'fixed2');
                     }
                 };
 
@@ -589,7 +589,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         _formatNumber: function(value, nD) {
             nD = nD || 2;
-            return Y.Lang.isNumber(value) ? value.toFixed(nD) : "n/a";
+            return Y.Lang.isNumber(value) ? I18n.formatNumber(value.toFixed(nD)) : "n/a";
         },
         buildCharts: function(evals, node, summary, maxY) {
             var i, evD, klass, data, k;
@@ -622,8 +622,8 @@ YUI.add("wegas-review-widgets", function(Y) {
                     node.one("." + klass + " .legend").append("<p>" + I18n.t("review.orchestrator.stats.basedOn", {available: data.numberOfValues || 0, expected: summary.maxNumberOfValue}) + "</p>");
                 } else if (evD.get("@class") === "TextEvaluationDescriptor") {
                     node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
-                    node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgWc") + ": " + (data.averageNumberOfWords ? data.averageNumberOfWords.toFixed(2) : "n/a") + "</p>");
-                    node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgCc") + ": " + (data.averageNumberOfCharacters ? data.averageNumberOfCharacters.toFixed(2) : "n/a") + "</p>");
+                    node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgWc") + ": " + (data.averageNumberOfWords ? I18n.formatNumber(data.averageNumberOfWords, 'fixed') : "n/a") + "</p>");
+                    node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgCc") + ": " + (data.averageNumberOfCharacters ? I18n.formatNumber(data.averageNumberOfCharacters, 'fixed') : "n/a") + "</p>");
                     node.one("." + klass + " .legend").append("<p>" + I18n.t("review.orchestrator.stats.basedOn", {available: data.numberOfValues || 0, expected: summary.maxNumberOfValue}) + "</p>");
                 }
             }
@@ -891,13 +891,15 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.destroyAll();
 
             this._treeview = new Y.Wegas.ReviewTV({
+                editable: false
             });
             this._treeview.addTarget(this);
 
             //this.plug(Y.Plugin.RememberExpandedTreeView);
 
             this._panel = new Y.Wegas.AbsoluteLayout({
-                cssClass: "wegas-review-treeview__panel"
+                cssClass: "wegas-review-treeview__panel",
+                editable: false
             });
 
             this.add(this._treeview);

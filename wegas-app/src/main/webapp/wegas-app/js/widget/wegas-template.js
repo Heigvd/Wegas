@@ -206,7 +206,7 @@ YUI.add('wegas-template', function(Y) {
         {
             TEMPLATE: Micro.compile(
                 "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
-            "<div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === 0 ? ' wegas-template-valuebox-zero' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div><% } %></span>" +
+            "<div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === 0 ? ' wegas-template-valuebox-zero' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= I18n.formatNumber(i) %></div><% } %></span>" +
                     '</div></div>'
             )
         },
@@ -239,7 +239,7 @@ YUI.add('wegas-template', function(Y) {
                 "<div class='wegas-template-box-units'><% for(var i=0; i < this.value; i+=1){%>" +
             "<div class='wegas-template-box-unit <%= 1+i == +this.value ? ' wegas-template-box-selected' : (2+i == +this.value ? ' wegas-template-box-pred' : '') %>' value='<%= 1+i %>'></div><% } %></div>" +
                 "<span class='wegas-template-box-value'>" +
-                "(<%= this.value || '{value}' %>" +
+                "(<%= I18n.formatNumber(this.value || '{value}') %>" +
             //+ "<% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>"
                 ')</span></div>'
         )
@@ -271,7 +271,7 @@ YUI.add('wegas-template', function(Y) {
         [],
         {
             TEMPLATE: Micro.compile(
-                "<div class='wegas-template-text'><% if(this.label){ %><span><%= this.label %></span><br/><% } %><span><%= this.value || '{value}' %></span></div>"
+                "<div class='wegas-template-text'><% if(this.label){ %><span><%= this.label %></span><br/><% } %><span><%= I18n.formatNumber(this.value || '{value}') %></span></div>"
             )
         },
         {
@@ -326,7 +326,7 @@ YUI.add('wegas-template', function(Y) {
                 "<div class='wegas-template-fraction'>" +
                     '<% if(this.label){ %><label><%= this.label %> </label><% } %>' +
             //+ "<%= (this.minValue || '{minValue}')%> /"
-                    "<%= (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>"
+                    "<%= I18n.formatNumber(this.value || '{label}') + '/' + I18n.formatNumber(this.maxValue || '{maxValue}') %></div>"
             )
         },
         {

@@ -146,7 +146,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         buildSubTree: function(node, widget) {
             var treeNode, selected;
 
-            if (!widget || typeof widget.getMenuCfg !== "function") {
+            if (!widget || typeof widget.getMenuCfg !== "function" || !widget.get("editable")) {
                 Y.log(widget + " not editable", "warn", "Y.Wegas.PageEditorTreeView");
                 return;
             }

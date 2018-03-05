@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -49,6 +51,12 @@ YUI.add('wegas-number-input', function(Y) {
                     .getInstance()
                     .get('value');
             },
+
+            _setStatus(level, msg) {
+                if (msg && level) {
+                    this.showMessage(level, msg);
+                }
+            },
             /**
              * Try to save value.
              * The value must, indeed, be a number and must validate against
@@ -63,7 +71,7 @@ YUI.add('wegas-number-input', function(Y) {
                     inst = desc.getInstance(),
                     min = desc.get('minValue'),
                     max = desc.get('maxValue'),
-                    value = +raw_value,
+                    value = I18n.parseNumber(raw_value, 'chf'),
                     cb = this.get('contentBox');
                 if (raw_value !== this._previousValue) {
                     this._previousValue = raw_value;
@@ -72,42 +80,37 @@ YUI.add('wegas-number-input', function(Y) {
                             if (Y.Lang.isNumber(max)) {
                                 if (value < min || value > max) {
                                     // Out of bound
-                                    this.showMessage(
-                                        'error',
+                                    this._setStatus('error',
                                         Y.Wegas.I18n.t('errors.outOfBounds', {
-                                            value: value,
-                                            min: min,
-                                            max: max
-                                        })
-                                        );
+                                            value: I18n.formatNumber(value),
+                                            min: I18n.formatNumber(min),
+                                            max: I18n.formatNumber(max)
+                                        }));
                                     cb.addClass('invalid');
                                     return false;
                                 }
                             } else {
                                 if (value < min) {
-                                    this.showMessage(
-                                        'error',
+                                    this._setStatus('error',
                                         Y.Wegas.I18n.t('errors.lessThan', {
-                                            value: value,
-                                            min: min
-                                        })
-                                        );
+                                            value: I18n.formatNumber(value),
+                                            min: I18n.formatNumber(min)
+                                        }));
                                     cb.addClass('invalid');
                                     return false;
                                 }
                             }
                         } else if (Y.Lang.isNumber(max)) {
-                            this.showMessage(
-                                'error',
+                            this._setStatus('error',
                                 Y.Wegas.I18n.t('errors.greaterThan', {
-                                    value: value,
-                                    max: max
-                                })
-                                );
+                                    value: I18n.formatNumber(value),
+                                    max: I18n.formatNumber(max)
+                                }));
                             cb.addClass('invalid');
                             return false;
                         }
 
+                        this._setStatus('ok', "");
                         cb.removeClass('invalid');
                         if (inst.get('value') !== value) {
                             if (this.get('selfSaving')) {
@@ -126,10 +129,9 @@ YUI.add('wegas-number-input', function(Y) {
                         return true;
                     } else {
                         cb.addClass('invalid');
-                        this.showMessage(
-                            'error',
-                            Y.Wegas.I18n.t('errors.nan', {value: raw_value})
-                            );
+                        this._setStatus('error',
+                            Y.Wegas.I18n.t('errors.nan', {value: raw_value}
+                            ));
                         return false;
                     }
                 } else {
@@ -266,6 +268,7 @@ YUI.add('wegas-number-input', function(Y) {
                 '  <div class="wegas-input-container">' +
                 '    <input class="wegas-input" />' +
                 '  </div>' +
+                '  <div class="wegas-input-status"></div>' +
                 '</div>',
             initializer: function() {
                 this.xSlider = null;
@@ -273,11 +276,16 @@ YUI.add('wegas-number-input', function(Y) {
                     emitFacade: true
                 });
             },
+            _setStatus: function(level, msg) {
+                var statusDiv = this.get("contentBox").one(".wegas-input-status");
+                statusDiv.setHTML("<span class='status-" + level + "'>" + msg + "</span>")
+
+            },
             renderUI: function() {
                 var desc = this.get('variable.evaluated'),
                     inst = desc.getInstance(),
                     CB = this.get('contentBox'),
-                    value,
+                    value, fmtValue,
                     min, max;
                 this._descriptor = desc;
 
@@ -285,10 +293,11 @@ YUI.add('wegas-number-input', function(Y) {
                     CB.one('.wegas-input-label').setContent(this.get('label'));
                 }
 
+                value = +inst.get('value');
+                fmtValue = I18n.formatNumber(value);
                 if (!this.get('readonly.evaluated')) {
                     min = desc.get('minValue');
                     max = desc.get('maxValue');
-                    value = +inst.get('value');
                     if (Y.Lang.isNumber(min) && Y.Lang.isNumber(max)) {
                         this.xSlider = new Y.Slider({
                             min: min,
@@ -296,13 +305,13 @@ YUI.add('wegas-number-input', function(Y) {
                             value: value
                         }).render(CB.one('.wegas-input-slider'));
 
-                        this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", value);
+                        this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", fmtValue);
                         this.get(CONTENTBOX)
                             .one(".wegas-input-slider .yui3-slider-rail-cap-left")
-                            .setAttribute("data-value", min);
+                            .setAttribute("data-value", I18n.formatNumber(min));
                         this.get(CONTENTBOX)
                             .one(".wegas-input-slider .yui3-slider-rail-cap-right")
-                            .setAttribute("data-value", max);
+                            .setAttribute("data-value", I18n.formatNumber(max));
 
                         this.get(CONTENTBOX).addClass("hide-input");
                         this.get(CONTENTBOX)
@@ -312,19 +321,20 @@ YUI.add('wegas-number-input', function(Y) {
                 } else {
                     this.get(CONTENTBOX)
                         .one('.wegas-input-container')
-                        .setContent('<p>' + inst.get('value') + '</p>');
+                        .setContent('<p>' + fmtValue + '</p>');
                 }
             },
             syncUI: function() {
                 var desc = this.get('variable.evaluated'),
                     inst = desc.getInstance(),
                     CB = this.get('contentBox'),
-                    value = inst.get('value');
+                    value = inst.get('value'),
+                    fmtValue = I18n.formatNumber(value);
 
                 if (!this.get('readonly.evaluated')) {
                     if (this._initialValue !== value) {
                         // Skip this syncUI if the user has continued typing during the save:
-                        var snapshot = +CB.one('.wegas-input').get('value');
+                        var snapshot = I18n.parseNumber(CB.one('.wegas-input').get('value'));
                         if (this._initialValue !== undefined && snapshot !== value &&
                             // But do the syncUI anyway if the variable was updated by another means than this input field:
                             this._initialValue != snapshot) {
@@ -333,16 +343,17 @@ YUI.add('wegas-number-input', function(Y) {
                         }
 
                         this._initialValue = value;
-                        CB.one('.wegas-input').set('value', value);
+
+                        CB.one('.wegas-input').set('value', fmtValue);
                         if (this.xSlider && this.xSlider.get('value') !== inst.get('value')) {
-                            this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", value);
+                            this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", fmtValue);
                             this.xSlider.set('value', inst.get('value'));
                         }
                     }
                 } else {
                     this.get(CONTENTBOX)
                         .one('.wegas-input-container')
-                        .setContent('<p>' + inst.get('value') + '</p>');
+                        .setContent('<p>' + fmtValue + '</p>');
                 }
             },
             bindUI: function() {
@@ -384,12 +395,13 @@ YUI.add('wegas-number-input', function(Y) {
             destructor: function() {},
             updateInput: function(e) {
                 var input = this.get(CONTENTBOX).one('.wegas-input'),
-                    value = this.xSlider.get('value');
+                    value = this.xSlider.get('value'),
+                    fmtValue = I18n.formatNumber(value);
 
-                this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", value);
+                this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", fmtValue);
 
                 //this.updateValue(value);
-                input.set('value', value);
+                input.set('value', fmtValue);
             },
             updateFromSlider: function(e) {
                 var value = this.xSlider.get('value');
@@ -464,14 +476,12 @@ YUI.add('wegas-number-input', function(Y) {
                                 '<div class="box" data-value="' +
                                 i +
                                 '" data-position=""><div class="value">' +
-                                i +
+                                I18n.formatNumber(i) +
                                 '</div></div>'
                                 );
                         }
                     } else {
-                        boxes.setContent(
-                            '<p class="error">Variable is not bounded !</p>'
-                            );
+                        boxes.setContent('<p class="error">Variable is not bounded !</p>');
                     }
                 }
             },

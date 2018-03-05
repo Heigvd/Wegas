@@ -62,8 +62,8 @@
 
 #centerTabView .yui3-tabview-panel:empty:after,
 #rightTabView .yui3-tabview-panel:empty:after,
-#centerTabView > .yui3-tabview-content > .yui3-tabview-panel:after,
-#rightTabView > .yui3-tabview-content > .yui3-tabview-panel:after,
+/*#centerTabView > .yui3-tabview-content > .yui3-tabview-panel:after,
+#rightTabView > .yui3-tabview-content > .yui3-tabview-panel:after,*/
 #centerTabView .yui3-tabview-panel .panel-inner:empty:after,
 #rightTabView .yui3-tabview-panel .panel-inner:empty:after,
 #centerTabView .yui3-tabview-panel .empty-edit-panel:after,

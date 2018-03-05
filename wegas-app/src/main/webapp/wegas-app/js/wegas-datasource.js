@@ -349,7 +349,7 @@ YUI.add('wegas-datasource', function(Y) {
             var i, ds;
             for (i = 0; i < entities.length; i += 1) {
                 this.updateCache(POST, entities[i], collector);
-                }
+            }
         },
         __showMessage: function(level, message) {
             Wegas.Alerts.showMessage(level, message);
@@ -427,10 +427,10 @@ YUI.add('wegas-datasource', function(Y) {
                             entity = response.get("updatedEntities")[i];
                             if (Lang.isObject(entity)) {
                                 this.updateCache(POST, entity, collector);
-                                }
                             }
                         }
                     }
+                }
 
                 if (response.get("events")) {
                     for (i = 0; i < response.get("events").length; i += 1) {
@@ -467,11 +467,11 @@ YUI.add('wegas-datasource', function(Y) {
             this.insert([entity]);
         },
         insert: function insert(stack) {
-                return Y.Array.each(stack, function(item) {
-                    this._insertIntoIndexes(item);
+            return Y.Array.each(stack, function(item) {
+                this._insertIntoIndexes(item);
                 this.walkEntity(item, this.insert);
-                    return false;
-                }, this);
+                return false;
+            }, this);
         },
         _deleteFromIndexes: function(entity) {
             var indexedKey, index, key;
@@ -489,10 +489,10 @@ YUI.add('wegas-datasource', function(Y) {
             this.drop([entity]);
         },
         drop: function drop(stack) {
-                return Y.Array.each(stack, function(item) {
-                    this._deleteFromIndexes(item);
+            return Y.Array.each(stack, function(item) {
+                this._deleteFromIndexes(item);
                 this.walkEntity(item, this.drop);
-                }, this);
+            }, this);
         },
         _updateIndexes: function(oldAtts, newAttrs) {
 
@@ -558,8 +558,8 @@ YUI.add('wegas-datasource', function(Y) {
                     if (!newAttrs.version || newAttrs.version >= oldAttrs.version) {
                         inCacheEntity.setAttrs(newAttrs);
 
-                            this.updateIndexes(oldAttrs, newAttrs); // OK
-                            // Update Entity (anywhere)
+                        this.updateIndexes(oldAttrs, newAttrs); // OK
+                        // Update Entity (anywhere)
                         if (inCacheEntity instanceof Wegas.persistence.VariableDescriptor) {
                             eventsCollector[dsid].events.updatedDescriptor = eventsCollector[dsid].events.updatedDescriptor || [];
                             eventsCollector[dsid].events.updatedDescriptor.push({"entity": inCacheEntity});
@@ -569,10 +569,10 @@ YUI.add('wegas-datasource', function(Y) {
                 } else {
 
                     // New entitiy
-                this.addToCache(entity); // In case we still have not found anything
+                    this.addToCache(entity); // In case we still have not found anything
 
-                // Index the new entity and its children
-                this.insertIntoIndexes(entity);
+                    // Index the new entity and its children
+                    this.insertIntoIndexes(entity);
 
                     eventsCollector[dsid].events.added = eventsCollector[dsid].events.added || [];
                     eventsCollector[dsid].events.added.push({
@@ -701,16 +701,16 @@ YUI.add('wegas-datasource', function(Y) {
                 findFn = function findFn(stack) {
                     stack.find(function find(item) { // @fixme speedup
                         if (testFn(item, key, needle)) { // We check the current element if it's a match
-                        ret = item;
+                            ret = item;
                             return item;
                         }
                         return walkEntity(item, findFn);
                     });
-                        }
+                }
             findFn(this.getCache());
             if (ret !== undefined && onFindFn) {
                 onFindFn(ret, needle);
-                    }
+            }
             return ret;
         },
         _getChildren: function(entity) {
@@ -977,7 +977,7 @@ YUI.add('wegas-datasource', function(Y) {
             if (entity.get("parentDescriptorType") === "GameModel") {
                 return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentDescriptorId"));
             } else {
-            return this.find("id", entity.get("parentDescriptorId"));
+                return this.find("id", entity.get("parentDescriptorId"));
             }
         },
         move: function(entity, parentEntity, index, localOnly) {
@@ -1000,7 +1000,7 @@ YUI.add('wegas-datasource', function(Y) {
                             } else {
                                 this.get(HOST).fire("updatedDescriptor", {entity: parentEntity});
                                 this.get(HOST).fire("updatedDescriptor", {entity: entity.getParent()});
-                        }
+                            }
                         }, this, entity, parentEntity)
                     }
                 });
@@ -1132,7 +1132,7 @@ YUI.add('wegas-datasource', function(Y) {
                         }
                     }
 
-                    }
+                }
                 return true;
             } else {
                 if (!scope) {

@@ -404,15 +404,34 @@ font {
 }
 
 
-/* List styles */
+.wegas-flexlist {
+    overflow:auto;
+}
 
-.wegas-list-horizontal > div {
+.wegas-flexlist-horizontal{
+    display: flex;
+}
+
+.wegas-flexlist-vertical{
+    display: flex;
+    flex-direction: column;
+}
+
+.wegas-flexlist-vertical > div,
+.wegas-flexlist-horizontal > div {
+    display: block;
+    flex-shrink: 0;
+    vertical-align: top;
+}
+
+/* List styles */
+.wegas-list .wegas-list-horizontal > div {
     display: block;
     float: left;
     vertical-align: top;
 }
 
-.wegas-list-content:empty:before, .wegas-choicelist-content:empty:before {
+.wegas-list .wegas-list-content:empty:before, .wegas-choicelist-content:empty:before {
     content: "Empty";
 }
 

@@ -9,7 +9,7 @@
  * @fileoverview
  * @author maxence.laurent gmail.com
  */
-/*global YUI, Chartist */
+/*global YUI, Chartist, I18n */
 YUI.add('wegas-chart', function(Y) {
     'use strict';
     var CONTENTBOX = 'contentBox', Chart;
@@ -28,13 +28,13 @@ YUI.add('wegas-chart', function(Y) {
                 if (this.get('xLabelMapper')) {
                     this._xLabelMapper = eval(
                         '(' + this.get('xLabelMapper') + ')'
-                    );
+                        );
                 }
             },
             bindUI: function() {
                 this.handlers.push(
                     Y.Wegas.Facade.Variable.after('update', this.syncUI, this)
-                );
+                    );
             },
             renderUI: function() {
                 var variables, i, vd, legendNode, label;
@@ -42,19 +42,22 @@ YUI.add('wegas-chart', function(Y) {
                     width: this.get('width'),
                     height: this.get(
                         'height'
-                    ) /*
-                 lineSmooth: Chartist.Interpolation.none(),
-                 axisX: {
-                 type: Chartist.AutoScaleAxis,
-                 onlyInteger: true,
-                 },*/,
+                        ) /*
+                         lineSmooth: Chartist.Interpolation.none(),
+                         axisX: {
+                         type: Chartist.AutoScaleAxis,
+                         onlyInteger: true,
+                         },*/,
                     axisX: {
                         showLabel: this.get('showXLabels')
                     },
                     axisY: {
                         type: Chartist.AutoScaleAxis,
                         position: this.get('yLabelPosition'),
-                        showLabel: this.get('showYLabels')
+                        showLabel: this.get('showYLabels'),
+                        labelInterpolationFnc: function(value) {
+                            return I18n.formatNumber(value);
+                        }
                     }
                 };
                 if (this.get('interpolation') === 'simple') {
@@ -86,23 +89,23 @@ YUI.add('wegas-chart', function(Y) {
                     vd = Y.Wegas.Facade.Variable.cache.find(
                         'name',
                         variables[i].name
-                    );
+                        );
                     if (this.get('variables')[i].label) {
                         label = Y.Template.Micro.compile(
                             this.get('variables')[i].label || ''
-                        )();
+                            )();
                     } else {
                         label = vd.get('label');
                     }
 
                     legendNode.append(
                         '<div><span class="color ct-series-' +
-                            String.fromCharCode(97 + i) +
-                            '"></span>' +
-                            '<span class="label">' +
-                            label +
-                            ' </span></div>'
-                    );
+                        String.fromCharCode(97 + i) +
+                        '"></span>' +
+                        '<span class="label">' +
+                        label +
+                        ' </span></div>'
+                        );
                 }
                 this.chart;
             },
@@ -113,18 +116,18 @@ YUI.add('wegas-chart', function(Y) {
                     history,
                     promises = [],
                     ctx = this;
-                this.data = { labels: [], series: [] };
+                this.data = {labels: [], series: []};
                 this.counter = variables.length;
                 for (i = 0; i < variables.length; i += 1) {
                     vd = Y.Wegas.Facade.Variable.cache.find(
                         'name',
                         variables[i].name
-                    );
+                        );
                     if (!vd) {
                         this.showMessage(
                             'error',
                             'Variable ' + variables[i].name + ' not found'
-                        );
+                            );
                         return;
                     }
                     promises.push(this.updateHistory(vd, i));
@@ -155,7 +158,7 @@ YUI.add('wegas-chart', function(Y) {
                         max = Math.max(
                             max,
                             this.get('xMinMax.evaluated').getValue()
-                        );
+                            );
                     }
                     for (k = 0; k < max; k++) {
                         if (this._xLabelMapper) {
@@ -172,7 +175,7 @@ YUI.add('wegas-chart', function(Y) {
                             '#' + this.get(CONTENTBOX).get('id') + ' .ct-chart',
                             this.data,
                             this.options
-                        );
+                            );
                         this.generateTooltip();
                     }
                 }
@@ -193,13 +196,13 @@ YUI.add('wegas-chart', function(Y) {
                                 .getDOMNode()
                                 .parentNode.getAttribute('ct:series-name');
                             value = e.target.getAttribute('ct:value');
-                            tooltip.setContent(name + '<br />' + value);
+                            tooltip.setContent(name + '<br />' + I18n.formatNumber(value));
                             tooltip.show();
                         },
                         '.ct-point',
                         this
-                    )
-                );
+                        )
+                    );
                 this.handlers.push(
                     CB.delegate(
                         'mouseleave',
@@ -208,8 +211,8 @@ YUI.add('wegas-chart', function(Y) {
                         },
                         '.ct-point',
                         this
-                    )
-                );
+                        )
+                    );
                 this.handlers.push(
                     chart.on(
                         'mousemove',
@@ -219,8 +222,8 @@ YUI.add('wegas-chart', function(Y) {
                             tooltip.setStyle('top', e.pageY + 10 + 'px');
                         },
                         this
-                    )
-                );
+                        )
+                    );
             },
             destructor: function() {
                 var i;
@@ -244,8 +247,8 @@ YUI.add('wegas-chart', function(Y) {
                                         if (this.get('variables')[i].label) {
                                             label = Y.Template.Micro.compile(
                                                 this.get('variables')[i]
-                                                    .label || ''
-                                            )();
+                                                .label || ''
+                                                )();
                                         } else {
                                             label = vd.get('label');
                                         }
@@ -259,7 +262,7 @@ YUI.add('wegas-chart', function(Y) {
                                     failure: function(r) {
                                         Y.error(
                                             'Error by loading history data'
-                                        );
+                                            );
                                         resolve({
                                             serie: [],
                                             label: vd.get('label')
@@ -268,7 +271,7 @@ YUI.add('wegas-chart', function(Y) {
                                 }
                             },
                             ctx
-                        );
+                            );
                     });
                 return promise;
             }
@@ -307,14 +310,14 @@ YUI.add('wegas-chart', function(Y) {
                     type: 'string',
                     value: '250px',
                     index: 100,
-                    view: { label: 'Width' }
+                    view: {label: 'Width'}
                 },
                 height: {
                     transient: false,
                     type: 'string',
                     value: '200px',
                     index: 100,
-                    view: { label: 'Height' }
+                    view: {label: 'Height'}
                 },
                 xMinMax: {
                     type: 'object',
@@ -337,22 +340,22 @@ YUI.add('wegas-chart', function(Y) {
                 showXLabels: {
                     type: 'boolean',
                     value: true,
-                    view: { label: 'Show x labels' }
+                    view: {label: 'Show x labels'}
                 },
                 showYLabels: {
                     type: 'boolean',
                     value: true,
-                    view: { label: 'Show y labels' }
+                    view: {label: 'Show y labels'}
                 },
                 yLabelPosition: {
                     type: 'string',
                     value: 'start',
-                    view: { type: 'hidden' }
+                    view: {type: 'hidden'}
                 },
                 xLabelMapper: {
                     type: 'string',
                     value: '',
-                    view: { type: 'hidden' }
+                    view: {type: 'hidden'}
                 }
             }
         }

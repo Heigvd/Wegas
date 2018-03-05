@@ -252,12 +252,14 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                     return true; // Different structures
                                 }
                             } else {
-                                if (isDifferent(elemc, elemo))
+                                if (isDifferent(elemc, elemo)){
                                     return true;
+                                }
                             }
                         } else {
-                            if (isDifferent(elemc, elemo))
+                            if (isDifferent(elemc, elemo)){
                                 return true;
+                            }
                         }
                     }
                     return false;
@@ -281,7 +283,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     }
                     var sizeIndex = pluginIndex(currProp, "CSSSize");
                     if (sizeIndex !== pluginIndex(otherProp, "CSSSize")) {
-                        if (posIndex === -1) {
+                        if (sizeIndex === -1) {
                             return true;
                         }
                         var size = currProp[sizeIndex].cfg.styles;
@@ -324,8 +326,9 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                     continue;
                                 }
                             }
-                            if (isDifferent(currProp, otherProp))
+                            if (isDifferent(currProp, otherProp)){
                                 return true;
+                            }
                         } else if (currProp != otherProp) { // Allow conversions like string/int, undefined/null
                             if (currProp === "" && otherProp == null) { // Tolerate clicking in and out of an empty field
                                 continue;

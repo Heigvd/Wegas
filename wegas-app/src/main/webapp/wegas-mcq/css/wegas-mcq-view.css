@@ -450,11 +450,6 @@
     box-shadow: 0 0 2px 1px #f78a8a;
 }
 
-.wegas-whview,
-.wegas-whview-corrector {
-    width: 100%;
-}
-
 .wegas-whview select.hidden{
     display: none;
 }

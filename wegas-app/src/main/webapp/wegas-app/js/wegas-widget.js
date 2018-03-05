@@ -31,8 +31,12 @@ YUI.add('wegas-widget', function(Y) {
             this.overlayCounter = 0;
             this.get(BOUNDING_BOX)
                 .addClass('wegas-widget')
-                .toggleClass(this.get('cssClass'), this.get('cssClass')) // Add cssClass atrribute if the widget has one
-                .toggleClass('wegas-widget-editable', this.isEditable());
+                .toggleClass(this.get('cssClass'), this.get('cssClass')); // Add cssClass atrribute if the widget has one
+
+            Y.later(0, this, function() {
+                this.get(BOUNDING_BOX)
+                    .toggleClass('wegas-widget-editable', this.isEditable());
+            });
         });
         this._cssPrefix = this.constructor.CSS_PREFIX =
             this.constructor.CSS_PREFIX || this.constructor.NAME.toLowerCase(); // If no prefix is set, use the name (without // the usual "yui3-" prefix)
@@ -129,7 +133,7 @@ YUI.add('wegas-widget', function(Y) {
             if (this.isRoot()) {
                 parent = Y.Widget.getByNode(
                     this.get(BOUNDING_BOX).get('parentNode')
-                );
+                    );
                 parent.reload();
                 return parent.get('widget'); // dependencies should (and must) be loaded by now that way we obtain the new widget
             }
@@ -140,13 +144,17 @@ YUI.add('wegas-widget', function(Y) {
             this.destroy();
             return parent.add(cfg, index).item(0);
         },
+        isPageRoot: function(){
+            return this.isRoot && this.isRoot() && this.get("boundingBox").ancestor().hasClass("wegas-pageloader-content");
+        },
         isEditable: function() {
             return (
-                this.get('editable') ||
-                !!(this.get(PARENT) &&
+                this.get('editable') &&
+                !!(this.isPageRoot() ||
+                    this.get(PARENT) &&
                     this.get(PARENT).isEditable &&
                     this.get(PARENT).isEditable())
-            );
+                );
         },
         _enable: function(token) {
             this.disableCounter = this.disableCounter || {};
@@ -235,11 +243,11 @@ YUI.add('wegas-widget', function(Y) {
              * editable specify if this widget may be edited in the scenarist's UI
              * If it was added as a child and it's parent is editable, this parameter is useless
              * Usefull if this widget is rendered by an other widget.
-             * @type {Boolean} default to false
+             * @type {Boolean} default to true
              */
             editable: {
                 transient: true,
-                value: false
+                value: true
             },
             /**
              * Number of the page
@@ -256,7 +264,7 @@ YUI.add('wegas-widget', function(Y) {
                         s === undefined ||
                         (Y.Lang.isString(s) && s.length > 0) ||
                         Y.Lang.isNumber(s)
-                    );
+                        );
                 }
             },
             /**
@@ -275,7 +283,7 @@ YUI.add('wegas-widget', function(Y) {
             cssClass: {
                 type: ['null', 'string'],
                 optional: true,
-                    index: 4,
+                index: 4,
                 view: {
                     label: 'CSS class',
                     className: 'wegas-advanced-feature'
@@ -446,7 +454,7 @@ YUI.add('wegas-widget', function(Y) {
                             p.push({
                                 fn: Wegas.Plugin.getPluginFromName(
                                     this._plugins[i].NAME
-                                ), //TODO: find an other referencing way
+                                    ), //TODO: find an other referencing way
                                 cfg: plg.toObject('type')
                             });
                         }
@@ -466,60 +474,60 @@ YUI.add('wegas-widget', function(Y) {
                             children: [
                                 {
                                     label: 'Open page',
-                                    value: { fn: 'OpenPageAction' }
-                                        },
+                                    value: {fn: 'OpenPageAction'}
+                                },
                                 {
                                     label: 'Open url',
-                                    value: { fn: 'OpenUrlAction' }
+                                    value: {fn: 'OpenUrlAction'}
                                 },
                                 {
                                     label: 'Impact variables',
-                                    value: { fn: 'ExecuteScriptAction' }
+                                    value: {fn: 'ExecuteScriptAction'}
                                 },
                                 {
                                     label: 'Open Popup page',
-                                    value: { fn: 'OpenPanelPageloader' }
+                                    value: {fn: 'OpenPanelPageloader'}
                                 },
                                 {
                                     label: 'Play sound',
-                                    value: { fn: 'PlaySoundAction' }
+                                    value: {fn: 'PlaySoundAction'}
                                 },
                                 {
                                     label: 'Print Variables',
-                                    value: { fn: 'PrintActionPlugin' }
-                                            }, {
-                                                label: "Show Inbox Overlay",
-                                    value:{fn: "ShowInboxListOnClick"}
-                                            }
-                                        ]
+                                    value: {fn: 'PrintActionPlugin'}
+                                }, {
+                                    label: "Show Inbox Overlay",
+                                    value: {fn: "ShowInboxListOnClick"}
+                                }
+                            ]
                         },
                         {
                             label: 'Styles',
                             children: [
                                 {
                                     label: 'Tooltip',
-                                    value: { fn: 'Tooltip' }
+                                    value: {fn: 'Tooltip'}
                                 },
                                 {
                                     label: 'Background',
-                                    value: { fn: 'CSSBackground' }
+                                    value: {fn: 'CSSBackground'}
                                 },
                                 {
                                     label: 'Position',
-                                    value: { fn: 'CSSPosition' }
+                                    value: {fn: 'CSSPosition'}
                                 },
                                 {
                                     label: 'Size',
-                                    value: { fn: 'CSSSize' }
+                                    value: {fn: 'CSSSize'}
                                 },
                                 {
                                     label: 'Text',
-                                    value: { fn: 'CSSText' }
+                                    value: {fn: 'CSSText'}
                                 },
                                 {
                                     label: 'Other styles',
-                                    value: { fn: 'CSSStyles' }
-                                    }
+                                    value: {fn: 'CSSStyles'}
+                                }
                             ]
                         },
                         {
@@ -527,12 +535,12 @@ YUI.add('wegas-widget', function(Y) {
                             children: [
                                 {
                                     label: 'Show after',
-                                    value: { fn: 'ShowAfter' }
-                                        },
+                                    value: {fn: 'ShowAfter'}
+                                },
                                 {
                                     label: 'Hide after',
-                                    value: { fn: 'HideAfter' }
-                                    }
+                                    value: {fn: 'HideAfter'}
+                                }
                             ]
                         },
                         {
@@ -540,22 +548,22 @@ YUI.add('wegas-widget', function(Y) {
                             children: [
                                 {
                                     label: 'Conditional disable',
-                                    value: { fn: 'ConditionalDisable' }
+                                    value: {fn: 'ConditionalDisable'}
                                 },
                                 {
                                     label: 'Unread count',
-                                    value: { fn: 'UnreadCount' }
-                                        },
+                                    value: {fn: 'UnreadCount'}
+                                },
                                 {
                                     label: 'Lock',
-                                    value: { fn: 'Lockable' }
-                                },{
-                                                type: BUTTON,
-                                                label: "Event Logger",
-                                                data: "EventLogger"
-                                            }
+                                    value: {fn: 'Lockable'}
+                                }, {
+                                    type: BUTTON,
+                                    label: "Event Logger",
+                                    data: "EventLogger"
+                                }
                             ]
-                                    }
+                        }
                     ]
                 },
                 index: 10,
@@ -565,13 +573,13 @@ YUI.add('wegas-widget', function(Y) {
                         fn: {
                             type: 'string'
                         },
-                                    cfg: {
+                        cfg: {
                             type: 'object'
                         }
-                                        },
+                    },
                     view: {
                         type: 'plugin'
-                                    }
+                    }
                 }
             }
         },
@@ -594,11 +602,11 @@ YUI.add('wegas-widget', function(Y) {
             } else {
                 Y.log(
                     'Could not create a child widget because its constructor is either undefined or invalid(' +
-                        type +
-                        ').',
+                    type +
+                    ').',
                     'error',
                     'Wegas.Widget'
-                );
+                    );
             }
 
             return child;
@@ -646,7 +654,7 @@ YUI.add('wegas-widget', function(Y) {
                             'Unable to read expression: ' + val.content,
                             'error',
                             'Wegas.Widget'
-                        );
+                            );
                         val.evaluated = null;
                     }
                 } else if (val.name) {
@@ -657,13 +665,13 @@ YUI.add('wegas-widget', function(Y) {
                     try {
                         val.evaluated = ds.cache.findById(
                             ds.script.localEval(val.expr)
-                        );
+                            );
                     } catch (e) {
                         Y.log(
                             'Unable to read expression: ' + val.expr,
                             'error',
                             'Wegas.Widget'
-                        );
+                            );
                         val.evaluated = null;
                     }
                 }
@@ -751,15 +759,15 @@ YUI.add('wegas-widget', function(Y) {
         } catch (e) {
             this.get(BOUNDING_BOX).setHTML(
                 "<div class='wegas-widget-errored'><i>Failed to render<br>" +
-                    e.message +
-                    '</i></div>'
-            );
+                e.message +
+                '</i></div>'
+                );
 
             Y.log(
                 'error',
                 'Failed to render ' + this.getType() + ': ' + (e.message || ''),
                 this.constructor.NAME
-            );
+                );
             //Y.error("Failed to render " + this.getType() + ": " + (e.message || ""), e, this.constructor.NAME);//do crash parent widget in debug mode
             //throw e;
         }

@@ -15,6 +15,7 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
 public class RequestController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(RequestController.class);
+
+    private static String[] availableLocales = {"en", "fr", "fr-CH"};
 
     /**
      *
@@ -99,6 +102,22 @@ public class RequestController implements Serializable {
             return context.getApplication().getDefaultLocale();
         }
         return Locale.getDefault();
+    }
+
+    public Locale getPreferredLocale() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context.getExternalContext().getRequestLocale() != null) {
+            Iterator<Locale> locales = context.getExternalContext().getRequestLocales();
+            while (locales.hasNext()) {
+                Locale next = locales.next();
+                for (String aLocale : availableLocales) {
+                    if (next.toLanguageTag().equals(aLocale)) {
+                        return next;
+                    }
+                }
+            }
+        }
+        return new Locale("en");
     }
 
     /**

@@ -12,8 +12,4 @@
  */
 /*global YUI, I18n */
 
-var lang = I18n._currentLocale;
-YUI.add("wegas-i18n-global", function(Y) {
-    "use strict";
-    Y.log("I18n Global: \"" + lang + "\" translation loaded");
-}, 1.0, {requires: ["wegas-i18n-global-" + lang]});
+I18n.loadModule("wegas-i18n-global");

@@ -788,10 +788,69 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 value: "TaskInstance"
             },
             active: {
-                type: BOOLEAN
+                type: BOOLEAN,
+                view: {
+                    label: 'Active from start',
+                    value: true
+                }
             },
             requirements: {
                 type: ARRAY,
+                view: {
+                    label: "Resource requirements"
+                },
+                items: {
+                    type: OBJECT,
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            value: "WRequirement",
+                            view: {type: HIDDEN}
+                        },
+                        id: IDATTRDEF,
+                        name: {type: STRING, view: {type: HIDDEN}},
+                        work: {
+                            type: STRING,
+                            view: {
+                                type: SELECT,
+                                choices: persistence.Resources.SKILLS
+                            }
+                        },
+                        level: {
+                            type: NUMBER,
+                            view: {
+                                type: SELECT,
+                                choices: persistence.Resources.LEVELS
+                            }
+                        },
+                        quantity: {
+                            type: NUMBER,
+                            required: true,
+                            value: 1,
+                            view: {
+                                label: 'Quantity'
+                            }
+                        },
+                        limit: {
+                            type: NUMBER,
+                            required: true,
+                            value: 100,
+                            view: {
+                                label: 'Limit'
+                            }
+                        },
+                        completeness: {
+                            type: NUMBER,
+                            value: 0,
+                            view: {type: HIDDEN}
+                        },
+                        quality: {
+                            type: NUMBER,
+                            value: 100,
+                            view: {type: HIDDEN}
+                        }
+                    }
+                },
                 setter: function(v) {
                     v.sort(function(a, b) {
                         if (a.get("work") === b.get("work")) {
@@ -807,8 +866,13 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             properties: {
                 type: OBJECT,
+                additionalProperties: {
+                    view: {label: VALUE}
+                },
                 view: {
-                    label: "Properties"
+                    label: "Properties",
+                    type: HASHLIST,
+                    keyLabel: NAME
                 }
             },
             plannification: {

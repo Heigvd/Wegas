@@ -19,6 +19,9 @@
     background:steelblue;
     border:1px solid gray;
     float:left;
+    padding: 2px;
+    min-width: 14px;
+    text-align: center;
 }
 .wegas-template-valuebox-selected {
     background:white;

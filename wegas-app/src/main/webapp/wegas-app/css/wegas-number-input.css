@@ -28,12 +28,12 @@
 
 .wegas-boxes-number-input .boxes .box {
     float: left;
-    width: 20px;
+    min-width: 18px;
     height: 20px;
     border-radius: 2px;
     border : 1px solid darkgrey;
     margin: 0px;
-    padding: 0px;
+    padding: 0px 1px;
 }
 
 .wegas-boxes-number-input .boxes .box .value{
@@ -45,8 +45,14 @@
     margin-top: 2px;
 }
 
+.wegas-boxes-number-input .boxes .box[data-position="below"] .value {
+    display: block;
+    color: #ccc;
+}
+
 .wegas-boxes-number-input .boxes.boxes.clickable .box:hover .value{
     display: block; 
+    color: white;
 }
 
 .wegas-boxes-number-input .boxes .box[data-position="value"] .value {
@@ -55,7 +61,9 @@
     display: block;
 }
 
-.wegas-boxes-number-input .boxes .box[data-position="below"], 
+.wegas-boxes-number-input .boxes .box[data-position="below"] {
+    background-color: #66b2ce;
+}
 .wegas-boxes-number-input .boxes .box[data-position="value"] {
     background-color: #66b2ce;
 }
@@ -97,7 +105,7 @@ SLIDER
     font-family: monospace;
     font-size: 7pt;
     text-align: center;
-    width:20px;
+    white-space: nowrap;
 }
 
 .wegas-number-input .hide-input .yui3-slider-x .yui3-slider-rail:after {
@@ -109,4 +117,5 @@ SLIDER
     top: 2px;
     padding: 1px;
     border-bottom: 1px solid #aaa;
+    white-space: nowrap;
 }

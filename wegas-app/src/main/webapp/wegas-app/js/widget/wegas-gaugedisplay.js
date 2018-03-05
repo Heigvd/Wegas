@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -160,7 +162,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
 
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").
-                setContent(value);
+                setContent(I18n.formatNumber(value));
             this.gauge.animationSpeed = 32;
         },
         getEditorLabel: function() {

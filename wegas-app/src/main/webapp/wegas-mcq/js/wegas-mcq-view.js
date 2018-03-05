@@ -18,7 +18,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
 
     WhView = Y.Base.create("wegas-whview", Y.Widget,
-        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
         initializer: function() {
             this.handlers = {};
         },
@@ -54,7 +54,8 @@ YUI.add('wegas-mcq-view', function(Y) {
 
             this.mainList = new Y.Wegas.List({
                 cssClass: "wegas-whview__main-list",
-                direction: "vertical"
+                direction: "vertical",
+                editable: false
             });
 
             this.hList = new Y.Wegas.List({
@@ -89,7 +90,6 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                     container = new Y.Wegas.List({
                         classes: "wegas-whview__answers__input-container container-" + name,
-                        editable: "false",
                         direction: "horizontal"
                     });
 
@@ -175,7 +175,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                 });
                 this._submitButton = new Y.Wegas.Button({
                     cssClass: "wegas-whview--submit-button",
-                    "label": Y.Wegas.I18n.t('mcq.submit')
+                    "label": Y.Wegas.I18n.t('mcq.submit'),
+                    editable: false
                 });
                 this._submitButton.on("click", this.submit, this);
                 this._buttonContainer.add(this._submitButton);
@@ -367,6 +368,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
         }
     }, {
+        EDITORNAME: "Single OpenQuestion",
         ATTRS: {
             variable: {
                 type: "object",
@@ -376,10 +378,6 @@ YUI.add('wegas-mcq-view', function(Y) {
                     label: "Question",
                     classFilter: ["WhQuestionDescriptor"]
                 }
-            },
-            readonly: {
-                type: "boolean",
-                value: false
             }
         }
     });
