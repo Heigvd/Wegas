@@ -13,7 +13,7 @@ const labelTextStyle = css({
 });
 
 interface ILabelProps {
-    editKey: string;
+    editKey?: string;
     view: {
         /**
          * Using 'true' is usefull for additional{Properties,Items}

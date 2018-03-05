@@ -54,7 +54,7 @@ ObjectView.propTypes = {
     editKey: PropTypes.string,
     view: PropTypes.shape({
         className: PropTypes.string,
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     }),
     errorMessage: PropTypes.array,
 };

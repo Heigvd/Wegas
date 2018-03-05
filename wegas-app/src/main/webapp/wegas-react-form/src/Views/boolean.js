@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { css } from 'glamor';
 import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
-import { css } from 'glamor';
 import FormStyles from './form-styles';
 
 const booleanContainerStyle = css({
@@ -11,12 +11,12 @@ const booleanContainerStyle = css({
     '& span': {
         display: 'inline-block',
         fontSize: FormStyles.labelFontSize,
-        verticalAlign: '1px'
+        verticalAlign: '1px',
     },
     // Vertically align the following 'info' field on the label instead of the checkbox:
     '& + div': {
-        marginLeft: '22px'
-    }
+        marginLeft: '22px',
+    },
 });
 
 const checkboxStyle = css({
@@ -26,31 +26,43 @@ const checkboxStyle = css({
     marginRight: '6px',
     width: '15px!important',
     maxWidth: '15px!important',
-    fontSize: '14px'
+    fontSize: '14px',
 });
 
-function BooleanView(props) {
-    const onChange = function onChange(event) {
-        props.onChange(event.target.checked);
-    };
-    return (
-        <input
-            id={props.id}
-            checked={props.value}
-            type="checkbox"
-            className={checkboxStyle}
-            onChange={onChange}
-        />
-    );
+class BooleanView extends React.Component {
+    constructor(props) {
+        super(props);
+        this.onChange = this.onChange.bind(this);
+    }
+    onChange(event) {
+        this.props.onChange(event.target.checked);
+    }
+    render() {
+        const { id, value } = this.props;
+        return (
+            <input
+                id={id}
+                checked={Boolean(value)}
+                type="checkbox"
+                className={checkboxStyle}
+                onChange={this.onChange}
+            />
+        );
+    }
 }
 
 BooleanView.defaultProps = {
-    value: false
+    value: false,
 };
 
 BooleanView.propTypes = {
+    id: PropTypes.string,
     onChange: PropTypes.func.isRequired,
-    value: PropTypes.bool,
+    value: PropTypes.oneOfType([
+        PropTypes.bool,
+        PropTypes.number,
+        PropTypes.string,
+    ]),
 };
 
 export default commonView(

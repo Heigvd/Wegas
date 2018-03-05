@@ -810,7 +810,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: ARRAY,
                 items: {
                     type: ARRAY,
-                    view:{ label: true, description: "Path" },
+                    view:{ label: true, description: "Path", horizontal: true, highlight: true },
                     items: {
                         type: "object",
                         view: { label: true },
@@ -825,7 +825,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 value: 0,
                                 view: {
                                     type: "boolean",
-                                    className: "inline-block"
+                                    layout: "inlineShort"
                                 }
                             }
                         }
@@ -959,7 +959,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                             components:"PC",
                             id: "Player",
                             direction: 2,
-                            collides: true
+                            collides: false
                         }},{
                         label: "Panel",
                         value: {
@@ -1043,6 +1043,9 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         label: "left"
                                     }]
                             }
+                        },
+                        "^collides$":{
+                            view:{type:"hidden"}
                         }
                     },
                     additionalProperties:{

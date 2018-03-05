@@ -25,12 +25,10 @@ const listElementContainerStyle = css({
     display: 'flex',
     flexDirection: 'row',
     marginTop: '5px',
-    ':first-of-type': {
-        marginTop: '10px',
-    },
 });
 const highlight = css({
     backgroundColor: 'rgba(106, 172, 241, 0.2)',
+    marginRight: '2px',
 });
 
 const listElementStyle = css({
@@ -44,8 +42,13 @@ const listElementStyle = css({
 const inlinePlusStyle = css({
     fontSize: '18px',
     verticalAlign: '-1px',
+    width: '100%',
+    textAlign: 'left',
 });
-
+const horizontal = css({
+    display: 'flex',
+    flexWrap: 'wrap',
+});
 const optionLabelStyle = css(FormStyles.labelStyle, {
     fontSize: FormStyles.labelBigFontSize,
     paddingRight: '5px',
@@ -60,6 +63,7 @@ interface IArrayProps {
          * Composit bg color
          */
         highlight?: boolean;
+        horizontal?: boolean;
     };
 }
 
@@ -124,9 +128,9 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
     function renderChild(child: React.ReactChild, index: number) {
         return (
             <div
-                className={`${listElementContainerStyle} ${
+                className={`${
                     props.view.highlight ? highlight : ''
-                }`}
+                } ${listElementContainerStyle}`}
             >
                 <span className={listElementStyle.toString()}>{child}</span>
                 <span className={binStyle.toString()}>
@@ -146,7 +150,11 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
     const children = React.Children.map(props.children, renderChild);
     const label = props.view.label === true ? props.editKey : props.view.label;
     return (
-        <div className={arrayStyle.toString()}>
+        <div
+            className={`${arrayStyle} ${
+                props.view.horizontal ? horizontal : ''
+            }`}
+        >
             {maxItems > valueLength && !disabled ? (
                 <Adder {...props} />
             ) : (
