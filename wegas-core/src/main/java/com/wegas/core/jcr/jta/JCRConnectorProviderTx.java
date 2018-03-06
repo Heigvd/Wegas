@@ -182,6 +182,7 @@ public class JCRConnectorProviderTx implements Serializable {
             logger.debug(" *** {} ROLLBACK", connector);
             connector.rollback();
         }
+        connectors.clear();
     }
 
     /**
@@ -192,6 +193,7 @@ public class JCRConnectorProviderTx implements Serializable {
             logger.debug(" *** {} COMMIT", connector);
             connector.commit();
         }
+        connectors.clear();
     }
 
     /**

@@ -12,6 +12,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
+import com.wegas.core.jcr.jta.JCRConnectorProviderTx;
+import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.jcr.tools.RepositoryVisitor;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.persistence.game.Game;
@@ -79,7 +82,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         reflections = new Reflections("com.wegas");
     }
 
-    @BeforeClass
+    //@BeforeClass
     public static void setLoggerLevels() {
         Helper.setLoggerLevel(logger, Level.INFO);
         mfLevel = Helper.setLoggerLevel(ModelFacade.class, Level.DEBUG);
@@ -308,8 +311,8 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         theModel.setCssLibrary(cssLibrary);
     }
 
-    private void setPagesFromStrings(GameModel theModel, String... pages) throws IOException {
-        Map<String, JsonNode> gmPages = theModel.getPages();
+    private void setPagesFromStrings(GameModel theModel, String... pages) throws IOException, RepositoryException {
+        Map<String, JsonNode> gmPages = this.getPages(theModel);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -321,10 +324,26 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         theModel.setPages(gmPages);
     }
 
-    private void printPages(GameModel gameModel) {
+    /*
+     * outside a transaction imply using detached connectors
+     */
+    private Map<String, JsonNode> getPages(GameModel gameModel) throws RepositoryException {
+        Pages pages = null;
+        try {
+            pages = (Pages) JCRConnectorProviderTx.getDetachedConnector(gameModel, JCRConnectorProvider.RepositoryType.PAGES);
+            return pages.getPagesContent();
+        } finally {
+            if (pages != null) {
+                pages.rollback();
+            }
+        }
+
+    }
+
+    private void printPages(GameModel gameModel) throws RepositoryException {
         StringBuilder sb = new StringBuilder(gameModel.toString()).append("\n");
 
-        for (Entry<String, JsonNode> page : gameModel.getPages().entrySet()) {
+        for (Entry<String, JsonNode> page : this.getPages(gameModel).entrySet()) {
             String pageName = page.getKey();
             sb.append("  ").append(pageName).append("\n").append(page.getValue()).append("\n");
         }
@@ -774,7 +793,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         // Model: list: x y
         // Gm1&2: list/x
-
         // new model based on model
         // exact copy, including private content
         GameModel newModel = gameModelFacade.createModel(model.getId());
@@ -791,7 +809,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertNull("yMod exist in the new model", getDescriptor(newScenario_model, "yMod"));
 
         // new scenario based on a scenario (should include src scenario private content)
-
         ListDescriptor gm1List = (ListDescriptor) getDescriptor(gameModel1, "myFirstFolder");
         createNumberDescriptor(gameModel1, gm1List, "yGm1", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
@@ -800,8 +817,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertNotNull("x does not exist in the new model", getDescriptor(newScenario_scen, "x"));
         Assert.assertNull("yMod exist in the new model", getDescriptor(newScenario_scen, "yMod"));
         Assert.assertNotNull("yGm1 does not exist in the new model", getDescriptor(newScenario_scen, "yGm1"));
-
-
 
         logger.info("Helloooo");
     }
