@@ -77,7 +77,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     @Inject
     private RequestManager requestManager;
 
-
     /**
      * Create a player linked to the user identified by userId(may be null) and join the team
      * identified by teamId.
@@ -442,24 +441,57 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * Returns the first available player in the target game.
+     * Returns the first available player in the target gameModel.
+     * A player of any DebugTeam or any player from any team of a DebugGame
      *
-     * @param gameId
      *
-     * @return a player from the game
+     * @param gameModelId
      *
-     * @throws com.wegas.core.exception.internal.WegasNoResultException
+     * @return a player from the gameModel
+     *
      */
-    public Player findDebugPlayerByGameId(Long gameId) throws WegasNoResultException {
-        Game game = gameFacade.find(gameId);
+    public Player findDebugPlayerByGameModelId(Long gameModelId) {
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        for (Game game : gameModel.getGames()) {
+            Player p = findDebugPlayerByGame(game);
+            if (p != null) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The first test player found.
+     * A player of any DebugTeam or any player from any team of a DebugGame
+     *
+     * @param game
+     *
+     * @return
+     *
+     * @throws WegasNoResultException
+     */
+    private Player findDebugPlayerByGame(Game game) {
         for (Team t : game.getTeams()) {
-            if (t instanceof DebugTeam) {
+            if (t instanceof DebugTeam || game instanceof DebugGame) {
                 if (t.getPlayers().size() > 0) {
                     return t.getPlayers().get(0);
                 }
             }
         }
-        throw new WegasNoResultException("No player");
+        return null;
+    }
+
+    /**
+     * Returns the first available test player in the target game.
+     *
+     * @param gameId
+     *
+     * @return a player from the game
+     *
+     */
+    public Player findDebugPlayerByGameId(Long gameId) {
+        return this.findDebugPlayerByGame(gameFacade.find(gameId));
     }
 
     /**

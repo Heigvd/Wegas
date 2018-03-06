@@ -208,12 +208,16 @@ YUI.add('wegas-form', function(Y) {
                     properties: {
                         fields: {
                             type: 'array',
+                            view: {
+                                label: 'Fields',
+                                highlight: true
+                            },
                             items: {
                                 type: 'object',
-                                required: true,
                                 value: {},
                                 properties: {
                                     type: {
+                                        index: -5,
                                         type: 'string',
                                         required: true,
                                         view: {
@@ -231,9 +235,11 @@ YUI.add('wegas-form', function(Y) {
                                     },
                                     required: {
                                         type: 'boolean',
+                                        index: -4,
                                         value: false,
                                         view: { label: 'Required' }
                                     },
+                                    value:{ view:{  type: "hidden" } },
                                     choices: {
                                         type: 'array',
                                         items: {
@@ -241,11 +247,11 @@ YUI.add('wegas-form', function(Y) {
                                             properties: {
                                                 value: {
                                                     type: 'string',
-                                                    view: { label: 'Value' }
+                                                    view: { label: 'Value', layout: 'shortInline' }
                                                 },
                                                 label: {
                                                     type: 'string',
-                                                    view: { label: 'Label' }
+                                                    view: { label: 'Label', layout: 'shortInline' }
                                                 }
                                             }
                                         },
@@ -261,16 +267,19 @@ YUI.add('wegas-form', function(Y) {
                                             return curr.type === 'select';
                                         },
                                         view: {
-                                            label: 'Choices'
+                                            label: 'Choices',
+                                            highlight: true
                                         }
                                     },
                                     name: {
                                         type: 'string',
+                                        index: -2,
                                         required: true,
                                         view: { label: 'Name' }
                                     },
                                     label: {
                                         type: 'string',
+                                        index: -1,
                                         view: { label: 'Label' }
                                     }
                                 }

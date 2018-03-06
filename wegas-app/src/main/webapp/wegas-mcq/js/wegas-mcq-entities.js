@@ -80,12 +80,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         errors.push('Value must be positive');
                     }
                     if (formVal.cbx && Y.Lang.isNumber(max) && min > max) {
-                        errors.push('Value cannot be greater than the maximum nunber of replies');
+                        errors.push('Value cannot be greater than the maximum number of replies');
                     }
                     return errors.join(', ');
                 },
                 view: {
-                    label: 'Min. number of replies',
+                    label: 'Min. number replies',
                     description: "Optional value",
                     placeholder: "1",
                     layout: 'shortInline'
@@ -100,18 +100,18 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     var errors = [];
                     if (Y.Lang.isNumber(val)) {
                         if (val < 1) {
-                            errors.push('Value must be striclty positive or empty');
+                            errors.push('Value must be strictly positive or empty');
                         }
                         if (formVal.cbx && Y.Lang.isNumber(formVal.minReplies)) {
                             if (val < formVal.minReplies) {
-                                errors.push('Value must be greater or equals than minimum');
+                                errors.push('Value must be greater than or equal to the minimum');
                             }
                         }
                     }
                     return errors.join(', ');
                 },
                 view: {
-                    label: 'Max. number of replies',
+                    label: 'Max. number replies',
                     description: "Optional value",
                     placeholder: "∞",
                     layout: 'shortInline'
@@ -409,7 +409,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         return true;
                     },
                     view: {
-                        label: 'Max. number of replies',
+                        label: 'Max. number replies',
                         placeholder: "∞",
                         description: "Optional value",
                         //indent: true,

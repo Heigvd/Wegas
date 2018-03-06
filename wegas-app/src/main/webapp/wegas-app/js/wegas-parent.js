@@ -73,6 +73,9 @@ YUI.add("wegas-parent", function(Y) {
             children: {
                 "transient": true,
                 type: "array",
+                getter: function() {
+                    return this.toObject().children;
+                },
                 value: [],
                 view: {type: "hidden"}
             },

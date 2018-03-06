@@ -684,6 +684,7 @@ YUI.add('wegas-plugin', function(Y) {
         },
         {
             NS: 'SaveObjectAction',
+            EDITORNAME: 'Save to',
             ATTRS: {
                 variable: {
                     /**

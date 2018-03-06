@@ -565,14 +565,7 @@ public class UserController {
      * @return the IP address
      */
     public String getRequestingIP(HttpServletRequest request) {
-        String ip = request.getHeader("X-FORWARDED-FOR");
-        if (ip == null) {
-            ip = request.getHeader("X-Real-IP");
-            if (ip == null) {
-                ip = request.getRemoteAddr();
-            }
-        }
-        return ip;
+        return Helper.getRequestingIP(request);
     }
 
     /**

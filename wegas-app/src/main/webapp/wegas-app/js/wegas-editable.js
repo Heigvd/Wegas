@@ -18,8 +18,8 @@ YUI.add('wegas-editable', function(Y) {
     Y.Base._ATTR_CFG.push("type", "properties", "view", 
     /* should vanish once */ "_inputex", "required", "format", "errored",
         "choices", "items", "enum", "pattern", "maxLength", "minLength", "index",
-        "default", "transient", "visible", "additionalProperties", 
-        "minItems", "maxItems", "minimum", "maximum");
+        "default", "transient", "visible", "additionalProperties", "additionalItems",
+        "minItems", "maxItems", "minimum", "maximum", "uniqueItems", "patternProperties");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
     /**
      * @name Y.Wegas.Editable

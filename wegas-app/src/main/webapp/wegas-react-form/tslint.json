@@ -32,7 +32,8 @@
         "member-access": false,
         "array-type": [true, "array"],
         "jsx-wrap-multiline": false,
-        "jsx-boolean-value": [true, "never"]
+        "jsx-boolean-value": [true, "never"],
+        "jsx-curly-spacing": false
     },
     "rulesDirectory": []
 }

@@ -1,12 +1,10 @@
-// polyfill injection point
-import 'core-js';
-// end polyfill injection point
 import { Schema } from 'jsoninput';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { css } from 'glamor';
-import { debounce } from 'lodash-es';
+import { debounce, cloneDeep } from 'lodash-es';
 import promised from './HOC/loadAsyncComp';
+import './index';
 
 const FORM = 'form';
 
@@ -46,17 +44,17 @@ const containerForm = css({
     },
 });
 const AsyncForm = promised(() => {
-    import(/* webpackChunkName: "reactForm" */ './defaultViews');
-    return import(/* webpackChunkName: "reactForm" */ 'jsoninput').then(
-        RForm => {
-            return (props: {
-                schema: Schema;
-                formRef: React.Ref<React.Component>;
-                value?: {};
-                onChange: (value: any) => void;
-            }) => <RForm.default ref={props.formRef} {...props} />;
-        }
-    );
+    return Promise.all([
+        import(/* webpackChunkName: "reactForm" */ 'jsoninput'),
+        import(/* webpackChunkName: "reactForm" */ './defaultViews'),
+    ]).then(([RForm]) => {
+        return (props: {
+            schema: Schema;
+            formRef: React.Ref<React.Component>;
+            value?: {};
+            onChange: (value: any) => void;
+        }) => <RForm.default ref={props.formRef} {...props} />;
+    });
 });
 
 YUI.add('wegas-react-form', Y => {
@@ -155,7 +153,7 @@ YUI.add('wegas-react-form', Y => {
                 // }
                 this.animateSaveBtn();
                 this.fire('submit', {
-                    value: JSON.parse(JSON.stringify(val)), // Immutability ...
+                    value: cloneDeep(val), // Immutability ...
                 });
             },
             validate() {
@@ -353,25 +351,28 @@ YUI.add('wegas-react-form', Y => {
             );
         },
         MultiVariableMethod(...args: any[]) {
-            import(/* webpackChunkName: "reactForm" */ './defaultViews');
-            return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
-                ({ IndependantMultiVariableMethod }) =>
-                    IndependantMultiVariableMethod(...args)
+            return Promise.all([
+                import(/* webpackChunkName: "reactForm" */ './Script/index'),
+                import(/* webpackChunkName: "reactForm" */ './defaultViews'),
+            ]).then(([{ IndependantMultiVariableMethod }]) =>
+                IndependantMultiVariableMethod(...args)
             );
         },
 
         MultiVariableCondition(...args: any[]) {
-            import(/* webpackChunkName: "reactForm" */ './defaultViews');
-            return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
-                ({ IndependantMultiVariableCondition }) =>
-                    IndependantMultiVariableCondition(...args)
+            return Promise.all([
+                import(/* webpackChunkName: "reactForm" */ './Script/index'),
+                import(/* webpackChunkName: "reactForm" */ './defaultViews'),
+            ]).then(([{ IndependantMultiVariableCondition }]) =>
+                IndependantMultiVariableCondition(...args)
             );
         },
         VariableStatement(...args: any[]) {
-            import(/* webpackChunkName: "reactForm" */ './defaultViews');
-            return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
-                ({ IndependantVariableStatement }) =>
-                    IndependantVariableStatement(...args)
+            return Promise.all([
+                import(/* webpackChunkName: "reactForm" */ './Script/index'),
+                import(/* webpackChunkName: "reactForm" */ './defaultViews'),
+            ]).then(([{ IndependantVariableStatement }]) =>
+                IndependantVariableStatement(...args)
             );
         },
     };

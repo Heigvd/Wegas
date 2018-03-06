@@ -190,10 +190,11 @@ YUI.add('wegas-template', function(Y) {
             EDITORNAME: 'Custom template',
         ATTRS: {
             custom: {
-                    type: 'text',
-                value: "<%= this.variable.getValue() || 'Undefined' %>",
+                    type: 'string',
+                    value: "<%= this.variable.getValue() || 'Undefined' %>",
                     view: {
-                        label: 'Template'
+                        label: 'Template',
+                        rows: 3
                 }
             }
         }

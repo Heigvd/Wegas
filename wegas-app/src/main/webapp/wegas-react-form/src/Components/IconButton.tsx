@@ -49,11 +49,6 @@ const grayStyle = css({
     color: 'darkslategray',
     fontWeight: 'bold',
     fontSize: '15px',
-    backgroundColor: 'white',
-    backgroundOpacity: 0,
-    ':hover': {
-        backgroundOpacity: 1,
-    },
 });
 
 function renderLabel(label?: string, labelClassName?: string) {
