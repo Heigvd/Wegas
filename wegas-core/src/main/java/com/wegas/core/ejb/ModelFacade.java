@@ -445,6 +445,7 @@ public class ModelFacade {
                                     logger.info(" CREATE AT ROOL LEVEL");
                                     VariableDescriptor clone = (VariableDescriptor) vd.shallowClone();
                                     variableDescriptorFacade.createChild(scenario, scenario, clone);
+                                    clone.setName(vd.getName());
                                     it.remove();
                                     restart = true;
                                 }
