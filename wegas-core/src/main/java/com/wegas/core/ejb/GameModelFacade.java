@@ -540,6 +540,14 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     // duplicating a scenario which is based on a model
                     newGameModel.setBasedOn(srcGameModel.getBasedOn());
                     break;
+                case PLAY:
+                    GameModel basedOn = srcGameModel.getBasedOn();
+                    if (basedOn != null) {
+                        requestManager.assertCanDuplicateGameModel(basedOn);
+                        newGameModel = this.duplicate(sourceId);
+                        newGameModel.setBasedOn(srcGameModel.getBasedOn());
+                        break;
+                    }
                 default:
                     throw new WegasIncompatibleType("Couldn not create a new scenatrio from " + srcGameModel);
             }
