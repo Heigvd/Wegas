@@ -37,7 +37,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 cssClass: "wegas-whview__left"
             });
 
-            title = whQuestion.get("label");
+            title = whQuestion.get("title") || whQuestion.get("label");
 
             this.qTitle = new Y.Wegas.Text({
                 cssClass: "wegas-whview__title",
@@ -93,7 +93,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         direction: "horizontal"
                     });
 
-                    label = child.get("label");
+                    label = child.get("title") || child.get("label");
 
                     switch (child.get("@class")) {
                         case "NumberDescriptor":

@@ -1224,8 +1224,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
             activate: {
                 arguments: [SELFARG]
             },
-            desactivate: {
+            deactivate: {
                 label: "deactivate",
+                arguments: [SELFARG]
+            },
+            reopen: {
+                label: "reopen",
                 arguments: [SELFARG]
             },
             isReplied: {

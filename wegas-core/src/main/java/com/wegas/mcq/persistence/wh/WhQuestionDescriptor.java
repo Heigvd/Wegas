@@ -158,8 +158,12 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @param p
      */
-    public void desactivate(Player p) {
+    public void deactivate(Player p) {
         this.setActive(p, false);
+    }
+
+    public void reopen(Player p){
+        this.getInstance(p).setValidated(false);
     }
 
     /**

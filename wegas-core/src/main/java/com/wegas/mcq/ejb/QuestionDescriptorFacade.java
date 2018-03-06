@@ -17,6 +17,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.mcq.persistence.*;
+import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -532,6 +533,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     @Override
     public void validateQuestion(final WhQuestionInstance validateQuestion, final Player player) throws WegasRuntimeException {
         validateQuestion.setValidated(true);
+        scriptEvent.fire(player, "whValidate", new WhValidate(validateQuestion));
     }
 
     /**
@@ -630,6 +632,17 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         logger.error("ICI *********************************************** ICI");
         getEntityManager().remove(entity);
         entity.getQuestion().remove(entity);
+    }
+
+    public static class WhValidate {
+
+        final public WhQuestionDescriptor whDescriptor;
+        final public WhQuestionInstance whInstance;
+
+        private WhValidate(WhQuestionInstance validateQuestion) {
+            this.whInstance = validateQuestion;
+            this.whDescriptor = (WhQuestionDescriptor) validateQuestion.findDescriptor();
+        }
     }
 
     /**

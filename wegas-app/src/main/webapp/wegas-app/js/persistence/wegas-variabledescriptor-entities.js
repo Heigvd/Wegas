@@ -24,6 +24,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         VALUE = 'value',
         TEXT = 'text',
         HTML = 'html',
+        NULLSTRING = ["null", STRING],
         AVAILABLE_TYPES,
         OPTIONAL_AVAILABLE_TYPES,
         Wegas = Y.Wegas,
@@ -617,6 +618,25 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 '@class': {
                     value: 'StringDescriptor'
                 },
+                title: {
+                    type: NULLSTRING,
+                    optional: true,
+                    value: "",
+                    index: -1,
+                    visible: function(val, formVal) {
+                        // hack: only show label when embedded within an WhQuestion
+                        var parent;
+                        if (formVal.id) {
+                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
+                            return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
+                        }
+                        return true;
+                    },
+                    view: {
+                        label: "Label",
+                        description: "Displayed to players"
+                    }
+                },
                 defaultInstance: {
                     properties: {
                         '@class': {
@@ -714,6 +734,25 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             ATTRS: {
                 '@class': {
                     value: 'TextDescriptor'
+                },
+                title: {
+                    type: NULLSTRING,
+                    optional: true,
+                    value: "",
+                    index: -1,
+                    visible: function(val, formVal) {
+                        // hack: only show label when embedded within an WhQuestion
+                        var parent;
+                        if (formVal.id) {
+                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
+                            return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
+                        }
+                        return true;
+                    },
+                    view: {
+                        label: "Label",
+                        description: "Displayed to players"
+                    }
                 },
                 defaultInstance: {
                     properties: {
@@ -854,6 +893,25 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         label: 'Maximum',
                         placeholder: "∞",
                         layout: 'shortInline'
+                    }
+                },
+                title: {
+                    type: NULLSTRING,
+                    optional: true,
+                    value: "",
+                    index: -1,
+                    visible: function(val, formVal) {
+                        // hack: only show label when embedded within an WhQuestion
+                        var parent;
+                        if (formVal.id) {
+                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
+                            return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
+                        }
+                        return true;
+                    },
+                    view: {
+                        label: "Label",
+                        description: "Displayed to players"
                     }
                 },
                 historySize: {

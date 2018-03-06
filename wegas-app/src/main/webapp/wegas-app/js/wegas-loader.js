@@ -845,7 +845,7 @@ YUI().use(function(Y) {
                 ws_provides: "MCQTabView"
             },
             "wegas-mcq-view": {
-                requires: ["wegas-alerts", "wegas-gallery", "wegas-mcq-viewcss",
+                requires: ["wegas-layout-absolute", "wegas-alerts", "wegas-gallery", "wegas-mcq-viewcss",
                     "wegas-mcq-printcss", "wegas-mcq-entities", "wegas-i18n-mcq",
                     "wegas-alerts", "wegas-text", "wegas-text-input",
                     "wegas-number-input", "wegas-layout-list"],

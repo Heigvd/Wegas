@@ -15,6 +15,7 @@
     <name>wegas-app</name>
 
     <properties>
+        <skip.yarn>${skipYarn}</skip.yarn>
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
         <netbeans.hint.license>license</netbeans.hint.license>
     </properties>
@@ -375,6 +376,9 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
+                <configuration>
+                    <skip>${skip.yarn}</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <id>yarn install</id>
