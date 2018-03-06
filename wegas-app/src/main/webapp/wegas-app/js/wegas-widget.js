@@ -145,7 +145,8 @@ YUI.add('wegas-widget', function(Y) {
             return parent.add(cfg, index).item(0);
         },
         isPageRoot: function(){
-            return this.isRoot && this.isRoot() && this.get("boundingBox").ancestor().hasClass("wegas-pageloader-content");
+            var ancestor;
+            return this.isRoot && this.isRoot() && (ancestor = this.get("boundingBox").ancestor()) && ancestor.hasClass("wegas-pageloader-content");
         },
         isEditable: function() {
             return (

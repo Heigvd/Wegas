@@ -24,10 +24,30 @@ YUI = (function() {
 
 Y = (function() {
 
-    function add(lang, table) {
-        var currentTable;
-        currentTable = Y.Wegas.I18n._tables[lang] || {};
-        Y.Wegas.I18n._tables[lang] = Y.merge(currentTable, table);
+    function add(module, locale, trTable, numberTable) {
+        var langTable,
+            effectiveTable,
+            sp = locale.split(/[-_]/),
+            lang = sp[0], variant = sp[1];
+
+        langTable = Y.Wegas.I18n._tables[lang] = Y.Wegas.I18n._tables[lang] || {
+            main: {
+                tr: {},
+                numbers: {}
+            },
+            variants: {}
+        };
+
+        if (variant) {
+            effectiveTable = langTable.variants[variant] = langTable.variants[variant] || {
+                tr: {},
+                numbers: {}
+            };
+        } else {
+            effectiveTable = langTable.main;
+        }
+
+        Y.mix(effectiveTable, {tr: trTable || {}, numbers: numberTable || {}});
     }
 
     return {
@@ -40,11 +60,40 @@ Y = (function() {
             }
             return n;
         },
+        mix: function(receiver, supplier) {
+            var exists, from, k, to;
+
+            if (receiver && supplier) {
+                from = supplier;
+                to = receiver;
+
+                for (k in from) {
+                    if (from.hasOwnProperty(k)) {
+                        exists = k in to;
+
+                        if (exists && typeof to[k] === "object"
+                            && typeof from[k] === "object") {
+                            Y.mix(to[k], from[k]);
+                        } else {
+                            to[k] = from[k];
+                        }
+                    }
+                }
+            }
+            return receiver;
+        },
+
+        config: {
+            win: {}
+        },
         Wegas: {
             I18n: {
                 _tables: {},
-                register: function(lang, table) {
-                    add(lang, table);
+                register: function(module, lang, trTable, numbersTable) {
+                    add(module, lang, trTable, numbersTable);
+                },
+                update: function(module, lang, trTable, numbersTable) {
+                    add(module, lang, trTable, numbersTable);
                 }
             }
         }
@@ -56,10 +105,20 @@ Y = (function() {
 I18nTest = (function() {
     "use strict";
 
+    function log(msg) {
+        if (console) {
+            console.log(msg);
+        } else if (print) {
+            print(msg);
+        }
+    }
+
     function testLocaleCompletness() {
-        var missingInEn = assertTranslationsExists(Y.Wegas.I18n._tables.fr, Y.Wegas.I18n._tables.en),
-            missingInFr = assertTranslationsExists(Y.Wegas.I18n._tables.en, Y.Wegas.I18n._tables.fr),
-            argsNotMatch = assertArgumentsMatch(Y.Wegas.I18n._tables.en, Y.Wegas.I18n._tables.fr),
+        var frTr = Y.Wegas.I18n._tables.fr.main.tr,
+            enTr = Y.Wegas.I18n._tables.en.main.tr,
+            missingInEn = assertTranslationsExists(frTr, enTr),
+            missingInFr = assertTranslationsExists(enTr, frTr),
+            argsNotMatch = assertArgumentsMatch(enTr, frTr),
             message = "";
 
         if (missingInEn.length > 0) {
@@ -81,6 +140,16 @@ I18nTest = (function() {
     function assertArgumentsMatch(table1, table2, root) {
         var key, value, missings = [], queue = [],
             current, a1, a2, m1, m2, i;
+
+        log("Assert arguments of matching translations in " + table1 + " and " + table2);
+        if (!table1) {
+            missings.push("REFERENCE TABLE IS NO DEFINED");
+        }
+
+        if (!table2) {
+            missings.push("TABLE TO TEST IS NO DEFINED");
+        }
+
         queue.push({
             t1: table1,
             t2: table2,
@@ -138,6 +207,18 @@ I18nTest = (function() {
     function assertTranslationsExists(table1, table2, root) {
         var key, value, missings = [], queue = [],
             current;
+
+        log("Assert all translations in " + table1 + " exist in " + table2);
+
+        if (!table1) {
+            missings.push("REFERENCE TABLE IS NO DEFINED");
+        }
+
+        if (!table2) {
+            missings.push("TABLE TO TEST IS NO DEFINED");
+        }
+
+
         queue.push({
             t1: table1,
             t2: table2,
@@ -147,9 +228,9 @@ I18nTest = (function() {
             for (key in current.t1) {
                 var fullKey = (current.root ? current.root + "." + key : key);
                 value = current.t2[key];
-                if (value) {
+                if (value !== undefined && value !== null) {
                     if (typeof value !== "string") {
-// Go deeper
+                        // Go deeper
                         queue.push({
                             t1: current.t1[key],
                             t2: current.t2[key],
