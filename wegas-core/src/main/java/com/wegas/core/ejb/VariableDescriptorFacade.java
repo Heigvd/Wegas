@@ -48,6 +48,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -140,7 +141,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
 
-        List<String> usedNames = this.findDistinctNames(gameModel);
+        List<String> usedNames = this.findDistinctNames(gameModel, entity.getRefId());
         List<String> usedLabels = this.findDistinctLabels(list);
 
         boolean hasName = !Helper.isNullOrEmpty(entity.getName());
@@ -265,7 +266,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * Create a new descriptor as a child of another
      *
      * @param parentDescriptorId owner of the descriptor
-     * @param entity the new descriptor to create
+     * @param entity             the new descriptor to create
      *
      * @return the new child
      */
@@ -277,7 +278,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      * Create descriptor at gameModel rootLevel
      *
-     * @param gameModelId owner of the descriptor
+     * @param gameModelId        owner of the descriptor
      * @param variableDescriptor descriptor to add to the gameModel
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
@@ -310,7 +311,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
         // reset reference id for all new entites within newEntity
         MergeHelper.resetRefIds(newEntity, null);
-        if (oldEntity.isProtected()){
+        if (oldEntity.isProtected()) {
             MergeHelper.resetVisibility(newEntity, Visibility.PRIVATE);
         }
 
@@ -394,15 +395,21 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
     }
 
+
+    public Object executeNativeSql(String sql){
+        return this.getEntityManager().createNativeQuery(sql).getResultList();
+    }
+
     /**
      * @param gameModel
+     * @param refId
      *
-     * @return all descriptor names already in use within the gameModel
+     * @return all descriptor names already in use within the gameModel excluding description with given refId
      */
-    public List<String> findDistinctNames(final GameModel gameModel) {
+    public List<String> findDistinctNames(final GameModel gameModel, String refId) {
         TypedQuery<String> query;
         if (gameModel.isModel()) {
-            // names from the models and all scenarios
+            // names from the model and all scenarios
             query = getEntityManager().createNamedQuery("VariableDescriptor.findAllNamesInModelAndItsScenarios", String.class);
         } else {
             // names from the gamemodel and its model
@@ -410,6 +417,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
 
         query.setParameter("gameModelId", gameModel.getId());
+        query.setParameter("refId", refId);
 
         return query.getResultList();
     }

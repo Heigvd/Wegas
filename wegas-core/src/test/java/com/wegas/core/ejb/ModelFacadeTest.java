@@ -760,7 +760,75 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testModelise_duplicate() throws NamingException, WegasNoResultException, IOException, RepositoryException, CloneNotSupportedException {
+    public void testModelise_duplicateDescriptor() throws NamingException, WegasNoResultException, IOException, RepositoryException, CloneNotSupportedException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        ListDescriptor list1_1 = createList(gameModel1, null, "aFolder", "a folder");
+        createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        ListDescriptor list1_2 = createList(gameModel2, null, "aFolder", "a folder");
+        createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+        VariableDescriptor xModel = getDescriptor(model, "x");
+        xModel.setLabel("New Label for x");
+        variableDescriptorFacade.update(xModel.getId(), xModel);
+        modelFacade.propagateModel(model.getId());
+
+        VariableDescriptor x2Model = variableDescriptorFacade.duplicate(xModel.getId());
+        Assert.assertNotEquals("X and X2 have same refid", xModel.getRefId(), x2Model.getRefId());
+
+        // propagate x2 to scenarios
+        modelFacade.propagateModel(model.getId());
+
+        Assert.assertNotNull("X2 does not exist in the model", getDescriptor(model, "x_2"));
+        Assert.assertNotNull("X2 does not exist in scenario1", getDescriptor(gameModel1, "x_2"));
+        Assert.assertNotNull("X2 does not exist in scenario2", getDescriptor(gameModel2, "x_2"));
+
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(model, "x_2").getVisibility());
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel1, "x_2").getVisibility());
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel2, "x_2").getVisibility());
+
+        // duplcate X in model -> x_3
+        variableDescriptorFacade.duplicate(xModel.getId());
+
+        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, "x_3"));
+        Assert.assertNull("X3 already exists in scenario1", getDescriptor(gameModel1, "x_3"));
+        Assert.assertNull("X3 already exists in scenario2", getDescriptor(gameModel2, "x_3"));
+
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(model, "x_3").getVisibility());
+
+        // duplcate X in gm1 -> x_4
+        variableDescriptorFacade.duplicate(getDescriptor(gameModel1, "x").getId());
+        Assert.assertNotNull("X4 does not exist in scenario1", getDescriptor(gameModel1, "x_4"));
+        Assert.assertEquals(ModelScoped.Visibility.PRIVATE, getDescriptor(gameModel1, "x_4").getVisibility());
+
+        modelFacade.propagateModel(model.getId());
+        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, "x_3"));
+        Assert.assertNotNull("X3 does not exist in scenario1", getDescriptor(gameModel1, "x_3"));
+        Assert.assertNotNull("X3 does not exist in scenario3", getDescriptor(gameModel2, "x_3"));
+
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel1, "x_3").getVisibility());
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel2, "x_3").getVisibility());
+    }
+
+    @Test
+    public void testModelise_duplicateModel() throws NamingException, WegasNoResultException, IOException, RepositoryException, CloneNotSupportedException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         gameModelFacade.createWithDebugGame(gameModel1);
@@ -817,8 +885,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertNotNull("x does not exist in the new model", getDescriptor(newScenario_scen, "x"));
         Assert.assertNull("yMod exist in the new model", getDescriptor(newScenario_scen, "yMod"));
         Assert.assertNotNull("yGm1 does not exist in the new model", getDescriptor(newScenario_scen, "yGm1"));
-
-        logger.info("Helloooo");
     }
 
     @Test

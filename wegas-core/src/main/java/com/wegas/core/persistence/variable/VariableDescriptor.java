@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -84,7 +85,7 @@ import org.slf4j.LoggerFactory;
             + "FROM GameModel model "
             + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
             + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-            + "WHERE model.id = :gameModelId"
+            + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
     ),
     /*@NamedQuery(
             name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
@@ -101,9 +102,9 @@ import org.slf4j.LoggerFactory;
             name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
             query = "SELECT DISTINCT(vd.name)"
             + " FROM GameModel scen "
-            + " LEFT JOIN GameModel model ON (model = scen.basedOn)"
+            + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
             + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-            + " WHERE scen.id = :gameModelId"
+            + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
     ),
     @NamedQuery(
             name = "VariableDescriptor.findByRootGameModelId",
@@ -139,7 +140,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 //@MappedSuperclass
-@WegasEntity(callback = VariableDescriptor.ScopeUpdate.class)
+@WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
 abstract public class VariableDescriptor<T extends VariableInstance>
         extends NamedEntity
         implements Searchable, LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
@@ -236,7 +237,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
     @JoinFetch
     //@JsonView(value = Views.WithScopeI.class)
-    //@WegasEntityProperty(callback = ScopeUpdate.class)
+    //@WegasEntityProperty(callback = VdMergeCallback.class)
     private AbstractScope scope;
 
     /**
@@ -698,7 +699,15 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         return this.variableDescriptorFacade;
     }
 
-    public static class ScopeUpdate implements WegasCallback {
+    /**
+     * WegasCallback for VariableDescriptor merge.
+     * Two purpose:
+     * <ul>
+     * <li>create/destroy instances when scope changes</li>
+     * <li>assert name is valid within the model cluster</li>
+     * </ul>
+     */
+    public static class VdMergeCallback implements WegasCallback {
 
         private AbstractScope cloneScope(AbstractScope scope) {
             AbstractScope newScope = null;
@@ -720,13 +729,19 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         @Override
         public void postUpdate(Mergeable entity, Object originalNewValue, Object identifier) {
             VariableDescriptor vd = (VariableDescriptor) entity;
+
+            if (vd.getGameModel() != null) {
+                if (vd.getVariableDescriptorFacade().findDistinctNames(vd.getGameModel(), vd.getRefId()).contains(vd.getName())) {
+                    throw new WegasConflictException("Name already in use");
+                }
+            }
+
             AbstractScope scope = vd.getScope();
             AbstractScope newScope = ((VariableDescriptor) originalNewValue).getScope();
 
             if (scope != null && newScope != null) {
                 if (!scope.getClass().equals(newScope.getClass())) {
-                    VariableDescriptor variableDescriptor = scope.getVariableDescriptor();
-                    variableDescriptor.getVariableDescriptorFacade().updateScope(variableDescriptor, cloneScope(newScope));
+                    vd.getVariableDescriptorFacade().updateScope(vd, cloneScope(newScope));
                 } else {
                     scope.setBroadcastScope(newScope.getBroadcastScope());
                 }

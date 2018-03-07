@@ -176,7 +176,7 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
         merged.setFeedback(new EvaluationDescriptorContainer());
         merged.setFbComments(new EvaluationDescriptorContainer());
 
-        variableDescriptorFacade.create(scenario.getId(), merged);
+        //variableDescriptorFacade.create(scenario.getId(), merged);
 
         //logger.warn("Initial: " + exportMapper.writeValueAsString(initial));
         merged.merge(initial);

@@ -207,7 +207,19 @@ public class ModelFacade {
                     if (exists) {
                         logger.debug("Descriptor {} exists in all scenarios", vd);
                         // vd exists is all scenarios -> keep
+                        // change visibility from PRIVATE TO INHERITED
                         vd.setVisibility(ModelScoped.Visibility.INHERITED);
+
+                        // make sure corresponding descriptors share the same refId
+                        for (GameModel other : scenarios) {
+                            try {
+                                VariableDescriptor find = variableDescriptorFacade.find(other, vd.getName());
+                                MergeHelper.resetRefIds(find, vd);
+
+                            } catch (WegasNoResultException ex) {
+                            }
+                        }
+
                     } else {
                         logger.debug("Descriptor {} does NOT exists in all scenarios", vd);
                         if (vd instanceof DescriptorListI) {
@@ -358,6 +370,8 @@ public class ModelFacade {
      *
      * @param model     the model
      * @param scenarios scenario to attach to model
+     *
+     * @throws javax.jcr.RepositoryException
      */
     public void integrateScenario(GameModel model, List<GameModel> scenarios) throws RepositoryException {
         if (model != null) {
@@ -445,7 +459,7 @@ public class ModelFacade {
                                     logger.info(" CREATE AT ROOL LEVEL");
                                     VariableDescriptor clone = (VariableDescriptor) vd.shallowClone();
                                     variableDescriptorFacade.createChild(scenario, scenario, clone);
-                                    clone.setName(vd.getName());
+                                    clone.setName(vd.getName()); // force the new variable name
                                     it.remove();
                                     restart = true;
                                 }
@@ -463,6 +477,9 @@ public class ModelFacade {
                     //key : the descriptor to move; value: corresponding descriptor within the model
                     this.move(entry.getKey(), entry.getValue());
                 }
+
+                // flush to have new descriptors and correct refId in database
+                variableDescriptorFacade.flush();
 
                 // generate initial patch agains model
                 WegasEntityPatch initialPatch = new WegasEntityPatch(reference, reference, true);

@@ -102,7 +102,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
     }
 
     public void forceRefId(String refId) {
-        logger.error("ForceRefId {} => {}", this, refId);
+        logger.trace("ForceRefId {} => {}", this, refId);
         this.refId = refId;
     }
 

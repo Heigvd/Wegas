@@ -111,6 +111,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
 
                                     if (isField) {
                                         if (!parentMode.equals(PatchMode.DELETE)) { // skip delete mode
+                                            logger.debug(" SET to {}", toValue);
                                             setter.invoke(targetEntity, toValue);
                                         } else {
                                             logger.debug("SKIP MODIFICATION {} : DELETE", this);
