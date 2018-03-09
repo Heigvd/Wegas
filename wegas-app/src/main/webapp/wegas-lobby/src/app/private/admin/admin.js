@@ -17,13 +17,26 @@ angular.module('private.admin', [
                     }
                 }
             })
-        ;
+            ;
     })
-    .controller('AdminCtrl', function AdminCtrl($rootScope, $state, Auth, $translate, WegasTranslations) {
+    .controller('AdminCtrl', function AdminCtrl($rootScope, $state, Auth, $translate, $http, WegasTranslations) {
         "use strict";
         var ctrl = this;
         ctrl.serviceUrl = window.ServiceURL;
-        ctrl.loading = false;
+        ctrl.loading = true;
+        ctrl.uploading = false;
+
+        ctrl.fireAndForget = function(method, url) {
+            switch (method) {
+                case "GET":
+                    $http.get(ctrl.serviceUrl + url);
+                    break;
+                case "DELETE":
+                    $http.delete(ctrl.serviceUrl + url);
+                    break;
+            }
+        };
+
         Auth.getAuthenticatedUser().then(function(user) {
             if (user) {
                 if (!user.isAdmin) {
@@ -34,8 +47,14 @@ angular.module('private.admin', [
                 $rootScope.translationWorkspace = {
                     workspace: WegasTranslations.workspaces.ADMIN[$translate.use()]
                 };
+                $http.get(ctrl.serviceUrl + "rest/Utils/build_details").then(function(response) {
+                    ctrl.build_details = response.data;
+                    ctrl.loading = false;
+                });
             }
         });
+
+
     })
     .directive('scenarioCreateUpload', function(ScenariosModel) {
         "use strict";
@@ -54,4 +73,4 @@ angular.module('private.admin', [
             }
         };
     })
-;
+    ;

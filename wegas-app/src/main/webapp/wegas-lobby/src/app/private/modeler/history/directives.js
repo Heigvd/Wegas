@@ -32,7 +32,7 @@ angular
                     ScenariosModel.restoreVersionHistory(ctrl.scenarioId, name).then(function(response) {
                         response.flash();
                         if (!response.isErroneous()) {
-                            $rootScope.$emit('changeScenarios', true);
+                            $rootScope.$emit('changeModels', true);
                         }
                     });
                 };
@@ -40,7 +40,7 @@ angular
                     ScenariosModel.copyScenario(ctrl.scenarioId).then(function(response) {
                         if (!response.isErroneous()) {
                             response.flash();
-                            $rootScope.$emit('changeScenarios', true);
+                            $rootScope.$emit('changeModels', true);
                         }
                     });
                 };
@@ -53,7 +53,7 @@ angular
                         }
                     });
                 };
-                ScenariosModel.getScenario("LIVE", ctrl.scenarioId).then(function(response) {
+                ScenariosModel.getModel("LIVE", ctrl.scenarioId).then(function(response) {
                     ctrl.scenario = response.data;
                     ctrl.updateVersions();
                 });

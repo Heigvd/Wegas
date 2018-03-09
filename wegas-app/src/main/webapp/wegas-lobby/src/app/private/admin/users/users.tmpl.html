@@ -22,7 +22,7 @@
         <div class="card__illustration illustration illustration--icon"
              illustration="ICON_grey_group_wif"
              ng-click="adminUsersCtrl.toggleExpansion(group)"></div>
-        <div class="card__description card__description--one-line">
+        <div class="card__description">
             <div class="line line--primary">{{group.name}} ({{adminUsersCtrl.groupTransient[group.id].realSize}})</div>
         </div>
         <div class="card__actions">
@@ -49,7 +49,7 @@
          user="user">
             <div ng-if="!user.isVerified" class="card__illustration illustration illustration--icon" illustration="ICON_grey_user_wif" title="✘ Unverified identity"></div>
             <div ng-if="user.isVerified"  class="card__illustration illustration illustration--icon" illustration="ICON_grey_id-card-o_fa" title="✔ verified identity"></div>
-        <div class="card__description card__description--two-lines">
+        <div class="card__description">
             <div class="line line--primary">
                     {{ user.account.name }} <span ng-if="user.account.username">({{user.account.username}})</span>
             </div>

@@ -375,6 +375,23 @@ public class GameModelController {
     }
 
     /**
+     * count gameModel with given status
+     *
+     * @param type
+     * @param status
+     *
+     * @return the number of gameModel with the given status the current user
+     *         has access too
+     */
+    @GET
+    @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}/count")
+    public int countByTypeAndStatus(
+            @PathParam("type") final GameModel.GmType type,
+            @PathParam("status") final GameModel.Status status) {
+        return this.findByTypeAndStatus(type, status).size();
+    }
+
+    /**
      * Move to bin a LIVE gameModel, Delete a bin one
      *
      * @param entityId

@@ -1,0 +1,34 @@
+{
+    "elements": {
+        "modeler-scenarios-archives-index": {},
+        "modeler-model-extract": {},
+        "modeler-scenario-create": {}
+    },
+    "attributes": {
+        "active-icon": {
+            "context": "div"
+        },
+        "active-color": {},
+        "ui-view": {
+            "context": "div"
+        },
+        "illustration": {
+            "context": "div"
+        },
+        "scenarios": {
+            "context": "div"
+        },
+        "expander": {
+            "context": "a"
+        },
+        "value": {
+            "context": "input"
+        },
+        "modal-window": {
+            "context": "div"
+        },
+        "ui-sref": {
+            "context": "button"
+        }
+    }
+}

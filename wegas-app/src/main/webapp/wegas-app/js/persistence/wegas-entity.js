@@ -171,6 +171,7 @@ YUI.add('wegas-entity', function(Y) {
                                 label: "Private"
                             }],
                         maxWritableVisibility: "NONE",
+                        label: "Visibility",
                         className: "wegas-entity--visibility-attribute"
                     }
                 },

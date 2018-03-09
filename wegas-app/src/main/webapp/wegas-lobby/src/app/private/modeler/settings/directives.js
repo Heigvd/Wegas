@@ -155,7 +155,7 @@ angular.module('private.modeler.settings.directives', [
         ctrl.save = function() {
             ScenariosModel.updateScenario(ctrl.scenario.id, ctrl.infos, "MODEL").then(function(response) {
                 if (!response.isErroneous()) {
-                    $rootScope.$emit("changeScenarios", true);
+                    $rootScope.$emit("changeModels", true);
                     $scope.close();
                 } else {
                     response.flash();

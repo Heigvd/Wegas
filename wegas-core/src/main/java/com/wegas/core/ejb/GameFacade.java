@@ -528,7 +528,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param gameId
      * @param t
      *
-     * @return id of the brand new team
+     *
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Long createAndCommit(Long gameId, Team t) {

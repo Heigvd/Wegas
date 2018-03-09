@@ -1657,6 +1657,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Edit " + keywords.scenario.singular.en,
                             'fr': "Modifier le " + keywords.scenario.singular.fr
                         },
+                        'SCENARIST-CARD-DETAILS-MODEL': {
+                            'en': startSentence(keywords.model.singular.en),
+                            'fr': startSentence(keywords.model.singular.fr)
+                        },
                         'SCENARIST-CARD-CREATED-ON': {
                             'en': "Created on ",
                             'fr': "Créé le "
@@ -1746,8 +1750,24 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Bienvenue dans la console d'admin"
                         },
                         'ADMIN-INDEX-ACTIONS-TITLE': {
-                            'en': "Please choose among the actions available in the above menu",
-                            'fr': "Veuillez choisir parmi les actions offertes par le menu ci-dessus"
+                            'en': "Perform an action:",
+                            'fr': "Effectuer une action:"
+                        },
+                        'ADMIN-INDEX-LOGGERS-BTN': {
+                            'en': "Loggers",
+                            'fr': "Loggers"
+                        },
+                        'ADMIN-INDEX-TRIGGER-POPULATING': {
+                            'en': "Start Populating Team/Player",
+                            'fr': "Déclancher la création des Team/Player"
+                        },
+                        'ADMIN-INDEX-CLEAR-EMCACHE': {
+                            'en': "Clear JPA cache",
+                            'fr': "Vider le cache JPA"
+                        },
+                        'ADMIN-INDEX-CLEAR-GAMEMODELS': {
+                            'en': "Delete gameModels which are candidates for final deletion",
+                            'fr': "Supprimer définitivement les gameModels qui sont candidats pour une suppression définitive"
                         },
                         'ADMIN-INDEX-USERS-BTN': {
                             'en': "Users",
@@ -1756,6 +1776,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-INDEX-WHO-BTN': {
                             'en': "Who",
                             'fr': "Qui"
+                        },
+                        'ADMIN-INDEX-ADMIN-BTN': {
+                            'en': "Admin",
+                            'fr': "Admin"
                         },
                         'ADMIN-USERS-LOADING': {
                             'en': "Loading " + keywords.user.plural.en,

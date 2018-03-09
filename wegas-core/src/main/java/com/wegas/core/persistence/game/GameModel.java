@@ -282,6 +282,30 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
+     *
+     * @return
+     */
+    public Long getBasedOnId() {
+        return this.getBasedOn() !=null ? this.getBasedOn().getId() : null;
+    }
+
+    public void setBasedOnId(Long id){
+        //json ignore
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getBasedOnName() {
+        return this.getBasedOn() !=null ? this.getBasedOn().getName() : null;
+    }
+
+    public void setBasedOnName(String name){
+        //json ignore
+    }
+
+    /**
      * Register new descriptor within the main descriptor list
      * Method do nothing id descriptor is already registered
      *

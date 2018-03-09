@@ -92,10 +92,14 @@ angular.module('wegas.models.scenarios', [])
                     for (var cacheName in scenarios.cache) {
                         scenario = scenarios.findScenario(cacheName, scenarioId);
                         if (scenario) {
+                            // remove scenario from the previous cache
                             scenarios.cache[cacheName].data = uncacheScenario(cacheName, scenario);
-                        }
-                        if (status === cacheName) {
-                            scenarios.cache[cacheName].data = cacheScenario(cacheName, data);
+                            var newCacheName = cacheName.split(":")[0] + ":" + status;
+                            if (scenarios.cache[newCacheName]) {
+                                // add move it to the new cache
+                                scenarios.cache[newCacheName].data = cacheScenario(newCacheName, data);
+                            }
+                            break;
                         }
                     }
                     deferred.resolve(data);
@@ -587,6 +591,17 @@ angular.module('wegas.models.scenarios', [])
         /*  ---------------------------------
          ARCHIVED SCENARIOS SERVICES
          --------------------------------- */
+        model.countArchivedModels = function() {
+            var deferred = $q.defer();
+            $http.get(ServiceURL + "rest/GameModel/type/MODEL/status/BIN/count").success(function(data) {
+                $translate('PRIVATE-ARCHIVES-COUNT').then(function(message) {
+                    deferred.resolve(Responses.info(message, data));
+                });
+            });
+            return deferred.promise;
+        };
+
+
         model.countArchivedScenarios = function() {
             var deferred = $q.defer();
             $http.get(ServiceURL + "rest/GameModel/status/BIN/count").success(function(data) {

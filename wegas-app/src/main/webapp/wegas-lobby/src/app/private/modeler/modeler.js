@@ -3,7 +3,8 @@ angular.module('private.modeler', [
     'private.modeler.archives',
     'private.modeler.settings',
     'private.modeler.comodelers',
-    'private.modeler.history'
+    'private.modeler.history',
+    'private.modeler.instances'
 ])
     .config(function($stateProvider) {
         "use strict";

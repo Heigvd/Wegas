@@ -209,7 +209,7 @@ angular.module('private.modeler.directives', [
                     response.flash();
                 } else {
                     ctrl.nbArchives += 1;
-                    $rootScope.$emit('changeScenarios', true);
+                    $rootScope.$emit('changeModels', true);
                 }
                 $timeout(function() {
                     $('#archive-' + scenario.id).removeClass('busy-button').addClass('button--archive');
@@ -226,7 +226,7 @@ angular.module('private.modeler.directives', [
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
-                    $rootScope.$emit('changeScenarios', true);
+                    $rootScope.$emit('changeModels', true);
                 }
                 $('#dupe-' + scenario.id).removeClass('busy-button');
                 ctrl.duplicating = false;
@@ -272,7 +272,7 @@ angular.module('private.modeler.directives', [
         });
 
         // Listen for updates to individual scenarios or to the list of scenarios:
-        $rootScope.$on('changeScenarios', function(e, hasNewData) {
+        $rootScope.$on('changeModels', function(e, hasNewData) {
             if (hasNewData) {
                 // To be on the safe side, also request an extension of displayed scenarios (parameter 'true'):
                 ctrl.updateScenarios(true);
@@ -323,7 +323,7 @@ angular.module('private.modeler.directives', [
         });
 
         // Finally, load info about archived scenarios:
-        ScenariosModel.countArchivedScenarios().then(function(response) {
+        ScenariosModel.countArchivedModels().then(function(response) {
             ctrl.nbArchives = response.data;
         });
 
@@ -374,7 +374,7 @@ angular.module('private.modeler.directives', [
                     var button = $(element).find(".form__submit");
                     if (scope.newScenario.name !== '') {
                         var ids = _.transform(scope.selectedIds, function(result, value, key) {
-                            if (value){
+                            if (value) {
                                 result.push(key);
                             }
                             return result;

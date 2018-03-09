@@ -166,7 +166,6 @@ YUI.add('wegas-editable', function(Y) {
             }
         },
         _overrideFormConfig: function(cfg, entity, inheritedMode, inheritedVisibility, inheritedMaxWriteVisibility) {
-            return;
             var visibility, mode, key, maxWritableVisibility;
 
             visibility = this._getVisibility(entity, inheritedVisibility);

@@ -24,10 +24,10 @@ angular.module('private.modeler.archives.directives', [])
          ** Hypothesis: input array ctrl.rawArchives is already ordered according to the 'createdTime' attribute,
          ** so that the output automatically follows the same ordering.
          */
-        ctrl.filterArchives = function(search){
-            if (!search || search.length === 0){
+        ctrl.filterArchives = function(search) {
+            if (!search || search.length === 0) {
                 ctrl.archives = ctrl.rawArchives;
-                if ( ! $rootScope.$$phase) {
+                if (!$rootScope.$$phase) {
                     $scope.$apply();
                 }
                 return;
@@ -35,9 +35,10 @@ angular.module('private.modeler.archives.directives', [])
             var res = [],
                 len = ctrl.rawArchives.length,
                 i;
-            for (i=0; i<len; i++){
+            for (i = 0; i < len; i++) {
                 var scenario = ctrl.rawArchives[i];
-                if (scenario.canView === false || scenario.canEdit === false) continue;
+                if (scenario.canView === false || scenario.canEdit === false)
+                    continue;
                 var needle = search.toLowerCase();
                 if ((scenario.name && scenario.name.toLowerCase().indexOf(needle) >= 0) ||
                     (scenario.createdByName && scenario.createdByName.toLowerCase().indexOf(needle) >= 0) ||
@@ -48,14 +49,14 @@ angular.module('private.modeler.archives.directives', [])
                 }
             }
             ctrl.archives = res;
-            if ( ! $rootScope.$$phase) {
+            if (!$rootScope.$$phase) {
                 $scope.$apply();
             }
         };
 
         // Use jQuery input events, more reliable than Angular's:
         $(document).off("input", '#searchFieldScenarioArchives'); // Detach any previous input handler
-        $(document).on("input", '#searchFieldScenarioArchives', function(){
+        $(document).on("input", '#searchFieldScenarioArchives', function() {
             // At this point, the search variable is not necessarily updated by Angular to reflect the real input field:
             ctrl.search = this.value;
             ctrl.filterArchives(ctrl.search);
@@ -63,7 +64,7 @@ angular.module('private.modeler.archives.directives', [])
 
         ctrl.updateScenarios = function() {
             ctrl.loading = true;
-            ScenariosModel.getScenarios("BIN").then(function(response) {
+            ScenariosModel.getModels("BIN").then(function(response) {
                 ctrl.loading = false;
                 if (response.isErroneous()) {
                     response.flash();
@@ -88,8 +89,8 @@ angular.module('private.modeler.archives.directives', [])
                     if (!response.isErroneous()) {
                         $rootScope.$emit('entrenchNbArchives', 1);
                         ctrl.updateScenarios();
-                        // The scenario is reinserted into the LIVE list, which has to be updated:
-                        $rootScope.$emit('changeScenarios', true);
+                        // The model is reinserted into the LIVE list, which has to be updated:
+                        $rootScope.$emit('changeModels', true);
                     } else {
                         response.flash();
                     }
@@ -107,7 +108,7 @@ angular.module('private.modeler.archives.directives', [])
                     if (!response.isErroneous()) {
                         $rootScope.$emit('entrenchNbArchives', 1);
                         ctrl.updateScenarios();
-                        //$rootScope.$emit('changeScenarios', true);
+                        //$rootScope.$emit('changeModels', true);
                     } else {
                         response.flash();
                     }
@@ -120,7 +121,7 @@ angular.module('private.modeler.archives.directives', [])
         };
 
         /* Listen for new scenarios */
-        $rootScope.$on('changeScenarios', function(e, hasNewData) {
+        $rootScope.$on('changeModels', function(e, hasNewData) {
             if (hasNewData) {
                 ctrl.updateScenarios();
             }
@@ -129,7 +130,7 @@ angular.module('private.modeler.archives.directives', [])
         // Find out what the current user's "friendly" username is.
         Auth.getAuthenticatedUser().then(function(user) {
             if (user !== false) {
-                UsersModel.getFullUser(user.id).then(function (response) {
+                UsersModel.getFullUser(user.id).then(function(response) {
                     if (response.isErroneous()) {
                         response.flash();
                     } else {

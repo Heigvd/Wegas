@@ -1,6 +1,5 @@
 <div class="card__illustration illustration illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
-<div class="card__description"
-      ng-class="{2:'card__description--two-lines', 3:'card__description--three-lines'}[((scenario.comments == null || scenario.comments == '') ? 2 : 3)]" >
+<div class="card__description">
     <div class="line line--primary">{{scenario.name}}</div>
     <div class="line">{{'SCENARIST-CARD-CREATED-ON' | translate}} {{'COMMONS-DATE' | translate: {date: scenario.createdTime} }}
         <span ng-if="(user.isAdmin)">{{'SCENARIST-CARD-CREATED-BY' | translate}}
@@ -20,6 +19,9 @@
      class="button button--small button--round button--label-off button--default-reverse glyphicon glyphicon-duplicate"
      title="{{'MODELER-CARD-DUPLICATE-BTN' | translate}}" ng-click="duplicate(scenario)">
       <span class="button__label">{{'MODELER-CARD-DUPLICATE-BTN' | translate}}</span>
+  </a>
+  <a class="button button--small button--round button--default-reverse button--label-off button--plug" title="{{'SCENARIST-INDEX-LIST-TITLE' | translate}}" ui-sref=".instances({scenarioId: scenario.id})">
+    <span class="button__label">{{'SCENARIST-INDEX-LIST-TITLE' | translate}}</span>
   </a>
   <a class="button button--small button--round button--default-reverse button--label-off button--fork" title="{{'SCENARIST-CARD-VERSIONS-BTN' | translate}}" ui-sref=".history({scenarioId: scenario.id})">
     <span class="button__label">{{'SCENARIST-CARD-VERSIONS-BTN' | translate}}</span>

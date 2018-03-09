@@ -555,11 +555,14 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             if (newGameModel != null) {
                 newGameModel.setName(this.findUniqueName(srcGameModel.getName(), SCENARIO));
 
+                // one should be able to create/modifiy everything
+                newGameModel.setOnGoingPropagation(Boolean.TRUE);
                 this.create(newGameModel);
 
                 newGameModel.setType(SCENARIO);
 
                 this.duplicateRepository(newGameModel, srcGameModel);
+                newGameModel.setOnGoingPropagation(Boolean.FALSE);
                 return newGameModel;
             } else {
                 throw WegasErrorMessage.error("Something went wrong");
@@ -617,6 +620,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (GameModel instantiation : instantiations) {
             instantiation.setBasedOn(null);
+            if (gameModel.isModel() && instantiation.getType().equals(GmType.REFERENCE)) {
+                this.remove(instantiation);
+            }
         }
 
         for (Game g : this.find(id).getGames()) {
@@ -884,8 +890,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             logger.info("deleteGameModels(): want to delete gameModels");
             if (lock.tryLock()) {
                 try {
-                    List<GameModel> byStatus = this.findByTypeAndStatus(SCENARIO, Status.DELETE);
-                    for (GameModel gm : byStatus) {
+                    List<GameModel> toDelete = this.findByTypeAndStatus(SCENARIO, Status.DELETE);
+                    toDelete.addAll(this.findByTypeAndStatus(MODEL, Status.DELETE));
+
+                    for (GameModel gm : toDelete) {
                         this.remove(gm);
                     }
                     this.getEntityManager().flush();
