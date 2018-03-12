@@ -36,7 +36,7 @@ YUI.add('wegas-pageeditor', function(Y) {
              */
             this.isActive = false;
 
-            if (!Wegas.Facade.Page.cache.editable) {
+            if (!Wegas.Facade.Page.cache.isEditable()) {
                 Y.later(100, this.get("host"), function() {
                     this.unplug(PageEditor);
                 });
@@ -353,7 +353,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.highlightOverlay && this.highlightOverlay.hide();
         },
         destructor: function() {
-            if (!Wegas.Facade.Page.cache.editable) {
+            if (!Wegas.Facade.Page.cache.isEditable()) {
                 return;
             }
 

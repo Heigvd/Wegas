@@ -370,7 +370,11 @@
     background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 1px; /* white version of toggle: -40px; */
     top: 1.1em;
 }
+.yui3-skin-sam .wegas-layout-hd .edit-openmodel:hover{
+    color: palevioletred;
+}
 
+.yui3-skin-sam .wegas-layout-hd .edit-openmodel,
 .yui3-skin-sam .wegas-layout-hd .editor-restart-button,
 .yui3-skin-sam .wegas-layout-hd .wegas-login {
     color: #666;
@@ -383,6 +387,11 @@
     -moz-border-radius: 50%;
     border-radius: 50%;
 }
+
+.yui3-skin-sam .wegas-layout-hd .edit-openmodel{
+    font-size: 18px;
+}
+
 
 .yui3-skin-sam .wegas-layout-hd .editor-restart-button {
     font-size: 18px;

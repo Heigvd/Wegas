@@ -21,7 +21,7 @@ import com.wegas.core.jcr.jta.JTARepositoryConnector;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class Pages implements JTARepositoryConnector {
+public class Pages extends JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
 
@@ -51,26 +51,18 @@ public class Pages implements JTARepositoryConnector {
      * @return Page index
      *
      * @throws RepositoryException
-     * @throws JSONException
      */
     public List<HashMap<String, String>> getIndex() throws RepositoryException {
-        final List<HashMap<String, String>> ret = new LinkedList<>();
-        NodeIterator it = this.connector.listChildren();
-        Node n;
-        while (it.hasNext()) {
-            final HashMap<String, String> keyVal = new HashMap<>();
-            n = (Node) it.next();
+        final List<HashMap<String, String>> index = new LinkedList<>();
 
-            keyVal.put("id", n.getName());
-            if (n.hasProperty(Page.NAME_KEY)) {
-                keyVal.put("name", n.getProperty(Page.NAME_KEY).getString());
-            }
-            if (n.hasProperty(Page.INDEX_KEY)) {
-                keyVal.put("index", Long.toString(n.getProperty(Page.INDEX_KEY).getLong()));
-            }
-            ret.add(keyVal);
+        for (Page page : this.getPages()){
+            final HashMap<String, String> entry = new HashMap<>();
+            entry.put("id", page.getId());
+            entry.put("name", page.getName());
+            entry.put("index", page.getIndex().toString());
+            index.add(entry);
         }
-        return ret;
+        return index;
     }
 
     public Boolean pageExist(String id) throws RepositoryException {
@@ -172,6 +164,7 @@ public class Pages implements JTARepositoryConnector {
      */
     @Override
     public void commit() {
+        this.runCommitCallbacks();
         this.connector.commit();
     }
 
@@ -180,6 +173,7 @@ public class Pages implements JTARepositoryConnector {
      */
     @Override
     public void rollback() {
+        this.runRollbackCallbacks();
         this.connector.rollback();
     }
 
@@ -228,6 +222,9 @@ public class Pages implements JTARepositoryConnector {
         while (nodeIterator.hasNext()) {
             pages.add(new Page(nodeIterator.nextNode()));
         }
+
+        Collections.sort(pages, (Page o1, Page o2) -> o1.getIndex().compareTo(o2.getIndex()));
+
         return pages;
     }
 

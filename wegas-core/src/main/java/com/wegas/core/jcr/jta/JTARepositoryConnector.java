@@ -7,12 +7,20 @@
  */
 package com.wegas.core.jcr.jta;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Consumer;
+import org.apache.derby.iapi.store.raw.ContainerLock;
+
 /**
  * Add JTA related method to JCR connectors
  *
  * @author maxence
  */
-public interface JTARepositoryConnector {
+public abstract class JTARepositoryConnector {
+
+    private List<Consumer<JTARepositoryConnector>> onCommitCallbacks = new LinkedList<>();
+    private List<Consumer<JTARepositoryConnector>> onRollbackCallbacks = new LinkedList<>();
 
     /**
      * indicate whether the repository is managed or not.
@@ -20,7 +28,7 @@ public interface JTARepositoryConnector {
      *
      * @param managed
      */
-    public void setManaged(boolean managed);
+    public abstract void setManaged(boolean managed);
 
     /**
      * Is the repository managed.
@@ -28,20 +36,42 @@ public interface JTARepositoryConnector {
      *
      * @return is managed ?
      */
-    public boolean getManaged();
+    public abstract boolean getManaged();
 
     /**
      * assert all changes are valid
      */
-    void prepare();
+    public abstract void prepare();
 
     /**
      * Rollback changed and close
      */
-    void rollback();
+    public abstract void rollback();
 
     /**
      * Save changes to repository and close
      */
-    void commit();
+    public abstract void commit();
+
+    public void onCommit(Consumer<JTARepositoryConnector> consumer) {
+        this.onCommitCallbacks.add(consumer);
+    }
+
+    public void onRollback(Consumer<JTARepositoryConnector> consumer) {
+        this.onRollbackCallbacks.add(consumer);
+    }
+
+    private void run(List<Consumer<JTARepositoryConnector>> cbs) {
+        for (Consumer<JTARepositoryConnector> cb : cbs) {
+            cb.accept(this);
+        }
+    }
+
+    protected void runCommitCallbacks() {
+        this.run(onCommitCallbacks);
+    }
+
+    protected void runRollbackCallbacks() {
+        this.run(onRollbackCallbacks);
+    }
 }

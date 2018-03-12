@@ -21,6 +21,7 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -226,7 +227,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * the same time.
      */
     @Transient
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL)
     @JsonView({Views.ExportI.class})
     private Map<String, JsonNode> pages;
 

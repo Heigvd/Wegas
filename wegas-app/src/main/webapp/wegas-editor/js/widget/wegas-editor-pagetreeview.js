@@ -24,7 +24,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             this.treeView.addTarget(this); // Treeview events bubble
             this.plug(Plugin.WidgetToolbar); // Add a toolbar
 
-            if (DATASOURCE.editable) {
+            if (DATASOURCE.isEditable()) {
                 this.plug(PageTreeviewToolbarMenu);
                 // @TODO Reactivate this once the new editor FORM2 is ready for production
                 //this.plug(PageTreeViewContextMenu);
@@ -70,7 +70,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     this.set("pageLoader", this._pageLoaderId);
                 }
             }, this);
-            if (DATASOURCE.editable) {
+            if (DATASOURCE.isEditable()) {
                 this.treeView.sortable.on("sort", function(e) {
                     if (e.dragWidget.get("data.page")) {
                         DATASOURCE.move(e.dragWidget.get("data.page"), e.index, Y.bind(function() {
@@ -463,7 +463,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
 
     Plugin.UneditablePageDisabler = Y.Base.create('wegas-pagetab-disabler', Plugin.Base, [], {
         initializer: function() {
-            if (!DATASOURCE.editable) {
+            if (!DATASOURCE.isEditable()) {
                 this.get("host").get(BOUNDING_BOX).addClass("wegas-advanced-feature");
             }
         }

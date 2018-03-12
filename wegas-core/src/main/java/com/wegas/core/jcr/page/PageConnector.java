@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class PageConnector implements JTARepositoryConnector {
+public class PageConnector extends JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageConnector.class);
     private static final long serialVersionUID = 1317346293333627485L;
@@ -77,9 +77,9 @@ public class PageConnector implements JTARepositoryConnector {
      *
      * @throws RepositoryException
      */
-    protected NodeIterator listChildren_query() throws RepositoryException {
+    /*protected NodeIterator listChildren() throws RepositoryException {
         return this.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" + WFSConfig.PAGES_ROOT.apply(this.gameModelId) + "') order by n.index, localname(n)");
-    }
+    }*/
 
     protected NodeIterator query(final String query) throws RepositoryException {
         return this.query(query, -1, -1);
@@ -172,11 +172,13 @@ public class PageConnector implements JTARepositoryConnector {
         } catch (RepositoryException ex) {
             throw WegasErrorMessage.error("COMMIT FAILS");
         }
+        this.runCommitCallbacks();
         SessionManager.closeSession(session);
     }
 
     @Override
     public void rollback() {
+        this.runRollbackCallbacks();
         SessionManager.closeSession(session);
     }
 }

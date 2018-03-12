@@ -108,7 +108,6 @@ YUI.add('wegas-editable', function(Y) {
                         properties: attrCfgs
                 };
                 if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
-
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
                     this._overrideFormConfig(schemaMap, this, "PRIVATE");
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
@@ -185,7 +184,7 @@ YUI.add('wegas-editable', function(Y) {
                 for (key in cfg.properties) {
                     if (cfg.properties.hasOwnProperty(key)) {
                         Y.log("KEY: " + key);
-                        this._overrideFormConfig(cfg.properties[key], entity && entity.get(key), mode, visibility, maxWritableVisibility);
+                        this._overrideFormConfig(cfg.properties[key], entity && (entity.get ? entity.get(key) : entity[key]), mode, visibility, maxWritableVisibility);
                     }
                 }
             } else if (cfg.type === "array" && cfg.items) {

@@ -16,6 +16,7 @@ import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.DirectoryDescriptor;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
+import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.MergeHelper;
@@ -63,6 +64,9 @@ public class ModelFacade {
 
     @Inject
     private JCRConnectorProvider jCRConnectorProvider;
+
+    @Inject
+    private WebsocketFacade websocketFacade;
 
     /**
      * return a new list of managed scenarios
@@ -500,6 +504,7 @@ public class ModelFacade {
 
                     variableDescriptorFacade.reviveItems(scenario, scenario, false);
                     gameModelFacade.reset(scenario);
+                    this.registerPagesPropagates(scenario);
                 }
 
                 this.syncRepository(model);
@@ -513,6 +518,24 @@ public class ModelFacade {
                 logger.info("PROCESS COMPLETED");
             }
         }
+    }
+
+    private void registerPagesPropagates(GameModel scenario) throws RepositoryException {
+        jCRConnectorProvider.getPages(scenario).onCommit((t) -> {
+            if (t instanceof Pages) {
+                try {
+                    Pages p = (Pages) t;
+                    logger.error("PROPAGATE PAGES: {}", scenario.getId());
+                    websocketFacade.pageIndexUpdate(scenario.getId(), requestManager.getSocketId());
+                    logger.error("INDEX PROPAGAES");
+                    for (String pageId : p.getPagesContent().keySet()){
+                        websocketFacade.pageUpdate(scenario.getId(), pageId, requestManager.getSocketId());
+                    }
+                } catch (RepositoryException ex) {
+                    logger.error("PROPAGATE PAGES ERROR: {}", ex);
+                }
+            }
+        });
     }
 
     /**
@@ -655,6 +678,8 @@ public class ModelFacade {
                         //scenario.propagateGameModel();
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
                         gameModelFacade.reset(scenario);
+
+                        this.registerPagesPropagates(scenario);
                     }
                 }
 

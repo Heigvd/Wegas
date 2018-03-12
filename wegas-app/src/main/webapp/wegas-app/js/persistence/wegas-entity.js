@@ -299,7 +299,11 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * GameModel mapper
      */
-    persistence.GameModel = Base.create("GameModel", persistence.Entity, [persistence.VariableContainer], {}, {
+    persistence.GameModel = Base.create("GameModel", persistence.Entity, [persistence.VariableContainer], {
+        dependsOnModel: function() {
+            return this.get("type") === "SCENARIO" && this.get("basedOnId") > 0;
+        }
+    }, {
         EDITORNAME: "Scenario",
         ATTRS: {
             name: {
@@ -307,6 +311,22 @@ YUI.add('wegas-entity', function(Y) {
                 view: {
                     label: 'Name',
                     className: 'editor-form-gamemodel-name'
+                }
+            },
+            basedOnId: {
+                type: NUMBER,
+                view: {
+                    type: 'uneditable',
+                    className: 'wegas-advanced-feature',
+                    label: 'model id'
+                }
+            },
+            basedOnName: {
+                type: STRING,
+                view: {
+                    type: 'uneditable',
+                    className: 'wegas-advanced-feature',
+                    label: 'model name'
                 }
             },
             games: {
@@ -677,6 +697,11 @@ YUI.add('wegas-entity', function(Y) {
                 },
                 accounts: {
                     type: ARRAY
+                },
+                roles: {
+                    value:[],
+                    transient:true,
+                    type: "array"
                 }
             }
         }

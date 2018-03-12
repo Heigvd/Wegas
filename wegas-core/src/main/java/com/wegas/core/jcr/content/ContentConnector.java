@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class ContentConnector implements JTARepositoryConnector {
+public class ContentConnector extends JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
 
@@ -494,11 +494,13 @@ public class ContentConnector implements JTARepositoryConnector {
         } catch (RepositoryException ex) {
             throw WegasErrorMessage.error("COMMIT FAILS");
         }
+        this.runCommitCallbacks();
         SessionManager.closeSession(session);
     }
 
     @Override
     public void rollback() {
+        this.runRollbackCallbacks();
         SessionManager.closeSession(session);
     }
 }

@@ -14,6 +14,31 @@
         <script>//<ui:define name = "editorFooter"><![CDATA[
             Y.Wegas.app.once("render", function() {
 
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().dependsOnModel()) {
+                    if (Y.Array.find(Y.Wegas.Facade.User.cache.get("currentUser").get("roles"),
+                        function(role) {
+                            return role.get("name") === "Administrator";
+                        })) {
+                        Y.use("wegas-button", function() {
+                            var editButton = new Y.Wegas.Button({
+                                label: "",
+                                cssClass: "edit-openmodel fa fa-cubes",
+                                "plugins": [{
+                                        "fn": "Tooltip",
+                                        "cfg": {
+                                            "content": "<p>Edit the model</p>"
+                                        }
+                                    }]
+
+                            }).render(".wegas-layout-hd");
+
+                            editButton.on("click", function() {
+                                window.open("edit.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("basedOnId"), "_blank");
+                            }, this);
+                        });
+                    }
+                }
+
                 //]]><ui:fragment rendered = "#{editorGameController.gameId != null}"><![CDATA[
                 Y.one("body").addClass("wegas-editmode-game");
                 // Handle switch from host to edit mode
