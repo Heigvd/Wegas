@@ -1439,7 +1439,7 @@ YUI.add('wegas-datasource', function(Y) {
             this.publish("forcePageUpdate");
             this.publish("forceIndexUpdate");
         },
-        isEditable() {
+        isEditable: function() {
             if (this.editable === undefined) {
                 var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
                 // neither static pages nor the ones which come from a model are editable
