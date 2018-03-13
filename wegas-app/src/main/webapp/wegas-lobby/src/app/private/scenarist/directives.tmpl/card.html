@@ -6,7 +6,7 @@
             <span ng-class="{true:'highlighted'}[scenario.createdByName !== username]">{{scenario.createdByName}}</span>
         </span>
     </div>
-    <div ng-if="scenario.basedOnName" class="line">{{'SCENARIST-CARD-DETAILS-MODEL' | translate}}:&nbsp;{{scenario.basedOnName}}</div>
+    <div ng-if="!modelloading && scenario.basedOnId" class="line">{{'SCENARIST-CARD-DETAILS-MODEL' | translate}}:&nbsp;{{modelname(scenario.basedOnId)}}</div>
     <div ng-if="(scenario.comments)" class="line line--optional">{{scenario.comments}}</div>
 </div>
 <div class="card__actions">

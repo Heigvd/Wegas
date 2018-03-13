@@ -321,14 +321,6 @@ YUI.add('wegas-entity', function(Y) {
                     label: 'model id'
                 }
             },
-            basedOnName: {
-                type: STRING,
-                view: {
-                    type: 'uneditable',
-                    className: 'wegas-advanced-feature',
-                    label: 'model name'
-                }
-            },
             games: {
                 type: ARRAY,
                 value: [],

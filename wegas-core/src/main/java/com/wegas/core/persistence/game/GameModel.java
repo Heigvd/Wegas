@@ -152,6 +152,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonIgnore
     private GameModel basedOn;
 
+    @Column(name = "basedon_gamemodelid", insertable = false, updatable = false, columnDefinition = "bigint")
+    private Long basedOnId;
+
     /**
      *
      */
@@ -227,6 +230,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * the same time.
      */
     @Transient
+
     @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL)
     @JsonView({Views.ExportI.class})
     private Map<String, JsonNode> pages;
@@ -271,6 +275,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setBasedOn(GameModel srcGameModel) {
         this.basedOn = srcGameModel;
+        if (this.basedOn != null) {
+            this.basedOnId = this.basedOn.getId();
+        }
     }
 
     /**
@@ -287,23 +294,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return
      */
     public Long getBasedOnId() {
-        return this.getBasedOn() !=null ? this.getBasedOn().getId() : null;
+        return this.basedOnId;
     }
 
-    public void setBasedOnId(Long id){
-        //json ignore
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getBasedOnName() {
-        return this.getBasedOn() !=null ? this.getBasedOn().getName() : null;
-    }
-
-    public void setBasedOnName(String name){
-        //json ignore
+    public void setBasedOnId(Long id) {
+        // jsonIgnore
     }
 
     /**

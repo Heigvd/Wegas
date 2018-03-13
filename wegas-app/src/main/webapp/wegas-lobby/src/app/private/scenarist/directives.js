@@ -170,7 +170,19 @@ angular.module('private.scenarist.directives', [
                 $('#scenarist-scenarios-list').css('overflow-y', 'hidden');
             }
             ctrl.scenarios = rawScenarios = [];
+            ctrl.models = [];
+
             ctrl.loading = true;
+            ctrl.modelLoading = true;
+
+            ScenariosModel.getModels('LIVE').then(function(response) {
+                ctrl.models = response.data;
+                ScenariosModel.getModels('BIN').then(function(response) {
+                    ctrl.models = ctrl.models.concat(response.data);
+                    ctrl.modelLoading = false;
+                });
+            });
+
             ScenariosModel.getScenarios('LIVE').then(function(response) {
                 rawScenarios = $filter('filter')(response.data, {canEdit: true}) || [];
                 if (ctrl.mefirst && ctrl.username.length > 0) {
@@ -200,6 +212,11 @@ angular.module('private.scenarist.directives', [
                 // Keep the "loading" indicator on screen as long as possible:
                 ctrl.loading = false;
             });
+        };
+
+        ctrl.getModelName = function(modelId) {
+            var m = $filter('filter')(ctrl.models, {id: modelId});
+            return (m && m.length > 0) ? m[0].name : "";
         };
 
         ctrl.archiveScenario = function(scenario) {
@@ -310,112 +327,116 @@ angular.module('private.scenarist.directives', [
         });
 
     })
-    .directive('scenaristScenariosIndex', function() {
-        "use strict";
-        return {
-            templateUrl: 'app/private/scenarist/directives.tmpl/index.html',
-            controller: 'ScenaristIndexController as scenaristIndexCtrl'
-        };
-    })
-    .directive('scenaristScenarioCreate', function(ScenariosModel, Flash, $translate, $filter) {
-        "use strict";
-        return {
-            templateUrl: 'app/private/scenarist/directives.tmpl/create.html',
-            scope: false,
-            link: function(scope, element, attrs, parentCtrl) {
-                scope.scenariomenu = [];
-                scope.loadingScenarios = false;
-                var loadScenarios = function() {
-                    // Reload list from cache each time the window is opened:
-                    scope.loadingScenarios = true;
-                    ScenariosModel.getScenarios("LIVE").then(function(response) {
-                        if (!response.isErroneous()) {
-                            var expression = {canDuplicate: true},
-                                filtered = $filter('filter')(response.data, expression) || [];
-                            ScenariosModel.getModels("LIVE").then(function(response) {
-                                if (!response.isErroneous()) {
-                                    scope.loadingScenarios = false;
-                                    var expr = {canInstantiate: true},
-                                        filtered2 = $filter("filter")(response.data, expr) || [];
-                                    scope.scenariomenu = $filter('orderBy')(filtered.concat(filtered2), 'name');
-                                }
-                            });
-                        }
-                    });
-                };
-
-                var resetNewScenario = function() {
-                    scope.newScenario = {
-                        name: '',
-                        templateId: 0
+        .directive('scenaristScenariosIndex', function() {
+            "use strict";
+            return {
+                templateUrl: 'app/private/scenarist/directives.tmpl/index.html',
+                controller: 'ScenaristIndexController as scenaristIndexCtrl'
+            };
+        })
+        .directive('scenaristScenarioCreate', function(ScenariosModel, Flash, $translate, $filter) {
+            "use strict";
+            return {
+                templateUrl: 'app/private/scenarist/directives.tmpl/create.html',
+                scope: false,
+                link: function(scope, element, attrs, parentCtrl) {
+                    scope.scenariomenu = [];
+                    scope.loadingScenarios = false;
+                    var loadScenarios = function() {
+                        // Reload list from cache each time the window is opened:
+                        scope.loadingScenarios = true;
+                        ScenariosModel.getScenarios("LIVE").then(function(response) {
+                            if (!response.isErroneous()) {
+                                var expression = {canDuplicate: true},
+                                    filtered = $filter('filter')(response.data, expression) || [];
+                                ScenariosModel.getModels("LIVE").then(function(response) {
+                                    if (!response.isErroneous()) {
+                                        scope.loadingScenarios = false;
+                                        var expr = {canInstantiate: true},
+                                            filtered2 = $filter("filter")(response.data, expr) || [];
+                                        scope.scenariomenu = $filter('orderBy')(filtered.concat(filtered2), 'name');
+                                    }
+                                });
+                            }
+                        });
                     };
-                };
 
-                scope.cancelScenario = function() {
-                    resetNewScenario();
-                    scope.$emit('collapse');
-                };
+                    var resetNewScenario = function() {
+                        scope.newScenario = {
+                            name: '',
+                            templateId: 0
+                        };
+                    };
 
-                scope.createScenario = function() {
-                    var button = $(element).find(".form__submit");
-                    if (scope.newScenario.name !== '') {
-                        if (scope.newScenario.templateId !== 0) {
-                            if (!button.hasClass("button--disable")) {
-                                button.addClass("button--disable button--spinner button--rotate");
-                                scope.scenaristIndexCtrl.createScenario(scope.newScenario.name, scope.newScenario.templateId).then(function() {
-                                    button.removeClass("button--disable button--spinner button--rotate");
-                                    resetNewScenario();
+                    scope.cancelScenario = function() {
+                        resetNewScenario();
+                        scope.$emit('collapse');
+                    };
+
+                    scope.createScenario = function() {
+                        var button = $(element).find(".form__submit");
+                        if (scope.newScenario.name !== '') {
+                            if (scope.newScenario.templateId !== 0) {
+                                if (!button.hasClass("button--disable")) {
+                                    button.addClass("button--disable button--spinner button--rotate");
+                                    scope.scenaristIndexCtrl.createScenario(scope.newScenario.name, scope.newScenario.templateId).then(function() {
+                                        button.removeClass("button--disable button--spinner button--rotate");
+                                        resetNewScenario();
+                                    });
+                                }
+                            } else {
+                                $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function(message) {
+                                    Flash.danger(message);
                                 });
                             }
                         } else {
-                            $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function(message) {
+                            $translate('COMMONS-SCENARIOS-EMPTY-NAME-FLASH-ERROR').then(function(message) {
                                 Flash.danger(message);
                             });
                         }
-                    } else {
-                        $translate('COMMONS-SCENARIOS-EMPTY-NAME-FLASH-ERROR').then(function(message) {
-                            Flash.danger(message);
-                        });
-                    }
-                };
+                    };
 
-                scope.$on('expand', function() {
-                    resetNewScenario();
-                    loadScenarios();
-                });
-            }
-        };
-    })
-    .directive('scenaristScenariosList', function() {
-        "use strict";
-        return {
-            templateUrl: 'app/private/scenarist/directives.tmpl/list.html',
-            scope: {
-                scenarios: '=',
-                archive: '=',
-                search: '=',
-                duplicate: '=',
-                duplicating: '=',
-                user: '=',
-                username: '=',
-                mefirst: '='
-            }
-        };
-    })
-    .directive('scenarioCard', function() {
-        "use strict";
-        return {
-            templateUrl: 'app/private/scenarist/directives.tmpl/card.html',
-            scope: {
-                scenario: '=',
-                archive: '=',
-                duplicate: '=',
-                duplicating: '=',
-                user: '=',
-                username: '='
-            },
-            link: function(scope) {
-                scope.ServiceURL = window.ServiceURL;
-            }
-        };
-    });
+                    scope.$on('expand', function() {
+                        resetNewScenario();
+                        loadScenarios();
+                    });
+                }
+            };
+        })
+        .directive('scenaristScenariosList', function() {
+            "use strict";
+            return {
+                templateUrl: 'app/private/scenarist/directives.tmpl/list.html',
+                scope: {
+                    scenarios: '=',
+                    archive: '=',
+                    modelname: '=',
+                    modelloading: '=',
+                    search: '=',
+                    duplicate: '=',
+                    duplicating: '=',
+                    user: '=',
+                    username: '=',
+                    mefirst: '='
+                }
+            };
+        })
+        .directive('scenarioCard', function() {
+            "use strict";
+            return {
+                templateUrl: 'app/private/scenarist/directives.tmpl/card.html',
+                scope: {
+                    scenario: '=',
+                    archive: '=',
+                    modelname: '=',
+                    modelloading: '=',
+                    duplicate: '=',
+                    duplicating: '=',
+                    user: '=',
+                    username: '='
+                },
+                link: function(scope) {
+                    scope.ServiceURL = window.ServiceURL;
+                }
+            };
+        });
