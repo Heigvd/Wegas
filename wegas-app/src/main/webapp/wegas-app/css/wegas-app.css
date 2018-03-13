@@ -425,13 +425,13 @@ font {
 }
 
 /* List styles */
-.wegas-list .wegas-list-horizontal > div {
+.wegas-list-horizontal > div {
     display: block;
     float: left;
     vertical-align: top;
 }
 
-.wegas-list .wegas-list-content:empty:before, .wegas-choicelist-content:empty:before {
+.wegas-list-content:empty:before, .wegas-choicelist-content:empty:before {
     content: "Empty";
 }
 
