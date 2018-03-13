@@ -131,7 +131,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      * @param child
      */
     private boolean isAuthorized(VariableDescriptor child) {
-        return this.isAuthorized(child.getClass().getSimpleName());
+        return this.isAuthorized(child.getJSONClassName());
     }
 
     /**
