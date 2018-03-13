@@ -8,7 +8,9 @@ import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
 import { Combobox, Specialization } from '../Views/Combobox';
 import { children } from '../../EntitiesConfig/ListDescriptor';
-import { Tree } from '../Views/Tree';
+import { Container, Node } from '../Views/TreeView';
+import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
+// import { Tree } from '../Views/Tree';
 
 interface TreeProps {
   variables?: number[];
@@ -45,13 +47,39 @@ function TreeView({ variables, dispatch }: TreeProps) {
         />
       </Toolbar.Header>
       <Toolbar.Content>
-        {variables ? (
-          variables.map(v => (
-            <CTree key={v} variableId={v} onSelectCreator={onSelectCreator} />
-          ))
-        ) : (
-          <span>Loading ...</span>
-        )}
+        <Container
+          onDropResult={({ source, target, id }) => {
+            if (
+              source.parent !== target.parent ||
+              source.index !== target.index
+            ) {
+              dispatch(
+                moveDescriptor(
+                  id as IVariableDescriptor,
+                  target.index,
+                  target.parent as IParentDescriptor,
+                ),
+              );
+            }
+          }}
+        >
+          {({ nodeProps }) => (
+            <div style={{ height: '100%' }}>
+              {variables ? (
+                variables.map(v => (
+                  <CTree
+                    nodeProps={nodeProps}
+                    key={v}
+                    variableId={v}
+                    onSelectCreator={onSelectCreator}
+                  />
+                ))
+              ) : (
+                <span>Loading ...</span>
+              )}
+            </div>
+          )}
+        </Container>
       </Toolbar.Content>
     </Toolbar>
   );
@@ -76,8 +104,10 @@ const CTree = connect(
 )(function VTree({
   variable,
   onSelectCreator,
+  nodeProps,
 }: {
   variable: IVariableDescriptor | undefined;
+  nodeProps: () => {};
   onSelectCreator: (
     entity: IWegasEntity,
     path?: (string | number)[],
@@ -85,33 +115,43 @@ const CTree = connect(
 }): JSX.Element {
   if (variable) {
     return (
-      <Tree
+      <Node
+        {...nodeProps()}
         header={
           <span onClick={onSelectCreator(variable)}>
             {`${variable['@class']}: ${variable.label}`}
           </span>
         }
+        id={variable}
       >
-        {varIsList(variable)
-          ? variable.itemsIds.map(i => (
-              <CTree key={i} variableId={i} onSelectCreator={onSelectCreator} />
-            ))
-          : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
-            ? variable.results.map((r, index) => (
+        {({ nodeProps }) =>
+          varIsList(variable)
+            ? variable.itemsIds.map(i => (
                 <CTree
-                  key={r.id}
-                  variableId={r.choiceDescriptorId}
-                  subPath={['results', index]}
-                  onSelectCreator={function(v: IResult) {
-                    return onSelectCreator(
-                      VariableDescriptor.select(v.choiceDescriptorId)!,
-                      ['results', index],
-                    );
-                  }}
+                  nodeProps={nodeProps}
+                  key={i}
+                  variableId={i}
+                  onSelectCreator={onSelectCreator}
                 />
               ))
-            : null}
-      </Tree>
+            : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
+              ? variable.results.map((r, index) => (
+                  <CTree
+                    nodeProps={nodeProps}
+                    key={r.id}
+                    variableId={r.choiceDescriptorId}
+                    subPath={['results', index]}
+                    onSelectCreator={function(v: IResult) {
+                      return onSelectCreator(
+                        VariableDescriptor.select(v.choiceDescriptorId)!,
+                        ['results', index],
+                      );
+                    }}
+                  />
+                ))
+              : null
+        }
+      </Node>
     );
   }
   return <div>Loading...</div>;

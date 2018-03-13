@@ -42,4 +42,19 @@ export namespace VariableDescriptorAPI {
       'Editor',
     );
   }
+  export function move(
+    gameModelId: number,
+    variableDescriptor: IVariableDescriptor,
+    index: number,
+    parent?: IParentDescriptor,
+  ) {
+    let position = String(index);
+    if (parent != null) {
+      position = `${parent.id}/${index}`;
+    }
+    return managedModeRequest(
+      `${VD_BASE(gameModelId)}${variableDescriptor.id}/Move/${position}`,
+      { method: 'PUT' },
+    );
+  }
 }

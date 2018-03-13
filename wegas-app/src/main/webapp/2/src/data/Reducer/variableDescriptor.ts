@@ -60,6 +60,21 @@ export function updateDescriptor(
     );
   };
 }
+export function moveDescriptor(
+  variableDescriptor: IVariableDescriptor,
+  index: number,
+  parent?: IParentDescriptor,
+): ThunkAction<void, State, void> {
+  return function(dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    return VariableDescriptorAPI.move(
+      gameModelId,
+      variableDescriptor,
+      index,
+      parent,
+    ).then(res => dispatch(managedMode(res)));
+  };
+}
 export function createDescriptor(
   variableDescriptor: IVariableDescriptor,
   parent?: IParentDescriptor,
