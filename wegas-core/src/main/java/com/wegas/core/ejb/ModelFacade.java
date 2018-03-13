@@ -525,9 +525,7 @@ public class ModelFacade {
             if (t instanceof Pages) {
                 try {
                     Pages p = (Pages) t;
-                    logger.error("PROPAGATE PAGES: {}", scenario.getId());
                     websocketFacade.pageIndexUpdate(scenario.getId(), requestManager.getSocketId());
-                    logger.error("INDEX PROPAGAES");
                     for (String pageId : p.getPagesContent().keySet()){
                         websocketFacade.pageUpdate(scenario.getId(), pageId, requestManager.getSocketId());
                     }

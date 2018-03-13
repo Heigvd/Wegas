@@ -78,6 +78,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     @Inject
     private JCRFacade jcrFacade;
 
+    @Inject
+    private PageFacade pageFacade;
+
     static {
         reflections = new Reflections("com.wegas");
     }
@@ -311,6 +314,15 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         theModel.setCssLibrary(cssLibrary);
     }
 
+    private void updateCss(GameModel gm, String previousColor, String newColor) {
+        Map<String, GameModelContent> css = gm.getCssLibrary();
+        for (Entry<String, GameModelContent> entry : css.entrySet()) {
+            GameModelContent value = entry.getValue();
+            value.setContent(value.getContent().replace(previousColor, newColor));
+        }
+        gameModelFacade.merge(gm);
+    }
+
     private void setPagesFromStrings(GameModel theModel, String... pages) throws IOException, RepositoryException {
         Map<String, JsonNode> gmPages = this.getPages(theModel);
 
@@ -321,7 +333,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
             gmPages.put(i.toString(), page);
         }
 
-        theModel.setPages(gmPages);
+        pageFacade.setPages(theModel, gmPages);
     }
 
     /*
@@ -337,17 +349,21 @@ public class ModelFacadeTest extends AbstractArquillianTest {
                 pages.rollback();
             }
         }
-
     }
 
-    private void printPages(GameModel gameModel) throws RepositoryException {
-        StringBuilder sb = new StringBuilder(gameModel.toString()).append("\n");
+    private String getStringifiedPages(GameModel gameModel) throws RepositoryException {
+        StringBuilder sb = new StringBuilder();
 
         for (Entry<String, JsonNode> page : this.getPages(gameModel).entrySet()) {
             String pageName = page.getKey();
             sb.append("  ").append(pageName).append("\n").append(page.getValue()).append("\n");
         }
-        logger.error("Pages: {}", sb);
+        return sb.toString();
+    }
+
+    private void printPages(GameModel gameModel) throws RepositoryException {
+        logger.error("GameModel {}", gameModel.toString());
+        logger.error("Pages: {}", getStringifiedPages(gameModel));
     }
 
     @Test
@@ -366,9 +382,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        printPages(gameModel1);
-        printPages(gameModel2);
-
         List<GameModel> scenarios = new ArrayList<>();
 
         scenarios.add(gameModel1);
@@ -376,20 +389,31 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         logger.info("Create Model");
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+
+        // by design, pages from the first gameModel are extracted
+        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel1));
+        Assert.assertNotEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel2));
+
+        Assert.assertEquals(2, pageFacade.getPageIndex(model).size());
+        Assert.assertEquals(3, pageFacade.getPageIndex(gameModel2).size());
+
         modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        printPages(model);
-        printPages(gameModel1);
-        printPages(gameModel2);
+        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel1));
+        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel2));
+
+        Assert.assertEquals(2, pageFacade.getPageIndex(model).size());
 
         /**
          * Update pages
          */
-        this.setPagesFromStrings(model, "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}", "{\"type\": \"AbsoluteLayout\", \"children\": []}");
+        this.setPagesFromStrings(model, "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}",
+                "{\"type\": \"AbsoluteLayout\", \"children\": []}",
+                "{\"type\": \"FlexList\", \"direction\": \"horizontal\", \"children\": []}");
         model = gameModelFacade.merge(model);
 
         /**
@@ -401,9 +425,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        printPages(model);
-        printPages(gameModel1);
-        printPages(gameModel2);
+        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel1));
+        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel2));
+
+        Assert.assertEquals(3, pageFacade.getPageIndex(model).size());
     }
 
     @Test
@@ -428,40 +453,69 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         logger.info("Create Model");
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+
+        printLibraries(model);
+
+        // restore model css visibilities
+        Map<String, GameModelContent> cssLibrary = model.getCssLibrary();
+        for (Entry<String, GameModelContent> entry : cssLibrary.entrySet()) {
+            String key = entry.getKey();
+            GameModelContent value = entry.getValue();
+            switch (key) {
+                case "modelCss":
+                    value.setVisibility(ModelScoped.Visibility.INTERNAL);
+                    break;
+                case "protectedCss":
+                    value.setVisibility(ModelScoped.Visibility.PROTECTED);
+                    break;
+                case "inheritedCss":
+                    value.setVisibility(ModelScoped.Visibility.INHERITED);
+                    break;
+                default:
+                    value.setVisibility(ModelScoped.Visibility.PRIVATE);
+                    break;
+            }
+        }
+        model.setCssLibrary(cssLibrary);
+        model = gameModelFacade.merge(model);
+
         modelFacade.propagateModel(model.getId());
 
         model = gameModelFacade.find(model.getId());
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        printLibraries(model);
-        printLibraries(gameModel1);
-        printLibraries(gameModel2);
+        /**
+         * ASSERTS
+         */
+        Map<String, GameModelContent> modelCss = model.getCssLibrary();
+        Map<String, GameModelContent> gameModel1Css = gameModel1.getCssLibrary();
+        Map<String, GameModelContent> gameModel2Css = gameModel2.getCssLibrary();
+
+        // modelCss and protected always set to model colour
+        Assert.assertTrue(modelCss.get("modelCss").getContent().contains("red"));
+        Assert.assertTrue(gameModel1Css.get("modelCss").getContent().contains("red"));
+        Assert.assertTrue(gameModel2Css.get("modelCss").getContent().contains("red"));
+
+        Assert.assertTrue(modelCss.get("protectedCss").getContent().contains("red"));
+        Assert.assertTrue(gameModel1Css.get("protectedCss").getContent().contains("red"));
+        Assert.assertTrue(gameModel2Css.get("protectedCss").getContent().contains("red"));
+
+        // set to model colour, unless user change user change
+        Assert.assertTrue(modelCss.get("inheritedCss").getContent().contains("red"));
+        Assert.assertTrue(gameModel1Css.get("inheritedCss").getContent().contains("red"));
+        Assert.assertTrue(gameModel2Css.get("inheritedCss").getContent().contains("red"));
+
+        // private is private
+        Assert.assertTrue(modelCss.get("privateCss").getContent().contains("red"));
+        Assert.assertTrue(gameModel1Css.get("privateCsssheet1").getContent().contains("red"));
+        Assert.assertTrue(gameModel2Css.get("privateCsssheet2").getContent().contains("red"));
 
         /**
          * Update CSS sheets
          */
-        Map<String, GameModelContent> cssLibrary;
-        cssLibrary = model.getCssLibrary();
-        GameModelContent lib;
-        lib = cssLibrary.get("inheritedCss");
-        lib.setContent(".inherited_rule { color: hotpink}");
-
-        lib = model.getCss("protectedCss");
-        lib.setContent(".protected_rule { color: hotpink}");
-
-        model.setCssLibrary(cssLibrary);
-        model = gameModelFacade.merge(model);
-
-        cssLibrary = gameModel1.getCssLibrary();
-        lib = cssLibrary.get("inheritedCss");
-        lib.setContent(".inherited_rule { color: lavender}");
-
-        lib = model.getCss("protectedCss");
-        lib.setContent(".protected_rule { color: lavender}");
-
-        gameModel1.setCssLibrary(cssLibrary);
-        gameModel1 = gameModelFacade.merge(gameModel1);
+        this.updateCss(model, "red", "hotpink");
+        this.updateCss(gameModel1, "red", "palevioletred");
 
         /**
          * Update gameModel properties
@@ -472,26 +526,49 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        printLibraries(model);
-        printLibraries(gameModel1);
-        printLibraries(gameModel2);
+        modelCss = model.getCssLibrary();
+        gameModel1Css = gameModel1.getCssLibrary();
+        gameModel2Css = gameModel2.getCssLibrary();
 
         /**
          * ASSERTS
          */
+        // modelCss and protected always set to model colour
+        Assert.assertTrue(modelCss.get("modelCss").getContent().contains("hotpink"));
+        Assert.assertTrue(gameModel1Css.get("modelCss").getContent().contains("hotpink"));
+        Assert.assertTrue(gameModel2Css.get("modelCss").getContent().contains("hotpink"));
+
+        Assert.assertTrue(modelCss.get("protectedCss").getContent().contains("hotpink"));
+        Assert.assertTrue(gameModel1Css.get("protectedCss").getContent().contains("hotpink"));
+        Assert.assertTrue(gameModel2Css.get("protectedCss").getContent().contains("hotpink"));
+
+        // set to model colour, unless user change user change
+        Assert.assertTrue(modelCss.get("inheritedCss").getContent().contains("hotpink"));
+        Assert.assertTrue(gameModel1Css.get("inheritedCss").getContent().contains("palevioletred"));
+        Assert.assertTrue(gameModel2Css.get("inheritedCss").getContent().contains("hotpink"));
+
+        // private is private
+        Assert.assertTrue(modelCss.get("privateCss").getContent().contains("hotpink"));
+        Assert.assertTrue(gameModel1Css.get("privateCsssheet1").getContent().contains("palevioletred"));
+        Assert.assertTrue(gameModel2Css.get("privateCsssheet2").getContent().contains("red"));
     }
 
-    private void printLibraries(GameModel gameModel) {
-        StringBuilder sb = new StringBuilder(gameModel.toString()).append("\n");
+    private String stringifyLibraries(GameModel gameModel) {
+        StringBuilder sb = new StringBuilder();
         for (Entry<String, Map<String, GameModelContent>> entry : gameModel.getLibraries().entrySet()) {
             String libraryName = entry.getKey();
             sb.append("  ").append(libraryName).append("\n");
             for (Entry<String, GameModelContent> content : entry.getValue().entrySet()) {
                 GameModelContent value = content.getValue();
-                sb.append("   - ").append(value.getId()).append(" ").append(value.getVisibility()).append("::").append(content.getKey()).append(" (").append(value.getContentType()).append("): ").append(value.getContent()).append("\n");
+                sb.append("   - ").append(" ").append(value.getVisibility()).append("::").append(content.getKey()).append(" (").append(value.getContentType()).append("): ").append(value.getContent()).append("\n");
             }
         }
-        logger.info("Libraries: {}", sb);
+        return sb.toString();
+    }
+
+    private void printLibraries(GameModel gameModel) {
+        logger.error("GameModel {}", gameModel.toString());
+        logger.error("Libraries: {}", this.stringifyLibraries(gameModel));
     }
 
     @Test

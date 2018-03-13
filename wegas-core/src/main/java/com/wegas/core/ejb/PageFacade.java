@@ -90,6 +90,10 @@ public class PageFacade {
         }
     }
 
+    public void setPages(GameModel gameModel, Map<String, JsonNode> pages){
+        gameModel.setPages(pages);
+}
+
     public void setPage(GameModel gm, String pageId, JsonNode content) throws RepositoryException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         Page page = new Page(pageId, content);
