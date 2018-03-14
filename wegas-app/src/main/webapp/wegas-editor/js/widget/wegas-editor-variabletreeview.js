@@ -198,6 +198,11 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     this.currentSelection = -1;
                     this.treeView.set("selected", 0);
                 }, this));
+
+                this.handlers.push(this.treeView.on("nodeClick", function(e) {
+                    e.preventDefault();
+                }));
+
                 if (request) {
                     ds.sendRequest(request);
                 }

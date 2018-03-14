@@ -21,7 +21,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
         MAX_FILE_SIZE = 20000000,
         FILENAME = new RegExp(
             '^(\\w|\\.| |-|_|' + Y.Wegas.Helper.Diacritics.isDiacritics + ')+$'
-        ),
+            ),
         DEFAULTHEADERS = {
             'Content-Type': 'application/json; charset=UTF-8',
             'Managed-Mode': false
@@ -112,21 +112,21 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                         if (!ret) {
                                             ret =
                                                 this.get(LABEL)
-                                                    .toLowerCase()
-                                                    .indexOf(
-                                                        searchVal.toLowerCase()
+                                                .toLowerCase()
+                                                .indexOf(
+                                                    searchVal.toLowerCase()
                                                     ) > -1;
                                         }
                                         if (
                                             !ret &&
                                             this.get('data') &&
                                             this.get('data.mimeType')
-                                        ) {
+                                            ) {
                                             ret =
                                                 this.get('data.mimeType')
-                                                    .toLowerCase()
-                                                    .indexOf(
-                                                        searchVal.toLowerCase()
+                                                .toLowerCase()
+                                                .indexOf(
+                                                    searchVal.toLowerCase()
                                                     ) === 0;
                                         }
                                         return ret;
@@ -156,7 +156,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         collapsed: false,
                         label: '/',
                         rightWidget: null,
-                        data: { mimeType: this.directoryMimeType }
+                        data: {mimeType: this.directoryMimeType}
                     });
                     this.treeView.add(this.rootNode);
                 }
@@ -175,13 +175,13 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                 'params.data',
                                 new Wegas.persistence.Directory(
                                     e.response.results
-                                )
-                            );
+                                    )
+                                );
                             if (this.toolbar) {
                                 this.rootMenu = menu;
                                 this.rootMenu.render(
                                     this.toolbar.get('header')
-                                );
+                                    );
                                 this.rootMenu.on(
                                     'itemClick',
                                     function(e) {
@@ -189,10 +189,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                             e.data,
                                             this.rootNode,
                                             e.params
-                                        );
+                                            );
                                     },
                                     this
-                                );
+                                    );
                             } else {
                                 this.rootNode.set('rightWidget', menu);
                             }
@@ -205,12 +205,12 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 if (this.get('filter')) {
                     this.search = Y.Node.create(
                         "<input class='treeview-search' type='text' placeholder='Search...'/>"
-                    );
+                        );
                     if (this.toolbar) {
                         this.toolbar.get('header').append(this.search);
                         this.search.wrap(
                             "<div class='wegas-filter-input'></div>"
-                        );
+                            );
                     } else {
                         this.get('boundingBox').append(this.search);
                         this.search.hide();
@@ -223,7 +223,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 }
                 cb.append(
                     "<div class='fileexplorer-footer'>Upload files by dragging & dropping them on a folder</div>"
-                );
+                    );
                 this.tooltip = new Wegas.Tooltip({
                     delegate: cb,
                     delegateSelect: '.yui3-treeleaf-content-label',
@@ -253,7 +253,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         this.tooltip.setTriggerContent(ret);
                     },
                     this
-                );
+                    );
                 //Prevent drop to avoid application exit
                 this.get(BOUNDING_BOX).on('drop', function(e) {
                     e.halt(true);
@@ -298,7 +298,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     },
                     '.yui3-treenode, .yui3-treeview',
                     this
-                );
+                    );
                 this.rootNode.get(BOUNDING_BOX).delegate(
                     'dragover',
                     function(e) {
@@ -312,7 +312,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         }
                     },
                     '.yui3-treenode, .yui3-treeview'
-                );
+                    );
                 this.rootNode.get(BOUNDING_BOX).delegate(
                     'dragleave',
                     function(e) {
@@ -325,32 +325,32 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         e.currentTarget.removeClass('fileexplorer-drag-over');
                     },
                     '.yui3-treenode, .yui3-treeview'
-                );
+                    );
                 this.treeView.on(
                     '*:nodeExpanded',
                     function(e) {
                         this.listNodeData(e.node);
                     },
                     this
-                );
+                    );
                 this.treeView.after(
                     'treeleaf:click',
                     function(e) {
                         if (e.node.path) {
-                            this.fire('fileSelected', { node: e.node }, e.node.path);
+                            this.fire('fileSelected', {node: e.node}, e.node.path);
                         }
                     },
                     this
-                );
+                    );
                 this.treeView.on(
                     ['treenode:iconClick', 'treenode:labelClick'],
                     function(e) {
                         if (e.node.path) {
-                            this.fire('directorySelected', { node: e.target });
+                            this.fire('directorySelected', {node: e.target});
                         }
                     },
                     this
-                );
+                    );
                 this.treeView.on(
                     'wegas-menu:itemClick',
                     function(e) {
@@ -358,17 +358,17 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             e.data,
                             e.target.get('parent'),
                             e.params
-                        );
+                            );
                     },
                     this
-                );
+                    );
                 this.fakeFile.after(
                     'uploadcomplete',
                     function(e) {
                         var n = this.pathToNode(
                             this.rootNode,
                             Y.JSON.parse(e.data).path
-                        );
+                            );
                         if (n.expand) {
                             n.expand();
                         }
@@ -376,17 +376,17 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         //    this.showMessage("success", "Folder successfully created");
                     },
                     this
-                );
+                    );
                 this.uploader.after(
                     'fileselect',
                     function(e) {
                         if (
                             this.uploader.parentNode.get(LABEL) === 'Filename'
-                        ) {
+                            ) {
                             this.uploader.parentNode.set(
                                 LABEL,
                                 e.fileList[0].get('name')
-                            );
+                                );
                         }
                         this.editNode.show();
                         // Case 1: Upload file directly
@@ -397,23 +397,23 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         return;
                         // Case 2: Display buttons
                         /*this.uploader.parentNode.set("rightWidget", new Wegas.WegasMenu({
-                 items: [{
-                 label: "Upload",
-                 cssClass: "wegas-icon wegas-icon-upload",
-                 data: "upload"
-                 }, {
-                 label: "Cancel",
-                 cssClass: "wegas-icon wegas-icon-cancel",
-                 data: "cancel"
-                 }],
-                 horizontal: true,
-                 params: {
-                 file: e.fileList[0]
-                 }
-                 }));*/
+                         items: [{
+                         label: "Upload",
+                         cssClass: "wegas-icon wegas-icon-upload",
+                         data: "upload"
+                         }, {
+                         label: "Cancel",
+                         cssClass: "wegas-icon wegas-icon-cancel",
+                         data: "cancel"
+                         }],
+                         horizontal: true,
+                         params: {
+                         file: e.fileList[0]
+                         }
+                         }));*/
                     },
                     this
-                );
+                    );
                 this.fileUploader.on(
                     'fileuploadcomplete',
                     function(e) {
@@ -430,16 +430,17 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             this.showMessage(
                                 'error',
                                 'Error uploading "' +
-                                    JSON.parse(e.data).name +
-                                    '"'
-                            );
+                                JSON.parse(e.data).name +
+                                '"'
+                                );
                         }
                         try {
                             e.file.treeLeaf.destroy();
-                        } catch (ex) {}
+                        } catch (ex) {
+                        }
                     },
                     this
-                );
+                    );
                 this.fileUploader.on(
                     'fileuploaderror',
                     function(e) {
@@ -449,15 +450,15 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         if (endsWith(e.statusText, ' already exists')) {
                             Y.Wegas.Panel.confirm(
                                 e.statusText +
-                                    '<br>Overwrite it ?<br><small>you will have to refresh your browser to see changes</small>',
+                                '<br>Overwrite it ?<br><small>you will have to refresh your browser to see changes</small>',
                                 Y.bind(function() {
                                     this.treeView
                                         .find(function(i) {
                                             return (
                                                 i !== e.file.treeLeaf &&
                                                 i.get('label') ===
-                                                    e.file.get('name')
-                                            );
+                                                e.file.get('name')
+                                                );
                                         })
                                         .destroy();
                                     this.fileUploader.addFile(e.file, true);
@@ -465,26 +466,28 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                 function() {
                                     try {
                                         e.file.treeLeaf.destroy();
-                                    } catch (ex) {}
+                                    } catch (ex) {
+                                    }
                                 }
                             );
                         } else {
                             try {
                                 e.file.treeLeaf.destroy();
-                            } catch (ex) {}
+                            } catch (ex) {
+                            }
                             this.showMessage('error', e.statusText);
                         }
                     },
                     this
-                );
+                    );
                 if (this.search) {
                     this.before('keydown', function(e) {
                         if (
                             e.domEvent.ctrlKey &&
                             String.fromCharCode(
                                 e.domEvent.charCode
-                            ).toUpperCase() === 'F'
-                        ) {
+                                ).toUpperCase() === 'F'
+                            ) {
                             e.domEvent.preventDefault();
                             this.search.focus();
                             this.search.show();
@@ -496,10 +499,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             this.treeView.filter.set(
                                 'searchVal',
                                 this.search.getDOMNode().value
-                            );
+                                );
                         },
                         this
-                    );
+                        );
                 }
             },
             destructor: function() {
@@ -527,7 +530,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                 this.onListRequestSuccess,
                                 this,
                                 callback
-                            ),
+                                ),
                             failure: Y.bind(this.onRequestFailure, this)
                         }
                     });
@@ -583,7 +586,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                     this.showMessage(
                                         'error',
                                         "Folder's name is required"
-                                    );
+                                        );
                                     //                        } else if (!(FILENAME.test(name))) {
                                     //                            this.showMessage("error",
                                     //                                "Invalid name: " + name + ". Letters, numbers, whitespace
@@ -594,13 +597,15 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                     });
                                 }
                             }, this)
-                        );
+                            );
                         break;
                     case 'edit':
-                        Y.Plugin.EditEntityAction.showEditForm(
-                            params.data,
-                            Y.bind(this.editContent, this, node)
-                        );
+                        Y.Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                            Y.Plugin.EditEntityAction.showEditForm(
+                                params.data,
+                                Y.bind(this.editContent, this, node)
+                                );
+                        }, this));
                         break;
                     case 'open':
                         this.openFile(params.path);
@@ -624,15 +629,15 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                             success: Y.bind(
                                                 this.removeNode,
                                                 this
-                                            ),
+                                                ),
                                             failure: Y.bind(
                                                 this._onDeleteFailure,
                                                 this
-                                            )
+                                                )
                                         }
                                     });
                                 }, this)
-                            );
+                                );
                         }
                         break;
                     default:
@@ -640,7 +645,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             'Not implemented yet :' + action,
                             'warn',
                             'Y.Wegas.FileExplorer'
-                        );
+                            );
                 }
             },
             _onDeleteFailure: function(e) {
@@ -662,11 +667,11 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                                 success: Y.bind(
                                                     current.removeNode,
                                                     current
-                                                ),
+                                                    ),
                                                 failure: Y.bind(
                                                     current.onRequestFailure,
                                                     current
-                                                )
+                                                    )
                                             }
                                         });
                                         this.exit();
@@ -707,7 +712,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 Y.Plugin.EditEntityAction.showFormMessage(
                     'success',
                     data.name + ' successfully updated.'
-                );
+                    );
                 Y.Plugin.EditEntityAction.hideEditFormOverlay();
                 e.cfg.scope.refresh(node);
             },
@@ -715,7 +720,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 if (
                     this.editNode &&
                     this.editNode.get('parent') === e.cfg.node
-                ) {
+                    ) {
                     this.editNode.set('rightWidget', null);
                 }
                 e.cfg.node.destroyAll();
@@ -835,7 +840,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 if (
                     event instanceof Y.TreeNode ||
                     event instanceof Y.TreeView
-                ) {
+                    ) {
                     node = event;
                 } else {
                     node = event.cfg.node;
@@ -844,8 +849,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     if (
                         this.editNode &&
                         this.editNode.get('rightWidget') instanceof
-                            Y.UploaderHTML5
-                    ) {
+                        Y.UploaderHTML5
+                        ) {
                         this.editNode.set('rightWidget', null);
                         this.editNode.destroy();
                         this.editNode = null;
@@ -890,7 +895,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     Wegas.Facade.GameModel.get('currentGameModelId') +
                     '/File/read' +
                     relativePath
-                );
+                    );
             },
             isProcessing: function(node) {
                 return (
@@ -898,7 +903,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     (node instanceof Y.TreeNode
                         ? node._items.some(this.isProcessing, this)
                         : false)
-                );
+                    );
             },
             pathToNode: function(node, path) {
                 var i, n = null;
@@ -911,7 +916,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             if (
                                 n instanceof Y.TreeNode ||
                                 n instanceof Y.TreeLeaf
-                            ) {
+                                ) {
                                 return n;
                             }
                         }
@@ -922,10 +927,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
             onRequestFailure: function(e) {
                 Y.log(
                     'onDataSourceError(): Error retrieving data ' +
-                        (e.response.results.exception || e),
+                    (e.response.results.exception || e),
                     'error',
                     'Wegas.FileExplorer'
-                );
+                    );
                 e.cfg.node.set('loading', false);
                 this.showMessage('error', e.response.results.message);
             }
@@ -951,7 +956,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     (bytes / Math.pow(1024, i)).toFixed(precision) +
                     ' ' +
                     sizes[i]
-                );
+                    );
             }
         }
     );
@@ -987,20 +992,20 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     this._set(
                         CONTENTBOX,
                         this.get('fileexplorer')
-                            .toolbar.get('panel')
-                            .getDOMNode()
-                    );
+                        .toolbar.get('panel')
+                        .getDOMNode()
+                        );
                 } else {
                     //FALLBACK, no toolbar
                     this.get(BOUNDING_BOX).insertBefore(
                         '<span>Uploader</span>',
                         this.get(CONTENTBOX)
-                    );
+                        );
                     this.overallProgress.render();
                     this.get(BOUNDING_BOX).insertBefore(
                         this.overallProgress.get(BOUNDING_BOX),
                         this.get(CONTENTBOX)
-                    );
+                        );
                 }
                 this.overallProgress.hide();
             },
@@ -1019,10 +1024,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         this.overallProgress.set(
                             'percent',
                             uploaded / total * 100
-                        );
+                            );
                     },
                     this
-                );
+                    );
                 this.uploader.on('uploadprogress', function(e) {
                     e.file.progressBar.set('percent', e.percentLoaded);
                     if (e.file.treeLeaf) {
@@ -1037,7 +1042,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         this.fire('fileuploadcomplete', e);
                     },
                     this
-                );
+                    );
                 this.uploader.on(
                     'uploaderror',
                     function(e) {
@@ -1060,23 +1065,23 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         this.fire('fileuploaderror', e);
                     },
                     this
-                );
+                    );
             },
             destructor: function() {
                 this.uploader.destroy();
             },
             addFile: function(file, force) {
                 /*    if (!(FILENAME.test(file.get("name")))) {
-             throw new Error("Invalid name: " + file.get("name") + ". Letters, numbers, whitespace or \".-_\" only");
-             } else */
+                 throw new Error("Invalid name: " + file.get("name") + ". Letters, numbers, whitespace or \".-_\" only");
+                 } else */
                 if (file.get('size') > MAX_FILE_SIZE) {
                     throw new Error(
                         file.get('name') +
-                            ' (' +
-                            FileExplorer.formatFileSize(file.get('size')) +
-                            ') is too big. Max file size :' +
-                            FileExplorer.formatFileSize(MAX_FILE_SIZE)
-                    );
+                        ' (' +
+                        FileExplorer.formatFileSize(file.get('size')) +
+                        ') is too big. Max file size :' +
+                        FileExplorer.formatFileSize(MAX_FILE_SIZE)
+                        );
                 }
                 var uploadDescriptor = new Y.Node.create('<div/>'),
                     progressDiv = new Y.Node.create('<div/>'),
@@ -1090,16 +1095,16 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         showValue: true,
                         color: 'lightgrey'
                     })
-                );
+                    );
                 progressDiv.setContent(file.treeLeaf.get(LABEL));
                 detailDiv.setContent(
                     'Filename: ' +
-                        file.get('name') +
-                        '<br/>Upload to: ' +
-                        file.treeLeaf.parentPath +
-                        '<br/>Type: ' +
-                        file.get('type')
-                );
+                    file.get('name') +
+                    '<br/>Upload to: ' +
+                    file.treeLeaf.parentPath +
+                    '<br/>Type: ' +
+                    file.get('type')
+                    );
                 uploadDescriptor.addClass(this.getClassName('descriptor'));
                 progressDiv.addClass(this.getClassName('progress'));
                 detailDiv.addClass(this.getClassName('detail'));
@@ -1124,9 +1129,9 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 this.uploader.uploadThese(
                     [file],
                     Wegas.Facade.File.get('source') +
-                        (force ? 'force/' : '') +
-                        'upload' +
-                        file.treeLeaf.parentPath,
+                    (force ? 'force/' : '') +
+                    'upload' +
+                    file.treeLeaf.parentPath,
                     {
                         name: file.treeLeaf.get(LABEL)
                     }

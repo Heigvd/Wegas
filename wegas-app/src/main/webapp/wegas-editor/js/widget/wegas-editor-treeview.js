@@ -377,29 +377,28 @@ YUI.add("wegas-editor-treeview", function(Y) {
             function cancelNewSelection(e) {
                 e.stopImmediatePropagation();
                 if (entity) {
-                    setTimeout(function () {
-                        Y.fire("edit-entity:edit", {entity: entity})
+                    setTimeout(function() {
+                        Y.fire("edit-entity:edit", {entity: entity});
                     }, 0);
                 }
             }
 
-            if (Plugin.EditEntityAction) {
-                Plugin.EditEntityAction.allowDiscardingEdits(
-                    Y.bind(function() {
-                        if (menuItems && menuItems.length) {
-                            var button = Wegas.Widget.create(menuItems[0]);
-                            button.fire("click");
-                            button.destroy();
-                        } else {
-                            Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
-                        }
-                    }, this),
-                    Y.bind(function() {
-                        cancelNewSelection(e);
-                    }, this));
+            //if (Plugin.EditEntityAction) {
+            //Plugin.EditEntityAction.allowDiscardingEdits( Y.bind(function() {
+            if (menuItems && menuItems.length) {
+                var button = Wegas.Widget.create(menuItems[0]);
+                button.fire("click");
+                button.destroy();
             } else {
-                cancelNewSelection(e);
+                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
             }
+            //}, this),
+            //Y.bind(function() {
+            //cancelNewSelection(e);
+            //}, this));
+            //} else {
+            //cancelNewSelection(e);
+            //}
         }
     }, {
         NS: "defaultmenuclick"
