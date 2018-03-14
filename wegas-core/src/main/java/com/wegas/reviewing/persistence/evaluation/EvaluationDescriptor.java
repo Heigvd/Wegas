@@ -242,6 +242,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getEffectiveContainer().getRequieredUpdatePermission();
+        return this.getEffectiveContainer().getRequieredReadPermission();
     }
 }
