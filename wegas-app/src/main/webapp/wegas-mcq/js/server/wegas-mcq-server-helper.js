@@ -28,22 +28,22 @@ var MCQHelper = (function() {
             msg = "<b>" + whTitle + "</b>";
             msg += whDescriptor.getDescription() + "<br /><br />";
 
-            msg += '<div class="answers">';
+            msg += '<div class="whview-history-answers">';
             items = Java.from(whDescriptor.getItems());
             for (i in items) {
-                msg += '<div class="answer" style="margin-bottom: 10px;">';
+                msg += '<div class="whview-history-answer" style="margin-bottom: 10px;">';
                 item = items[i];
                 title = item.getTitle() || item.getLabel();
-                msg += "<span class=\"title\"><b>" + title + "</b></span>";
+                msg += "<span class=\"whview-history-answer-title\"><b>" + title + "</b></span>";
                 if (item instanceof com.wegas.core.persistence.variable.primitive.StringDescriptor &&
                     !item.getAllowedValues().isEmpty()) {
                     values = JSON.parse(item.getValue(self));
                     for (v in values) {
-                        msg += "<div class=\"value\" style=\"margin-left : 10px;\">" + values[v] + "</div>";
+                        msg += "<div class=\"whview-history-answer-value\" style=\"margin-left : 10px;\">" + values[v] + "</div>";
                     }
 
                 } else {
-                    msg += "<div class=\"value\" style=\"margin-left : 10px;\">" + item.getValue(self) + "</div>";
+                    msg += "<div class=\"whview-history-answer-value\" style=\"margin-left : 10px;\">" + item.getValue(self) + "</div>";
                 }
                 msg += "</div>";
             }
