@@ -1,6 +1,5 @@
 <div class="card__illustration illustration illustration--icon" illustration="{{session.properties.iconUri}}"></div>
 <div class="card__description">
-    <div class="line line--padding"></div>
     <div class="line line--primary">{{session.name}}</div>
     <div class="line">{{'TRAINER-CARD-DETAILS-CREATED-ON' | translate}} {{'COMMONS-DATE' | translate: {date: session.createdTime} }}
         <span ng-if="user.isAdmin">{{'TRAINER-CARD-DETAILS-CREATED-BY' | translate}}
@@ -8,8 +7,7 @@
         </span>
     </div>
     <div class="line">{{'TRAINER-CARD-DETAILS-SCENARIO' | translate}}:&nbsp;{{session.gameModelName}}</div>
-    <div ng-if="(session.gameModel)" class="line line--optional">{{session.gameModel.comments}}</div>
-    <div class="line line--padding"></div>
+    <div ng-if="(session.gameModel.comments)" class="line line--optional">{{session.gameModel.comments}}</div>
 </div>
 <div class="card__actions">
     <div class="card__actions__access"
