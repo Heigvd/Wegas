@@ -230,9 +230,17 @@ div.wegas-pdf-text-container div{
     /* border : 1px solid #353B41; */    
 }
 
+.wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title,
 .wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title {
     font-size: 1.1em;
     padding-left: 9px;
+}
+
+.wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property-key {
+    display: none;
+}
+.wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property-value {
+    padding-left: 24px;
 }
 
 .wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property {
