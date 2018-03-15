@@ -27,14 +27,14 @@ YUI.add('wegas-mcq-view', function(Y) {
                 whQuestionInstance = whQuestion.getInstance(),
                 i, j, child, name, classes,
                 answers,
-                container, label, title;
+                inputWidget, label, title;
 
             this.destroyAll();
 
             this.readonly = whQuestionInstance.get("validated");
 
             this.qList = new Y.Wegas.List({
-                cssClass: "wegas-whview__left"
+                cssClass: "wegas-whview__mainlist"
             });
 
             title = whQuestion.get("title") || whQuestion.get("label");
@@ -63,9 +63,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 direction: "vertical"
             });
 
-            this.hList.add(this.qList);
-
-            this.mainList.add(this.hList);
+            this.mainList.add(this.qList);
             this.add(this.mainList);
 
             this._locks = {};
@@ -74,7 +72,6 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.aList = new Y.Wegas.List({
                 cssClass: "wegas-whview__answers"
             });
-            this.answersContainer = {};
 
 
             answers = whQuestion.get("items");
@@ -88,11 +85,6 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                     classes = "wegas-whview__answers__input-answer input-" + name;
 
-                    container = new Y.Wegas.List({
-                        classes: "wegas-whview__answers__input-container container-" + name,
-                        direction: "horizontal"
-                    });
-
                     label = child.get("title") || child.get("label");
 
                     switch (child.get("@class")) {
@@ -100,7 +92,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                             if (Y.Lang.isNumber(child.get("minValue")) && Y.Lang.isNumber(child.get("maxValue"))
                                 && (child.get("maxValue") - child.get("minValue") < 15)) {
 
-                                container.add(new Y.Wegas.BoxesNumberInput({
+                                inputWidget = new Y.Wegas.BoxesNumberInput({
                                     label: label,
                                     cssClass: classes,
                                     variable: {name: name},
@@ -108,20 +100,20 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     readonly: {
                                         "content": "return " + this.readonly + ";"
                                     }
-                                }));
+                                });
                             } else {
-                                container.add(new Y.Wegas.NumberInput({
+                                inputWidget = new Y.Wegas.NumberInput({
                                     label: label,
                                     cssClass: classes,
                                     variable: {name: name},
                                     selfSaving: false,
                                     readonly: {
                                         "content": "return " + this.readonly + ";"
-                                    }}));
+                                    }});
                             }
                             break;
                         case "StringDescriptor":
-                            container.add(new Y.Wegas.StringInput({
+                            inputWidget = new Y.Wegas.StringInput({
                                 label: label,
                                 cssClass: classes,
                                 variable: {name: name},
@@ -135,13 +127,13 @@ YUI.add('wegas-mcq-view', function(Y) {
                                 },
                                 allowNull: false,
                                 selfSaving: false
-                            }));
+                            });
                             break;
                         case "TextDescriptor":
                             // maxChars = undefined;
                             // maxWords = undefined;
                             // countBlank = false;
-                            container.add(new Y.Wegas.TextInput({
+                            inputWidget = new Y.Wegas.TextInput({
                                 label: label,
                                 cssClass: classes,
                                 variable: {name: name},
@@ -158,15 +150,14 @@ YUI.add('wegas-mcq-view', function(Y) {
                                 toolbar3: "",
                                 contextmenu: "bold italic underline bullist",
                                 disablePaste: true
-                            }));
+                            });
                             break;
                     }
-                    this.answersContainer[name] = container;
-                    this.aList.add(container);
+                    this.aList.add(inputWidget);
                 }
             }
 
-            this.hList.add(this.aList);
+            this.mainList.add(this.aList);
 
             if (!this.readonly) {
                 this._buttonContainer = new Y.Wegas.AbsoluteLayout({

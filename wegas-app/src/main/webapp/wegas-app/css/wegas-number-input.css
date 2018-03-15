@@ -12,7 +12,7 @@
 
 .wegas-boxes-number-input .boxes {
     cursor: default;
-    border-radius :6px;
+    /*border-radius :6px;*/
     min-height: 24px;
     padding: 2px 2px 0 2px;
     display: inline-block;
@@ -87,7 +87,7 @@ SLIDER
     display: none;
 }
 
-.wegas-number-input .wegas-input-slider {
+.wegas-number-input .wegas-input-slider > span {
     padding-top: 15px;
 }
 

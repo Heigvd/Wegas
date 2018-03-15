@@ -264,11 +264,13 @@ YUI.add("wegas-number-input", function(Y) {
         {
             CONTENT_TEMPLATE: "<div>" +
                 "  <div class=\"wegas-input-label\"></div>" +
-                "  <div class=\"wegas-input-slider\"></div>" +
-                "  <div class=\"wegas-input-container\">" +
-                "    <input class=\"wegas-input\" />" +
+                "  <div class=\"wegas-input-body\">" +
+                "    <div class=\"wegas-input-slider\"></div>" +
+                "    <div class=\"wegas-input-container\">" +
+                "      <input class=\"wegas-input\" />" +
+                "    </div>" +
+                "    <div class=\"wegas-input-status\"></div>" +
                 "  </div>" +
-                "  <div class=\"wegas-input-status\"></div>" +
                 "</div>",
             initializer: function() {
                 this.xSlider = null;
@@ -451,8 +453,10 @@ YUI.add("wegas-number-input", function(Y) {
         {
             CONTENT_TEMPLATE: "<div>" +
                 "<div class=\"wegas-input-label\"></div>" +
-                "<div class=\"boxes\"></div>" +
-                "<div style=\"clear: both;\"></div>" +
+                "<div class=\"wegas-input-body\">" +
+                "  <div class=\"boxes\"></div>" +
+                "  <div style=\"clear: both;\"></div>" +
+                "</div>" +
                 "</div>",
             initializer: function() {},
             renderUI: function() {

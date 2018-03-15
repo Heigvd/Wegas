@@ -28,11 +28,13 @@ YUI.add('wegas-text-input', function(Y) {
 
             CONTENT_TEMPLATE: '<div>' +
                 '<div class="wegas-input-label"></div>' +
-                '<div class="wegas-text-input-editor"></div>' +
-                '<div class="wegas-text-input-toolbar">' +
-                '<span class="cc"></span>' +
-                '<span class="wc"></span>' +
-                '<span class="status"></span>' +
+                '<div class="wegas-input-body">' +
+                '  <div class="wegas-text-input-editor"></div>' +
+                '  <div class="wegas-text-input-toolbar">' +
+                '    <span class="cc"></span>' +
+                '    <span class="wc"></span>' +
+                '    <span class="status"></span>' +
+                '  </div>' +
                 '</div>' +
                 '</div>',
             initializer: function() {
@@ -543,7 +545,9 @@ YUI.add('wegas-text-input', function(Y) {
         {
             CONTENT_TEMPLATE: '<div>' +
                 '<div class="wegas-input-label"></div>' +
-                '<div class="wegas-input-text"></div>' +
+                '<div class="wegas-input-body">' +
+                '  <div class="wegas-input-text"></div>' +
+                '</div>' +
                 '</div>',
             initializer: function() {
                 this.handlers = [];
