@@ -25,6 +25,8 @@
     font-size: 14px;
     padding-right: 6px;
     cursor:pointer;
+    display: inline-block;
+    width: 14px;
 }
 
 .yui3-treenode-content-toggle:before {
