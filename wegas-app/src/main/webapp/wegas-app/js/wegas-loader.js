@@ -70,9 +70,11 @@ YUI().use(function(Y) {
             },
             "wegas-i18n-global": {
                 path: 'js/i18n/i18n-global-min.js',
-                requires: ['wegas-i18n', 'datatype-number']
+                requires: ['wegas-i18n']
             },
-            "wegas-i18n": {},
+            "wegas-i18n": {
+                requires: ['datatype-number']
+            },
             /**
              * Persistence
              */
