@@ -519,6 +519,12 @@
 /*
  * WhInputs
  */
+.wegas-whview .wegas-string-input.readonly input {
+    background-color: transparent;
+    border: none;
+    color: #333333;
+}
+
 .wegas-whview .wegas-input-body {
     border : 1px solid #d8d9dd;
     border-bottom-width:  3px;
@@ -527,6 +533,15 @@
     box-sizing: border-box;
 }
 
+
+.wegas-whview .wegas-text-input-editor .readonly {
+    border: none;
+    background-color: transparent;
+}
+
+.wegas-whview .wegas-text-input .wegas-input-body .readonly {
+    padding: 5px 16px;
+}
 .wegas-whview .wegas-text-input .wegas-input-body {
     padding: 0;
 }
