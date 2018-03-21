@@ -125,8 +125,12 @@ YUI.add("wegas-review-widgets", function(Y) {
                     success: function(e) {
                         ctx._monitoredData = e.response.results;
                         ctx.syncTable();
-                    }//,
-                    //failure: reject
+                    },
+                    failure: function(e) {
+                        if (e && e.response && e.response.results && e.response.results.message && e.response.results.message.indexOf("undefined in ReviewHelper")) {
+                            ctx.showMessage("error", "Please include server script : \"wegas-reviewing/scripts/server/\"");
+                        }
+                    }
                 }
             });
             //});
@@ -897,7 +901,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             //this.plug(Y.Plugin.RememberExpandedTreeView);
 
-            this._panel = new Y.Wegas.AbsoluteLayout({
+            this._panel = new Y.Wegas.FlexList({
                 cssClass: "wegas-review-treeview__panel",
                 editable: false
             });

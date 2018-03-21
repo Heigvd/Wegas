@@ -168,7 +168,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
@@ -433,7 +433,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "EditEntityArrayFieldAction",
                         cfg: {

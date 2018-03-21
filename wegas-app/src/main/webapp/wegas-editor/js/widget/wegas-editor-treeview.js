@@ -349,6 +349,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
                         case "New":
                         case "Add":
                         case "Copy":
+                        case "Duplicate":
                         case "View":
                         case "Open in editor":
                         case "Open":

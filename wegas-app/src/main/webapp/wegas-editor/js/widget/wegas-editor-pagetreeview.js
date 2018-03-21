@@ -441,7 +441,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                      }, */
                         {
                             type: "Button",
-                            label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                            label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                             cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                             on: {
                                 click: Y.bind(host.duplicatePage, host, data.page)

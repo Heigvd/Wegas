@@ -529,7 +529,7 @@ YUI.add("wegas-parent", function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "DuplicateWidgetAction"
                     }]

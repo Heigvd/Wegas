@@ -128,7 +128,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             i = EditEntityAction.stackedIcon(i, 'fa-sort-alpha-asc');
                             i.tooltip = 'Sort contents alphabetically';
                             break;
-                        case "Copy":
+                        case "Duplicate":
                             i = EditEntityAction.stackedIcon(i, 'fa-files-o');
                             i.tooltip = 'Duplicate';
                             break;
@@ -537,6 +537,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             Y.Widget.getByNode(".wegas-layout-right > .wegas-widget").unplug(Plugin.WidgetToolbar);
         },
         destroyEditionTab: function() {
+            this.unsaved = false;
             Wegas.TabView.destroyTab(Wegas.TabView.getEditorTabLabel());
         },
         /**
@@ -963,7 +964,6 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 /*if (EditEntityAction.currentEntity) {
                                  if (EditEntityAction.currentEntity.get(ID) === entity.get(ID)) {
                                  EditEntityAction.destroyEditionTab();
-
                                  } else if (entity.get("@class") === "ListDescriptor") {
                                  for (i = 0; i < entity.get("items").length; i += 1) {
                                  // Who cares about deeper levels ? TODO...
@@ -1151,7 +1151,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     case "Leave":
                     case "Delete":
                     case "New":
-                    case "Copy":
+                    case "Duplicate":
                     case "Open":
                     case "Edit":
                         i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() +

@@ -6,7 +6,17 @@
  * Licensed under the MIT License
  */
 .wegas-template-box-value {
-    font-size: 7pt;}
+    font-size: 7pt;
+}
+
+.wegas-template-box-unit.padding{
+    width:auto;
+    background-color: transparent;
+    border: none;
+    line-height:11px;
+    font-size: 11px;
+}
+
 .wegas-template-box-unit {
     width:5px;
     height:10px;

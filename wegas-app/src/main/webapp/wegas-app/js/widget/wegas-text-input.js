@@ -196,7 +196,6 @@ YUI.add('wegas-text-input', function(Y) {
             },
             getPayload: function(value) {
                 var desc = this._descriptor || this.get('variable.evaluated');
-
                 return {
                     descriptor: desc,
                     value: value
@@ -367,11 +366,9 @@ YUI.add('wegas-text-input', function(Y) {
             processSave: function(value, descriptor) {
                 var theVar = descriptor.getInstance(),
                     cb = this.get('contentBox');
-
                 this.waitForValue = value;
                 this._initialContent = value;
                 theVar.set('value', value);
-
                 Wegas.Facade.Variable.script.remoteEval(
                     'Variable.find(gameModel, "' +
                     descriptor.get('name') +
@@ -396,7 +393,6 @@ YUI.add('wegas-text-input', function(Y) {
             },
             _saved: function(value) {
                 this.fire('saved', this.getPayload(value));
-
                 if (this.waitForValue === value) {
                     this.waitForValue = null;
                     if (this.queuedValue) {
@@ -410,7 +406,6 @@ YUI.add('wegas-text-input', function(Y) {
             save: function(value) {
                 var desc = this.get('variable.evaluated'),
                     cb = this.get('contentBox');
-
                 if (this.get('selfSaving')) {
                     cb.addClass('loading');
                 }
@@ -500,7 +495,6 @@ YUI.add('wegas-text-input', function(Y) {
                 },
                 countBlank: {
                     type: 'boolean',
-
                     value: false,
                     view: {label: 'Count blank'}
                 },
@@ -537,7 +531,6 @@ YUI.add('wegas-text-input', function(Y) {
         }
     );
     Y.Wegas.TextInput = TextInput;
-
     StringInput = Y.Base.create(
         'wegas-string-input',
         Y.Widget,
@@ -573,7 +566,6 @@ YUI.add('wegas-text-input', function(Y) {
             },
             getPayload: function(value) {
                 var desc = this._descriptor || this.get('variable.evaluated');
-
                 return {
                     descriptor: desc,
                     value: value
@@ -618,9 +610,10 @@ YUI.add('wegas-text-input', function(Y) {
                         if (!iValue) {
                             values = [];
                         } else {
-                            values = JSON.parse(iValue);
-                            if (!Y.Lang.isArray(values)) {
-                                values = [values];
+                            if (iValue.indexOf("[") !== 0) {
+                                values = [iValue];
+                            } else {
+                                values = JSON.parse(iValue);
                             }
                         }
                         if (values.indexOf(value) >= 0) {
@@ -737,7 +730,6 @@ YUI.add('wegas-text-input', function(Y) {
                         ];
                         for (i in allowedValues) {
                             value = allowedValues[i];
-
                             content.push(
                                 '<li data-value=' +
                                 JSON.stringify(value) +
@@ -775,7 +767,7 @@ YUI.add('wegas-text-input', function(Y) {
                     value = inst.get('value'),
                     values,
                     i,
-                    readonly = this.get('readonly.evaluated'),
+                    readonly = this.get('readonly.evaluated') || false, // toggleClass required a well-defined boolean!
                     input,
                     select,
                     option,
@@ -826,10 +818,18 @@ YUI.add('wegas-text-input', function(Y) {
                             value = '[]';
                         }
                         // value shall always be an array (even an empty one!)
-                        values = JSON.parse(value);
-                        if (!Y.Lang.isArray(values)) {
-                            values = [values];
+                        if (value.indexOf("[") !== 0) {
+                            values = [value];
+                        } else {
+                            values = JSON.parse(value);
                         }
+                        var maxReached = values.length >= this.get("numSelectable");
+
+                        select.toggleClass("maximumReached", maxReached);
+
+                        /*if (!Y.Lang.isArray(values)) {
+                         values = [values];
+                         }*/
                         for (i in values) {
                             select
                                 .all('li[data-value="' + values[i] + '"]')
@@ -870,14 +870,8 @@ YUI.add('wegas-text-input', function(Y) {
                 }
                 ul = this.get(CONTENTBOX).one('ul');
                 if (ul) {
-                    this.handlers.push(
-                        this.get(CONTENTBOX).delegate(
-                        'click',
-                        this.updateFromUl,
-                        'li',
-                        this
-                        )
-                        );
+                    this.handlers.push(this.get(CONTENTBOX).delegate( 'click',
+                        this.updateFromUl, 'li', this));
                 }
                 this.on('save', this._save);
             },
@@ -928,6 +922,7 @@ YUI.add('wegas-text-input', function(Y) {
                     type: 'object',
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     required: true,
+                    index: 1,
                     view: {
                         type: 'variableselect',
                         label: 'Variable',
@@ -939,34 +934,57 @@ YUI.add('wegas-text-input', function(Y) {
                     type: 'boolean',
                     value: false,
                     required: true,
+                    index: 52,
+                    visible: function(val, formVal) {
+                        if (formVal.variable) {
+                            var variable = Y.Wegas.Facade.Variable.script.localEval(formVal.variable)
+                            return variable && variable.get("allowedValues").length > 0;
+                        }
+                        return false;
+                    },
                     view: {
                         type: 'scriptcondition',
-                        label: 'Disable Choices when readonly'
+                        label: 'Display choices when readonly'
                     }
                 },
                 selfSaving: {
                     type: 'boolean',
+                    index: 100,
                     value: true,
                     view: {label: 'Auto save'}
                 },
                 clickSelect: {
                     type: 'boolean',
                     value: false,
+                    index: 31,
+                    visible: function(val, formVal) {
+                        if (formVal.variable) {
+                            var variable = Y.Wegas.Facade.Variable.script.localEval(formVal.variable)
+                            return variable && variable.get("allowedValues").length > 0;
+                        }
+                        return false;
+                    },
                     view: {label: 'Click select'}
                 },
                 allowNull: {
                     type: 'boolean',
+                    index: 100,
                     value: true,
                     view: {label: 'Allow null'}
                 },
                 numSelectable: {
                     type: 'number',
                     value: 1,
+                    index: 32,
+                    visible: function(val, formVal) {
+                        return formVal.clickSelect;
+                    },
                     view: {label: 'Number of selectable'}
                 },
                 readonly: {
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     value: false,
+                    index: 100,
                     required: true,
                     view: {
                         label: 'Read only',
@@ -975,6 +993,7 @@ YUI.add('wegas-text-input', function(Y) {
                 },
                 label: {
                     type: 'string',
+                    index: 0,
                     view: {label: 'Label'}
                 }
             }

@@ -136,6 +136,25 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> impleme
         this.getInstance(p).setValue(value);
     }
 
+    /**
+     *
+     * @param p
+     * @param value
+     * @return
+     */
+    public boolean isValueSelected(Player p, String value) {
+        StringInstance instance = this.getInstance(p);
+
+        String[] values = instance.parseValues(instance.getValue());
+
+        for (String v : values) {
+            if (v != null && v.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isValueAllowed(String value) {
         return allowedValues == null || allowedValues.isEmpty() || value.isEmpty() || allowedValues.contains(value);
     }

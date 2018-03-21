@@ -569,7 +569,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
 
                 form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
                 form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                     cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
                         click: Y.bind(function () {
@@ -811,7 +811,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
 
                 form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
                 form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                     cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
                         click: Y.bind(function () {

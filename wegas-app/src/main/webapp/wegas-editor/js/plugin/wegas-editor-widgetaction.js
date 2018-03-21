@@ -78,7 +78,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                             case 'Delete':
                                 i.label = Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete');
                                 break;
-                            case 'Copy':
+                            case 'Duplicate':
                                 i.label = Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate');
                                 break;
                             case 'Edit':

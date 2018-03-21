@@ -187,7 +187,7 @@ YUI.add('wegas-widget', function(Y) {
             },
             {
                 type: BUTTON,
-                label: 'Copy',
+                label: 'Duplicate',
                 plugins: [
                     {
                         fn: 'DuplicateWidgetAction'

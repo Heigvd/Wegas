@@ -374,7 +374,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 {
                     type: BUTTON,
-                    label: 'Copy',
+                    label: 'Duplicate',
                     plugins: [
                         {
                             fn: 'DuplicateEntityAction'
@@ -630,7 +630,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
                             return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
                         }
-                        return true;
+                        return false;
                     },
                     view: {
                         label: "Label",
@@ -695,6 +695,28 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     localEval: function(player) {
                         return this.getInstance(player).get(VALUE);
                     }
+                },
+                isValueSelected: {
+                    returns: BOOLEAN,
+                    arguments: [SELFARG, {
+                            type: STRING,
+                            view: {
+                                type: "entityarrayfieldselect",
+                                field: "allowedValues"
+                            }
+                        }]/*,
+                    localEval: function(player, v) {
+                        var value = this.getInstance(player).get(VALUE);
+                        if (value && value.indexOf("[") === 0) {
+                            var values = JSON.parse(value);
+                            for (i in values){
+                                if (values[i] === v){
+                                    return true;
+                                }
+                            }
+                        }
+                        return v === value;
+                    }*/
                 }
             }
         }
@@ -747,7 +769,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
                             return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
                         }
-                        return true;
+                        return false;
                     },
                     view: {
                         label: "Label",
@@ -907,7 +929,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
                             return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
                         }
-                        return true;
+                        return false;
                     },
                     view: {
                         label: "Label",
@@ -954,21 +976,13 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             required: true,
                             errored: function(val, formVal) {
                                 var errors = [],
-                                    max = typeof formVal.maxValue === 'number'
-                                    ? formVal.maxValue
-                                    : Infinity,
-                                    min = typeof formVal.minValue === 'number'
-                                    ? formVal.minValue
-                                    : -Infinity;
+                                    max = typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity,
+                                    min = typeof formVal.minValue === 'number' ? formVal.minValue : -Infinity;
                                 if (val > max) {
-                                    errors.push(
-                                        'Default value is greater than maximum'
-                                        );
+                                    errors.push('Default value is greater than maximum');
                                 }
                                 if (val < min) {
-                                    errors.push(
-                                        'Default value is less than minimum'
-                                        );
+                                    errors.push('Default value is less than minimum');
                                 }
                                 return errors.join(', ');
                             },
@@ -1331,7 +1345,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 {
                     type: BUTTON,
-                    label: 'Copy',
+                    label: 'Duplicate',
                     plugins: [
                         {
                             fn: 'DuplicateEntityAction'

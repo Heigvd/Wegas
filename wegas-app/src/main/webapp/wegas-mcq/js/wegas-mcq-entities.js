@@ -54,7 +54,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 value: "QuestionDescriptor"
             },
             title: {
-                type: NULLSTRING,
+                type: STRING,
                 optional: true,
                 value: "",
                 index: -1,
@@ -139,7 +139,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: 10
             },
             description: {
-                type: NULLSTRING,
+                type: STRING,
+                value :"",
+                optional: true,
                 format: HTML,
                 index: 12,
                 view: {type: HTML, label: "Description"}
@@ -231,7 +233,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
@@ -352,7 +354,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 },
                 description: {
-                    type: NULLSTRING,
+                    type: STRING,
+                    value:"",
                     optional: true,
                     view: {
                         type: HTML,
@@ -475,7 +478,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         }]
                 }, {
                     type: BUTTON,
-                    label: "Copy",
+                    label: "Duplicate",
                     plugins: [{
                             fn: "DuplicateEntityAction"
                         }]
@@ -737,7 +740,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 {
                     type: BUTTON,
-                    label: "Copy",
+                    label: "Duplicate",
                     plugins: [{
                             fn: "DuplicateEntityAction"
                         }]
@@ -930,7 +933,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "EditEntityArrayFieldAction",
                         cfg: {
@@ -1202,7 +1205,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
