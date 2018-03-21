@@ -100,7 +100,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 label = (questionInstance.get("validated") ? "" : (question.get("maxReplies") === 1) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone'));
 
             return  '<div class="'
-                + (this.get("highlightUnanswered") ? "unread" : "")
+                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unread" : "")
                 + '"><div class="index-label">'
                 + (question.get("title") || question.get("label") || "undefined") + "</div>"
                 + '<div class="index-status">' + label + "</div>"
