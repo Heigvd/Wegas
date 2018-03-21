@@ -12,7 +12,7 @@ function optionNameToString(result, name) {
 }
 function EntityArrayFieldSelect(props) {
     const Y = getY();
-    const { field, returnAttr, scope, entity, name, ...restView } = props.view;
+    const {field, returnAttr, scope, entity, name, ...restView} = props.view;
     const computedEntity = entity ?
         Y.Wegas.Facade.Variable.cache.find('name', entity) :
         Y.Plugin.EditEntityAction.currentEntity;
@@ -23,12 +23,12 @@ function EntityArrayFieldSelect(props) {
         results = computedEntity.getInstance().get(field);
     }
     const choices = results.map(r => ({
-        value: r.get(returnAttr || 'name'),
-        label: r.getEditorLabel() || optionNameToString(r, name)
-    }));
+            value: (r && r.get ? r.get(returnAttr || 'name') : r),
+            label: (r && r.get ? r.getEditorLabel() || optionNameToString(r, name) : r)
+        }));
     return (
-        <Select {...props} view={{ ...restView, choices }} />
-    );
+        <Select {...props} view={{...restView, choices}} />
+        );
 }
 
 EntityArrayFieldSelect.propTypes = {
