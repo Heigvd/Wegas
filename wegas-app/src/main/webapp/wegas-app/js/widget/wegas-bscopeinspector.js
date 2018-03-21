@@ -49,7 +49,7 @@ YUI.add('wegas-bscopeinspector', function(Y) {
             }
             return "✗";
         },
-        instanceUpdateTrigger:function(e){
+        instanceUpdateTrigger: function(e) {
             var theVar = this.get("variable.evaluated");
             e.entity;
             this.syncUI();
@@ -67,8 +67,7 @@ YUI.add('wegas-bscopeinspector', function(Y) {
                 output = "";
 
             this.count = 0;
-            output += "<li>GameModel: " + this.formatInstance(instances[0], mine) + "</li>";
-            output += "<li>Game: " + this.formatInstance(instances[game.get("id")], mine) + "</li>";
+            output += "<li>Global: " + this.formatInstance(instances[0], mine) + "</li>";
 
             output += "<ul>";
             for (i in game.get("teams")) {
@@ -100,11 +99,12 @@ YUI.add('wegas-bscopeinspector', function(Y) {
         EDITORNAME: "BScopeInspector",
         ATTRS: {
             variable: {
+                type: "object",
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 view: {
                     type: "variableselect",
                     label: "Variable",
-                    classFilter: ["TextDescriptor"]
+                    classFilter: ["TextDescriptor", "NumberDescriptor", "StringDescriptor"]
                 }
             }
         }
