@@ -140,7 +140,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             description: {
                 type: STRING,
-                value :"",
+                value: "",
                 optional: true,
                 format: HTML,
                 index: 12,
@@ -355,7 +355,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 description: {
                     type: STRING,
-                    value:"",
+                    value: "",
                     optional: true,
                     view: {
                         type: HTML,
@@ -650,7 +650,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 }
                             },
                             answer: {
-                                type: NULLSTRING,
+                                type: STRING,
+                                value: "",
                                 optional: true,
                                 index: 1,
                                 view: {
