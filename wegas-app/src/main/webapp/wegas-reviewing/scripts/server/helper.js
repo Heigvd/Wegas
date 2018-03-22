@@ -23,6 +23,7 @@ var ReviewHelper = (function() {
      * { 
      *  "type" : "GradeSummary",
      *  name: "name1", 
+     *  label: "Name 1",
      *  min: a
      *  max: b
      *  mean: _x
@@ -44,6 +45,7 @@ var ReviewHelper = (function() {
         stats.type = "GradeSummary";
         stats.id = descriptor.getId();
         stats.name = descriptor.getName();
+        stats.label = descriptor.getLabel();
         stats.data = (includeData ? values : []);
 
         return stats;
@@ -54,6 +56,7 @@ var ReviewHelper = (function() {
      * {
      *  type" : "CategorizationSummary",
      *  name: "name2",
+     *  label: "Name 2",
      *  histogram: {
      *      "CategoryA" : count
      *      "CategoryB" : count
@@ -81,6 +84,7 @@ var ReviewHelper = (function() {
             type: "CategorizationSummary",
             name: descriptor.getName(),
             id: descriptor.getId(),
+            label: descriptor.getLabel(),
             numberOfValues: numberOfValues,
             histogram: histogram,
             data: (includeData ? values : [])
@@ -90,6 +94,7 @@ var ReviewHelper = (function() {
     /* {
      *  type" : "TextSummary",
      *  name: "name3",
+     *  label: "Name 3",
      *  averageNumberOfWords: ~x
      *  averageNumberOfCharacters: ~y
      * }
@@ -108,6 +113,7 @@ var ReviewHelper = (function() {
         return {
             type: "TextSummary",
             name: descriptor.getName(),
+            label: descriptor.getLabel(),
             id: descriptor.getId(),
             numberOfValues: values.length,
             averageNumberOfWords: wc,
@@ -145,7 +151,7 @@ var ReviewHelper = (function() {
 
         structure = {
             id: "ev-" + evDescriptor.getId(),
-            title: evDescriptor.getName(),
+            title: evDescriptor.getLabel(),
             items: []
         };
 

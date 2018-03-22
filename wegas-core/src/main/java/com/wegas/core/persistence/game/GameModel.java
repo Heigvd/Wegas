@@ -59,12 +59,10 @@ import org.slf4j.LoggerFactory;
 @Table(
         indexes = {
             @Index(columnList = "createdby_id"),
-            @Index(columnList = "basedon_gamemodelid"),
-            @Index(columnList = "model_gamemodelid")
+            @Index(columnList = "basedon_id")
         }
 )
-public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, JCRClient {
-
+public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
     private static final Logger logger = LoggerFactory.getLogger(GameModel.class);
 
     private static final long serialVersionUID = 1L;
@@ -89,7 +87,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @Id
-    @Column(name = "gamemodelid")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonView(Views.IndexI.class)
     private Long id;
@@ -167,13 +164,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * hierarchy (other VariableDescriptor can be placed inside of a
      * ListDescriptor's items List).
      */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "rootgamemodel_id")
-    @OrderColumn
-    @JsonView(Views.Export.class)
-
+    @OneToMany(mappedBy = "root", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OrderColumn(name = "gm_items_order")
+    //@JsonManagedReference
     @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
-    private List<VariableDescriptor> childVariableDescriptors = new ArrayList<>();
+    private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
      * All gameModelScoped instances
@@ -194,28 +189,25 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * Holds all the scripts contained in current game model.
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "scriptlibrary_gamemodelid")
-    @WegasEntityProperty(includeByDefault = false)
+    @OneToMany(mappedBy = "scriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
      *
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "csslibrary_gamemodelid")
-    @WegasEntityProperty(includeByDefault = false)
+    @OneToMany(mappedBy = "csslibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
      *
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "clientscriptlibrary_gamemodelid")
-    @WegasEntityProperty(includeByDefault = false)
+    @OneToMany(mappedBy = "clientscriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
@@ -496,7 +488,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         List<VariableInstance> instances = new ArrayList<>();
         instances.addAll(getPrivateInstances());
         for (Game g : getGames()) {
-            instances.addAll(g.getAllInstances());
+            for (Team t : g.getTeams()) {
+                instances.addAll(t.getAllInstances());
+            }
         }
         return instances;
     }
@@ -512,7 +506,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @JsonIgnore
     public List<VariableDescriptor> getChildVariableDescriptors() {
-        return childVariableDescriptors;
+        return this.getItems();
     }
 
     /**
@@ -521,14 +515,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonProperty
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
         this.setItems(variableDescriptors);
-
-        this.variableDescriptors.clear();
-        this.propagateGameModel();
     }
 
     @Override
     public void setChildParent(VariableDescriptor child) {
-        child.setRootGameModel(this);
+        child.setRoot(this);
     }
 
     /**
@@ -855,12 +846,19 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Override
     @JsonView(Views.ExportI.class)
     public List<VariableDescriptor> getItems() {
-        return this.getChildVariableDescriptors();
+        return this.items;
     }
 
     @Override
     public void resetItemsField() {
         this.childVariableDescriptors = new ArrayList<>();
+    }
+
+    public void setItems(List<VariableDescriptor> items) {
+        this.items = new ArrayList<>();
+        for (VariableDescriptor vd : items) {
+            this.addItem(vd);
+        }
     }
 
     @Override

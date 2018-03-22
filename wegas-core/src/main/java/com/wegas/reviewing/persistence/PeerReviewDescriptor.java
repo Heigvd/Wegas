@@ -10,6 +10,12 @@ package com.wegas.reviewing.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -63,10 +69,11 @@ import javax.validation.constraints.NotNull;
 @Table(
         indexes = {
             @Index(columnList = "fbcomments_id"),
-            @Index(columnList = "toreview_variabledescriptor_id"),
+            @Index(columnList = "toreview_id"),
             @Index(columnList = "feedback_id")
         }
 )
+@WegasEntity(callback = PeerReviewDescriptor.PRDCallback.class)
 public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance> {
 
     private static final long serialVersionUID = 1L;
@@ -160,7 +167,22 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @WegasEntityProperty
     private EvaluationDescriptorContainer fbComments;
 
+    Helper.setNamesAndLabelForEvaluationList (
+
+
+
+
+
+    this.getFeedback().getEvaluations());
+    Helper.setNamesAndLabelForEvaluationList (
+
+
+
+
+
+    this.getFbComments().getEvaluations());
     /**
+>>>>>>> origin/master
      * Return the variable that will be reviewed
      *
      * @return the variable that will be reviewed
@@ -320,5 +342,17 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @Override
     public void revive(Beanjection beans) {
         beans.getReviewingFacade().revivePeerReviewDescriptor(this);
+    }
+
+    private static class PRDCallback implements WegasCallback {
+
+        @Override
+        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+            if (entity instanceof PeerReviewDescriptor) {
+                PeerReviewDescriptor prd = (PeerReviewDescriptor) entity;
+                Helper.setNamesAndLabelForEvaluationList(prd.getFeedback().getEvaluations());
+                Helper.setNamesAndLabelForEvaluationList(prd.getFbComments().getEvaluations());
+            }
+        }
     }
 }

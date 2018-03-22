@@ -12,8 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -30,10 +30,10 @@ import javax.persistence.*;
 @JsonTypeName(value = "Message")
 
 @Table(indexes = {
-    @Index(columnList = "inboxinstance_variableinstance_id")
+    @Index(columnList = "inboxinstance_id")
 })
 
-public class Message extends NamedEntity implements DatedEntity {
+public class Message extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -190,8 +190,6 @@ public class Message extends NamedEntity implements DatedEntity {
         return this.getTime();
     }
 
-
-
     /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getInboxInstance().getEntities();
@@ -229,17 +227,6 @@ public class Message extends NamedEntity implements DatedEntity {
      */
     public void setBody(String body) {
         this.body = body;
-    }
-
-    @Override
-    @JsonIgnore
-    public String getName() {
-        return this.subject;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.subject = name;
     }
 
     @Override

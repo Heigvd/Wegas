@@ -10,7 +10,6 @@ package com.wegas.unit.i18n;
 import com.wegas.utils.AbstractTest;
 import java.io.IOException;
 import java.util.List;
-import org.glassfish.embeddable.GlassFishException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +24,7 @@ public abstract class AbstractClientLanguageTest extends AbstractTest {
     protected abstract List<String> getScripts();
 
     @Before
-    public void setUpGM() throws IOException, GlassFishException {
+    public void setUpGM() throws IOException {
         /* insert script from files*/
         List<String> scripts = this.getScripts();
         scripts.add(0, SCRIPTROOT + "wegas-app/tests/scripts/test-i18n-client.js");

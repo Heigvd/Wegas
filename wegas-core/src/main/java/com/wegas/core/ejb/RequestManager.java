@@ -165,6 +165,9 @@ public class RequestManager implements RequestManagerI {
     @Inject
     private RequestFacade requestFacade;
 
+    @Inject
+    private WebsocketFacade websocketFacade;
+
     /**
      * SL4j Logger
      */
@@ -1007,6 +1010,11 @@ public class RequestManager implements RequestManagerI {
                 concurrentHelper.unlockFull(entry.getKey(), audience);
             }
         }
+
+        if (currentUser != null) {
+            websocketFacade.touchOnlineUser(currentUser.getId());
+        }
+
         if (this.currentScriptContext != null) {
             this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
             this.currentScriptContext = null;

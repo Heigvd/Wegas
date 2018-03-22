@@ -76,7 +76,6 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                 ask_comment: "Que pensez vous du feedback reçu ?",
                 comment: "Ce que vous pensez du feedback reçu",
                 author_comment: "Ce que l'auteur pense de votre feedback",
-                oob: "Votre note ",
                 noValueProvided: "Aucune évaluation n'a été fournie",
                 didNotProvide: "n'a pas fourni d'évaluation",
                 didNotProvidePluralized: "n'ont pas fourni d'évaluation",

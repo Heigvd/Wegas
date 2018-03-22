@@ -11,9 +11,4 @@
         <property name="DatabaseName" value="wegas_dev"/>
         <property name="driverClass" value="org.postgresql.Driver"/>
     </jdbc-connection-pool>
-    <connector-resource enabled="true" jndi-name="jcr/jackrabbit" pool-name="jackrabbit-connection-pool"></connector-resource>
-    <connector-connection-pool name="jackrabbit-connection-pool" connection-definition-name="javax.jcr.Repository" resource-adapter-name="jackrabbit-jca-2.4.2" max-pool-size="200" pool-resize-quantity="2" steady-pool-size="8" ping="true">
-        <property name="ConfigFile" value="JRFile/repository.xml"/>
-        <property name="HomeDir" value="JRFile"/>
-    </connector-connection-pool>
 </resources>

@@ -44,9 +44,21 @@
     height: 100%;
 }
 
+
 .wegas-stdmode .wegas-treeview-advanced-children .yui3-treenode-content-toggle{
-    display: none
+    cursor: default;
+    /*display: none*/
 }
+.wegas-stdmode .wegas-treeview-advanced-children .yui3-treenode-content-toggle:before {
+    color: #cccccc;
+    content : "├";
+    /*├ └─ */
+}
+
+.wegas-stdmode .wegas-treeview-advanced-children:last-child .yui3-treenode-content-toggle:before {
+    content : "└";
+}
+
 .editor-administrator-button,
 .wegas-rolerights-tab {
     display: none;
@@ -65,8 +77,8 @@
 
 #centerTabView .yui3-tabview-panel:empty:after,
 #rightTabView .yui3-tabview-panel:empty:after,
-#centerTabView > .yui3-tabview-content > .yui3-tabview-panel:after,
-#rightTabView > .yui3-tabview-content > .yui3-tabview-panel:after,
+/*#centerTabView > .yui3-tabview-content > .yui3-tabview-panel:after,
+#rightTabView > .yui3-tabview-content > .yui3-tabview-panel:after,*/
 #centerTabView .yui3-tabview-panel .panel-inner:empty:after,
 #rightTabView .yui3-tabview-panel .panel-inner:empty:after,
 #centerTabView .yui3-tabview-panel .empty-edit-panel:after,

@@ -15,7 +15,7 @@
         <ui:define name="head">
 
             <!-- Stylesheets from current game model style library -->
-            <style type="text/css">#{gameController.styleSheets}</style>
+            <style type="text/css">#{gameController.combinedStyleSheet}</style>
 
             <!-- Stylesheets from current game model cssUri property -->
             <ui:repeat rendered="#{gameController.currentGameModel.properties.cssUri != ''}"

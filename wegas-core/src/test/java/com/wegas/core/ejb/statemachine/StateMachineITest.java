@@ -15,7 +15,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
-import com.wegas.core.persistence.variable.scope.GameScope;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
@@ -49,7 +49,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         NumberDescriptor testNumber2;
         testNumber2 = new NumberDescriptor("number2");
         testNumber2.setDefaultInstance(new NumberInstance(0));
-        testNumber2.setScope(new GameScope());
+        testNumber2.setScope(new GameModelScope());
 
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
@@ -201,7 +201,7 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         NumberDescriptor highScore = new NumberDescriptor("highScore");
         highScore.setDefaultInstance(new NumberInstance(0));
-        highScore.setScope(new GameScope());
+        highScore.setScope(new GameModelScope());
 
         NumberDescriptor personalScore = new NumberDescriptor("personalScore");
         personalScore.setDefaultInstance(new NumberInstance(0));

@@ -399,9 +399,19 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             name: {
                 type: STRING,
+                view: {
+                    className: 'wegas-advanced-feature',
+                    label: 'Script alias',
+                    description: "Internal name"
+                }
+            },
+            label: {
+                type: STRING,
+                transient: false,
                 required: true,
                 view: {
-                    label: "Name"
+                    label: "Name",
+                    description: "Displayed to players"
                 }
             },
             index: {
@@ -420,8 +430,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             parentDescriptorId: {
                 type: NUMBER,
                 optional: true,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             }
             /*,
@@ -451,7 +461,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 index: 10,
                 cfg: {
                     type: BUTTON,
-                    label: "Copy",
+                    label: "Duplicate",
                     plugins: [{
                             fn: "EditEntityArrayFieldAction",
                             cfg: {
@@ -481,6 +491,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * TextEvaluationDescriptor
      */
     persistence.TextEvaluationDescriptor = Y.Base.create("TextEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+        getIconCss: function() {
+            return 'fa fa-paragraph';
+        }
     }, {
         ATTRS: {
             "@class": {
@@ -497,24 +510,52 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         },
         getMinValue: function() {
             return this.get("minValue");
+        },
+        getIconCss: function() {
+            return 'fa wegas-icon-numberdescriptor';
         }
     }, {
+        EDITORNAME: 'Number',
         ATTRS: {
             "@class": {
                 value: "GradeDescriptor"
             },
             minValue: {
-                type: NUMBER,
+                type: ['null', NUMBER],
                 optional: true,
+                errored: function(val, formVal) {
+                    var errors = [],
+                        max = typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity,
+                        min = typeof val === 'number' ? val : -Infinity;
+                    if (min > max) {
+                        errors.push('Minimum is greater than maximum');
+                    }
+                    return errors.join(', ');
+                },
                 view: {
-                    label: "Minimum"
+                    label: 'Minimum',
+                    placeholder: "-∞",
+                    layout: 'shortInline'
                 }
             },
             maxValue: {
-                type: NUMBER,
+                type: ['null', NUMBER],
                 optional: true,
+                errored: function(val, formVal) {
+                    var errors = [],
+                        max = typeof val === 'number' ? val : Infinity,
+                        min = typeof formVal.minValue === 'number'
+                        ? formVal.minValue
+                        : -Infinity;
+                    if (max < min) {
+                        errors.push('Maximum is less than minimum');
+                    }
+                    return errors.join(', ');
+                },
                 view: {
-                    label: "Maximum"
+                    label: 'Maximum',
+                    placeholder: "∞",
+                    layout: 'shortInline'
                 }
             }
         }
@@ -523,6 +564,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * CategorizedEvaluationDescriptor
      */
     persistence.CategorizedEvaluationDescriptor = Y.Base.create("CategorizedEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+        getIconCss: function() {
+            return "fa fa-list-ul";
+        }
     }, {
         ATTRS: {
             "@class": {

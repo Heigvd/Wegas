@@ -15,7 +15,10 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.mcq.persistence.*;
+import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
+import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -519,6 +522,20 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);
     }
 
+    public void validateQuestion(final VariableInstance question, final Player player) throws WegasRuntimeException {
+        if (question instanceof QuestionInstance) {
+            this.validateQuestion((QuestionInstance) question, player);
+        } else if (question instanceof WhQuestionInstance) {
+            this.validateQuestion((WhQuestionInstance) question, player);
+        }
+    }
+
+    @Override
+    public void validateQuestion(final WhQuestionInstance validateQuestion, final Player player) throws WegasRuntimeException {
+        validateQuestion.setValidated(true);
+        scriptEvent.fire(player, "whValidate", new WhValidate(validateQuestion));
+    }
+
     /**
      * Validates a question that's marked as checkbox type: sequentially
      * validates all replies (i.e. selected choices) and processes all other
@@ -591,9 +608,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      */
     @Override
     public void validateQuestion(Long questionInstanceId, Player player) {
-        QuestionInstance questionInstance = getEntityManager().find(QuestionInstance.class, questionInstanceId);
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
-        this.validateQuestion(questionInstance, player);
+        VariableInstance question = getEntityManager().find(VariableInstance.class, questionInstanceId);
+        requestFacade.getRequestManager().lock("MCQ-" + question.getId(), question.getEffectiveOwner());
+        this.validateQuestion(question, player);
     }
 
     /**
@@ -615,6 +632,17 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         logger.error("ICI *********************************************** ICI");
         getEntityManager().remove(entity);
         entity.getQuestion().remove(entity);
+    }
+
+    public static class WhValidate {
+
+        final public WhQuestionDescriptor whDescriptor;
+        final public WhQuestionInstance whInstance;
+
+        private WhValidate(WhQuestionInstance validateQuestion) {
+            this.whInstance = validateQuestion;
+            this.whDescriptor = (WhQuestionDescriptor) validateQuestion.findDescriptor();
+        }
     }
 
     /**

@@ -681,18 +681,23 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             this.set(TEXT, a.join(token));
         }
     }, {
-        EDITORNAME: "server text",
-        ATTRS: {
-            "@class": {
-                value: "DialogueState"
-            },
-            version: VERSION_ATTR_DEF,
-            text: {
-                type: STRING,
-                value: null,
-                index: -1,
-                validator: function(s) {
-                    return s === null || Y.Lang.isString(s);
+            EDITORNAME: "server text",
+            ATTRS: {
+                "@class": {
+                    value: "DialogueState"
+                },
+                version: VERSION_ATTR_DEF,
+                text: {
+                    type: [NULL, STRING],
+                    value: null,
+                    index: -1,
+                    validator: function(s) {
+                        return s === null || Y.Lang.isString(s);
+                    },
+                    view: {
+                        type: HTML,
+                        label: "Text"
+                    }
                 },
                 view: {
                     type: HTML,
@@ -705,7 +710,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             }
         }
-    });
+    );
     /**
      * Coordinate embeddable mapper
      **/

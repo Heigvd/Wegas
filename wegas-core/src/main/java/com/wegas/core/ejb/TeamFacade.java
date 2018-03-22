@@ -22,6 +22,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,12 +78,36 @@ public class TeamFacade extends BaseFacade<Team> {
         return accounts;
     }
 
+    public String findUniqueNameForTeam(Game g, String baseName) {
+        boolean found = false;
+        String uniqueName = baseName;
+        TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findByGameIdAndName", Team.class);
+        query.setParameter("gameId", g.getId());
+        long suffix = 1;
+
+        do {
+            query.setParameter("name", uniqueName);
+            try {
+                query.getSingleResult();
+                // if a team with the name already exists:
+                suffix++;
+                uniqueName = baseName + " (" + suffix + ")";
+            } catch (NoResultException ex) {
+                // no team with such name exists
+                found = true;
+            }
+        } while (!found);
+
+        return uniqueName;
+    }
+
     /**
      * Real world case : real user is joining a game
      *
      * @param gameId
      * @param t
-     * @return 
+     *
+     * @return
      */
     public Team create(Long gameId, Team t) {
         /**

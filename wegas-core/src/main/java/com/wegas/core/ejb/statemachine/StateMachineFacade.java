@@ -150,7 +150,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
 
         for (StateMachineDescriptor sm : stateMachineDescriptors) {
             validTransition = false;
-            smi = sm.getInstance(player);
+            smi = (StateMachineInstance) variableDescriptorFacade.getInstance(sm, player);
             if (!smi.getEnabled() || smi.getCurrentState() == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
                 continue;
             }

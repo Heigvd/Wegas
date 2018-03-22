@@ -33,10 +33,9 @@ import javax.persistence.*;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@Table(name = "MCQChoiceDescriptor",
-        indexes = {
-            @Index(columnList = "question_variabledescriptor_id")
-        })
+@Table(indexes = {
+    @Index(columnList = "question_id")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
@@ -420,7 +419,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     public void setQuestion(QuestionDescriptor question) {
         this.question = question;
         if (question != null) { // Hum... question should never be null...
-            this.setRootGameModel(null);
+            this.setRoot(null);
             this.setParentList(null);
         }
     }
@@ -462,7 +461,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
                 // set names and labels unique
                 for (Result r : newResults) {
-                    Helper.setNameAndLabelForResult(r, names, labels);
+                    Helper.setNameAndLabelForLabelledEntity(r, names, labels, "result");
                 }
             }
         }

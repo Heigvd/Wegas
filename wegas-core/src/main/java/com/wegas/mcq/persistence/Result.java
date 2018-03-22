@@ -15,7 +15,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.LabelledEntity;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -45,7 +44,7 @@ import javax.persistence.*;
 @NamedQueries({
     @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
 })
-public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
+public class Result extends AbstractEntity implements Searchable, Scripted, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -129,7 +128,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      */
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "choicedescriptor_id")
     private ChoiceDescriptor choiceDescriptor;
 
     /**

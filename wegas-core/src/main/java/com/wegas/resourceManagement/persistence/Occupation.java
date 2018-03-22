@@ -25,7 +25,7 @@ import javax.persistence.*;
 @Entity
 
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id")
+    @Index(columnList = "resourceinstance_id")
 })
 public class Occupation extends AbstractEntity {
 
@@ -61,7 +61,7 @@ public class Occupation extends AbstractEntity {
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "variableinstance_id", nullable = false)
+    @JoinColumn(nullable = false)
     @JsonBackReference
     @JsonIgnore
     private ResourceInstance resourceInstance;

@@ -24,18 +24,19 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             this.treeView.addTarget(this); // Treeview events bubble
             this.plug(Plugin.WidgetToolbar); // Add a toolbar
 
+            this.handlers = [];
             if (DATASOURCE.isEditable()) {
                 this.plug(PageTreeviewToolbarMenu);
                 // @TODO Reactivate this once the new editor FORM2 is ready for production
                 //this.plug(PageTreeViewContextMenu);
                 this.treeView.plug(Plugin.TreeViewSortable, {
                     nodeGroups: [{
-                        nodeClass: "widget-node",
-                        parentNode: "container-node"
-                    }, {
-                        nodeClass: "page-node",
-                        parentNode: "yui3-treeview"
-                    }]
+                            nodeClass: "widget-node",
+                            parentNode: "container-node"
+                        }, {
+                            nodeClass: "page-node",
+                            parentNode: "yui3-treeview"
+                        }]
                 });
                 this.toolbar.add({
                     label: "<span class=\"fa fa-plus-circle\"></span> New",
@@ -65,11 +66,12 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     }); //mimic click
                 }
             });
-            this.plCreationEvent = Y.after("pageloader:created", function(e) {
+            this.handlers.push(Y.after("pageloader:created", function(e) {
                 if (e.get("pageLoaderId") === this._pageLoaderId) {
                     this.set("pageLoader", this._pageLoaderId);
                 }
-            }, this);
+            }, this));
+
             if (DATASOURCE.isEditable()) {
                 this.treeView.sortable.on("sort", function(e) {
                     if (e.dragWidget.get("data.page")) {
@@ -115,17 +117,44 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 }
             }, ".content-header", this);
 
-            this.dsIndexEvent = DATASOURCE.after("forceIndexUpdate", function(e) {
+
+            this.handlers.push(DATASOURCE.after("forceIndexUpdate", function(e) {
                 this.getIndex();
-            }, this);
-            this.dsEvent = DATASOURCE.after("pageUpdated", function(e) {
+            }, this));
+
+            this.handlers.push(DATASOURCE.after("pageUpdated", function(e) {
                 //this.showOverlay();
                 this.getIndex();
-            }, this);
+            }, this));
+
             //if (this.get("pageLoader")) {
             //    this.get("pageLoader").after("pageIdChange", this.syncUI, this);
             //}
             //this.get("pageLoader").get("widget").after("*:destroy", this.syncUI, this);
+
+            this.handlers.push(this.treeView.on("nodeClick", function(e) {
+                e.preventDefault();
+            }));
+            this.handlers.push(Y.after("edit-entity:edit", function(e) {
+                var cur = this.treeView.find(function(item) {
+                    if (item.get("data.page") !== undefined && e.entity["@pageId"] && item.get("data.page") === e.entity["@pageId"]){
+                        return true;
+                    }
+                    return item.get("data.widget") ?
+                        item.get("data.widget")._yuid === e.entity._yuid :
+                        false;
+
+                });
+                this.treeView.deselectAll();
+                if (cur) {
+                    this.currentSelection = e.entity.get("id");
+                    cur.set("selected", 2);
+                }
+            }, this));
+            this.handlers.push(Y.after("edit-entity:cancel", function(e) {
+                this.currentSelection = -1;
+                this.treeView.set("selected", 0);
+            }, this));
         },
         getIndex: function() {
             if (this.indexReq) {
@@ -146,7 +175,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         buildSubTree: function(node, widget) {
             var treeNode, selected;
 
-            if (!widget || typeof widget.getMenuCfg !== "function") {
+            if (!widget || typeof widget.getMenuCfg !== "function" || !widget.get("editable")) {
                 Y.log(widget + " not editable", "warn", "Y.Wegas.PageEditorTreeView");
                 return;
             }
@@ -219,7 +248,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     tmpPageId = "" + index[i].id;
                     node = new Y.TreeNode({
                         label: index[i].name ? index[i].name + " (" + tmpPageId + ")" :
-                        "<i>Unnamed (" + tmpPageId + ")</i>",
+                            "<i>Unnamed (" + tmpPageId + ")</i>",
                         data: {
                             page: tmpPageId,
                             name: index[i].name
@@ -331,10 +360,11 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         },
         destructor: function() {
             this.treeView.destroy();
-            this.dsEvent.detach();
-            this.dsIndexEvent.detach();
-            this.plCreationEvent.detach();
             Wegas.DataSource.abort(this.indexReq);
+
+            Y.Array.each(this.handlers, function(i) {
+                i.detach();
+            });
         }
     }, {
         CSS_PREFIX: "wegas-page-editor",
@@ -408,32 +438,32 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                      click: Y.bind(host.editPage, host, data)
                      }
                      }, */
-                    {
-                        type: "Button",
-                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
-                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                        on: {
-                            click: Y.bind(host.duplicatePage, host, data.page)
-                        }
-                    },
-                    {
-                        type: "Button",
-                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                        on: {
-                            click: Y.bind(host.deletePage, host, data.page)
-                        }
-                    });
-                if (!data.widget) {
-                    menuItems.splice(0, 0, {
-                        type: "Button",
-                        label: "<span class=\"wegas-icon wegas-icon-edit\"></span>Rename",
-                        on: {
-                            click: Y.bind(host.editPage, host, data)
-                        }
-                    });
+                        {
+                            type: "Button",
+                            label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
+                            cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                            on: {
+                                click: Y.bind(host.duplicatePage, host, data.page)
+                            }
+                        },
+                        {
+                            type: "Button",
+                            label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                            cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                            on: {
+                                click: Y.bind(host.deletePage, host, data.page)
+                            }
+                        });
+                    if (!data.widget) {
+                        menuItems.splice(0, 0, {
+                            type: "Button",
+                            label: "<span class=\"wegas-icon wegas-icon-edit\"></span>Rename",
+                            on: {
+                                click: Y.bind(host.editPage, host, data)
+                            }
+                        });
+                    }
                 }
-            }
             return menuItems;
         }
     }, {

@@ -37,6 +37,7 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
+import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
@@ -67,14 +68,15 @@ import org.slf4j.LoggerFactory;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
-// @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
-// @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
+    @UniqueConstraint(columnNames = {"gamemodel_id", "name"}) // Name has to be unique for the whole game model
+// @UniqueConstraint(columnNames = {"parentlist_id", "name"}) // Name has to be unique within a list
+// @UniqueConstraint(columnNames = {"root_id", "name"})       // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-    @Index(columnList = "defaultinstance_variableinstance_id"),
-    @Index(columnList = "items_variabledescriptor_id"),
-    @Index(columnList = "rootgamemodel_id"),
-    @Index(columnList = "gamemodel_gamemodelid"),
+    @Index(columnList = "defaultinstance_id"),
+    @Index(columnList = "parentlist_id"),
+    @Index(columnList = "parentwh_id"),
+    @Index(columnList = "root_id"),
+    @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
     @Index(columnList = "scope_id")
 })
@@ -120,7 +122,7 @@ import org.slf4j.LoggerFactory;
 
 })
 @CacheIndexes(value = {
-    @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
+    @CacheIndex(columnNames = {"GAMEMODEL_ID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
@@ -133,6 +135,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
     @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
     @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "WhQuestionDescriptor", value = WhQuestionDescriptor.class),
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
@@ -142,8 +145,8 @@ import org.slf4j.LoggerFactory;
 //@MappedSuperclass
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
 abstract public class VariableDescriptor<T extends VariableInstance>
-        extends NamedEntity
-        implements Searchable, LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
+        extends AbstractEntity
+        implements Searchable, LabelledEntity, Broadcastable, AcceptInjection, ModelScoped, NamedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -169,7 +172,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      */
     @Lob
     @JsonView(value = Views.EditorI.class)
-    @Column(name = "Descriptor_comments")
+    @Column(name = "comments")
     @WegasEntityProperty
     private String comments;
 
@@ -192,7 +195,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      */
     //@JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "gamemodel_gamemodelid")
     @CacheIndex
     private GameModel gameModel;
 
@@ -200,20 +202,21 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      *
      */
     @Id
-    @Column(name = "variabledescriptor_id")
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "items_variabledescriptor_id")
     @JsonIgnore
     private ListDescriptor parentList;
 
     @ManyToOne
-    @JoinColumn(name = "rootgamemodel_id")
     @JsonIgnore
-    private GameModel rootGameModel;
+    private WhQuestionDescriptor parentWh;
+
+    @ManyToOne
+    @JsonIgnore
+    private GameModel root;
 
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     @Enumerated(value = EnumType.STRING)
@@ -227,11 +230,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @WegasEntityProperty
     private String label;
 
-    /*
-         * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
-         * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
-         * updatable = true)
-     */
     //@BatchFetch(BatchFetchType.JOIN)
     //@JsonManagedReference
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
@@ -271,15 +269,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         this.version = version;
     }
 
-    /**
-     *
-     */
-    //@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    //@JoinTable(joinColumns = {
-    //    @JoinColumn(referencedColumnName = "variabledescriptor_id")},
-    //        inverseJoinColumns = {
-    //    @JoinColumn(referencedColumnName = "tag_id")})
-    //private List<Tag> tags;
     /**
      *
      */
@@ -357,14 +346,15 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     }
 
     @JsonIgnore
-    public GameModel getRootGameModel() {
-        return rootGameModel;
+    public GameModel getRoot() {
+        return root;
     }
 
-    public void setRootGameModel(GameModel rootGameModel) {
-        this.rootGameModel = rootGameModel;
-        if (this.rootGameModel != null) {
+    public void setRoot(GameModel rootGameModel) {
+        this.root = rootGameModel;
+        if (this.root != null) {
             this.setParentList(null);
+            this.setParentWh(null);
         }
     }
 
@@ -375,7 +365,20 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     public void setParentList(ListDescriptor parentList) {
         this.parentList = parentList;
         if (this.parentList != null) {
-            this.setRootGameModel(null);
+            this.setRoot(null);
+            this.setParentWh(null);
+        }
+    }
+
+    public WhQuestionDescriptor getParentWh() {
+        return parentWh;
+    }
+
+    public void setParentWh(WhQuestionDescriptor parentWh) {
+        this.parentWh = parentWh;
+        if (this.parentWh != null) {
+            this.setRoot(null);
+            this.setParentList(null);
         }
     }
 
@@ -386,8 +389,10 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     public DescriptorListI<? extends VariableDescriptor> getParentOrNull() {
         if (parentList != null) {
             return parentList;
-        } else if (rootGameModel != null) {
-            return rootGameModel;
+        } else if (parentWh != null) {
+            return parentWh;
+        } else if (root != null) {
+            return root;
         }
         return null;
     }
@@ -396,8 +401,10 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (parentList != null) {
             return parentList;
-        } else if (rootGameModel != null) {
-            return rootGameModel;
+        } else if (parentWh != null) {
+            return parentWh;
+        } else if (root != null) {
+            return root;
         } else {
             throw new WegasNotFoundException("ORPHAN DESCRIPTOR"); // is somebody expect this exception or return null will do the job ?
         }
@@ -405,7 +412,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @JsonView(Views.IndexI.class)
     public String getParentDescriptorType() {
-        if (this.getRootGameModel() != null) {
+        if (this.getRoot() != null) {
             return "GameModel";
         } else {
             return "VariableDescriptor";
@@ -619,8 +626,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         int sFlag = 0;
         if (scope instanceof GameModelScope) { // gms
             sFlag = 4;
-        } else if (scope instanceof GameScope) { // gs
-            sFlag = 3;
         } else if (scope instanceof TeamScope) { // ts
             sFlag = 2;
         } else if (scope instanceof PlayerScope) { // ps
@@ -638,7 +643,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     public void createInstances(InstanceOwner instanceOwner) {
         if ((scope instanceof GameModelScope && instanceOwner instanceof GameModel)
-                || (scope instanceof GameScope && instanceOwner instanceof Game)
                 || (scope instanceof TeamScope && instanceOwner instanceof Team)
                 || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
             scope.propagateDefaultInstance(instanceOwner, true);

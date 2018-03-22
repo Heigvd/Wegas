@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -268,7 +267,7 @@ public class GameController {
                     if (requestManager.tryLock("join-" + gameId + "-" + currentUser.getId())) {
                         if (!playerFacade.isInGame(game.getId(), currentUser.getId())) {
                             if (game.getGameModel().getProperties().getFreeForAll()) {
-                                Team team = new Team("Ind-" + Helper.genToken(12), 1);
+                                Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
                                 teamFacade.create(game.getId(), team); // return managed team
                                 team = teamFacade.find(team.getId());
                                 gameFacade.joinTeam(team.getId(), currentUser.getId());

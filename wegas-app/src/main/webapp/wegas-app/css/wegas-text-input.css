@@ -58,11 +58,29 @@
  */
 
 .readonly .wegas-string-input-checkboxes li{
-    cursor: initial;;
+    cursor: initial;
+}
+
+.wegas-string-input:not(.readonly) .wegas-string-input-checkboxes li.selected:hover {
+    background-color: #8dc4d8;
 }
 
 .wegas-string-input-checkboxes li.selected {
-    background-color: #AEB7B0;
+    background-color: #66b2ce;
+    font-weight: bold;
+    color: #fff;
+}
+
+
+.wegas-string-input-checkboxes li.selected:before {
+    content:"\f00c";
+    font-family:"FontAwesome";
+    font-size:11px;
+    margin-right: 6px;
+}
+
+.wegas-string-input-checkboxes.maximumReached li:not(.selected){
+    cursor: default;
 }
 
 .wegas-string-input-checkboxes li{
@@ -81,7 +99,10 @@
     transition: .3s;
 }
 
-.wegas-string-input-checkboxes li:hover{background: hsl(133, 2%, 40%);}
+.wegas-string-input:not(.readonly) .wegas-string-input-checkboxes li:hover{
+    background: hsl(133, 2%, 40%);
+}
+
 .readonly .wegas-string-input-checkboxes li:hover{
     background-image: none;
 }

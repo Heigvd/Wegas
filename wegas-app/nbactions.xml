@@ -30,6 +30,18 @@
         </properties>
     </action>
     <action>
+        <actionName>CUSTOM-Run exploded -skipTests yarn</actionName>
+        <displayName>Run -exploded -skipTests yarn</displayName>
+        <goals>
+            <goal>prepare-package</goal>
+            <goal>war:exploded</goal>
+        </goals>
+        <properties>
+            <netbeans.deploy>true</netbeans.deploy>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
+    <action>
         <actionName>CUSTOM-Run exploded -skipTests</actionName>
         <displayName>Run -exploded -skipTests</displayName>
         <goals>
@@ -81,6 +93,16 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
+    <action>
+        <actionName>CUSTOM-Build -skip-test yarn</actionName>
+        <displayName>Build -skip-test yarn</displayName>
+        <goals>
+            <goal>install</goal>
+        </goals>
+        <properties>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
 
     <action>
         <actionName>CUSTOM-Build -skip-test</actionName>
@@ -90,6 +112,7 @@
         </goals>
         <properties>
             <skipTests>true</skipTests>
+            <skipYarn>true</skipYarn>
         </properties>
     </action>
     <action>
@@ -103,6 +126,7 @@
             <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
             <netbeans.deploy>true</netbeans.deploy>
             <skipTests>true</skipTests>
+            <skipYarn>true</skipYarn>
         </properties>
     </action>
     <action>
@@ -115,6 +139,7 @@
             <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
             <netbeans.deploy>true</netbeans.deploy>
             <skipTests>true</skipTests>
+            <skipYarn>true</skipYarn>
         </properties>
     </action>
     <action>
@@ -186,6 +211,26 @@
                 <skipTests>true</skipTests>
                 <netbeans.deploy>true</netbeans.deploy>
                 <netbeans.deploy.profilemode>true</netbeans.deploy.profilemode>
+            </properties>
+        </action>
+    <action>
+            <actionName>CUSTOM-test noYarn</actionName>
+            <displayName>test noYarn</displayName>
+            <goals>
+                <goal>test</goal>
+            </goals>
+            <properties>
+                <skipYarn>true</skipYarn>
+            </properties>
+        </action>
+    <action>
+            <actionName>CUSTOM-verify noYarn</actionName>
+            <displayName>verify noYarn</displayName>
+            <goals>
+                <goal>verify</goal>
+            </goals>
+            <properties>
+                <skipYarn>true</skipYarn>
             </properties>
         </action>
 

@@ -53,6 +53,21 @@
     height: 19px;
 }
 
+
+.wegas-editor-treeview .yui3-treeleaf-content-header:before,
+.wegas-page-editor .yui3-treeleaf-content-header:before {
+    color: #cccccc;
+    content : "├";
+    display: inline-block;
+    width: 20px;
+    /*├ └─ */
+}
+
+.wegas-editor-treeview li:last-child > .yui3-treeleaf-content > .yui3-treeleaf-content-header:before,
+.wegas-page-editor li:last-child > .yui3-treeleaf-content > .yui3-treeleaf-content-header:before {
+    content :"└";
+}
+
 /** Styles for table treeviews (Games) */
 .wegas-editor-treeview-content .yui3-treeview > ul > li,
 .wegas-page-editor .yui3-treeview > ul > li {

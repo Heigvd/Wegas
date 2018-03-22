@@ -13,7 +13,367 @@ YUI.add('wegas-mcq-view', function(Y) {
     "use strict";
     var CONTENTBOX = 'contentBox',
         Wegas = Y.Wegas,
+        WhView,
         MCQView;
+
+
+    WhView = Y.Base.create("wegas-whview", Y.Widget,
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
+        initializer: function() {
+            this.handlers = {};
+        },
+        renderUI: function() {
+            var whQuestion = this.get("variable.evaluated"),
+                whQuestionInstance = whQuestion.getInstance(),
+                i, j, child, name, classes,
+                answers,
+                inputWidget, label, title;
+
+            this.destroyAll();
+
+            this.readonly = whQuestionInstance.get("validated");
+
+            this.qList = new Y.Wegas.List({
+                cssClass: "wegas-whview__mainlist"
+            });
+
+            title = whQuestion.get("title") || whQuestion.get("label");
+
+            this.qTitle = new Y.Wegas.Text({
+                cssClass: "wegas-whview__title",
+                content: title
+            });
+            this.qText = new Y.Wegas.Text({
+                cssClass: "wegas-whview__question wegas-light-picture",
+                content: whQuestion.get("description")
+            });
+
+            this.qList.add(this.qTitle);
+            this.qList.add(this.qText);
+
+
+            this.mainList = new Y.Wegas.List({
+                cssClass: "wegas-whview__main-list",
+                direction: "vertical",
+                editable: false
+            });
+
+            this.hList = new Y.Wegas.List({
+                cssClass: "wegas-whview__main",
+                direction: "vertical"
+            });
+
+            this.mainList.add(this.qList);
+            this.add(this.mainList);
+
+            this._locks = {};
+            this._values = {};
+
+            this.aList = new Y.Wegas.List({
+                cssClass: "wegas-whview__answers"
+            });
+
+
+            answers = whQuestion.get("items");
+
+            for (i in answers) {
+                if (answers.hasOwnProperty(i)) {
+                    child = answers[i];
+                    name = child.get("name");
+
+                    this._values[name] = child.getValue();
+
+                    classes = "wegas-whview__answers__input-answer input-" + name;
+
+                    label = child.get("title") || child.get("label");
+
+                    switch (child.get("@class")) {
+                        case "NumberDescriptor":
+                            if (Y.Lang.isNumber(child.get("minValue")) && Y.Lang.isNumber(child.get("maxValue"))
+                                && (child.get("maxValue") - child.get("minValue") < 15)) {
+
+                                inputWidget = new Y.Wegas.BoxesNumberInput({
+                                    label: label,
+                                    cssClass: classes,
+                                    variable: {name: name},
+                                    selfSaving: false,
+                                    readonly: {
+                                        "content": "return " + this.readonly + ";"
+                                    }
+                                });
+                            } else {
+                                inputWidget = new Y.Wegas.NumberInput({
+                                    label: label,
+                                    cssClass: classes,
+                                    variable: {name: name},
+                                    selfSaving: false,
+                                    readonly: {
+                                        "content": "return " + this.readonly + ";"
+                                    }});
+                            }
+                            break;
+                        case "StringDescriptor":
+                            inputWidget = new Y.Wegas.StringInput({
+                                label: label,
+                                cssClass: classes,
+                                variable: {name: name},
+                                displayChoicesWhenReadonly: {
+                                    "content": "false"
+                                },
+                                clickSelect: true,
+                                numSelectable: 1,
+                                readonly: {
+                                    "content": "return " + this.readonly + ";"
+                                },
+                                allowNull: false,
+                                selfSaving: false
+                            });
+                            break;
+                        case "TextDescriptor":
+                            // maxChars = undefined;
+                            // maxWords = undefined;
+                            // countBlank = false;
+                            inputWidget = new Y.Wegas.TextInput({
+                                label: label,
+                                cssClass: classes,
+                                variable: {name: name},
+                                showSaveButton: false,
+                                maxNumberOfCharacters: undefined,
+                                maxNumberOfWords: undefined,
+                                countBlank: true,
+                                readonly: {
+                                    "content": "return " + this.readonly + ";"
+                                },
+                                selfSaving: false,
+                                toolbar1: "bold italic underline bullist",
+                                toolbar2: "",
+                                toolbar3: "",
+                                contextmenu: "bold italic underline bullist",
+                                disablePaste: true
+                            });
+                            break;
+                    }
+                    this.aList.add(inputWidget);
+                }
+            }
+
+            this.mainList.add(this.aList);
+
+            if (!this.readonly) {
+                this._buttonContainer = new Y.Wegas.AbsoluteLayout({
+                    cssClass: "wegas-whview--button-container",
+                    editable: false
+                });
+                this._submitButton = new Y.Wegas.Button({
+                    cssClass: "wegas-whview--submit-button",
+                    "label": Y.Wegas.I18n.t('mcq.submit'),
+                    editable: false
+                });
+                this._submitButton.on("click", this.submit, this);
+                this._buttonContainer.add(this._submitButton);
+                this.mainList.add(this._buttonContainer);
+            }
+        },
+        bindUI: function() {
+            this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after('updatedInstance',
+                function(e) {
+                    var question = this.get('variable.evaluated');
+                    if (question &&
+                        question.getInstance().get('id') === e.entity.get('id')) {
+                        this.renderUI();
+                    }
+                }, this);
+
+            this.handlers.onDescriptorUpdate = Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
+                var question = this.get("variable.evaluated");
+                if (question && question.get("id") === e.entity.get("id")) {
+                    this.renderUI();
+                }
+            }, this);
+
+            this.handlers.change = this.after("questionFolderChange", this.renderUI, this);
+
+            this.handlers.beforeSwitchEntity = this.before("questionFolderChange", this.beforeSwitch, this);
+
+            this.handlers.beforeAnswerSave = this.before("*:save", this.disableSubmit, this);
+            this.handlers.afterAnswerSave = this.after("*:saved", this.onSubSave, this);
+            this.handlers.editing = this.on("*:editing", this.disableSubmit, this);
+            this.handlers.revert = this.on("*:revert", this.onSubSave, this);
+        },
+        disableSubmit: function(event) {
+        },
+        onSubSave: function(event) {
+            var name = event.descriptor.get("name");
+
+            this._values[name] = event.value;
+        },
+        isValid: function(event) {
+            var container = this.get("contentBox").one(".wegas-whview__answers"),
+                name,
+                answerDescriptor = event.descriptor, numSelectable,
+                aValues, values, value = event.value, node, widget, stats,
+                isValid = true;
+
+            name = answerDescriptor.get("name");
+
+            node = container.one(".input-" + name);
+
+            switch (answerDescriptor.get("@class")) {
+                /*case "NumberDescriptor":
+                 isValid = true; // always
+                 break;*/
+                case "TextDescriptor":
+                    widget = Y.Widget.getByNode(node);
+                    stats = widget.getStats();
+
+                    /* falls through */
+                case "StringDescriptor":
+                    aValues = answerDescriptor.get("allowedValues");
+                    if (aValues && aValues.length > 0) {
+                        if (!value) {
+                            // MCQ CLICK -> MUST SELECT "DUNNO"
+                            isValid = false;
+                        } else {
+                            values = JSON.parse(value);
+
+                            numSelectable = 1;
+
+                            if (values.length < numSelectable && ((Y.Array.find(values, function(item) {  // or dunno not selected
+                                return item === "";
+                            }, this) === null))) {
+                                isValid = false;
+                            }
+                        }
+                    } else {
+                        // Text Input
+                        if (!value) {
+                            isValid = false;
+                        }
+                    }
+                    break;
+
+            }
+            node.toggleClass("invalid", !isValid);
+            return isValid;
+        },
+        isAllValid: function() {
+            var i, child, isValid,
+                whQuestion = this.get("variable.evaluated"),
+                value, answers,
+                valid = true;
+
+            answers = whQuestion.get("items");
+
+            for (i in answers) {
+                if (answers.hasOwnProperty(i)) {
+                    child = answers[i];
+                    value = Y.Wegas.Facade.Variable.cache.find("name", child.get("name")).getValue();
+                    isValid = this.isValid({
+                        descriptor: child,
+                        value: value
+                    });
+                    valid = valid && isValid;
+                }
+            }
+            return valid;
+        },
+        getSaveScript: function() {
+            var script = "", answerName;
+            for (answerName in this._values) {
+                if (this._values.hasOwnProperty(answerName)) {
+                    script += "Variable.find(gameModel, \"" + answerName + "\").setValue(self,  " + JSON.stringify(this._values[answerName]) + ");";
+                }
+            }
+            return script;
+        },
+        save: function() {
+            Y.log("SAVE");
+            var script = this.getSaveScript();
+
+            Y.Wegas.Facade.Variable.sendRequest({
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
+                cfg: {
+                    method: "POST",
+                    updateCache: false,
+                    updateEvent: false,
+                    data: {
+                        "@class": "Script",
+                        content: script
+                    }
+                }
+            });
+        },
+        _submit: function() {
+            if (this.isAllValid()) {
+                this.showOverlay();
+                var iId = this.get("variable.evaluated").getInstance().get("id");
+                Y.Wegas.Facade.Variable.sendRequest({
+                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
+                    cfg: {
+                        method: "POST",
+                        data: {
+                            "@class": "Script",
+                            content: this.getSaveScript() + "QuestionFacade.validateQuestion(" + iId + ", self);"
+                        }
+                    },
+                    on: {
+                        success: Y.bind(function() {
+                            this.hideOverlay();
+                            /*if (this.__hackParent) {
+                             Y.later(500, this.__hackParent, this.__hackParent.selectNextUnread);
+                             }*/
+                        }, this),
+                        failure: Y.bind(function() {
+                            this.hideOverlay();
+                            this.showMessage("error", "Something went wrong");
+                        }, this)
+                    }
+                });
+            }
+        },
+        /**
+         * save and sumbit
+         * @returns {undefined}
+         */
+        submit: function() {
+            Y.later(100, this, function() {
+                this._submit();
+            }, this);
+        },
+        beforeSwitch: function() {
+            if (!this.readonly) {
+                this.save();
+            }
+        },
+        destructor: function() {
+            Y.log("Destroy WH-VIEW");
+            var k;
+            for (k in this.handlers) {
+                if (this.handlers.hasOwnProperty(k)) {
+                    this.handlers[k].detach();
+                }
+            }
+
+            if (!this.readonly) {
+                this.beforeSwitch();
+            }
+        }
+    }, {
+        EDITORNAME: "Single OpenQuestion",
+        ATTRS: {
+            variable: {
+                type: "object",
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: "variableselect",
+                    label: "Question",
+                    classFilter: ["WhQuestionDescriptor"]
+                }
+            }
+        }
+    });
+    Wegas.WhView = WhView;
+
     /**
      * @name Y.Wegas.MCQView
      * @extends Y.Widget
@@ -384,9 +744,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                             }
                             ret.push('<div class="mcq-checkbox-container">');
                             cAnswerable = qAnswerable && (!checkbox || !maximumReached || checked);
-                            ret.push('<input class="mcq-checkbox"', (checkbox ? ' type="checkbox"' : ' type="radio"'), 
+                            ret.push('<input class="mcq-checkbox"', (checkbox ? ' type="checkbox"' : ' type="radio"'),
                                 ((checkbox && qAnswerable && maximumReached && !checked) ? ' title="' + I18n.t('mcq.maximumReached', {max: maxQ}) + '"' : ''),
-                            (checked ? ' checked' : ''), (cAnswerable ? '' : ' disabled style="cursor:default"'),
+                                (checked ? ' checked' : ''), (cAnswerable ? '' : ' disabled style="cursor:default"'),
                                 ' id="', choiceID, '" name="', questionScriptAlias, '">');
                             ret.push('</div>'); // end div mcq-checkbox-container
                             ret.push('</div>'); // end cell mcq-choices-vertical-checkbox
@@ -583,6 +943,7 @@ YUI.add('wegas-mcq-view', function(Y) {
          *  by this widget
          */
         destructor: function() {
+            Y.log("Destroy MCQ-VIEW");
             var i,
                 length = this.handlers.length;
             if (this.gallery) {

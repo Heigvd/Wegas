@@ -17,6 +17,8 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -292,22 +294,23 @@ public class Helper {
     /**
      * ChoiceDescriptor's result renaming helper
      *
-     * @param r          result to rename / relabel
+     * @param le         result to rename / relabel
      * @param usedNames  result sibling's names
      * @param usedLabels result sibling's label
+     * @param base       base to build new names and labels on
      */
-    public static void setNameAndLabelForResult(Result r,
-            List<String> usedNames, List<String> usedLabels) {
-        boolean hasLabel = !isNullOrEmpty(r.getLabel());
-        boolean hasName = !isNullOrEmpty(r.getName());
+    public static void setNameAndLabelForLabelledEntity(LabelledEntity le,
+            List<String> usedNames, List<String> usedLabels, String base) {
+        boolean hasLabel = !isNullOrEmpty(le.getLabel());
+        boolean hasName = !isNullOrEmpty(le.getName());
         if (hasLabel && !hasName) {
-            r.setName(r.getLabel());
+            le.setName(le.getLabel());
         }
         if (hasName && !hasLabel) {
-            r.setLabel(r.getName());
+            le.setLabel(le.getName());
         }
-        setUniqueNameForEntity(r, usedNames, "result", false);
-        setUniqueLabel(r, usedLabels, "New Result");
+        setUniqueNameForEntity(le, usedNames, base, false);
+        setUniqueLabel(le, usedLabels, "New " + base);
     }
 
     /**
@@ -328,8 +331,35 @@ public class Helper {
             List<String> names = new ArrayList<>();
             List<String> labels = new ArrayList<>();
             for (Result r : cd.getResults()) {
-                setNameAndLabelForResult(r, names, labels);
+                setNameAndLabelForLabelledEntity(r, names, labels, "result");
             }
+        } else if (vd instanceof PeerReviewDescriptor) {
+            PeerReviewDescriptor prd = (PeerReviewDescriptor) vd;
+            Helper.setNamesAndLabelForEvaluationList(prd.getFeedback().getEvaluations());
+            Helper.setNamesAndLabelForEvaluationList(prd.getFbComments().getEvaluations());
+        }
+    }
+
+
+    public static void setNamesAndLabelForEvaluationList(List<EvaluationDescriptor> edList) {
+        // Detect new answers
+        List<String> labels = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<EvaluationDescriptor> newEds = new ArrayList<>();
+
+        for (EvaluationDescriptor r : edList) {
+            if (r.getId() != null) {
+                // Store name and label existing result
+                labels.add(r.getLabel());
+                names.add(r.getName());
+            } else {
+                newEds.add(r);
+            }
+        }
+
+        // set names and labels unique
+        for (EvaluationDescriptor ed : newEds) {
+            Helper.setNameAndLabelForLabelledEntity(ed, names, labels, "input");
         }
     }
 

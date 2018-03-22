@@ -54,7 +54,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 value: "QuestionDescriptor"
             },
             title: {
-                type: NULLSTRING,
+                type: STRING,
                 optional: true,
                 value: "",
                 index: -1,
@@ -139,7 +139,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: 10
             },
             description: {
-                type: NULLSTRING,
+                type: STRING,
+                value: "",
+                optional: true,
                 format: HTML,
                 index: 12,
                 view: {type: HTML, label: "Description"}
@@ -342,7 +344,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 },
                 description: {
-                    type: NULLSTRING,
+                    type: STRING,
+                    value: "",
                     optional: true,
                     view: {
                         type: HTML,
@@ -626,7 +629,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 }
                             },
                             answer: {
-                                type: NULLSTRING,
+                                type: STRING,
+                                value: "",
                                 optional: true,
                                 index: 1,
                                 view: {
@@ -899,7 +903,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: 10,
                 cfg: {
                     type: BUTTON,
-                    label: "Copy",
+                    label: "Duplicate",
                     plugins: [{
                             fn: "EditEntityArrayFieldAction",
                             cfg: {
@@ -1056,6 +1060,185 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             createdTime: {
                 "transient": true
+            }
+        }
+    });
+
+
+
+    /*
+     * Wh-Questions
+     */
+
+    /**
+     * QuestionDescriptor mapper
+     */
+    persistence.WhQuestionDescriptor = Y.Base.create("WhQuestionDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
+        getIconCss: function() {
+            return 'fa fa-pencil-square';
+        }
+    }, {
+        EDITORNAME: "Open Question",
+        ATTRS: {
+            "@class": {
+                type: STRING,
+                value: "WhQuestionDescriptor"
+            },
+            title: {
+                type: NULLSTRING,
+                optional: true,
+                value: "",
+                index: -1,
+                view: {
+                    label: "Label",
+                    description: "Displayed to players"
+                }
+            },
+            description: {
+                type: NULLSTRING,
+                format: HTML,
+                index: 12,
+                view: {type: HTML, label: "Description"}
+            },
+            defaultInstance: {
+                type: "object",
+                required: true,
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "WhQuestionInstance",
+                        view: {
+                            type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
+                    validated: {
+                        value: false,
+                        type: BOOLEAN,
+                        view: {type: HIDDEN}
+                    },
+                    active: {
+                        type: BOOLEAN,
+                        value: true,
+                        view: {
+                            label: 'Active from start'
+                        }
+                    }
+                },
+                index: 3
+            }
+        },
+        EDITMENU: [{
+                type: "EditEntityButton"
+            },
+            {
+                type: BUTTON,
+                label: "Add",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: [
+                                {
+                                    type: BUTTON,
+                                    label: '<span class="wegas-icon-numberdescriptor"></span> Number',
+                                    plugins: [{
+                                            fn: "AddEntityChildAction",
+                                            cfg: {
+                                                targetClass: "NumberDescriptor"
+                                            }
+                                        }]
+                                }, {
+                                    type: BUTTON,
+                                    label: '<span class="fa fa-paragraph"></span> Text',
+                                    plugins: [{
+                                            fn: "AddEntityChildAction",
+                                            cfg: {
+                                                targetClass: "TextDescriptor"
+                                            }
+                                        }]
+                                }, {
+                                    type: BUTTON,
+                                    label: '<span class="fa fa-font"></span> String',
+                                    plugins: [{
+                                            fn: "AddEntityChildAction",
+                                            cfg: {
+                                                targetClass: "StringDescriptor"
+                                            }
+                                        }]
+                                }
+                            ]
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "Duplicate",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
+                type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
+            }],
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {
+            activate: {
+                arguments: [SELFARG]
+            },
+            deactivate: {
+                label: "deactivate",
+                arguments: [SELFARG]
+            },
+            reopen: {
+                label: "reopen",
+                arguments: [SELFARG]
+            },
+            isReplied: {
+                label: "has been replied",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isNotReplied: {
+                label: "has not been replied",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isActive: {
+                label: "is active",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            }
+        }
+    });
+
+
+    /**
+     * WhQuestionInstance mapper
+     */
+    Wegas.persistence.WhQuestionInstance = Y.Base.create("WhQuestionInstance",
+        Wegas.persistence.VariableInstance, [], {}, {
+        EDITORNAME: "Open Question",
+        ATTRS: {
+            "@class": {
+                value: "WhQuestionInstance"
+            },
+            active: {
+                value: true,
+                type: BOOLEAN
+            },
+            validated: {
+                value: false,
+                type: BOOLEAN
             }
         }
     });

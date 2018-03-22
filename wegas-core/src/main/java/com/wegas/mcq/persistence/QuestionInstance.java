@@ -21,13 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@Table(name = "MCQQuestionInstance")
 public class QuestionInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;

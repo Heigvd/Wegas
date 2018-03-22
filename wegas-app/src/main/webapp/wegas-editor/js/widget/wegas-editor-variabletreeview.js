@@ -56,34 +56,34 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             });
             this.handlers.push(
                 this.toolbar.get("header")
-                    .prepend("<div class='wegas-filter-input'><input type='search' placeholder='Search...'/></div>")
-                    .one('.wegas-filter-input input')
-                    .on('valueChange', this.checkSearchField, this));
+                .prepend("<div class='wegas-filter-input'><input type='search' placeholder='Search...'/></div>")
+                .one('.wegas-filter-input input')
+                .on('valueChange', this.checkSearchField, this));
             /*
-            this._toggleSearchBtn = new Y.ToggleButton({
-                render: this.toolbar.get("header"),
-                label: "<span class='wegas-icon wegas-icon-zoom'></span>",
-                on: {
-                    pressedChange: Y.bind(function(e) {
-                        var search = this.get("boundingBox").one(".wegas-filter-input");
-                        if (e.newVal) {
-                            this.treeView.get("boundingBox").setStyle("top", "25px");
-                            search.show();
-                            search.one("input").focus();
-                        } else {
-                            this.treeView.get("boundingBox").setStyle("top", "");
-                            search.hide();
-                            search.one("input").set("value", "");
-                            searchRE = "";
-                            searchVal = "";
-                            this._timer.reset();
-                        }
+             this._toggleSearchBtn = new Y.ToggleButton({
+             render: this.toolbar.get("header"),
+             label: "<span class='wegas-icon wegas-icon-zoom'></span>",
+             on: {
+             pressedChange: Y.bind(function(e) {
+             var search = this.get("boundingBox").one(".wegas-filter-input");
+             if (e.newVal) {
+             this.treeView.get("boundingBox").setStyle("top", "25px");
+             search.show();
+             search.one("input").focus();
+             } else {
+             this.treeView.get("boundingBox").setStyle("top", "");
+             search.hide();
+             search.one("input").set("value", "");
+             searchRE = "";
+             searchVal = "";
+             this._timer.reset();
+             }
+             
+             }, this)
+             }
+             });
+             */
 
-                    }, this)
-                }
-            });
-            */
-            
             this._searchBttn = new Y.Button({
                 render: this.get("boundingBox").one(".wegas-filter-input"),
                 label: "<span title='Search in all fields'>In-depth</span>",
@@ -198,6 +198,11 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     this.currentSelection = -1;
                     this.treeView.set("selected", 0);
                 }, this));
+
+                this.handlers.push(this.treeView.on("nodeClick", function(e) {
+                    e.preventDefault();
+                }));
+
                 if (request) {
                     ds.sendRequest(request);
                 }
@@ -338,6 +343,22 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         cssClass: "wegas-editor-listitem wegas-editor-list " + advancedClass
                     };
                     return node;
+                case "WhQuestionDescriptor":
+                    node = {
+                        type: 'TreeNode',
+                        label: text,
+                        /*tooltip: tooltip,*/
+                        childrenShortcut: true, //entity.get("addShortcut"),
+                        collapsed: collapsed,
+                        selected: selected,
+                        children: this.genTreeViewElements(entity.get("items")),
+                        data: {
+                            entity: entity
+                        },
+                        iconCSS: entity.getIconCss(),
+                        cssClass: "wegas-editor-listitem wegas-editor-list " + advancedClass
+                    };
+                    return node;
                 case 'QuestionDescriptor':
                     return {
                         type: 'TreeNode',
@@ -400,13 +421,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         var container = entity.get(category),
                             children = Y.Array.map(container.get("evaluations"), function(ev) {
                                 return {
-                                    label: ev.get("name"),
+                                    label: ev.get("label"),
                                     selected: (ev.get(ID) === this.currentSelection) ? 2 : 0,
                                     data: {
                                         entity: ev,
                                         parentEntity: container
                                     },
-                                    iconCSS: "fa fa-star-half-o fa-1"
+                                    iconCSS: ev.getIconCss()
                                 };
                             }, this);
                         return {
@@ -455,7 +476,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         genScopeTreeViewElements: function(el) {
             var children = [],
                 i, label, team, player, instance, iconFa,
-                instances; 
+                instances;
             instances = Y.Wegas.Facade.Instance.cache.find("descriptorId", el.get("id")).variableInstances;
 
             for (i in instances) {
@@ -483,7 +504,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             }
                             iconFa = "fa-group";
                             break;
-                        case 'GameScope':
                         case 'GameModelScope':
                             label = 'Global';
                             iconFa = "fa-globe";
@@ -543,7 +563,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }
             return node;
         },
-        serverSearch :function() {
+        serverSearch: function() {
             var btnBox = this._searchBttn.get("boundingBox");
             Y.Wegas.DataSource.abort(this.req);
             if (!this.searchVal) {
@@ -624,14 +644,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             var node = e.node,
                 entity = node.get("data.entity"),
                 id = entity.get(ID);
-                if (node.size() > 0) {
-                    return;
-                }
+            if (node.size() > 0) {
+                return;
+            }
             if (typeof entity.isAugmentedBy === 'function'
                 && entity.isAugmentedBy(Wegas.persistence.VariableContainer)) {
                 node.add(this.get('host').genTreeViewElements(entity.get('items')));
-            } else if (entity instanceof Wegas.persistence.VariableDescriptor 
-                    && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) {
+            } else if (entity instanceof Wegas.persistence.VariableDescriptor
+                && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) {
                 node.destroyAll();
                 node.set("loading", true);
                 Wegas.Facade.Instance.sendRequest({

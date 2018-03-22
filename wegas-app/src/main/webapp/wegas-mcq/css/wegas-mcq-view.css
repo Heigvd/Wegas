@@ -8,13 +8,14 @@
 /**
  * Question
  */
-
+.wegas-whview__mainlist,
 .wegas-mcqview .mcq-question {
     padding: 0 6px 10px 6px;
     position: relative;
     height: 100%;
 }
 
+.wegas-whview .wegas-whview__title,
 .wegas-mcqview .mcq-question-title {
     font-weight: bold;
     font-size: 13px;
@@ -145,9 +146,12 @@
     border-right: none;
     border-bottom-width: 3px;
 }
+
+.wegas-whview__answers .wegas-input-label,
 .wegas-mcqview .mcq-choice-name {
     line-height: 35px;
     background: #d8d9dd;
+    font-weight: 600;
 }
 .wegas-mcqview .mcq-choice.notitle {
     border: none;
@@ -182,17 +186,25 @@
 .wegas-mcqview .mcq-choice.spurned .mcq-choice-description {
     color: #aaa;
 }
+
+.wegas-whview .wegas-whview__answers .wegas-input-label,
 .wegas-mcqview .mcq-choice-vertical .mcq-choice-name,
 .wegas-mcqview .mcq-choice-vertical .mcq-choice-description {
-    padding-left: 10px;
+    padding-left: 16px;
     padding-right: 20px;
     min-height: 24px;
 }
+
+.wegas-whview,
+.wegas-mcqview {
+    color: #333333;
+}
+
 .wegas-mcqview .mcq-choice-description {
     padding-top: 5px;
     padding-bottom: 5px;
-    color: #333333;
 }
+
 .wegas-mcqview .mcq-question button {
     display: inline-block;
     position: relative;
@@ -221,6 +233,7 @@
     top: 2px;
     left:0;
 }
+
 .wegas-mcqview .mcq-question button:disabled {
     visibility: hidden;
 }
@@ -325,3 +338,226 @@
     margin-bottom:8px;
 }
 
+
+
+/*
+ * WhQuestion
+ */
+
+.wegas-whview__answers{
+    /* max-width: 50%; */
+    min-width: 30%;
+    overflow-y: auto;
+}
+
+.wegas-whview .wegas-input-label,
+.wegas-whview__mainlist,
+.wegas-whview__mainlist * {
+    /* max-width: 235px; */
+    /*pointer-events: none;*/
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.wegas-whview__mainlist audio, 
+.wegas-whview__mainlist img, 
+.wegas-whview__mainlist video {
+    /*pointer-events: auto;*/
+}
+
+.wegas-whview__mainlist * {
+    height:auto;
+}
+
+.wegas-whview__info:before {
+    content:"\f00c";
+    font-family:"FontAwesome";
+    position:absolute;
+    text-align:center;
+    font-size: 28px;
+    color: rgba(45, 154, 45, 0.84);
+}
+
+
+.wegas-whview__partial-none:before{
+    content:"\f040";
+    color: orange;   
+}
+
+.wegas-whview__partial-auto:before{
+    color: orange;   
+}
+
+.wegas-whview__info {
+    margin: 10px;
+    padding: 20px;
+    background-color: #444;
+    border: 1px solid #bbb;
+    color: white;
+    width:300px; 
+}
+
+
+.wegas-whview__answer-info:before {
+    content:"\f00c";
+    font-family:"FontAwesome";
+    position: absolute;
+    text-align:center;
+    font-size: 20pt;
+    color: rgba(45, 154, 45, 0.84);
+    margin-top: -6px;
+}
+
+.wegas-whview__answer-manual:before {
+    content:"\f040";
+    color: orange;
+}
+
+.wegas-whview__answer-manual-done:before {
+    content:"\f040";
+    color: rgba(45, 154, 45, 0.84);
+}
+
+.wegas-whview__notsubmitted:before {
+    content:"\f071";
+    color: orange;
+}
+
+.wegas-whview__answer-info {
+    margin: 10px;
+    padding: 10px;
+    background-color: #444;
+    border: 1px solid #bbb;
+    color: white;
+    width:300px;
+}
+
+
+.wegas-whview__answer-info .wegas-text-content,
+.wegas-whview__info .wegas-text-content {
+    padding-left: 50px;
+}
+
+.wegas-whview video,
+.wegas-whview img {
+    max-width:100%;
+}
+
+.wegas-whview .wegas-light-picture img {
+    cursor: zoom-in;
+}
+
+.wegas-whview__answers__input-answer {
+    margin: 5px;
+    padding: 3px;
+}
+
+.wegas-whview__answers__input-answer.invalid {
+    box-shadow: 0 0 2px 1px #f78a8a;
+}
+
+.wegas-whview select.hidden{
+    display: none;
+}
+
+
+.wegas-whview .wegas-text-input {
+    position: relative;
+}
+
+.wegas-whview .wegas-text-input-toolbar {
+    position: absolute;
+    top: 25px;
+    font-style: italic;
+    color: grey;
+    width: 100%;
+    right: 5px;
+}
+
+.wegas-whview .wegas-text-input-toolbar .status {
+    display: none;
+}
+
+.wegas-whview--button-container{
+    width: 100%;
+    height: 28px;
+    padding: 10px 0;
+    bottom: 0px;
+}
+
+.wegas-whview .wegas-whview--submit-button {
+    display: inline-block;
+    position: relative;
+    background: #69bd7f;
+    text-transform: uppercase;
+    height: 24px;
+    margin: 2px 5px 4px 15px;
+    font-size: 11px;
+    font-weight: normal;
+    padding: 4px 8px 4px 24px;
+    border-radius: 6px;
+    color: white;
+    transition: .3s;
+}
+
+
+.wegas-whview--submit-button:before{
+    content:"\f00c";
+    font-family:"FontAwesome";
+    /*display:block;*/
+    position:absolute;
+    width:24px;
+    height:24px;
+    text-align:center;
+    line-height:24px;
+    font-size:11px;
+    top:2px;
+    left:0px;
+}
+
+
+/*
+ * WhInputs
+ */
+.wegas-whview .wegas-string-input.readonly input {
+    background-color: transparent;
+    border: none;
+    color: #333333;
+}
+
+.wegas-whview .wegas-input-body {
+    border : 1px solid #d8d9dd;
+    border-bottom-width:  3px;
+    padding: 5px 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+.wegas-whview .wegas-text-input-editor .readonly {
+    border: none;
+    background-color: transparent;
+}
+
+.wegas-whview .wegas-text-input .wegas-input-body .readonly {
+    padding: 5px 16px;
+}
+.wegas-whview .wegas-text-input .wegas-input-body {
+    padding: 0;
+}
+.wegas-whview .wegas-text-input .wegas-input-body > .mce-container {
+    border: none;
+}
+
+.wegas-whview .wegas-boxes-number-input .boxes .box {
+    margin-top: 3px;
+}
+
+.wegas-whview .wegas-string-input ul.wegas-string-input-checkboxes {
+    padding: 0;
+    margin: 0;
+}
+
+.wegas-whview .wegas-string-input ul.wegas-string-input-checkboxes li:first-child {
+    margin-left: 0;
+}

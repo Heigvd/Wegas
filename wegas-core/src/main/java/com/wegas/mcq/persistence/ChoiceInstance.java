@@ -30,11 +30,9 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@Table(name = "MCQChoiceInstance",
-        indexes = {
-            @Index(columnList = "currentresult_id")
-        }
-)
+@Table(indexes = {
+    @Index(columnList = "currentresult_id")
+})
 @NamedQueries({
     @NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
 })

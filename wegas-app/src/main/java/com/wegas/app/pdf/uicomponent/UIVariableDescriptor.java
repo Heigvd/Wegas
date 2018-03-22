@@ -31,6 +31,8 @@ import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
+import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
+import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
@@ -54,15 +56,16 @@ import javax.faces.context.ResponseWriter;
  * Faces component that print a VariableDescriptor as xHTML.
  * <p>
  * <p>
- * <pre>
+ * <
+ * pre>
  * <b>Usage:</b>
  * &lt;<b>VariableDescriptor</b> <b>value</b>="#{the varDesc object}"
- *        <b>player</b>="#{the player to print the varDesc for (may be the test player)}"
- *        <b>editorMode</b>="#{boolean : toggle editor or player export mode}" /%gt;
- *
+ * <b>player</b>="#{the player to print the varDesc for (may be the test player)}"
+ * <b>editorMode</b>="#{boolean : toggle editor or player export mode}" /%gt;
+ * <p>
  * editorMode: is used regardless currentUser permission (this is quite OK
- *             for the time since this component is only included from a UIGameModel instance,
- *             who has already checked such a permission...)
+ * for the time since this component is only included from a UIGameModel instance,
+ * who has already checked such a permission...)
  * </pre>
  *
  * @TODO : editorMode is used regardless currentUser permission (this is quite
@@ -138,11 +141,17 @@ public class UIVariableDescriptor extends UIComponentBase {
             case "List":
                 encode(context, writer, (ListDescriptor) vDesc);
                 break;
+            case "WhQuestion":
+                encode(context, writer, (WhQuestionDescriptor) vDesc);
+                break;
             case "Question":
                 encode(context, writer, (QuestionDescriptor) vDesc);
                 break;
             case "Object":
                 encode(context, writer, (ObjectDescriptor) vDesc);
+                break;
+            case "String":
+                encode(context, writer, (StringDescriptor) vDesc);
                 break;
             case "Text":
                 encode(context, writer, (TextDescriptor) vDesc);
@@ -457,6 +466,36 @@ public class UIVariableDescriptor extends UIComponentBase {
                 uiVd.encodeAll(context);
             }
             UIHelper.endDiv(writer);
+        }
+        UIHelper.endDiv(writer);
+    }
+
+    /**
+     * Specific behaviour for QuestionDescriptor
+     *
+     * @param context
+     * @param writer
+     * @param question
+     *
+     * @throws IOException
+     */
+    public void encode(FacesContext context, ResponseWriter writer, WhQuestionDescriptor question) throws IOException {
+        WhQuestionInstance instance = question.getInstance(defaultValues, player);
+
+        // dont't print inactive questions for players, but always print them for editors
+        if ((editorMode) || (instance.getActive())) {
+            //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
+            encodeBase(context, writer, question, editorMode);
+
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, question.getDescription(), false, editorMode);
+
+            if (editorMode) {
+                UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
+            }
+
+            for (VariableDescriptor item : question.getItems()) {
+                dispatch(context, writer, item);
+            }
         }
         UIHelper.endDiv(writer);
     }

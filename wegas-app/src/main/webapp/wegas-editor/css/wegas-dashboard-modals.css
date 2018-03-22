@@ -67,9 +67,21 @@
 
 .wegas-console-custom .content-advanced-script{
     width:100%;
-    height:auto;
+    height: 100%;
     display:block;
     position:relative;
+}
+
+.wegas-console-custom .content-advanced-script > div > div > span > span > div {
+    overflow-y: auto;
+}
+
+.wegas-console-custom .content-advanced-script > div,
+.wegas-console-custom .content-advanced-script > div > div,
+.wegas-console-custom .content-advanced-script > div > div > span 
+.wegas-console-custom .content-advanced-script > div > div > span > span,
+.wegas-console-custom .content-advanced-script > div > div > span > span > div{
+    height: 100%;
 }
 
 .modal--content-advanced .content-advanced-script-add{

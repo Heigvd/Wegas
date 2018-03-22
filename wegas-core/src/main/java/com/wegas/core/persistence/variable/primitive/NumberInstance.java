@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @EntityListeners(NumberListener.class)
 /*@Table(indexes = {
- @Index(columnList = "history.numberinstance_variableinstance_id")
+ @Index(columnList = "history.numberinstance_id")
  })*/
 public class NumberInstance extends VariableInstance {
 
@@ -136,7 +136,7 @@ public class NumberInstance extends VariableInstance {
 
             if (theDesc instanceof NumberDescriptor) {
                 /*
-                select vd.* from variabledescriptor as vd inner join variableinstance as vi on vi.variableinstance_id = vd.defaultinstance_variableinstance_id  where vd.dtype = 'ListDescriptor' and vi.dtype <> 'ListInstance';
+                select vd.* from variabledescriptor as vd inner join variableinstance as vi on vi.id = vd.defaultinstance_id  where vd.dtype = 'ListDescriptor' and vi.dtype <> 'ListInstance';
                  */
                 maxHSize = ((NumberDescriptor) theDesc).getHistorySize();
             }

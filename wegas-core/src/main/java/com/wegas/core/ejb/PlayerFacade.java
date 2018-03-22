@@ -19,7 +19,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
@@ -251,7 +250,7 @@ public class PlayerFacade extends BaseFacade<Player> {
             if (scope.getBroadcastScope().equals(PlayerScope.class.getSimpleName())) {
                 // Only owners has access to their variable
                 result.add(instance);
-            } else if (scope.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
+            } else if (scope.getBroadcastScope().equals("GameScope")) {
                 // Current player has access to all instances in the game
                 for (Player p : player.getGame().getLivePlayers()) {
                     query.setParameter("playerId", p.getId());
@@ -311,26 +310,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * Get all GameScoped variableinstances a game has access to.
-     * Including:
-     * <ul>
-     * <li> the game own GameScoped instances</li>
-     * </ul>
-     *
-     * @param game the game to fetch instances for
-     *
-     * @return all instances owned by the game
-     */
-    private List<VariableInstance> getGameInstances(Game game) {
-        List<VariableInstance> result = new ArrayList<>();
-
-        for (VariableInstance instance : game.getPrivateInstances()) {
-            result.add(instance);
-        }
-        return result;
-    }
-
-    /**
      * Get all GameModelScoped variableinstances a gameModel owns
      * Including:
      * <ul>
@@ -361,7 +340,6 @@ public class PlayerFacade extends BaseFacade<Player> {
 
         List<VariableInstance> instances = this.getPlayerInstances(player);
         instances.addAll(this.getTeamInstances(team));
-        instances.addAll(this.getGameInstances(game));
         instances.addAll(this.getGameModelInstances(gameModel));
 
         return instances;

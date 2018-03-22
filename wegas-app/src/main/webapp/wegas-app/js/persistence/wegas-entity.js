@@ -88,11 +88,12 @@ YUI.add('wegas-entity', function(Y) {
                     setter: function(val) {
                         return val * 1;
                     },
-                    index: -2,
+                    index: -10,
                     view: {
                         type: 'uneditable',
                         className: 'wegas-advanced-feature',
-                        label: 'Id'
+                        label: 'Id',
+                        layout: 'shortInline'
                     }
                 },
                 '@class': {
@@ -691,8 +692,8 @@ YUI.add('wegas-entity', function(Y) {
                     type: ARRAY
                 },
                 roles: {
-                    value:[],
-                    transient:true,
+                    value: [],
+                    transient: true,
                     type: "array"
                 }
             }

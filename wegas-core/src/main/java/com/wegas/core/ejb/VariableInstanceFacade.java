@@ -19,7 +19,6 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
-import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
@@ -116,18 +115,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
         return vd.getInstance(player);
     }
 
-    public VariableInstance getGameInstance(GameScope scope, Game game) {
-        try {
-            TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                    "VariableInstance.findGameInstance", VariableInstance.class);
-            query.setParameter("scopeId", scope.getId());
-            query.setParameter("gameId", game.getId());
-            return query.getSingleResult();
-        } catch (NoResultException ex) {
-            return null;
-        }
-    }
-
     public VariableInstance getTeamInstance(TeamScope scope, Team team) {
         try {
             TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
@@ -184,8 +171,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             return this.getAllTeamInstances((TeamScope) scope);
         } else if (scope instanceof PlayerScope) {
             return this.getAllPlayerInstances((PlayerScope) scope);
-        } else if (scope instanceof GameScope) {
-            return this.getAllGameInstances((GameScope) scope);
         } else if (scope instanceof GameModelScope) {
             HashMap<GameModel, VariableInstance> hashMap = new HashMap<GameModel, VariableInstance>();
             hashMap.put(null, ((GameModelScope) scope).getVariableInstance());
@@ -221,19 +206,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
         return instances;
     }
 
-    public Map<Game, VariableInstance> getAllGameInstances(GameScope scope) {
-        Map<Game, VariableInstance> instances = new HashMap<>();
-        TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                "VariableInstance.findAllGameInstances", VariableInstance.class);
-        query.setParameter("scopeId", scope.getId());
-
-        List<VariableInstance> resultList = query.getResultList();
-        for (VariableInstance vi : resultList) {
-            instances.put(vi.getGame(), vi);
-        }
-        return instances;
-    }
-
     /**
      *
      * @param variableDescriptorId
@@ -263,13 +235,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             return players;
         } else if (instance.getScope() instanceof TeamScope) {
             return teamFacade.find(instance.getTeam().getId()).getPlayers();
-        } else if (instance.getScope() instanceof GameScope) {
-            List<Player> players = new ArrayList<>();
-
-            for (Team t : gameFacade.find(instance.getGame().getId()).getTeams()) {
-                players.addAll(t.getPlayers());
-            }
-            return players;
         } else if (instance.getScope() instanceof GameModelScope) {
             return instance.getDescriptor().getGameModel().getPlayers();
         } else {
@@ -291,8 +256,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             return playerFacade.find(instance.getPlayer().getId()).getGame();
         } else if (instance.getScope() instanceof TeamScope) {
             return teamFacade.find(instance.getTeam().getId()).getGame();
-        } else if (instance.getScope() instanceof GameScope) {
-            return gameFacade.find(instance.getGame().getId());
         } else if (instance.getScope() instanceof GameModelScope) {
             return instance.getDescriptor().getGameModel().getGames().get(0);
         } else {
@@ -317,8 +280,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             return playerFacade.find(instance.getPlayer().getId()).getTeam();
         } else if (instance.getScope() instanceof TeamScope) {
             return teamFacade.find(instance.getTeam().getId());
-        } else if (instance.getScope() instanceof GameScope) {
-            throw new UnsupportedOperationException();  // Should never be called
         } else if (instance.getScope() instanceof GameModelScope) {
             throw new UnsupportedOperationException();// Should never be called
             //return instance.getDescriptor().getGameModel().getGames().get(0);
@@ -403,8 +364,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             entity.getPlayer().getPrivateInstances().remove(entity);
         } else if (entity.getTeam() != null) {
             entity.getTeam().getPrivateInstances().remove(entity);
-        } else if (entity.getGame() != null) {
-            entity.getGame().getPrivateInstances().remove(entity);
         }
         /*
          * else {

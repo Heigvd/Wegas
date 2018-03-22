@@ -31,7 +31,7 @@ import javax.persistence.*;
 @JsonIgnoreProperties({"moralHistory", "confidenceHistory"})
 /*
  * @Table(indexes = {
- * @Index(columnList = "properties.resourceinstance_variableinstance_id")
+ * @Index(columnList = "properties.resourceinstance_id")
  * })
  */
 public class ResourceInstance extends VariableInstance implements Propertable, AcceptInjection {

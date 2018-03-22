@@ -70,9 +70,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     @ManyToMany
     @JoinTable(
             joinColumns = {
-                @JoinColumn(name = "taskdescriptor_variabledescriptor_id")},
+                @JoinColumn(name = "taskdescriptor_id")},
             inverseJoinColumns = {
-                @JoinColumn(name = "predecessors_variabledescriptor_id")})      // prevent change in the db
+                @JoinColumn(name = "predecessor_id")})// prevent change in the db
     @JsonIgnore
     private List<TaskDescriptor> predecessors = new ArrayList<>();
     /*

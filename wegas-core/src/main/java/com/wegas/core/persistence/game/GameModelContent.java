@@ -17,6 +17,8 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.io.Serializable;
 import java.util.Collection;
+import com.wegas.core.rest.util.Views;
+import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -28,10 +30,10 @@ import javax.persistence.*;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @Table(indexes = {
-    @Index(columnList = "clientscriptlibrary_gamemodelid"),
-    @Index(columnList = "scriptlibrary_gamemodelid"),
-    @Index(columnList = "csslibrary_gamemodelid"),
-    @Index(columnList = "csslibrary_gamemodelid, scriptlibrary_gamemodelid, clientscriptlibrary_gamemodelid, contentKey", unique = true)
+    @Index(columnList = "clientscriptlibrary_gamemodel_id"),
+    @Index(columnList = "scriptlibrary_gamemodel_id"),
+    @Index(columnList = "csslibrary_gamemodel_id"),
+    @Index(columnList = "csslibrary_gamemodel_id, scriptlibrary_gamemodel_id, clientscriptlibrary_gamemodel_id, contentKey", unique = true)
 })
 public class GameModelContent extends AbstractEntity implements Serializable, ModelScoped {
 
@@ -42,17 +44,14 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "csslibrary_gamemodelid")
     @JsonIgnore
     private GameModel csslibrary_GameModel;
 
     @ManyToOne
-    @JoinColumn(name = "scriptlibrary_gamemodelid")
     @JsonIgnore
     private GameModel scriptlibrary_GameModel;
 
     @ManyToOne
-    @JoinColumn(name = "clientscriptlibrary_gamemodelid")
     @JsonIgnore
     private GameModel clientscriptlibrary_GameModel;
 

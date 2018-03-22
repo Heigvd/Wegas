@@ -26,7 +26,6 @@ import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
-import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
@@ -201,8 +200,8 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
         List<PeerReviewInstance> touched = new ArrayList<>();
         List<PeerReviewInstance> evicted = new ArrayList<>();
 
-        if (scope instanceof GameModelScope || scope instanceof GameScope) {
-            throw WegasErrorMessage.error("Invalid Scope for PeerReview descriptor. GameScope or GameModelScope does not make any sense for this kind of data");
+        if (scope instanceof GameModelScope){
+            throw WegasErrorMessage.error("Invalid Scope for PeerReview descriptor. GameModelScope does not make any sense for this kind of data");
         }
 
         int numberOfReview;
@@ -586,7 +585,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
 
         AbstractScope rScope = prd.getScope();
         AbstractScope vScope = toReview.getScope();
-        if (rScope instanceof GameModelScope || rScope instanceof GameScope) {
+        if (rScope instanceof GameModelScope){
             throw WegasErrorMessage.error("GameModel/Game Scope is forbidden for " + prd);
         }
         if (rScope instanceof TeamScope) {

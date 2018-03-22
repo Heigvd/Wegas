@@ -87,6 +87,27 @@ YUI.add('wegas-mcq-tabview', function(Y) {
              */
         },
         updateTab: function(tab, question) {
+            var label;
+            if (question instanceof Wegas.persistence.QuestionDescriptor) {
+                label = this.getMcqTabLabel(tab, question);
+            } else if (question instanceof Wegas.persistence.WhQuestionDescriptor) {
+                label = this.getWhTabLabel(tab, question);
+            }
+            tab.set("label", label);
+        },
+        getWhTabLabel: function(tab, question) {
+            var questionInstance = question.getInstance(),
+                label = (questionInstance.get("validated") ? "" : (question.get("maxReplies") === 1) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone'));
+
+            return  '<div class="'
+                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unread" : "")
+                + '"><div class="index-label">'
+                + (question.get("title") || question.get("label") || "undefined") + "</div>"
+                + '<div class="index-status">' + label + "</div>"
+                + '</div>';
+
+        },
+        getMcqTabLabel: function(tab, question) {
             var questionInstance = question.getInstance(),
                 choiceDescriptor,
                 label = null, cbxType = question.get("cbx"),
@@ -97,22 +118,22 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             /*
              * The followinbg seciton may replace  the next one
              */
-            /*
-             if (nbReplies > 0 || validatedCbx) {
-             label = ""; // make sure the label is no null
-             if (question.get("allowMultipleReplies")) {
-             if (cbxType) {
-             label = Wegas.I18n.t('mcq.answered').capitalize();
-             } else {
-             label = questionInstance.get("replies").length + "x";
-             }
-             } else { // Find the last selected replies
-             choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-             label = choiceDescriptor.get("title") || "";
-             label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
-             }
-             }
-             */
+            if (false) {
+                if (nbReplies > 0 || validatedCbx) {
+                    label = ""; // make sure the label is no null
+                    if (question.get("allowMultipleReplies")) {
+                        if (cbxType) {
+                            label = Wegas.I18n.t('mcq.answered').capitalize();
+                        } else {
+                            label = questionInstance.get("replies").length + "x";
+                        }
+                    } else { // Find the last selected replies
+                        choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
+                        label = choiceDescriptor.get("title") || "";
+                        label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
+                    }
+                }
+            }
 
             if (cbxType) {
                 if (validatedCbx)
@@ -129,18 +150,15 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }
 
             if (Y.Lang.isNull(label)) {
-                label = (!question.get("allowMultipleReplies")) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone');
+                label = (question.get("maxReplies") === 1) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone');
             }
 
-
-            label = '<div class="'
+            return  '<div class="'
                 + (highlightUnanswered ? "unread" : "")
                 + '"><div class="index-label">'
                 + (question.get("title") || question.get("label") || "undefined") + "</div>"
                 + '<div class="index-status">' + label + "</div>"
                 + '</div>';
-
-            tab.set("label", label);
         },
         createTab: function(question) {
             var tab = new Y.Wegas.Tab();
@@ -166,7 +184,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
             index = 0;
             while (question = queue.shift()) {
-                if (question instanceof Wegas.persistence.QuestionDescriptor) {
+                if (question instanceof Wegas.persistence.QuestionDescriptor
+                    || question instanceof Wegas.persistence.WhQuestionDescriptor) {
                     oldTab = Y.Array.find(tabs, function(item) {
                         return item.cQuestion && item.cQuestion.get("id") === question.get("id");
                     });
@@ -244,16 +263,35 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          * @description Display selected question's description on current tab.
          */
         onTabSelected: function(e) {
-            var widget;
+            var widget,
+                question;
             if (e.newVal && e.newVal.cQuestion
                 && !this.isRemovingTabs && !e.newVal.loaded) {
+                this.destroyWidget(e.prevVal);
                 e.newVal.loaded = true;
-                widget = new Y.Wegas.MCQView({
-                    variable: {
-                        "name": e.newVal.cQuestion.get("name")
-                    }
-                });
+                question = e.newVal.cQuestion;
+
+                if (question instanceof Wegas.persistence.QuestionDescriptor) {
+                    widget = new Y.Wegas.MCQView({
+                        variable: {
+                            "name": question.get("name")
+                        }
+                    });
+                } else if (question instanceof Wegas.persistence.WhQuestionDescriptor) {
+                    widget = new Y.Wegas.WhView({
+                        variable: {
+                            "name": question.get("name")
+                        }
+                    });
+                }
+
                 e.newVal.add(widget);
+            }
+        },
+        destroyWidget: function(prevVal) {
+            if (prevVal && prevVal.loaded) {
+                prevVal.loaded = false;
+                prevVal.destroyAll();
             }
         },
         getEditorLabel: function() {

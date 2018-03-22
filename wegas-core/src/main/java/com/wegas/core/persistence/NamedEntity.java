@@ -9,11 +9,11 @@ package com.wegas.core.persistence;
 
 /**
  *
+ * Entity name is kind of human-readable unique identifier
+ *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public abstract class NamedEntity extends AbstractEntity {
-
-    private static final long serialVersionUID = -5419544250248220709L;
+public interface NamedEntity {
 
     /**
      * Get the entity internal name
@@ -27,13 +27,4 @@ public abstract class NamedEntity extends AbstractEntity {
      * @param name
      */
     public abstract void setName(String name);
-
-    /**
-     *
-     * @return class simple name, id and name
-     */
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + getName() + ")";
-    }
 }

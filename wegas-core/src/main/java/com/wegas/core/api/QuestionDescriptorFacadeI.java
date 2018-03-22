@@ -11,6 +11,7 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
+import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 
 /**
  *
@@ -88,12 +89,16 @@ public interface QuestionDescriptorFacadeI {
     Reply updateReply(Long replyId, Reply r);
 
     /**
+     * Validate either a checkboxed QuestionInstance or a WhQuestionInstance
+     *
      * @param questionInstanceId
      * @param playerId
      */
     void validateQuestion(Long questionInstanceId, Long playerId);
 
     /**
+     * Validate either a checkboxed QuestionInstance or a WhQuestionInstance
+     *
      * @param questionInstanceId
      * @param player
      */
@@ -110,6 +115,16 @@ public interface QuestionDescriptorFacadeI {
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
     void validateQuestion(final QuestionInstance validateQuestion, final Player player) throws WegasRuntimeException;
+
+    /**
+     * Validate a wh-question
+     *
+     * @param validateQuestion
+     * @param player
+     *
+     * @throws WegasRuntimeException
+     */
+    void validateQuestion(final WhQuestionInstance validateQuestion, final Player player) throws WegasRuntimeException;
 
     /**
      * @param playerId

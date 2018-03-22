@@ -10,11 +10,10 @@ package com.wegas.resourceManagement.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
@@ -35,8 +34,8 @@ import javax.persistence.Transient;
 
 /*@Table(indexes = {
 
-    @Index(columnList = "plannification.taskinstance_variableinstance_id"),
-    @Index(columnList = "properties.taskinstance_variableinstance_id")
+    @Index(columnList = "plannification.taskinstance_id"),
+    @Index(columnList = "properties.taskinstance_id")
 })*/
 public class TaskInstance extends VariableInstance implements Propertable {
 

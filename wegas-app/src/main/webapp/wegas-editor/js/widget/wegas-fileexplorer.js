@@ -594,10 +594,12 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             );
                         break;
                     case 'edit':
-                        Y.Plugin.EditEntityAction.showEditForm(
-                            params.data,
-                            Y.bind(this.editContent, this, node)
-                            );
+                        Y.Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                            Y.Plugin.EditEntityAction.showEditForm(
+                                params.data,
+                                Y.bind(this.editContent, this, node)
+                                );
+                        }, this));
                         break;
                     case 'open':
                         this.openFile(params.path);

@@ -10,6 +10,8 @@ package com.wegas.reviewing.persistence.evaluation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.ModelScoped;
@@ -76,6 +78,10 @@ public abstract class EvaluationInstance extends AbstractEntity {
     @ManyToOne
     private EvaluationDescriptor evaluationDescriptor;
 
+    @Transient
+    @WegasEntityProperty
+    private String descriptorName;
+
     /**
      * Simple constructor
      */
@@ -107,6 +113,27 @@ public abstract class EvaluationInstance extends AbstractEntity {
      */
     public void setDescriptor(EvaluationDescriptor ed) {
         this.evaluationDescriptor = ed;
+    }
+
+    /**
+     * @return the descriptorName
+     */
+    @JsonIgnore
+    public String getDescritproName() {
+        if (!Helper.isNullOrEmpty(descriptorName)) {
+            return descriptorName;
+        } else if (this.getDescriptor() != null) {
+            return getDescriptor().getName();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param descriptorName
+     */
+    public void setDescriptorName(String descriptorName) {
+        this.descriptorName = descriptorName;
     }
 
     @Override
@@ -218,6 +245,7 @@ public abstract class EvaluationInstance extends AbstractEntity {
                 theReview.getComments().remove(this);
             }
         }
+
         super.updateCacheOnDelete(beans);
     }
 
@@ -241,7 +269,6 @@ public abstract class EvaluationInstance extends AbstractEntity {
     public Collection<WegasPermission> getRequieredDeletePermission() {
         return this.getEffectiveReview().getRequieredDeletePermission();
     }*/
-
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getEffectiveReview().getRequieredReadPermission();

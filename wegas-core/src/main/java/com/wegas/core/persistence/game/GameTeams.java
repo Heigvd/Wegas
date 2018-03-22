@@ -18,7 +18,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -30,7 +29,7 @@ import javax.persistence.Table;
 @Entity
 @Table(
         indexes = {
-            @Index(columnList = "game_game_id")
+            @Index(columnList = "game_id")
         }
 )
 public class GameTeams extends AbstractEntity {
@@ -42,7 +41,6 @@ public class GameTeams extends AbstractEntity {
     private Long id;
 
     @OneToOne(optional = false)
-    @JoinColumn
     private Game game;
 
     @OneToMany(mappedBy = "gameTeams", cascade = CascadeType.ALL, orphanRemoval = true)

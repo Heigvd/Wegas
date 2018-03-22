@@ -38,8 +38,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(indexes = {
-    @Index(columnList = "author_variableinstance_id"),
-    @Index(columnList = "reviewer_variableinstance_id")
+    @Index(columnList = "author_id"),
+    @Index(columnList = "reviewer_id")
 })
 public class Review extends AbstractEntity implements DatedEntity {
 

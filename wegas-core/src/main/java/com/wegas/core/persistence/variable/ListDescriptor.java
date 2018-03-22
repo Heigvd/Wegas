@@ -14,6 +14,9 @@ import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
@@ -37,14 +40,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     /**
      *
      */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     //@BatchFetch(BatchFetchType.IN)
-
-
-    @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
-    //@OrderBy("id")
-    @OrderColumn
-
+    @OneToMany(mappedBy = "parentList", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OrderColumn(name = "ld_items_order")
     @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
     private List<VariableDescriptor> items = new ArrayList<>();
 

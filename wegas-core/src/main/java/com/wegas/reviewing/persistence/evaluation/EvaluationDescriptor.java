@@ -12,8 +12,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
@@ -35,8 +37,10 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(
-        uniqueConstraints = {},
-        indexes= {
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"container_id", "name"}),
+            @UniqueConstraint(columnNames = {"container_id", "label"}),},
+        indexes = {
             @Index(columnList = "container_id")
         }
 )
@@ -45,7 +49,8 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = CategorizedEvaluationDescriptor.class),
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
-public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends NamedEntity {
+public abstract class EvaluationDescriptor<T extends EvaluationInstance>
+        extends AbstractEntity implements LabelledEntity {
 
     @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
@@ -66,10 +71,16 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     private Integer index;
 
     /**
-     * Evaluation name as displayed to players
+     * Evaluation internal identifier
      */
     @WegasEntityProperty
     private String name;
+
+    /**
+     * Evaluation label as displayed to players
+     */
+    @WegasEntityProperty
+    private String label;
 
     /**
      * Textual descriptor to be displayed to players
@@ -79,7 +90,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     private String description;
 
     /**
-     * the parent
+     * the parent,
      */
     @ManyToOne
     @JsonBackReference
@@ -106,6 +117,16 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**
@@ -217,6 +238,10 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.evaluationInstances.remove(instance);
     }
 
+    private WithPermission getEffectiveContainer() {
+        return this.getContainer();
+    }
+
     @Override
     public boolean isProtected() {
         return this.getContainer().isProtected();
@@ -229,11 +254,11 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getContainer().getRequieredUpdatePermission();
+        return this.getEffectiveContainer().getRequieredUpdatePermission();
     }
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getContainer().getRequieredReadPermission();
+        return this.getEffectiveContainer().getRequieredReadPermission();
     }
 }

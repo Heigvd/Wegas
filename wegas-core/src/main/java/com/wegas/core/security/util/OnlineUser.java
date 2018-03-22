@@ -23,6 +23,7 @@ public class OnlineUser implements Serializable {
     private final String email;
     private final String username;
     private final Date connectionDate;
+    private Date lastActivityDate;
     private final Long userId;
     private final Long mainAccountId;
     private final Long highestRole;
@@ -32,6 +33,7 @@ public class OnlineUser implements Serializable {
         this.username = user.getMainAccount().getUsername();
         this.email = user.getMainAccount().getEmail();
         this.connectionDate = new Date();
+        this.lastActivityDate = new Date();
         this.userId = user.getId();
         this.mainAccountId = user.getMainAccount().getId();
         this.highestRole = highestRole;
@@ -50,7 +52,18 @@ public class OnlineUser implements Serializable {
     }
 
     public Date getConnectionDate() {
-        return connectionDate;
+        return new Date(connectionDate.getTime());
+    }
+
+    public Date getLastActivityDate() {
+        return new Date(lastActivityDate.getTime());
+    }
+
+    /**
+     * set last activity date to now
+     */
+    public void touch(){
+        this.lastActivityDate = new Date();
     }
 
     public Long getUserId() {
