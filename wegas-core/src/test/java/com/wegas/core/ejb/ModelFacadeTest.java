@@ -1246,9 +1246,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals(getDescriptor(gameModel2, "myFirstFolder"), getDescriptor(gameModel2, "alpha").getParentList());
         Assert.assertEquals(getDescriptor(gameModel3, "myFirstFolder"), getDescriptor(gameModel3, "alpha").getParentList());
 
-        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "pi").getRootGameModel());
-        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "pi").getRootGameModel());
-        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "pi").getRootGameModel());
+        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "pi").getRoot());
+        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "pi").getRoot());
+        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "pi").getRoot());
 
         /**
          * Assert z no longer exists
@@ -1260,9 +1260,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         /**
          * Assert x stands at root level
          */
-        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "x").getRootGameModel());
-        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "x").getRootGameModel());
-        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "x").getRootGameModel());
+        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "x").getRoot());
+        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "x").getRoot());
+        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "x").getRoot());
 
         Assert.assertNull(getDescriptor(gameModel1, "x").getParentList());
         Assert.assertNull(getDescriptor(gameModel2, "x").getParentList());
@@ -1307,9 +1307,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         /**
          * Assert y stands at root level
          */
-        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "y").getRootGameModel());
-        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "y").getRootGameModel());
-        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "y").getRootGameModel());
+        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "y").getRoot());
+        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "y").getRoot());
+        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "y").getRoot());
 
         Assert.assertNull(getDescriptor(gameModel1, "y").getParentList());
         Assert.assertNull(getDescriptor(gameModel2, "y").getParentList());

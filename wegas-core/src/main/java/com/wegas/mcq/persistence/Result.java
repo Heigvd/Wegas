@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;

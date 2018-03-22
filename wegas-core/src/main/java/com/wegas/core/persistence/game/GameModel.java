@@ -851,9 +851,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @Override
     public void resetItemsField() {
-        this.childVariableDescriptors = new ArrayList<>();
+        this.items = new ArrayList<>();
     }
 
+    @Override
     public void setItems(List<VariableDescriptor> items) {
         this.items = new ArrayList<>();
         for (VariableDescriptor vd : items) {

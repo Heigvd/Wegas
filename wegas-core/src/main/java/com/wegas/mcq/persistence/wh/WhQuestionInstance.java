@@ -7,8 +7,7 @@
  */
 package com.wegas.mcq.persistence.wh;
 
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import static java.lang.Boolean.FALSE;
@@ -27,29 +26,19 @@ public class WhQuestionInstance extends VariableInstance {
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean active = true;
     /**
      * False until the user has clicked on the global question-wide "submit"
      * button.
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean validated = FALSE;
 
     /**
      * @param a
      */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof WhQuestionInstance) {
-            WhQuestionInstance other = (WhQuestionInstance) a;
-            super.merge(a);
-            this.setActive(other.getActive());
-            this.setValidated(other.isValidated());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
-
     @Override
     public void revive(Beanjection beans) {
         super.revive(beans);

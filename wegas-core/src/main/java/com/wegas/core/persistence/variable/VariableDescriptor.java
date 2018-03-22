@@ -146,7 +146,7 @@ import org.slf4j.LoggerFactory;
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
 abstract public class VariableDescriptor<T extends VariableInstance>
         extends AbstractEntity
-        implements Searchable, LabelledEntity, Broadcastable, AcceptInjection, ModelScoped, NamedEntity {
+        implements Searchable, LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
 
     private static final long serialVersionUID = 1L;
 

@@ -11,10 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -167,22 +165,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @WegasEntityProperty
     private EvaluationDescriptorContainer fbComments;
 
-    Helper.setNamesAndLabelForEvaluationList (
-
-
-
-
-
-    this.getFeedback().getEvaluations());
-    Helper.setNamesAndLabelForEvaluationList (
-
-
-
-
-
-    this.getFbComments().getEvaluations());
     /**
->>>>>>> origin/master
      * Return the variable that will be reviewed
      *
      * @return the variable that will be reviewed
@@ -344,7 +327,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         beans.getReviewingFacade().revivePeerReviewDescriptor(this);
     }
 
-    private static class PRDCallback implements WegasCallback {
+    public static class PRDCallback implements WegasCallback {
 
         @Override
         public void postUpdate(Mergeable entity, Object ref, Object identifier) {
