@@ -63,7 +63,12 @@ angular.module('private.admin.who', [
         };
         ctrl.getConnectionDate = function(user) {
             var d =new Date(user.connectionDate);
-            return d.toLocaleString()
+            return d.toLocaleString();
+        };
+
+        ctrl.getLastActivityDate = function(user) {
+            var d =new Date(user.lastActivityDate);
+            return d.toLocaleString();
         };
 
         $rootScope.$on('wegaspusher:update-members', function(e, data) {

@@ -47,8 +47,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 import javax.cache.Cache;
+import javax.cache.processor.MutableEntry;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.ejb.Asynchronous;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -70,7 +72,7 @@ public class WebsocketFacade {
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
 
     private final Pusher pusher;
-    private final Boolean maintainLocalListUpToDate;
+    private Boolean maintainLocalListUpToDate;
 
     public final static String GLOBAL_CHANNEL = "global-channel";
     public final static String ADMIN_CHANNEL = "private-Role-Administrator";
@@ -505,7 +507,7 @@ public class WebsocketFacade {
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
         }
         if (channel.startsWith("private")) {
-            if (requestManager.hasChannelPermission(channel)){
+            if (requestManager.hasChannelPermission(channel)) {
                 return pusher.authenticate(socketId, channel);
             }
         }
@@ -542,6 +544,7 @@ public class WebsocketFacade {
     public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
         ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
         onlineUsersLock.lock();
+        this.maintainLocalListUpToDate = true;
         try {
             IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
             if (onlineUsersUpToDate.get() == 0) {
@@ -563,6 +566,22 @@ public class WebsocketFacade {
             this.propagateOnlineUsers();
         } finally {
             onlineUsersLock.unlock();
+        }
+    }
+
+    @Asynchronous
+    public void touchOnlineUser(Long userId) {
+        if (userId != null) {
+            onlineUsers.invoke(userId, (MutableEntry<Long, OnlineUser> entry, Object... arguments) -> {
+                if (entry != null) {
+                    OnlineUser value = entry.getValue();
+                    if (value != null) {
+                        value.touch();
+                        entry.setValue(value);
+                    }
+                }
+                return null;
+            });
         }
     }
 
@@ -702,15 +721,15 @@ public class WebsocketFacade {
                 HashMap<String, Object> channels = readValue.get("channels");
 
                 /*
-             * Assert all online users are in the local list
+                 * Assert all online users are in the local list
                  */
                 for (String channel : channels.keySet()) {
                     this.registerUser(this.getUserFromChannel(channel));
                 }
 
                 /*
-             * Detect no longer online user still in the local list
-             * and remove them
+                 * Detect no longer online user still in the local list
+                 * and remove them
                  */
                 Iterator<Cache.Entry<Long, OnlineUser>> it = onlineUsers.iterator();
                 while (it.hasNext()) {
