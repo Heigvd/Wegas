@@ -117,7 +117,7 @@ public abstract class EvaluationInstance extends AbstractEntity {
      * @return the descriptorName
      */
     @JsonIgnore
-    public String getDescritproName() {
+    public String getDescriptorName() {
         if (!Helper.isNullOrEmpty(descriptorName)) {
             return descriptorName;
         } else if (this.getDescriptor() != null) {
