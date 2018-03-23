@@ -240,7 +240,7 @@ public class ModelFacade {
                 /*
                  * go through exclusionCanditates to detemintate which of them should be kept
                  * a candidate is a descriptor which is not shared among all scenarios, but it may contains children which are.
-                 * When it's the case, the descriptor must be kept. 
+                 * When it's the case, the descriptor must be kept.
                  * If the descriptor doesn't contains any children, it can be removed
                  */
                 boolean restart;
@@ -286,7 +286,7 @@ public class ModelFacade {
                 // Open the brand new model repository
                 try {
                     ContentConnector modelRepo = jCRConnectorProvider.getContentConnector(model, ContentConnector.WorkspaceType.FILES);
-                    logger.error("JCR FILES");
+                    logger.trace("JCR FILES");
 
                     // open all other repositories but the one whose modelRepo is a copy of
                     List<ContentConnector> repositories = new ArrayList<>(scenarios.size());
@@ -299,20 +299,20 @@ public class ModelFacade {
 
                     while (!fileQueue.isEmpty()) {
                         AbstractContentDescriptor item = fileQueue.remove(0);
-                        logger.error("Process {}", item);
+                        logger.trace("Process {}", item);
                         String path = item.getFullPath();
                         boolean exists = true;
                         for (ContentConnector otherRepository : repositories) {
-                            logger.error(" other repo: path {}", path);
+                            logger.trace(" other repo: path {}", path);
                             AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, otherRepository);
                             if (!descriptor.exist() || !descriptor.getClass().equals(item.getClass())) {
-                                logger.error("BREAK");
+                                logger.trace("BREAK");
                                 exists = false;
                                 break;
                             }
                         }
                         if (exists) {
-                            logger.error(" item exists");
+                            logger.trace(" item exists");
                             item.setVisibility(ModelScoped.Visibility.INHERITED);
 
                             item.setContentToRepository();
@@ -324,7 +324,7 @@ public class ModelFacade {
                             }
                         } else {
                             // item does not exists in all scenario -> delete
-                            logger.error(" item does not exist");
+                            logger.trace(" item does not exist");
                             item.delete(true);
                         }
 
@@ -334,7 +334,7 @@ public class ModelFacade {
                     java.util.logging.Logger.getLogger(ModelFacade.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                logger.info("Process variables");
+                logger.trace("Process variables");
 
             } catch (CloneNotSupportedException ex) {
                 logger.error("Exception while creating model", ex);
@@ -355,7 +355,7 @@ public class ModelFacade {
         if (parent instanceof AbstractEntity) {
             return ((AbstractEntity) parent).getRefId();
         } else {
-            return null; //throw error ? 
+            return null; //throw error ?
         }
     }
 
@@ -590,7 +590,7 @@ public class ModelFacade {
         DescriptorListI newParent;
 
         if (modelParent instanceof VariableDescriptor) {
-            // original parent is a descriptor 
+            // original parent is a descriptor
             String parentName = ((VariableDescriptor) modelParent).getName();
             try {
                 newParent = (DescriptorListI) variableDescriptorFacade.find(vd.getGameModel(), parentName);

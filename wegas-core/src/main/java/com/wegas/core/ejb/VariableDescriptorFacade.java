@@ -48,7 +48,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -185,11 +184,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
 
         /*
-         * This flush is required by several EntityRevivedEvent listener, 
+         * This flush is required by several EntityRevivedEvent listener,
          * which opperate some SQL queries (which didn't return anything before
          * entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, 
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
          * it will not return any result if this flush not occurs
          */
         this.getEntityManager().flush();
@@ -222,6 +221,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      * @param gameModel
      * @param entity
+     * @param propagate
      */
     public void reviveItems(GameModel gameModel, DescriptorListI entity, boolean propagate) {
         for (Object vd : entity.getItems()) {

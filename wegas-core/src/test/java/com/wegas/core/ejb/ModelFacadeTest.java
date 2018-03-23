@@ -51,7 +51,6 @@ import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -1122,7 +1121,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
 
         /*
-         * Y: model override descriptor but update defaultinstance 
+         * Y: model override descriptor but update defaultinstance
          */
         yi1 = (NumberInstance) getInstance(gameModel1, "y");
         yi2 = (NumberInstance) getInstance(gameModel2, "y");
@@ -1137,7 +1136,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
 
         /*
-         * Z: model update descriptor and defaultinstance 
+         * Z: model update descriptor and defaultinstance
          */
         zi1 = (NumberInstance) getInstance(gameModel1, "z");
         zi2 = (NumberInstance) getInstance(gameModel2, "z");
@@ -1191,7 +1190,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
 
         /*
-         * Y: model override descriptor but update defaultinstance 
+         * Y: model override descriptor but update defaultinstance
          */
         yi1 = (NumberInstance) getInstance(gameModel1, "y");
         yi2 = (NumberInstance) getInstance(gameModel2, "y");
@@ -1206,7 +1205,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
 
         /*
-         * Z: model update descriptor and defaultinstance 
+         * Z: model update descriptor and defaultinstance
          */
         zi1 = (NumberInstance) getInstance(gameModel1, "z");
         zi2 = (NumberInstance) getInstance(gameModel2, "z");
@@ -1316,7 +1315,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertNull(getDescriptor(gameModel3, "y").getParentList());
 
         /*
-         * Y: model override descriptor but update defaultinstance 
+         * Y: model override descriptor but update defaultinstance
          */
         Assert.assertEquals(22.0, ((NumberInstance) getInstance(gameModel1, "y")).getValue(), 0.00001);
         Assert.assertEquals(22.0, ((NumberInstance) getInstance(gameModel2, "y")).getValue(), 0.00001);

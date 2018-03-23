@@ -194,7 +194,7 @@ public class MergeTest extends AbstractArquillianTest {
     public void testGetterAndSetter() {
         Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
 
-        List<Exception> exes = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
 
         for (Class<? extends AbstractEntity> entityClass : sub) {
 
@@ -204,16 +204,16 @@ public class MergeTest extends AbstractArquillianTest {
                 try {
                     PropertyDescriptor property = new PropertyDescriptor(f.getName(), f.getDeclaringClass());
                 } catch (IntrospectionException ex) {
-                    exes.add(ex);
+                    errors.add("Class " + entityClass + "; Field: " + f + " -> " + ex);
                 }
             }
         }
 
-        for (Exception ex : exes) {
-            System.out.println(ex);
+        for (String error : errors) {
+            logger.error(error);
         }
 
-        Assert.assertEquals(0, exes.size());
+        Assert.assertEquals(0, errors.size());
     }
 
     //@Test

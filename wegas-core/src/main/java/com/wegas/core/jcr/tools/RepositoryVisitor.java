@@ -41,7 +41,7 @@ public abstract class RepositoryVisitor {
     }
 
     public void visitRepository(ContentConnector repository) throws RepositoryException {
-        logger.error("LS repo {}", repository.getWorkspaceRoot());
+        logger.trace("LS repo {}", repository.getWorkspaceRoot());
         visitNode(DescriptorFactory.getDescriptor("/", repository));
     }
 
@@ -111,7 +111,7 @@ public abstract class RepositoryVisitor {
                 } catch (IOException ex) {
                 }
             }
-            logger.error(sb.toString());
+            logger.trace("{}", sb);
         }
 
         @Override
