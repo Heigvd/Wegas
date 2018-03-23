@@ -134,10 +134,10 @@
         <sql>UPDATE evaluationdescriptor SET refid = 'evaluationdescriptor' || id || random_string(6);</sql>
         <sql>UPDATE evaluationdescriptorcontainer SET refid = 'evaluationdescriptorcontainer' || id || random_string(6);</sql>
         <sql>UPDATE evaluationinstance SET refid = 'evaluationinstance:' || id || random_string(6);</sql>
-        <sql>UPDATE fsm_state SET refid = 'fsm_state:' || state_id || random_string(6);</sql>
-        <sql>UPDATE game SET refid = 'game:' || game_id || random_string(6);</sql>
+        <sql>UPDATE fsm_state SET refid = 'fsm_state:' || id || random_string(6);</sql>
+        <sql>UPDATE game SET refid = 'game:' || id || random_string(6);</sql>
         <sql>UPDATE gameadmin SET refid = 'gameadmin:' || id || random_string(6);</sql>
-        <sql>UPDATE gamemodel SET refid = 'gamemodel:' || gamemodelid || random_string(6);</sql>
+        <sql>UPDATE gamemodel SET refid = 'gamemodel:' || id || random_string(6);</sql>
         <sql>UPDATE gamemodelcontent SET refid = 'gamemodelcontent:' || id || random_string(6);</sql>
         <sql>UPDATE iteration SET refid = 'iteration:' || id || random_string(6);</sql>
         <sql>UPDATE mcqreply SET refid = 'mcqreply:' || id || random_string(6);</sql>
@@ -151,10 +151,10 @@
         <sql>UPDATE team SET refid = 'team:' || id || random_string(6);</sql>
         <sql>UPDATE transition SET refid = 'transition:' || id || random_string(6);</sql>
         <sql>UPDATE users SET refid = 'users:' || id || random_string(6);</sql>
-        <sql>UPDATE variabledescriptor SET refid = 'variabledescriptor:' || variabledescriptor_id || random_string(6);</sql>
-        <sql>UPDATE variableinstance SET refid = 'variableinstance:' || variableinstance_id || random_string(6);</sql>
+        <sql>UPDATE variabledescriptor SET refid = 'variabledescriptor:' || id || random_string(6);</sql>
+        <sql>UPDATE variableinstance SET refid = 'variableinstance:' || id || random_string(6);</sql>
         <sql>UPDATE workload SET refid = 'workload:' || id || random_string(6);</sql>
-        <sql>UPDATE wrequirement SET refid = 'wrequirement:' || wrequirement_id || random_string(6);</sql>
+        <sql>UPDATE wrequirement SET refid = 'wrequirement:' || id || random_string(6);</sql>
 
         <sql>drop function random_string ( integer);</sql>
     </changeSet>
