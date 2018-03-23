@@ -137,7 +137,7 @@ public abstract class EvaluationInstance extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof EvaluationInstance) {
-            this.setDescriptorName(((EvaluationInstance) a).getDescritproName());
+            this.setDescriptorName(((EvaluationInstance) a).getDescriptorName());
         }
     }
 
