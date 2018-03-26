@@ -35,12 +35,21 @@
     background-size: 100% 80px;
 }
 
+.yui3-skin-sam.fullscreened .wegas-editview {
+    height: 42px !important;
+}
 
 .editor-preview {
     width: 100%;
     height: 100%;
 }
 
+
+.fullscreened .editor-preview .wegas-toolbar{
+    position: fixed;
+    top: 0;
+    left: 50%;
+}
 
 .wegas-stdmode .wegas-treeview-advanced-children .yui3-treenode-content-toggle{
     cursor: default;
