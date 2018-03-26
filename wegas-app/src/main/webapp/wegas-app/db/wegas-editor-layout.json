@@ -13,97 +13,134 @@
         "height": 25,
         "children": [
             {
-                "type": "UserLoginButton"
-            }, {
-                "type": "Button",
-                "label": "<span class=\"fa fa-repeat fa-rotate-180\" title=\"Restart game\"></span>",
-                "cssClass": "editor-restart-button",
-                "plugins": [
+                "type": "FlexList",
+                "direction": "horizontal",
+                "cssClass": "wegas-edit-maintoolbar",
+                "children": [
                     {
-                        "fn": "ResetAction"
-                    }
-                ]
-            }, {
-                "type": "EditorChat"
-            }, {
-                "type": "Button",
-                "cssClass": "wegas-logo",
-                "tooltip": "Back to lobby",
-                "plugins": [
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-toolbar-title",
+                        "children": [
+                            {
+                                "type": "Button",
+                                "cssClass": "wegas-logo",
+                                "tooltip": "Back to lobby",
+                                "plugins": [
+                                    {
+                                        "fn": "OpenUrlAction",
+                                        "cfg": {
+                                            "url": "",
+                                            "target": "_self"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Text",
+                                "cssClass": "wegas-title"
+                            }
+                        ]
+                    },
                     {
-                        "fn": "OpenUrlAction",
-                        "cfg": {
-                            "url": "",
-                            "target": "_self"
-                        }
-                    }
-                ]
-            }, {
-                "type": "Text",
-                "cssClass": "wegas-title"
-            }, {
-                "type": "Button",
-                "label": "Advanced",
-                "cssClass": "editor-scenarist-button editor-scenarist-advanced-button wegas-advanced-feature",
-                "plugins": [
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-toolbar-menu",
+                        "children": [
+                            {
+                                "type": "Button",
+                                "label": "Advanced",
+                                "cssClass": "editor-scenarist-button editor-scenarist-advanced-button wegas-advanced-feature",
+                                "plugins": [
+                                    {
+                                        "fn": "WidgetMenu",
+                                        "cfg": {
+                                            "children": [
+                                                {
+                                                    "type": "Button",
+                                                    "label": "EXPERIMENTAL: Create a new scenario from player state",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "GmExtractorAction"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Button",
+                                                    "label": "<b>Experimental & Hazardous</b> Re-init default values from a player",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "GmDefaulterAction"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Button",
+                                                    "label": "Clear Combo Cache",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "FireAndForgetRequestAction",
+                                                            "cfg": {
+                                                                "url": "rest/combo",
+                                                                "method": "DELETE"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Button",
+                                                    "label": "Clear EM level2 Cache",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "FireAndForgetRequestAction",
+                                                            "cfg": {
+                                                                "url": "rest/Utils/EmCache",
+                                                                "method": "DELETE"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "OpenTabButton",
+                                "label": "Help (old)",
+                                "cssClass": "editor-scenarist-button wegas-advanced-feature",
+                                "wchildren": [
+                                    {
+                                        "type": "Text",
+                                        "cssClass": "editor-help",
+                                        "content": "<iframe src=\"https://docs.google.com/document/d/16S3uGvSGkweay9Dng6mIus3ERdq5D1_GJIwMynTMcuo/pub?embedded=true\"></iframe>"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
                     {
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "children": [{
-                                    "type": "Button",
-                                    "label": "EXPERIMENTAL: Create a new scenario from player state",
-                                    "plugins": [
-                                        {
-                                            "fn": "GmExtractorAction"
-                                        }
-                                    ]
-                                }, {
-                                    "type": "Button",
-                                    "label": "<b>Experimental & Hazardous</b> Re-init default values from a player",
-                                    "plugins": [
-                                        {
-                                            "fn": "GmDefaulterAction"
-                                        }
-                                    ]
-                                }, {
-                                    "type": "Button",
-                                    "label": "Clear Combo Cache",
-                                    "plugins": [
-                                        {
-                                            "fn": "FireAndForgetRequestAction",
-                                            "cfg": {
-                                                "url": "rest/combo",
-                                                "method": "DELETE"
-                                            }
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "Button",
-                                    "label": "Clear EM level2 Cache",
-                                    "plugins": [
-                                        {
-                                            "fn": "FireAndForgetRequestAction",
-                                            "cfg": {
-                                                "url": "rest/Utils/EmCache",
-                                                "method": "DELETE"
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }, {
-                "type": "OpenTabButton",
-                "label": "Help (old)",
-                "cssClass": "editor-scenarist-button wegas-advanced-feature",
-                "wchildren": [
+                        "type": "EditorChat"
+                    },
                     {
-                        "type": "Text",
-                        "cssClass": "editor-help",
-                        "content": "<iframe src=\"https://docs.google.com/document/d/16S3uGvSGkweay9Dng6mIus3ERdq5D1_GJIwMynTMcuo/pub?embedded=true\"></iframe>"
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-button-toolbar",
+                        "children": [
+                            {
+                                "type": "Button",
+                                "label": "<i class=\"fa fa-repeat fa-rotate-180\" title=\"Restart game\"></i>",
+                                "cssClass": "editor-restart-button",
+                                "plugins": [
+                                    {
+                                        "fn": "ResetAction"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "UserLoginButton"
+                            }
+                        ]
                     }
                 ]
             }
@@ -128,7 +165,8 @@
                                 "plugins": [
                                     {
                                         "fn": "EditorTVNodeLoader"
-                                    }, {
+                                    },
+                                    {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
                                             "children": [
@@ -144,13 +182,16 @@
                                 ]
                             }
                         ]
-                    }, {
+                    },
+                    {
                         "type": "Tab",
                         "label": "Layout",
                         "cssClass": "editor-pages",
-                        "plugins": [{
-                            "fn": "UneditablePageDisabler"
-                        }],
+                        "plugins": [
+                            {
+                                "fn": "UneditablePageDisabler"
+                            }
+                        ],
                         "children": [
                             {
                                 "type": "PageTreeview"
@@ -186,7 +227,8 @@
                                 "content": "<div class=\"empty-edit-panel\"></div>"
                             }
                         ]
-                    }, {
+                    },
+                    {
                         "type": "Button",
                         "label": "<span class=\"fa fa-plus-circle\" title=\"Add a tab\"></span>",
                         "cssClass": "editor-scenarist-button wegas-plus-tab",
@@ -207,27 +249,37 @@
                                                     "plugins": [
                                                         {
                                                             "fn": "PreviewFullScreen",
-                                                            "cfg":{"selector":".wegas-layout-bd"}
-                                                        }, {
+                                                            "cfg": {
+                                                                "selector": ".wegas-layout-bd"
+                                                            }
+                                                        },
+                                                        {
                                                             "fn": "WidgetToolbar",
                                                             "cfg": {
-                                                                "children": []
+                                                                "children": [
+                                                                ]
                                                             }
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "PageEditor"
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "Injector"
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "PopupListener"
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "ServerPopupListener"
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "GetPageIdFromQueryString"
                                                         }
                                                     ]
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Files",
                                             "wchildren": [
@@ -240,7 +292,8 @@
                                                     ]
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Styles",
                                             "wchildren": [
@@ -250,7 +303,8 @@
                                                     "cssClass": "wegas-csseditor"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Server scripts",
                                             "wchildren": [
@@ -258,7 +312,8 @@
                                                     "type": "ScriptLibrary"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Client scripts",
                                             "wchildren": [
@@ -267,7 +322,8 @@
                                                     "library": "ClientScript"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Impact",
                                             "wchildren": [
@@ -276,7 +332,8 @@
                                                     "cssClass": "wegas-console wegas-editor-console"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "Button",
                                             "cssClass": "wegas-advanced-feature",
                                             "label": "Scenario properties",
@@ -289,7 +346,8 @@
                                                     }
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "cssClass": "wegas-advanced-feature",
                                             "label": "Log",
@@ -298,7 +356,8 @@
                                                     "type": "Log"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Attributes",
                                             "cssClass": "wegas-editor-menu-item-center",
@@ -353,21 +412,30 @@
                                 "plugins": [
                                     {
                                         "fn": "PreviewFullScreen",
-                                        "cfg":{"selector":".wegas-layout-bd"}
-                                    }, {
+                                        "cfg": {
+                                            "selector": ".wegas-layout-bd"
+                                        }
+                                    },
+                                    {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
-                                            "children": []
+                                            "children": [
+                                            ]
                                         }
-                                    }, {
+                                    },
+                                    {
                                         "fn": "PageEditor"
-                                    }, {
+                                    },
+                                    {
                                         "fn": "Injector"
-                                    }, {
+                                    },
+                                    {
                                         "fn": "PopupListener"
-                                    }, {
+                                    },
+                                    {
                                         "fn": "ServerPopupListener"
-                                    }, {
+                                    },
+                                    {
                                         "fn": "GetPageIdFromQueryString"
                                     }
                                 ]
@@ -396,27 +464,37 @@
                                                     "plugins": [
                                                         {
                                                             "fn": "PreviewFullScreen",
-                                                            "cfg":{"selector":".wegas-layout-bd"}
-                                                        }, {
+                                                            "cfg": {
+                                                                "selector": ".wegas-layout-bd"
+                                                            }
+                                                        },
+                                                        {
                                                             "fn": "WidgetToolbar",
                                                             "cfg": {
-                                                                "children": []
+                                                                "children": [
+                                                                ]
                                                             }
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "PageEditor"
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "Injector"
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "PopupListener"
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "ServerPopupListener"
-                                                        }, {
+                                                        },
+                                                        {
                                                             "fn": "GetPageIdFromQueryString"
                                                         }
                                                     ]
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Files",
                                             "tabSelector": "#rightTabView",
@@ -430,7 +508,8 @@
                                                     ]
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Styles",
                                             "tabSelector": "#rightTabView",
@@ -441,7 +520,8 @@
                                                     "cssClass": "wegas-csseditor"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Server scripts",
                                             "tabSelector": "#rightTabView",
@@ -450,7 +530,8 @@
                                                     "type": "ScriptLibrary"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Client scripts",
                                             "tabSelector": "#rightTabView",
@@ -460,7 +541,8 @@
                                                     "library": "ClientScript"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Impact",
                                             "tabSelector": "#rightTabView",
@@ -470,7 +552,8 @@
                                                     "cssClass": "wegas-console wegas-editor-console"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "Button",
                                             "cssClass": "wegas-advanced-feature",
                                             "label": "Scenario properties",
@@ -484,7 +567,8 @@
                                                     }
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "cssClass": "wegas-advanced-feature",
                                             "label": "Log",
@@ -494,7 +578,8 @@
                                                     "type": "Log"
                                                 }
                                             ]
-                                        }, {
+                                        },
+                                        {
                                             "type": "OpenTabButton",
                                             "label": "Attributes",
                                             "cssClass": "wegas-editor-menu-item-right",
@@ -504,9 +589,9 @@
                                                     "content": "<div class=\"empty-edit-panel\"></div>"
                                                 }
                                             ]
-                                    }
+                                        }
 
-                                            ]
+                                    ]
                                 }
                             }
                         ]

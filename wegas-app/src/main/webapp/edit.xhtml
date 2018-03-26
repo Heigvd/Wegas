@@ -21,16 +21,9 @@
                         })) {
                         Y.use("wegas-button", function() {
                             var editButton = new Y.Wegas.Button({
-                                label: "",
-                                cssClass: "edit-openmodel fa fa-cubes",
-                                "plugins": [{
-                                        "fn": "Tooltip",
-                                        "cfg": {
-                                            "content": "<p>Edit the model</p>"
-                                        }
-                                    }]
-
-                            }).render(".wegas-layout-hd");
+                                "label": "<i class=\"fa fa-cubes\" title=\"Edit the model\"></i>",
+                                cssClass: "edit-openmodel"
+                            }).render(".wegas-button-toolbar .wegas-flexlist-content");
 
                             editButton.on("click", function() {
                                 window.open("edit.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("basedOnId"), "_blank");

@@ -11,10 +11,43 @@
         "height": 25,
         "children": [
             {
-                "type": "Text",
-                "cssClass": "wegas-title"
-            }, {
-                "type": "UserLoginButton"
+                "type": "FlexList",
+                "direction": "horizontal",
+                "cssClass": "wegas-edit-maintoolbar",
+                "children": [
+                    {
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-toolbar-title",
+                        "children": [
+                            {
+                                "type": "Text",
+                                "cssClass": "wegas-title"
+                            },
+                            {
+                                "type": "Text",
+                                "cssClass": "wegas-subtitle"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-toolbar-menu",
+                        "children": [
+                        ]
+                    },
+                    {
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-button-toolbar",
+                        "children": [
+                            {
+                                "type": "UserLoginButton"
+                            }
+                        ]
+                    }
+                ]
             }
         ]
     },

@@ -353,71 +353,68 @@
     padding: 0; /* Override yui default */
 }
 
+
+
 /* Editor layout styles */
+
 .yui3-skin-sam .wegas-layout-hd {
-    white-space: nowrap;
-    min-width: 600px;
+    /*white-space: nowrap;*/
+    /*min-width: 600px;*/
 }
 
-.yui3-skin-sam .wegas-layout-hd > div {
-    display: inline-block;
-    vertical-align: top;
+
+.wegas-edit-maintoolbar {
+    width: 100%;
+}
+
+.wegas-edit-maintoolbar .wegas-toolbar-menu {
+    flex-grow: 1;
+}
+
+.wegas-edit-maintoolbar .wegas-button-toolbar .wegas-flexlist-content,
+.wegas-edit-maintoolbar .wegas-toolbar-menu .wegas-flexlist-content{
+    height: 100%;
+    align-items: center;
 }
 
 .yui3-skin-sam .wegas-layout-hd .yui3-button {
-    border: none;
     font-weight: bold;
     font-size: 11px;
-    line-height: 1.9em;
     color: #4c4c4c;
-    -moz-box-shadow: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    padding: 3px 20px 3px 10px;
     background: none;
-    margin-top: 10px;
 }
 
-.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-widgetmenu-hassubmenu:after {
-    background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 1px; /* white version of toggle: -40px; */
-    top: 1.1em;
-}
-.yui3-skin-sam .wegas-layout-hd .edit-openmodel:hover{
-    color: palevioletred;
-}
-
-.yui3-skin-sam .wegas-layout-hd .edit-openmodel,
-.yui3-skin-sam .wegas-layout-hd .editor-restart-button,
-.yui3-skin-sam .wegas-layout-hd .wegas-login {
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button {
     color: #666;
-    font-size: 21px;
-    line-height: 1em;
-    float: right !important;
-    margin-right: 15px;
-    padding: 5px;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
+    height:35px;
+    /*width: 30px;*/
+    font-size: 20px;
     border-radius: 50%;
 }
 
-.yui3-skin-sam .wegas-layout-hd .edit-openmodel{
-    font-size: 18px;
+.yui3-skin-sam .wegas-layout-hd .wegas-login {
+    order:99;
 }
 
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button.edit-openmodel{
+    order: 71;
+    font-size:18px;
+}
 
 .yui3-skin-sam .wegas-layout-hd .editor-restart-button {
-    font-size: 18px;
-    margin-right: 10px;
+    order: 31;
 }
 
 .yui3-skin-sam .wegas-layout-hd .wegas-login:after {
     display: none;
 }
 
-.yui3-skin-sam .wegas-layout-hd .editor-restart-button:hover,
-.yui3-skin-sam .wegas-layout-hd .wegas-login:hover {
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button:hover {
     background: rgba(221, 221, 221, 0.25);
     color: red;
+}
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button.edit-openmodel:hover{
+    color: palevioletred;
 }
 
 .yui3-skin-sam .wegas-layout-resizable .wegas-layout-column .yui3-resize-handle {
