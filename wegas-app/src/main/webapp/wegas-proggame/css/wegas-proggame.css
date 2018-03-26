@@ -371,7 +371,10 @@ code {
 
 /* Level: TabView styles */
 
-.wegas-proggame-level .yui3-tabview, .wegas-proggame-level .yui3-tabview a {
+.wegas-proggame-level .yui3-treenode-content-label,
+.wegas-proggame-level .yui3-treeleaf-content-label,
+.wegas-proggame-level .yui3-tabview, 
+.wegas-proggame-level .yui3-tabview a {
     color: white;
 }
 
