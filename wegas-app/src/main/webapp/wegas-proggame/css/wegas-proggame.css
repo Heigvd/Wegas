@@ -448,6 +448,10 @@ code {
     width: 180px;
 }
 
+.proggame-api {
+    margin-top: 15px;
+}
+
 .proggame-api .selected>div>.yui3-treeleaf-content-header, .proggame-api .selected>.yui3-treenode-content-header {
     background: none;
     border: none;
