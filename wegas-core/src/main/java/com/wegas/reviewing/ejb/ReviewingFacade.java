@@ -28,18 +28,22 @@ import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,6 +113,23 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
      */
     public EvaluationDescriptor findEvaluationDescriptor(Long evId) {
         return this.getEntityManager().find(EvaluationDescriptor.class, evId);
+    }
+
+    public Collection<WegasPermission> getReviewReadPermission(Review aReview) {
+        Query query = getEntityManager().createNamedQuery("Review.findOwners");
+        query.setParameter(1, aReview.getId());
+        List results = query.getResultList();
+
+        Collection<WegasPermission> perms = new ArrayList<>();
+        for (Object item : results) {
+            Object[] tuple = (Object[]) item;
+            String entityType = (String) tuple[0];
+            Long entityId = (Long) tuple[1];
+
+            perms.add(new WegasEntityPermission(entityId, WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.valueOf(entityType)));
+        }
+
+        return perms;
     }
 
     /**
@@ -200,7 +221,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
         List<PeerReviewInstance> touched = new ArrayList<>();
         List<PeerReviewInstance> evicted = new ArrayList<>();
 
-        if (scope instanceof GameModelScope){
+        if (scope instanceof GameModelScope) {
             throw WegasErrorMessage.error("Invalid Scope for PeerReview descriptor. GameModelScope does not make any sense for this kind of data");
         }
 
@@ -584,7 +605,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
 
         AbstractScope rScope = prd.getScope();
         AbstractScope vScope = toReview.getScope();
-        if (rScope instanceof GameModelScope){
+        if (rScope instanceof GameModelScope) {
             throw WegasErrorMessage.error("GameModel/Game Scope is forbidden for " + prd);
         }
         if (rScope instanceof TeamScope) {
