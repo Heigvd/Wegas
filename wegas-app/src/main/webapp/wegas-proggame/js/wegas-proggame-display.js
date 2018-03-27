@@ -47,7 +47,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             });
 
             this.get("boundingBox").setStyles({
-                marginTop: (1 * 32) + "px",
+                marginTop: "12px",
                 marginLeft: (Math.floor(900 - pos.x) / 2) + "px"
             });
 
@@ -563,7 +563,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.requires("Tile, PanelSprite, Speaker, GridOffset");
             this._offset = {
                 x: 6,
-                y: -22
+                y: -10
             };
         }
     });
