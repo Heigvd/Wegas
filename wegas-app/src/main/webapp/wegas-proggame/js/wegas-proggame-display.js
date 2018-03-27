@@ -305,7 +305,7 @@ YUI.add('wegas-proggame-display', function(Y) {
 
             var pos = [this._x, this._y],
                 textE = Crafty.e("2D, DOM, Text")
-                .text(text.toUpperCase())
+                .text(text)
                 .attr({
                     z: 401,
                     visible: false
