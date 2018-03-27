@@ -936,7 +936,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     }
                 },
                 historySize: {
-                    type: NUMBER,
+                    type: ['null', NUMBER],
                     value: 20,
                     optional: true,
                     view: {
@@ -1205,7 +1205,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     }
                 },
                 addShortcut: {
-                    type: STRING,
+                    type: ['null', STRING],
                     view: {
                         type: SELECT,
                         label: 'Default child type',
