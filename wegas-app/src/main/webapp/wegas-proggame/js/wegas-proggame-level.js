@@ -318,8 +318,9 @@ YUI.add('wegas-proggame-level', function(Y) {
         doIdleAnimation: function() {
             var texts = this.get("invites");
             if (texts.length === 0) {
-                texts = ["HELP! HELP!!! SOMEBODY HERE? PLEASE HELP ME!",
-                    "PLEASE HELP ME!", "WHY ME? TELL ME WHY?", "WOULD ANYBODY BE KIND ENOUGH AS TO GET ME OUT OF HERE?"];
+                texts = ["BONJOUR ? IL Y A QUELQU'UN ICI ? MOI, JE SUIS LÀ !",
+                    "TAPE LE BON CODE POUR ME REJOINDRE !",
+                    "Y A-T-IL QUELQU'UN POUR ME TENIR COMPAGNIE ?"];
             }
 
             if (this.get(STATE) === IDLE) {
