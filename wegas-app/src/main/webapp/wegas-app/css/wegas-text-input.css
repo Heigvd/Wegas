@@ -97,6 +97,7 @@
     border-radius: 6px;
     color: white;
     transition: .3s;
+    user-select: none;
 }
 
 .wegas-string-input:not(.readonly) .wegas-string-input-checkboxes li:hover{

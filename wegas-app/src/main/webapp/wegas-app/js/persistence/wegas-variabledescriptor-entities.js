@@ -667,7 +667,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     },
                     view: {
                         label: 'Allowed Values',
-                        className: 'wegas-advanced-feature',
                         elementType: {
                             required: true,
                             type: 'string'
