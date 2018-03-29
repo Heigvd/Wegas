@@ -38,7 +38,7 @@
         <script src="assets/js/app-min.js"></script>
 
         <script type="application/javascript">
-            if (navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) || navigator.userAgent.match(/rv:11/)) || (typeof $.browser !== "undefined" && $.browser.msie == 1)){
+            if (navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) || navigator.userAgent.match(/rv:11/)) || (typeof $ !== "undefined" && typeof $.browser !== "undefined" && $.browser.msie == 1)){
                 alert("Your browser (Internet Explorer) is unfortunately not supported. Please switch to another browser.");
             } else {
                 var node = document.getElementById("browsehappy"), ptnode;
