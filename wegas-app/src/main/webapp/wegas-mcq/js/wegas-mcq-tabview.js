@@ -102,7 +102,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             return  '<div class="'
                 + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unread" : "")
                 + '"><div class="index-label">'
-                + (question.get("title") || question.get("label") || "undefined") + "</div>"
+                + (question.get("label") || question.get("label") || "undefined") + "</div>"
                 + '<div class="index-status">' + label + "</div>"
                 + '</div>';
 
@@ -129,7 +129,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                         }
                     } else { // Find the last selected replies
                         choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                        label = choiceDescriptor.get("title") || "";
+                        label = choiceDescriptor.get("label") || "";
                         label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
                     }
                 }
@@ -142,7 +142,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 if (question.get("maxReplies") === 1) {
                     // Find the last selected replies
                     choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                    label = choiceDescriptor.get("title") || "";
+                    label = choiceDescriptor.get("label") || "";
                     label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
                 } else {
                     label = questionInstance.get("replies").length + "x";
@@ -156,7 +156,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             return  '<div class="'
                 + (highlightUnanswered ? "unread" : "")
                 + '"><div class="index-label">'
-                + (question.get("title") || question.get("label") || "undefined") + "</div>"
+                + (question.get("label") || question.get("label") || "undefined") + "</div>"
                 + '<div class="index-status">' + label + "</div>"
                 + '</div>';
         },

@@ -23,7 +23,7 @@ var MCQHelper = (function() {
                 items, i, item, whTitle, title,
                 msg;
 
-            whTitle = whDescriptor.getTitle() || whDescriptor.getLabel();
+            whTitle = whDescriptor.getLabel();
 
             msg = "<b>" + whTitle + "</b>";
             msg += whDescriptor.getDescription() + "<br /><br />";
@@ -33,7 +33,7 @@ var MCQHelper = (function() {
             for (i in items) {
                 msg += '<div class="whview-history-answer" style="margin-bottom: 10px;">';
                 item = items[i];
-                title = item.getTitle() || item.getLabel();
+                title = item.getLabel();
                 msg += "<span class=\"whview-history-answer-title\"><b>" + title + "</b></span>";
                 if (item instanceof com.wegas.core.persistence.variable.primitive.StringDescriptor &&
                     !item.getAllowedValues().isEmpty()) {

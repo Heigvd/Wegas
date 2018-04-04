@@ -33,7 +33,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         VERSION_ATTR_DEF,
         IDATTRDEF,
         SELFARG;
-
     VERSION_ATTR_DEF = {
         type: NUMBER,
         optional: true,
@@ -61,7 +60,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         const: SELF,
         view: {type: HIDDEN}
     };
-
     AVAILABLE_TYPES = [
         {
             label: 'String',
@@ -201,6 +199,17 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             getLabel: function() {
                 return this.get('label');
             },
+            getEditorLabel: function() {
+                if (!this.get("editorTag") && !this.get("label")) {
+                    return this.get("name");
+                } else if (!this.get("editorTag")){
+                    return this.get("label");
+                } else if (!this.get("label")){
+                    return this.get("editorTag");
+                } else {
+                    return this.get("editorTag") + " - " + this.get("label");
+                }
+            },
             getIconCss: function() {
                 return (
                     'wegas-icon-variabledescriptor wegas-icon-' +
@@ -260,22 +269,27 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         type: 'textarea',
                         className: 'wegas-comments',
                         borderTop: true,
-                        label: 'Comments'
+                        label: 'Comments',
+                    }
+                },
+                editorTag: {
+                    type: STRING,
+                    optional: false,
+                    value: "",
+                    index: -2,
+                    view: {
+                        label: "Tag",
+                        description: "Never displayed to players"
                     }
                 },
                 label: {
                     type: STRING,
-                    value: undefined,
-                    errored: function(v) {
-                        return v ? '' : 'is required';
-                    },
+                    value: "",
                     index: -1,
                     transient: false,
-                    getter: function(val) {
-                        return val || this.get(NAME);
-                    },
                     view: {
-                        label: 'Name'
+                        label: 'Label',
+                        description: "Displayed to players"
                     }
                 },
                 name: {
@@ -332,7 +346,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             errored: function(val, formVal) {
                                 var errors = [],
                                     scope = formVal.scope;
-
                                 if (scope["@class"] === "TeamScope" && val === "PlayerScope" ||
                                     scope["@class"] === "GameModelScope" && (val === "PlayerScope" || val === "TeamScope")) {
                                     errors.push('Invalid combination');
@@ -618,25 +631,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 '@class': {
                     value: 'StringDescriptor'
                 },
-                title: {
-                    type: NULLSTRING,
-                    optional: true,
-                    value: "",
-                    index: -1,
-                    visible: function(val, formVal) {
-                        // hack: only show label when embedded within an WhQuestion
-                        var parent;
-                        if (formVal.id) {
-                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
-                            return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
-                        }
-                        return false;
-                    },
-                    view: {
-                        label: "Label",
-                        description: "Displayed to players"
-                    }
-                },
                 defaultInstance: {
                     properties: {
                         '@class': {
@@ -704,18 +698,18 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                 field: "allowedValues"
                             }
                         }]/*,
-                    localEval: function(player, v) {
-                        var value = this.getInstance(player).get(VALUE);
-                        if (value && value.indexOf("[") === 0) {
-                            var values = JSON.parse(value);
-                            for (i in values){
-                                if (values[i] === v){
-                                    return true;
-                                }
-                            }
-                        }
-                        return v === value;
-                    }*/
+                         localEval: function(player, v) {
+                         var value = this.getInstance(player).get(VALUE);
+                         if (value && value.indexOf("[") === 0) {
+                         var values = JSON.parse(value);
+                         for (i in values){
+                         if (values[i] === v){
+                         return true;
+                         }
+                         }
+                         }
+                         return v === value;
+                         }*/
                 }
             }
         }
@@ -755,25 +749,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             ATTRS: {
                 '@class': {
                     value: 'TextDescriptor'
-                },
-                title: {
-                    type: NULLSTRING,
-                    optional: true,
-                    value: "",
-                    index: -1,
-                    visible: function(val, formVal) {
-                        // hack: only show label when embedded within an WhQuestion
-                        var parent;
-                        if (formVal.id) {
-                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
-                            return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
-                        }
-                        return false;
-                    },
-                    view: {
-                        label: "Label",
-                        description: "Displayed to players"
-                    }
                 },
                 defaultInstance: {
                     properties: {
@@ -916,25 +891,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         layout: 'shortInline'
                     }
                 },
-                title: {
-                    type: NULLSTRING,
-                    optional: true,
-                    value: "",
-                    index: -1,
-                    visible: function(val, formVal) {
-                        // hack: only show label when embedded within an WhQuestion
-                        var parent;
-                        if (formVal.id) {
-                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
-                            return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
-                        }
-                        return false;
-                    },
-                    view: {
-                        label: "Label",
-                        description: "Displayed to players"
-                    }
-                },
                 historySize: {
                     type: ['null', NUMBER],
                     value: 20,
@@ -1071,7 +1027,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         }
     );
-
     /**
      * ListDescriptor mapper
      */

@@ -105,10 +105,7 @@ YUI.add('wegas-entity', function(Y) {
                     }
                 },
                 label: {
-                    transient: true,
-                    getter: function(val) {
-                        return val || this.get(NAME);
-                    }
+                    transient: true
                 }
             },
             /**

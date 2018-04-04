@@ -53,16 +53,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 value: "QuestionDescriptor"
             },
-            title: {
-                type: STRING,
-                optional: true,
-                value: "",
-                index: -1,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players"
-                }
-            },
             minReplies: {
                 type: ['null', NUMBER],
                 optional: true,
@@ -342,16 +332,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             ATTRS: {
                 "@class": {
                     value: "ChoiceDescriptor"
-                },
-                title: {
-                    type: STRING,
-                    value: "",
-                    optional: true,
-                    index: -1,
-                    view: {
-                        label: "Label",
-                        description: "Displayed to players"
-                    }
                 },
                 description: {
                     type: STRING,
@@ -1116,16 +1096,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             "@class": {
                 type: STRING,
                 value: "WhQuestionDescriptor"
-            },
-            title: {
-                type: NULLSTRING,
-                optional: true,
-                value: "",
-                index: -1,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players"
-                }
             },
             description: {
                 type: NULLSTRING,

@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * Faces component that print a GameModel as xHTML.
- *
+ * <p>
  * *
  * <pre>
  * <b>Usage:</b>
@@ -44,14 +44,14 @@ import org.slf4j.LoggerFactory;
  *       available for users that have the 'edit' permission on the specified GameModel.
  *       If mode != "editor" or currentUser hasn't this 'edit' permission, mode is degraded to "player"
  * </pre>
- *
+ * <p>
  * See WEB-INF/web.xml & WEB-INF/wegas-taglib.xml for tag and params definitions
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 /*
- * 
- * Faces 2.2 @FacesComponent(value="com.wegas.app.pdf.uicomponent.GameModel", 
+ *
+ * Faces 2.2 @FacesComponent(value="com.wegas.app.pdf.uicomponent.GameModel",
  *                           createTag = true, tagName = "GameModel",
  *                           namespace ="http://www.albasim.ch/wegas/pdf")
  * But still missing attributes definitions....
@@ -100,7 +100,7 @@ public class UIGameModel extends UIComponentBase {
             subtitle = "Example";
         }
 
-        // Header 
+        // Header
         writer.write("<div class='header'>");
         writer.write("<div class='scenario'>");
         writer.write("<span class='title'>Scenario: </span>");
@@ -141,7 +141,7 @@ public class UIGameModel extends UIComponentBase {
         ArrayList<String> path = new ArrayList<>();
 
         /*
-         * when root is specified, do not print headers and start printing 
+         * when root is specified, do not print headers and start printing
          * vardesc from root node
          */
         if (root == null || root.isEmpty()) {
@@ -166,11 +166,7 @@ public class UIGameModel extends UIComponentBase {
                             break;
                         } else {
                             current = (VariableDescriptor) parent;
-                            if (current.getTitle() == null) {
-                                path.add(current.getLabel());
-                            } else {
-                                path.add(current.getTitle());
-                            }
+                            path.add(current.getLabel());
                         }
                     }
                 }
@@ -208,6 +204,7 @@ public class UIGameModel extends UIComponentBase {
      * @param context
      * @param writer
      * @param gm
+     *
      * @throws IOException
      */
     private void encodeGameModelHeader(FacesContext context, ResponseWriter writer, GameModel gm) throws IOException {

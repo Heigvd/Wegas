@@ -246,7 +246,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         if (maxNumberOfReviewer >= 0) {
             this.maxNumberOfReviewer = maxNumberOfReviewer;
         } else {
-            this.maxNumberOfReviewer = 1; // TODO throw error ? 
+            this.maxNumberOfReviewer = 1; // TODO throw error ?
         }
     }
 
@@ -335,6 +335,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
 
     @Override
     public void revive(Beanjection beans) {
+        super.revive(beans);
         beans.getReviewingFacade().revivePeerReviewDescriptor(this);
     }
 }

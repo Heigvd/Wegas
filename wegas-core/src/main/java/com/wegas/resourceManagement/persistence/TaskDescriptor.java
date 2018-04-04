@@ -430,6 +430,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
 
     @Override
     public void revive(Beanjection beans) {
+        super.revive(beans);
         beans.getResourceFacade().reviveTaskDescriptor(this);
     }
 

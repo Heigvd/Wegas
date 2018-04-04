@@ -66,7 +66,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                             (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
                                 items[i].getInstance().get("enabled"))) {
                             entityBox.append("<li class='chooser-entity' data-name='" + items[i].get("name") + "'>" +
-                                (items[i].get("title") || items[i].get("label")) + "</li>");
+                                (items[i].get("label")) + "</li>");
                         }
                     }
                 }
@@ -207,7 +207,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                         (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
                             items[i].getInstance().get("enabled"))) {
                         getLabel = this.get("widgets")[items[i].get("@class")].getLabel;
-                        label = (items[i].get("title") || items[i].get("label"));
+                        label = items[i].get("label");
 
                         li = entityBox.appendChild("<li class='chooser-entity' data-type='" +
                             items[i].get("@class") + "'data-name='" +

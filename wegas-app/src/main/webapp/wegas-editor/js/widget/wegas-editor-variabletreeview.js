@@ -47,7 +47,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 testFn: searchFn
                     /*  return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
                      e.get("name"),
-                     e.get("title"),
                      e.get("label"),
                      e.get("comments")
                      ].join("|"));*/

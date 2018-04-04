@@ -206,10 +206,10 @@ public class UIVariableDescriptor extends UIComponentBase {
          * Some entity have a specific label to be displayed for players (called
          * title) if any, use it rather than std label
          */
-        if (editorMode || vDesc.getTitle() == null /* || vDesc.getTitle().isEmpty() */) {
-            title = vDesc.getLabel();
+        if (editorMode) {
+            title = vDesc.getEditorLabel();
         } else {
-            title = vDesc.getTitle();
+            title = vDesc.getLabel();
         }
 
         writer.write("<a name=\"vd" + vDesc.getId() + "\" />");
@@ -221,10 +221,6 @@ public class UIVariableDescriptor extends UIComponentBase {
         if (editorMode) {
             UIHelper.printProperty(context, writer, "Type", type);
             UIHelper.printProperty(context, writer, "ScriptAlias", vDesc.getName());
-
-            if (vDesc.getTitle() != null && !vDesc.getTitle().isEmpty()) {
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_LABEL, vDesc.getTitle());
-            }
         }
     }
 
@@ -240,7 +236,7 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @throws IOException
      */
     public void fallback(FacesContext context, ResponseWriter writer, VariableDescriptor vDesc) throws IOException {
-        // Never show to players 
+        // Never show to players
         if (editorMode) {
             VariableInstance instance = vDesc.getInstance(defaultValues, player);
 
@@ -258,7 +254,7 @@ public class UIVariableDescriptor extends UIComponentBase {
     private static void printMethods(FacesContext context, ResponseWriter writer, String title, Object o) throws IOException {
         UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_SUBSUBTITLE);
         for (Method m : o.getClass().getDeclaredMethods()) {
-            // Only care about non-JsonIgnored getter 
+            // Only care about non-JsonIgnored getter
             if (m.getName().matches("^get.*")
                     && m.getParameterTypes().length == 0
                     && m.getAnnotation(com.fasterxml.jackson.annotation.JsonIgnore.class) == null) {

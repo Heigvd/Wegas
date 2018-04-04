@@ -20,6 +20,7 @@ import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.ListUtils.Updater;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -55,7 +56,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      *
      */
     @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id")
+    //    @OrderBy("id")
     @OrderColumn
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
@@ -498,5 +499,23 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             }
         }
         return false;
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        if (this.title != null) {
+            String importedLabel = getLabel();
+            if (importedLabel == null) {
+                importedLabel = "";
+            }
+            // title = "", label= "" => prefix = "", label=""
+            // title = "", label= "[r5b] Meet someone" => prefix = "[r5b] Meet someone", label=""
+            // title = "Meet someone", label= "[r5b] Meet someone" => prefix = "[r5b]", label="Meet someone"
+            // title = "Meet someone", label="" => prefix = "", label="Meet someone"
+            this.setEditorTag(importedLabel.replace(title, "").trim());
+            this.setLabel(title);
+            this.title = null;
+        }
+        super.revive(beans);
     }
 }

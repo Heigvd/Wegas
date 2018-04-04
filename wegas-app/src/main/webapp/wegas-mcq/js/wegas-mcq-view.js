@@ -37,7 +37,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 cssClass: "wegas-whview__mainlist"
             });
 
-            title = whQuestion.get("title") || whQuestion.get("label");
+            title = whQuestion.get("label");
 
             this.qTitle = new Y.Wegas.Text({
                 cssClass: "wegas-whview__title",
@@ -85,7 +85,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                     classes = "wegas-whview__answers__input-answer input-" + name;
 
-                    label = child.get("title") || child.get("label");
+                    label = child.get("label");
 
                     switch (child.get("@class")) {
                         case "NumberDescriptor":
@@ -655,7 +655,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             Y.log("RENDER TAB");
             ret = ['<div class="mcq-question">',
                 '<div class="mcq-question-details">',
-                '<div class="mcq-question-title">', question.get("title") || question.get("label") || "undefined", '</div>',
+                '<div class="mcq-question-title">', question.get("label") || "undefined", '</div>',
                 '<div class="mcq-question-description">', question.get("description"), '</div>',
                 '</div>'];
             // Display choices
@@ -690,7 +690,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         if (choiceI.get("active")) {
                             checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
                             ret.push('<div class="mcq-choice', (qAnswerable || checked ? '' : ' spurned'), '" style="width:', cellWidth, '% !important">');
-                            title = (choiceD.get("title").trim() !== '') ? choiceD.get("title") : "&nbsp;";
+                            title = (choiceD.get("label").trim() !== '') ? choiceD.get("label") : "&nbsp;";
                             ret.push('<div class="mcq-choice-name" style="text-align:center"><label for="', choiceID, '">', title, '</label></div>');
                             currDescr = '';
                             if (hasDescription) {
@@ -732,7 +732,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                             ret.push('<div class="mcq-choice-vertical">');
                             checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
                             ret.push('<div class="mcq-choice', (qAnswerable || checked ? '' : ' spurned'), '">');
-                            title = (choiceD.get("title").trim() !== '') ? choiceD.get("title") : "&nbsp;";
+                            title = (choiceD.get("label").trim() !== '') ? choiceD.get("label") : "&nbsp;";
                             ret.push('<div class="mcq-choice-name"><label for="', choiceID, '">', title, '</label></div>');
                             if (currDescr !== '') {
                                 ret.push('<div class="mcq-choice-description"><label for="', choiceID, '">', currDescr, '</label></div>');
@@ -780,12 +780,12 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                     isChosenReply = choiceReplies.length > 0;
                     if (choiceI.get("active")) {
-                        var noTitle = (choiceD.get("title").trim() == '');
+                        var noTitle = (choiceD.get("label").trim() == '');
                         var noDescr = (currDescr.trim() == '');
 
                         ret.push('<div class="mcq-choice-vertical', (noTitle && noDescr ? ' nohover' : ''), '">');
                         ret.push('<div class="mcq-choice', (cAnswerable || isChosenReply) ? (noTitle && noDescr ? ' notitle' : '') : ' spurned', '">');
-                        title = noTitle ? "&nbsp;" : choiceD.get("title");
+                        title = noTitle ? "&nbsp;" : choiceD.get("label");
                         ret.push('<div class="mcq-choice-name', (noTitle && noDescr ? ' notitle' : (!noTitle && !noDescr ? ' colspan' : '')), '">', title, '</div>');
 
                         if (!noDescr) {
@@ -829,7 +829,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         reply = allReplies[i];
                         choiceD = reply.getChoiceDescriptor();
                         ret.push('<div class="mcq-reply" data-choice-id="', choiceD.get("id"), '">');
-                        ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
+                        ret.push('<div class="mcq-reply-title">', choiceD.get("label"), '</div>');
                         ret.push('<div class="mcq-reply-content">', reply.get("answer"), '</div>');
                         ret.push('</div>'); // end mcq-reply
                     }
@@ -895,7 +895,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         toDisplay = reply.answerText;
 
                         ret.push('<div class="mcq-reply" data-choice-id="', choiceD.get("id"), '" style="font-style:normal; color:inherit">');
-                        ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
+                        ret.push('<div class="mcq-reply-title">', choiceD.get("label"), '</div>');
                         ret.push('<div class="mcq-reply-content">', toDisplay, '</div>');
                         ret.push('</div>'); // end mcq-reply
                     }

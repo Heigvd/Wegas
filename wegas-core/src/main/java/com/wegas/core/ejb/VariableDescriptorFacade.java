@@ -171,11 +171,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
 
         /*
-         * This flush is required by several EntityRevivedEvent listener, 
+         * This flush is required by several EntityRevivedEvent listener,
          * which opperate some SQL queries (which didn't return anything before
          * entites have been flushed to database
          *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, 
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
          * it will not return any result if this flush not occurs
          */
         this.getEntityManager().flush();
@@ -460,17 +460,17 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     /**
      * @param gameModel
-     * @param title     title we look for
+     * @param prefix    prefix we look for
      *
      * @return all gameModel descriptors with the given title
      */
     @Override
-    public List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title) {
+    public List<VariableDescriptor> findByPrefix(final GameModel gameModel, final String prefix) {
 
         List<VariableDescriptor> result = new ArrayList<>();
-        if (title != null) {
+        if (prefix != null) {
             for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
-                if (title.equals(vd.getTitle())) {
+                if (prefix.equals(vd.getEditorTag())) {
                     result.add(vd);
                 }
             }

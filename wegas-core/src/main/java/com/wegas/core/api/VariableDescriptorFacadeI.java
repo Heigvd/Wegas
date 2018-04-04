@@ -99,11 +99,11 @@ public interface VariableDescriptorFacadeI {
 
     /**
      * @param gameModel
-     * @param title     title we look for
+     * @param prefix    prefix we look for
      *
      * @return all gameModel descriptors with the given title
      */
-    List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title);
+    List<VariableDescriptor> findByPrefix(final GameModel gameModel, final String prefix);
 
     /**
      * @param vd
