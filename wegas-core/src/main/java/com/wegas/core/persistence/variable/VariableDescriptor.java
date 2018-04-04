@@ -115,7 +115,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
+    protected static final Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
 
     /**
      * HACK
@@ -291,6 +291,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
 
     public void setRoot(GameModel rootGameModel) {
         this.root = rootGameModel;
+        logger.trace("set {} root to {}", this, this.root);
         if (this.root != null) {
             this.setParentList(null);
             this.setParentWh(null);
@@ -303,6 +304,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
 
     public void setParentList(ListDescriptor parentList) {
         this.parentList = parentList;
+        logger.trace("set {} parentList to {}", this, this.parentList);
         if (this.parentList != null) {
             this.setRoot(null);
             this.setParentWh(null);
@@ -315,6 +317,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
 
     public void setParentWh(WhQuestionDescriptor parentWh) {
         this.parentWh = parentWh;
+        logger.trace("set {} parentWh to {}", this, this.parentWh);
         if (this.parentWh != null) {
             this.setRoot(null);
             this.setParentList(null);
