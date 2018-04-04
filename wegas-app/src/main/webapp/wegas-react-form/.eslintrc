@@ -24,7 +24,7 @@
             { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }
         ],
         "comma-dangle": 0,
-        "max-len": [1, 80],
+        "max-len": ["error", { "code": 100, "ignoreComments": true }],
         "arrow-parens": ["error", "as-needed"],
         "function-paren-newline": 0,
         "object-curly-newline": 0,

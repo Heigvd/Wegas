@@ -11,3 +11,6 @@ export const FETCH_VARS = 'FETCH_VARS';
 
 export const SHOW_OVERLAY = 'SHOW_OVERLAY';
 export const HIDE_OVERLAY = 'HIDE_OVERLAY';
+
+export const START_REQUEST = 'START_REQUEST';
+export const END_REQUEST = 'END_REQUEST';

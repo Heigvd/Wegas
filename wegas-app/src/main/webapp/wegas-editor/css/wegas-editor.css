@@ -49,6 +49,7 @@
     position: fixed;
     top: 0;
     left: 50%;
+    width: auto;
 }
 
 .wegas-stdmode .wegas-treeview-advanced-children .yui3-treenode-content-toggle{

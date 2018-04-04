@@ -58,10 +58,11 @@ function onFileBrowserClick(fieldName, url, type, win) {
 
 const TINY_CONFIG = {
     inline: false,
+    browser_spellcheck: true,
     plugins: [
-        'autolink link image lists code media table contextmenu',
+        'autolink link image lists code media table',
         'paste advlist textcolor dynamic_toolbar',
-        // textcolor wordcount autosave
+        // textcolor wordcount autosave contextmenu
         // advlist charmap print preview hr anchor pagebreak spellchecker
         // directionality
     ],
@@ -220,6 +221,7 @@ class HTMLView extends React.Component {
 
     render() {
         return (
+            // eslint-disable-next-line
             <div {...tinymceStyle} onClick={focusChildOnClick}>
                 <TinyMCE
                     key={this.state.key}

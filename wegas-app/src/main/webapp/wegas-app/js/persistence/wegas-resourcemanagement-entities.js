@@ -564,6 +564,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 required: true,
                 view: {
                     label: "Task number",
+                    layout: "extraShort"
                 }
             },
             predecessors: {
@@ -637,14 +638,16 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     type: STRING,
                                     view: {
                                         type: SELECT,
-                                        choices: persistence.Resources.SKILLS
+                                        choices: persistence.Resources.SKILLS,
+                                        layout: "shortInline"
                                     }
                                 },
                                 level: {
                                     type: NUMBER,
                                     view: {
                                         type: SELECT,
-                                        choices: persistence.Resources.LEVELS
+                                        choices: persistence.Resources.LEVELS,
+                                        layout: "shortInline"
                                     }
                                 },
                                 quantity: {
@@ -652,7 +655,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     required: true,
                                     value: 1,
                                     view: {
-                                        label: 'Quantity'
+                                        label: 'Quantity',
+                                        layout: "extraShortInline"
                                     }
                                 },
                                 limit: {
@@ -660,7 +664,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     required: true,
                                     value: 100,
                                     view: {
-                                        label: 'Limit'
+                                        label: 'Limit',
+                                        layout: "extraShortInline"
                                     }
                                 },
                                 completeness: {
