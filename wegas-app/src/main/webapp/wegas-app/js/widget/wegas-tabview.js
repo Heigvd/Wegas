@@ -260,6 +260,7 @@ YUI.add('wegas-tabview', function(Y) {
             // @HACK Special treatment for the Preview panel, which needs reloading to become fully usable,
             // especially because of TinyMce:
             if (id === PREVIEW_TAB_LABEL) {
+                newTab.get("panelNode").show();
                 Y.Wegas.PageLoader.find("previewPageLoader").reload();
             }
             // Make the old tab coherent to enable its deletion:
@@ -323,24 +324,40 @@ YUI.add('wegas-tabview', function(Y) {
 
         /*
         ** Shows the plus-menu of the given tabView and hides the other one.
-        ** If we are showing the menu of the editor tabView, hide its first entry (for moving the editor),
-        ** otherwise show its first entry.
+        ** If we are showing the menu of the Preview tabView, hide the "Preview" entry, otherwise show it.
          */
-        showPlusMenu: function(tabViewId, hideFirstEntry) {
+        showPlusMenu: function(tabViewId) {
             tabViewId = this.getLongPositionName(tabViewId);
-            var editorTabView = this.getCurrentEditorTabViewId() || this.getDefaultEditorTabView(),
-                isEditorTabView = editorTabView.indexOf(tabViewId) > -1,
-                plusMenu = Y.one(tabViewId + " .wegas-plus-tab");
+            var plusMenu = Y.one(tabViewId + " .wegas-plus-tab");
             if (!plusMenu) return;
-            var menu = Y.Widget.getByNode(plusMenu).hasPlugin("menu"),
-                firstEntry = menu.getMenu().item(0);
-            Y.one(tabViewId + " .wegas-plus-tab").show();
+            plusMenu.show();
             Y.one(TabView.getOppositeTabView(tabViewId) + " .wegas-plus-tab").hide();
-            if (isEditorTabView || hideFirstEntry === true) {
-                firstEntry.hide();
+
+            var previewTabView = this.getCurrentPreviewTabViewId(),
+                isPreviewTabView = previewTabView.indexOf(tabViewId) > -1,
+                previewEntry = this.getPreviewEntry(tabViewId);
+            if (isPreviewTabView) {
+                var tab = this.getTab(PREVIEW_TAB_LABEL);
+                if (tab && tab.get("visible")) {
+                    previewEntry.hide();
+                } else {
+                    previewEntry.show();
+                }
             } else {
-                firstEntry.show();
+                previewEntry.show();
             }
+        },
+
+        /*
+        ** Returns the "Preview" entry of the plus-menu of the given tabView.
+         */
+        getPreviewEntry: function(tabViewId) {
+            tabViewId = this.getLongPositionName(tabViewId);
+            var plusMenu = Y.one(tabViewId + " .wegas-plus-tab");
+            if (!plusMenu) return null;
+            var menu = Y.Widget.getByNode(plusMenu).hasPlugin("menu"),
+                previewEntry = menu.getMenu().item(0);
+            return previewEntry;
         },
 
         // Returns the default tabView identifier for the editor tab, taking the user's last setting if available:
@@ -363,6 +380,12 @@ YUI.add('wegas-tabview', function(Y) {
         // NB: Returns undefined if the editor tab is not currently displayed!
         getCurrentEditorTabViewId: function() {
             var tab = this.getTab(EDITOR_TAB_LABEL);
+            return tab ? tab.get("tabSelector") : undefined;
+        },
+
+        // NB: Returns undefined if the Preview tab is not currently displayed!
+        getCurrentPreviewTabViewId: function() {
+            var tab = this.getTab(PREVIEW_TAB_LABEL);
             return tab ? tab.get("tabSelector") : undefined;
         },
 
@@ -760,6 +783,8 @@ YUI.add('wegas-tabview', function(Y) {
             var tab = this.get("host");
             tab.hide();
             tab.get("panelNode").hide();
+            // Unhide the Preview entry of the current plus-menu each time the tab is closed:
+            Wegas.TabView.getPreviewEntry(tab.get("tabSelector")).show();
         },
         expand: function() {
             var tab = this.get("host");
@@ -938,13 +963,13 @@ YUI.add('wegas-tabview', function(Y) {
                     var otherTabView = Wegas.TabView.getOppositeTabView(tabView);
                     if (Wegas.app.widget.isHidden(otherTabView)) {
                         Wegas.app.widget.showPosition(otherTabView);
-                        Wegas.TabView.showPlusMenu(otherTabView, true);
+                        Wegas.TabView.showPlusMenu(otherTabView);
                     }
                     Wegas.app.widget.hidePosition(tabView);
                 }));
             } else {
                 // It's the other tabView (Preview, plus-menu, ...)
-                // Keep the tabView open, but do the following: (1) hide the close button, (2) close all its tabs, (3) hide the "Attributes" entry of the plus-menu
+                // Keep the tabView open, but do the following: (1) hide the close button, (2) close all its tabs, (3) adjust the plus-menu
                 e.target.hide();
                 var tabViewObj = this.get("host"),
                     nbTabs = tabViewObj.size(),
@@ -964,7 +989,7 @@ YUI.add('wegas-tabview', function(Y) {
                     Wegas.TabView.showPlusMenu(otherTabView);
                     Wegas.app.widget.hidePosition(tabView);
                 } else {
-                    Wegas.TabView.showPlusMenu(tabView, true);
+                    Wegas.TabView.showPlusMenu(tabView);
                 }
             }
         }
