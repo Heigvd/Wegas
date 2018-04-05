@@ -27,7 +27,7 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
-    mainFields: ['browser', 'module', 'jsnext:main', 'main'],
+    mainFields: ['browser', 'module', 'main'],
   },
   plugins: plugins,
   module: {
