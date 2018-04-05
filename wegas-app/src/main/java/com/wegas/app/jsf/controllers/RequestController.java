@@ -198,6 +198,10 @@ public class RequestController implements Serializable {
         this.debug = debug;
     }
 
+    public boolean useYUICDN(){
+        return Boolean.valueOf(Helper.getWegasProperty("useYUICDN", "false"));
+    }
+
     public Boolean debugMode() {
         if (debug == null) {
             return Boolean.valueOf(Helper.getWegasProperty("debug", "false"));

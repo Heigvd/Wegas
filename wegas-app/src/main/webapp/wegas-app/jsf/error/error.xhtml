@@ -4,7 +4,7 @@
 
     <ui:composition template="../page-message.xhtml">
 
-        <ui:define name="title">Error</ui:define>
+        <ui:define name="title">#{error.errorTitle}</ui:define>
 
         <ui:define name="body">#{error.errorMessage}</ui:define>
 
