@@ -23,12 +23,14 @@ import com.wegas.core.ejb.nashorn.JavaObjectInvocationHandler;
 import com.wegas.core.ejb.nashorn.NHClassLoader;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.WegasErrorMessageManager;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.UserFacade;
@@ -187,6 +189,14 @@ public class ScriptFacade extends WegasAbstractFacade {
 
     private ScriptContext populate(Player player) {
         final Bindings bindings = engine.createBindings();
+        if (player == null) {
+            throw WegasErrorMessage.error("ScriptFacade.populate requires a player !!!");
+        }
+
+        if (player.getStatus() != Populatable.Status.LIVE) {
+            throw WegasErrorMessage.error("ScriptFacade.populate requires a LIVE player !!!");
+        }
+
         bindings.put("self", player);                           // Inject current player
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
 

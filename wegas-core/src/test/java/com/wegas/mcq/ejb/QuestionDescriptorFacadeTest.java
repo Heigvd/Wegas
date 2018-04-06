@@ -15,8 +15,13 @@ import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.persistence.variable.ListInstance;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
@@ -123,8 +128,8 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals(!preselected, ci.getReplies().isEmpty());
         boolean ok = false;
 
-        for (Reply r : ci.getReplies()){
-            if (!r.getIgnored()){
+        for (Reply r : ci.getReplies()) {
+            if (!r.getIgnored()) {
                 ok = true;
                 break;
             }
@@ -287,7 +292,6 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         variableDescriptorFacade.remove(question.getId());
     }
-
 
     @Test
     public void testRadioChocie() throws Exception {
@@ -560,5 +564,52 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         assertEquals("result_1", ((ChoiceDescriptor) variableDescriptorFacade.find(choice.getId())).getResults().get(0).getName());
         variableDescriptorFacade.remove(question.getId());
+    }
+
+    private void printChildren(String title, DescriptorListI list) {
+        logger.error(title + ":");
+        for (Object child : list.getItems()) {
+            logger.error(" - " + child);
+        }
+    }
+
+    @Test
+    public void testMoveChoice() {
+        ListDescriptor list = new ListDescriptor("list");
+        list.setDefaultInstance(new ListInstance());
+        variableDescriptorFacade.create(scenario.getId(), list);
+
+        QuestionDescriptor question = this.createQuestion(scenario.getId(), "question", null);
+
+        // Add a choice descriptor and 3 results
+        ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result_1",
+                new Result("result_1"));
+
+        choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
+        Assert.assertEquals(question, (QuestionDescriptor) choice.getParent());
+        Assert.assertEquals("VariableDescriptor", choice.getParentDescriptorType());
+        Assert.assertEquals(2, gameModelFacade.find(scenario.getId()).getItems().size());
+        Assert.assertEquals(1, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
+        Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
+
+        // move choice from question to root
+        variableDescriptorFacade.move(choice.getId(), 0);
+        choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
+        Assert.assertEquals(scenario, (GameModel) choice.getParent());
+        Assert.assertEquals("GameModel", choice.getParentDescriptorType());
+        Assert.assertEquals(3, gameModelFacade.find(scenario.getId()).getItems().size());
+        Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
+        Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
+
+        // move choice from root to list
+        variableDescriptorFacade.move(choice.getId(), list.getId(), 0);
+
+        choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
+        Assert.assertEquals(list, (ListDescriptor) choice.getParent());
+        Assert.assertEquals("VariableDescriptor", choice.getParentDescriptorType());
+        Assert.assertEquals(2, gameModelFacade.find(scenario.getId()).getItems().size());
+        Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
+        Assert.assertEquals(1, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
+
     }
 }

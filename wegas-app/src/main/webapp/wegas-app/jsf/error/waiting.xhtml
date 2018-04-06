@@ -191,9 +191,7 @@
                         player = team.players[i];
                         if (player.id === Wegas.playerId) {
                             if (player.status === 'LIVE') {
-                                setTimeout(function() {
-                                    Wegas.reload();
-                                }, 500);
+                                Wegas.reload();
                             } else if (player.status === 'PROCESSING') {
                                 Wegas.showSpinner();
                             }

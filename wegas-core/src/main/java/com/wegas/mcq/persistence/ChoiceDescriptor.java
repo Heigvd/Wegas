@@ -18,13 +18,17 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.ListUtils.Updater;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.persistence.Permission;
+import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -481,9 +485,35 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @JsonBackReference
     public void setQuestion(QuestionDescriptor question) {
         this.question = question;
+        logger.trace("set {} question to {}", this, this.question);
         if (question != null) { // Hum... question should never be null...
             this.setRoot(null);
             this.setParentList(null);
+            this.setParentWh(null);
+        }
+    }
+
+    @Override
+    public void setRoot(GameModel rootGameModel) {
+        super.setRoot(rootGameModel);
+        if (this.getRoot() != null){
+            this.setQuestion(null);
+        }
+    }
+
+    @Override
+    public void setParentList(ListDescriptor parentList) {
+        super.setParentList(parentList);
+        if (this.getParentList() != null){
+            this.setQuestion(null);
+        }
+    }
+
+    @Override
+    public void setParentWh(WhQuestionDescriptor parentWh) {
+        super.setParentWh(parentWh);
+        if (this.getParentWh() != null){
+            this.setQuestion(null);
         }
     }
 

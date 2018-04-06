@@ -793,7 +793,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
                     dataSource.cache.put(assoc.descriptor.toObject(), {
                         on: {
-                            success: EditEntityAction.destroyEditionTab,
+                            success: Y.bind(function() {
+                                this.hideOverlay();
+                                EditEntityAction.destroyEditionTab();
+                            }, this),
                             failure: Y.bind(this.hideOverlay, this)
                         }
                     });

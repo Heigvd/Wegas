@@ -19,8 +19,6 @@ import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -29,6 +27,8 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -41,6 +41,8 @@ import javax.inject.Inject;
 public class GameController extends AbstractGameController {
 
     private static final long serialVersionUID = 569534896590048360L;
+
+    private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
     /**
      *
@@ -140,20 +142,19 @@ public class GameController extends AbstractGameController {
         }
 
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            errorController.dispatch("The game you are looking for could not be found.");
+            errorController.gameNotFound();
         } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
             try {
                 externalContext.dispatch("/wegas-app/jsf/error/waiting.xhtml");
             } catch (IOException ex) {
-                Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("Dispatch error: {}", ex);
             }
         } else if (!currentPlayer.getGame().getStatus().equals(Game.Status.LIVE)) {
-            errorController.dispatch("The game you are looking for has been deleted.");
+            currentPlayer = null;
+            errorController.gameDeleted();
         } else if (!requestManager.hasPlayerRight(currentPlayer)) {
-            try {
-                externalContext.dispatch("/wegas-app/jsf/error/accessdenied.xhtml");
-            } catch (IOException ex) {
-            }
+            currentPlayer = null;
+            errorController.accessDenied();
         }
     }
 

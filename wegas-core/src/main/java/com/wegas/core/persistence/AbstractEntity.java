@@ -27,8 +27,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
-import org.eclipse.persistence.annotations.Cache;
-import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -47,11 +45,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg ChoiceDescriptor and result).
  * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
+ * 2018-04-05: revert to default since it seems the buggy behaviour no longer occurs
  * <p>
- * INVALIDATE OBJECT FIX DirectCollectionMapping NPE
+ * INVALIDATE OBJECT FIX DirectCollectionMapping NPE -> fixed since eclipselink 2.7.1
  */
 @MappedSuperclass
-@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
+//@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
 public abstract class AbstractEntity implements Serializable, Cloneable, WithPermission {
 
     private static final long serialVersionUID = -2538440276749623728L;

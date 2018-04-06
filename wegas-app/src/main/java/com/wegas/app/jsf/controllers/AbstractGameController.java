@@ -23,6 +23,8 @@ import java.util.Locale;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -30,6 +32,7 @@ import javax.faces.context.FacesContext;
 public class AbstractGameController implements Serializable {
 
     private static final long serialVersionUID = -1511995063657626077L;
+    private static final Logger logger = LoggerFactory.getLogger(AbstractGameController.class);
 
     /**
      *
@@ -153,5 +156,13 @@ public class AbstractGameController implements Serializable {
 
     public String getWegasProperty(String property) {
         return Helper.getWegasProperty(property);
+    }
+
+    public void dispatch(String view) {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().dispatch(view);
+        } catch (IOException ex) {
+            logger.error("Unable to find error page", ex);
+        }
     }
 }
