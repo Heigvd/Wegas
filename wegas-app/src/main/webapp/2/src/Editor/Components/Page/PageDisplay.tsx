@@ -17,17 +17,13 @@ class PageDisplay extends React.Component<
   PageDisplayProps,
   { currentPageId: string }
 > {
+  static getDerivedStateFromProps(nextProps: PageDisplayProps) {
+    return { currentPageId: nextProps.defaultPageId };
+  }
   editor?: SrcEditor | null;
   constructor(props: PageDisplayProps) {
     super(props);
     this.state = { currentPageId: props.defaultPageId };
-  }
-  componentWillReceiveProps(nextProps: PageDisplayProps) {
-    if (this.props.defaultPageId === undefined) {
-      this.setState({
-        currentPageId: nextProps.defaultPageId,
-      });
-    }
   }
   render() {
     return (

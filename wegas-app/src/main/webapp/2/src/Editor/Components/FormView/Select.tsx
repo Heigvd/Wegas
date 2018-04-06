@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from 'glamor';
-import { CommonView } from './commonView';
+import { CommonViewContainer } from './commonView';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
@@ -71,7 +71,7 @@ function SelectView(props: ISelectProps) {
   const menuItems = choices.map(genItems);
   const value = JSON.stringify(props.value) || JSON.stringify(title.value);
   return (
-    <CommonView view={props.view} errorMessage={props.errorMessage}>
+    <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
         {({ inputId, labelNode }) => (
           <>
@@ -89,7 +89,7 @@ function SelectView(props: ISelectProps) {
           </>
         )}
       </Labeled>
-    </CommonView>
+    </CommonViewContainer>
   );
 }
 

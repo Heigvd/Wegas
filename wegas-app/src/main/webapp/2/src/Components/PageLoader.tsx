@@ -4,17 +4,21 @@ import { State } from '../data/Reducer/reducers';
 import { css } from 'glamor';
 import { Actions } from '../data/index';
 
-function Oups(props: any) {
+/**
+ * Test Widget to be removed
+ * @param props 
+ */
+function Print(props: any) {
   return (
     <span>
-      <span>Message is:</span> {props.message}
+      <span>Print:</span> {props.message}
       <span>{props.children}</span>
     </span>
   );
 }
 
 const AVAILABLE: { [key: string]: React.ComponentType } = {
-  Oups: editable(Oups, 'Oups'),
+  Print: editable(Print, 'Print'),
 };
 // function inferComponenent(type: string | React.ComponentType) {
 //     if (typeof type == 'string') {
@@ -121,15 +125,15 @@ interface PageLoaderProps {
 }
 
 class PageLoader extends React.Component<PageLoaderProps, { json?: Page }> {
+  static getDerivedStateFromProps(nextProps: PageLoaderProps) {
+    return { json: nextProps.page };
+  }
   constructor(props: PageLoaderProps) {
     super(props);
     this.state = {
       json: props.page,
     };
     this.update = this.update.bind(this);
-  }
-  componentWillReceiveProps(nextProps: PageLoaderProps) {
-    this.setState({ json: nextProps.page });
   }
   update(json: Page) {
     this.setState({ json });

@@ -19,12 +19,12 @@ export type IForm = typeof Form;
 
 export class Form extends React.Component<FormProps, { val: any }> {
   form?: JSONForm;
+  static getDerivedStateFromProps(nextProps: FormProps) {
+    return { val: nextProps.entity }; // check for others
+  }
   constructor(props: FormProps) {
     super(props);
     this.state = { val: props.entity };
-  }
-  componentWillReceiveProps(nextProps: FormProps) {
-    this.setState({ val: nextProps.entity }); // check for others
   }
   render() {
     return (

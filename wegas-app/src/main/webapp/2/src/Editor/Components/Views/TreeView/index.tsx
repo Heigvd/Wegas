@@ -1,6 +1,6 @@
 import * as React from 'react';
 import HTML5Backend from 'react-dnd-html5-backend';
-// Replace once react 16.3 lands
+// Replace once react 16.3 lands and type updates :-)
 import createReactContext from 'create-react-context';
 import {
   DragSource,
@@ -43,15 +43,22 @@ const DropContext = createReactContext<{
   onDropResult: (result: DropResult) => void;
 }>({ onDropResult: noop });
 
-class ContextContainer extends React.Component<ContainerProps> {
+class ContextContainer extends React.Component<
+  ContainerProps,
+  { context: { onDropResult: NonNullable<ContainerProps['onDropResult']> } }
+> {
+  state = { context: { onDropResult: noop } };
+  static getDerivedStateFromProps(props: ContainerProps) {
+    return { context: { onDropResult: props.onDropResult || noop} };
+  }
   render() {
-    const { parent, onDropResult } = this.props;
+    const { parent } = this.props;
     let index = 0;
     function nodeProps() {
       return { index: index++, parent };
     }
     return (
-      <DropContext.Provider value={{ onDropResult: onDropResult || noop }}>
+      <DropContext.Provider value={this.state.context}>
          {this.props.children({ nodeProps })}
       </DropContext.Provider>
     );

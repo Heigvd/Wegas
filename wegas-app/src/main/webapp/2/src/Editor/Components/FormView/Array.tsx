@@ -4,7 +4,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { Cover } from '../../../Components/Cover';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { Menu } from '../../../Components/Menu';
-import { CommonView } from './commonView';
+import { CommonViewContainer } from './commonView';
 import { Labeled } from './labeled';
 
 const transparentStyle = css({
@@ -98,7 +98,7 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
   const children = React.Children.map(props.children, renderChild);
 
   return (
-    <CommonView errorMessage={props.errorMessage} view={props.view}>
+    <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
       <Labeled label={props.view.label} description={props.view.description}>
         {({ inputId, labelNode }) => {
           return (
@@ -111,7 +111,7 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
           );
         }}
       </Labeled>
-    </CommonView>
+    </CommonViewContainer>
   );
 }
 

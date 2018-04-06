@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled } from './labeled';
-import { CommonView } from './commonView';
+import { CommonViewContainer } from './commonView';
 
 export default class BooleanView extends React.Component<
   WidgetProps.BaseProps<'boolean'> & { value?: boolean }
@@ -11,7 +11,7 @@ export default class BooleanView extends React.Component<
   render() {
     const { view, errorMessage, value } = this.props;
     return (
-      <CommonView errorMessage={errorMessage} view={view}>
+      <CommonViewContainer errorMessage={errorMessage} view={view}>
         <Labeled {...view}>
           {({ inputId, labelNode }) => (
             <>
@@ -25,7 +25,7 @@ export default class BooleanView extends React.Component<
             </>
           )}
         </Labeled>
-      </CommonView>
+      </CommonViewContainer>
     );
   }
 }

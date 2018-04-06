@@ -22,16 +22,20 @@ const LAYOUTS = {
     maxWidth: '11em',
   }),
 };
+export type CommonView = View<any> & {
+  borderTop?: boolean;
+  layout?: keyof typeof LAYOUTS;
+};
 interface CommonViewProps {
   children: React.ReactNode;
   errorMessage?: string[];
-  view: View<any> & { borderTop?: boolean; layout?: keyof typeof LAYOUTS };
+  view: CommonView;
 }
 /**
  * Handle errorMessage, layout.
  * @param param0 Props
  */
-export function CommonView({ children, errorMessage, view }: CommonViewProps) {
+export function CommonViewContainer({ children, errorMessage, view }: CommonViewProps) {
   const error = errorMessage && errorMessage.join(', ');
   const layout = view.layout ? String(LAYOUTS[view.layout]) : '';
   return (

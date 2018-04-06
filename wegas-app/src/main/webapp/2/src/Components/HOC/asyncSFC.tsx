@@ -2,29 +2,53 @@ import * as React from 'react';
 
 /**
  * async SFC
- * @param Comp
+ * @param PComp
  * @param Loader
  * @param Err
  */
 export function asyncSFC<T>(
-  Comp: (props: T) => Promise<JSX.Element>,
+  PComp: (props: T) => Promise<JSX.Element>,
   Loader: React.SFC<{}> = () => <span />,
   Err: React.SFC<{ err: Error }> = () => <span />,
 ): React.ComponentClass<T> {
-  class AsyncDeps extends React.PureComponent<T, { el: JSX.Element | null }> {
+  class AsyncDeps extends React.PureComponent<
+    T,
+    { el: JSX.Element | null; loaded: boolean }
+  > {
+    static getDerivedStateFromProps() {
+      return { loaded: false };
+    }
+    mount: boolean = true;
     constructor(props: T) {
       super(props);
       this.state = {
+        loaded: false,
         el: Loader({}),
       };
-      Comp(props)
-        .then(el => this.setState({ el }))
-        .catch(err => this.setState({ el: Err({ err }) }));
     }
-    componentWillReceiveProps(nextProps: T) {
-      Comp(nextProps)
-        .then(el => this.setState({ el }))
-        .catch(err => this.setState({ el: Err({ err }) }));
+    loadComp() {
+      PComp(this.props)
+        .then(el => {
+          if (this.mount) {
+            this.setState({ loaded: true, el });
+          }
+        })
+        .catch(err => {
+          if (this.mount) {
+            this.setState({ loaded: true, el: Err({ err }) });
+          }
+        });
+    }
+    componentDidMount() {
+      this.loadComp();
+    }
+    componentDidUpdate() {
+      if (!this.state.loaded) {
+        this.loadComp();
+      }
+    }
+    componentWillUnmount() {
+      this.mount = false;
     }
     render() {
       return this.state.el;

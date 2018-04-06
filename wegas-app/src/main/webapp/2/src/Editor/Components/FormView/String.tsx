@@ -2,7 +2,7 @@ import * as React from 'react';
 import { debounce } from 'lodash-es';
 import { Labeled } from './labeled';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { CommonView } from './commonView';
+import { CommonViewContainer, CommonView } from './commonView';
 import { css } from 'glamor';
 interface StringInputProps extends WidgetProps.BaseProps<'string' | 'number'> {
   value?: string | number;
@@ -12,7 +12,7 @@ interface StringInputProps extends WidgetProps.BaseProps<'string' | 'number'> {
     disabled?: boolean;
     readOnly?: boolean;
     placeholder?: string;
-  };
+  } & CommonView;
 }
 
 const inputStyle = css({
@@ -37,6 +37,9 @@ export default class StringInput extends React.Component<
   StringInputProps,
   { value?: string | number }
 > {
+  static getDerivedStateFromProps(nextProps: StringInputProps) {
+    return { value: nextProps.value };
+  }
   constructor(props: StringInputProps) {
     super(props);
     this.state = { value: props.value };
@@ -59,13 +62,10 @@ export default class StringInput extends React.Component<
       }
     });
   };
-  componentWillReceiveProps(nextProps: StringInputProps) {
-    this.setState({ value: nextProps.value });
-  }
   render() {
     const { view, errorMessage } = this.props;
     return (
-      <CommonView errorMessage={errorMessage} view={view}>
+      <CommonViewContainer errorMessage={errorMessage} view={view}>
         <Labeled {...view}>
           {({ inputId, labelNode }) => {
             if (typeof view.rows === 'number') {
@@ -108,7 +108,7 @@ export default class StringInput extends React.Component<
             );
           }}
         </Labeled>
-      </CommonView>
+      </CommonViewContainer>
     );
   }
 }

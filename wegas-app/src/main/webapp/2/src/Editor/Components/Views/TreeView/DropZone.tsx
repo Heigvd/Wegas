@@ -105,17 +105,17 @@ class DropZoneContainer extends React.Component<
   ConDropZoneProps,
   { where: DropLocation }
 > {
+  static getDerivedStateFromProps(nextProps: ConDropZoneProps) {
+    return {
+      where: nextProps.where,
+    };
+  }
   separator: HTMLElement | null = null;
   constructor(props: ConDropZoneProps) {
     super(props);
     this.state = {
       where: props.where,
     };
-  }
-  componentWillReceiveProps(nextProps: ConDropZoneProps) {
-    this.setState({
-      where: nextProps.where,
-    });
   }
   render() {
     const { isOver, connectDropTarget, children, item } = this.props;
