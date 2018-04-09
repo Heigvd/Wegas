@@ -1401,9 +1401,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                 node: ".proggame-buttons",
                 html: "<div>Pour exécuter votre code, cliquez sur la flèche verte.</div>"
             }, {
-                node: ".barre",
-                html: "<div>L'éditeur de code peut être agrandi en tirant sur cette barre</div>"
-            }, {
                 node: ".proggame-lefttab",
                 html: "<div>L'<b>API</b>(Application Programming Interface) expose les instructions que vous avez à disposition.<br/><br/>" +
                     "Le <b>?</b> donne des informations supplémentaires pour chaque instruction<br/><br/>" +
