@@ -8,12 +8,15 @@ enum STATUS {
 
 type PromiseProps<I, O> = (props: I) => Promise<O> | O;
 function promised<P, O>(Comp: React.ComponentType<O>) {
-    return (promising: PromiseProps<P, O>) => {
+    return (promiseProps: PromiseProps<P, O>) => {
         interface IAsyncState {
             result?: O;
             status: STATUS;
         }
         class Async extends React.Component<P, IAsyncState> {
+            static getDerivedStateFromProps(props: P, state: IAsyncState) {
+                return { status: STATUS.RUN };
+            }
             mounted: boolean = true;
             constructor(props: P) {
                 super(props);
@@ -21,30 +24,23 @@ function promised<P, O>(Comp: React.ComponentType<O>) {
                     status: STATUS.STOP,
                 };
             }
-            componentWillMount() {
-                this.setState({ status: STATUS.RUN });
-                Promise.resolve(promising(this.props)).then(result => {
-                    if (this.mounted) {
-                        this.setState({
-                            result,
-                            status: STATUS.END,
-                        });
-                    }
-                });
+            _resolvePromise() {
+                if (this.state.status !== STATUS.END) {
+                    Promise.resolve(promiseProps(this.props)).then(result => {
+                        if (this.mounted) {
+                            this.setState({
+                                result,
+                                status: STATUS.END,
+                            });
+                        }
+                    });
+                }
             }
-            componentWillReceiveProps(nextProps: P) {
-                this.setState({ status: STATUS.RUN });
-                Promise.resolve(promising(nextProps)).then(result => {
-                    if (this.mounted) {
-                        this.setState({
-                            result,
-                            status: STATUS.END,
-                        });
-                    }
-                });
+            componentDidMount() {
+                this._resolvePromise();
             }
-            shouldComponentUpdate(nextProps: P, nextState: IAsyncState) {
-                return nextState.status === STATUS.END;
+            componentDidUpdate() {
+                this._resolvePromise();
             }
             componentWillUnmount() {
                 this.mounted = false;

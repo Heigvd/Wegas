@@ -699,7 +699,7 @@ YUI.add('wegas-datasource', function(Y) {
                 testFn = this.get("testFn"),
                 walkEntity = this.walkEntity.bind(this),
                 findFn = function findFn(stack) {
-                    stack.find(function find(item) { // @fixme speedup
+                    Y.Array.find(stack, function find(item) { // @fixme speedup
                         if (testFn(item, key, needle)) { // We check the current element if it's a match
                             ret = item;
                             return item;
