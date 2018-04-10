@@ -135,7 +135,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable {
 
         for (String langRef : refs) {
             Translation tr = trMap.get(langRef);
-            if (tr != null && Helper.isNullOrEmpty(tr.getTranslation())) {
+            if (tr != null && !Helper.isNullOrEmpty(tr.getTranslation())) {
                 return tr;
             }
         }
