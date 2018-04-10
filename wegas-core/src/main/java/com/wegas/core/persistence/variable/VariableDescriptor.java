@@ -700,7 +700,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
                 // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
                 // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
                 this.setEditorTag(importedLabel.replace(title, "").trim());
-                this.setLabel(TranslatableContent.build("def", "title"));
+                this.setLabel(TranslatableContent.build("def", title));
             }
             this.title = null;
         }
