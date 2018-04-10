@@ -151,7 +151,7 @@ YUI.add("wegas-i18n", function(Y) {
             if (typeof key === "string") {
                 return translateFromTable(key, args);
             } else if (typeof key === "object") {
-                return translateFromObject(key);
+                return translateFromObject(key, args);
             }
         }
 
@@ -166,7 +166,7 @@ YUI.add("wegas-i18n", function(Y) {
 
                     if (gmLanguages.length > 0) {
                         for (i in gmLanguages) {
-                            gmLang= gmLanguages[i];
+                            gmLang = gmLanguages[i];
                             if (gmLang.get("code") === locale) {
                                 //most specific 
                                 Y.Wegas.I18n._currentRefName = gmLang.get("refName");
@@ -186,14 +186,53 @@ YUI.add("wegas-i18n", function(Y) {
             return Y.Wegas.I18n._currentRefName;
         }
 
-        function translateFromObject(trContent) {
-            var refName = getRefName();
+        function computeTranslation(text, decorate, lang, id, favorite) {
+            if (decorate) {
+                return "<div class='wegas-translation " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
+                    "' data-trid='" + id + "' data-refName='" + lang.refName + "'data-lang='" + lang.lang + "'><span class='inline-editor-button fa fa-pencil'></span>" + text + "</div>";
+            } else {
+                return text;
+            }
+        }
+
+        function translateFromObject(trContent, params) {
+            var favoriteRefName = getRefName(),
+                i,
+                langs,
+                lang,
+                trId = trContent.get("id"),
+                translations,
+                decorate = params && params.decorate;
+
             if (trContent.get("@class") === "TranslatableContent" && trContent.get("translations")) {
-                if (trContent.get("translations")[refName] !== undefined) {
-                    return trContent.get("translations")[refName] || "";
+                translations = trContent.get("translations");
+                langs = Y.Array.map(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
+                    return {
+                        lang: item.get("lang"),
+                        refName: item.get("refName")
+                    };
+                });
+                // move favorite language at first position
+                lang = Y.Array.find(langs, function(item) {
+                    return item.refName === favoriteRefName;
+                });
+                if (lang) {
+                    i = langs.indexOf(lang);
+                    langs.splice(i, 1);
+                    langs.unshift(lang);
+                }
+                for (i in langs) {
+                    lang = langs[i];
+                    if (translations[lang.refName] !== undefined) {
+                        return computeTranslation(trContent.get("translations")[lang.refName] || "", decorate, lang, trId, lang.refName === favoriteRefName);
+                    }
                 }
             }
-            return "NO TRANSLATION";
+            if (decorate) {
+                return "<div class='wegas-translation missing' data-trid='" + trId + "' data-refName=''>MISSING TRANSLATION</div>";
+            } else {
+                return "MISSING TRANSLATION";
+            }
         }
         /**
          * Return the translation for the key messages, according to current locale

@@ -9,7 +9,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
 
- 
+
 /* Header toggle button */
 .yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode{
     background-color : red;
@@ -29,7 +29,7 @@
     background: white;
     color: #6AACF1;
 }
- 
+
 .yui3-skin-sam .wegas-editview {
     background: url(../../wegas-app/images/editor-polygons.png) no-repeat;
     background-size: 100% 80px;
@@ -640,4 +640,28 @@
 
 .wegas-uploadfile input {
     display: none;
+}
+
+/* I18N */
+
+.wegas-translation .inline-editor-button {
+    display: none;
+    position: absolute;
+    right: 0;
+    cursor:pointer;
+}
+
+.wegas-advancedmode .wegas-translation.favorite-lang:hover .inline-editor-button {
+}
+
+.wegas-advancedmode .wegas-translation.favorite-lang:hover .inline-editor-button {
+    display: block;
+}
+
+.wegas-advancedmode .wegas-translation.not-favorite-lang {
+    background-color: pink;
+}
+
+.wegas-advancedmode .wegas-translation.missing {
+    background-color: hotpink;
 }

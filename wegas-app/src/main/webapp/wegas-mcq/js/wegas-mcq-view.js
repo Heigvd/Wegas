@@ -659,7 +659,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             ret = ['<div class="mcq-question">',
                 '<div class="mcq-question-details">',
                 '<div class="mcq-question-title">', I18n.t(question.get("label")) || "undefined", '</div>',
-                '<div class="mcq-question-description">', I18n.t(question.get("description")), '</div>',
+                '<div class="mcq-question-description">', I18n.t(question.get("description"), {decorate: true}), '</div>',
                 '</div>'];
             // Display choices
 
