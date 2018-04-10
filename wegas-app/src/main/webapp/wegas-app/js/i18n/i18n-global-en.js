@@ -27,6 +27,11 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             variableNotFound: "Unable to found \"{{name}}\" variable",
             logout: "logout"
         },
+        i18n:{
+            manager: {
+                title: "Scenario Available Languages Manager"
+            }
+        },
         errors: {
             conflict: "Your request could not be completed due to a conflict. This usually means you tried to update an outdated element.",
             greaterThan: "{{value}} is greater greater than {{max}}",

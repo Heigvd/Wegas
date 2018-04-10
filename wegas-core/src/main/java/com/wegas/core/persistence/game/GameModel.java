@@ -15,6 +15,7 @@ import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -82,6 +83,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
     private String name;
 
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<GameModelLanguage> languages = new ArrayList<>();
+
     /**
      *
      */
@@ -94,7 +98,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      */
     @Enumerated(value = EnumType.STRING)
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -303,6 +306,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
             this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
             this.setComments(other.getComments());
             this.getProperties().merge(other.getProperties());
+            //this.setLanguages(ListUtils.mergeLists(this.getLanguages(), other.getLanguages())); // Note For Modeler-> not in default merge
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + n.getClass().getSimpleName() + ") is not possible");
         }
@@ -761,7 +765,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         if (this.pages != null) {
             try (final Pages pagesDAO = new Pages(this.id)) {
                 pagesDAO.delete();                                              // Remove existing pages
-                // Pay Attention: this.pages != this.getPages() ! 
+                // Pay Attention: this.pages != this.getPages() !
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
                 for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
@@ -827,6 +831,39 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     public void setCreatedByName(String createdByName) {
         // Here so game deserialization works
+    }
+
+    @JsonIgnore
+    public List<GameModelLanguage> getRawLanguages() {
+        return this.languages;
+    }
+
+    public List<GameModelLanguage> getLanguages() {
+        return Helper.copyAndSort(this.languages, new EntityComparators.OrderComparator<>());
+    }
+
+    public void setLanguages(List<GameModelLanguage> languages) {
+        this.languages = languages;
+        int i = 0;
+        for (GameModelLanguage lang : this.languages) {
+            lang.setIndexOrder(i++);
+            lang.setGameModel(this);
+        }
+    }
+
+    /**
+     * get list of language refName, sorted according to player preferences
+     *
+     * @param player may be null
+     *
+     * @return list
+     */
+    public List<String> getPreferredLanguagesRefName(Player player) {
+        ArrayList<String> langs = new ArrayList<>(languages.size());
+        for (GameModelLanguage gml : this.languages) {
+            langs.add(gml.getRefName());
+        }
+        return langs;
     }
 
     /**

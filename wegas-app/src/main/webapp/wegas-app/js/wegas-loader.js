@@ -755,6 +755,11 @@ YUI().use(function(Y) {
             "wegas-fileexplorercss": {
                 type: CSS
             },
+            "wegas-gamemodel-i18n": {
+                path: "js/widget/wegas-gamemodel-i18n-min.js",
+                requires: ["wegas-layout-list"],
+                ws_provides: ["LanguagesManager"]
+            },
             "wegas-gamemodel-extractor": {
                 path: "js/widget/wegas-gamemodel-extractor-min.js",
                 requires: ["wegas-modal", "wegas-plugin"],
@@ -879,8 +884,8 @@ YUI().use(function(Y) {
         base: "./wegas-react-form/",
         root: "/wegas-react-form/",
         modules: {
-            "wegas-react-form-binding":{
-                path:"dist/bundle.js"
+            "wegas-react-form-binding": {
+                path: "dist/bundle.js"
             },
             "wegas-react-form": {
                 path: "dist/bundle.js",

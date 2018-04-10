@@ -209,7 +209,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         if (editorMode) {
             title = vDesc.getEditorLabel();
         } else {
-            title = vDesc.getLabel();
+            title = vDesc.getLabel().translateOrEmpty(player);
         }
 
         writer.write("<a name=\"vd" + vDesc.getId() + "\" />");
@@ -467,7 +467,7 @@ public class UIVariableDescriptor extends UIComponentBase {
     }
 
     /**
-     * Specific behaviour for QuestionDescriptor
+     * Specific behaviour for WhQuestionDescriptor
      *
      * @param context
      * @param writer
@@ -530,7 +530,7 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_COLUMN);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, question.getDescription(), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, question.getDescription().translateOrEmpty(player), false, editorMode);
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, "Min: ", question.getMinReplies());
@@ -689,8 +689,6 @@ public class UIVariableDescriptor extends UIComponentBase {
         //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
         encodeBase(context, writer, inbox, editorMode);
         InboxInstance instance = inbox.getInstance(defaultValues, player);
-
-        UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, inbox.getDescription(), false, false);
 
         for (Message msg : instance.getSortedMessages()) {
             UIHelper.printMessage(context, writer, "", msg.getFrom(), msg.getSubject(), msg.getDate(), msg.getBody(), msg.getToken(), msg.getAttachements());

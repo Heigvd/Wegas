@@ -166,7 +166,7 @@ public class UIGameModel extends UIComponentBase {
                             break;
                         } else {
                             current = (VariableDescriptor) parent;
-                            path.add(current.getLabel());
+                            path.add(current.getLabel().translateOrEmpty(player));
                         }
                     }
                 }

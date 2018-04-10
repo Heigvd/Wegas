@@ -11,11 +11,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
@@ -198,7 +201,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
      * Variable descriptor human readable name
      * Player visible
      */
-    private String label;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent label;
 
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
     @JoinFetch
@@ -459,7 +464,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
             return this.getName();
         }
         if (this.getEditorTag() == null) {
-            return this.getLabel();
+            return this.getLabel().translateOrEmpty(this.getGameModel());
         }
         return this.getEditorTag() + " - " + this.getLabel();
     }
@@ -481,7 +486,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
      * @return the label
      */
     @Override
-    public String getLabel() {
+    public TranslatableContent getLabel() {
         return label;
     }
 
@@ -489,7 +494,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
      * @param label the label to set
      */
     @Override
-    public void setLabel(String label) {
+    public void setLabel(TranslatableContent label) {
         this.label = label;
     }
 
@@ -501,7 +506,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     @JsonIgnore
     @Deprecated
     public String getTitle() {
-        return this.getLabel();
+        return this.getLabel().translateOrEmpty(this.getGameModel());
     }
 
     /**
@@ -565,7 +570,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
                 this.setVersion(other.getVersion());
                 this.setName(other.getName());
                 this.setEditorTag(other.getEditorTag());
-                this.setLabel(other.getLabel());
+                this.getLabel().merge(other.getLabel());
                 this.setComments(other.getComments());
                 this.getDefaultInstance().merge(other.getDefaultInstance());
                 if (other.getScope() != null) {
@@ -647,7 +652,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     public Boolean containsAll(final List<String> criterias) {
         Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
                 || Helper.insensitiveContainsAll(this.getEditorTag(), criterias)
-                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
+                || this.getLabel().containsAll(criterias)
                 || Helper.insensitiveContainsAll(this.getComments(), criterias);
         if (!found && (this.getDefaultInstance() instanceof Searchable)) {
             return ((Searchable) this.getDefaultInstance()).containsAll(criterias);
@@ -687,7 +692,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
                 // eg:  label="[r5b] Meet someone'; title=""; prefix = ""; label="[r5b] Meet someone"
                 this.setEditorTag("");
             } else {
-                String importedLabel = getLabel();
+                String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
                 if (importedLabel == null) {
                     importedLabel = "";
                 }
@@ -695,7 +700,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
                 // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
                 // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
                 this.setEditorTag(importedLabel.replace(title, "").trim());
-                this.setLabel(title);
+                this.setLabel(TranslatableContent.build("def", "title"));
             }
             this.title = null;
         }

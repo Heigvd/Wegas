@@ -399,15 +399,12 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     description: "Internal name"
                 }
             },
-            label: {
-                type: STRING,
-                transient: false,
-                required: true,
-                view: {
-                    label: "Name",
-                    description: "Displayed to players"
-                }
-            },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                index: -1,
+                description: "Displayed to players",
+                type: STRING
+            }),
             index: {
                 type: NUMBER,
                 view: {label: "Index"}

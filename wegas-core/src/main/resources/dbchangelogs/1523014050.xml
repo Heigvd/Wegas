@@ -1,0 +1,168 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence (generated)" id="1523014059600-setup">
+        <!-- create a real sql sequence wich match JPA one -->
+        <createSequence sequenceName="i18n_seq" />
+        <sql>select setval('i18n_seq', (select max(seq_count) + 1 as start from sequence WHERE seq_name = 'SEQ_GEN')::bigint)</sql>
+    </changeSet>
+    
+    <changeSet author="maxence (generated)" id="1523014059600-1">
+        <createTable tableName="gamemodellanguage">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="code" type="VARCHAR(16)"/>
+            <column name="indexorder" type="INT"/>
+            <column name="lang" type="VARCHAR(255)"/>
+            <column defaultValue="" name="refname" type="VARCHAR(16)"/>
+            <column name="gamemodel_id" type="BIGINT"/>
+        </createTable>
+        <!-- create default language for each gamemodel -->
+        <sql>
+            INSERT INTO gamemodellanguage (id, gamemodel_id, indexorder, refname, code, lang)
+            SELECT nextval('i18n_seq') as id, id as gamemodel_id, 0 as indexorder, 'def' as refname, 'def' as code, 'default' as lang
+            FROM gamemodel;
+        </sql>
+    </changeSet>
+        
+
+    <changeSet author="maxence (generated)" id="1523014059600-2">
+        <createTable tableName="translatablecontent">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxence (generated)" id="1523014059600-3">
+        <createTable tableName="translatablecontent_translations">
+            <column name="lang" type="VARCHAR(255)"/>
+            <column name="tr" type="TEXT"/>
+            <column name="translatablecontent_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxence (generated)" id="1523014059600-4">
+        <addPrimaryKey columnNames="id" constraintName="gamemodellanguage_pkey" tableName="gamemodellanguage"/>
+        <addUniqueConstraint columnNames="gamemodel_id, refname" constraintName="unq_gamemodellanguage_0" tableName="gamemodellanguage"/>
+        <addPrimaryKey columnNames="id" constraintName="translatablecontent_pkey" tableName="translatablecontent"/>
+        <createIndex indexName="index_gamemodellanguage_gamemodel_id" tableName="gamemodellanguage">
+            <column name="gamemodel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="maxence (generated)" id="1523014059600-5">
+        <addForeignKeyConstraint baseColumnNames="gamemodel_id" baseTableName="gamemodellanguage" constraintName="fk_gamemodellanguage_gamemodel_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel"/>
+        <addForeignKeyConstraint baseColumnNames="translatablecontent_id" baseTableName="translatablecontent_translations" constraintName="fk_translatablecontent_translations_translatablecontent_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+    </changeSet>
+
+    <!-- Let's migrate texts to default translations -->
+
+    <!-- Question description -->
+    <changeSet author="maxence (generated)" id="1523014059600-6">
+        <addColumn tableName="questiondescriptor">
+            <column name="description_id" type="int8"/>
+        </addColumn>
+
+        <!-- create an id for each item to translate -->
+        <update tableName="questiondescriptor">
+            <column name="description_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <!-- and create corresponding translatablecontent -->
+        <sql>INSERT INTO translatablecontent (id) SELECT description_id as id from questiondescriptor</sql>
+        
+        <!-- set up FK -->
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="questiondescriptor" constraintName="fk_questiondescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <!-- Move text as default translation -->
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT description as tr, 'def' as lang, description_id as translatablecontent_id
+            FROM questiondescriptor
+        </sql>
+
+        <dropColumn columnName="description" tableName="questiondescriptor"/>
+    </changeSet>
+
+    <!-- Descriptor Label -->
+    <changeSet author="maxence (generated)" id="1523014059600-7">
+        <addColumn tableName="variabledescriptor">
+            <column name="label_id" type="int8"/>
+        </addColumn>
+
+        <update tableName="variabledescriptor">
+            <column name="label_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id) SELECT label_id as id from variabledescriptor</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT label as tr, 'def' as lang, label_id as translatablecontent_id
+            FROM variabledescriptor
+        </sql>
+
+        <dropColumn columnName="label" tableName="variabledescriptor"/>
+    </changeSet>
+
+    <!-- Result Label -->
+    <changeSet author="maxence (generated)" id="1523014059600-8">
+        <addColumn tableName="mcqresult">
+            <column name="label_id" type="int8"/>
+        </addColumn>
+
+        <update tableName="mcqresult">
+            <column name="label_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id) SELECT label_id as id from mcqresult</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="mcqresult" constraintName="fk_variabledescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT label as tr, 'def' as lang, label_id as translatablecontent_id
+            FROM mcqresult
+        </sql>
+
+        <dropColumn columnName="label" tableName="mcqresult"/>
+    </changeSet>
+
+
+
+    <!-- EvaluationDescriptor Label -->
+    <changeSet author="maxence (generated)" id="1523014059600-9">
+        <addColumn tableName="evaluationdescriptor">
+            <column name="label_id" type="int8"/>
+        </addColumn>
+
+        <update tableName="evaluationdescriptor">
+            <column name="label_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id) SELECT label_id as id from evaluationdescriptor</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="evaluationdescriptor" constraintName="fk_variabledescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT label as tr, 'def' as lang, label_id as translatablecontent_id
+            FROM evaluationdescriptor
+        </sql>
+
+        <dropColumn columnName="label" tableName="evaluationdescriptor"/>
+    </changeSet>
+
+
+
+
+
+
+    <!-- restore JPA sequence -->
+    <changeSet author="maxence (generated)" id="1523014059600-clear">
+        <sql>
+             update sequence set seq_count = ceil(nextval('i18n_seq')::double precision / 100)*100 where seq_name = 'SEQ_GEN';
+        </sql>
+        <dropSequence sequenceName="i18n_seq" />
+    </changeSet>
+</databaseChangeLog>

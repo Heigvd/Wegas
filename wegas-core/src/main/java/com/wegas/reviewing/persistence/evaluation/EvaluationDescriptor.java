@@ -9,9 +9,13 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -76,7 +80,9 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * Evaluation label as displayed to players
      */
-    private String label;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent label;
 
     /**
      * Textual descriptor to be displayed to players
@@ -119,7 +125,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
         if (a instanceof EvaluationDescriptor) {
             EvaluationDescriptor o = (EvaluationDescriptor) a;
             this.setName(o.getName());
-            this.setLabel(o.getLabel());
+            this.getLabel().merge(o.getLabel());
             this.setDescription(o.getDescription());
             this.setIndex(o.getIndex());
         } else {
@@ -128,12 +134,12 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     }
 
     @Override
-    public String getLabel() {
+    public TranslatableContent getLabel() {
         return label;
     }
 
     @Override
-    public void setLabel(String label) {
+    public void setLabel(TranslatableContent label) {
         this.label = label;
     }
 

@@ -78,11 +78,11 @@ public class NumberInstance extends VariableInstance {
     public void setValue(double value) {
         try {
             VariableDescriptor vd = this.findDescriptor();
-            if (vd instanceof NumberDescriptor) { // @fixme (Occurs when numberinstance are used for list descriptors) (IS THAT FUCKIN EXISTING ANY MORE ???)
+            if (vd instanceof NumberDescriptor) { // @fixme (Occurs when numberinstance are used for list descriptors) (IS THAT FUCKIN EXISTS ANY MORE ???)
                 NumberDescriptor desc = (NumberDescriptor) vd;
 
                 if (!desc.isValueValid(value)) {
-                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getName(), desc.getLabel());
+                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getName(), desc.getLabel().translateOrEmpty(this.getGameModel()));
                 }
             }
         } catch (NullPointerException e) {

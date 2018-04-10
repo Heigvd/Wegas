@@ -277,6 +277,14 @@
                                                 }
                                             ]
                                         }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Translations",
+                                            "wchildren": [
+                                                {
+                                                    "type": "LanguagesManager"
+                                                }
+                                            ]
+                                        }, {
                                             "type": "Button",
                                             "cssClass": "wegas-advanced-feature",
                                             "label": "Scenario properties",
@@ -468,6 +476,14 @@
                                                 {
                                                     "type": "WysiwygConsole",
                                                     "cssClass": "wegas-console wegas-editor-console"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Translations",
+                                            "wchildren": [
+                                                {
+                                                    "type": "LanguagesManager"
                                                 }
                                             ]
                                         }, {

@@ -49,7 +49,7 @@ import javax.validation.constraints.Pattern;
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity{
+public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -121,7 +121,6 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     @Enumerated(value = EnumType.STRING)
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 

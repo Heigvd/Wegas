@@ -71,7 +71,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
         super.merge(a);
         if (!this.isValueValid(this.getDefaultValue())) {
             throw new WegasOutOfBoundException(this.getMinValue(),
-                    this.getMaxValue(), this.getDefaultValue(), this.getName(), this.getLabel());
+                    this.getMaxValue(), this.getDefaultValue(), this.getName(), this.getLabel().translateOrEmpty(this.getGameModel()));
         }
     }
 

@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.ListUtils.Updater;
@@ -142,7 +144,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 defaultInstance.setCurrentResult(null);
             }*/
             // Detect new results
-            List<String> labels = new ArrayList<>();
+            List<TranslatableContent> labels = new ArrayList<>();
             List<String> names = new ArrayList<>();
             List<Result> newResults = new ArrayList<>();
 
@@ -496,7 +498,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Override
     public void setRoot(GameModel rootGameModel) {
         super.setRoot(rootGameModel);
-        if (this.getRoot() != null){
+        if (this.getRoot() != null) {
             this.setQuestion(null);
         }
     }
@@ -504,7 +506,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Override
     public void setParentList(ListDescriptor parentList) {
         super.setParentList(parentList);
-        if (this.getParentList() != null){
+        if (this.getParentList() != null) {
             this.setQuestion(null);
         }
     }
@@ -512,7 +514,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Override
     public void setParentWh(WhQuestionDescriptor parentWh) {
         super.setParentWh(parentWh);
-        if (this.getParentWh() != null){
+        if (this.getParentWh() != null) {
             this.setQuestion(null);
         }
     }
@@ -534,7 +536,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Override
     public void revive(Beanjection beans) {
         if (this.title != null) {
-            String importedLabel = getLabel();
+            String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
             if (importedLabel == null) {
                 importedLabel = "";
             }
@@ -543,7 +545,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             // title = "Meet someone", label= "[r5b] Meet someone" => prefix = "[r5b]", label="Meet someone"
             // title = "Meet someone", label="" => prefix = "", label="Meet someone"
             this.setEditorTag(importedLabel.replace(title, "").trim());
-            this.setLabel(title);
+
+            this.setLabel(TranslatableContent.build("def", title));
             this.title = null;
         }
         super.revive(beans);

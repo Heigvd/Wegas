@@ -26,6 +26,7 @@ public class ApplicationConfig extends ResourceConfig {
         // register REST controllers from those packages :
         packages("com.wegas.core.rest",
             "com.wegas.core.security.rest",
+            "com.wegas.core.i18n.rest",
             "com.wegas.mcq.rest",
             "com.wegas.messaging.rest",
             "com.wegas.proggame.rest",

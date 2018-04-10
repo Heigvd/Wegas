@@ -26,11 +26,49 @@ YUI.add('wegas-entity', function(Y) {
         Base = Y.Base,
         Entity,
         IDATTRDEF = {
-            type: STRING,
+            type: NUMBER,
             optional: true, //                                                  // The id is optional for entites that
             // have not been persisted
             view: {
                 type: HIDDEN
+            }
+        },
+        TRANSLATION_CONTENT_ATTR_DEF = {
+            id: IDATTRDEF,
+            "@class": {
+                value: "TranslatableContent",
+                type: STRING,
+                view: {
+                    type: HIDDEN
+                }
+            },
+            translations: {
+                type: "object",
+                additionalProperties: {
+                    type: STRING,
+                    required: true,
+                    view: {
+                        label: "translation",
+                        type: ""
+                    }
+                },
+                view: {
+                    label: "lang",
+                    type: "hashlist",
+                    keyLabel: "lang"
+                }
+            }
+        },
+        TRANSLATION_VIEW = {
+            type: "object",
+            optional: true,
+            value: {
+                "@class": "TranslatableContent",
+                translations: {}
+            },
+            properties: TRANSLATION_CONTENT_ATTR_DEF,
+            view: {
+                label: ""
             }
         },
         PERMISSION = {
@@ -59,6 +97,15 @@ YUI.add('wegas-entity', function(Y) {
                 className: 'wegas-advanced-feature'
             }
         };
+
+    Y.Wegas.Helper.getTranslationAttr = function(param) {
+        var theView = JSON.parse(JSON.stringify(TRANSLATION_VIEW));
+        theView.view.label = param.label;
+        theView.view.description = param.description;
+        theView.index = param.index;
+        theView.properties.translations.additionalProperties.view.type = param.type;
+        return theView;
+    };
 
     /**
      * @class Entity is used to represent db objects
@@ -103,9 +150,6 @@ YUI.add('wegas-entity', function(Y) {
                     view: {
                         type: HIDDEN
                     }
-                },
-                label: {
-                    transient: true
                 }
             },
             /**
@@ -236,6 +280,72 @@ YUI.add('wegas-entity', function(Y) {
         }
     };
 
+    // I18N
+
+    persistence.GameModelLanguage = Base.create("GameModelLanguage", persistence.Entity, [], {}, {
+        EDITORNAME: "Language",
+        ATTRS: {
+            id: IDATTRDEF,
+            '@class': {
+                type: "string",
+                value: 'GameModelLanguage',
+                view: {
+                    type: HIDDEN
+                }
+            },
+            refName: {
+                type: "string",
+                view: {
+                    type: 'uneditable',
+                    label: "refName",
+                    description: "Internal identifier"
+                }
+            },
+            code: {
+                type: "string",
+                view: {
+                    label: "language code name"
+                }
+            },
+            lang: {
+                type: "string",
+                view: {
+                    label: "language full name"
+                }
+            }
+        }
+    });
+
+
+
+    persistence.TranslatableContent = Base.create("TranslatableContent", persistence.Entity, [], {}, {
+        EDITORNAME: "TranslatableContent",
+        ATTRS: {
+            id: IDATTRDEF,
+            '@class': {
+                type: "string",
+                value: 'TranslatableContent',
+                view: {
+                    type: HIDDEN
+                }
+            },
+            translations: {
+                type: "object",
+                additionalProperties: {
+                    type: STRING,
+                    required: true,
+                    view: {
+                        label: "translation"
+                    }
+                },
+                view: {
+                    label: "lang",
+                    type: "hashlist",
+                    keyLabel: "lang"
+                }
+            }
+        }
+    });
 
     /**
      * GameModel mapper
@@ -266,6 +376,41 @@ YUI.add('wegas-entity', function(Y) {
             cssLibrary: {
                 value: {},
                 transient: true
+            },
+            languages: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    value: {
+                        "@class": "GameModelLanguage",
+                        refName: "",
+                        code: "",
+                        lang: ""
+                    },
+                    properties: {
+                        id: IDATTRDEF,
+                        '@class': {
+                            type: "string",
+                            value: 'GameModelLanguage',
+                            view: {
+                                type: HIDDEN
+                            }
+                        },
+                        refName: {
+                            type: "string",
+                            view: {label: "refName"}
+                        },
+                        code: {
+                            type: "string",
+                            view: {label: "code"}
+                        },
+                        lang: {
+                            type: "string",
+                            view: {label: "language"}
+                        }
+                    }
+                },
+                view: {label: "Languages"}
             },
             properties: {
                 type: 'object',

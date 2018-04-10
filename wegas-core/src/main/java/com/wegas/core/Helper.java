@@ -9,6 +9,7 @@ package com.wegas.core;
 
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
@@ -269,7 +270,7 @@ public class Helper {
      * @param entity     entity to label
      * @param usedLabels labels already in use
      */
-    public static void setUniqueLabel(final LabelledEntity entity, List<String> usedLabels) {
+    public static void setUniqueLabel(final LabelledEntity entity, List<TranslatableContent> usedLabels) {
         setUniqueLabel(entity, usedLabels, DEFAULT_VARIABLE_LABEL);
     }
 
@@ -280,13 +281,13 @@ public class Helper {
      * @param usedLabels   labels already in use
      * @param defaultLabel label to set if entity one is unset
      */
-    public static void setUniqueLabel(final LabelledEntity entity, List<String> usedLabels, String defaultLabel) {
-        if (isNullOrEmpty(entity.getLabel())) {
-            entity.setLabel(defaultLabel);
-        }
-        String newLabel = findUniqueLabel(entity.getLabel(), usedLabels);
-        entity.setLabel(newLabel);
-        usedLabels.add(newLabel);
+    public static void setUniqueLabel(final LabelledEntity entity, List<TranslatableContent> usedLabels, String defaultLabel) {
+        //if (isNullOrEmpty(entity.getLabel())) {
+        //    entity.setLabel(defaultLabel);
+        //}
+        //String newLabel = findUniqueLabel(entity.getLabel(), usedLabels);
+        //entity.setLabel(newLabel);
+        //usedLabels.add(newLabel);
     }
 
     /**
@@ -298,15 +299,15 @@ public class Helper {
      * @param base       base to build new names and labels on
      */
     public static void setNameAndLabelForLabelledEntity(LabelledEntity le,
-            List<String> usedNames, List<String> usedLabels, String base) {
-        boolean hasLabel = !isNullOrEmpty(le.getLabel());
+            List<String> usedNames, List<TranslatableContent> usedLabels, String base) {
+        //boolean hasLabel = !isNullOrEmpty(le.getLabel());
         boolean hasName = !isNullOrEmpty(le.getName());
-        if (hasLabel && !hasName) {
-            le.setName(le.getLabel());
-        }
-        if (hasName && !hasLabel) {
-            le.setLabel(le.getName());
-        }
+        //if (hasLabel && !hasName) {
+        //    le.setName(le.getLabel());
+        //}
+        //if (hasName && !hasLabel) {
+        //    le.setLabel(le.getName());
+        //}
         setUniqueNameForEntity(le, usedNames, base, false);
         setUniqueLabel(le, usedLabels, "New " + base);
     }
@@ -327,7 +328,7 @@ public class Helper {
         } else if (vd instanceof ChoiceDescriptor) {
             ChoiceDescriptor cd = (ChoiceDescriptor) vd;
             List<String> names = new ArrayList<>();
-            List<String> labels = new ArrayList<>();
+            List<TranslatableContent> labels = new ArrayList<>();
             for (Result r : cd.getResults()) {
                 setNameAndLabelForLabelledEntity(r, names, labels, "result");
             }
@@ -338,10 +339,9 @@ public class Helper {
         }
     }
 
-
     public static void setNamesAndLabelForEvaluationList(List<EvaluationDescriptor> edList) {
         // Detect new answers
-        List<String> labels = new ArrayList<>();
+        List<TranslatableContent> labels = new ArrayList<>();
         List<String> names = new ArrayList<>();
         List<EvaluationDescriptor> newEds = new ArrayList<>();
 

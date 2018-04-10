@@ -92,8 +92,8 @@ public class UIResult extends UIComponentBase {
         // For editors and players who selected this
         if (editorMode || hasBeenSelected) {
             String title;
-            if (result.getChoiceDescriptor().getLabel() != null && !result.getChoiceDescriptor().getLabel().trim().isEmpty()) {
-                title = result.getChoiceDescriptor().getLabel();
+            if (result.getChoiceDescriptor().getLabel() != null && !result.getChoiceDescriptor().getLabel().translateOrEmpty(player).trim().isEmpty()) {
+                title = result.getChoiceDescriptor().getLabel().translateOrEmpty(player);
             } else {
                 title = UIHelper.TEXT_IMPACT_TEXT;
             }

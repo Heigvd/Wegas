@@ -197,17 +197,19 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
              * @returns {String}
              */
             getLabel: function() {
-                return this.get('label');
+                return I18n.t(this.get('label'));
             },
             getEditorLabel: function() {
-                if (!this.get("editorTag") && !this.get("label")) {
+                var trLabel = this.getLabel();
+                
+                if (!this.get("editorTag") && !trLabel) {
                     return this.get("name");
-                } else if (!this.get("editorTag")){
-                    return this.get("label");
-                } else if (!this.get("label")){
+                } else if (!this.get("editorTag")) {
+                    return trLabel;
+                } else if (!trLabel) {
                     return this.get("editorTag");
                 } else {
-                    return this.get("editorTag") + " - " + this.get("label");
+                    return this.get("editorTag") + " - " + trLabel;
                 }
             },
             getIconCss: function() {
@@ -282,16 +284,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         description: "Never displayed to players"
                     }
                 },
-                label: {
-                    type: STRING,
-                    value: "",
+                label: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Label",
                     index: -1,
-                    transient: false,
-                    view: {
-                        label: 'Label',
-                        description: "Displayed to players"
-                    }
-                },
+                    description: "Displayed to players",
+                    type: STRING
+                }),
                 name: {
                     type: STRING,
                     index: -1,
@@ -734,7 +732,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         }
     );
     /**
-     * StringDescriptor mapper
+     * TextDescriptor mapper
      */
     persistence.TextDescriptor = Base.create(
         'TextDescriptor',
@@ -823,183 +821,173 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * NumberDescriptor mapper
      */
-    persistence.NumberDescriptor = Base.create(
-        'NumberDescriptor',
-        persistence.VariableDescriptor,
-        [persistence.PrimitiveDescriptor],
-        {
-            getMaxValue: function() {
-                return this.get('maxValue');
+    persistence.NumberDescriptor = Base.create('NumberDescriptor', persistence.VariableDescriptor,
+        [persistence.PrimitiveDescriptor], {
+        getMaxValue: function() {
+            return this.get('maxValue');
+        },
+        getMinValue: function() {
+            return this.get('minValue');
+        },
+        getIconCss: function() {
+            return 'fa wegas-icon-numberdescriptor';
+        }
+    }, {
+        ATTRS: {
+            '@class': {
+                value: 'NumberDescriptor'
             },
-            getMinValue: function() {
-                return this.get('minValue');
+            minValue: {
+                type: ['null', NUMBER],
+                optional: true,
+                errored: function(val, formVal) {
+                    var errors = [],
+                        max = typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity,
+                        min = typeof val === 'number' ? val : -Infinity;
+                    if (min > formVal.defaultInstance.value) {
+                        errors.push('Minimum is greater than default value');
+                    }
+                    if (min > max) {
+                        errors.push('Minimum is greater than maximum');
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Minimum',
+                    placeholder: "-∞",
+                    layout: 'shortInline'
+                }
             },
-            getIconCss: function() {
-                return 'fa wegas-icon-numberdescriptor';
+            maxValue: {
+                type: ['null', NUMBER],
+                optional: true,
+                errored: function(val, formVal) {
+                    var errors = [],
+                        max = typeof val === 'number' ? val : Infinity,
+                        min = typeof formVal.minValue === 'number' ? formVal.minValue : -Infinity;
+                    if (max < formVal.defaultInstance.value) {
+                        errors.push('Maximum is less than default value');
+                    }
+                    if (max < min) {
+                        errors.push('Maximum is less than minimum');
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Maximum',
+                    placeholder: "∞",
+                    layout: 'shortInline'
+                }
+            },
+            historySize: {
+                type: ['null', NUMBER],
+                value: 20,
+                optional: true,
+                view: {
+                    className: 'wegas-advanced-feature',
+                    label: 'Maximum history size'
+                }
+            },
+            value: {
+                transient: true,
+                getter: function() {
+                    if (this.getInstance()) {
+                        return this.getInstance().get(VALUE);
+                    } else {
+                        return null;
+                    }
+                }
+            },
+            defaultValue: {
+                type: STRING,
+                transient: true
+            },
+            defaultInstance: {
+                properties: {
+                    '@class': {
+                        type: STRING,
+                        value: 'NumberInstance',
+                        view: {
+                            type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
+                    value: {
+                        type: NUMBER,
+                        required: true,
+                        errored: function(val, formVal) {
+                            var errors = [],
+                                max = typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity,
+                                min = typeof formVal.minValue === 'number' ? formVal.minValue : -Infinity;
+                            if (val > max) {
+                                errors.push('Default value is greater than maximum');
+                            }
+                            if (val < min) {
+                                errors.push('Default value is less than minimum');
+                            }
+                            return errors.join(', ');
+                        },
+                        view: {
+                            label: 'Default value',
+                            layout: 'shortInline'
+                        }
+                    },
+                    history: {
+                        type: ARRAY,
+                        view: {
+                            className: 'wegas-advanced-feature',
+                            label: 'History'
+                        }
+                    }
+                }
             }
         },
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'NumberDescriptor'
-                },
-                minValue: {
-                    type: ['null', NUMBER],
-                    optional: true,
-                    errored: function(val, formVal) {
-                        var errors = [],
-                            max = typeof formVal.maxValue === 'number'
-                            ? formVal.maxValue
-                            : Infinity,
-                            min = typeof val === 'number' ? val : -Infinity;
-                        if (min > formVal.defaultInstance.value) {
-                            errors.push(
-                                'Minimum is greater than default value'
-                                );
-                        }
-                        if (min > max) {
-                            errors.push('Minimum is greater than maximum');
-                        }
-                        return errors.join(', ');
-                    },
-                    view: {
-                        label: 'Minimum',
-                        placeholder: "-∞",
-                        layout: 'shortInline'
-                    }
-                },
-                maxValue: {
-                    type: ['null', NUMBER],
-                    optional: true,
-                    errored: function(val, formVal) {
-                        var errors = [],
-                            max = typeof val === 'number' ? val : Infinity,
-                            min = typeof formVal.minValue === 'number'
-                            ? formVal.minValue
-                            : -Infinity;
-                        if (max < formVal.defaultInstance.value) {
-                            errors.push('Maximum is less than default value');
-                        }
-                        if (max < min) {
-                            errors.push('Maximum is less than minimum');
-                        }
-                        return errors.join(', ');
-                    },
-                    view: {
-                        label: 'Maximum',
-                        placeholder: "∞",
-                        layout: 'shortInline'
-                    }
-                },
-                historySize: {
-                    type: ['null', NUMBER],
-                    value: 20,
-                    optional: true,
-                    view: {
-                        className: 'wegas-advanced-feature',
-                        label: 'Maximum history size'
-                    }
-                },
-                value: {
-                    transient: true,
-                    getter: function() {
-                        if (this.getInstance()) {
-                            return this.getInstance().get(VALUE);
-                        } else {
-                            return null;
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {
+            add: {
+                arguments: [
+                    SELFARG,
+                    {
+                        type: NUMBER,
+                        required: true,
+                        view: {
+                            layout: 'extraShortInline'
                         }
                     }
-                },
-                defaultValue: {
-                    type: STRING,
-                    transient: true
-                },
-                defaultInstance: {
-                    properties: {
-                        '@class': {
-                            type: STRING,
-                            value: 'NumberInstance',
-                            view: {
-                                type: HIDDEN
-                            }
-                        },
-                        id: IDATTRDEF,
-                        version: VERSION_ATTR_DEF,
-                        descriptorId: IDATTRDEF,
-                        value: {
-                            type: NUMBER,
-                            required: true,
-                            errored: function(val, formVal) {
-                                var errors = [],
-                                    max = typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity,
-                                    min = typeof formVal.minValue === 'number' ? formVal.minValue : -Infinity;
-                                if (val > max) {
-                                    errors.push('Default value is greater than maximum');
-                                }
-                                if (val < min) {
-                                    errors.push('Default value is less than minimum');
-                                }
-                                return errors.join(', ');
-                            },
-                            view: {
-                                label: 'Default value',
-                                layout: 'shortInline'
-                            }
-                        },
-                        history: {
-                            type: ARRAY,
-                            view: {
-                                className: 'wegas-advanced-feature',
-                                label: 'History'
-                            }
-                        }
+                ]
+            } /*
+             sub: {
+             label: "subtract",
+             "arguments": [{
+             type: HIDDEN,
+             value: SELF
+             }, {
+             type: NUMBER,
+             required: true
+             }]
+             },*/,
+            setValue: {
+                label: 'set',
+                arguments: [
+                    SELFARG,
+                    {
+                        type: NUMBER,
+                        required: true,
+                        view: {layout: 'extraShortInline'}
                     }
-                }
+                ]
             },
-            /**
-             * Defines methods available in wysiwyge script editor
-             */
-            METHODS: {
-                add: {
-                    arguments: [
-                        SELFARG,
-                        {
-                            type: NUMBER,
-                            required: true,
-                            view: {
-                                layout: 'extraShortInline'
-                            }
-                        }
-                    ]
-                } /*
-                 sub: {
-                 label: "subtract",
-                 "arguments": [{
-                 type: HIDDEN,
-                 value: SELF
-                 }, {
-                 type: NUMBER,
-                 required: true
-                 }]
-                 },*/,
-                setValue: {
-                    label: 'set',
-                    arguments: [
-                        SELFARG,
-                        {
-                            type: NUMBER,
-                            required: true,
-                            view: {layout: 'extraShortInline'}
-                        }
-                    ]
-                },
-                getValue: {
-                    label: VALUE,
-                    returns: NUMBER,
-                    arguments: [SELFARG]
-                }
+            getValue: {
+                label: VALUE,
+                returns: NUMBER,
+                arguments: [SELFARG]
             }
         }
+    }
     );
     /**
      * NumberInstance mapper
@@ -1191,6 +1179,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                         type: 'AddEntityChildButton',
                                         label: '<span class="wegas-icon-numberdescriptor"></span> Number',
                                         targetClass: 'NumberDescriptor'
+                                    },
+                                    {
+                                        type: 'AddEntityChildButton',
+                                        label: '<span class="fa fa-paragraph"></span> Static Content',
+                                        targetClass: 'StaticTextDescriptor'
                                     },
                                     {
                                         type: 'AddEntityChildButton',

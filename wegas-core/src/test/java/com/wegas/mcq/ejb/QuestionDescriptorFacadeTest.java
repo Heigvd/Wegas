@@ -15,6 +15,7 @@ import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -298,7 +299,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = createCbxQuestion(scenario.getId(), "question", 1, 1);
 
         ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", new Result("result"));
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", "label"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", TranslatableContent.build("def", "label")));
         ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", new Result("result"));
 
         login(user);
@@ -348,7 +349,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = createCbxQuestion(scenario.getId(), "question", 2, 3);
 
         ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", new Result("result"));
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", "label"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", TranslatableContent.build("def", "label")));
         ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", new Result("result"));
         ChoiceDescriptor choice4 = createChoice(question, "choice4", null, "result", new Result("result"));
 

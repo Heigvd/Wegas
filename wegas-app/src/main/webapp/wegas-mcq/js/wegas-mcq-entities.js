@@ -128,14 +128,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 index: 10
             },
-            description: {
-                type: STRING,
-                value: "",
-                optional: true,
-                format: HTML,
+            description: Y.Wegas.Helper.getTranslationAttr({
+                label: "Description",
                 index: 12,
-                view: {type: HTML, label: "Description"}
-            },
+                type: HTML
+            }),
             defaultInstance: {
                 type: "object",
                 required: true,
@@ -623,7 +620,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 }
                             },
                             label: {
-                                type: NULLSTRING,
+                                type: "object",
                                 optional: true,
                                 view: {
                                     type: HIDDEN
@@ -798,17 +795,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 index: -1
             },
-            label: {
-                type: STRING,
-                "transient": false,
-                getter: function(val) {
-                    return val || this.get("name");
-                },
+
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
                 index: -1,
-                view: {
-                    label: "Name"
-                }
-            },
+                type: STRING
+            }),
             name: {
                 value: "",
                 type: STRING,

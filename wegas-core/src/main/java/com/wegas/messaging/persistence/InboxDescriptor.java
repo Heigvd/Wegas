@@ -7,28 +7,24 @@
  */
 package com.wegas.messaging.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
+@JsonIgnoreProperties(value = {"description"})
 public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
 
     private static final long serialVersionUID = 1L;
-    /**
-     *
-     */
-    @Lob
-    private String description;
 
     /**
      * Tells if the inbox has a capacity of just one message.
@@ -46,20 +42,6 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
         super.merge(a);
         InboxDescriptor other = (InboxDescriptor) a;
         this.setCapped(other.getCapped());
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     /**

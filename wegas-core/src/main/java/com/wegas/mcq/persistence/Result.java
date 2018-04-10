@@ -9,11 +9,15 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.game.Script;
@@ -75,7 +79,10 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /**
      * Displayed name
      */
-    private String label;
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL)
+    private TranslatableContent label;
+
     /**
      *
      */
@@ -148,14 +155,16 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @param name
      */
     public Result(String name) {
-        this(name, name);
+        this.label = new TranslatableContent();
+        this.label.getTranslations().put("def", name);
+        this.name = name;
     }
 
     /**
      * @param name
      * @param label
      */
-    public Result(String name, String label) {
+    public Result(String name, TranslatableContent label) {
         this.name = name;
         this.label = label;
     }
@@ -163,6 +172,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     public Result(String name, Script impact) {
         this(name, impact, null);
     }
+
     /**
      *
      * @param name
@@ -170,8 +180,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @param ignorationImpact
      */
     public Result(String name, Script impact, Script ignorationImpact) {
-        this.name = name;
-        this.label = name;
+        this(name);
         this.impact = impact;
         this.ignorationImpact = ignorationImpact;
     }
@@ -204,7 +213,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
             Result other = (Result) a;
             this.setVersion(other.getVersion());
             this.setName(other.getName());
-            this.setLabel(other.getLabel());
+            this.getLabel().merge(other.getLabel());
             this.setAnswer(other.getAnswer());
             this.setImpact(other.getImpact());
             this.setIgnorationAnswer(other.getIgnorationAnswer());
@@ -324,7 +333,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @return the label
      */
     @Override
-    public String getLabel() {
+    public TranslatableContent getLabel() {
         return label;
     }
 
@@ -332,7 +341,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @param label the label to set
      */
     @Override
-    public void setLabel(String label) {
+    public void setLabel(TranslatableContent label) {
         this.label = label;
     }
 

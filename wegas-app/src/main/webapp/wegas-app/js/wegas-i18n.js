@@ -147,6 +147,54 @@ YUI.add("wegas-i18n", function(Y) {
         }
 
 
+        function translate(key, args) {
+            if (typeof key === "string") {
+                return translateFromTable(key, args);
+            } else if (typeof key === "object") {
+                return translateFromObject(key);
+            }
+        }
+
+        function getRefName() {
+            if (!Y.Wegas.I18n._currentRefName) {
+                if (Y.Wegas.Facade.GameModel) {
+                    var locale = currentLocale().split(/[-_]/),
+                        lang = locale[0],
+                        variant = locale[1],
+                        gmLanguages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"),
+                        i, gmLang;
+
+                    if (gmLanguages.length > 0) {
+                        for (i in gmLanguages) {
+                            gmLang= gmLanguages[i];
+                            if (gmLang.get("code") === locale) {
+                                //most specific 
+                                Y.Wegas.I18n._currentRefName = gmLang.get("refName");
+                            }
+                            if (gmLang.get("code") === lang && !Y.Wegas.I18n._currentRefName) {
+                                Y.Wegas.I18n._currentRefName = gmLang.get("refName");
+                            }
+                        }
+                    }
+                    if (!Y.Wegas.I18n._currentRefName) {
+                        Y.Wegas.I18n._currentRefName = "def";
+                    }
+                } else {
+                    return "def";
+                }
+            }
+            return Y.Wegas.I18n._currentRefName;
+        }
+
+        function translateFromObject(trContent) {
+            var refName = getRefName();
+            if (trContent.get("@class") === "TranslatableContent" && trContent.get("translations")) {
+                if (trContent.get("translations")[refName] !== undefined) {
+                    return trContent.get("translations")[refName] || "";
+                }
+            }
+            return "NO TRANSLATION";
+        }
         /**
          * Return the translation for the key messages, according to current locale
          *
@@ -154,7 +202,7 @@ YUI.add("wegas-i18n", function(Y) {
          * @param {type} object contains message arguments to replace {k: value, etc}
          * @returns {String} the translated string filled with provided arguments
          */
-        function translate(key, object) {
+        function translateFromTable(key, object) {
             var locale = currentLocale().split(/[-_]/),
                 lang = locale[0],
                 variant = locale[1],
@@ -266,6 +314,7 @@ YUI.add("wegas-i18n", function(Y) {
                 String.prototype.colonize = config[lang].colonize; // don't
                 String.prototype.pluralize = config[lang].pluralize; // don't
             });
+            Y.Wegas.I18n._currentRefName = null;
         }
 
         function loadModule(moduleName) {
@@ -297,6 +346,7 @@ YUI.add("wegas-i18n", function(Y) {
             _tables: {},
             _modules: {},
             _currentLocale: undefined,
+            _currentRefName: undefined,
             _currentTable: function() {
                 return Y.Wegas.I18n._tables[Y.Wegas.I18n._currentLocale];
             },

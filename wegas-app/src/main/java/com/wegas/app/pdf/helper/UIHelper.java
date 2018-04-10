@@ -8,6 +8,8 @@
 package com.wegas.app.pdf.helper;
 
 import com.wegas.core.Helper;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import java.io.IOException;
 import java.util.List;
@@ -110,6 +112,7 @@ public class UIHelper {
      * Start a div
      *
      * @param wr
+     *
      * @throws IOException
      */
     public static void startDiv(ResponseWriter wr) throws IOException {
@@ -123,6 +126,7 @@ public class UIHelper {
      *
      * @param wr
      * @param cssClass
+     *
      * @throws IOException
      */
     public static void startDiv(ResponseWriter wr, String cssClass) throws IOException {
@@ -138,6 +142,7 @@ public class UIHelper {
      * @param elem
      * @param cssClass
      * @param id
+     *
      * @throws IOException
      */
     public static void startElement(ResponseWriter wr, String elem, String cssClass, String id) throws IOException {
@@ -155,6 +160,7 @@ public class UIHelper {
      * @param wr
      * @param cssClass
      * @param id
+     *
      * @throws IOException
      */
     public static void startDiv(ResponseWriter wr, String cssClass, String id) throws IOException {
@@ -165,6 +171,7 @@ public class UIHelper {
      * end a div
      *
      * @param wr
+     *
      * @throws IOException
      */
     public static void endDiv(ResponseWriter wr) throws IOException {
@@ -177,6 +184,7 @@ public class UIHelper {
      * @see endSpan
      * @param wr
      * @param cssClass
+     *
      * @throws IOException
      */
     public static void startSpan(ResponseWriter wr, String cssClass) throws IOException {
@@ -189,6 +197,7 @@ public class UIHelper {
      * @param wr
      * @param cssClass
      * @param id
+     *
      * @throws IOException
      */
     public static void startSpan(ResponseWriter wr, String cssClass, String id) throws IOException {
@@ -199,6 +208,7 @@ public class UIHelper {
      * end a span
      *
      * @param wr
+     *
      * @throws IOException
      */
     public static void endSpan(ResponseWriter wr) throws IOException {
@@ -212,6 +222,7 @@ public class UIHelper {
      * @param writer
      * @param key
      * @param value
+     *
      * @throws IOException
      */
     public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, boolean value) throws IOException {
@@ -226,6 +237,7 @@ public class UIHelper {
      * @param writer
      * @param key
      * @param value
+     *
      * @throws IOException
      */
     public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, Object value) throws IOException {
@@ -239,6 +251,7 @@ public class UIHelper {
      * @param writer
      * @param key
      * @param value
+     *
      * @throws IOException
      */
     public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, String value) throws IOException {
@@ -259,6 +272,7 @@ public class UIHelper {
      * @param value     the text to print
      * @param code      add a css class if the text represents a source code
      * @param displayNA
+     *
      * @throws IOException
      */
     public static void printPropertyTextArea(FacesContext ctx, ResponseWriter writer, String key, String value, boolean code, boolean displayNA) throws IOException {
@@ -279,6 +293,7 @@ public class UIHelper {
      * @param writer
      * @param key
      * @param script
+     *
      * @throws IOException
      */
     public static void printPropertyImpactScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
@@ -308,6 +323,7 @@ public class UIHelper {
      * @param writer
      * @param key
      * @param script
+     *
      * @throws IOException
      */
     public static void printPropertyScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
@@ -327,6 +343,7 @@ public class UIHelper {
      * @param writer
      * @param key
      * @param script
+     *
      * @throws IOException
      */
     public static void printPropertyScript(FacesContext ctx, ResponseWriter writer, String key, String script) throws IOException {
@@ -342,6 +359,7 @@ public class UIHelper {
      * @param context
      * @param writer
      * @param key
+     *
      * @throws IOException
      */
     public static void startScript(FacesContext context, ResponseWriter writer, String key) throws IOException {
@@ -356,6 +374,7 @@ public class UIHelper {
      *
      * @param context
      * @param writer
+     *
      * @throws IOException
      */
     public static void endScript(FacesContext context, ResponseWriter writer) throws IOException {
@@ -369,6 +388,7 @@ public class UIHelper {
      * @param writer
      * @param text
      * @param style
+     *
      * @throws IOException
      */
     public static void printText(FacesContext ctx, ResponseWriter writer, String text, String style) throws IOException {
@@ -396,6 +416,7 @@ public class UIHelper {
      * @param text
      * @param style
      * @param code
+     *
      * @throws IOException
      */
     public static void printTextArea(FacesContext ctx, ResponseWriter writer, String text, String style, boolean code) throws IOException {
@@ -413,6 +434,7 @@ public class UIHelper {
      * @param text
      * @param style
      * @param code
+     *
      * @throws IOException
      */
     public static void printTextAreaText(FacesContext ctx, ResponseWriter writer, String text, String style, boolean code) throws IOException {
@@ -436,6 +458,7 @@ public class UIHelper {
      * Start text area (i.e. a container for the text)
      *
      * @param writer
+     *
      * @throws IOException
      */
     public static void startTextArea(ResponseWriter writer) throws IOException {
@@ -453,6 +476,7 @@ public class UIHelper {
      * end a text area container
      *
      * @param writer
+     *
      * @throws IOException
      */
     public static void endTextArea(ResponseWriter writer) throws IOException {
@@ -468,6 +492,7 @@ public class UIHelper {
      * @param writer
      * @param properties
      * @param title
+     *
      * @throws IOException
      */
     public static void printKeyValueMap(FacesContext context, ResponseWriter writer, Map<String, String> properties, String title) throws IOException {
@@ -489,7 +514,7 @@ public class UIHelper {
 
     /**
      * Print key/value map w/o title
-     *
+     * <p>
      * TODO TO avoid printing to much properties in player mode, shall we
      * introduce something like prefixing propertyName with something special
      * (e.g '$', '_' or '`') to make that property internal ?
@@ -497,6 +522,7 @@ public class UIHelper {
      * @param context
      * @param writer
      * @param properties
+     *
      * @throws IOException
      */
     public static void printKeyValueMap(FacesContext context, ResponseWriter writer, Map<String, String> properties) throws IOException {
@@ -521,6 +547,7 @@ public class UIHelper {
      * @param date
      * @param body
      * @param attachements
+     *
      * @throws IOException
      */
     public static void printMessage(FacesContext context, ResponseWriter writer,
@@ -556,7 +583,6 @@ public class UIHelper {
         //printText(context, writer, unescapeAndTrimQuotes(subject), CSS_CLASS_PROPERTY_VALUE);
         UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(subject));
         UIHelper.endSpan(writer);
-
 
         UIHelper.endDiv(writer); // </div class="header">
 
