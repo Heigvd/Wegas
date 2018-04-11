@@ -33,44 +33,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: HIDDEN
             }
         },
-        TRANSLATION_CONTENT_ATTR_DEF = {
-            id: IDATTRDEF,
-            "@class": {
-                value: "TranslatableContent",
-                type: STRING,
-                view: {
-                    type: HIDDEN
-                }
-            },
-            translations: {
-                type: "object",
-                additionalProperties: {
-                    type: STRING,
-                    required: true,
-                    view: {
-                        label: "translation",
-                        type: ""
-                    }
-                },
-                view: {
-                    label: "lang",
-                    type: "hashlist",
-                    keyLabel: "lang"
-                }
-            }
-        },
-        TRANSLATION_VIEW = {
-            type: "object",
-            optional: true,
-            value: {
-                "@class": "TranslatableContent",
-                translations: {}
-            },
-            properties: TRANSLATION_CONTENT_ATTR_DEF,
-            view: {
-                label: ""
-            }
-        },
+        
         PERMISSION = {
             optional: true,
             type: ARRAY,
@@ -97,14 +60,51 @@ YUI.add('wegas-entity', function(Y) {
                 className: 'wegas-advanced-feature'
             }
         };
-
+/**
+ * 
+ * @param {{type:"string" | "html", description?:string, label?:string, index?:number}} param 
+ */
     Y.Wegas.Helper.getTranslationAttr = function(param) {
-        var theView = JSON.parse(JSON.stringify(TRANSLATION_VIEW));
-        theView.view.label = param.label;
-        theView.view.description = param.description;
-        theView.index = param.index;
-        theView.properties.translations.additionalProperties.view.type = param.type;
-        return theView;
+       var TRANSLATION_CONTENT_ATTR_DEF = {
+            id: IDATTRDEF,
+            "@class": {
+                value: "TranslatableContent",
+                type: STRING,
+                view: {
+                    type: HIDDEN
+                }
+            },
+            translations: {
+                type: "object",
+                additionalProperties: {
+                    type: STRING,
+                    required: true,
+                    view: {
+                        label: "translation",
+                        type: ""
+                    }
+                },
+                view: {
+                    type: "I18n" + param.type,
+                    keyLabel: "lang",
+                    label: param.label,
+                    description: param.description
+                    
+                }
+            }
+        },
+        TRANSLATION_VIEW = {
+            type: "object",
+            index: param.index,
+            optional: true,
+            value: {
+                "@class": "TranslatableContent",
+                translations: {}
+            },
+            properties: TRANSLATION_CONTENT_ATTR_DEF
+        }
+        
+        return TRANSLATION_VIEW;
     };
 
     /**
