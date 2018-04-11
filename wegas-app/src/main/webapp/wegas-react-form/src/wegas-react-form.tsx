@@ -1,10 +1,11 @@
-import { Schema } from 'jsoninput';
+import Form, { Schema } from 'jsoninput';
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { render, unmountComponentAtNode, createPortal } from 'react-dom';
 import { css } from 'glamor';
 import { debounce, cloneDeep } from 'lodash-es';
 import promised from './HOC/loadAsyncComp';
 import './index';
+import { LangHandler, LangToggler } from './LangContext';
 
 const FORM = 'form';
 
@@ -50,7 +51,7 @@ const AsyncForm = promised(() => {
     ]).then(([RForm]) => {
         return (props: {
             schema: Schema;
-            formRef: React.Ref<React.Component>;
+            formRef: React.Ref<Form>;
             value?: {};
             onChange: (value: any) => void;
         }) => <RForm.default ref={props.formRef} {...props} />;
@@ -59,7 +60,7 @@ const AsyncForm = promised(() => {
 
 YUI.add('wegas-react-form', Y => {
     const Wegas: { [key: string]: any } = Y.Wegas;
-    const Form = Y.Base.create(
+    const RForm = Y.Base.create(
         'wegas-react-form',
         Y.Widget,
         [Y.WidgetChild, Wegas.Widget, Wegas.Editable],
@@ -77,6 +78,11 @@ YUI.add('wegas-react-form', Y => {
             },
             renderUI() {
                 Y.Array.each(this.get('buttons'), this.addButton, this);
+                const langNode = Y.Node.create('<span/>', window.document);
+                this.langSelectorNode = langNode.getDOMNode();
+
+                this.toolbar.get('header').append(langNode);
+
                 // ctrl-s shortcut
                 this.get('contentBox').on(
                     'key',
@@ -91,14 +97,31 @@ YUI.add('wegas-react-form', Y => {
                         this.fire('updated', val);
                     };
                     render(
-                        <div className={containerForm.toString()}>
-                            <AsyncForm
-                                formRef={form => this.set(FORM, form)}
-                                schema={schema}
-                                value={value}
-                                onChange={boundFire}
-                            />
-                        </div>,
+                        <LangHandler
+                            lang={Y.Wegas.I18n._currentRefName}
+                            availableLang={Y.Wegas.Facade.GameModel.cache
+                                .getCurrentGameModel()
+                                .get('languages')
+                                .map((l: any) => {
+                                    return {
+                                        value: l.get('refName'),
+                                        label: l.get('lang'),
+                                    };
+                                })}
+                        >
+                            {createPortal(
+                                <LangToggler />,
+                                this.langSelectorNode
+                            )}
+                            <div className={containerForm.toString()}>
+                                <AsyncForm
+                                    formRef={form => this.set(FORM, form)}
+                                    schema={schema}
+                                    value={value}
+                                    onChange={boundFire}
+                                />
+                            </div>
+                        </LangHandler>,
                         this.get('contentBox').getDOMNode()
                     );
                 }
@@ -331,7 +354,7 @@ YUI.add('wegas-react-form', Y => {
             },
         }
     );
-    (Form as any).Script = {
+    (RForm as any).Script = {
         // Register Global script methods
         register: function r(
             value: string,
@@ -385,5 +408,5 @@ YUI.add('wegas-react-form', Y => {
     //     data: 'SaveObjectAction'
     // });
 
-    Wegas.RForm = Form;
+    Wegas.RForm = RForm;
 });
