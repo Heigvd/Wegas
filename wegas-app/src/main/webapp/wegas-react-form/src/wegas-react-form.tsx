@@ -104,7 +104,8 @@ YUI.add('wegas-react-form', Y => {
                                 .get('languages')
                                 .map((l: any) => {
                                     return {
-                                        value: l.get('refName'),
+                                        refName: l.get('refName'),
+                                        code: l.get('code'),
                                         label: l.get('lang'),
                                     };
                                 })}

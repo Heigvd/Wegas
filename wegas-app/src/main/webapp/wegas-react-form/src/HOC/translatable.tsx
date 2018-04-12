@@ -1,14 +1,18 @@
 import * as React from 'react';
 import { LangConsumer } from '../LangContext';
+import { Schema } from 'jsoninput';
+import { infoStyle } from './commonView';
 
 interface TranslatableProps {
     value: { [refName: string]: string };
     onChange: (value: { [refName: string]: string }) => void;
+    view: Schema['view'];
 }
 
 interface EndProps {
     value?: string | number;
     onChange: (value: string) => void;
+    view: Schema['view'];
 }
 /**
  * HOC: Transform a hashmap (lang:value) into value based on current language
@@ -20,19 +24,41 @@ export default function translatable<P extends EndProps>(
     function Translated(props: TranslatableProps) {
         return (
             <LangConsumer>
-                {({ lang }) => (
-                    <Comp
-                        {...props}
-                        value={props.value[lang]}
-                        onChange={value => {
-                            const v = {
-                                ...props.value,
-                                [lang]: value,
-                            };
-                            props.onChange(v);
-                        }}
-                    />
-                )}
+                {({ lang, availableLang }) => {
+                    // Updade label
+                    const curCode = (
+                        availableLang.find(l => l.refName === lang) || {
+                            code: '',
+                        }
+                    ).code;
+                    const view = {
+                        ...props.view,
+                        label: (
+                            <span>
+                                {(props.view || {}).label}{' '}
+                                <span
+                                    className={String(infoStyle)}
+                                >
+                                    [{curCode}]
+                                </span>
+                            </span>
+                        ),
+                    };
+                    return (
+                        <Comp
+                            {...props}
+                            value={props.value[lang]}
+                            view={view}
+                            onChange={value => {
+                                const v = {
+                                    ...props.value,
+                                    [lang]: value,
+                                };
+                                props.onChange(v);
+                            }}
+                        />
+                    );
+                }}
             </LangConsumer>
         );
     }

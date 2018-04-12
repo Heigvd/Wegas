@@ -3,7 +3,7 @@ import * as React from 'react';
 interface Context {
     lang: string;
     toggleLang: (lang: string) => void;
-    availableLang: { value: string; label: string }[];
+    availableLang: { refName: string; code: string; label: string }[];
 }
 const LangContext = React.createContext<Context>({
     lang: 'en',
@@ -14,7 +14,7 @@ export const LangConsumer = LangContext.Consumer;
 
 interface LangProviderProps {
     lang: string;
-    availableLang: { value: string; label: string }[];
+    availableLang: { refName: string; code: string; label: string }[];
 }
 export class LangHandler extends React.Component<LangProviderProps, Context> {
     static getDerivedStateFromProps(props: LangProviderProps, state: Context) {
@@ -54,7 +54,9 @@ export function LangToggler() {
                     onChange={ev => toggleLang(ev.target.value)}
                 >
                     {availableLang.map(l => (
-                        <option key={l.value} value={l.value}>{l.label}</option>
+                        <option key={l.refName} value={l.refName}>
+                            {`[${l.code}] ${l.label}`}
+                        </option>
                     ))}
                 </select>
             )}
