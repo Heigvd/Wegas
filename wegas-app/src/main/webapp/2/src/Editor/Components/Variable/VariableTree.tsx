@@ -91,6 +91,11 @@ const CTree = connect(
     props: {
       variableId: number;
       subPath?: (string | number)[];
+      nodeProps: () => {};
+      onSelectCreator: (
+        entity: IWegasEntity,
+        path?: (string | number)[],
+      ) => () => void;
     },
   ) => {
     const v = VariableDescriptor.select(props.variableId);

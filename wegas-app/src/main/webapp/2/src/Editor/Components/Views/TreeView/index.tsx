@@ -1,7 +1,5 @@
 import * as React from 'react';
 import HTML5Backend from 'react-dnd-html5-backend';
-// Replace once react 16.3 lands and type updates :-)
-import createReactContext from 'create-react-context';
 import {
   DragSource,
   DragDropContext,
@@ -39,7 +37,7 @@ interface ContainerProps {
 const isOverPrevStyle = css({
   border: '1px dashed',
 });
-const DropContext = createReactContext<{
+const DropContext = React.createContext<{
   onDropResult: (result: DropResult) => void;
 }>({ onDropResult: noop });
 

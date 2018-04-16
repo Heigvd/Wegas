@@ -1,5 +1,4 @@
 import { setDefaultWidgets } from 'jsoninput';
-import views from 'jsoninput/lib/views.es2015';
 import hidden from './Hidden';
 import uneditable from './Uneditable';
 import StringInput from './String';
@@ -20,11 +19,19 @@ const DEFINED_VIEWS = {
   array: ArrayWidget,
   select: Select,
   html: StringInput, // @TODO
-  script: views.object, // @TODO
+  script: ObjectView, // @TODO
 };
-setDefaultWidgets(views);
 setDefaultWidgets(DEFINED_VIEWS);
 
-export type AvailableViews =
-  | keyof (typeof DEFINED_VIEWS)
-  | keyof (typeof views);
+export type ViewTypes = keyof (typeof DEFINED_VIEWS);
+type PropsType<T> = T extends React.ComponentType<infer U>
+  ? U
+  : T extends (p: infer P) => any ? P : never;
+export type View<P extends ViewTypes> = { type?: P } & PropsType<
+  (typeof DEFINED_VIEWS)[P]
+>['view'];
+
+type ZoZo = { [P in keyof typeof DEFINED_VIEWS]: View<P> };
+type valueof<T> = T extends { [key: string]: infer Z } ? Z : never;
+
+export type AvailableViews = valueof<ZoZo>;

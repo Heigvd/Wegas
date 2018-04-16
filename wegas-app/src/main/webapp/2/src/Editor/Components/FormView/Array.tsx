@@ -4,8 +4,8 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { Cover } from '../../../Components/Cover';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { Menu } from '../../../Components/Menu';
-import { CommonViewContainer } from './commonView';
-import { Labeled } from './labeled';
+import { CommonViewContainer, CommonView } from './commonView';
+import { Labeled, LabeledView } from './labeled';
 
 const transparentStyle = css({
   opacity: 0,
@@ -27,11 +27,16 @@ const listElementStyle = css({
   },
 });
 
-interface IArrayProps {
-  view: {
-    choices?: { label: React.ReactNode }[];
-    tooltip?: string;
-  };
+interface IArrayProps
+  extends WidgetProps.ArrayProps<
+      {
+        choices?: { label: React.ReactNode }[];
+        tooltip?: string;
+        disabled?: boolean;
+      } & CommonView &
+        LabeledView
+    > {
+  value?: {}[];
 }
 
 class Adder extends React.Component<
@@ -74,7 +79,7 @@ class Adder extends React.Component<
     );
   }
 }
-function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
+function ArrayWidget(props: IArrayProps) {
   const valueLength = Array.isArray(props.value) ? props.value.length : 0;
   const { maxItems = Infinity, minItems = 0 } = props.schema;
   const disabled = props.view.disabled;

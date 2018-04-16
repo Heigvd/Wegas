@@ -38,6 +38,10 @@ module.exports = {
         exclude: /node_modules/,
         options: { transpileOnly: true },
       },
+      // {
+      //   test: /\.tsx?$/,
+      //   loader: 'awesome-typescript-loader',
+      // },
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader', 'postcss-loader'],

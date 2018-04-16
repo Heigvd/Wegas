@@ -1,18 +1,20 @@
 import * as React from 'react';
 import { debounce } from 'lodash-es';
-import { Labeled } from './labeled';
+import { Labeled, LabeledView } from './labeled';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonViewContainer, CommonView } from './commonView';
 import { css } from 'glamor';
-interface StringInputProps extends WidgetProps.BaseProps<'string' | 'number'> {
-  value?: string | number;
+
+export interface StringInputProps extends WidgetProps.BaseProps {
   view: {
-    type?: any;
     rows?: number;
     disabled?: boolean;
     readOnly?: boolean;
     placeholder?: string;
-  } & CommonView;
+  } & CommonView &
+    LabeledView;
+
+  value?: string | number;
 }
 
 const inputStyle = css({

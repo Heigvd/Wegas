@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from 'glamor';
 import * as className from 'classnames';
-import { View } from 'jsoninput/typings/types';
+
 const containerStyle = css({
   position: 'relative',
   marginTop: '0.8em',
@@ -22,7 +22,7 @@ const LAYOUTS = {
     maxWidth: '11em',
   }),
 };
-export type CommonView = View<any> & {
+export type CommonView = {
   borderTop?: boolean;
   layout?: keyof typeof LAYOUTS;
 };
@@ -35,7 +35,11 @@ interface CommonViewProps {
  * Handle errorMessage, layout.
  * @param param0 Props
  */
-export function CommonViewContainer({ children, errorMessage, view }: CommonViewProps) {
+export function CommonViewContainer({
+  children,
+  errorMessage,
+  view,
+}: CommonViewProps) {
   const error = errorMessage && errorMessage.join(', ');
   const layout = view.layout ? String(LAYOUTS[view.layout]) : '';
   return (

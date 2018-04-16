@@ -61,6 +61,7 @@ interface IResult extends IWegasEntity, IVersionable {
 }
 interface IChoiceDescriptor extends IVariableDescriptor<IChoiceInstance> {
   '@class': 'ChoiceDescriptor';
+  description: null | string;
   cost: number;
   duration: number;
   results: IResult[];

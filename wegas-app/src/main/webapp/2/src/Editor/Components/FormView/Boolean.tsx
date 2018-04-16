@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { Labeled } from './labeled';
-import { CommonViewContainer } from './commonView';
-
-export default class BooleanView extends React.Component<
-  WidgetProps.BaseProps<'boolean'> & { value?: boolean }
-> {
+import { Labeled, LabeledView } from './labeled';
+import { CommonViewContainer, CommonView } from './commonView';
+interface BooleanProps extends WidgetProps.BaseProps<CommonView & LabeledView> {
+  value?: boolean;
+}
+export default class BooleanView extends React.Component<BooleanProps> {
   onChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     this.props.onChange(event.target.checked);
+
   render() {
     const { view, errorMessage, value } = this.props;
     return (

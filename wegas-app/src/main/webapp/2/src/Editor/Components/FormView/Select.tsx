@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { css } from 'glamor';
-import { CommonViewContainer } from './commonView';
+import { CommonViewContainer, CommonView } from './commonView';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { Labeled } from './labeled';
+import { Labeled, LabeledView } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 
 interface Choice {
@@ -19,12 +19,12 @@ type Choices = (string | Choice)[];
 interface ISelectProps extends WidgetProps.BaseProps {
   view: {
     choices: Choices;
-  };
+  } & CommonView & LabeledView;
 }
 interface IAsyncSelectProps extends WidgetProps.BaseProps {
   view: {
     choices: (() => Promise<Choices>) | Choices;
-  };
+  } & CommonView & LabeledView;
 }
 const selectStyle = css({
   padding: '2px 4px',

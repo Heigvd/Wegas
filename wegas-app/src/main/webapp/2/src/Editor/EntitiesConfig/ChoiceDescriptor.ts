@@ -6,6 +6,13 @@ import { entityIs } from '../../data/entities';
 
 export const config: ConfigurationSchema<IChoiceDescriptor> = {
   ...variableDescriptorConfig,
+  description: {
+    type: ['null', 'string'],
+    view: {
+      type: 'html',
+      label: 'Description',
+    },
+  },
   defaultInstance: {
     type: 'object',
     properties: choiceInstanceConfig,
@@ -33,9 +40,15 @@ export const config: ConfigurationSchema<IChoiceDescriptor> = {
   },
   cost: {
     type: 'number',
+    view: {
+      label: 'Cost',
+    },
   },
   duration: {
     type: 'number',
+    view: {
+      label: 'Duration',
+    },
   },
   results: {
     view: { type: 'hidden' },

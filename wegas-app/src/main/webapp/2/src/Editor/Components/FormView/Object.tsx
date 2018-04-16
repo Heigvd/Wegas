@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import { css } from 'glamor';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { CommonViewContainer } from './commonView';
+import { CommonViewContainer, CommonView } from './commonView';
 
 const borderTopStyle = css({
   borderWidth: '1px 0 0 0',
@@ -17,13 +17,15 @@ const legendStyle = css({
   textAlign: 'center',
 });
 
-function ObjectView(props: WidgetProps.ObjectProps) {
+function ObjectView(
+  props: WidgetProps.ObjectProps<CommonView & { label?: string }>,
+) {
   return (
     <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
       <fieldset
         {...reset}
         className={classNames({
-          [`${borderTopStyle}`]: props.view.label,
+          [`${borderTopStyle}`]: props.view.label !== undefined,
         })}
       >
         <legend {...legendStyle}>{props.view.label}</legend>
