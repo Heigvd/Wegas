@@ -1,4 +1,4 @@
-import { Schema } from 'jsoninput';
+import Form, { Schema } from 'jsoninput';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { css } from 'glamor';
@@ -50,7 +50,7 @@ const AsyncForm = promised(() => {
     ]).then(([RForm]) => {
         return (props: {
             schema: Schema;
-            formRef: React.Ref<React.Component>;
+            formRef: React.Ref<Form>;
             value?: {};
             onChange: (value: any) => void;
         }) => <RForm.default ref={props.formRef} {...props} />;
