@@ -11,7 +11,7 @@
  * @fileoverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-/*global YUI*/
+/*global YUI, I18n*/
 YUI.add("wegas-entitychooser", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox", EntityChooser, EntityChooser2,
@@ -66,7 +66,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                             (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
                                 items[i].getInstance().get("enabled"))) {
                             entityBox.append("<li class='chooser-entity' data-name='" + items[i].get("name") + "'>" +
-                                (items[i].get("label")) + "</li>");
+                                (I18n.t(items[i].get("label"))) + "</li>");
                         }
                     }
                 }
@@ -207,7 +207,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                         (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
                             items[i].getInstance().get("enabled"))) {
                         getLabel = this.get("widgets")[items[i].get("@class")].getLabel;
-                        label = items[i].get("label");
+                        label = I18n.t(items[i].get("label"));
 
                         li = entityBox.appendChild("<li class='chooser-entity' data-type='" +
                             items[i].get("@class") + "'data-name='" +
@@ -351,7 +351,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                 },
                 flatten: {
                     type: "boolean",
-                    value: "true",
+                    value: true,
                     view: {label:"flatter"}
                 }
             }

@@ -35,6 +35,7 @@ import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
+import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -590,9 +591,18 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
             reviewD.setToReview(toReview);
 
             assertScopesAreValid(reviewD);
+
+            this.reviveEvaluations(reviewD.getFeedback(), reviewD);
+            this.reviveEvaluations(reviewD.getFbComments(), reviewD);
         } catch (WegasNoResultException ex) {
             logger.error("Failed te revive ReviewDescriptor", ex);
             reviewD.setToReview(null);
+        }
+    }
+
+    private void reviveEvaluations(EvaluationDescriptorContainer container, PeerReviewDescriptor parent){
+        for (EvaluationDescriptor ed : container.getEvaluations()){
+            ed.getLabel().setParentDescriptor(parent);
         }
     }
 

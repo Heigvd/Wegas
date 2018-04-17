@@ -8,6 +8,7 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -189,19 +190,19 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         DialogueState ds1 = new DialogueState();
         DialogueState ds2 = new DialogueState();
-        ds1.setText("Hello");
-        ds2.setText("World");
+        ds1.setText(TranslatableContent.build("def", "Hello"));
+        ds2.setText(TranslatableContent.build("def", "World"));
         dial.setStates(toMap(toList(1L, 2L), toList(ds1, ds2)));
 
         DialogueTransition s1ToS2 = new DialogueTransition();
         s1ToS2.setNextStateId(2L);
-        s1ToS2.setActionText(", ");
+        s1ToS2.setActionText(TranslatableContent.build("def", ", "));
         ds1.setTransitions(toList(s1ToS2));
         variableDescriptorFacade.create(scenario.getId(), dial);
         gameModelFacade.reset(scenario.getId());
-        assertEquals("Hello", (((DialogueState) ((StateMachineInstance) variableInstanceFacade.find(dial.getId(), player.getId())).getCurrentState()).getText()));
+        assertEquals("Hello", (((DialogueState) ((StateMachineInstance) variableInstanceFacade.find(dial.getId(), player.getId())).getCurrentState()).getText().translateOrEmpty(player)));
         stateMachineFacade.doTransition(scenario.getId(), player.getId(), dial.getId(), s1ToS2.getId());
-        assertEquals("World", (((DialogueState) ((StateMachineInstance) variableInstanceFacade.find(dial.getId(), player.getId())).getCurrentState()).getText()));
+        assertEquals("World", (((DialogueState) ((StateMachineInstance) variableInstanceFacade.find(dial.getId(), player.getId())).getCurrentState()).getText().translateOrEmpty(player)));
     }
 
     @Test

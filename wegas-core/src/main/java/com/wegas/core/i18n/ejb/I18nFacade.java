@@ -225,14 +225,12 @@ public class I18nFacade extends WegasAbstractFacade {
      * @throws WegasNotFoundException if such a translation does not exists
      */
     private Translation getTranslation(TranslatableContent trContent, String refName) {
-        if (refName != null) {
-            for (Translation tr : trContent.getRawTranslations()) {
-                if (refName.equals(tr.getLang())) {
-                    return tr;
-                }
-            }
+        Translation translation = trContent.getTranslation(refName);
+        if (translation != null) {
+            return translation;
+        } else {
+            throw new WegasNotFoundException("There is no translation for language " + refName);
         }
-        throw new WegasNotFoundException("There is no translation for language " + refName);
     }
 
     /**
@@ -250,17 +248,9 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     public TranslatableContent updateTranslation(Long trId, String refName, String newValue) {
-        Translation tr;
         TranslatableContent content = this.findTranslatableContent(trId);
 
-        try {
-            tr = this.getTranslation(content, refName);
-            tr.setTranslation(newValue);
-
-        } catch (WegasNotFoundException ex) {
-            logger.trace("Translation does not exists: create");
-            content.getRawTranslations().add(new Translation(refName, newValue));
-        }
+        content.updateTranslation(refName, newValue);
 
         return content;
     }

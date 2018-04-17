@@ -758,7 +758,7 @@ YUI().use(function(Y) {
             "wegas-gamemodel-i18n": {
                 path: "js/widget/wegas-gamemodel-i18n-min.js",
                 requires: ["wegas-layout-list"],
-                ws_provides: ["LanguagesManager"]
+                ws_provides: ["LanguagesManager", "TranslationEditor"]
             },
             "wegas-gamemodel-extractor": {
                 path: "js/widget/wegas-gamemodel-extractor-min.js",

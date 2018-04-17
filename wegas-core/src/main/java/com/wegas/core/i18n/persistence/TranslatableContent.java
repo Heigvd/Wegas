@@ -12,10 +12,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
@@ -25,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.persistence.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,16 +38,19 @@ import javax.persistence.*;
 @Entity
 @Table(indexes = { //@Index(columnList = "inboxinstance_id")
 })
-public class TranslatableContent extends AbstractEntity implements Searchable {
+public class TranslatableContent extends AbstractEntity implements Searchable, Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * HACKME !!!
-     */
-    @Transient
+    private static final Logger logger = LoggerFactory.getLogger(TranslatableContent.class);
+
+    @ManyToOne
     @JsonIgnore
-    private AbstractEntity owner;
+    private VariableDescriptor parentDescriptor;
+
+    @ManyToOne
+    @JsonIgnore
+    private VariableInstance parentInstance;
 
     /**
      *
@@ -63,12 +71,42 @@ public class TranslatableContent extends AbstractEntity implements Searchable {
         return this.id;
     }
 
-    public AbstractEntity getOwner() {
-        return owner;
+    public VariableDescriptor getParentDescriptor() {
+        return parentDescriptor;
     }
 
-    public void setOwner(AbstractEntity owner) {
-        this.owner = owner;
+    public void setParentDescriptor(VariableDescriptor parentDescriptor) {
+        this.parentDescriptor = parentDescriptor;
+        if (this.parentDescriptor != null) {
+            this.parentInstance = null;
+        }
+    }
+
+    public VariableInstance getParentInstance() {
+        return parentInstance;
+    }
+
+    public void setParentInstance(VariableInstance parentInstance) {
+        this.parentInstance = parentInstance;
+        if (this.parentInstance != null) {
+            this.parentDescriptor = null;
+        }
+    }
+
+    /**
+     * Nearest broadcastable parent
+     *
+     * @return
+     */
+    @JsonIgnore
+    public Broadcastable getOwner() {
+        if (this.parentDescriptor != null) {
+            return parentDescriptor;
+        }
+        if (this.parentInstance != null) {
+            return parentInstance;
+        }
+        return null;
     }
 
     @JsonIgnore
@@ -120,6 +158,40 @@ public class TranslatableContent extends AbstractEntity implements Searchable {
     }
 
     /**
+     * Get a translation
+     *
+     * @param refName language ref name
+     *
+     * @return the translation or null if there is no such translation
+     *
+     */
+    public Translation getTranslation(String refName) {
+        if (refName != null) {
+            for (Translation tr : this.translations) {
+                if (refName.equals(tr.getLang())) {
+                    return tr;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Update or set a translation
+     *
+     * @param refName     language ref name
+     * @param translation the new translation
+     */
+    public void updateTranslation(String refName, String translation) {
+        Translation tr = this.getTranslation(refName);
+        if (tr != null) {
+            tr.setTranslation(translation);
+        } else {
+            this.getRawTranslations().add(new Translation(refName, translation));
+        }
+    }
+
+    /**
      * Get the most preferred translation for the given player.
      *
      * @param player
@@ -128,18 +200,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable {
      */
     public Translation translate(Player player) {
         GameModel gameModel = player.getGameModel();
-
-        List<String> refs = gameModel.getPreferredLanguagesRefName(player);
-
-        Map<String, Translation> trMap = ListUtils.mapEntries(translations, new Translation.Mapper());
-
-        for (String langRef : refs) {
-            Translation tr = trMap.get(langRef);
-            if (tr != null && !Helper.isNullOrEmpty(tr.getTranslation())) {
-                return tr;
-            }
-        }
-        return null;
+        return this.translate( gameModel.getPreferredLanguagesRefName(player));
     }
 
     public String translateOrEmpty(Player self) {
@@ -151,18 +212,64 @@ public class TranslatableContent extends AbstractEntity implements Searchable {
         }
     }
 
-    public Translation translate(GameModel gameModel) {
-        List<String> refs = gameModel.getPreferredLanguagesRefName(null);
+    @JsonIgnore
+    public Translation getAnyTranslation() {
+        Translation emptyOne = null;
 
-        Map<String, Translation> trMap = ListUtils.mapEntries(translations, new Translation.Mapper());
-
-        for (String langRef : refs) {
-            Translation tr = trMap.get(langRef);
-            if (tr != null && Helper.isNullOrEmpty(tr.getTranslation())) {
-                return tr;
+        for (Translation tr : this.translations) {
+            if (tr != null) {
+                String str = tr.getTranslation();
+                if (str != null) {
+                    if (str.isEmpty()) {
+                        if (emptyOne == null) {
+                            emptyOne = tr;
+                        }
+                    } else {
+                        return tr;
+                    }
+                }
             }
         }
-        return null;
+        return emptyOne;
+    }
+
+    /**
+     * Returns the most preferred translation according to given languages.
+     * returns the first translation which is not empty. If all translation are empty
+     * returns, the first non null, returns null o otherwise
+     *
+     * @param languages languages sorted by preference
+     *
+     * @return
+     */
+    private Translation translate(List<String> languages) {
+        Map<String, Translation> trMap = ListUtils.mapEntries(translations, new Translation.Mapper());
+        Translation emptyOne = null;
+
+        for (String langRef : languages) {
+            Translation tr = trMap.get(langRef);
+            if (tr != null) {
+                String str = tr.getTranslation();
+                if (str != null) {
+                    if (str.isEmpty()) {
+                        if (emptyOne == null) {
+                            emptyOne = tr;
+                        }
+                    } else {
+                        return tr;
+                    }
+                }
+            }
+        }
+        return emptyOne;
+    }
+
+    public Translation translate(GameModel gameModel) {
+        if (gameModel != null) {
+            return this.translate(gameModel.getPreferredLanguagesRefName(null));
+        } else {
+            return getAnyTranslation();
+        }
     }
 
     public String translateOrEmpty(GameModel gameModel) {
@@ -180,23 +287,62 @@ public class TranslatableContent extends AbstractEntity implements Searchable {
      */
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        if (this.owner != null) {
+        Broadcastable owner = getOwner();
+        if (owner != null) {
             return owner.getRequieredUpdatePermission();
         }
+        logger.error("Orphan here {}", this);
         return null;
     }
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        if (this.owner != null) {
+        Broadcastable owner = getOwner();
+        if (owner != null) {
             return owner.getRequieredReadPermission();
+        }
+        logger.error("Orphan here {}", this);
+
+        return null;
+    }
+
+    public static TranslatableContent build(String lang, String translation) {
+        TranslatableContent trC = new TranslatableContent();
+        trC.getRawTranslations().add(new Translation(lang, translation));
+        return trC;
+    }
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        Broadcastable owner = this.getOwner();
+        if (owner != null) {
+            return owner.getEntities();
         }
         return null;
     }
 
-    public static TranslatableContent build(String lang, String translation){
-        TranslatableContent trC = new TranslatableContent();
-        trC.getRawTranslations().add(new Translation(lang, translation));
-        return trC;
+    /**
+     * Convenient method to use within merge implementation.
+     * other may be null, in this case, null is returned.
+     * target may be null, a brand new object will be returned.
+     * <p>
+     * <p>
+     * in merge example: this.setField(TranslatableContent.merger(this.getField(), o.getField()))
+     *
+     * @param target the one to update, may be null
+     * @param other  the one to copy content from, may be null
+     *
+     * @return the new translatable content the caller must use form now
+     */
+    public static TranslatableContent merger(TranslatableContent target, TranslatableContent other) {
+        if (other == null) {
+            return null;
+        }
+
+        if (target == null) {
+            target = new TranslatableContent();
+        }
+        target.merge(other);
+        return target;
     }
 }

@@ -5,6 +5,13 @@
         <createSequence sequenceName="i18n_seq" />
         <sql>select setval('i18n_seq', (select max(seq_count) + 1 as start from sequence WHERE seq_name = 'SEQ_GEN')::bigint)</sql>
     </changeSet>
+
+    <!-- drop unused columns -->
+    <changeSet author="maxence (generated)" id="1523014059600-0">
+        <dropColumn columnName="description" tableName="inboxdescriptor"/>
+        <dropColumn columnName="content" tableName="dialoguedescriptor"/>
+    </changeSet>
+
     
     <changeSet author="maxence (generated)" id="1523014059600-1">
         <createTable tableName="gamemodellanguage">
@@ -31,6 +38,8 @@
             <column name="id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="parentdescriptor_id" type="BIGINT" />
+            <column name="parentinstance_id" type="BIGINT" />
         </createTable>
     </changeSet>
     <changeSet author="maxence (generated)" id="1523014059600-3">
@@ -47,10 +56,17 @@
         <createIndex indexName="index_gamemodellanguage_gamemodel_id" tableName="gamemodellanguage">
             <column name="gamemodel_id"/>
         </createIndex>
+        <createIndex indexName="index_translatablecontent_translations_translatablecontent_id" tableName="translatablecontent_translations" unique="false">
+            <column name="translatablecontent_id"/>
+        </createIndex>
+
     </changeSet>
+    
     <changeSet author="maxence (generated)" id="1523014059600-5">
         <addForeignKeyConstraint baseColumnNames="gamemodel_id" baseTableName="gamemodellanguage" constraintName="fk_gamemodellanguage_gamemodel_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel"/>
         <addForeignKeyConstraint baseColumnNames="translatablecontent_id" baseTableName="translatablecontent_translations" constraintName="fk_translatablecontent_translations_translatablecontent_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+        <addForeignKeyConstraint baseColumnNames="parentdescriptor_id" baseTableName="translatablecontent" constraintName="fk_translatablecontent_parentdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
+        <addForeignKeyConstraint baseColumnNames="parentinstance_id" baseTableName="translatablecontent" constraintName="fk_translatablecontent_parentinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance"/>
     </changeSet>
 
     <!-- Let's migrate texts to default translations -->
@@ -67,7 +83,7 @@
         </update>
 
         <!-- and create corresponding translatablecontent -->
-        <sql>INSERT INTO translatablecontent (id) SELECT description_id as id from questiondescriptor</sql>
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from questiondescriptor</sql>
         
         <!-- set up FK -->
         <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="questiondescriptor" constraintName="fk_questiondescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
@@ -92,7 +108,7 @@
             <column name="label_id" valueComputed="nextval('i18n_seq')" />
         </update>
 
-        <sql>INSERT INTO translatablecontent (id) SELECT label_id as id from variabledescriptor</sql>
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT label_id as id, id as parentdescriptor_id from variabledescriptor</sql>
         
         <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
@@ -115,9 +131,9 @@
             <column name="label_id" valueComputed="nextval('i18n_seq')" />
         </update>
 
-        <sql>INSERT INTO translatablecontent (id) SELECT label_id as id from mcqresult</sql>
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT label_id as id, choicedescriptor_id as parentdescriptor_id from mcqresult</sql>
         
-        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="mcqresult" constraintName="fk_variabledescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="mcqresult" constraintName="fk_mcqresult_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
             INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
@@ -140,9 +156,9 @@
             <column name="label_id" valueComputed="nextval('i18n_seq')" />
         </update>
 
-        <sql>INSERT INTO translatablecontent (id) SELECT label_id as id from evaluationdescriptor</sql>
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) select ed.label_id, prd.id as parentdescriptor_id from evaluationdescriptor ed join peerreviewdescriptor as prd on container_id = prd.fbcomments_id OR  container_id = prd.feedback_id </sql>
         
-        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="evaluationdescriptor" constraintName="fk_variabledescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="evaluationdescriptor" constraintName="fk_evaluationdescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
             INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
@@ -154,14 +170,179 @@
     </changeSet>
 
 
+    <!-- Choice description -->
+    <changeSet author="maxence (generated)" id="1523014059600-10">
+        <addColumn tableName="choicedescriptor">
+            <column name="description_id" type="int8"/>
+        </addColumn>
+
+        <update tableName="choicedescriptor">
+            <column name="description_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from choicedescriptor</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="choicedescriptor" constraintName="fk_choicedescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT description as tr, 'def' as lang, description_id as translatablecontent_id
+            FROM choicedescriptor
+        </sql>
+
+        <dropColumn columnName="description" tableName="choicedescriptor"/>
+    </changeSet>
+
+    <!-- WhQuestion description -->
+    <changeSet author="maxence (generated)" id="1523014059600-11">
+        <addColumn tableName="whquestiondescriptor">
+            <column name="description_id" type="int8"/>
+        </addColumn>
+
+        <update tableName="whquestiondescriptor">
+            <column name="description_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from whquestiondescriptor</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="whquestiondescriptor" constraintName="fk_whquestiondescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT description as tr, 'def' as lang, description_id as translatablecontent_id
+            FROM whquestiondescriptor
+        </sql>
+
+        <dropColumn columnName="description" tableName="whquestiondescriptor"/>
+    </changeSet>
+
+    <!-- Result answer -->
+    <changeSet author="maxence (generated)" id="1523014059600-12">
+        <addColumn tableName="mcqresult">
+            <column name="answer_id" type="int8"/>
+        </addColumn>
+
+        <update tableName="mcqresult">
+            <column name="answer_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT answer_id as id, choicedescriptor_id as parentdescriptor_id from mcqresult</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="answer_id" baseTableName="mcqresult" constraintName="fk_mcqresult_answer_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT answer as tr, 'def' as lang, answer_id as translatablecontent_id
+            FROM mcqresult
+        </sql>
+
+        <dropColumn columnName="answer" tableName="mcqresult"/>
+    </changeSet>
+
+    <!-- Result ignorationanswer -->
+    <changeSet author="maxence (generated)" id="1523014059600-13">
+        <addColumn tableName="mcqresult">
+            <column name="ignorationanswer_id" type="int8"/>
+        </addColumn>
+
+        <update tableName="mcqresult">
+            <column name="ignorationanswer_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT ignorationanswer_id as id, choicedescriptor_id as parentdescriptor_id from mcqresult</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="ignorationanswer_id" baseTableName="mcqresult" constraintName="fk_mcqresult_ignorationanswer_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT ignorationanswer as tr, 'def' as lang, ignorationanswer_id as translatablecontent_id
+            FROM mcqresult
+        </sql>
+
+        <dropColumn columnName="ignorationanswer" tableName="mcqresult"/>
+    </changeSet>
+
+    <!-- DialogueState text -->
+    <changeSet author="maxence (generated)" id="1523014059600-14">
+        <addColumn tableName="fsm_state">
+            <column name="text_id" type="int8"/>
+        </addColumn>
+
+        <!-- initialize text_id for dialogue states only -->
+        <update tableName="fsm_state">
+            <column name="text_id" valueComputed="nextval('i18n_seq')"  />
+            <where>dtype = 'DialogueState'</where>
+        </update>
+
+        <!-- create translatablecontent for each dialogue state -->
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT text_id as id, statemachine_id as parentdescriptor_id from fsm_state WHERE dtype = 'DialogueState'</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="text_id" baseTableName="fsm_state" constraintName="fk_dialoguestate_text_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT text as tr, 'def' as lang, text_id as translatablecontent_id
+            FROM fsm_state WHERE dtype = 'DialogueState'
+        </sql>
+
+        <dropColumn columnName="text" tableName="fsm_state"/>
+    </changeSet>
 
 
+    <!-- DialogueState text -->
+    <changeSet author="maxence (generated)" id="1523014059600-15">
+        <addColumn tableName="transition">
+            <column name="actiontext_id" type="int8"/>
+        </addColumn>
 
+        <!-- initialize actiontext_id for dialogue states only -->
+        <update tableName="transition">
+            <column name="actiontext_id" valueComputed="nextval('i18n_seq')"  />
+            <where>dtype = 'DialogueTransition'</where>
+        </update>
+
+        <!-- create translatablecontent for each dialogue state -->
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT actiontext_id as id, state.statemachine_id as parentdescriptor_id from transition t join fsm_state state on state.id = t.state_id WHERE t.dtype = 'DialogueTransition'</sql>
+
+        
+        <addForeignKeyConstraint baseColumnNames="actiontext_id" baseTableName="transition" constraintName="fk_dialoguestate_actiontext_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT actiontext as tr, 'def' as lang, actiontext_id as translatablecontent_id
+            FROM transition WHERE dtype = 'DialogueTransition'
+        </sql>
+
+        <dropColumn columnName="actiontext" tableName="transition"/>
+    </changeSet>
+
+    <!-- PeerReview description -->
+    <changeSet author="maxence (generated)" id="1523014059600-16">
+        <addColumn tableName="peerreviewdescriptor">
+            <column name="description_id" type="int8"/>
+        </addColumn>
+
+        <update tableName="peerreviewdescriptor">
+            <column name="description_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from peerreviewdescriptor</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="peerreviewdescriptor" constraintName="fk_peerreviewdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT description as tr, 'def' as lang, description_id as translatablecontent_id
+            FROM peerreviewdescriptor
+        </sql>
+
+        <dropColumn columnName="description" tableName="peerreviewdescriptor"/>
+    </changeSet>
 
     <!-- restore JPA sequence -->
     <changeSet author="maxence (generated)" id="1523014059600-clear">
         <sql>
-             update sequence set seq_count = ceil(nextval('i18n_seq')::double precision / 100)*100 where seq_name = 'SEQ_GEN';
+            update sequence set seq_count = ceil(nextval('i18n_seq')::double precision / 100)*100 where seq_name = 'SEQ_GEN';
         </sql>
         <dropSequence sequenceName="i18n_seq" />
     </changeSet>

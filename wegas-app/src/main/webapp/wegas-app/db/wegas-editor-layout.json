@@ -216,6 +216,8 @@
                                                         }, {
                                                             "fn": "PageEditor"
                                                         }, {
+                                                            "fn": "TranslationEditor"
+                                                        }, {
                                                             "fn": "Injector"
                                                         }, {
                                                             "fn": "PopupListener"
@@ -370,6 +372,8 @@
                                     }, {
                                         "fn": "PageEditor"
                                     }, {
+                                        "fn": "TranslationEditor"
+                                    }, {
                                         "fn": "Injector"
                                     }, {
                                         "fn": "PopupListener"
@@ -412,6 +416,8 @@
                                                             }
                                                         }, {
                                                             "fn": "PageEditor"
+                                                        }, {
+                                                            "fn": "TranslationEditor"
                                                         }, {
                                                             "fn": "Injector"
                                                         }, {

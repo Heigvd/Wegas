@@ -47,7 +47,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             });
             this.qText = new Y.Wegas.Text({
                 cssClass: "wegas-whview__question wegas-light-picture",
-                content: whQuestion.get("description")
+                content: I18n.t(whQuestion.get("description"), {inlineEditor: 'html'})
             });
 
             this.qList.add(this.qTitle);
@@ -658,8 +658,8 @@ YUI.add('wegas-mcq-view', function(Y) {
             Y.log("RENDER TAB");
             ret = ['<div class="mcq-question">',
                 '<div class="mcq-question-details">',
-                '<div class="mcq-question-title">', I18n.t(question.get("label")) || "undefined", '</div>',
-                '<div class="mcq-question-description">', I18n.t(question.get("description"), {decorate: true}), '</div>',
+                '<div class="mcq-question-title">', I18n.t(question.get("label"), {inlineEditor: 'string'}) || "undefined", '</div>',
+                '<div class="mcq-question-description">', I18n.t(question.get("description"), {inlineEditor: "html"}), '</div>',
                 '</div>'];
             // Display choices
 
@@ -676,7 +676,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     for (i = 0; i < choices.length; i += 1) {
                         if (choices[i].getInstance().get("active")) {
                             nbActiveChoices++;
-                            description = question.get("items")[i].get("description");
+                            description = I18n.t(question.get("items")[i].get("description"));
 
                             if (description && description.length !== 0) {
                                 hasDescription = true;
@@ -693,16 +693,13 @@ YUI.add('wegas-mcq-view', function(Y) {
                         if (choiceI.get("active")) {
                             checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
                             ret.push('<div class="mcq-choice', (qAnswerable || checked ? '' : ' spurned'), '" style="width:', cellWidth, '% !important">');
-                            title = I18n.t(choiceD.get("label"));
-                            title = (title.trim() !== '') ? title : "&nbsp;";
-                            ret.push('<div class="mcq-choice-name" style="text-align:center"><label for="', choiceID, '">', title, '</label></div>');
+                            title = I18n.t(choiceD.get("label"), {inlineEditor: 'string', fallback: "&nbsp;"});
+                            ret.push('<div class="mcq-choice-name" style="text-align:center">', title, '</div>');
                             currDescr = '';
                             if (hasDescription) {
-                                currDescr = question.get("items")[i].get("description");
-                                if (currDescr.length === 0)
-                                    currDescr = "&nbsp;";
+                                currDescr = I18n.t(question.get("items")[i].get("description"), {inlineEditor: 'html',  fallback: "&nbsp;"});
                             }
-                            ret.push('<div class="mcq-choice-description" style="text-align:center"><label for="', choiceID, '">', currDescr, '</label></div>');
+                            ret.push('<div class="mcq-choice-description" style="text-align:center">', currDescr, '</div>');
                             cAnswerable = qAnswerable && (!checkbox || !maximumReached || checked);
 
                             ret.push('<input class="mcq-checkbox"', (checkbox ? ' type="checkbox"' : ' type="radio"'),
@@ -731,16 +728,16 @@ YUI.add('wegas-mcq-view', function(Y) {
                         choiceD = choices[i];
                         choiceI = choiceD.getInstance();
                         choiceID = choiceD.get("id");
-                        currDescr = question.get("items")[i].get("description") || '';
+                        currDescr = I18n.t(question.get("items")[i].get("description"));
                         if (choiceI.get("active")) {
                             ret.push('<div class="mcq-choice-vertical">');
                             checked = this.getNumberOfReplies(questionInstance, choiceD) > 0;
                             ret.push('<div class="mcq-choice', (qAnswerable || checked ? '' : ' spurned'), '">');
-                            title = I18n.t(choiceD.get("label"));
-                            title = (title.trim() !== '') ? title : "&nbsp;";
-                            ret.push('<div class="mcq-choice-name"><label for="', choiceID, '">', title, '</label></div>');
+                            title = I18n.t(choiceD.get("label"), {inlineEditor: 'string', fallback: "&nbsp;"});
+
+                            ret.push('<div class="mcq-choice-name">', title, '</div>');
                             if (currDescr !== '') {
-                                ret.push('<div class="mcq-choice-description"><label for="', choiceID, '">', currDescr, '</label></div>');
+                                ret.push('<div class="mcq-choice-description">', I18n.t(question.get("items")[i].get("description"), {inlineEditor: 'html'}), '</div>');
                             }
                             ret.push('</div>'); // end cell mcq-choice
                             ret.push('<div class="mcq-choices-vertical-checkbox', (qAnswerable || checked) ? '' : ' spurned', (currDescr === '' ? ' nodescr' : ''), '">');
@@ -777,7 +774,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     choiceD = choices[i];
                     choiceI = choiceD.getInstance();
                     choiceID = choiceD.get("id");
-                    currDescr = question.get("items")[i].get("description") || "";
+                    currDescr = I18n.t(question.get("items")[i].get("description"));
 
                     maxC = choiceD.get("maxReplies");
                     choiceReplies = choiceI.get("replies");
@@ -785,16 +782,17 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                     isChosenReply = choiceReplies.length > 0;
                     if (choiceI.get("active")) {
-                        var noTitle = (I18n.t(choiceD.get("label")).trim() == '');
+                        var rawTitle = I18n.t(choiceD.get("label")).trim();
+                        var noTitle = (rawTitle == '');
                         var noDescr = (currDescr.trim() == '');
 
                         ret.push('<div class="mcq-choice-vertical', (noTitle && noDescr ? ' nohover' : ''), '">');
                         ret.push('<div class="mcq-choice', (cAnswerable || isChosenReply) ? (noTitle && noDescr ? ' notitle' : '') : ' spurned', '">');
-                        title = noTitle ? "&nbsp;" : I18n.t(choiceD.get("label"));
+                        title = I18n.t(choiceD.get("label"), {inlineEditor: 'string', fallback: "&nbsp;"});
                         ret.push('<div class="mcq-choice-name', (noTitle && noDescr ? ' notitle' : (!noTitle && !noDescr ? ' colspan' : '')), '">', title, '</div>');
 
                         if (!noDescr) {
-                            ret.push('<div class="mcq-choice-description">', currDescr, '</div>');
+                            ret.push('<div class="mcq-choice-description">', I18n.t(question.get("items")[i].get("description"), {inlineEditor: "html"}), '</div>');
                         }
 
                         ret.push('</div>'); // end cell mcq-choice
@@ -835,7 +833,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         choiceD = reply.getChoiceDescriptor();
                         ret.push('<div class="mcq-reply" data-choice-id="', choiceD.get("id"), '">');
                         ret.push('<div class="mcq-reply-title">', I18n.t(choiceD.get("label")), '</div>');
-                        ret.push('<div class="mcq-reply-content">', reply.get("answer"), '</div>');
+                        ret.push('<div class="mcq-reply-content">', I18n.t(reply.get("answer")), '</div>');
                         ret.push('</div>'); // end mcq-reply
                     }
                     ret.push('</div>'); // end mcq-replies
@@ -871,9 +869,9 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                             // select the correct text to display
                             if (!reply.get("ignored")) {
-                                toDisplay = reply.get("answer");
+                                toDisplay = I18n.t(reply.get("answer"));
                             } else {
-                                toDisplay = reply.get("ignorationAnswer");
+                                toDisplay = I18n.t(reply.get("ignorationAnswer"));
 
                                 // skip ignored reply without text
                                 if (!toDisplay || !toDisplay.replace(/(\r\n|\n|\r)/gm, "").trim()) {

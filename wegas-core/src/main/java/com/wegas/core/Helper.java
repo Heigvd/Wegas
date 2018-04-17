@@ -10,9 +10,12 @@ package com.wegas.core;
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -26,6 +29,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.internet.AddressException;
@@ -172,27 +176,30 @@ public class Helper {
      * @return name to use in place on initial one
      */
     private static String findUniqueName(final String name, List<String> usedNames, String pattern, String preSuff, String postSuff) {
+        if (usedNames != null) {
+            Pattern p = Pattern.compile(pattern);
+            Matcher matcher = p.matcher(name);
 
-        Pattern p = Pattern.compile(pattern);
-        Matcher matcher = p.matcher(name);
+            int suff;
+            final String baseName;
+            if (matcher.matches()) {
+                baseName = matcher.group(1);
+                suff = Integer.parseInt(matcher.group(2)) + 1;
+            } else {
+                baseName = name;
+                suff = 2;
+            }
 
-        int suff;
-        final String baseName;
-        if (matcher.matches()) {
-            baseName = matcher.group(1);
-            suff = Integer.parseInt(matcher.group(2)) + 1;
+            String newName = name;
+            while (usedNames.contains(newName)) {
+                newName = baseName + preSuff + suff + postSuff;
+                suff++;
+            }
+
+            return newName;
         } else {
-            baseName = name;
-            suff = 2;
+            return name;
         }
-
-        String newName = name;
-        while (usedNames.contains(newName)) {
-            newName = baseName + preSuff + suff + postSuff;
-            suff++;
-        }
-
-        return newName;
     }
 
     /**
@@ -269,8 +276,9 @@ public class Helper {
      *
      * @param entity     entity to label
      * @param usedLabels labels already in use
+     * @param gameModel
      */
-    public static void setUniqueLabel(final LabelledEntity entity, List<TranslatableContent> usedLabels) {
+    public static void setUniqueLabel(final LabelledEntity entity, List<TranslatableContent> usedLabels, GameModel gameModel) {
         setUniqueLabel(entity, usedLabels, DEFAULT_VARIABLE_LABEL);
     }
 
@@ -281,13 +289,38 @@ public class Helper {
      * @param usedLabels   labels already in use
      * @param defaultLabel label to set if entity one is unset
      */
-    public static void setUniqueLabel(final LabelledEntity entity, List<TranslatableContent> usedLabels, String defaultLabel) {
-        //if (isNullOrEmpty(entity.getLabel())) {
-        //    entity.setLabel(defaultLabel);
-        //}
-        //String newLabel = findUniqueLabel(entity.getLabel(), usedLabels);
-        //entity.setLabel(newLabel);
-        //usedLabels.add(newLabel);
+    public static void setUniqueLabel(final LabelledEntity entity,
+            List<TranslatableContent> usedLabels, String defaultLabel) {
+
+        // make sure the label exists
+        TranslatableContent theLabel = entity.getLabel();
+        if (theLabel == null) {
+            theLabel = new TranslatableContent();
+            entity.setLabel(theLabel);
+        }
+
+        Map<String, List<String>> mapUsedlabels = new HashMap<>();
+
+        for (TranslatableContent label : usedLabels) {
+            for (Entry<String, String> translation : label.getTranslations().entrySet()) {
+                if (!mapUsedlabels.containsKey(translation.getKey())) {
+                    mapUsedlabels.put(translation.getKey(), new ArrayList<>());
+                }
+                mapUsedlabels.get(translation.getKey()).add(translation.getValue());
+            }
+        }
+
+        Map<String, String> translations = theLabel.getTranslations();
+        for (String refName : translations.keySet()) {
+            String currentLabel = translations.get(refName);
+            if (!Helper.isNullOrEmpty(currentLabel)) {
+                theLabel.updateTranslation(refName, findUniqueLabel(currentLabel, mapUsedlabels.get(refName)));
+            }
+        }
+
+        if (!usedLabels.contains(entity.getLabel())) {
+            usedLabels.add(entity.getLabel());
+        }
     }
 
     /**
@@ -297,19 +330,38 @@ public class Helper {
      * @param usedNames  result sibling's names
      * @param usedLabels result sibling's label
      * @param base       base to build new names and labels on
+     * @param gameModel
      */
     public static void setNameAndLabelForLabelledEntity(LabelledEntity le,
-            List<String> usedNames, List<TranslatableContent> usedLabels, String base) {
-        //boolean hasLabel = !isNullOrEmpty(le.getLabel());
-        boolean hasName = !isNullOrEmpty(le.getName());
-        //if (hasLabel && !hasName) {
-        //    le.setName(le.getLabel());
-        //}
-        //if (hasName && !hasLabel) {
-        //    le.setLabel(le.getName());
-        //}
-        setUniqueNameForEntity(le, usedNames, base, false);
-        setUniqueLabel(le, usedLabels, "New " + base);
+            List<String> usedNames, List<TranslatableContent> usedLabels,
+            String base, GameModel gameModel) {
+
+        String baseName = le.getName();
+        String baseLabel = baseName;
+
+        if (le.getLabel() != null) {
+            // fetch the most preferred label
+            Translation favoriteLabel;
+            favoriteLabel = le.getLabel().translate(gameModel);
+            if (favoriteLabel != null) {
+                baseLabel = favoriteLabel.getTranslation();
+            }
+        }
+
+        // Init basename
+        if (Helper.isNullOrEmpty(baseName)) {
+            if (baseLabel == null) {
+                baseName = base;
+                baseLabel = "New " + base;
+            } else if (baseLabel.isEmpty()) {
+                baseName = base;
+            } else {
+                baseName = baseLabel;
+            }
+        }
+
+        setUniqueNameForEntity(le, usedNames, baseName, false);
+        setUniqueLabel(le, usedLabels, baseLabel);
     }
 
     /**
@@ -317,34 +369,35 @@ public class Helper {
      *
      * @param vd
      * @param usedNames
+     * @param gameModel
      */
-    public static void setUniqueName(final VariableDescriptor vd, List<String> usedNames) {
+    public static void setUniqueName(final VariableDescriptor vd, List<String> usedNames, GameModel gameModel) {
         setUniqueNameForEntity(vd, usedNames);
         if (vd instanceof DescriptorListI) {
             // Recursively find unique names for children
             for (Object child : ((DescriptorListI) vd).getItems()) {
-                setUniqueName((VariableDescriptor) child, usedNames);
+                setUniqueName((VariableDescriptor) child, usedNames, gameModel);
             }
         } else if (vd instanceof ChoiceDescriptor) {
             ChoiceDescriptor cd = (ChoiceDescriptor) vd;
             List<String> names = new ArrayList<>();
             List<TranslatableContent> labels = new ArrayList<>();
             for (Result r : cd.getResults()) {
-                setNameAndLabelForLabelledEntity(r, names, labels, "result");
+                setNameAndLabelForLabelledEntity(r, names, labels, "result", gameModel);
             }
         } else if (vd instanceof PeerReviewDescriptor) {
             PeerReviewDescriptor prd = (PeerReviewDescriptor) vd;
-            Helper.setNamesAndLabelForEvaluationList(prd.getFeedback().getEvaluations());
-            Helper.setNamesAndLabelForEvaluationList(prd.getFbComments().getEvaluations());
+            Helper.setNamesAndLabelForEvaluationList(prd.getFeedback().getEvaluations(), gameModel);
+            Helper.setNamesAndLabelForEvaluationList(prd.getFbComments().getEvaluations(), gameModel);
         }
     }
 
-    public static void setNamesAndLabelForEvaluationList(List<EvaluationDescriptor> edList) {
-        // Detect new answers
+    public static void setNamesAndLabelForEvaluationList(List<EvaluationDescriptor> edList, GameModel gameModel) {
         List<TranslatableContent> labels = new ArrayList<>();
         List<String> names = new ArrayList<>();
         List<EvaluationDescriptor> newEds = new ArrayList<>();
 
+        // collect existing names and labels
         for (EvaluationDescriptor r : edList) {
             if (r.getId() != null) {
                 // Store name and label existing result
@@ -357,7 +410,7 @@ public class Helper {
 
         // set names and labels unique
         for (EvaluationDescriptor ed : newEds) {
-            Helper.setNameAndLabelForLabelledEntity(ed, names, labels, "input");
+            Helper.setNameAndLabelForLabelledEntity(ed, names, labels, "input", gameModel);
         }
     }
 
@@ -774,6 +827,7 @@ public class Helper {
     public static void assertEmailPattern(String email) throws AddressException {
         InternetAddress emailAddr = new InternetAddress(email);
         emailAddr.validate();
+
     }
 
     /**

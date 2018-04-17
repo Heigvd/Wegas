@@ -765,3 +765,9 @@ font {
     width: calc(100% - 40px);
     display: inline-block;
 }
+
+/* I18N */
+
+.wegas-translation .tools{
+    display:none;
+}

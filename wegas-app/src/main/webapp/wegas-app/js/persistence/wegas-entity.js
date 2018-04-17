@@ -33,7 +33,6 @@ YUI.add('wegas-entity', function(Y) {
                 type: HIDDEN
             }
         },
-        
         PERMISSION = {
             optional: true,
             type: ARRAY,
@@ -60,12 +59,12 @@ YUI.add('wegas-entity', function(Y) {
                 className: 'wegas-advanced-feature'
             }
         };
-/**
- * 
- * @param {{type:"string" | "html", description?:string, label?:string, index?:number}} param 
- */
+    /**
+     * 
+     * @param {{type:"string" | "html", description?:string, label?:string, index?:number}} param 
+     */
     Y.Wegas.Helper.getTranslationAttr = function(param) {
-       var TRANSLATION_CONTENT_ATTR_DEF = {
+        var TRANSLATION_CONTENT_ATTR_DEF = {
             id: IDATTRDEF,
             "@class": {
                 value: "TranslatableContent",
@@ -77,7 +76,7 @@ YUI.add('wegas-entity', function(Y) {
             translations: {
                 type: "object",
                 additionalProperties: {
-                    type: STRING,
+                    type: ["null", STRING],
                     required: true,
                     view: {
                         label: "translation",
@@ -88,22 +87,25 @@ YUI.add('wegas-entity', function(Y) {
                     type: "I18n" + param.type,
                     keyLabel: "lang",
                     label: param.label,
-                    description: param.description
-                    
+                    description: param.description,
+                    borderTop: param.borderTop
+
                 }
             }
         },
-        TRANSLATION_VIEW = {
-            type: "object",
-            index: param.index,
-            optional: true,
-            value: {
-                "@class": "TranslatableContent",
-                translations: {}
-            },
-            properties: TRANSLATION_CONTENT_ATTR_DEF
-        }
-        
+            TRANSLATION_VIEW = {
+                type: "object",
+                index: param.index,
+                visible: param.visible,
+                valueFn: function() {
+                    return {
+                        "@class": "TranslatableContent",
+                        translations: {}
+                    };
+                },
+                properties: TRANSLATION_CONTENT_ATTR_DEF
+            };
+
         return TRANSLATION_VIEW;
     };
 

@@ -14,6 +14,7 @@ import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -142,17 +143,20 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         List<String> usedNames = this.findDistinctNames(gameModel);
         List<TranslatableContent> usedLabels = this.findDistinctLabels(list);
 
-        boolean hasName = !Helper.isNullOrEmpty(entity.getName());
-        //boolean hasLabel = !Helper.isNullOrEmpty(entity.getLabel());
+        String baseLabel = null;
 
-        //if (hasName && !hasLabel) {
-        //    entity.setLabel(entity.getName());
-        //} else if (hasLabel && !hasName) {
-        //    entity.setName(entity.getLabel());
-        //}
+        if (entity.getLabel() != null) {
+            // fetch the most preferred label
+            baseLabel = entity.getLabel().translateOrEmpty(gameModel);
+        }
 
-        Helper.setUniqueName(entity, usedNames);
-        //Helper.setUniqueLabel(entity, usedLabels);
+        if (Helper.isNullOrEmpty(entity.getName()) && !Helper.isNullOrEmpty(baseLabel)) {
+            // no name, but a label
+            entity.setName(baseLabel);
+        }
+
+        Helper.setUniqueName(entity, usedNames, gameModel);
+        Helper.setUniqueLabel(entity, usedLabels, gameModel);
 
         list.addItem(entity);
         this.revive(gameModel, entity, true);
@@ -242,7 +246,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * Create a new descriptor as a child of another
      *
      * @param parentDescriptorId owner of the descriptor
-     * @param entity the new descriptor to create
+     * @param entity             the new descriptor to create
      *
      * @return the new child
      */
@@ -254,7 +258,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      * Create a root level descriptor.
      *
-     * @param gameModelId owner of the descriptor
+     * @param gameModelId        owner of the descriptor
      * @param variableDescriptor descriptor to add to the gameModel
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {

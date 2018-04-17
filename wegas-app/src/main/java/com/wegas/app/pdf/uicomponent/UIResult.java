@@ -101,7 +101,7 @@ public class UIResult extends UIComponentBase {
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE);
 
-            UIHelper.printTextArea(context, writer, result.getAnswer(), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
+            UIHelper.printTextArea(context, writer, result.getAnswer().translateOrEmpty(player), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
             UIHelper.endDiv(writer);
             //UIHelper.printPropertyTextArea(context, writer, title, result.getAnswer(), false, editorMode);
         }

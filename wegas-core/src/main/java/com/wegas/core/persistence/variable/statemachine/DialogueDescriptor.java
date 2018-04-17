@@ -7,42 +7,35 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.wegas.core.Helper;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.core.persistence.variable.Beanjection;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 
-/**
+/*
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
+@JsonIgnoreProperties(value = {"content"})
 public class DialogueDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;
-    /**
-     *
-     */
-    @Lob
-    private String content;
 
     @Override
-    public Boolean containsAll(final List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getContent(), criterias)
-                || super.containsAll(criterias);
-    }
+    public void revive(Beanjection beans) {
+        super.revive(beans);
+        for (State s : this.getStates().values()) {
+            if (s instanceof DialogueState) {
+                DialogueState ds = (DialogueState) s;
+                ds.getText().setParentDescriptor(this);
+            }
 
-    /**
-     * @return the content
-     */
-    public String getContent() {
-        return content;
-    }
-
-    /**
-     * @param content the content to set
-     */
-    public void setContent(String content) {
-        this.content = content;
+            for (Transition t : s.getTransitions()) {
+                if (t instanceof DialogueTransition) {
+                    DialogueTransition dt = (DialogueTransition) t;
+                    dt.getActionText().setParentDescriptor(this);
+                }
+            }
+        }
     }
 }

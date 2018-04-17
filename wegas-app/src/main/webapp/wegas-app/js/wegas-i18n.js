@@ -186,10 +186,23 @@ YUI.add("wegas-i18n", function(Y) {
             return Y.Wegas.I18n._currentRefName;
         }
 
-        function computeTranslation(text, decorate, lang, id, favorite) {
-            if (decorate) {
-                return "<div class='wegas-translation " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
-                    "' data-trid='" + id + "' data-refName='" + lang.refName + "'data-lang='" + lang.lang + "'><span class='inline-editor-button fa fa-pencil'></span>" + text + "</div>";
+        function genTranslationMarkup(text, inlineEditor, lang, id, favorite) {
+            if (inlineEditor === "html") {
+                return "<div class='wegas-translation wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
+                    "' data-trid='" + id +
+                    "' data-refName='" + lang.refName + "'data-lang='" + lang.lang + "'><span class='tools'>" +
+                    "<span class='inline-editor-validate fa fa-check'></span>" +
+                    "<span class='inline-editor-cancel fa fa-times'></span>" +
+                    "</span>" +
+                    "<div class='wegas-translation--value'>" + text + "</div></div>";
+            } else if (inlineEditor === "string") {
+                return "<span class='wegas-translation wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
+                    "' data-trid='" + id +
+                    "' data-refName='" + lang.refName + "'data-lang='" + lang.lang + "'><span class='tools'>" +
+                    "<span class='inline-editor-validate fa fa-check'></span>" +
+                    "<span class='inline-editor-cancel fa fa-times'></span>" +
+                    "</span>" +
+                    "<span class='wegas-translation--value'>" + text + "</span></span>";
             } else {
                 return text;
             }
@@ -200,36 +213,59 @@ YUI.add("wegas-i18n", function(Y) {
                 i,
                 langs,
                 lang,
-                trId = trContent.get("id"),
+                trId = "",
+                klass,
                 translations,
-                decorate = params && params.decorate;
+                inlineEditor = params && params.inlineEditor,
+                theOne;
 
-            if (trContent.get("@class") === "TranslatableContent" && trContent.get("translations")) {
-                translations = trContent.get("translations");
-                langs = Y.Array.map(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
-                    return {
-                        lang: item.get("lang"),
-                        refName: item.get("refName")
-                    };
-                });
-                // move favorite language at first position
-                lang = Y.Array.find(langs, function(item) {
-                    return item.refName === favoriteRefName;
-                });
-                if (lang) {
-                    i = langs.indexOf(lang);
-                    langs.splice(i, 1);
-                    langs.unshift(lang);
+            if (trContent) {
+                if (trContent.get) {
+                    klass = trContent.get("@class");
+                    translations = trContent.get("translations");
+                    trId = trContent && trContent.get("id");
+                } else {
+                    klass = trContent["@class"];
+                    translations = trContent.translations;
+                    trId = trContent.id;
                 }
-                for (i in langs) {
-                    lang = langs[i];
-                    if (translations[lang.refName] !== undefined) {
-                        return computeTranslation(trContent.get("translations")[lang.refName] || "", decorate, lang, trId, lang.refName === favoriteRefName);
+
+                if (klass === "TranslatableContent" && translations) {
+                    langs = Y.Array.map(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
+                        return {
+                            lang: item.get("lang"),
+                            refName: item.get("refName")
+                        };
+                    });
+                    // move favorite language at first position
+                    lang = Y.Array.find(langs, function(item) {
+                        return item.refName === favoriteRefName;
+                    });
+                    if (lang) {
+                        i = langs.indexOf(lang);
+                        langs.splice(i, 1);
+                        langs.unshift(lang);
+                    }
+                    for (i in langs) {
+                        lang = langs[i];
+                        if (translations[lang.refName] !== undefined) {
+                            if (translations[lang.refName]) {
+                                theOne = lang;
+                                break;
+                            }
+                        }
+                    }
+                    if (theOne) {
+                        return genTranslationMarkup(translations[theOne.refName], inlineEditor, theOne, trId, theOne.refName === favoriteRefName);
+                    } else {
+                        return genTranslationMarkup(params && params.fallback || "", inlineEditor, langs[0], trId, true);
                     }
                 }
             }
-            if (decorate) {
+            if (inlineEditor === "html") {
                 return "<div class='wegas-translation missing' data-trid='" + trId + "' data-refName=''>MISSING TRANSLATION</div>";
+            } else if (inlineEditor === "html") {
+                return "<span class='wegas-translation missing' data-trid='" + trId + "' data-refName=''>MISSING TRANSLATION</span>";
             } else {
                 return "MISSING TRANSLATION";
             }
@@ -398,6 +434,7 @@ YUI.add("wegas-i18n", function(Y) {
             lang: function() {
                 return currentLocale();
             },
+            getRefName: getRefName,
             setLang: setLang,
             setNumericLang: setNumericLang,
             t: function(key, args) {

@@ -12,11 +12,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.Translation;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.ListUtils.Updater;
@@ -29,7 +30,6 @@ import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.persistence.Permission;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,10 +70,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     /**
      *
      */
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @Lob
-    //@JsonView(Views.ExtendedI.class)
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent description;
 
     /**
      *
@@ -108,7 +107,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     public void merge(AbstractEntity a) {
         if (a instanceof ChoiceDescriptor) {
             ChoiceDescriptor other = (ChoiceDescriptor) a;
-            this.setDescription(other.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
             super.merge(a);
             this.setMaxReplies(other.getMaxReplies());
             this.setDuration(other.getDuration());
@@ -160,7 +159,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
             // set names and labels unique
             for (Result r : newResults) {
-                Helper.setNameAndLabelForLabelledEntity(r, names, labels, "result");
+                Helper.setNameAndLabelForLabelledEntity(r, names, labels, "result", this.getGameModel());
             }
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
@@ -238,15 +237,18 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**
@@ -521,7 +523,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        if (Helper.insensitiveContainsAll(this.getDescription(), criterias)
+        if (this.getDescription().containsAll(criterias)
                 || super.containsAll(criterias)) {
             return true;
         }
@@ -548,6 +550,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
             this.setLabel(TranslatableContent.build("def", title));
             this.title = null;
+        }
+        for (Result r : results) {
+            r.getLabel().setParentDescriptor(this);
+            r.getAnswer().setParentDescriptor(this);
+            r.getIgnorationAnswer().setParentDescriptor(this);
         }
         super.revive(beans);
     }

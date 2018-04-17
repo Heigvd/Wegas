@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -313,7 +315,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                     var vd = Wegas.Facade.Variable.cache.find("name",
                                                 i.callee.object.arguments[1].value), methodName = i.callee.property.name, method = vd.getMethodCfgs()[methodName];
 
-                                    return vd.get("label") + " " + (i.callee.property.name !== "getValue" ? "<em>" + (method.label ? method.label.toLowerCase() : methodName) + "</em> " : "") + formatArgs(i.arguments.slice(1),
+                                    return I18n.t(vd.get("label")) + " " + (i.callee.property.name !== "getValue" ? "<em>" + (method.label ? method.label.toLowerCase() : methodName) + "</em> " : "") + formatArgs(i.arguments.slice(1),
                                                     method.arguments.slice(1));
                                 } else {
                                     var global = globals[i.callee.object.name + "." + i.callee.property.name];

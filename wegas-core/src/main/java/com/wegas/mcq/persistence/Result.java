@@ -9,7 +9,6 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -84,20 +83,18 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     private TranslatableContent label;
 
     /**
-     *
+     * Displayed answer when result selected and validated
      */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    //@JsonView(Views.ExtendedI.class)
-    private String answer;
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL)
+    private TranslatableContent answer;
 
     /**
-     *
+     * Displayed answer when MCQ result not selected and validated
      */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    //@JsonView(Views.ExtendedI.class)
-    private String ignorationAnswer;
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL)
+    private TranslatableContent ignorationAnswer;
 
     /*
      *
@@ -188,9 +185,10 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     @Override
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
-                || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
+                || getLabel().containsAll(criterias)
+                || getAnswer().containsAll(criterias)
                 || (this.getImpact() != null && this.getImpact().containsAll(criterias))
-                || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
+                || getIgnorationAnswer().containsAll(criterias)
                 || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
     }
 
@@ -213,10 +211,10 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
             Result other = (Result) a;
             this.setVersion(other.getVersion());
             this.setName(other.getName());
-            this.getLabel().merge(other.getLabel());
-            this.setAnswer(other.getAnswer());
+            this.setLabel(TranslatableContent.merger(this.getLabel(), other.getLabel()));
+            this.setAnswer(TranslatableContent.merger(this.getAnswer(), other.getAnswer()));
             this.setImpact(other.getImpact());
-            this.setIgnorationAnswer(other.getIgnorationAnswer());
+            this.setIgnorationAnswer(TranslatableContent.merger(this.getIgnorationAnswer(), other.getIgnorationAnswer()));
             this.setIgnorationImpact(other.getIgnorationImpact());
             this.setFiles(other.getFiles());
             this.setChoiceDescriptor(other.getChoiceDescriptor());
@@ -260,15 +258,18 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /**
      * @return the answer
      */
-    public String getAnswer() {
+    public TranslatableContent getAnswer() {
         return answer;
     }
 
     /**
      * @param answer the answer to set
      */
-    public void setAnswer(String answer) {
+    public void setAnswer(TranslatableContent answer) {
         this.answer = answer;
+        if (this.answer!= null){
+            this.answer.setParentDescriptor(this.getChoiceDescriptor());
+        }
     }
 
     /**
@@ -288,15 +289,18 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /**
      * @return the ignoration answer
      */
-    public String getIgnorationAnswer() {
+    public TranslatableContent getIgnorationAnswer() {
         return ignorationAnswer;
     }
 
     /**
      * @param answer the answer to set
      */
-    public void setIgnorationAnswer(String answer) {
+    public void setIgnorationAnswer(TranslatableContent answer) {
         this.ignorationAnswer = answer;
+        if (this.ignorationAnswer!= null){
+            this.ignorationAnswer.setParentDescriptor(this.getChoiceDescriptor());
+        }
     }
 
     /**
@@ -343,6 +347,9 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     @Override
     public void setLabel(TranslatableContent label) {
         this.label = label;
+        if (this.label != null){
+            this.label.setParentDescriptor(this.getChoiceDescriptor());
+        }
     }
 
     /**

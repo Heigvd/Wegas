@@ -33,8 +33,8 @@ import javax.faces.context.ResponseWriter;
  *             for the time since this component is only included from a UIGameModel instance,
  *             who has already checked such a permission...)
  * </pre>
- * 
-* See WEB-INF/web.xml & WEB-INF/wegas-taglib.xml for tag and params definitions
+ * <p>
+ * See WEB-INF/web.xml & WEB-INF/wegas-taglib.xml for tag and params definitions
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
@@ -42,8 +42,9 @@ import javax.faces.context.ResponseWriter;
 public class UIState extends UIComponentBase {
 
     private Boolean editorMode;
+    private Player player;
 
-    public UIState(){
+    public UIState() {
         super();
     }
 
@@ -65,6 +66,7 @@ public class UIState extends UIComponentBase {
      * Print State Machine State Please use encodeAll();
      *
      * @param context
+     *
      * @throws IOException
      */
     @Override
@@ -75,6 +77,7 @@ public class UIState extends UIComponentBase {
         State state = (State) getAttributes().get("value");
         Long id = (Long) getAttributes().get("stateID");
         editorMode = (Boolean) getAttributes().get("editorMode");
+        this.player = (Player) getAttributes().get("player");
         Boolean defaultValues = (Boolean) getAttributes().get("defaultValues");
 
         UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
@@ -83,7 +86,7 @@ public class UIState extends UIComponentBase {
         UIHelper.printProperty(context, writer, UIHelper.TEXT_NAME, state.getLabel());
 
         if (state instanceof DialogueState) {
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, ((DialogueState) state).getText(), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, ((DialogueState) state).getText().translateOrEmpty(player), false, editorMode);
         }
 
         UIHelper.printPropertyImpactScript(context, writer, UIHelper.TEXT_ON_ENTER_IMPACT, state.getOnEnterEvent());
@@ -111,7 +114,7 @@ public class UIState extends UIComponentBase {
         UIHelper.printProperty(context, writer, UIHelper.TEXT_NEXT_STATE, transition.getNextStateId());
 
         if (transition instanceof DialogueTransition) {
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, ((DialogueTransition) transition).getActionText(), true, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, ((DialogueTransition) transition).getActionText().translateOrEmpty(player), true, editorMode);
         }
 
         UIHelper.printPropertyScript(context, writer, UIHelper.TEXT_CONDITION, transition.getTriggerCondition());

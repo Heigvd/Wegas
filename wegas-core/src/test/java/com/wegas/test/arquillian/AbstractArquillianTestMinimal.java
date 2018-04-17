@@ -250,7 +250,9 @@ public abstract class AbstractArquillianTestMinimal {
                     + "CREATE INDEX IF NOT EXISTS index_iteration_replannedworkloads_iteration on iteration_replannedworkloads (iteration_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_iteration_id on iteration_taskinstance (iteration_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_id on iteration_taskinstance (taskinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_mcqresult_label_choicedescriptor_id on mcqresult (label,choicedescriptor_id);"
+
+                    //+ "CREATE INDEX IF NOT EXISTS index_mcqresult_label_choicedescriptor_id on mcqresult (label,choicedescriptor_id);"
+
                     + "CREATE INDEX IF NOT EXISTS index_mcqresult_name_choicedescriptor_id on mcqresult (name,choicedescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_message_attachements_message_id on message_attachements (message_id);"
                     + "CREATE INDEX IF NOT EXISTS index_questiondescriptor_pictures_questiondescriptor_id on questiondescriptor_pictures (questiondescriptor_id);"

@@ -120,14 +120,8 @@ YUI.add('wegas-text-input', function(Y) {
                                         });
                                     }
                                     // Update on editor update
-                                    editor.on(
-                                        'change',
-                                        Y.bind(this._onChange, this)
-                                        ); // click on taskbar buttons
-                                    editor.on(
-                                        'keyUp',
-                                        Y.bind(this._onChange, this)
-                                        ); // text input & ctrl-related operations
+                                    editor.on('change', Y.bind(this._onChange, this)); // click on taskbar buttons
+                                    editor.on('keyUp', Y.bind(this._onChange, this)); // text input & ctrl-related operations
                                     //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
                                     // Callback for when the editor has been initialized and setContent is allowed:
                                     editor.on('init',
@@ -870,7 +864,7 @@ YUI.add('wegas-text-input', function(Y) {
                 }
                 ul = this.get(CONTENTBOX).one('ul');
                 if (ul) {
-                    this.handlers.push(this.get(CONTENTBOX).delegate( 'click',
+                    this.handlers.push(this.get(CONTENTBOX).delegate('click',
                         this.updateFromUl, 'li', this));
                 }
                 this.on('save', this._save);

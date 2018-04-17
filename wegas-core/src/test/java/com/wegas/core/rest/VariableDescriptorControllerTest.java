@@ -87,7 +87,7 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
 
         ChoiceDescriptor choice = new ChoiceDescriptor();
         choice.setDefaultInstance(new ChoiceInstance());
-        choice.setDescription("Find me");
+        choice.setDescription(TranslatableContent.build("def", "Find me"));
         Result r = new Result("Reply 1");
         choice.addResult(r);
         Result r2 = new Result("Reply 2");

@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -227,11 +228,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
         this.setChoiceName(null);
     }
 
-    public String getAnswer() {
+    public TranslatableContent getAnswer() {
         if (result != null) {
             return result.getAnswer();
         } else {
-            return "";
+            return null;
         }
     }
 
@@ -239,11 +240,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
         // Make Jackson happy
     }
 
-    public String getIgnorationAnswer() {
+    public TranslatableContent getIgnorationAnswer() {
         if (result != null) {
             return result.getIgnorationAnswer();
         } else {
-            return "";
+            return null;
         }
     }
 

@@ -496,6 +496,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     @Override
     public void setLabel(TranslatableContent label) {
         this.label = label;
+        if (this.label != null) {
+            this.label.setParentDescriptor(this);
+        }
     }
 
     /**
@@ -570,7 +573,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
                 this.setVersion(other.getVersion());
                 this.setName(other.getName());
                 this.setEditorTag(other.getEditorTag());
-                this.getLabel().merge(other.getLabel());
+                this.setLabel(TranslatableContent.merger(this.getLabel(), other.getLabel()));
                 this.setComments(other.getComments());
                 this.getDefaultInstance().merge(other.getDefaultInstance());
                 if (other.getScope() != null) {

@@ -22,7 +22,6 @@ import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
-import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
@@ -39,7 +38,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -127,8 +125,8 @@ public class UpdateController {
             List<TranslatableContent> findDistinctLabels = descriptorFacade.findDistinctLabels(vd.getGameModel());
             findDistinctNames.remove(vd.getName());
             findDistinctLabels.remove(vd.getLabel());
-            Helper.setUniqueName(vd, findDistinctNames);
-            Helper.setUniqueLabel(vd, findDistinctLabels);
+            Helper.setUniqueName(vd, findDistinctNames, vd.getGameModel());
+            Helper.setUniqueLabel(vd, findDistinctLabels, vd.getGameModel());
             descriptorFacade.flush();
         }
         return "Finished";

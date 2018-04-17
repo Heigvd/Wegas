@@ -852,7 +852,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * get list of language refName, sorted according to player preferences
+     * get list of language refName, sorted according to player preferences if such a player is provided;
      *
      * @param player may be null
      *

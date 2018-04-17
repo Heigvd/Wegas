@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
@@ -84,15 +86,10 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     classFilter: ["TextDescriptor", "NumberDescriptor"]
                 }
             },
-            description: {
-                type: NULLSTRING,
-                format: HTML,
-                optional: true,
-                view: {
-                    type: HTML,
-                    label: "Description"
-                }
-            },
+            description: Y.Wegas.Helper.getTranslationAttr({
+                type: HTML,
+                label: "Description"
+            }),
             feedback: {
                 type: OBJECT,
                 value: {
@@ -386,6 +383,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * EvaluationDescriptor
      */
     persistence.EvaluationDescriptor = Y.Base.create("EvaluationDescriptor", persistence.Entity, [], {
+        getEditorLabel: function() {
+            return I18n.t(this.get("label"));
+        }
     }, {
         ATTRS: {
             "@class": {

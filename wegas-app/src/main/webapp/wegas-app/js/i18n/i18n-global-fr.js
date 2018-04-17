@@ -29,7 +29,8 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
         i18n:{
             manager: {
                 title: "Gestionnaire des langues du scéanrio"
-            }
+            },
+            languages: "Langues"
         },
         errors: {
             conflict: "Votre requête ne peut pas être traitée car un conflit s'est produit durant son éxecution. Cela signifie probablement que vous avez tentez de modifier un élément en même temps qu'un autre utilisateur.",

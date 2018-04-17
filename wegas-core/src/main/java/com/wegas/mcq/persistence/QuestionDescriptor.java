@@ -10,14 +10,12 @@ package com.wegas.mcq.persistence;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
@@ -96,7 +94,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (a instanceof QuestionDescriptor) {
             super.merge(a);
             QuestionDescriptor other = (QuestionDescriptor) a;
-            this.getDescription().merge(other.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
             this.setMinReplies(other.getMinReplies());
             this.setMaxReplies(other.getMaxReplies());
             this.setCbx(other.getCbx());
@@ -156,6 +154,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**

@@ -644,18 +644,22 @@
 
 /* I18N */
 
-.wegas-translation .inline-editor-button {
-    display: none;
-    position: absolute;
-    right: 0;
-    cursor:pointer;
+.wegas-translation.unsaved {
+    display: flex;
+    flex-direction: column;
 }
 
-.wegas-advancedmode .wegas-translation.favorite-lang:hover .inline-editor-button {
-}
-
-.wegas-advancedmode .wegas-translation.favorite-lang:hover .inline-editor-button {
+.wegas-translation.unsaved .tools{
     display: block;
+    order: 2;
+
+}
+.wegas-translation .mce-content-body{
+    background-color: #eee;
+}
+
+.wegas-translation.unsaved .tools span{
+    cursor: pointer;
 }
 
 .wegas-advancedmode .wegas-translation.not-favorite-lang {
@@ -664,4 +668,42 @@
 
 .wegas-advancedmode .wegas-translation.missing {
     background-color: hotpink;
+}
+
+/*
+ * I18n manager
+ */
+
+.wegas-i18n-manager {
+    height: 100%;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--title {
+    font-size: 1.4em;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-text{
+    padding: 0 10px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .create-button {
+    cursor: pointer;
+}
+
+
+.wegas-i18n-manager .wegas-i18n-manager--layout{
+    flex-grow: 1;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--layout,
+.wegas-i18n-manager .wegas-i18n-manager--treeview,
+.wegas-i18n-manager .wegas-i18n-manager--editor {
+    border: 1px dashed #eee;
+    background-color: #db70937d;
 }

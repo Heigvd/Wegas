@@ -10,13 +10,16 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.persistence.*;
@@ -28,8 +31,8 @@ import javax.persistence.*;
 @Table(name = "FSMDescriptor")
 @JsonTypeName(value = "FSMDescriptor")
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
-        @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
+    @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
+    @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
 })
 @NamedQueries(
         @NamedQuery(
@@ -43,7 +46,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /**
      *
      */
-    @OneToMany(mappedBy ="stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
     private Map<Long, State> states = new HashMap<>();
@@ -70,7 +73,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return states;
     }
 
-    public State addState(Long index, State state){
+    public State addState(Long index, State state) {
         this.getStates().put(index, state);
         state.setStateMachine(this);
         return state;
@@ -105,7 +108,6 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /*
      * script methods
      */
-
     /**
      * @param p
      */
@@ -122,6 +124,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     /**
      * @param p
+     *
      * @return is player instance enabled ?
      */
     public boolean isEnabled(Player p) {
@@ -130,6 +133,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     /**
      * @param p
+     *
      * @return is player instance disabled ?
      */
     public boolean isDisabled(Player p) {
@@ -137,7 +141,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     }
 
     private void mergeStates(Map<Long, State> newStates) {
-        for (Iterator<Entry<Long, State>> it = this.states.entrySet().iterator(); it.hasNext(); ) {
+        for (Iterator<Entry<Long, State>> it = this.states.entrySet().iterator(); it.hasNext();) {
             Entry<Long, State> oldState = it.next();
             Long oldKeys = oldState.getKey();
             if (newStates.get(oldKeys) == null) {
@@ -146,7 +150,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
                 oldState.getValue().merge(newStates.get(oldKeys));
             }
         }
-        for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext(); ) {
+        for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext();) {
             Entry<Long, State> newStateEntry = it.next();
             Long newKey = newStateEntry.getKey();
             State newState = newStateEntry.getValue();

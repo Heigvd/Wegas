@@ -483,7 +483,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, question, editorMode);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, question.getDescription(), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, question.getDescription().translateOrEmpty(player), false, editorMode);
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
@@ -581,7 +581,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, choice, editorMode);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, choice.getDescription(), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, choice.getDescription().translateOrEmpty(player), false, editorMode);
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
@@ -660,10 +660,6 @@ public class UIVariableDescriptor extends UIComponentBase {
             encodeBase(context, writer, fsm, editorMode);
             UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, fsm.getDefaultInstance().getEnabled());
             UIHelper.printProperty(context, writer, UIHelper.TEXT_DEFAULT_STATE, fsm.getDefaultInstance().getCurrentStateId().toString());
-
-            if (fsm instanceof DialogueDescriptor) {
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_CONTENT, ((DialogueDescriptor) (fsm)).getContent());
-            }
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
             for (Long id : fsm.getStates().keySet()) {
