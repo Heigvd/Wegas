@@ -650,7 +650,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 }
                             },
                             answer: {
-                                type: STRING,
+                                type: NULLSTRING,
                                 value: "",
                                 optional: true,
                                 index: 1,
