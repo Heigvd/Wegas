@@ -782,7 +782,7 @@
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .translation-title {
-    border-bottom: 1px solid #eee;
+    /*border-bottom: 1px solid #eee;*/
     margin-bottom: 2px;
 }
 
