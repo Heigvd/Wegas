@@ -20,7 +20,9 @@ const flex = css({
 const bottom = css({
     alignSelf: 'flex-end',
 });
-type HashListProps = WidgetProps.ObjectProps & { id: string };
+type HashListProps = WidgetProps.ObjectProps<{ keyLabel?: string }> & {
+    id: string;
+};
 class HashlistView extends React.Component<
     HashListProps,
     { newInputValue: string }

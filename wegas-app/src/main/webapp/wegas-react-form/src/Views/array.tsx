@@ -59,6 +59,8 @@ interface IArrayProps {
     view: {
         choices?: {}[];
         tooltip?: string;
+        label?: string | boolean;
+        disabled?: boolean;
         /**
          * Composit bg color
          */
