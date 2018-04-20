@@ -39,9 +39,13 @@ import javax.persistence.*;
         name = "MCQResult",
         uniqueConstraints = {
             @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"})
+        },
         indexes = {
-            @Index(columnList = "choicedescriptor_id")
+            @Index(columnList = "choicedescriptor_id"),
+            @Index(columnList = "label_id"),
+            @Index(columnList = "answer_id"),
+            @Index(columnList = "ignorationanswer_id")
         }
 )
 @NamedQueries({
@@ -267,7 +271,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     public void setAnswer(TranslatableContent answer) {
         this.answer = answer;
-        if (this.answer!= null){
+        if (this.answer != null) {
             this.answer.setParentDescriptor(this.getChoiceDescriptor());
         }
     }
@@ -298,7 +302,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     public void setIgnorationAnswer(TranslatableContent answer) {
         this.ignorationAnswer = answer;
-        if (this.ignorationAnswer!= null){
+        if (this.ignorationAnswer != null) {
             this.ignorationAnswer.setParentDescriptor(this.getChoiceDescriptor());
         }
     }
@@ -347,7 +351,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     @Override
     public void setLabel(TranslatableContent label) {
         this.label = label;
-        if (this.label != null){
+        if (this.label != null) {
             this.label.setParentDescriptor(this.getChoiceDescriptor());
         }
     }

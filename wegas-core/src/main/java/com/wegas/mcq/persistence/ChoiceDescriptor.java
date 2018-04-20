@@ -41,7 +41,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(indexes = {
-    @Index(columnList = "question_id")
+    @Index(columnList = "question_id"),
+    @Index(columnList = "description_id")
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @JsonSubTypes(value = {
@@ -135,32 +136,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 }
             }));
 
-            // Default instance has already been merged,
-            // has its currentResult been removed ?
-            /*ChoiceInstance defaultInstance = this.getDefaultInstance();
-
-            if (defaultInstance.getCurrentResult() != null && !this.getResults().contains(defaultInstance.getCurrentResult())) {
-                defaultInstance.setCurrentResult(null);
-            }*/
-            // Detect new results
-            List<TranslatableContent> labels = new ArrayList<>();
-            List<String> names = new ArrayList<>();
-            List<Result> newResults = new ArrayList<>();
-
-            for (Result r : this.getResults()) {
-                if (r.getId() != null) {
-                    // Store name and label existing result
-                    labels.add(r.getLabel());
-                    names.add(r.getName());
-                } else {
-                    newResults.add(r);
-                }
-            }
-
-            // set names and labels unique
-            for (Result r : newResults) {
-                Helper.setNameAndLabelForLabelledEntity(r, names, labels, "result", this.getGameModel());
-            }
+            Helper.setNameAndLabelForLabelledEntityList(this.getResults(), "result", this.getGameModel());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -552,9 +528,15 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             this.title = null;
         }
         for (Result r : results) {
-            r.getLabel().setParentDescriptor(this);
-            r.getAnswer().setParentDescriptor(this);
-            r.getIgnorationAnswer().setParentDescriptor(this);
+            if (r.getLabel() != null) {
+                r.getLabel().setParentDescriptor(this);
+            }
+            if (r.getAnswer() != null) {
+                r.getAnswer().setParentDescriptor(this);
+            }
+            if (r.getIgnorationAnswer() != null) {
+                r.getIgnorationAnswer().setParentDescriptor(this);
+            }
         }
         super.revive(beans);
     }

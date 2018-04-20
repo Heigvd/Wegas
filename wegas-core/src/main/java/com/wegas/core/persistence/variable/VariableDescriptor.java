@@ -78,7 +78,8 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "root_id"),
     @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
-    @Index(columnList = "scope_id")
+    @Index(columnList = "scope_id"),
+    @Index(columnList = "label_id")
 })
 @NamedQueries({
     @NamedQuery(

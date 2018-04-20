@@ -859,10 +859,19 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return list
      */
     public List<String> getPreferredLanguagesRefName(Player player) {
-        ArrayList<String> langs = new ArrayList<>(languages.size());
-        for (GameModelLanguage gml : this.languages) {
+        List<GameModelLanguage> sortedLanguages = getLanguages();
+        ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
+        for (GameModelLanguage gml : sortedLanguages) {
             langs.add(gml.getRefName());
         }
+
+        String playerFirstChoice = "def"; //player.getRefName();
+        if (Helper.isNullOrEmpty(playerFirstChoice)) {
+            if (langs.remove(playerFirstChoice)) {
+                langs.add(0, playerFirstChoice);
+            }
+        }
+
         return langs;
     }
 

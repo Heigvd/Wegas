@@ -131,12 +131,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 },
                 index: -1
             },
-            description: {
-                type: NULLSTRING,
-                view: {type: HTML, label: "Description"},
-                optional: true,
-                index: -1
-            },
+            description: Y.Wegas.Helper.getTranslationAttr({
+                label: "Description",
+                index: -1,
+                type: HTML
+            }),
             properties: {
                 type: OBJECT,
                 additionalProperties: {
@@ -598,15 +597,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     label: "Predecessors"
                 }
             },
-            description: {
-                type: NULLSTRING,
-                optional: true,
+            description: Y.Wegas.Helper.getTranslationAttr({
+                label: "Description",
                 index: -1,
-                view: {
-                    label: "Description",
-                    type: HTML
-                }
-            },
+                type: HTML
+            }),
             defaultInstance: {
                 properties: {
                     '@class': {

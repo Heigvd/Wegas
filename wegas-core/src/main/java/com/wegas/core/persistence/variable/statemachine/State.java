@@ -37,10 +37,10 @@ import javax.persistence.*;
 @Table(
         name = "fsm_state",
         indexes = {
-            @Index(columnList = "statemachine_id")
+            @Index(columnList = "statemachine_id"),
+            @Index(columnList = "text_id") // stands in superclass since index is not generated if defined in DialogueState ...
         }
 )
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)

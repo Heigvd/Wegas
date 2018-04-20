@@ -212,46 +212,27 @@ public abstract class AbstractArquillianTestMinimal {
                     + "INSERT INTO abstractaccount (id, username, email, dtype, user_id, passwordhex, salt) VALUES (1, 'root', 'root@local', 'JpaAccount', '1', 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');"
                     + "INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);"
                     + "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';"
-
                     + "CREATE INDEX IF NOT EXISTS index_abstractaccount_email ON abstractaccount (email) WHERE (dtype = 'JpaAccount' AND email IS NOT NULL AND email NOT LIKE '');"
                     + "CREATE INDEX IF NOT EXISTS index_abstractaccount_username ON abstractaccount (username) WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '');"
                     + "CREATE INDEX IF NOT EXISTS index_abstractaccount_persistentid ON abstractaccount (persistentid) WHERE (dtype = 'AaiAccount');"
-
                     + "CREATE INDEX IF NOT EXISTS index_listDesc_allowedType ON listdescriptor_allowedtypes (listdescriptor_id);"
-
                     + "CREATE INDEX IF NOT EXISTS index_numberinstance_history_numberinstance_id ON numberinstance_history (numberinstance_id);"
-
                     + "CREATE INDEX IF NOT EXISTS index_objectdescriptor_properties_objectdescriptor_id ON objectdescriptor_properties (objectdescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_objectinstance_properties_objectinstance_id ON objectinstance_properties (objectinstance_id);"
-
                     + "CREATE INDEX IF NOT EXISTS index_resourcedescriptor_properties_resourcedescriptor_id ON resourcedescriptor_properties (resourcedescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_resourceinstance_properties_resourceinstance_id ON resourceinstance_properties (resourceinstance_id);"
-
-                    + "CREATE INDEX IF NOT EXISTS index_stringdescriptor_allowed_values_stringdescriptor_id ON stringdescriptor_allowedvalues (stringdescriptor_id);"
-
                     + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_pred ON taskdescriptor_taskdescriptor (predecessor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_task ON taskdescriptor_taskdescriptor (taskdescriptor_id);"
-
-
                     + "CREATE INDEX IF NOT EXISTS index_users_roles_role_id ON users_roles (role_id);"
                     + "CREATE INDEX IF NOT EXISTS index_users_roles_user_id ON users_roles (user_id);"
-
                     + "CREATE INDEX IF NOT EXISTS index_taskinstance_plannification_taskinstance_id ON taskinstance_plannification (taskinstance_id);"
-
                     + "CREATE INDEX IF NOT EXISTS index_taskinstance_properties_taskinstance_id ON taskinstance_properties (taskinstance_id);"
                     + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_properties_taskdescriptor_id ON taskdescriptor_properties (taskdescriptor_id);"
-
                     + "CREATE INDEX IF NOT EXISTS index_transitionhistory_statemachineinstance_id ON transitionhistory (statemachineinstance_id);"
-
-
-
-                    + "CREATE INDEX IF NOT EXISTS index_categorizedevaluationdescriptor_categories_categorizedevaluationdescriptor_id on categorizedevaluationdescriptor_categories (categorizedevaluationdescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_plannedworkloads_iteration_id on iteration_plannedworkloads (iteration_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_replannedworkloads_iteration on iteration_replannedworkloads (iteration_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_iteration_id on iteration_taskinstance (iteration_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_id on iteration_taskinstance (taskinstance_id);"
-
-                    //+ "CREATE INDEX IF NOT EXISTS index_mcqresult_label_choicedescriptor_id on mcqresult (label,choicedescriptor_id);"
 
                     + "CREATE INDEX IF NOT EXISTS index_mcqresult_name_choicedescriptor_id on mcqresult (name,choicedescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_message_attachements_message_id on message_attachements (message_id);"
@@ -259,7 +240,7 @@ public abstract class AbstractArquillianTestMinimal {
                     + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
                     + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
-                    ;
+                    + "CREATE INDEX IF NOT EXISTS index_translatablecontent_translations_translatablecontent_id on translatablecontent_translations (translatablecontent_id);";
 
             statement.execute(setupQuery);
         } catch (SQLException ex) {

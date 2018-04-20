@@ -27,13 +27,17 @@ public class DialogueDescriptor extends StateMachineDescriptor {
         for (State s : this.getStates().values()) {
             if (s instanceof DialogueState) {
                 DialogueState ds = (DialogueState) s;
-                ds.getText().setParentDescriptor(this);
+                if (ds.getText() != null) {
+                    ds.getText().setParentDescriptor(this);
+                }
             }
 
             for (Transition t : s.getTransitions()) {
                 if (t instanceof DialogueTransition) {
                     DialogueTransition dt = (DialogueTransition) t;
-                    dt.getActionText().setParentDescriptor(this);
+                    if (dt.getActionText() != null) {
+                        dt.getActionText().setParentDescriptor(this);
+                    }
                 }
             }
         }

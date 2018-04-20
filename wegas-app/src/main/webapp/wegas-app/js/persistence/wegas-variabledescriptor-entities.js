@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -201,7 +203,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             },
             getEditorLabel: function() {
                 var trLabel = this.getLabel();
-                
+
                 if (!this.get("editorTag") && !trLabel) {
                     return this.get("name");
                 } else if (!this.get("editorTag")) {
@@ -612,6 +614,35 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         }
     );
+
+    persistence.EnumItem = Base.create('EnumItem', persistence.Entity, [], {
+        getEditorLabel: function() {
+            return I18n.t(this.get("label"));
+        }
+    }, {
+        ATTRS: {
+            name: {
+                type: STRING,
+                index: -1,
+                view: {
+                    className: 'wegas-advanced-feature',
+                    label: 'Script alias',
+                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+                },
+                validator: function(s) {
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                index: -1,
+                description: "Displayed to players",
+                type: STRING
+            })
+        }
+    });
+
     /**
      * StringDescriptor mapper
      */
@@ -620,6 +651,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         persistence.VariableDescriptor,
         [persistence.PrimitiveDescriptor],
         {
+            getLabelForAllowedValue: function(name) {
+                var cats = this.get("allowedValues"),
+                    i;
+                for (i in cats) {
+                    if (cats[i].get("name") === name) {
+                        return I18n.t(cats[i].get("label"));
+                    }
+                }
+            },
             getIconCss: function() {
                 return 'fa fa-font';
             }
@@ -654,15 +694,33 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 allowedValues: {
                     type: ARRAY,
                     items: {
-                        type: STRING,
-                        required: true
+                        type: "object",
+                        properties: {
+                            "@class": {
+                                type: STRING,
+                                value: "EnumItem",
+                                view: {type: HIDDEN}
+                            },
+                            id: IDATTRDEF,
+                            name: {
+                                type: STRING,
+                                view: {
+                                    className: 'wegas-advanced-feature',
+                                    label: 'Script alias',
+                                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                                    description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+                                }
+                            },
+                            label: Y.Wegas.Helper.getTranslationAttr({
+                                label: "Label",
+                                index: -1,
+                                description: "Displayed to players",
+                                type: STRING
+                            })
+                        }
                     },
                     view: {
-                        label: 'Allowed Values',
-                        elementType: {
-                            required: true,
-                            type: 'string'
-                        }
+                        label: 'Allowed Values'
                     }
                 }
             },
@@ -1090,6 +1148,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             },
             getTreeEditorLabel: function() {
                 return '\u229e ' + this.getEditorLabel();
+            },
+            getIconCss: function() {
+                return 'fa fa-folder';
+                //return "fa fa-envelope-o";
             }
         },
         {

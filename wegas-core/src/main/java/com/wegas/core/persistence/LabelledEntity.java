@@ -16,6 +16,8 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
  */
 public interface LabelledEntity extends NamedEntity {
 
+    public Long getId();
+
     /**
      * Get the entity label. Label is the name to be displayed to end-users
      *

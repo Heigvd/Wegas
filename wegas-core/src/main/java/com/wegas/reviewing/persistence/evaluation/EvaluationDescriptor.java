@@ -45,7 +45,9 @@ import javax.persistence.*;
             @UniqueConstraint(columnNames = {"container_id", "name"}),
             @UniqueConstraint(columnNames = {"container_id", "label"}),},
         indexes = {
-            @Index(columnList = "container_id")
+            @Index(columnList = "container_id"),
+            @Index(columnList = "label_id"),
+            @Index(columnList = "description_id")
         }
 )
 @JsonSubTypes(value = {
@@ -88,8 +90,9 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * Textual descriptor to be displayed to players
      */
-    @Lob
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent description;
 
     /**
      * the parent,
@@ -127,7 +130,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
             EvaluationDescriptor o = (EvaluationDescriptor) a;
             this.setName(o.getName());
             this.setLabel(TranslatableContent.merger(this.getLabel(), o.getLabel()));
-            this.setDescription(o.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), o.getDescription()));
             this.setIndex(o.getIndex());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
@@ -167,18 +170,15 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
         this.name = name;
     }
 
-    /**
-     * @return the description
-     */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null && this.getContainer() != null) {
+            this.description.setParentDescriptor(this.getContainer().getParent());
+        }
     }
 
     /**
@@ -259,7 +259,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     public Boolean containsAll(List<String> criterias) {
         return this.getLabel().containsAll(criterias)
                 || this.getLabel().containsAll(criterias)
-                || Helper.insensitiveContainsAll(name, criterias)
-                || Helper.insensitiveContainsAll(description, criterias);
+                || this.getDescription().containsAll(criterias)
+                || Helper.insensitiveContainsAll(name, criterias);
     }
 }

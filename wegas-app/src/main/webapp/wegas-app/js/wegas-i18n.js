@@ -216,6 +216,7 @@ YUI.add("wegas-i18n", function(Y) {
                 trId = "",
                 klass,
                 translations,
+                forcedLang = params && params.lang,
                 inlineEditor = params && params.inlineEditor,
                 theOne;
 
@@ -237,14 +238,21 @@ YUI.add("wegas-i18n", function(Y) {
                             refName: item.get("refName")
                         };
                     });
+                    if (forcedLang) {
+                        favoriteRefName = forcedLang;
+                    }
                     // move favorite language at first position
                     lang = Y.Array.find(langs, function(item) {
                         return item.refName === favoriteRefName;
                     });
-                    if (lang) {
-                        i = langs.indexOf(lang);
-                        langs.splice(i, 1);
-                        langs.unshift(lang);
+                    if (forcedLang) {
+                        langs = [lang];
+                    } else {
+                        if (lang) {
+                            i = langs.indexOf(lang);
+                            langs.splice(i, 1);
+                            langs.unshift(lang);
+                        }
                     }
                     for (i in langs) {
                         lang = langs[i];

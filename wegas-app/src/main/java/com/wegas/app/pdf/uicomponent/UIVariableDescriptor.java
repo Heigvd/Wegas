@@ -326,7 +326,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, task, editorMode);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, task.getDescription(), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, task.getDescription().translateOrEmpty(player), false, editorMode);
 
             if (editorMode) {
                 if (task.getIndex() != null) {
@@ -398,7 +398,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             encodeBase(context, writer, resource, editorMode);
             UIHelper.printProperty(context, writer, UIHelper.TEXT_LABEL, resource.getLabel());
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, resource.getDescription(), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, resource.getDescription().translateOrEmpty(player), false, editorMode);
 
             /*if (!instance.getSkillsets().isEmpty()) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_MAIN_SKILL, instance.getMainSkill() + " (lvl: " + resource.getDefaultInstance().getMainSkillLevel() + ")");

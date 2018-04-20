@@ -8,9 +8,11 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.Helper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.game.Player;
@@ -20,15 +22,16 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Entity
+@Table(
+        indexes = {
+            @Index(columnList = "description_id")
+        }
+)
 public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements Propertable {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskDescriptor.class);
@@ -47,10 +55,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    //@JsonView(Views.ExtendedI.class)
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent description;
+
     /**
      *
      */
@@ -103,7 +111,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         if (a instanceof TaskDescriptor) {
             super.merge(a);
             TaskDescriptor other = (TaskDescriptor) a;
-            this.setDescription(other.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
             this.setIndex(other.getIndex());
             this.setPredecessorNames(other.getImportedPredecessorNames());
             // this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
@@ -116,15 +124,18 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**
@@ -400,7 +411,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getDescription(), criterias)
+        return this.getDescription().containsAll(criterias)
                 || super.containsAll(criterias);
     }
 

@@ -41,6 +41,13 @@
             <column name="parentdescriptor_id" type="BIGINT" />
             <column name="parentinstance_id" type="BIGINT" />
         </createTable>
+
+        <createIndex indexName="index_translatablecontent_parentdescriptor_id" tableName="translatablecontent">
+            <column name="parentdescriptor_id"/>
+        </createIndex>
+        <createIndex indexName="index_translatablecontent_parentinstance_id" tableName="translatablecontent">
+            <column name="parentinstance_id"/>
+        </createIndex>
     </changeSet>
     <changeSet author="maxence (generated)" id="1523014059600-3">
         <createTable tableName="translatablecontent_translations">
@@ -77,6 +84,10 @@
             <column name="description_id" type="int8"/>
         </addColumn>
 
+        <createIndex indexName="index_questiondescriptor_description_id" tableName="questiondescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
         <!-- create an id for each item to translate -->
         <update tableName="questiondescriptor">
             <column name="description_id" valueComputed="nextval('i18n_seq')" />
@@ -104,6 +115,10 @@
             <column name="label_id" type="int8"/>
         </addColumn>
 
+        <createIndex indexName="index_variabledescriptor_label_id" tableName="variabledescriptor">
+            <column name="label_id"/>
+        </createIndex>
+
         <update tableName="variabledescriptor">
             <column name="label_id" valueComputed="nextval('i18n_seq')" />
         </update>
@@ -127,6 +142,10 @@
             <column name="label_id" type="int8"/>
         </addColumn>
 
+        <createIndex indexName="index_mcqresult_label_id" tableName="mcqresult">
+            <column name="label_id"/>
+        </createIndex>
+
         <update tableName="mcqresult">
             <column name="label_id" valueComputed="nextval('i18n_seq')" />
         </update>
@@ -145,12 +164,15 @@
     </changeSet>
 
 
-
     <!-- EvaluationDescriptor Label -->
     <changeSet author="maxence (generated)" id="1523014059600-9">
         <addColumn tableName="evaluationdescriptor">
             <column name="label_id" type="int8"/>
         </addColumn>
+
+        <createIndex indexName="index_evaluationdescriptor_label_id" tableName="evaluationdescriptor">
+            <column name="label_id"/>
+        </createIndex>
 
         <update tableName="evaluationdescriptor">
             <column name="label_id" valueComputed="nextval('i18n_seq')" />
@@ -176,6 +198,10 @@
             <column name="description_id" type="int8"/>
         </addColumn>
 
+        <createIndex indexName="index_choicedescriptor_description_id" tableName="choicedescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
         <update tableName="choicedescriptor">
             <column name="description_id" valueComputed="nextval('i18n_seq')" />
         </update>
@@ -198,6 +224,10 @@
         <addColumn tableName="whquestiondescriptor">
             <column name="description_id" type="int8"/>
         </addColumn>
+
+        <createIndex indexName="index_whquestiondescriptor_description_id" tableName="whquestiondescriptor">
+            <column name="description_id"/>
+        </createIndex>
 
         <update tableName="whquestiondescriptor">
             <column name="description_id" valueComputed="nextval('i18n_seq')" />
@@ -222,6 +252,10 @@
             <column name="answer_id" type="int8"/>
         </addColumn>
 
+        <createIndex indexName="index_mcqresult_answer_id" tableName="mcqresult">
+            <column name="answer_id"/>
+        </createIndex>
+
         <update tableName="mcqresult">
             <column name="answer_id" valueComputed="nextval('i18n_seq')" />
         </update>
@@ -244,6 +278,10 @@
         <addColumn tableName="mcqresult">
             <column name="ignorationanswer_id" type="int8"/>
         </addColumn>
+
+        <createIndex indexName="index_mcqresult_ignorationanswer_id" tableName="mcqresult">
+            <column name="ignorationanswer_id"/>
+        </createIndex>
 
         <update tableName="mcqresult">
             <column name="ignorationanswer_id" valueComputed="nextval('i18n_seq')" />
@@ -268,6 +306,10 @@
             <column name="text_id" type="int8"/>
         </addColumn>
 
+        <createIndex indexName="index_fsm_state_text_id" tableName="fsm_state">
+            <column name="text_id"/>
+        </createIndex>
+
         <!-- initialize text_id for dialogue states only -->
         <update tableName="fsm_state">
             <column name="text_id" valueComputed="nextval('i18n_seq')"  />
@@ -289,11 +331,15 @@
     </changeSet>
 
 
-    <!-- DialogueState text -->
+    <!-- DialogueTransition actiontext -->
     <changeSet author="maxence (generated)" id="1523014059600-15">
         <addColumn tableName="transition">
             <column name="actiontext_id" type="int8"/>
         </addColumn>
+
+        <createIndex indexName="index_transition_actiontext_id" tableName="transition">
+            <column name="actiontext_id"/>
+        </createIndex>
 
         <!-- initialize actiontext_id for dialogue states only -->
         <update tableName="transition">
@@ -322,6 +368,10 @@
             <column name="description_id" type="int8"/>
         </addColumn>
 
+        <createIndex indexName="index_peerreviewdescriptor_description_id" tableName="peerreviewdescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
         <update tableName="peerreviewdescriptor">
             <column name="description_id" valueComputed="nextval('i18n_seq')" />
         </update>
@@ -338,6 +388,168 @@
 
         <dropColumn columnName="description" tableName="peerreviewdescriptor"/>
     </changeSet>
+
+    <!-- EvaluationDescriptor description -->
+    <changeSet author="maxence (generated)" id="1523014059600-17">
+        <addColumn tableName="evaluationdescriptor">
+            <column name="description_id" type="int8"/>
+        </addColumn>
+
+        <createIndex indexName="index_evaluationdescriptor_description_id" tableName="evaluationdescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+        <update tableName="evaluationdescriptor">
+            <column name="description_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) select ed.description_id, prd.id as parentdescriptor_id from evaluationdescriptor ed join peerreviewdescriptor as prd on container_id = prd.fbcomments_id OR  container_id = prd.feedback_id </sql>
+        
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="evaluationdescriptor" constraintName="fk_evaluationdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT description as tr, 'def' as lang, description_id as translatablecontent_id
+            FROM evaluationdescriptor
+        </sql>
+
+        <dropColumn columnName="description" tableName="evaluationdescriptor"/>
+    </changeSet>
+
+    <!-- resource description -->
+    <changeSet author="maxence (generated)" id="1523014059600-18">
+        <addColumn tableName="resourcedescriptor">
+            <column name="description_id" type="int8"/>
+        </addColumn>
+
+        <createIndex indexName="index_resourcedescriptor_description_id" tableName="resourcedescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+        <update tableName="resourcedescriptor">
+            <column name="description_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from resourcedescriptor</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="resourcedescriptor" constraintName="fk_resourcedescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT description as tr, 'def' as lang, description_id as translatablecontent_id
+            FROM resourcedescriptor
+        </sql>
+
+        <dropColumn columnName="description" tableName="resourcedescriptor"/>
+    </changeSet>
+
+
+    <!-- task description -->
+    <changeSet author="maxence (generated)" id="1523014059600-19">
+        <addColumn tableName="taskdescriptor">
+            <column name="description_id" type="int8"/>
+        </addColumn>
+
+        <createIndex indexName="index_taskdescriptor_description_id" tableName="taskdescriptor">
+            <column name="description_id"/>
+        </createIndex>
+
+        <update tableName="taskdescriptor">
+            <column name="description_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from taskdescriptor</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="taskdescriptor" constraintName="fk_taskdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT description as tr, 'def' as lang, description_id as translatablecontent_id
+            FROM taskdescriptor
+        </sql>
+
+        <dropColumn columnName="description" tableName="taskdescriptor"/>
+    </changeSet>
+
+
+    <!-- From PeerReview evaluation categories to EnumItem -->
+    <!-- From String allowedValues to EnumItem -->
+
+    <changeSet author="maxence (generated)" id="1523014059600-20">
+        <createTable tableName="enumitem">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="item_order" type="INT"/>
+            <column name="parentevaluation_id" type="BIGINT"/>
+            <column name="parentstring_id" type="BIGINT"/>
+            <column name="label_id" type="BIGINT"/>
+        </createTable>
+
+        <createIndex indexName="index_enumitem_label_id" tableName="enumitem">
+            <column name="label_id"/>
+        </createIndex>
+        <createIndex indexName="index_enumitem_parentevaluation_id" tableName="enumitem">
+            <column name="parentevaluation_id"/>
+        </createIndex>
+        <createIndex indexName="index_enumitem_parentstring_id" tableName="enumitem">
+            <column name="parentstring_id"/>
+        </createIndex>
+
+        <addPrimaryKey columnNames="id" constraintName="enumitem_pkey" tableName="enumitem"/>
+        
+        <addForeignKeyConstraint baseColumnNames="parentevaluation_id" baseTableName="enumitem" constraintName="fk_enumitem_parentevaluation_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptor"/>
+        <addForeignKeyConstraint baseColumnNames="parentstring_id" baseTableName="enumitem" constraintName="fk_enumitem_parentstring_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
+
+
+        <!-- Convert peerreview evaluation categories into items -->
+        <sql>
+            INSERT INTO enumitem (id, name, item_order, parentevaluation_id, label_id)
+            SELECT nextval('i18n_seq') as id, categories as name, 0 as item_order, 
+            categorizedevaluationdescriptor_id as parentevaluation_id, nextval('i18n_seq') as label_id FROM categorizedevaluationdescriptor_categories;
+        </sql>
+
+        <!-- Convert StringDescriptor allowedValues into items -->
+        <sql>
+            INSERT INTO enumitem (id, name, item_order, parentstring_id, label_id)
+            SELECT nextval('i18n_seq') as id, allowedvalues as name, allowedvalues_order as item_order, 
+            stringdescriptor_id as parentstring_id, nextval('i18n_seq') as label_id FROM stringdescriptor_allowedvalues;
+        </sql>
+
+        <!-- create translatablecontent for each enumitem (evaluations) -->
+        <sql>
+            INSERT INTO translatablecontent (id, parentdescriptor_id) 
+            SELECT item.label_id, prd.id as parentdescriptor_id 
+            FROM evaluationdescriptor ed
+            JOIN enumitem item on item.parentevaluation_id = ed.id
+            JOIN peerreviewdescriptor as prd on container_id = prd.fbcomments_id OR  container_id = prd.feedback_id;
+        </sql>
+
+        <!-- create translatablecontent for each enumitem (stringdescriptor) -->
+        <sql>
+            INSERT INTO translatablecontent (id, parentdescriptor_id) 
+            SELECT item.label_id, item.parentstring_id AS parentdescriptor_id 
+            FROM enumitem item
+            WHERE item.parentstring_id IS NOT NULL;
+        </sql>
+
+        <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="enumitem" constraintName="fk_enumitem_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT name as tr, 'def' as lang, label_id as translatablecontent_id
+            FROM enumitem
+        </sql>
+
+        <dropForeignKeyConstraint baseTableName="categorizedevaluationdescriptor_categories" constraintName="ctgrzdvaluationdescriptorcategoriesctgrzdevaluationdescriptorid"/>
+        <dropForeignKeyConstraint baseTableName="stringdescriptor_allowedvalues" constraintName="stringdescriptor_allowedvaluesstringdescriptor_variabledescript"/>
+
+        <dropTable tableName="categorizedevaluationdescriptor_categories"/>
+        <dropTable tableName="stringdescriptor_allowedvalues"/>
+    </changeSet>
+
 
     <!-- restore JPA sequence -->
     <changeSet author="maxence (generated)" id="1523014059600-clear">

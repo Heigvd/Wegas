@@ -67,7 +67,8 @@ import javax.validation.constraints.NotNull;
         indexes = {
             @Index(columnList = "fbcomments_id"),
             @Index(columnList = "toreview_id"),
-            @Index(columnList = "feedback_id")
+            @Index(columnList = "feedback_id"),
+            @Index(columnList = "description_id")
         }
 )
 public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance> {
@@ -174,8 +175,8 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             this.getFbComments().merge(other.getFbComments());
             this.setIncludeEvicted(other.getIncludeEvicted());
 
-            Helper.setNamesAndLabelForEvaluationList(this.getFeedback().getEvaluations(), this.getGameModel());
-            Helper.setNamesAndLabelForEvaluationList(this.getFbComments().getEvaluations(), this.getGameModel());
+            Helper.setNameAndLabelForLabelledEntityList(this.getFeedback().getEvaluations(), "input", this.getGameModel());
+            Helper.setNameAndLabelForLabelledEntityList(this.getFbComments().getEvaluations(), "input", this.getGameModel());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }

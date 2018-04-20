@@ -15,12 +15,14 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.primitive.EnumItem;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import java.io.File;
 import java.io.IOException;
@@ -143,10 +145,23 @@ public class Helper {
      *
      * @return a unmodifiable copy of the list, sorted according to the comparator
      */
-    public static <T extends Object> List<T> copyAndSort(List<T> list, Comparator<? super T> c) {
+    public static <T extends Object> List<T> copyAndSortModifiable(List<T> list, Comparator<? super T> c) {
         List<T> copy = new ArrayList<>(list);
         Collections.sort(copy, c);
-        return Collections.unmodifiableList(copy);
+        return copy;
+    }
+
+    /**
+     * Copy and sort the given list
+     *
+     * @param <T>  list item type
+     * @param list the list to copy and sort
+     * @param c    a comparator to sort the list
+     *
+     * @return a unmodifiable copy of the list, sorted according to the comparator
+     */
+    public static <T extends Object> List<T> copyAndSort(List<T> list, Comparator<? super T> c) {
+        return Collections.unmodifiableList(Helper.copyAndSortModifiable(list, c));
     }
 
     /**
@@ -387,31 +402,49 @@ public class Helper {
             }
         } else if (vd instanceof PeerReviewDescriptor) {
             PeerReviewDescriptor prd = (PeerReviewDescriptor) vd;
-            Helper.setNamesAndLabelForEvaluationList(prd.getFeedback().getEvaluations(), gameModel);
-            Helper.setNamesAndLabelForEvaluationList(prd.getFbComments().getEvaluations(), gameModel);
+            Helper.setNameAndLabelForLabelledEntityList(prd.getFeedback().getEvaluations(), "input", gameModel);
+            Helper.setNameAndLabelForLabelledEntityList(prd.getFbComments().getEvaluations(), "input", gameModel);
+        } else if (vd instanceof StringDescriptor) {
+            StringDescriptor sd = (StringDescriptor) vd;
+            if (sd.getAllowedValues() != null) {
+                List<String> names = new ArrayList<>();
+                List<TranslatableContent> labels = new ArrayList<>();
+
+                for (EnumItem item : sd.getAllowedValues()) {
+                    setNameAndLabelForLabelledEntity(item, names, labels, "item", gameModel);
+                }
+            }
         }
     }
 
-    public static void setNamesAndLabelForEvaluationList(List<EvaluationDescriptor> edList, GameModel gameModel) {
+    public static void setNameAndLabelForLabelledEntityList(List<? extends LabelledEntity> items, String defaultName, GameModel gameModel) {
+
         List<TranslatableContent> labels = new ArrayList<>();
         List<String> names = new ArrayList<>();
-        List<EvaluationDescriptor> newEds = new ArrayList<>();
+        List<LabelledEntity> newItems = new ArrayList<>();
 
-        // collect existing names and labels
-        for (EvaluationDescriptor r : edList) {
-            if (r.getId() != null) {
+        for (LabelledEntity item : items) {
+            if (item.getId() != null) {
                 // Store name and label existing result
-                labels.add(r.getLabel());
-                names.add(r.getName());
+                labels.add(item.getLabel());
+                names.add(item.getName());
             } else {
-                newEds.add(r);
+                newItems.add(item);
             }
         }
 
         // set names and labels unique
-        for (EvaluationDescriptor ed : newEds) {
-            Helper.setNameAndLabelForLabelledEntity(ed, names, labels, "input", gameModel);
+        for (LabelledEntity item : newItems) {
+            Helper.setNameAndLabelForLabelledEntity(item, names, labels, defaultName, gameModel);
+
+            if (item instanceof CategorizedEvaluationDescriptor) {
+                Helper.setNamesAndLabelForEvaluationCategories((CategorizedEvaluationDescriptor) item, gameModel);
+            }
         }
+    }
+
+    public static void setNamesAndLabelForEvaluationCategories(CategorizedEvaluationDescriptor ced, GameModel gameModel) {
+        Helper.setNameAndLabelForLabelledEntityList(ced.getCategories(), "category", gameModel);
     }
 
     /**

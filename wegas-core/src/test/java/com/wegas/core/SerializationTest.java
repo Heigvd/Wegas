@@ -16,6 +16,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -322,7 +323,7 @@ public class SerializationTest {
 
         TaskDescriptor taskD = new TaskDescriptor();
         TaskDescriptor taskD2 = new TaskDescriptor();
-        taskD.setDescription("DESC");
+        taskD.setDescription(TranslatableContent.build("def", "DESC"));
         taskD.addPredecessor(taskD2);
         taskD.setName("taskD");
         taskD.setProperty("descriptorProperty", propertyValue);
@@ -347,7 +348,7 @@ public class SerializationTest {
 
         ResourceDescriptor resourceD = new ResourceDescriptor();
         resourceD.setName("resourceD");
-        resourceD.setDescription("DESC");
+        resourceD.setDescription(TranslatableContent.build("def", "DESC"));
         ResourceInstance resourceI = new ResourceInstance();
         resourceD.setDefaultInstance(resourceI);
         resourceI.setProperty("Level", "8");

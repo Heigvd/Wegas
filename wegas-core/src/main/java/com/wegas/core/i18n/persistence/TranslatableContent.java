@@ -36,7 +36,9 @@ import org.slf4j.LoggerFactory;
  * @author Maxence
  */
 @Entity
-@Table(indexes = { //@Index(columnList = "inboxinstance_id")
+@Table(indexes = {
+    @Index(columnList = "parentdescriptor_id"),
+    @Index(columnList = "parentinstance_id")
 })
 public class TranslatableContent extends AbstractEntity implements Searchable, Broadcastable {
 
@@ -200,7 +202,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
      */
     public Translation translate(Player player) {
         GameModel gameModel = player.getGameModel();
-        return this.translate( gameModel.getPreferredLanguagesRefName(player));
+        return this.translate(gameModel.getPreferredLanguagesRefName(player));
     }
 
     public String translateOrEmpty(Player self) {

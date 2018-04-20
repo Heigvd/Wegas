@@ -9,7 +9,6 @@ package com.wegas.mcq.persistence.wh;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -26,10 +25,12 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 
 /**
  *
@@ -38,6 +39,11 @@ import javax.persistence.OrderColumn;
 @Entity
 @NamedQuery(name = "WhQuestionDescriptor.findDistinctChildrenLabels",
         query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentWh.id = :containerId")
+@Table(
+        indexes = {
+            @Index(columnList = "description_id")
+        }
+)
 public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         implements DescriptorListI<VariableDescriptor> {
 
