@@ -13,8 +13,15 @@ const labelStyle = css(formStyles.labelStyle, {
     display: 'block',
     borderBottom: '1px solid',
 });
-function Tuple(props: WidgetProps.ArrayProps & { id: string }) {
-    const { children, schema: { items }, onChange, value } = props;
+function Tuple(
+    props: WidgetProps.ArrayProps<{ label?: string }> & { id: string }
+) {
+    const {
+        children,
+        schema: { items },
+        onChange,
+        value,
+    } = props;
     if (!Array.isArray(items)) {
         throw new Error('schema.items must be an array');
     }

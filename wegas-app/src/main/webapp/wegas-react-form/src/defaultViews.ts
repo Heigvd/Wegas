@@ -56,3 +56,5 @@ setDefaultWidgets({
     wegasimageurl: WegasImageUrl,
     wegasurl: WegasUrl,
 });
+// Make TS happy ...
+export default undefined;

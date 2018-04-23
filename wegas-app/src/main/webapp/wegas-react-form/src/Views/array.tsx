@@ -7,7 +7,12 @@ import { AddOptionButton } from '../Script/Views/Button';
 import Menu from '../Components/Menu';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Cover } from '../Components/Cover';
-
+import {
+    SortableContainer,
+    SortableElement,
+    SortableHandle,
+    arrayMove,
+} from 'react-sortable-hoc';
 const arrayStyle = css({
     display: 'inline',
 });
@@ -42,36 +47,46 @@ const listElementStyle = css({
 const inlinePlusStyle = css({
     fontSize: '18px',
     verticalAlign: '-1px',
-    width: '100%',
     textAlign: 'left',
 });
 const horizontal = css({
-    display: 'flex',
-    flexWrap: 'wrap',
+    '& > div': {
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
 });
 const optionLabelStyle = css(FormStyles.labelStyle, {
     fontSize: FormStyles.labelBigFontSize,
     paddingRight: '5px',
     verticalAlign: '1px',
 });
-
-interface IArrayProps {
-    view: {
-        choices?: {}[];
-        tooltip?: string;
-        /**
-         * Composit bg color
-         */
-        highlight?: boolean;
-        horizontal?: boolean;
-    };
+interface IArrayView {
+    choices?: {}[];
+    tooltip?: string;
+    label?: string | boolean;
+    disabled?: boolean;
+    /**
+     * Enable array sorting (DnD)
+     */
+    sortable?: boolean;
+    /**
+     * Composit bg color
+     */
+    highlight?: boolean;
+    horizontal?: boolean;
 }
+const dragHandleStyle = css({
+    alignSelf: 'center',
+    opacity: 0.7,
+    cursor: 'move',
+    ':hover': {
+        opacity: 1,
+    },
+});
+interface IArrayProps extends WidgetProps.ArrayProps<IArrayView> {}
 
-class Adder extends React.Component<
-    WidgetProps.ArrayProps & IArrayProps,
-    { open: boolean }
-> {
-    constructor(props: WidgetProps.ArrayProps & IArrayProps) {
+class Adder extends React.Component<IArrayProps, { open: boolean }> {
+    constructor(props: IArrayProps) {
         super(props);
         this.state = {
             open: false,
@@ -121,29 +136,57 @@ class Adder extends React.Component<
         );
     }
 }
-function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
-    const valueLength = Array.isArray(props.value) ? props.value.length : 0;
-    const { maxItems = Infinity, minItems = 0 } = props.schema;
-    const disabled = props.view.disabled;
-    function renderChild(child: React.ReactChild, index: number) {
+const DragHandle = SortableHandle(() => (
+    <span className={`fa fa-bars ${dragHandleStyle}`} />
+));
+const ChildItem = SortableElement(
+    (props: IArrayProps & { child: React.ReactNode; updateIndex: number }) => {
+        const valueLength = Array.isArray(props.value) ? props.value.length : 0;
+        const { minItems = 0 } = props.schema;
+        const disabled = props.view.disabled;
         return (
             <div
                 className={`${
                     props.view.highlight ? highlight : ''
                 } ${listElementContainerStyle}`}
             >
-                <span className={listElementStyle.toString()}>{child}</span>
+                {!disabled && props.view.sortable && <DragHandle />}
+                <span className={listElementStyle.toString()}>
+                    {props.child}
+                </span>
                 <span className={binStyle.toString()}>
                     {minItems < valueLength && !disabled ? (
                         <IconButton
                             icon="fa fa-trash"
-                            onClick={() => props.onChildRemove(index)}
+                            onClick={() =>
+                                props.onChildRemove(props.updateIndex)
+                            }
                             tooltip="Delete this group"
                             grey
                         />
                     ) : null}
                 </span>
             </div>
+        );
+    }
+);
+
+const SortContainer = SortableContainer(
+    ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+);
+function ArrayWidget(props: IArrayProps) {
+    const valueLength = Array.isArray(props.value) ? props.value.length : 0;
+    const { maxItems = Infinity } = props.schema;
+    const disabled = props.view.disabled;
+    function renderChild(child: React.ReactChild, index: number) {
+        return (
+            <ChildItem
+                {...props}
+                disabled={disabled && !props.view.sortable}
+                index={index}
+                updateIndex={index}
+                child={child}
+            />
         );
     }
 
@@ -162,7 +205,18 @@ function ArrayWidget(props: WidgetProps.ArrayProps & IArrayProps) {
                     {label}
                 </label>
             )}
-            {children}
+            <SortContainer
+                useDragHandle
+                axis={props.view.horizontal ? 'xy' : 'y'}
+                lockAxis={props.view.horizontal ? 'xy' : 'y'}
+                onSortEnd={o =>
+                    props.onChange(
+                        arrayMove(props.value!, o.oldIndex, o.newIndex)
+                    )
+                }
+            >
+                {children}
+            </SortContainer>
         </div>
     );
 }
