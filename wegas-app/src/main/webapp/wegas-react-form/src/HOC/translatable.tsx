@@ -6,7 +6,7 @@ import { infoStyle } from './commonView';
 interface TranslatableProps {
     value: { [refName: string]: string };
     onChange: (value: { [refName: string]: string }) => void;
-    view: Schema['view'];
+    view: Schema['view'] & { label?: string };
 }
 
 interface EndProps {
@@ -36,9 +36,7 @@ export default function translatable<P extends EndProps>(
                         label: (
                             <span>
                                 {(props.view || {}).label}{' '}
-                                <span
-                                    className={String(infoStyle)}
-                                >
+                                <span className={String(infoStyle)}>
                                     [{curCode}]
                                 </span>
                             </span>
