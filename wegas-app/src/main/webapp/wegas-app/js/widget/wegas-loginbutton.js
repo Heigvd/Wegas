@@ -64,8 +64,21 @@ YUI.add("wegas-loginbutton", function(Y) {
                                             label: (I18n.getRefName() === item.get("refName") ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
                                             on: {
                                                 click: function() {
-                                                    I18n.setLang(item.get("code"));
-                                                    Y.Widget.getByNode(Y.one(".wegas-playerview")).reload();
+                                                    var self = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
+                                                    self.set("refName", item.get("refName"));
+                                                    Y.Wegas.Facade.Game.cache.sendRequest({
+                                                        request: "/Team/" + self.get("teamId") + "/Player/" + self.get("id"),
+                                                        cfg: {
+                                                            method: "put",
+                                                            data: self
+                                                        },
+                                                        on: {
+                                                            success: function(response) {
+                                                                I18n.setRefName(response.response.entity.get("refName"));
+                                                                Y.Widget.getByNode(Y.one(".wegas-playerview")).reload();
+                                                            }
+                                                        }
+                                                    });
                                                 }
                                             }
                                         };

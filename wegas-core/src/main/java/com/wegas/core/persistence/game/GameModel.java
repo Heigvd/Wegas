@@ -566,6 +566,35 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * Return a test player.
+     * It may be a player in any team of a DebugGame or a player in a DebugTeam
+     *
+     * @return testPlayer
+     */
+    @JsonIgnore
+    public Player findTestPlayer() {
+        Player p = null;
+        for (Game game : this.getGames()) {
+            if (game instanceof DebugGame) {
+                p = game.getAnyLivePlayer();
+                if (p != null) {
+                    return p;
+                }
+            } else {
+                for (Team team : game.getTeams()) {
+                    if (team instanceof DebugTeam) {
+                        p = team.getAnyLivePlayer();
+                        if (p != null) {
+                            return p;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return the createdTime
      */
     public Date getCreatedTime() {
@@ -865,10 +894,12 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
             langs.add(gml.getRefName());
         }
 
-        String playerFirstChoice = "def"; //player.getRefName();
-        if (Helper.isNullOrEmpty(playerFirstChoice)) {
-            if (langs.remove(playerFirstChoice)) {
-                langs.add(0, playerFirstChoice);
+        if (player != null) {
+            String playerFirstChoice = player.getRefName();
+            if (Helper.isNullOrEmpty(playerFirstChoice)) {
+                if (langs.remove(playerFirstChoice)) {
+                    langs.add(0, playerFirstChoice);
+                }
             }
         }
 

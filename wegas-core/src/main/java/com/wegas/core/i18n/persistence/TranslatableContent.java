@@ -270,7 +270,8 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
 
     public Translation translate(GameModel gameModel) {
         if (gameModel != null) {
-            return this.translate(gameModel.getPreferredLanguagesRefName(null));
+            Player player = gameModel.findTestPlayer();
+            return this.translate(gameModel.getPreferredLanguagesRefName(player));
         } else {
             return getAnyTranslation();
         }

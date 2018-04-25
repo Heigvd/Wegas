@@ -384,20 +384,51 @@ YUI.add("wegas-i18n", function(Y) {
             });
         }
 
+        function findLanguageByRefName(refName) {
+            return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
+                return item.get("refName") === refName;
+            });
+        }
+
+        function setLangByRefName(refName) {
+            var gmLang = findLanguageByRefName(refName),
+                code;
+            if (gmLang) {
+                Y.Wegas.I18n._currentRefName = gmLang.get("refName");
+                code = gmLang.get("code");
+                setLang(code);
+            }
+        }
+
+        function getAvailableLang() {
+            return Y.Array.reduce(Y.config.groups.wegas.allModules, [], function(previous, currentValue, index, array) {
+                if (currentValue.indexOf("wegas-i18n-global-" === 0)) {
+                    previous.push(currentValue.substring(18));
+                }
+                return previous;
+            });
+        }
+
+        function isLangAvailable(lang) {
+            return getAvailableLang().indexOf(lang) >= 0;
+        }
+
         function setLang(locale, cb) {
             var module,
                 lang = locale.split(/[-_]/)[0],
                 deps = [];
-            for (module in Y.Wegas.I18n._modules) {
-                deps.push(module + "-" + lang);
+
+            if (isLangAvailable(lang)) {
+                for (module in Y.Wegas.I18n._modules) {
+                    deps.push(module + "-" + lang);
+                }
+                Y.use(deps, function(Y) {
+                    Y.Wegas.I18n._currentLocale = locale;
+                    String.prototype.capitalize = config[lang].capitalize; // don't
+                    String.prototype.colonize = config[lang].colonize; // don't
+                    String.prototype.pluralize = config[lang].pluralize; // don't
+                });
             }
-            Y.use(deps, function(Y) {
-                Y.Wegas.I18n._currentLocale = locale;
-                String.prototype.capitalize = config[lang].capitalize; // don't
-                String.prototype.colonize = config[lang].colonize; // don't
-                String.prototype.pluralize = config[lang].pluralize; // don't
-            });
-            Y.Wegas.I18n._currentRefName = null;
         }
 
         function loadModule(moduleName) {
@@ -443,6 +474,7 @@ YUI.add("wegas-i18n", function(Y) {
                 return currentLocale();
             },
             getRefName: getRefName,
+            setRefName: setLangByRefName,
             setLang: setLang,
             setNumericLang: setNumericLang,
             t: function(key, args) {

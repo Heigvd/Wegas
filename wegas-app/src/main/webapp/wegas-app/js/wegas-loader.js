@@ -68,6 +68,12 @@ YUI().use(function(Y) {
             "wegas-i18n-global-en": {
                 path: 'js/i18n/i18n-global-en-min.js'
             },
+            "wegas-i18n-global-de": {
+                path: 'js/i18n/i18n-global-de-min.js'
+            },
+            "wegas-i18n-global-it": {
+                path: 'js/i18n/i18n-global-it-min.js'
+            },
             "wegas-i18n-global": {
                 path: 'js/i18n/i18n-global-min.js',
                 requires: ['wegas-i18n']

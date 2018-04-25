@@ -7,14 +7,17 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
@@ -27,7 +30,9 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -64,6 +69,9 @@ public class PlayerFacade extends BaseFacade<Player> {
     @EJB
     private GameModelFacade gameModelFacade;
 
+    @Inject
+    private I18nFacade i18nFacade;
+
     /**
      *
      */
@@ -96,7 +104,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return brand new player id
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Long joinTeamAndCommit(Long teamId, Long userId, String playerName) {
+    public Long joinTeamAndCommit(Long teamId, Long userId, String playerName, List<Locale> languages) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         logger.info("Adding user {} to team {}", userId, teamId);
 
@@ -109,6 +117,30 @@ public class PlayerFacade extends BaseFacade<Player> {
         }
 
         Player player = new Player();
+        GameModel gameModel = team.getGame().getGameModel();
+        List<GameModelLanguage> gmLanguages = gameModel.getLanguages();
+
+        String preferredRefName = null;
+        if (languages != null && gmLanguages != null) {
+            for (Locale locale : languages) {
+                GameModelLanguage lang = i18nFacade.findLanguageByCode(gameModel, locale.toLanguageTag());
+                if (lang != null) {
+                    preferredRefName = lang.getRefName();
+                    break;
+                } else {
+                    lang = i18nFacade.findLanguageByCode(gameModel, locale.getLanguage());
+                    if (lang != null) {
+                        preferredRefName = lang.getRefName();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (Helper.isNullOrEmpty(preferredRefName)) {
+            preferredRefName = "def";
+        }
+        player.setRefName(preferredRefName);
 
         if (userId != null) {
             User user = userFacade.find(userId);

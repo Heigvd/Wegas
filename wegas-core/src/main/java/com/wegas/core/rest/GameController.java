@@ -21,10 +21,13 @@ import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
@@ -254,13 +257,16 @@ public class GameController {
      * Check if the game is played individually, Create a new team with a new
      * player linked on the current user for the game found.
      *
+     * @param request
      * @param gameId
      *
      * @return Response
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     @POST
     @Path("{id}/Player")
-    public Response joinIndividually(@PathParam("id") Long gameId) throws WegasNoResultException {
+    public Response joinIndividually(@Context HttpServletRequest request,
+            @PathParam("id") Long gameId) throws WegasNoResultException {
         Response r = Response.status(Response.Status.UNAUTHORIZED).build();
         User currentUser = userFacade.getCurrentUser();
         if (currentUser != null) {
@@ -275,7 +281,7 @@ public class GameController {
                                 Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
                                 teamFacade.create(game.getId(), team); // return managed team
                                 team = teamFacade.find(team.getId());
-                                gameFacade.joinTeam(team.getId(), currentUser.getId());
+                                gameFacade.joinTeam(team.getId(), currentUser.getId(), Collections.list(request.getLocales()));
                                 /**
                                  * Detach and re-find to fetch the new player
                                  */

@@ -71,6 +71,9 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
      */
     private Integer indexOrder;
 
+    @Column(columnDefinition = "boolean default true")
+    private boolean active = true;
+
     @ManyToOne
     @JsonIgnore
     private GameModel gameModel;
@@ -88,6 +91,14 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
 
     public Integer getIndexOrder() {
         return indexOrder;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public void setIndexOrder(Integer indexOrder) {
@@ -141,6 +152,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
         if (other instanceof GameModelLanguage) {
             GameModelLanguage lg = (GameModelLanguage) other;
             this.setCode(lg.getCode());
+            this.setActive(lg.isActive());
             this.setLang(lg.getLang());
         }
     }

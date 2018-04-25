@@ -12,13 +12,14 @@
         <dropColumn columnName="content" tableName="dialoguedescriptor"/>
     </changeSet>
 
-    
+
     <changeSet author="maxence (generated)" id="1523014059600-1">
         <createTable tableName="gamemodellanguage">
             <column name="id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column defaultValue="" name="code" type="VARCHAR(16)"/>
+            <column name="active" type="boolean" defaultValueBoolean="true"/>
             <column name="indexorder" type="INT"/>
             <column name="lang" type="VARCHAR(255)"/>
             <column defaultValue="" name="refname" type="VARCHAR(16)"/>
@@ -30,8 +31,12 @@
             SELECT nextval('i18n_seq') as id, id as gamemodel_id, 0 as indexorder, 'def' as refname, 'def' as code, 'default' as lang
             FROM gamemodel;
         </sql>
+
+        <addColumn tableName="player">
+            <column name="refname" type="VARCHAR(16)" />
+        </addColumn>
     </changeSet>
-        
+
 
     <changeSet author="maxence (generated)" id="1523014059600-2">
         <createTable tableName="translatablecontent">
@@ -68,7 +73,7 @@
         </createIndex>
 
     </changeSet>
-    
+
     <changeSet author="maxence (generated)" id="1523014059600-5">
         <addForeignKeyConstraint baseColumnNames="gamemodel_id" baseTableName="gamemodellanguage" constraintName="fk_gamemodellanguage_gamemodel_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gamemodel"/>
         <addForeignKeyConstraint baseColumnNames="translatablecontent_id" baseTableName="translatablecontent_translations" constraintName="fk_translatablecontent_translations_translatablecontent_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
@@ -95,7 +100,7 @@
 
         <!-- and create corresponding translatablecontent -->
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from questiondescriptor</sql>
-        
+
         <!-- set up FK -->
         <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="questiondescriptor" constraintName="fk_questiondescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
@@ -124,7 +129,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT label_id as id, id as parentdescriptor_id from variabledescriptor</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="variabledescriptor" constraintName="fk_variabledescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -151,7 +156,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT label_id as id, choicedescriptor_id as parentdescriptor_id from mcqresult</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="mcqresult" constraintName="fk_mcqresult_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -179,7 +184,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) select ed.label_id, prd.id as parentdescriptor_id from evaluationdescriptor ed join peerreviewdescriptor as prd on container_id = prd.fbcomments_id OR  container_id = prd.feedback_id </sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="label_id" baseTableName="evaluationdescriptor" constraintName="fk_evaluationdescriptor_label_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -207,7 +212,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from choicedescriptor</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="choicedescriptor" constraintName="fk_choicedescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -234,7 +239,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from whquestiondescriptor</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="whquestiondescriptor" constraintName="fk_whquestiondescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -261,7 +266,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT answer_id as id, choicedescriptor_id as parentdescriptor_id from mcqresult</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="answer_id" baseTableName="mcqresult" constraintName="fk_mcqresult_answer_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -288,7 +293,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT ignorationanswer_id as id, choicedescriptor_id as parentdescriptor_id from mcqresult</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="ignorationanswer_id" baseTableName="mcqresult" constraintName="fk_mcqresult_ignorationanswer_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -318,7 +323,7 @@
 
         <!-- create translatablecontent for each dialogue state -->
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT text_id as id, statemachine_id as parentdescriptor_id from fsm_state WHERE dtype = 'DialogueState'</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="text_id" baseTableName="fsm_state" constraintName="fk_dialoguestate_text_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -350,7 +355,7 @@
         <!-- create translatablecontent for each dialogue state -->
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT actiontext_id as id, state.statemachine_id as parentdescriptor_id from transition t join fsm_state state on state.id = t.state_id WHERE t.dtype = 'DialogueTransition'</sql>
 
-        
+
         <addForeignKeyConstraint baseColumnNames="actiontext_id" baseTableName="transition" constraintName="fk_dialoguestate_actiontext_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -377,7 +382,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from peerreviewdescriptor</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="peerreviewdescriptor" constraintName="fk_peerreviewdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -404,7 +409,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) select ed.description_id, prd.id as parentdescriptor_id from evaluationdescriptor ed join peerreviewdescriptor as prd on container_id = prd.fbcomments_id OR  container_id = prd.feedback_id </sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="evaluationdescriptor" constraintName="fk_evaluationdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -431,7 +436,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from resourcedescriptor</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="resourcedescriptor" constraintName="fk_resourcedescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -459,7 +464,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentdescriptor_id) SELECT description_id as id, id as parentdescriptor_id from taskdescriptor</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="taskdescriptor" constraintName="fk_taskdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
@@ -498,7 +503,7 @@
         </createIndex>
 
         <addPrimaryKey columnNames="id" constraintName="enumitem_pkey" tableName="enumitem"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="parentevaluation_id" baseTableName="enumitem" constraintName="fk_enumitem_parentevaluation_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptor"/>
         <addForeignKeyConstraint baseColumnNames="parentstring_id" baseTableName="enumitem" constraintName="fk_enumitem_parentstring_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
 
@@ -506,21 +511,21 @@
         <!-- Convert peerreview evaluation categories into items -->
         <sql>
             INSERT INTO enumitem (id, name, item_order, parentevaluation_id, label_id)
-            SELECT nextval('i18n_seq') as id, categories as name, 0 as item_order, 
+            SELECT nextval('i18n_seq') as id, categories as name, 0 as item_order,
             categorizedevaluationdescriptor_id as parentevaluation_id, nextval('i18n_seq') as label_id FROM categorizedevaluationdescriptor_categories;
         </sql>
 
         <!-- Convert StringDescriptor allowedValues into items -->
         <sql>
             INSERT INTO enumitem (id, name, item_order, parentstring_id, label_id)
-            SELECT nextval('i18n_seq') as id, allowedvalues as name, allowedvalues_order as item_order, 
+            SELECT nextval('i18n_seq') as id, allowedvalues as name, allowedvalues_order as item_order,
             stringdescriptor_id as parentstring_id, nextval('i18n_seq') as label_id FROM stringdescriptor_allowedvalues;
         </sql>
 
         <!-- create translatablecontent for each enumitem (evaluations) -->
         <sql>
-            INSERT INTO translatablecontent (id, parentdescriptor_id) 
-            SELECT item.label_id, prd.id as parentdescriptor_id 
+            INSERT INTO translatablecontent (id, parentdescriptor_id)
+            SELECT item.label_id, prd.id as parentdescriptor_id
             FROM evaluationdescriptor ed
             JOIN enumitem item on item.parentevaluation_id = ed.id
             JOIN peerreviewdescriptor as prd on container_id = prd.fbcomments_id OR  container_id = prd.feedback_id;
@@ -528,8 +533,8 @@
 
         <!-- create translatablecontent for each enumitem (stringdescriptor) -->
         <sql>
-            INSERT INTO translatablecontent (id, parentdescriptor_id) 
-            SELECT item.label_id, item.parentstring_id AS parentdescriptor_id 
+            INSERT INTO translatablecontent (id, parentdescriptor_id)
+            SELECT item.label_id, item.parentstring_id AS parentdescriptor_id
             FROM enumitem item
             WHERE item.parentstring_id IS NOT NULL;
         </sql>
@@ -565,7 +570,7 @@
         </update>
 
         <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT trvalue_id as id, id as parentinstance_id from textinstance</sql>
-        
+
         <addForeignKeyConstraint baseColumnNames="trvalue_id" baseTableName="textinstance" constraintName="fk_textinstance_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
 
         <sql>
