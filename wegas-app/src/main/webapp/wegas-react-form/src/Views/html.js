@@ -1,11 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-for */
 /* global tinymce:true */
+import { css } from 'glamor';
+import { debounce } from 'lodash-es';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TinyMCE from 'react-tinymce';
-import { css } from 'glamor';
-import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
+import labeled from '../HOC/labeled';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
 
@@ -186,7 +187,7 @@ class HTMLView extends React.Component {
     constructor(props) {
         super(props);
         this.state = { key: 0, content: props.value };
-        this.onChangeHandler = this.onChangeHandler.bind(this);
+        this.onChangeHandler = debounce(this.onChangeHandler.bind(this), 200);
         this.doNotCheck = false;
     }
     componentWillReceiveProps(nextProps) {
@@ -203,7 +204,9 @@ class HTMLView extends React.Component {
     componentDidUpdate() {
         this.doNotCheck = false;
     }
-
+    componentWillUnmount() {
+        this.onChangeHandler.flush();
+    }
     // Listens both to tinyMCE's synthetic 'change' events and to its basic 'onKeyup' events.
     // NB: the event parameter is not the same in both cases.
     onChangeHandler() {
