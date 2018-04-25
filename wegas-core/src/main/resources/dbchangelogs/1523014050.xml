@@ -550,6 +550,33 @@
         <dropTable tableName="stringdescriptor_allowedvalues"/>
     </changeSet>
 
+    <!-- TextInstance value -->
+    <changeSet author="maxence (generated)" id="1523014059600-21">
+        <addColumn tableName="textinstance">
+            <column name="trvalue_id" type="int8"/>
+        </addColumn>
+
+        <createIndex indexName="index_textinstance_trvalue_id" tableName="textinstance">
+            <column name="trvalue_id"/>
+        </createIndex>
+
+        <update tableName="textinstance">
+            <column name="trvalue_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT trvalue_id as id, id as parentinstance_id from textinstance</sql>
+        
+        <addForeignKeyConstraint baseColumnNames="trvalue_id" baseTableName="textinstance" constraintName="fk_textinstance_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT val as tr, 'def' as lang, trvalue_id as translatablecontent_id
+            FROM textinstance
+        </sql>
+
+        <dropColumn columnName="val" tableName="textinstance"/>
+    </changeSet>
+
 
     <!-- restore JPA sequence -->
     <changeSet author="maxence (generated)" id="1523014059600-clear">

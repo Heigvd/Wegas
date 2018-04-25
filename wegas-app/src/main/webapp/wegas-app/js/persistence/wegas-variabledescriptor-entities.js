@@ -203,7 +203,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             },
             getEditorLabel: function() {
                 var trLabel = this.getLabel();
-
                 if (!this.get("editorTag") && !trLabel) {
                     return this.get("name");
                 } else if (!this.get("editorTag")) {
@@ -614,7 +613,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         }
     );
-
     persistence.EnumItem = Base.create('EnumItem', persistence.Entity, [], {
         getEditorLabel: function() {
             return I18n.t(this.get("label"));
@@ -642,7 +640,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             })
         }
     });
-
     /**
      * StringDescriptor mapper
      */
@@ -720,7 +717,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         }
                     },
                     view: {
-                        label: 'Allowed Values'
+                        label: 'Allowed Values',
+                        sortable: true
                     }
                 }
             },
@@ -807,6 +805,13 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: 'TextDescriptor'
                 },
                 defaultInstance: {
+                    valueFn: function() {
+                        return {
+                            trValue: {
+                                translations: {}
+                            }
+                        };
+                    },
                     properties: {
                         '@class': {
                             type: STRING,
@@ -818,14 +823,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
                         descriptorId: IDATTRDEF,
-                        value: {
-                            type: STRING,
-                            value: '',
-                            view: {
-                                label: 'Default value',
-                                type: HTML
-                            }
-                        }
+                        trValue: Y.Wegas.Helper.getTranslationAttr({
+                            label: 'Default value',
+                            index: -1,
+                            type: HTML
+                        })
                     }
                 }
             },
@@ -835,12 +837,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     className: 'wegas-method-returnline',
                     arguments: [
                         SELFARG,
-                        {
-                            type: STRING,
-                            value: '',
-                            required: true,
-                            view: {type: HTML}
-                        }
+                        Y.Wegas.Helper.getTranslationAttr({
+                            index: -1,
+                            type: HTML
+                        })
                     ]
                 },
                 getValue: {
@@ -848,7 +848,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     returns: STRING,
                     arguments: [SELFARG],
                     localEval: function(player) {
-                        return this.getInstance(player).get(VALUE);
+                        return I18n.t(this.getInstance(player).get("trValue"));
                     }
                 }
             }
@@ -868,11 +868,17 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: 'TextInstance'
                 },
                 value: {
-                    type: STRING,
-                    view: {
-                        type: HTML
+                    type: "string",
+                    transient: true,
+                    getter: function() {
+                        return I18n.t(this.get("trValue"));
                     }
-                }
+                },
+                trValue: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Value",
+                    index: -1,
+                    type: HTML
+                })
             }
         }
     );

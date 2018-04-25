@@ -75,6 +75,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             translations: {
                 type: "object",
+                value: {},
                 additionalProperties: {
                     type: ["null", STRING],
                     required: true,
@@ -97,12 +98,24 @@ YUI.add('wegas-entity', function(Y) {
                 type: "object",
                 index: param.index,
                 visible: param.visible,
-                valueFn: function() {
-                    return {
-                        "@class": "TranslatableContent",
-                        translations: {}
-                    };
+                getter: function(value) {
+                    if (typeof value === "string") {
+                        //  backward compatibility: raw String to default translation
+                        return {
+                            "@class": "TranslatableContent",
+                            "translations": {
+                                "def": value
+                            }
+                        };
+                    }
+                    return value;
                 },
+                /*valueFn: function() {
+                 return {
+                 "@class": "TranslatableContent",
+                 translations: {}
+                 };
+                 },*/
                 properties: TRANSLATION_CONTENT_ATTR_DEF
             };
 

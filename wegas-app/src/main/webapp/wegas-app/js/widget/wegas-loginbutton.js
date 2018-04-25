@@ -61,7 +61,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                                     children:
                                         Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages").map(function(item) {
                                         return {
-                                            label: (I18n._currentRefName === item.get("refName") ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
+                                            label: (I18n.getRefName() === item.get("refName") ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
                                             on: {
                                                 click: function() {
                                                     I18n.setLang(item.get("code"));

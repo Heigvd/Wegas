@@ -22,6 +22,11 @@ export default function translatable<P extends EndProps>(
     Comp: React.ComponentType<P>
 ): React.SFC<TranslatableProps & P> {
     function Translated(props: TranslatableProps) {
+
+        if (!props.value) {
+            return null;
+        }
+
         return (
             <LangConsumer>
                 {({ lang, availableLang }) => {

@@ -23,7 +23,6 @@ import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
-import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

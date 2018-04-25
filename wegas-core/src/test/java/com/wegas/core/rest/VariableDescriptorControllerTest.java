@@ -44,7 +44,9 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         text.setLabel(TranslatableContent.build("def", "testLabel"));
         text.setTitle("testTitle");
         text.setComments("testComments");
-        text.setDefaultInstance(new TextInstance("instance value"));
+        TextInstance textInstance = new TextInstance();
+        textInstance.setTrValue(TranslatableContent.build("def", "instance value"));
+        text.setDefaultInstance(textInstance);
         variableDescriptorFacade.create(gameModel.getId(), text);
         Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testTex").contains(text.getId()));
 

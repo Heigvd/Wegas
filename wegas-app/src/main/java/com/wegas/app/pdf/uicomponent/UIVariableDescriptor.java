@@ -287,7 +287,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
         encodeBase(context, writer, obj, editorMode);
         TextInstance instance = obj.getInstance(defaultValues, player);
-        UIHelper.printPropertyTextArea(context, writer, "Value", instance.getValue(), false, true);
+        UIHelper.printPropertyTextArea(context, writer, "Value", instance.getTrValue().translateOrEmpty(player), false, true);
         UIHelper.endDiv(writer);
     }
 

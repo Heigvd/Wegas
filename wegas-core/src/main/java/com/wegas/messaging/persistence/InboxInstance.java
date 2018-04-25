@@ -121,9 +121,7 @@ public class InboxInstance extends VariableInstance {
      * @return The sent message
      */
     public Message sendMessage(String from, String subject, String body) {
-        Message msg = new Message(from, subject, body, null, null, null);
-        this.sendMessage(msg);
-        return msg;
+        return this.sendMessage(from, subject, body, null, null, null);
     }
 
     /**
@@ -135,9 +133,7 @@ public class InboxInstance extends VariableInstance {
      * @return The sent message
      */
     public Message sendWithToken(String from, String subject, String body, String token) {
-        Message msg = new Message(from, subject, body, null, token, null);
-        this.sendMessage(msg);
-        return msg;
+        return this.sendMessage(from, subject, body, null, token, null);
     }
 
     /**
@@ -149,9 +145,7 @@ public class InboxInstance extends VariableInstance {
      * @return The sent message
      */
     public Message sendMessage(String from, String subject, String body, String date) {
-        Message msg = new Message(from, subject, body, date, null, null);
-        this.sendMessage(msg);
-        return msg;
+        return this.sendMessage(from, subject, body, date, null, null);
     }
 
     /**
@@ -163,9 +157,7 @@ public class InboxInstance extends VariableInstance {
      * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final List<String> attachements) {
-        final Message msg = new Message(from, subject, body, null, null, attachements);
-        this.sendMessage(msg);
-        return msg;
+        return this.sendMessage(from, subject, body, null, null, attachements);
     }
 
     /**
@@ -178,6 +170,7 @@ public class InboxInstance extends VariableInstance {
      * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, final List<String> attachements) {
+        this.sendMessage(from, subject, body, date, null, attachements);
         final Message msg = new Message(from, subject, body, date, attachements);
         this.sendMessage(msg);
         return msg;

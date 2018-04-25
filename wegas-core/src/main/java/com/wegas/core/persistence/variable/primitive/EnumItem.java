@@ -221,6 +221,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
                         String strItem = p.getText();
                         EnumItem item = new EnumItem();
                         item.setLabel(TranslatableContent.build("def", strItem));
+                        item.setName(strItem);
                         items.add(item);
                     } else if (currentToken == JsonToken.START_OBJECT) {
                         EnumItem item = JacksonMapperProvider.getMapper().readValue(p, EnumItem.class);

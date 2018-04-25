@@ -586,7 +586,7 @@ YUI.add('wegas-text-input', function(Y) {
                     {
                         this.showMessage('error', Y.Wegas.I18n.t('errors.prohibited', {
                             value: desc.getLabelForAllowedValue(value),
-                            values: Y.Lang.Array.map(allowedValues, function(item) {
+                            values: Y.Array.map(allowedValues, function(item) {
                                 return I18n.t(item.get("label"));
                             })
                         }));
