@@ -876,6 +876,9 @@ YUI().use(function(Y) {
             "wegas-i18n-mcq-fr": {
                 path: 'js/i18n/i18n-mcq-fr.js'
             },
+            "wegas-i18n-mcq-de": {
+                path: 'js/i18n/i18n-mcq-de.js'
+            },
             "wegas-i18n-mcq-en": {
                 path: 'js/i18n/i18n-mcq-en.js'
             },
@@ -962,6 +965,9 @@ YUI().use(function(Y) {
                     "GradeInput",
                     "TextEvalInput",
                     "CategorizationInput"]
+            },
+            "wegas-i18n-review-de": {
+                path: 'js/i18n/i18n-review-de-min.js'
             },
             "wegas-i18n-review-fr": {
                 path: 'js/i18n/i18n-review-fr-min.js'
