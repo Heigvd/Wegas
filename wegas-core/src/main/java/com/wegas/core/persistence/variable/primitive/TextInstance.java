@@ -31,7 +31,7 @@ import jdk.nashorn.api.scripting.JSObject;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Table(indexes = {
-    @Index(columnList = "trlabel_id")
+    @Index(columnList = "trvalue_id")
 })
 @Entity
 public class TextInstance extends VariableInstance implements Searchable {
