@@ -55,6 +55,7 @@ setDefaultWidgets({
     variableselect: VariableStatement,
     wegasimageurl: WegasImageUrl,
     wegasurl: WegasUrl,
+    I18nwegasurl: translatable(WegasUrl),
 });
 // Make TS happy ...
 export default undefined;

@@ -351,18 +351,21 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         return target;
     }
 
-
     public static TranslatableContent readFromNashorn(JSObject jsTr) {
-        Object theClass = jsTr.getMember("@class");
-        TranslatableContent trContent = new TranslatableContent();
+        if (jsTr != null) {
+            Object theClass = jsTr.getMember("@class");
+            TranslatableContent trContent = new TranslatableContent();
 
-        if (theClass != null && theClass.equals("TranslatableContent")) {
-            ScriptObjectMirror trs = (ScriptObjectMirror) jsTr.getMember("translations");
-            String[] langs = trs.getOwnKeys(true);
-            for (String refName : langs){
-                trContent.updateTranslation(refName, (String) trs.getMember(refName));
+            if (theClass != null && theClass.equals("TranslatableContent")) {
+                ScriptObjectMirror trs = (ScriptObjectMirror) jsTr.getMember("translations");
+                String[] langs = trs.getOwnKeys(true);
+                for (String refName : langs) {
+                    trContent.updateTranslation(refName, (String) trs.getMember(refName));
+                }
             }
+            return trContent;
+        } else {
+            return null;
         }
-        return trContent;
     }
 }

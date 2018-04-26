@@ -583,6 +583,106 @@
     </changeSet>
 
 
+
+    <!-- Message  -->
+    <changeSet author="maxence (generated)" id="1523014059600-22">
+        <addColumn tableName="message">
+            <column name="from_id" type="int8"/>
+            <column name="subject_id" type="int8"/>
+            <column name="date_id" type="int8"/>
+            <column name="body_id" type="int8"/>
+        </addColumn>
+
+        <createIndex indexName="index_message_description_id" tableName="message">
+            <column name="from_id"/>
+            <column name="subject_id"/>
+            <column name="date_id"/>
+            <column name="body_id"/>
+        </createIndex>
+
+        <update tableName="message">
+            <column name="from_id" valueComputed="nextval('i18n_seq')" />
+            <column name="subject_id" valueComputed="nextval('i18n_seq')" />
+            <column name="date_id" valueComputed="nextval('i18n_seq')" />
+            <column name="body_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT from_id as id, inboxinstance_id as parentinstance_id from message</sql>
+        <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT subject_id as id, inboxinstance_id as parentinstance_id from message</sql>
+        <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT date_id as id, inboxinstance_id as parentinstance_id from message</sql>
+        <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT body_id as id, inboxinstance_id as parentinstance_id from message</sql>
+
+        <addForeignKeyConstraint baseColumnNames="from_id" baseTableName="message" constraintName="fk_message_from_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+        <addForeignKeyConstraint baseColumnNames="subject_id" baseTableName="message" constraintName="fk_message_subject_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+        <addForeignKeyConstraint baseColumnNames="date_id" baseTableName="message" constraintName="fk_message_date_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+        <addForeignKeyConstraint baseColumnNames="body_id" baseTableName="message" constraintName="fk_message_body_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT mfrom as tr, 'def' as lang, from_id as translatablecontent_id
+            FROM message
+        </sql>
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT subject as tr, 'def' as lang, subject_id as translatablecontent_id
+            FROM message
+        </sql>
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT date as tr, 'def' as lang, date_id as translatablecontent_id
+            FROM message
+        </sql>
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT body as tr, 'def' as lang, body_id as translatablecontent_id
+            FROM message
+        </sql>
+
+        <dropColumn columnName="mfrom" tableName="message"/>
+        <dropColumn columnName="subject" tableName="message"/>
+        <dropColumn columnName="date" tableName="message"/>
+        <dropColumn columnName="body" tableName="message"/>
+    </changeSet>
+
+    <!-- Message attachments -->
+    <changeSet author="maxence (generated)" id="1523014059600-23">
+        <dropForeignKeyConstraint baseTableName="message_attachements" constraintName="fk_message_attachements_message_id"/>
+
+        <renameTable oldTableName="message_attachements" newTableName="attachment" />
+        
+        <addForeignKeyConstraint baseColumnNames="message_id" baseTableName="attachment" constraintName="fk_attachment_message_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="message"/>
+
+        <addColumn tableName="attachment">
+            <column name="id" type="BIGINT" />
+            <column name="file_id" type="int8"/>
+        </addColumn>
+
+        <createIndex indexName="index_attachment_message_id" tableName="attachment">
+            <column name="message_id"/>
+        </createIndex>
+
+
+        <update tableName="attachment">
+            <column name="id" valueComputed="nextval('i18n_seq')" />
+            <column name="file_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+        <addNotNullConstraint tableName="attachment" columnName="id" />
+        <addPrimaryKey columnNames="id" constraintName="attachment_pkey" tableName="attachment"/>
+
+        <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT file_id as id, message.inboxinstance_id as parentinstance_id from attachment JOIN message on message.id = message_id</sql>
+
+        <addForeignKeyConstraint baseColumnNames="file_id" baseTableName="attachment" constraintName="fk_attachment_file_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT attachements as tr, 'def' as lang, file_id as translatablecontent_id
+            FROM attachment
+        </sql>
+
+        <dropColumn columnName="attachements" tableName="attachment"/>
+    </changeSet>
+
+
     <!-- restore JPA sequence -->
     <changeSet author="maxence (generated)" id="1523014059600-clear">
         <sql>

@@ -205,5 +205,4 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
         return super.containsAll(criterias)
                 || this.itemsContainsAll(criterias);
     }
-
 }

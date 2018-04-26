@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.messaging.persistence.Attachment;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +99,7 @@ public class UIHelper {
     public static final String TEXT_MESSAGE = "Message";
     public static final String TEXT_SEND_MESSAGE = "Send Message";
     public static final String TEXT_MAIN_SKILL = "Mail Skill";
-    public static final String TEXT_ATTACHEMENTS = "Attachements";
+    public static final String TEXT_ATTACHMENTS = "Attachments";
 
     public static final String TEXT_MIN_VALUE = "Max Value";
     public static final String TEXT_MAX_VALUE = "Min Value";
@@ -546,13 +547,14 @@ public class UIHelper {
      * @param subject
      * @param date
      * @param body
-     * @param attachements
+     * @param token
+     * @param attachments
      *
      * @throws IOException
      */
     public static void printMessage(FacesContext context, ResponseWriter writer,
             String destination, String from, String subject, String date, String body, String token,
-            List<String> attachements) throws IOException {
+            List<Attachment> attachments) throws IOException {
 
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_CONTAINER);
         printText(context, writer, TEXT_SEND_MESSAGE, CSS_CLASS_MESSAGE_TITLE);
@@ -586,8 +588,10 @@ public class UIHelper {
 
         UIHelper.endDiv(writer); // </div class="header">
 
-        if (attachements != null && attachements.size() > 0) {
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_ATTACHEMENTS, attachements.toString());
+        if (attachments != null && attachments.size() > 0) {
+            for (Attachment a : attachments) {
+                UIHelper.printProperty(context, writer, UIHelper.TEXT_ATTACHMENTS, a.getFile().translateOrEmpty((Player)null));
+            }
         }
 
         UIHelper.printPropertyTextArea(context, writer, " ", unescapeAndTrimQuotes(body), false, true);

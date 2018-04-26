@@ -235,7 +235,6 @@ public abstract class AbstractArquillianTestMinimal {
                     + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_id on iteration_taskinstance (taskinstance_id);"
 
                     + "CREATE INDEX IF NOT EXISTS index_mcqresult_name_choicedescriptor_id on mcqresult (name,choicedescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_message_attachements_message_id on message_attachements (message_id);"
                     + "CREATE INDEX IF NOT EXISTS index_questiondescriptor_pictures_questiondescriptor_id on questiondescriptor_pictures (questiondescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
                     + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"

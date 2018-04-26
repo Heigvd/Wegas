@@ -11,9 +11,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import org.slf4j.LoggerFactory;
 
@@ -22,17 +24,18 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import jdk.nashorn.api.scripting.JSObject;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class InboxInstance extends VariableInstance {
+public class InboxInstance extends VariableInstance implements Searchable {
 
     /**
      *
      */
-    protected static final org.slf4j.Logger loggerbeans  = LoggerFactory.getLogger(InboxInstance.class);
+    protected static final org.slf4j.Logger loggerbeans = LoggerFactory.getLogger(InboxInstance.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -40,7 +43,7 @@ public class InboxInstance extends VariableInstance {
      *
      */
     @OneToMany(mappedBy = "inboxInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
-//    @OrderBy("sentTime DESC, id")
+    //    @OrderBy("sentTime DESC, id")
     /*
      Quote from GF4 development guide:
 
@@ -57,13 +60,13 @@ public class InboxInstance extends VariableInstance {
      */
     @JsonManagedReference("inbox-message")
     private List<Message> messages = new ArrayList<>();
+
     /**
      * @return the replies
      */
     public List<Message> getMessages() {
         return messages;
     }
-
 
     /**
      * @return unmodifiable messages list, sorted by date (newer first)
@@ -152,12 +155,12 @@ public class InboxInstance extends VariableInstance {
      * @param from         message sender
      * @param subject      message subject
      * @param body         message body
-     * @param attachements
+     * @param attachments
      *
      * @return The sent message
      */
-    public Message sendMessage(final String from, final String subject, final String body, final List<String> attachements) {
-        return this.sendMessage(from, subject, body, null, null, attachements);
+    public Message sendMessage(final String from, final String subject, final String body, final List<String> attachments) {
+        return this.sendMessage(from, subject, body, null, null, attachments);
     }
 
     /**
@@ -165,13 +168,13 @@ public class InboxInstance extends VariableInstance {
      * @param subject      message subject
      * @param body         message body
      * @param date         ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
-     * @param attachements
+     * @param attachments
      *
      * @return The sent message
      */
-    public Message sendMessage(final String from, final String subject, final String body, final String date, final List<String> attachements) {
-        this.sendMessage(from, subject, body, date, null, attachements);
-        final Message msg = new Message(from, subject, body, date, attachements);
+    public Message sendMessage(final String from, final String subject, final String body, final String date, final List<String> attachments) {
+        this.sendMessage(from, subject, body, date, null, attachments);
+        final Message msg = new Message(from, subject, body, date, attachments);
         this.sendMessage(msg);
         return msg;
     }
@@ -182,14 +185,60 @@ public class InboxInstance extends VariableInstance {
      * @param body         message body
      * @param date         ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @param token        ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
-     * @param attachements
+     * @param attachments
      *
      * @return The sent message
      */
-    public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachements) {
-        final Message msg = new Message(from, subject, body, date, token, attachements);
+    public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachments) {
+        final Message msg = new Message(from, subject, body, date, token, attachments);
         this.sendMessage(msg);
         return msg;
+    }
+
+    /**
+     * I18n version
+     *
+     * @param from
+     * @param subject
+     * @param body
+     * @param date
+     * @param token
+     * @param attachments
+     *
+     * @return
+     */
+    public Message sendMessage(final TranslatableContent from, final TranslatableContent subject,
+            final TranslatableContent body, final TranslatableContent date,
+            String token, final List<TranslatableContent> attachments) {
+        final Message msg = new Message();
+        msg.setToken(token);
+        msg.setFrom(TranslatableContent.merger(null, from));
+        msg.setSubject(TranslatableContent.merger(null, subject));
+        msg.setBody(TranslatableContent.merger(null, body));
+        msg.setDate(TranslatableContent.merger(null, date));
+
+        this.sendMessage(msg);
+        return msg;
+    }
+
+    public Message sendMessage(final JSObject from, final JSObject subject,
+            final JSObject body, final JSObject date,
+            String token, final List<JSObject> attachments) {
+
+        List<TranslatableContent> atts = null;
+        if (attachments != null && !attachments.isEmpty()) {
+            atts = new ArrayList<>();
+            for (JSObject a : attachments) {
+                atts.add(TranslatableContent.readFromNashorn(a));
+            }
+        }
+
+        return this.sendMessage(
+                TranslatableContent.readFromNashorn(from),
+                TranslatableContent.readFromNashorn(subject),
+                TranslatableContent.readFromNashorn(body),
+                TranslatableContent.readFromNashorn(date),
+                token, atts);
     }
 
     /**
@@ -255,6 +304,18 @@ public class InboxInstance extends VariableInstance {
     public boolean isTokenMarkedAsRead(String token) {
         Message message = this.getMessageByToken(token);
         return message != null && !message.getUnread();
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        if (messages != null) {
+            for (Message m : messages) {
+                if (m.containsAll(criterias)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

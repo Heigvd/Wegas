@@ -837,10 +837,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     className: 'wegas-method-returnline',
                     arguments: [
                         SELFARG,
-                        Y.Wegas.Helper.getTranslationAttr({
-                            index: -1,
-                            type: HTML
-                        })
+                        Y.Wegas.Helper.getTranslationAttr({type: HTML}
+                        )
                     ]
                 },
                 getValue: {
@@ -1560,26 +1558,18 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     className: 'wegas-method-sendmessage',
                     arguments: [
                         SELFARG,
-                        {
-                            type: STRING,
-                            required: true,
-                            view: {label: 'From', layout: 'short'}
-                        },
-                        {
-                            type: STRING,
-                            value: '',
-                            view: {label: 'Date', layout: 'short'}
-                        },
-                        {
-                            type: STRING,
-                            view: {label: 'Subject', layout: 'short'},
-                            required: true
-                        },
-                        {
-                            type: STRING,
-                            view: {type: HTML, label: 'Body'},
-                            required: true
-                        },
+                        Y.Wegas.Helper.getTranslationAttr({
+                            type: STRING, label: "From" //required + layout: 'short'
+                        }),
+                        Y.Wegas.Helper.getTranslationAttr({
+                            type: STRING, label: "Date" //required + layout: 'short'
+                        }),
+                        Y.Wegas.Helper.getTranslationAttr({
+                            type: STRING, label: "Subject" //required + layout: 'short'
+                        }),
+                        Y.Wegas.Helper.getTranslationAttr({
+                            type: HTML, label: "Body"
+                        }),
                         {
                             type: STRING,
                             view: {
@@ -1593,14 +1583,19 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             value: [],
                             view: {label: 'Attachments'},
                             items: {
-                                type: STRING,
-                                required: true,
-                                view: {
-                                    type: 'wegasurl',
-                                    label: 'Select file'
+                                type: "object",
+                                properties: {
+                                    id: IDATTRDEF,
+                                    "@class": {
+                                        type: STRING,
+                                        value: "Attachment",
+                                        view: {type: HIDDEN}
+                                    },
+                                    file: Y.Wegas.Helper.getTranslationAttr({
+                                        type: "wegasurl", label: "Select file"
+                                    })
                                 }
                             }
-
                         }
                     ]
                 },
@@ -1673,19 +1668,31 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 '@class': {
                     value: 'Message'
                 },
-                subject: {},
-                body: {},
+                from: Y.Wegas.Helper.getTranslationAttr({
+                    label: "From",
+                    type: STRING
+                }),
+                subject: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Subject",
+                    type: STRING
+                }),
+                body: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Subject",
+                    type: HTML
+                }),
+                date: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Subject",
+                    type: STRING
+                }),
                 unread: {
                     value: false,
                     type: BOOLEAN
                 },
-                from: {},
                 token: {},
-                date: {},
                 time: {
                     transient: true
                 },
-                attachements: {}
+                attachments: {}
             }
         }
     );

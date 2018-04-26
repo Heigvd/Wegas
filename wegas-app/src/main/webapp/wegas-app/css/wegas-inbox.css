@@ -68,14 +68,14 @@
 }
 .wegas-inbox-list-content .msg-header .msg-from,
 .yui3-skin-sam .wegas-inbox .msg-from,
-.yui3-skin-sam .wegas-inbox .msg-attachement {
+.yui3-skin-sam .wegas-inbox .msg-attachment {
     color: #757575;
     /* font-style: italic; */
 }
 .yui3-skin-sam .wegas-inbox .msg-header-inbox .msg-from:before {
     content: "From: ";}
-.yui3-skin-sam .wegas-inbox .msg-header-inbox .msg-attachement:before {
-    content: "Attachements "
+.yui3-skin-sam .wegas-inbox .msg-header-inbox .msg-attachment:before {
+    content: "Attachments "
 }
 /* Right tab format */
 .yui3-skin-sam .wegas-inbox .msg-header {

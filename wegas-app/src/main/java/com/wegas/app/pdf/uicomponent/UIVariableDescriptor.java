@@ -687,7 +687,12 @@ public class UIVariableDescriptor extends UIComponentBase {
         InboxInstance instance = inbox.getInstance(defaultValues, player);
 
         for (Message msg : instance.getSortedMessages()) {
-            UIHelper.printMessage(context, writer, "", msg.getFrom(), msg.getSubject(), msg.getDate(), msg.getBody(), msg.getToken(), msg.getAttachements());
+            UIHelper.printMessage(context, writer, "", 
+                    msg.getFrom().translateOrEmpty(player),
+                    msg.getSubject().translateOrEmpty(player),
+                    msg.getDate().translateOrEmpty(player),
+                    msg.getBody().translateOrEmpty(player),
+                    msg.getToken(), msg.getAttachments());
         }
 
         UIHelper.endDiv(writer);
