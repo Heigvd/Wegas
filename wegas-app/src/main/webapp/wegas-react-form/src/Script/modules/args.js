@@ -1,5 +1,6 @@
 import React from 'react';
 import { types, print, parse, visit } from 'recast';
+import { isEqual } from 'lodash-es';
 import ArgForm from './ArgForm';
 
 const {builders: b} = types;
@@ -166,4 +167,22 @@ export function handleMethodArgs(methodDescr, args, onChange, entity) {
             i
             );
     });
+}
+/**
+ * Update an argument given a schema.
+ * Force const or replace with default value if value does
+ * not match a schema.
+ * @param {*} value
+ * @param {{const?:*, value?:*, type:string}} schema
+ */
+export function updateArgSchema(value, schema) {
+    if (
+        'const' in schema &&
+        !isEqual(schema.const, typeToValue(value, schema))
+    ) {
+        return valueToType(schema.const, schema);
+    } else if (!matchSchema(value, schema)) {
+        return valueToType(schema.value, schema);
+    }
+    return value;
 }
