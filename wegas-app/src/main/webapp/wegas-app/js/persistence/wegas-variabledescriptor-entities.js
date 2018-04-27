@@ -870,6 +870,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     transient: true,
                     getter: function() {
                         return I18n.t(this.get("trValue"));
+                    },
+                    setter: function(newVal) {
+                        var newTr = {
+                            "@class": "TranslatableContent",
+                            translations: {
+                            }
+                        };
+                        newTr.translations[I18n._currentRefName || "def"] = newVal;
+                        this.set("trValue", newTr);
                     }
                 },
                 trValue: Y.Wegas.Helper.getTranslationAttr({

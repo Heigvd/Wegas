@@ -9,9 +9,12 @@ package com.wegas.core.api;
 
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade.WhValidate;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
+import com.wegas.messaging.persistence.Message;
+import jdk.nashorn.api.scripting.JSObject;
 
 /**
  *
@@ -146,4 +149,14 @@ public interface QuestionDescriptorFacadeI {
      */
     void validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException;
 
+    /**
+     * According to whValidate event, create a message to be send to an inbox
+     *
+     * @param self
+     * @param whValidate
+     * @param i18n
+     *
+     * @return
+     */
+    Message buildWhValidateMessage(Player self, WhValidate whValidate, JSObject i18n);
 }

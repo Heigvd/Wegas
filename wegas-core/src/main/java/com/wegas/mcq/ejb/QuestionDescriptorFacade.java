@@ -14,14 +14,23 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.mcq.persistence.*;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
+import com.wegas.messaging.persistence.Message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -30,6 +39,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
+import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -632,6 +642,78 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         logger.error("ICI *********************************************** ICI");
         getEntityManager().remove(entity);
         entity.getQuestion().remove(entity);
+    }
+
+    /**
+     *
+     * @param self       current player
+     * @param whValidate whValidate script event
+     * @param i18n to fetch some translations
+     *
+     * @return
+     */
+    @Override
+    public Message buildWhValidateMessage(Player self, WhValidate whValidate, JSObject i18n) {
+        Message history = new Message();
+        JSObject translate = (JSObject) i18n.getMember("t");
+
+        TranslatableContent from = new TranslatableContent();
+        TranslatableContent subject = new TranslatableContent();
+        TranslatableContent body = new TranslatableContent();
+        TranslatableContent date = new TranslatableContent();
+
+        GameModel gameModel = whValidate.whDescriptor.getGameModel();
+        for (GameModelLanguage language : gameModel.getRawLanguages()) {
+            String refName = language.getRefName();
+
+            String title = whValidate.whDescriptor.getLabel().translateOrEmpty(gameModel, refName);
+            String description = whValidate.whDescriptor.getDescription().translateOrEmpty(gameModel, refName);
+
+            StringBuilder bd = new StringBuilder();
+
+            bd.append("<b>").append(title).append("</b>");
+            bd.append(description);
+
+            for (VariableDescriptor item : whValidate.whDescriptor.getItems()) {
+                if (item instanceof PrimitiveDescriptorI) {
+                    bd.append("<div class=\"whview-history-answer\" style=\"margin-bottom: 10px;\">");
+                    bd.append("<span class=\\\"whview-history-answer-title\\\"><b>").
+                            append(item.getLabel().translateOrEmpty(gameModel, refName)).
+                            append("</b></span>");
+
+                    if (item instanceof StringDescriptor && !((StringDescriptor) item).getAllowedValues().isEmpty()) {
+                        StringInstance instance = (StringInstance) item.getInstance(self);
+                        String[] values = instance.parseValues(instance.getValue());
+                        for (String value : values) {
+                            bd.append("<div class=\\\"whview-history-answer-value\\\" style=\\\"margin-left : 10px;\\\">").
+                                    append(value).
+                                    append("</div>");
+                        }
+
+                    } else {
+                        Object value = ((PrimitiveDescriptorI) item).getValue(self);
+
+                        bd.append("<div class=\\\"whview-history-answer-value\\\" style=\\\"margin-left : 10px;\\\">").
+                                append(value).
+                                append("</div>");
+                    }
+
+                    bd.append("</div>");
+                }
+            }
+
+            String result = (String) translate.call(i18n, "question.result");
+            logger.error("Result: " +result);
+            subject.updateTranslation(refName, title);
+            body.updateTranslation(refName, bd.toString());
+        }
+
+        history.setFrom(from);
+        history.setSubject(subject);
+        history.setBody(body);
+        history.setDate(date);
+
+        return history;
     }
 
     public static class WhValidate {

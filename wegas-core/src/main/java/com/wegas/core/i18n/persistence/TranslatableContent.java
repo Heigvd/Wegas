@@ -216,6 +216,19 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         }
     }
 
+    private Translation translate(GameModel gameModel, String refName) {
+        return this.translate(gameModel.getPreferredLanguagesRefName(refName));
+    }
+
+    public String translateOrEmpty(GameModel gameModel, String refName) {
+        Translation tr = this.translate(gameModel, refName);
+        if (tr != null) {
+            return tr.getTranslation();
+        } else {
+            return "";
+        }
+    }
+
     @JsonIgnore
     public Translation getAnyTranslation() {
         Translation emptyOne = null;

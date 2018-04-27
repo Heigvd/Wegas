@@ -60,6 +60,10 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
         this.capped = capped;
     }
 
+    public Message sendMessage(Player p, Message message) {
+        this.getInstance(p).sendMessage(message);
+        return message;
+    }
     /**
      *
      * Sugar to be used from scripts.
