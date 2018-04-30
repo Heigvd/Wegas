@@ -7,6 +7,7 @@ import Textarea from './Textarea';
 import BooleanView from './Boolean';
 import Select from './Select';
 import ArrayWidget from './Array';
+import Html from './Html';
 
 const DEFINED_VIEWS = {
   hidden,
@@ -18,7 +19,7 @@ const DEFINED_VIEWS = {
   textarea: Textarea,
   array: ArrayWidget,
   select: Select,
-  html: StringInput, // @TODO
+  html: Html,
   script: ObjectView, // @TODO
 };
 setDefaultWidgets(DEFINED_VIEWS);
@@ -35,6 +36,5 @@ export type View<P extends ViewTypes> = PropsType<
   : { type?: P };
 
 type ViewMap = { [P in keyof typeof DEFINED_VIEWS]: View<P> };
-type valueof<T> = T extends { [key: string]: infer Z } ? Z : never;
-
+type valueof<T> = T[keyof T];
 export type AvailableViews = valueof<ViewMap>;

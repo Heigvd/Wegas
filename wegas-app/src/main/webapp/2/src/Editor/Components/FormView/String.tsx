@@ -5,19 +5,20 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonViewContainer, CommonView } from './commonView';
 import { css } from 'glamor';
 
-export interface StringInputProps extends WidgetProps.BaseProps {
-  view: {
-    rows?: number;
-    disabled?: boolean;
-    readOnly?: boolean;
-    placeholder?: string;
-  } & CommonView &
-    LabeledView;
-
+export interface StringInputProps
+  extends WidgetProps.BaseProps<
+      {
+        rows?: number;
+        disabled?: boolean;
+        readOnly?: boolean;
+        placeholder?: string;
+      } & CommonView &
+        LabeledView
+    > {
   value?: string | number;
 }
 
-const inputStyle = css({
+export const inputStyle = css({
   minHeight: '1.5em',
   width: '100%',
   resize: 'vertical',
