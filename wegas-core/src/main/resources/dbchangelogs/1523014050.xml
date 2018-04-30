@@ -32,6 +32,13 @@
             FROM gamemodel;
         </sql>
 
+        <!-- guess default language from language variable -->
+        <sql>
+            UPDATE gamemodellanguage as gml set code = FOO.code, lang = FOO.lang FROM (
+            select gm.id as gamemodel_id, lower(si.val) as code, case lower(si.val) when 'fr' then 'Français' when 'en' then 'English' end as lang from variabledescriptor vd join gamemodel gm on gm.id = gamemodel_id join stringinstance si on si.id = defaultinstance_id where vd.name = 'language') as FOO
+            WHERE gml.gamemodel_id = FOO.gamemodel_id;
+        </sql>
+
         <addColumn tableName="player">
             <column name="refname" type="VARCHAR(16)" />
         </addColumn>

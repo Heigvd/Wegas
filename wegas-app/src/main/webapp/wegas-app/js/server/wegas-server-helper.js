@@ -19,11 +19,13 @@ var WegasHelper = (function() {
             "use strict";
             var message = QuestionFacade.buildWhValidateMessage(self, e, I18n);
 
-            if (typeof inboxNameOrCb === "function") {
-                inboxNameOrCb(message);
-            } else {
-                //sendDatedMessage(self, from, date, subject, body)
-                Variable.find(gameModel, inboxNameOrCb).sendMessage(self, message);
+            if (message) {
+                if (typeof inboxNameOrCb === "function") {
+                    inboxNameOrCb(message);
+                } else {
+                    //sendDatedMessage(self, from, date, subject, body)
+                    Variable.find(gameModel, inboxNameOrCb).sendMessage(self, message);
+                }
             }
         });
     }
@@ -36,39 +38,31 @@ var WegasHelper = (function() {
      * @returns {undefined}
      */
     function _registerReplyValidateListener(inboxNameOrCb, config) {
-        Event.on("whValidate", function(e) {
+        Event.on("replyValidate", function(e) {
             "use strict";
-            var msg = "",
-                choiceDescr = e.choice.getDescriptor(),
-                choiceTitle = choiceDescr.getLabel(),
-                i, result,
-                includeHistory = config && config.includeHistory;
+            var message = QuestionFacade.buildReplyValidateMessage(self, e, I18n, config || {});
 
-
-
-
-
-            if (typeof inboxNameOrCb === "function") {
-                inboxNameOrCb(title, msg);
-            } else {
-                //sendDatedMessage(self, from, date, subject, body)
-                Variable.find(gameModel, inboxNameOrCb).sendMessage(self, "", whTitle, msg);
+            if (message) {
+                if (typeof inboxNameOrCb === "function") {
+                    inboxNameOrCb(message);
+                } else {
+                    //sendDatedMessage(self, from, date, subject, body)
+                    Variable.find(gameModel, inboxNameOrCb).sendMessage(self, message);
+                }
             }
         });
     }
 
-
-
     return {
         /**
          * historize replyValidate as a message
-         * @param {type} inboxNameOrCb either the name of a inboxDescriptor variable or a callback (function(questionTitle, historyContent))
+         * @param {type} inboxNameOrCb either the name of a inboxDescriptor variable or a callback (function(message))
          */
         registerWhValidateListener: function(inboxNameOrCb) {
             _registerWhValidateListener(inboxNameOrCb);
         },
-        registerReplyValidateListener: function(inboxNameOrCb) {
-            return _registerReplyValidateListener(inboxNameOrCb);
+        registerReplyValidateListener: function(inboxNameOrCb, config) {
+            return _registerReplyValidateListener(inboxNameOrCb, config);
         }
     };
 }());

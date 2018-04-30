@@ -389,38 +389,9 @@ YUI.add('wegas-entity', function(Y) {
             },
             languages: {
                 type: 'array',
-                items: {
-                    type: 'object',
-                    value: {
-                        "@class": "GameModelLanguage",
-                        refName: "",
-                        code: "",
-                        lang: ""
-                    },
-                    properties: {
-                        id: IDATTRDEF,
-                        '@class': {
-                            type: "string",
-                            value: 'GameModelLanguage',
-                            view: {
-                                type: HIDDEN
-                            }
-                        },
-                        refName: {
-                            type: "string",
-                            view: {label: "refName"}
-                        },
-                        code: {
-                            type: "string",
-                            view: {label: "code"}
-                        },
-                        lang: {
-                            type: "string",
-                            view: {label: "language"}
-                        }
-                    }
-                },
-                view: {label: "Languages"}
+                view: {
+                    type: "hidden"
+                }
             },
             properties: {
                 type: 'object',

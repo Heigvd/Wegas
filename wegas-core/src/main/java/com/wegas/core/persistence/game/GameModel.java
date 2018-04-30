@@ -890,16 +890,35 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     public List<String> getPreferredLanguagesRefName(Player player) {
         List<GameModelLanguage> sortedLanguages = getLanguages();
         ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
+
         for (GameModelLanguage gml : sortedLanguages) {
-            langs.add(gml.getRefName());
+            if (gml.getRefName().equals(player.getRefName())) {
+                langs.add(0, gml.getRefName());
+            } else {
+                langs.add(gml.getRefName());
+            }
         }
 
-        if (player != null) {
-            String playerFirstChoice = player.getRefName();
-            if (!Helper.isNullOrEmpty(playerFirstChoice)) {
-                if (langs.remove(playerFirstChoice)) {
-                    langs.add(0, playerFirstChoice);
-                }
+        return langs;
+    }
+
+    /**
+     * get list of language code, the given one first
+     *
+     *
+     * @param preferredRefName preferred refName, may be null or empty
+     *
+     * @return list
+     */
+    public List<String> getPreferredLanguagesCode(String preferredRefName) {
+        List<GameModelLanguage> sortedLanguages = getLanguages();
+        ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
+
+        for (GameModelLanguage gml : sortedLanguages) {
+            if (gml.getRefName().equals(preferredRefName)) {
+                langs.add(0, gml.getCode());
+            } else {
+                langs.add(gml.getCode());
             }
         }
 
@@ -918,12 +937,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         List<GameModelLanguage> sortedLanguages = getLanguages();
         ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
         for (GameModelLanguage gml : sortedLanguages) {
-            langs.add(gml.getRefName());
-        }
-
-        if (!Helper.isNullOrEmpty(preferredRefName)) {
-            if (langs.remove(preferredRefName)) {
-                langs.add(0, preferredRefName);
+            if (gml.getRefName().equals(preferredRefName)) {
+                langs.add(0, gml.getRefName());
+            } else {
+                langs.add(gml.getRefName());
             }
         }
 

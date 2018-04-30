@@ -9,14 +9,7 @@
  * @fileoverview
  * @author Maxence Laurent <maxence.laurent> <gmail.com>
  */
-var i18nOrdinate = (function(module) {
-    return module;
-}(i18nOrdinate || {})),
-    i18nTable = (function(module) {
-        return module;
-    }(i18nTable || {}));
-
-i18nTable.en = {
+I18n.add("en", {
     wc: "Words count",
     cc: "Characters count",
     data: "Data",
@@ -37,18 +30,4 @@ i18nTable.en = {
     ready: "Done",
     na: "N/A",
     evicted: "Evicted"
-};
-
-i18nOrdinate.en = function(number) {
-    "use strict";
-    switch (number) {
-        case 1:
-            return number + "st";
-        case 2:
-            return number + "nd";
-        case 3:
-            return number + "rd";
-        default:
-            return number + "th";
-    }
-};
+});
