@@ -11,7 +11,7 @@ import { deepUpdate } from '../../data/updateUtils';
 import { IForm } from './Form';
 interface EditorProps {
   entity?: IVariableDescriptor;
-  update: (variable: IWegasEntity) => Promise<any>;
+  update: (variable: IWegasEntity) => void;
   del: (variable: IVariableDescriptor, path?: string[]) => void;
   path?: string[];
   config?: Schema;
@@ -86,10 +86,10 @@ export default connect(
   dispatch => {
     return {
       update(entity: IWegasEntity) {
-        return dispatch(Actions.EditorActions.saveEditor(entity));
+        dispatch(Actions.EditorActions.saveEditor(entity));
       },
       del(entity: IVariableDescriptor, path?: string[]) {
-        return dispatch(
+        dispatch(
           Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
         );
       },

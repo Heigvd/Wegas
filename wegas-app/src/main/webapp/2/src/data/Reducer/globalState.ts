@@ -2,7 +2,7 @@
 import u from 'immer';
 import { ThunkAction } from 'redux-thunk';
 import { VariableDescriptor } from '../selectors';
-import { ActionType, Actions } from '../actions';
+import { ActionType, Actions, ActionCreator } from '../actions';
 import { State } from './reducers';
 import { Actions as ACTIONS } from '..';
 import { Schema } from 'jsoninput';
@@ -91,11 +91,12 @@ export function editVariable(
   entity: IVariableDescriptor,
   path: string[] = [],
   config?: Schema,
-): Actions.VARIABLE_EDIT {
-  return {
-    type: ActionType.VARIABLE_EDIT,
-    payload: { id: entity.id, config, path },
-  };
+) {
+  return ActionCreator.VARIABLE_EDIT({
+    id: entity.id,
+    config,
+    path,
+  });
 }
 
 /**
@@ -105,21 +106,15 @@ export function editVariable(
  * @param {string} cls class
  * @returns
  */
-export function createVariable(
-  cls: string,
-  parent?: IParentDescriptor,
-): Actions.VARIABLE_CREATE {
-  return {
-    type: ActionType.VARIABLE_CREATE,
-    payload: { '@class': cls, parentId: parent ? parent.id : undefined },
-  };
+export function createVariable(cls: string, parent?: IParentDescriptor) {
+  return ActionCreator.VARIABLE_CREATE({
+    '@class': cls,
+    parentId: parent ? parent.id : undefined,
+  });
 }
 
-export function editComponent(page: string, path: string[]): Actions.PAGE_EDIT {
-  return {
-    type: 'PAGE/EDIT',
-    payload: { page, path },
-  };
+export function editComponent(page: string, path: string[]) {
+  return ActionCreator.PAGE_EDIT({ page, path });
 }
 /**
  * Save the content from the editor
@@ -144,7 +139,7 @@ export function saveEditor(
           ),
         );
       case 'VariableCreate':
-        dispatch(
+        return dispatch(
           ACTIONS.VariableDescriptorActions.createDescriptor(
             value as IVariableDescriptor,
             VariableDescriptor.select(editMode.parentId) as
@@ -161,8 +156,8 @@ export function saveEditor(
  * @export
  * @param {boolean} payload set it or not.
  */
-export function pageEditMode(payload: boolean): Actions.PAGE_EDIT_MODE {
-  return { type: ActionType.PAGE_EDIT_MODE, payload: payload };
+export function pageEditMode(payload: boolean) {
+  return ActionCreator.PAGE_EDIT_MODE(payload);
 }
 /**
  * Set or unset page src mode
@@ -170,16 +165,10 @@ export function pageEditMode(payload: boolean): Actions.PAGE_EDIT_MODE {
  * @export
  * @param payload set it or not
  */
-export function pageSrcMode(payload: boolean): Actions.PAGE_SRC_MODE {
-  return { type: ActionType.PAGE_SRC_MODE, payload: payload };
+export function pageSrcMode(payload: boolean) {
+  return ActionCreator.PAGE_SRC_MODE(payload);
 }
 
-export function updatePusherStatus(
-  status: string,
-  socket_id: string,
-): Actions.PUSHER_SOCKET {
-  return {
-    type: ActionType.PUSHER_SOCKET,
-    payload: { socket_id, status },
-  };
+export function updatePusherStatus(status: string, socket_id: string) {
+  return ActionCreator.PUSHER_SOCKET({ socket_id, status });
 }

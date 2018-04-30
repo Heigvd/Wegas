@@ -13,7 +13,14 @@ export const config: ConfigurationSchema<INumberDescriptor> = {
   },
   maxValue: {
     type: ['number', 'null'],
-    errored: function(val, formVal) {
+    errored: function(
+      val: number | null | undefined,
+      formVal: {
+        minValue: number | null | undefined;
+        maxValue: number | null | undefined;
+        defaultInstance: { value: number };
+      },
+    ) {
       const errors = [];
       const max = typeof val === 'number' ? val : Infinity;
       const min =
@@ -30,7 +37,14 @@ export const config: ConfigurationSchema<INumberDescriptor> = {
   },
   minValue: {
     type: ['number', 'null'],
-    errored: function(val, formVal) {
+    errored: function(
+      val: number | null | undefined,
+      formVal: {
+        minValue: number | null | undefined;
+        maxValue: number | null | undefined;
+        defaultInstance: { value: number };
+      },
+    ) {
       const errors = [];
       const max =
         typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity;

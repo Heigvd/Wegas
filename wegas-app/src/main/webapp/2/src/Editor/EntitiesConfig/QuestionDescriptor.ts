@@ -31,7 +31,7 @@ export const config: ConfigurationSchema<IQuestionDescriptor> = {
   tabular: {
     index: 2,
     type: 'boolean',
-    visible: function(_val, formVal) {
+    visible: function(_val: any, formVal: { cbx: boolean }) {
       return formVal.cbx;
     },
     view: {
@@ -44,10 +44,13 @@ export const config: ConfigurationSchema<IQuestionDescriptor> = {
     index: 3,
     value: 1,
     minimum: 0,
-    visible: function(_val, formVal) {
+    visible: function(_val: any, formVal: { cbx: boolean }) {
       return formVal.cbx;
     },
-    errored: function(val, formVal) {
+    errored: function(
+      val: number | undefined | null,
+      formVal: { cbx: boolean; maxReplies?: number },
+    ) {
       const errors = [];
       const min = typeof val === 'number' ? val : 1;
       const max = formVal.maxReplies;
@@ -72,7 +75,10 @@ export const config: ConfigurationSchema<IQuestionDescriptor> = {
     index: 4,
     value: 1,
     minimum: 1,
-    errored: function(val, formVal) {
+    errored: function(
+      val: number | null | undefined,
+      formVal: { minReplies?: number; cbx: boolean },
+    ) {
       const errors = [];
       if (typeof val === 'number') {
         if (val < 1) {

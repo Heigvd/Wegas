@@ -69,9 +69,9 @@ export const config: ConfigurationSchema<IResult> = {
   },
   ignorationAnswer: {
     type: ['string', 'null'],
-    visible: function(_val, formVal, path) {
+    visible: function(_val: any, formVal: {}, path: string[]) {
       path.pop(); // remove current key
-      const result: IResult = path.reduce((prev, v) => prev[v], formVal);
+      const result: IResult = path.reduce((prev: any, v) => prev[v], formVal);
       const choice = VariableDescriptor.select(result.choiceDescriptorId);
       if (choice != null) {
         const question = VariableDescriptor.select(
@@ -100,9 +100,9 @@ export const config: ConfigurationSchema<IResult> = {
         type: 'string',
       },
     },
-    visible: function(_val, formVal, path) {
+    visible: function(__val: any, formVal: {}, path: string[]) {
       path.pop(); // remove current key
-      const result: IResult = path.reduce((prev, v) => prev[v], formVal);
+      const result: IResult = path.reduce((prev: any, v) => prev[v], formVal);
       const choice = VariableDescriptor.select(result.choiceDescriptorId);
       if (choice != null) {
         const question = VariableDescriptor.select(

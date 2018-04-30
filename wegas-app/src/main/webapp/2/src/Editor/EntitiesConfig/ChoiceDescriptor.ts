@@ -20,7 +20,7 @@ export const config: ConfigurationSchema<IChoiceDescriptor> = {
   maxReplies: {
     type: ['null', 'number'],
     minimum: 1,
-    visible: function(_val, formVal) {
+    visible: function(_val: any, formVal: { id?: number }) {
       if (formVal.id) {
         const parent = VariableDescriptor.select(
           VariableDescriptor.select(formVal.id)!.parentDescriptorId,

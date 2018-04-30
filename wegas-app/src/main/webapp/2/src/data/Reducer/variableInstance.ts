@@ -37,10 +37,10 @@ export default variableInstances;
 
 //ACTIONS
 
-export function getAll(): ThunkAction<void, State, void> {
+export function getAll(): ThunkAction<Promise<Actions>, State, void> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
-    VariableInstanceAPI.getAll(gameModelId).then(res =>
+    return VariableInstanceAPI.getAll(gameModelId).then(res =>
       dispatch(managedMode(res)),
     );
   };

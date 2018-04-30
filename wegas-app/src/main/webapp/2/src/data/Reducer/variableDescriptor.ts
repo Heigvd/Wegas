@@ -43,10 +43,10 @@ export default variableDescriptors;
 
 //ACTIONS
 
-export function getAll(): ThunkAction<void, State, void> {
+export function getAll(): ThunkAction<Promise<Actions>, State, void> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
-    VariableDescriptorAPI.getAll(gameModelId).then(res =>
+    return VariableDescriptorAPI.getAll(gameModelId).then(res =>
       dispatch(managedMode(res)),
     );
   };
@@ -54,7 +54,7 @@ export function getAll(): ThunkAction<void, State, void> {
 
 export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
-): ThunkAction<void, State, void> {
+): ThunkAction<Promise<Actions>, State, void> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(
@@ -66,7 +66,7 @@ export function moveDescriptor(
   variableDescriptor: IVariableDescriptor,
   index: number,
   parent?: IParentDescriptor,
-): ThunkAction<void, State, void> {
+): ThunkAction<Promise<Actions>, State, void> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return VariableDescriptorAPI.move(
@@ -80,7 +80,7 @@ export function moveDescriptor(
 export function createDescriptor(
   variableDescriptor: IVariableDescriptor,
   parent?: IParentDescriptor,
-): ThunkAction<void, State, void> {
+): ThunkAction<Promise<Actions>, State, void> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return VariableDescriptorAPI.post(
@@ -90,7 +90,7 @@ export function createDescriptor(
     ).then(res => {
       dispatch(managedMode(res));
       // Assume entity[0] is what we just created.
-      dispatch(
+      return dispatch(
         Act.EditorActions.editVariable(res
           .updatedEntities[0] as IVariableDescriptor),
       );
@@ -100,7 +100,7 @@ export function createDescriptor(
 export function deleteDescriptor(
   variableDescriptor: IVariableDescriptor,
   path: string[] = [],
-): ThunkAction<void, State, void> {
+): ThunkAction<Promise<Actions>, State, void> {
   return function(dispatch, getState) {
     if (path.length > 0) {
       let vs = deepRemove(variableDescriptor, path);

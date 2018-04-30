@@ -5,7 +5,7 @@ import './FormView';
 
 interface EditorProps {
   entity?: IVariableDescriptor;
-  update: (variable: IWegasEntity) => Promise<any>;
+  update: (variable: IWegasEntity) => void;
   del: (variable: IVariableDescriptor, path?: string[]) => void;
   path?: string[];
   config?: Schema;
