@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import u from 'updeep';
+import u from 'immer';
 import { managedMode, Actions, ActionType } from '../actions';
 import { ThunkAction } from 'redux-thunk';
 import { State } from './reducers';
@@ -11,32 +11,34 @@ export interface VariableDescriptorState {
   [id: string]: Readonly<IVariableDescriptor> | undefined;
 }
 
-const variableDescriptors: Reducer<
-  Readonly<VariableDescriptorState>
-> = function variableDescriptors(state = {}, action: Actions) {
-  switch (action.type) {
-    case ActionType.MANAGED_MODE:
-      const updateList = action.payload.updatedEntities.variableDescriptors;
-      const deletedIds = Object.keys(
-        action.payload.deletedEntities.variableDescriptors,
-      );
-      // merge in update prev var which have a higher version
-      const realUpdate = u.map(
-        (variable, i) =>
-          u.if(
-            variable => {
-              const curVar = state[i];
-              return !!curVar && curVar.version > variable.version;
-            },
-            state[i],
-            variable,
-          ),
-        updateList,
-      );
-      return u.omit(deletedIds, u(realUpdate, state));
-  }
-  return state;
-};
+const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = u(
+  function variableDescriptors(
+    state: VariableDescriptorState,
+    action: Actions,
+  ) {
+    switch (action.type) {
+      case ActionType.MANAGED_MODE:
+        const updateList = action.payload.updatedEntities.variableDescriptors;
+        const deletedIds = Object.keys(
+          action.payload.deletedEntities.variableDescriptors,
+        );
+        Object.keys(updateList).forEach(id => {
+          const newElement = updateList[id];
+          const oldElement = state[id];
+          // merge in update prev var which have a higher version
+          if (oldElement == null || newElement.version > oldElement.version) {
+            state[id] = newElement;
+          }
+        });
+        deletedIds.forEach(id => {
+          delete state[id];
+        });
+
+        return;
+    }
+  },
+  {},
+);
 export default variableDescriptors;
 
 //ACTIONS

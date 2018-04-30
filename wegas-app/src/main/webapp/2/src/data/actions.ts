@@ -15,14 +15,18 @@ export namespace Actions {
   }
   export interface VARIABLE_EDIT {
     type: typeof ActionType.VARIABLE_EDIT;
-    id: number;
-    config?: Schema;
-    path?: string[];
+    payload: {
+      id: number;
+      config?: Schema;
+      path?: string[];
+    };
   }
   export interface RESULT_EDIT {
     type: typeof ActionType.RESULT_EDIT;
-    choiceId: number;
-    id: number;
+    payload: {
+      choiceId: number;
+      id: number;
+    };
   }
   export interface VARIABLE_CREATE {
     type: typeof ActionType.VARIABLE_CREATE;

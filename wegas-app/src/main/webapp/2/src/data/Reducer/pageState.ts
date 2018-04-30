@@ -1,4 +1,4 @@
-import u from 'updeep';
+import u from 'immer';
 import { ActionType, Actions } from '../actions';
 import { ThunkAction } from 'redux-thunk';
 import { State } from './reducers';
@@ -9,17 +9,12 @@ import { compare } from 'fast-json-patch';
 export interface PageState {
   [id: string]: Readonly<Page>;
 }
-(window as any).u = u;
-const pageState = (
-  state: PageState = u({}, {}),
-  action: Actions,
-): Readonly<PageState> => {
+const pageState = u<PageState>((state: PageState, action: Actions) => {
   switch (action.type) {
     case ActionType.PAGE_FETCH:
-      return u(u.map(p => u.constant(p), action.payload.pages), state);
+      return { ...state, ...action.payload.pages };
   }
-  return state;
-};
+}, {});
 export default pageState;
 
 // Actions

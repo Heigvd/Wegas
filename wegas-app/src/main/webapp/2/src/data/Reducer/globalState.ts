@@ -1,5 +1,5 @@
 // import { Reducer } from 'redux';
-import u from 'updeep';
+import u from 'immer';
 import { ThunkAction } from 'redux-thunk';
 import { VariableDescriptor } from '../selectors';
 import { ActionType, Actions } from '../actions';
@@ -33,63 +33,51 @@ export interface GlobalState {
  * @param {Actions} action
  * @returns {Readonly<GlobalState>}
  */
-const global = (
-  state = u(
-    {},
-    {
-      currentGameModelId: CurrentGM.id,
-      currentUser: CurrentUser,
-      pusherStatus: { status: 'disconnected' },
-      pageEdit: false,
-      pageSrc: false,
-    },
-  ),
-  action: Actions,
-): Readonly<GlobalState> => {
-  switch (action.type) {
-    case ActionType.VARIABLE_EDIT:
-      return u(
-        {
-          editing: u.constant({
-            type: 'Variable',
-            id: action.id,
-            schema: action.config,
-            path: action.path,
-          } as Edition),
-        },
-        state,
-      );
-    case ActionType.VARIABLE_CREATE:
-      return u(
-        {
-          editing: u.constant({
-            type: 'VariableCreate',
-            '@class': action.payload['@class'],
-            parentId: action.payload.parentId,
-          } as Edition),
-        },
-        state,
-      );
-    case ActionType.PAGE_EDIT:
-      return u(
-        {
-          editing: u.constant({
-            type: 'Component',
-            page: action.payload.page,
-            path: action.payload.path,
-          } as Edition),
-        },
-        state,
-      );
-    case ActionType.PAGE_SRC_MODE:
-      return u({ pageSrc: action.payload }, state);
-    case ActionType.PUSHER_SOCKET:
-      return u({ pusherStatus: action.payload }, state);
-    case ActionType.PAGE_EDIT_MODE:
-      return u({ pageEdit: action.payload }, state);
-  }
-  return state;
-};
+const global = u<GlobalState>(
+  (state: GlobalState, action: Actions) => {
+    switch (action.type) {
+      case ActionType.VARIABLE_EDIT:
+        state.editing = {
+          type: 'Variable',
+          id: action.payload.id,
+          config: action.payload.config,
+          path: action.payload.path,
+        };
+        return;
+      case ActionType.VARIABLE_CREATE:
+        state.editing = {
+          type: 'VariableCreate',
+          '@class': action.payload['@class'],
+          parentId: action.payload.parentId,
+        };
+        return;
+      case ActionType.PAGE_EDIT:
+        state.editing = {
+          type: 'Component',
+          page: action.payload.page,
+          path: action.payload.path,
+        };
+        return;
+      case ActionType.PAGE_SRC_MODE:
+        state.pageSrc = action.payload;
+        return;
+      case ActionType.PUSHER_SOCKET:
+        state.pusherStatus = action.payload;
+        return;
+      case ActionType.PAGE_EDIT_MODE:
+        state.pageEdit = action.payload;
+        return;
+    }
+    return state;
+  },
+  {
+    currentGameModelId: CurrentGM.id,
+    currentUser: CurrentUser,
+    pusherStatus: { status: 'disconnected' },
+    pageEdit: false,
+    pageSrc: false,
+  },
+);
 export default global;
 
 //ACTIONS
@@ -103,15 +91,18 @@ export function editVariable(
   entity: IVariableDescriptor,
   path: string[] = [],
   config?: Schema,
-) {
-  return { type: ActionType.VARIABLE_EDIT, id: entity.id, config, path };
+): Actions.VARIABLE_EDIT {
+  return {
+    type: ActionType.VARIABLE_EDIT,
+    payload: { id: entity.id, config, path },
+  };
 }
 
 /**
  * Create a variableDescriptor
  *
  * @export
- * @param {string} cls
+ * @param {string} cls class
  * @returns
  */
 export function createVariable(
