@@ -892,7 +892,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
 
         for (GameModelLanguage gml : sortedLanguages) {
-            if (gml.getRefName().equals(player.getRefName())) {
+            if (player != null && gml.getRefName().equals(player.getRefName())) {
                 langs.add(0, gml.getRefName());
             } else {
                 langs.add(gml.getRefName());

@@ -40,13 +40,15 @@ public class DelayedScriptEventFacadeTest extends AbstractArquillianTest {
         // a string descriptor
         StringDescriptor myString = new StringDescriptor();
         myString.setName(str1Name);
-        myString.setDefaultInstance(new StringInstance(str1OriValue));
+        myString.setDefaultInstance(new StringInstance());
+        myString.getDefaultInstance().setValue(str1OriValue);
         variableDescriptorFacade.create(scenario.getId(), myString);
 
         // a string descriptor
         StringDescriptor my2ndString = new StringDescriptor();
         my2ndString.setName(str2Name);
-        my2ndString.setDefaultInstance(new StringInstance(str2OriValue));
+        my2ndString.setDefaultInstance(new StringInstance());
+        my2ndString.getDefaultInstance().setValue(str2OriValue);
         variableDescriptorFacade.create(scenario.getId(), my2ndString);
 
         // a trigger triggered by '3secDelay' event

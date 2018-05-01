@@ -689,6 +689,33 @@
         <dropColumn columnName="attachements" tableName="attachment"/>
     </changeSet>
 
+    <!-- StringInstance value -->
+    <changeSet author="maxence (generated)" id="1523014059600-24">
+        <addColumn tableName="stringinstance">
+            <column name="trvalue_id" type="int8"/>
+        </addColumn>
+
+        <createIndex indexName="index_stringinstance_trvalue_id" tableName="stringinstance">
+            <column name="trvalue_id"/>
+        </createIndex>
+
+        <update tableName="stringinstance">
+            <column name="trvalue_id" valueComputed="nextval('i18n_seq')" />
+        </update>
+
+        <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT trvalue_id as id, id as parentinstance_id from stringinstance</sql>
+
+        <addForeignKeyConstraint baseColumnNames="trvalue_id" baseTableName="stringinstance" constraintName="fk_stringinstance_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+
+        <sql>
+            INSERT INTO translatablecontent_translations (tr, lang, translatablecontent_id)
+            SELECT val as tr, 'def' as lang, trvalue_id as translatablecontent_id
+            FROM stringinstance
+        </sql>
+
+        <dropColumn columnName="val" tableName="stringinstance"/>
+    </changeSet>
+
 
     <!-- restore JPA sequence -->
     <changeSet author="maxence (generated)" id="1523014059600-clear">

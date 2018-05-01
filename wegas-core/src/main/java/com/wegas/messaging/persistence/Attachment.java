@@ -7,6 +7,7 @@
  */
 package com.wegas.messaging.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +36,8 @@ import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 /**
  *
@@ -57,13 +60,14 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
     private static final long serialVersionUID = 1L;
 
     @ManyToOne
+    @JsonIgnore
     private Message message;
 
     /**
      * URI
      */
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent file;
 
     @Override
@@ -176,4 +180,19 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
 
     }
 
+    public static Attachment readFromNashorn(JSObject att) {
+        if (att != null) {
+            Object theClass = att.getMember("@class");
+            Attachment attachment = new Attachment();
+
+            if (theClass != null && theClass.equals("Attachment")) {
+                ScriptObjectMirror trs = (ScriptObjectMirror) att.getMember("file");
+                TranslatableContent file = TranslatableContent.readFromNashorn(trs);
+                attachment.setFile(file);
+            }
+            return attachment;
+        } else {
+            return null;
+        }
+    }
 }

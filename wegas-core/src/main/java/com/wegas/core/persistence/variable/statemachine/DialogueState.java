@@ -28,8 +28,8 @@ public class DialogueState extends State {
     /**
      *
      */
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent text;
 
     @Override

@@ -193,7 +193,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @return
      */
     public Message sendMessage(Player p, TranslatableContent from, TranslatableContent date, TranslatableContent subject,
-            TranslatableContent body, String token, List<TranslatableContent> attachments) {
+            TranslatableContent body, String token, List<Attachment> attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
     }
 

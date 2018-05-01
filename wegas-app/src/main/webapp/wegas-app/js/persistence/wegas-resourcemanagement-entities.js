@@ -987,14 +987,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "BurndownDescriptor"
             },
-            title: {
-                type: STRING,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players",
-                },
-                index: -1
-            },
             description: {
                 type: STRING,
                 optional: true,

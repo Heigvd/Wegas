@@ -44,6 +44,8 @@ import com.wegas.resourceManagement.persistence.WRequirement;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponentBase;
@@ -305,7 +307,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         encodeBase(context, writer, obj, editorMode);
 
         StringInstance instance = obj.getInstance(defaultValues, player);
-        UIHelper.printPropertyTextArea(context, writer, "Value", instance.getValue(), false, true);
+        UIHelper.printPropertyTextArea(context, writer, "Value", instance.getTrValue().translateOrEmpty(player), false, true);
         UIHelper.endDiv(writer);
     }
 
@@ -662,7 +664,11 @@ public class UIVariableDescriptor extends UIComponentBase {
             UIHelper.printProperty(context, writer, UIHelper.TEXT_DEFAULT_STATE, fsm.getDefaultInstance().getCurrentStateId().toString());
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
-            for (Long id : fsm.getStates().keySet()) {
+            List<Long> keys = new ArrayList<>();
+            keys.addAll(fsm.getStates().keySet());
+            Collections.sort(keys);
+
+            for (Long id : keys) {
                 UIState uiState = new UIState(fsm.getStates().get(id), id, player, editorMode, defaultValues);
                 uiState.encodeAll(context);
             }
@@ -687,7 +693,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         InboxInstance instance = inbox.getInstance(defaultValues, player);
 
         for (Message msg : instance.getSortedMessages()) {
-            UIHelper.printMessage(context, writer, "", 
+            UIHelper.printMessage(context, writer, "",
                     msg.getFrom().translateOrEmpty(player),
                     msg.getSubject().translateOrEmpty(player),
                     msg.getDate().translateOrEmpty(player),

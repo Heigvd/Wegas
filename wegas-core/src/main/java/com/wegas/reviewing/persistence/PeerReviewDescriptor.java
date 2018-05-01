@@ -135,7 +135,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     private Integer maxNumberOfReviewer;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonDeserialize(using = TranslationDeserializer.class)
     private TranslatableContent description;
 

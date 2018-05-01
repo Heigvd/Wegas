@@ -26,7 +26,7 @@ public class DialogueTransition extends Transition {
 
     private static final long serialVersionUID = 1L;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonDeserialize(using = TranslationDeserializer.class)
     private TranslatableContent actionText;
 

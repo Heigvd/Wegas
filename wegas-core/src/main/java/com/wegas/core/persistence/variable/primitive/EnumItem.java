@@ -81,7 +81,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     @JsonIgnore
     private Integer order;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent label;
 
     @Override

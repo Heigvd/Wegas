@@ -9,7 +9,6 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.persistence.variable.primitive.Enumeration;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
@@ -39,7 +38,7 @@ public class CategorizedEvaluationDescriptor
     /**
      * List of allowed categories
      */
-    @OneToMany(mappedBy = "parentEvaluation", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parentEvaluation", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
     private List<EnumItem> categories = new ArrayList<>();
 

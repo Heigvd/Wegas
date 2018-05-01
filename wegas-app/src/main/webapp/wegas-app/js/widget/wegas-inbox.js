@@ -63,7 +63,7 @@ YUI.add('wegas-inbox', function(Y) {
                         '  </div>' +
                         "  <% var from = I18n.t(this.get('from')); if (from) { %><div><span class='msg-from'><%== from %></span></div><% } %>" +
                         "  <% if (this.get('attachments') && this.get('attachments').length) {%>" +
-                        "  <div class='msg-attachment'><% Y.Array.each(this.get('attachments'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>" +
+                        "  <div class='msg-attachment'><% Y.Array.each(this.get('attachments'), function(a){ var url = I18n.t(a.get('file')); %><a href='<%= url %>' data-file='<%= url %>' target='_blank'><%= url.split('/').pop() %></a>;<% }); %></div>" +
                         '<% } %></div>' +
                         "<div class='msg-body'> <%== I18n.t(this.get('body')) %></div>"
                         )

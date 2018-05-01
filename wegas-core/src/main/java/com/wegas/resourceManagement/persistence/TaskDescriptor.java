@@ -55,8 +55,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     /**
      *
      */
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent description;
 
     /**

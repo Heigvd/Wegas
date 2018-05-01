@@ -51,7 +51,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     /**
      *
      */
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonDeserialize(using = TranslationDeserializer.class)
     private TranslatableContent description;
 

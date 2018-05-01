@@ -14,7 +14,6 @@ import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -153,6 +152,12 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         if (Helper.isNullOrEmpty(entity.getName()) && !Helper.isNullOrEmpty(baseLabel)) {
             // no name, but a label
             entity.setName(baseLabel);
+        }
+
+
+        if (Helper.isNullOrEmpty(entity.getName()) && !Helper.isNullOrEmpty(entity.getEditorTag())) {
+            // still no name but a tag
+            entity.setName(entity.getEditorTag());
         }
 
         Helper.setUniqueName(entity, usedNames, gameModel);

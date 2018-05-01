@@ -202,8 +202,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
      * Variable descriptor human readable name
      * Player visible
      */
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent label;
 
     @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)

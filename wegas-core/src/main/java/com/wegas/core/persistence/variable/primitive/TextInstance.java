@@ -43,8 +43,8 @@ public class TextInstance extends VariableInstance implements Searchable {
     /**
      *
      */
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent trValue;
 
     /**
@@ -92,7 +92,7 @@ public class TextInstance extends VariableInstance implements Searchable {
     }
 
     /**
-     * Backward compat used duringjson deserialisation
+     * Backward compat used during json deserialisation
      *
      * @param value
      */

@@ -53,8 +53,8 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     /**
      *
      */
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent subject;
     /**
      * Kind of message identifier
@@ -65,8 +65,8 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     /**
      * Message body
      */
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent body;
     /**
      * real world time for sorting purpose
@@ -78,8 +78,8 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     /**
      * Simulation date, for display purpose
      */
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent date;
     /**
      *
@@ -88,13 +88,13 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     /**
      *
      */
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent from;
     /**
      *
      */
-    @OneToMany(mappedBy = "message", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "message", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = Attachment.ListDeserializer.class)
     @JsonView(Views.ExtendedI.class)
     private List<Attachment> attachments = new ArrayList<>();
@@ -295,6 +295,17 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
      */
     public void setInboxInstance(InboxInstance inboxInstance) {
         this.inboxInstance = inboxInstance;
+        if (this.inboxInstance != null) {
+            this.getFrom().setParentInstance(this.inboxInstance);
+            this.getSubject().setParentInstance(this.inboxInstance);
+            this.getBody().setParentInstance(this.inboxInstance);
+            this.getDate().setParentInstance(this.inboxInstance);
+            if (this.getAttachments() != null){
+                for (Attachment a : this.getAttachments()){
+                    a.getFile().setParentInstance(this.inboxInstance);
+                }
+            }
+        }
     }
 
     /**

@@ -152,9 +152,9 @@ public class InboxInstance extends VariableInstance implements Searchable {
     }
 
     /**
-     * @param from         message sender
-     * @param subject      message subject
-     * @param body         message body
+     * @param from        message sender
+     * @param subject     message subject
+     * @param body        message body
      * @param attachments
      *
      * @return The sent message
@@ -164,10 +164,10 @@ public class InboxInstance extends VariableInstance implements Searchable {
     }
 
     /**
-     * @param from         message sender
-     * @param subject      message subject
-     * @param body         message body
-     * @param date         ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     * @param from        message sender
+     * @param subject     message subject
+     * @param body        message body
+     * @param date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @param attachments
      *
      * @return The sent message
@@ -180,11 +180,11 @@ public class InboxInstance extends VariableInstance implements Searchable {
     }
 
     /**
-     * @param from         message sender
-     * @param subject      message subject
-     * @param body         message body
-     * @param date         ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
-     * @param token        ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
+     * @param from        message sender
+     * @param subject     message subject
+     * @param body        message body
+     * @param date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     * @param token       ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
      * @param attachments
      *
      * @return The sent message
@@ -209,13 +209,14 @@ public class InboxInstance extends VariableInstance implements Searchable {
      */
     public Message sendMessage(final TranslatableContent from, final TranslatableContent subject,
             final TranslatableContent body, final TranslatableContent date,
-            String token, final List<TranslatableContent> attachments) {
+            String token, final List<Attachment> attachments) {
         final Message msg = new Message();
         msg.setToken(token);
         msg.setFrom(TranslatableContent.merger(null, from));
         msg.setSubject(TranslatableContent.merger(null, subject));
         msg.setBody(TranslatableContent.merger(null, body));
         msg.setDate(TranslatableContent.merger(null, date));
+        msg.setAttachments(ListUtils.mergeLists(msg.getAttachments(), attachments));
 
         this.sendMessage(msg);
         return msg;
@@ -225,11 +226,11 @@ public class InboxInstance extends VariableInstance implements Searchable {
             final JSObject body, final JSObject date,
             String token, final List<JSObject> attachments) {
 
-        List<TranslatableContent> atts = null;
+        List<Attachment> atts = null;
         if (attachments != null && !attachments.isEmpty()) {
             atts = new ArrayList<>();
             for (JSObject a : attachments) {
-                atts.add(TranslatableContent.readFromNashorn(a));
+                atts.add(Attachment.readFromNashorn(a));
             }
         }
 

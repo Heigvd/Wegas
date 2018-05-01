@@ -83,21 +83,21 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * Displayed name
      */
     @JsonDeserialize(using = TranslationDeserializer.class)
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent label;
 
     /**
      * Displayed answer when result selected and validated
      */
     @JsonDeserialize(using = TranslationDeserializer.class)
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent answer;
 
     /**
      * Displayed answer when MCQ result not selected and validated
      */
     @JsonDeserialize(using = TranslationDeserializer.class)
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private TranslatableContent ignorationAnswer;
 
     /*

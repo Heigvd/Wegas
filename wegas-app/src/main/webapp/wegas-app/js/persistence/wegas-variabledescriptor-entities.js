@@ -667,6 +667,13 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: 'StringDescriptor'
                 },
                 defaultInstance: {
+                    valueFn: function() {
+                        return {
+                            trValue: {
+                                translations: {}
+                            }
+                        };
+                    },
                     properties: {
                         '@class': {
                             type: STRING,
@@ -677,14 +684,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
-                        value: {
-                            type: STRING,
-                            optional: true,
-                            value: '',
-                            view: {
-                                label: 'Default value'
-                            }
-                        },
+                        trValue: Y.Wegas.Helper.getTranslationAttr({
+                            label: 'Default value',
+                            index: -1,
+                            type: STRING
+                        }),
                         descriptorId: IDATTRDEF
                     }
                 },
@@ -727,12 +731,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     label: 'set',
                     arguments: [
                         SELFARG,
-                        {
-                            type: STRING,
-                            value: '',
-                            required: false,
-                            view: {layout: 'shortInline'}
-                        }
+                        Y.Wegas.Helper.getTranslationAttr({type: STRING})
                     ]
                 },
                 getValue: {
@@ -740,7 +739,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     returns: STRING,
                     arguments: [SELFARG],
                     localEval: function(player) {
-                        return this.getInstance(player).get(VALUE);
+                        return I18n.t(this.getInstance(player).get("trValue"));
                     }
                 },
                 isValueSelected: {
@@ -782,8 +781,26 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: 'StringInstance'
                 },
                 value: {
+                    type: "string",
+                    transient: true,
+                    getter: function() {
+                        return I18n.t(this.get("trValue"));
+                    },
+                    setter: function(newVal) {
+                        var newTr = {
+                            "@class": "TranslatableContent",
+                            translations: {
+                            }
+                        };
+                        newTr.translations[I18n._currentRefName || "def"] = newVal;
+                        this.set("trValue", newTr);
+                    }
+                },
+                trValue: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Value",
+                    index: -1,
                     type: STRING
-                }
+                })
             }
         }
     );
@@ -837,8 +854,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     className: 'wegas-method-returnline',
                     arguments: [
                         SELFARG,
-                        Y.Wegas.Helper.getTranslationAttr({type: HTML}
-                        )
+                        Y.Wegas.Helper.getTranslationAttr({type: HTML})
                     ]
                 },
                 getValue: {
@@ -1581,6 +1597,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         }),
                         {
                             type: STRING,
+                            value: "", // prevent undefined as Java will interprets such a value as a literat "undefined" !
                             view: {
                                 label: 'Token',
                                 className: 'wegas-advanced-feature',
@@ -1661,6 +1678,26 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     transient: true,
                     value: 0
                 }
+            }
+        }
+    );
+    /**
+     * Message mapper
+     */
+    persistence.Attachment = Base.create(
+        'Attachment',
+        persistence.Entity,
+        [],
+        {},
+        {
+            ATTRS: {
+                '@class': {
+                    value: 'Attachment'
+                },
+                file: Y.Wegas.Helper.getTranslationAttr({
+                    label: "File",
+                    type: "wegasurl"
+                })
             }
         }
     );

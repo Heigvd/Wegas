@@ -46,7 +46,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
     /**
      * List of allowed categories
      */
-    @OneToMany(mappedBy = "parentString", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parentString", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
     private List<EnumItem> allowedValues = new ArrayList<>();
 

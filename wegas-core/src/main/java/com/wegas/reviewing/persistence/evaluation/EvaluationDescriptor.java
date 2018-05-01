@@ -83,14 +83,14 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * Evaluation label as displayed to players
      */
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonDeserialize(using = TranslationDeserializer.class)
     private TranslatableContent label;
 
     /**
      * Textual descriptor to be displayed to players
      */
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonDeserialize(using = TranslationDeserializer.class)
     private TranslatableContent description;
 
