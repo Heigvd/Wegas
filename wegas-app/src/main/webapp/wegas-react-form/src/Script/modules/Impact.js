@@ -15,7 +15,7 @@ import {
     methodDescriptor,
     handleArgs,
 } from './method';
-import { updateArgSchema } from './args';
+import { updateArgSchema, matchSchema } from './args';
 import {
     genChoices as genGlobalChoices,
     methodDescriptor as globalMethodDescriptor,
@@ -87,9 +87,31 @@ class Impact extends React.Component {
         this.state = {};
         this.handleVariableChange = this.handleVariableChange.bind(this);
     }
-
+    /**
+     * Check arguments after first parse. Initial value
+     */
+    componentDidMount() {
+        const schema = this.state.global
+            ? globalMethodDescriptor(this.state.member, this.state.method)
+            : methodDescriptor(this.state.variable, this.state.method);
+        if (schema) {
+            const argsDescr = schema.arguments;
+            if (this.state.args.length > argsDescr.length) {
+                // What to do with those additional args
+                throw Error('Too much args');
+            }
+            this.state.args.forEach((a, i) => {
+                if (!matchSchema(a, argsDescr[i])) {
+                    throw Error(
+                        `Unexpected arg [${i}]. Value ( ${
+                            print(a).code
+                        } ) does not match type '${argsDescr[i].type}'`
+                    );
+                }
+            });
+        }
+    }
     componentDidUpdate(prevProps, prevState) {
-        console.log('update', this.state.args);
         if (
             this.state.method &&
             (prevState.method !== this.state.method ||
