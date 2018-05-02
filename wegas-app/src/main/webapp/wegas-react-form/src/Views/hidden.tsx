@@ -1,10 +1,26 @@
 import { WidgetProps } from 'jsoninput/typings/types';
+import * as React from 'react';
 
-function HiddenView(props: WidgetProps & { schema: { const?: {} } }) {
-    if ('const' in props.schema && props.schema.const !== props.value) {
-        props.onChange(props.schema.const);
+type HiddenProps = WidgetProps & { schema: { const?: {} } };
+
+class HiddenView extends React.Component<HiddenProps> {
+    componentDidMount() {
+        this.checkConst();
     }
-    return null;
+    componentDidUpdate() {
+        this.checkConst();
+    }
+    checkConst() {
+        if (
+            'const' in this.props.schema &&
+            this.props.schema.const !== this.props.value
+        ) {
+            this.props.onChange(this.props.schema.const);
+        }
+    }
+    render() {
+        return null;
+    }
 }
 
 export default HiddenView;

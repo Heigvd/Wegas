@@ -93,6 +93,9 @@ YUI.add('wegas-react-form', Y => {
                     render(
                         <div className={containerForm.toString()}>
                             <AsyncForm
+                            // force new instance of component. Usefull for script validation.
+                            // New impact vs update one. Should find a better way to do this.
+                                key={value ? (value as any).id : undefined}
                                 formRef={form => this.set(FORM, form)}
                                 schema={schema}
                                 value={value}

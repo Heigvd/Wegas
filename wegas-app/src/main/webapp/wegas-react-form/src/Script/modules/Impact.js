@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Form from 'jsoninput';
+import { isEqualWith } from 'lodash-es';
 import { print, parse, types } from 'recast';
 import { css } from 'glamor';
 // import classNames from 'classnames';
@@ -14,7 +15,7 @@ import {
     methodDescriptor,
     handleArgs,
 } from './method';
-import { valueToType } from './args';
+import { updateArgSchema, matchSchema } from './args';
 import {
     genChoices as genGlobalChoices,
     methodDescriptor as globalMethodDescriptor,
@@ -57,23 +58,72 @@ function getState(node, method, type) {
     };
 }
 /**
+ * Update args inside state. return a new state.
+ * @param state Impact's State
+ */
+function updateArgs(state) {
+    if (state.method) {
+        const argSchema = state.global
+            ? globalMethodDescriptor(state.member, state.method)
+            : methodDescriptor(state.variable, state.method);
+        return {
+            ...state,
+            args: argSchema.arguments.map((v, i) =>
+                updateArgSchema(state.args[i], v)
+            ),
+        };
+    }
+    return { ...state, args: [] };
+}
+/**
  * handles method call on VariableDescriptor
  */
 class Impact extends React.Component {
+    static getDerivedStateFromProps(nextProps) {
+        return getState(nextProps.node, nextProps.view.method, nextProps.type);
+    }
     constructor(props) {
         super(props);
-        this.state = getState(props.node, props.view.method, props.type);
+        this.state = {};
         this.handleVariableChange = this.handleVariableChange.bind(this);
     }
-    componentWillReceiveProps(nextProps) {
+    /**
+     * Check arguments after first parse. Initial value
+     */
+    componentDidMount() {
+        const schema = this.state.global
+            ? globalMethodDescriptor(this.state.member, this.state.method)
+            : methodDescriptor(this.state.variable, this.state.method);
+        if (schema) {
+            const argsDescr = schema.arguments;
+            if (this.state.args.length > argsDescr.length) {
+                // What to do with those additional args
+                throw Error('Too much args');
+            }
+            this.state.args.forEach((a, i) => {
+                if (!matchSchema(a, argsDescr[i])) {
+                    throw Error(
+                        `Unexpected arg [${i}]. Value ( ${
+                            print(a).code
+                        } ) does not match type '${argsDescr[i].type}'`
+                    );
+                }
+            });
+        }
+    }
+    componentDidUpdate(prevProps, prevState) {
         if (
-            this.props.node !== nextProps.node ||
-            this.props.view !== nextProps.view ||
-            this.props.type !== nextProps.type
+            this.state.method &&
+            (prevState.method !== this.state.method ||
+                prevState.variable !== this.state.variable ||
+                prevState.member !== this.state.member ||
+                !isEqualWith(
+                    prevState.args,
+                    this.state.args,
+                    (val, oth, key) => (key === 'loc' ? true : undefined)
+                ))
         ) {
-            this.setState(
-                getState(nextProps.node, nextProps.view.method, nextProps.type)
-            );
+            this.props.onChange(buildMethod(this.state, this.props.type));
         }
     }
     checkHandled() {
@@ -101,54 +151,20 @@ class Impact extends React.Component {
         }
         return '';
     }
-    checkVariableMethod() {
-        if (this.state.variable && this.state.method) {
-            try {
-                const mergedArgs = methodDescriptor(
-                    this.state.variable,
-                    this.state.method
-                ).arguments.map(
-                    (v, i) => this.state.args[i] || valueToType(undefined, v)
-                );
-                this.setState(
-                    () => ({
-                        args: mergedArgs,
-                    }),
-                    () =>
-                        this.props.onChange(
-                            buildMethod(this.state, this.props.type)
-                        )
-                );
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    }
-    checkGlobalMethod() {
-        if (this.state.member && this.state.method) {
-            this.props.onChange(buildMethod(this.state, this.props.type));
-        }
-    }
+
     handleVariableChange(v) {
         if (v !== undefined && v.indexOf('.') > -1) {
             // global
-            const split = v.split('.');
-            const mergedArgs = globalMethodDescriptor(
-                split[0],
-                split[1]
-            ).arguments.map(
-                (val, i) => this.state.args[i] || valueToType(undefined, val)
-            );
-            this.setState(
-                () => ({
+            this.setState(prevState => {
+                const split = v.split('.');
+                return updateArgs({
+                    ...prevState,
                     global: true,
                     member: split[0],
                     method: split[1],
-                    args: mergedArgs,
                     variable: undefined,
-                }),
-                this.checkGlobalMethod
-            );
+                });
+            });
         } else if (v !== undefined) {
             this.setState((prevState, props) => {
                 const methodSchem = methodSchema(
@@ -156,7 +172,8 @@ class Impact extends React.Component {
                     v,
                     props.type
                 );
-                return {
+                return updateArgs({
+                    ...prevState,
                     global: false,
                     variable: v,
                     methodSchem,
@@ -164,13 +181,13 @@ class Impact extends React.Component {
                         // Reset method as it does not exist after a variable change
                         !methodSchem ||
                         !methodSchem.view.choices.some(
-                            c => c.value === this.state.method
+                            c => c.value === prevState.method
                         )
                             ? undefined
                             : prevState.method,
                     member: undefined,
-                };
-            }, this.checkVariableMethod);
+                });
+            });
         }
     }
     render() {
@@ -198,11 +215,11 @@ class Impact extends React.Component {
                             schema={schema}
                             value={this.state.method}
                             onChange={v =>
-                                this.setState(
-                                    {
+                                this.setState(prevState =>
+                                    updateArgs({
+                                        ...prevState,
                                         method: v,
-                                    },
-                                    this.checkVariableMethod
+                                    })
                                 )
                             }
                         />
@@ -216,10 +233,7 @@ class Impact extends React.Component {
             // const argsDescr = (methodDesc && methodDesc.arguments) || [];
             child = child.concat(
                 handleArgs(variable, method, args, v => {
-                    this.setState(
-                        () => ({ args: v }),
-                        this.checkVariableMethod
-                    );
+                    this.setState(() => ({ args: v }));
                 })
             );
         }
@@ -228,7 +242,7 @@ class Impact extends React.Component {
 
             child = child.concat(
                 globalHandleArgs(member, method, args, v =>
-                    this.setState(() => ({ args: v }), this.checkGlobalMethod)
+                    this.setState(() => ({ args: v }))
                 )
             );
         }

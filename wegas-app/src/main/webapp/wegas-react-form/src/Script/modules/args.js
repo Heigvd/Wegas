@@ -1,8 +1,9 @@
 import React from 'react';
 import { types, print, parse, visit } from 'recast';
+import { isEqual } from 'lodash-es';
 import ArgForm from './ArgForm';
 
-const { builders: b } = types;
+const { builders: b, namedTypes: n } = types;
 /**
  * Handle a Form's' schema for unknown datatypes, pass in an entity.
  * @param {{type:string}} schema The schema
@@ -99,17 +100,22 @@ export function typeToValue(value, schema) {
  * @param {{type:string}} schema The schema to check against
  */
 export function matchSchema(value, schema) {
-    const newVal = typeToValue(value, schema);
+    // undefined matches everything
+    if (n.Identifier.check(value) && value.name === 'undefined') {
+        return true;
+    }
     switch (schema.type) {
         case 'string':
         case 'boolean':
         case 'number':
             // eslint-disable-next-line
-            return typeof newVal === schema.type;
+            return n.Literal.check(value) && typeof value.value === schema.type;
         case 'array':
-            return Array.isArray(newVal);
+            return n.ArrayExpression.check(value);
         case 'object':
-            return !Array.isArray(newVal) && typeof newVal === 'object';
+            return n.ObjectExpression.check(value);
+        case 'identifier':
+            return n.Identifier.check(value);
         default:
             return false;
     }
@@ -165,4 +171,22 @@ export function handleMethodArgs(methodDescr, args, onChange, entity) {
             i
         );
     });
+}
+/**
+ * Update an argument given a schema.
+ * Force const or replace with default value if value does
+ * not match a schema.
+ * @param {*} value
+ * @param {{const?:*, value?:*, type:string}} schema
+ */
+export function updateArgSchema(value, schema) {
+    if (
+        'const' in schema &&
+        !isEqual(schema.const, typeToValue(value, schema))
+    ) {
+        return valueToType(schema.const, schema);
+    } else if (!matchSchema(value, schema)) {
+        return valueToType(schema.value, schema);
+    }
+    return value;
 }
