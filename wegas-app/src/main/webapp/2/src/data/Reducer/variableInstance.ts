@@ -21,7 +21,7 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
           const newElement = updateList[id];
           const oldElement = state[id];
           // merge in update prev var which have a higher version
-          if (oldElement == null || newElement.version > oldElement.version) {
+          if (oldElement == null || newElement.version >= oldElement.version) {
             state[id] = newElement;
           }
         });

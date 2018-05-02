@@ -26,14 +26,8 @@ const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = u(
           const newElement = updateList[id];
           const oldElement = state[id];
           // merge in update prev var which have a higher version
-          if (oldElement == null || newElement.version > oldElement.version) {
+          if (oldElement == null || newElement.version >= oldElement.version) {
             state[id] = newElement;
-          } else if ( // defaultInstance change doesn't update Descriptor's version
-            newElement.defaultInstance.version >
-            oldElement.defaultInstance.version
-          ) {
-            (oldElement as IVariableDescriptor).defaultInstance =
-              newElement.defaultInstance;
           }
         });
         deletedIds.forEach(id => {
