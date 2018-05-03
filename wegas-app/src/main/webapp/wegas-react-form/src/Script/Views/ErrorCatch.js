@@ -10,13 +10,16 @@ const errorStyle = css({
 });
 // eslint-disable-next-line
 export class ErrorCatch extends React.Component {
+    static getDerivedStateFromProps(nextProps, state) {
+        if (state.code !== nextProps.code) {
+            return { error: undefined, info: undefined, code: nextProps.code };
+        }
+        return null;
+    }
     constructor(props) {
         super(props);
         this.state = { error: undefined, info: undefined };
         this.onErrorBlur = this.onErrorBlur.bind(this);
-    }
-    componentWillReceiveProps() {
-        this.setState(() => ({ error: undefined, info: undefined }));
     }
     onErrorBlur(target, editor) {
         this.props.onChange(editor.getValue());

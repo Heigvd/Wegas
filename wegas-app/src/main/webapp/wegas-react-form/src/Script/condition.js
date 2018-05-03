@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { visit, types } from 'recast';
-import isMatch from 'lodash-es/isMatch';
+import { types, visit } from 'recast';
 
 const AND = '&&';
 /**
