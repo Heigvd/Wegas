@@ -614,6 +614,22 @@
             <column name="body_id" valueComputed="nextval('i18n_seq')" />
         </update>
 
+        <createIndex indexName="index_message_from_id" tableName="message">
+            <column name="from_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_message_subject_id" tableName="message">
+            <column name="subject_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_message_date_id" tableName="message">
+            <column name="date_id"/>
+        </createIndex>
+
+        <createIndex indexName="index_message_body_id" tableName="message">
+            <column name="body_id"/>
+        </createIndex>
+
         <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT from_id as id, inboxinstance_id as parentinstance_id from message</sql>
         <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT subject_id as id, inboxinstance_id as parentinstance_id from message</sql>
         <sql>INSERT INTO translatablecontent (id, parentinstance_id) SELECT date_id as id, inboxinstance_id as parentinstance_id from message</sql>
@@ -668,6 +684,9 @@
             <column name="message_id"/>
         </createIndex>
 
+        <createIndex indexName="index_attachment_file_id" tableName="attachment">
+            <column name="file_id"/>
+        </createIndex>
 
         <update tableName="attachment">
             <column name="id" valueComputed="nextval('i18n_seq')" />
