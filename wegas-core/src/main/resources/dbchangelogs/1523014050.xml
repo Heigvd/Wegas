@@ -724,4 +724,15 @@
         </sql>
         <dropSequence sequenceName="i18n_seq" />
     </changeSet>
+
+    <!-- PMG serverscript uri -->
+    <changeSet author="maxence (generated)" id="1523014059600-pmgMigrate">
+        <update tableName="gamemodel">
+            <column name="scripturi">wegas-app/js/server;wegas-private/wegas-pmg/scripts/server-scripts/;</column>
+            <where>scripturi = 'wegas-private/wegas-pmg/scripts/server-scripts/'</where>
+        </update>
+    </changeSet>
+
+
+
 </databaseChangeLog>
