@@ -47,7 +47,7 @@ export function bulletList(): Generated {
                 .call(c => {
                   if (!enabled) {
                     blockStack(value).forEach(b => c.unwrapBlock(b));
-                    c.setBlock('list-item').wrapBlock('list_ul');
+                    c.setBlocks('list-item').wrapBlock('list_ul');
                   }
                   return c;
                 })

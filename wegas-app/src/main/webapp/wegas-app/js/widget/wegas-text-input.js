@@ -981,7 +981,8 @@ YUI.add('wegas-text-input', function(Y) {
                 },
                 readonly: {
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    value: false,
+                    value:{"@class":"Script", content:"return false"},
+                    type: "object",
                     index: 100,
                     required: true,
                     view: {

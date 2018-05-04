@@ -115,7 +115,7 @@ export function genBlock({
       change = c => {
         if (!hasBlock(value, block)) {
           blockStack(value).forEach(b => c.unwrapBlock(b));
-          c.setBlock(block);
+          c.setBlocks(block);
         }
         return c;
       },

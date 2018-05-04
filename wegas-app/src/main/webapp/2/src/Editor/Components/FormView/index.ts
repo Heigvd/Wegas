@@ -8,6 +8,7 @@ import BooleanView from './Boolean';
 import Select from './Select';
 import ArrayWidget from './Array';
 import Html from './Html';
+import { Script } from './Script';
 
 const DEFINED_VIEWS = {
   hidden,
@@ -20,7 +21,7 @@ const DEFINED_VIEWS = {
   array: ArrayWidget,
   select: Select,
   html: Html,
-  script: ObjectView, // @TODO
+  script: Script,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 
