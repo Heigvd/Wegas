@@ -418,6 +418,7 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param teamId
      * @param userId
+     * @param languages
      *
      * @return a new player, linked to user, who just joined the team
      */
@@ -431,6 +432,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param teamId     id of the team to join
      * @param userId     id of the user to create a player for, may be null to create an anonymous player
      * @param playerName common name of the player
+     * @param languages
      *
      * @return a new player, linked to a user, who just joined the team
      */

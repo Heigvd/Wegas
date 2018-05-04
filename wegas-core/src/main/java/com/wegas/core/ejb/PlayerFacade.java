@@ -100,6 +100,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @param teamId     id of the team to join
      * @param userId     id the user to create a player for, may be null
      * @param playerName common name for the new player
+     * @param languages
      *
      * @return brand new player id
      */

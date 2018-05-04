@@ -379,7 +379,9 @@ public class SerializationTest {
 
     @Test
     public void testExceptionMapper() throws JsonProcessingException {
-        NumberDescriptor nd = new NumberDescriptor("x");
+        NumberDescriptor nd = new NumberDescriptor();
+        nd.setName("x");
+        nd.setLabel(TranslatableContent.build("def", "x"));
         NumberInstance ns = new NumberInstance(0);
 
         nd.setDefaultInstance(ns);

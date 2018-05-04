@@ -157,7 +157,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     public Result(String name) {
         this.label = new TranslatableContent();
-        this.label.getTranslations().put("def", name);
+        this.label.getModifiableTranslations().put("def", name);
         this.name = name;
     }
 

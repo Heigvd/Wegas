@@ -309,7 +309,6 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         if (owner != null) {
             return owner.getRequieredUpdatePermission();
         }
-        logger.error("Orphan here {}", this);
         return null;
     }
 
@@ -319,7 +318,6 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         if (owner != null) {
             return owner.getRequieredReadPermission();
         }
-        logger.error("Orphan here {}", this);
 
         return null;
     }

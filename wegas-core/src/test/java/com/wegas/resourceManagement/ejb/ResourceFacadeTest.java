@@ -909,7 +909,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         // and duplicate it
         TaskDescriptor duplicate = (TaskDescriptor) variableDescriptorFacade.duplicate(task2.getId());
         assertEquals("engineer", duplicate.getDefaultInstance().getRequirements().get(0).getWork());
-        assertEquals("My task", duplicate.getPredecessor(0).getLabel());
+        assertEquals("My task", duplicate.getPredecessor(0).getLabel().translateOrEmpty(scenario));
 
         // Clean
         variableDescriptorFacade.remove(task.getId());
@@ -933,7 +933,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), task2);
 
         TaskDescriptor created = (TaskDescriptor) variableDescriptorFacade.find(task2.getId());
-        assertEquals("My task", created.getPredecessor(0).getLabel());
+        assertEquals("My task", created.getPredecessor(0).getLabel().translateOrEmpty(scenario));
         assertEquals(1, created.getPredecessors().size());
 
         // Create a task
@@ -946,7 +946,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         task2.getPredecessors().clear();
         task2.setPredecessorNames(Arrays.asList("task3"));
         TaskDescriptor updated = (TaskDescriptor) variableDescriptorFacade.update(task2.getId(), task2);
-        assertEquals("task3", updated.getPredecessor(0).getLabel());
+        assertEquals("task3", updated.getPredecessor(0).getLabel().translateOrEmpty(gameModel));
         assertEquals(1, updated.getPredecessors().size());
 
         // Clean
@@ -972,7 +972,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), task2);
 
         TaskDescriptor created = (TaskDescriptor) variableDescriptorFacade.find(task2.getId());
-        assertEquals("My task", created.getPredecessor(0).getLabel());
+        assertEquals("My task", created.getPredecessor(0).getLabel().translateOrEmpty(scenario));
         assertEquals(1, created.getPredecessors().size());
 
         // Create a third task
@@ -982,7 +982,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         task3.addPredecessor(task2);
         variableDescriptorFacade.create(scenario.getId(), task3);
 
-        assertEquals("My task2", task3.getPredecessor(0).getLabel());
+        assertEquals("My task2", task3.getPredecessor(0).getLabel().translateOrEmpty(scenario));
         assertEquals(1, task3.getPredecessors().size());
 
         variableDescriptorFacade.remove(task2.getId());
