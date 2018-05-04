@@ -27,8 +27,8 @@
         </createTable>
         <!-- create default language for each gamemodel -->
         <sql>
-            INSERT INTO gamemodellanguage (id, gamemodel_id, indexorder, refname, code, lang)
-            SELECT nextval('i18n_seq') as id, id as gamemodel_id, 0 as indexorder, 'def' as refname, 'def' as code, 'default' as lang
+            INSERT INTO gamemodellanguage (id, gamemodel_id, indexorder, refname, code, lang, active)
+            SELECT nextval('i18n_seq') as id, id as gamemodel_id, 0 as indexorder, 'def' as refname, 'def' as code, 'default' as lang, true as active
             FROM gamemodel;
         </sql>
 

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
@@ -122,7 +123,7 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return this.getFile().containsAll(criterias);
+        return Helper.insensitiveContainsAll(getFile(), criterias);
     }
 
     public static class ListDeserializer extends StdDeserializer<List<Attachment>> {

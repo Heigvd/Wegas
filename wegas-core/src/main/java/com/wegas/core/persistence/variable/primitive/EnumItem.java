@@ -186,8 +186,8 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(name, criterias)
-                || this.getLabel().containsAll(criterias);
+        return Helper.insensitiveContainsAll(getName(), criterias)
+                || Helper.insensitiveContainsAll(getLabel(), criterias);
     }
 
     public static class ListDeserializer extends StdDeserializer<List<EnumItem>> {

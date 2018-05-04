@@ -111,9 +111,11 @@ public class InboxInstance extends VariableInstance implements Searchable {
 
     /**
      * @param message
+     * @return
      */
-    public void sendMessage(Message message) {
+    public Message sendMessage(Message message) {
         this.addMessage(message);
+        return message;
     }
 
     /**
@@ -173,10 +175,8 @@ public class InboxInstance extends VariableInstance implements Searchable {
      * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, final List<String> attachments) {
-        this.sendMessage(from, subject, body, date, null, attachments);
-        final Message msg = new Message(from, subject, body, date, attachments);
-        this.sendMessage(msg);
-        return msg;
+        return this.sendMessage(from, subject, body, date, null, attachments);
+
     }
 
     /**
@@ -190,9 +190,7 @@ public class InboxInstance extends VariableInstance implements Searchable {
      * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachments) {
-        final Message msg = new Message(from, subject, body, date, token, attachments);
-        this.sendMessage(msg);
-        return msg;
+        return this.sendMessage(new Message(from, subject, body, date, token, attachments));
     }
 
     /**
@@ -226,9 +224,8 @@ public class InboxInstance extends VariableInstance implements Searchable {
             final JSObject body, final JSObject date,
             String token, final List<JSObject> attachments) {
 
-        List<Attachment> atts = null;
+        List<Attachment> atts = new ArrayList<>();
         if (attachments != null && !attachments.isEmpty()) {
-            atts = new ArrayList<>();
             for (JSObject a : attachments) {
                 atts.add(Attachment.readFromNashorn(a));
             }

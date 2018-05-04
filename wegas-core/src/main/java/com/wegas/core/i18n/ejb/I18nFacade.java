@@ -7,12 +7,14 @@
  */
 package com.wegas.core.i18n.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import java.util.List;
@@ -46,6 +48,20 @@ public class I18nFacade extends WegasAbstractFacade {
     public GameModel createLanguage(Long gameModelId, String code, String name) {
         logger.trace("CREATE new language {} for gameModel #{}", name, gameModelId);
         return createLanguage(gameModelFacade.find(gameModelId), code, name);
+    }
+
+    public GameModel moveLanguageUp(Long gameModelId, Long languageId) {
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        List<GameModelLanguage> languages = Helper.copyAndSortModifiable(gameModel.getRawLanguages(), new EntityComparators.OrderComparator<>());
+        GameModelLanguage lang = this.findGameModelLanguage(languageId);
+        int indexOf = languages.indexOf(lang);
+        if (indexOf > 0) {
+            if (languages.remove(lang)) {
+                languages.add(indexOf - 1, lang);
+                gameModel.setLanguages(languages);
+            }
+        }
+        return gameModel;
     }
 
     private GameModelLanguage findGameModelLanguage(Long gmlId) {

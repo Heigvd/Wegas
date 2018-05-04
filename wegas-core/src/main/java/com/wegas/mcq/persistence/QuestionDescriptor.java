@@ -10,6 +10,7 @@ package com.wegas.mcq.persistence;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
@@ -312,7 +313,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return this.getDescription().containsAll(criterias)
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
                 || super.containsAll(criterias);
     }
 

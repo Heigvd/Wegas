@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
@@ -300,8 +301,8 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
             this.getSubject().setParentInstance(this.inboxInstance);
             this.getBody().setParentInstance(this.inboxInstance);
             this.getDate().setParentInstance(this.inboxInstance);
-            if (this.getAttachments() != null){
-                for (Attachment a : this.getAttachments()){
+            if (this.getAttachments() != null) {
+                for (Attachment a : this.getAttachments()) {
                     a.getFile().setParentInstance(this.inboxInstance);
                 }
             }
@@ -406,10 +407,10 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        if (this.getBody().containsAll(criterias)
-                || this.getFrom().containsAll(criterias)
-                || this.getSubject().containsAll(criterias)
-                || this.getDate().containsAll(criterias)) {
+        if (Helper.insensitiveContainsAll(getFrom(), criterias)
+                || Helper.insensitiveContainsAll(getSubject(), criterias)
+                || Helper.insensitiveContainsAll(getBody(), criterias)
+                || Helper.insensitiveContainsAll(getDate(), criterias)) {
             return true;
         }
         if (this.attachments != null) {

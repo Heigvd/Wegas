@@ -9,6 +9,7 @@ package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -411,7 +412,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return this.getDescription().containsAll(criterias)
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
                 || super.containsAll(criterias);
     }
 

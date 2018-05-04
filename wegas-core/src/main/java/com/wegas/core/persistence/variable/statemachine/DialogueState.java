@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
@@ -34,7 +35,7 @@ public class DialogueState extends State {
 
     @Override
     public Boolean containsAll(final List<String> criterias) {
-        return this.getText().containsAll(criterias)
+        return Helper.insensitiveContainsAll(getText(), criterias)
                 || super.containsAll(criterias);
     }
 

@@ -46,7 +46,7 @@ public class I18nController {
     public GameModel createLanguage(@PathParam("gameModelId") Long gameModelId,
             GameModelLanguage language) {
         logger.trace("POST new language {} for gameModel #{}", language, gameModelId);
-        return i18nfacade.createLanguage(gameModelId,language.getCode(), language.getLang());
+        return i18nfacade.createLanguage(gameModelId, language.getCode(), language.getLang());
     }
 
     @PUT
@@ -55,6 +55,13 @@ public class I18nController {
             GameModelLanguage language) {
         logger.trace("UPDATE language {} for gameModel #{}", language, gameModelId);
         return i18nfacade.updateLanguage(language);
+    }
+
+    @PUT
+    @Path("Lang/{langId: [1-9][0-9]*}/Up")
+    public GameModel updateLanguage(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("langId") Long langId) {
+        return i18nfacade.moveLanguageUp(gameModelId, langId);
     }
 
     @GET

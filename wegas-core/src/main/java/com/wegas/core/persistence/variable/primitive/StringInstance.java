@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -157,6 +158,6 @@ public class StringInstance extends VariableInstance implements Searchable {
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return this.getTrValue().containsAll(criterias);
+        return Helper.insensitiveContainsAll(getTrValue(), criterias);
     }
 }

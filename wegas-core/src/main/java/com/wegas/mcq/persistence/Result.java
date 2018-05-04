@@ -189,10 +189,10 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     @Override
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
-                || getLabel().containsAll(criterias)
-                || getAnswer().containsAll(criterias)
+                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
+                || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
+                || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
                 || (this.getImpact() != null && this.getImpact().containsAll(criterias))
-                || getIgnorationAnswer().containsAll(criterias)
                 || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
     }
 

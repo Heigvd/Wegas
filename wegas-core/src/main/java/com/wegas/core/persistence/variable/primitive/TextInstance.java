@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.primitive;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
@@ -119,6 +120,6 @@ public class TextInstance extends VariableInstance implements Searchable {
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return this.getTrValue().containsAll(criterias);
+        return Helper.insensitiveContainsAll(getTrValue(), criterias);
     }
 }

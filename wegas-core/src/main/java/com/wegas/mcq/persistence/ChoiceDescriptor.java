@@ -499,7 +499,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        if (this.getDescription().containsAll(criterias)
+        if (Helper.insensitiveContainsAll(getDescription(), criterias)
                 || super.containsAll(criterias)) {
             return true;
         }

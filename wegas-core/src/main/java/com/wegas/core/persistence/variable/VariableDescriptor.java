@@ -656,7 +656,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     public Boolean containsAll(final List<String> criterias) {
         Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
                 || Helper.insensitiveContainsAll(this.getEditorTag(), criterias)
-                || this.getLabel().containsAll(criterias)
+                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
                 || Helper.insensitiveContainsAll(this.getComments(), criterias);
         if (!found && (this.getDefaultInstance() instanceof Searchable)) {
             return ((Searchable) this.getDefaultInstance()).containsAll(criterias);

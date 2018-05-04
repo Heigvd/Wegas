@@ -340,12 +340,10 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        if (this.getDescription().containsAll(criterias)
-                || super.containsAll(criterias)) {
-            return true;
-        }
-        // check evaluations !!!
-        return false;
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
+                || this.getFeedback().containsAll(criterias)
+                || this.getFbComments().containsAll(criterias)
+                || super.containsAll(criterias);
     }
 
     @Override

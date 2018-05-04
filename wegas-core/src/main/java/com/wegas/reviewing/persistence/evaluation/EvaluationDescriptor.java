@@ -257,9 +257,8 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return this.getLabel().containsAll(criterias)
-                || this.getLabel().containsAll(criterias)
-                || this.getDescription().containsAll(criterias)
-                || Helper.insensitiveContainsAll(name, criterias);
+        return  Helper.insensitiveContainsAll(getName(), criterias)
+                || Helper.insensitiveContainsAll(getLabel(), criterias)
+                || Helper.insensitiveContainsAll(getDescription(), criterias);
     }
 }
