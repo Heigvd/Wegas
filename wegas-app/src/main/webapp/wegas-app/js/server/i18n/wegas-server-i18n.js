@@ -68,6 +68,53 @@ var i18nOrdinate = (function(module) {
             return string;
         }
 
+
+        function foreach(callback, mode) {
+            mode = mode || "match";
+
+            var lang, refName, count = 0;
+            if (mode === "internal" || mode === "match") {
+                for (lang in i18nTable) {
+                    if (i18nTable.hasOwnProperty(lang)) {
+                        refName = getRefNameByCode(lang);
+                        if (refName || mode === "internal") {
+                            callback(refName, lang);
+                            count++;
+                        }
+                    }
+                }
+            } else {
+                // ie mode === gamemodel
+                for (lang in self.getGameModel().getLanguages) {
+                    callback(lang.getRefName(), lang.getCode());
+                    count++;
+                }
+            }
+
+            if (!count) {
+                callback("def", currentLocale());
+                count++;
+            }
+        }
+
+        /**
+         * 
+         * @param {type} code
+         * @returns {unresolved}
+         */
+        function getRefNameByCode(code) {
+            var lang = self.getGameModel().getLanguageByCode(code);
+            if (lang) {
+                return lang.getRefName();
+            }
+            return null;
+        }
+
+        /**
+         * Guess language to use, according to player preference and available languages
+         * @param {type} refName
+         * @returns {undefined|i18nTable|wegas-server-i18nI18n.currentLocale.gmCodes|String}
+         */
         function currentLocale(refName) {
             var locale, i,
                 gmCodes = self.getGameModel().getPreferredLanguagesCode(refName || self.getRefName());
@@ -102,6 +149,14 @@ var i18nOrdinate = (function(module) {
          * @returns {String} the translated string filled with provided arguments
          */
         function translate(key, object, refName) {
+            if (typeof key === "string") {
+                return translateKey(key, object, refName);
+            } else {
+                return translateObject(key, object, refName);
+            }
+        }
+
+        function translateKey(key, object, refName) {
             var locale = currentLocale(refName), value, res, i,
                 value = i18nTable[locale];
             if (value) {
@@ -124,6 +179,13 @@ var i18nOrdinate = (function(module) {
             }
         }
 
+        function translateObject(trContent, config, refName) {
+            if (refName) {
+                return trContent.translateOrEmpty(self.getGameModel(), refName);
+            } else {
+                return trContent.translateOrEmpty(self);
+            }
+        }
 
         function ordinate(number) {
             var lang = currentLocale();
@@ -142,6 +204,33 @@ var i18nOrdinate = (function(module) {
             },
             add: function(lang, table) {
                 return add(lang, table);
+            },
+            buildNewTranslation: function() {
+                return {
+                    "@class": "TranslatableContent",
+                    "translations": {
+                    }
+                };
+            },
+            /**
+             * Call callback for each available languages.
+             * 
+             * 
+             * callback parameters:
+             *  * language refName;
+             *  * language code:
+             *  
+             *  mode may be "gameModel", "internal", or "match":
+             *   gamemodel: call callback for all gamemodel languages (refName and code are defined)
+             *   internal: call callback for internal languages only (the ones in i18nTable, code is defined but refName is not)
+             *   match: call callback for langauges which are defined in both set, this is the default setting
+             *   
+             *   fallback : call def / first language in i18nTable
+             *  
+             * @param {type} callback
+             */
+            foreach: function(callback, mode) {
+                return foreach(callback, mode);
             }
         };
     }());

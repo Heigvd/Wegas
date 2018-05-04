@@ -695,6 +695,28 @@
     flex-shrink: 0;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages label {
+    width: 45px;
+    display: inline-block;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .form {
+    margin-bottom: 20px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .language .tools {
+    display: none;
+    cursor: pointer;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .move-up {
+    cursor: pointer;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .language.unsaved .tools {
+    display:block;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-text{
     padding: 0 10px;
 }
@@ -722,6 +744,14 @@
     user-select: none;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-scriptalias {
+    display: none;
+    font-size: 0.8em;
+}
+
+.wegas-advancedmode .wegas-i18n-manager .wegas-i18n-manager--editor .node-scriptalias {
+    display: inline-block;
+}
 
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='0'] .node-name

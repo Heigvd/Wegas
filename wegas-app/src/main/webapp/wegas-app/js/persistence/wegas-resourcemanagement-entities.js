@@ -121,16 +121,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "ResourceDescriptor"
             },
-            title: {
-                type: NULLSTRING,
-                optional: true,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players",
-                    lengthType: "short"
-                },
-                index: -1
-            },
             description: Y.Wegas.Helper.getTranslationAttr({
                 label: "Description",
                 index: -1,
@@ -547,15 +537,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         ATTRS: {
             "@class": {
                 value: "TaskDescriptor"
-            },
-            title: {
-                type: NULLSTRING,
-                optional: true,
-                index: -1,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players",
-                }
             },
             index: {
                 type: STRING,

@@ -748,7 +748,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             type: STRING,
                             view: {
                                 type: "entityarrayfieldselect",
-                                field: "allowedValues"
+                                field: "allowedValues",
+                                returnAttr : "name"
                             }
                         }]/*,
                          localEval: function(player, v) {

@@ -29,7 +29,7 @@ YUI.add("wegas-i18n-global-en", function(Y) {
         },
         i18n:{
             manager: {
-                title: "Scenario Available Languages Manager"
+                title: "Languages Manager"
             },
             languages: "Languages"
         },

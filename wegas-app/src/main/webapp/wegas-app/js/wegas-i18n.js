@@ -186,11 +186,11 @@ YUI.add("wegas-i18n", function(Y) {
             return Y.Wegas.I18n._currentRefName;
         }
 
-        function genTranslationMarkup(text, inlineEditor, lang, id, favorite) {
+        function genTranslationMarkup(text, inlineEditor, lang, id, favorite, code) {
             if (inlineEditor === "html") {
                 return "<div class='wegas-translation wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
                     "' data-trid='" + id +
-                    "' data-refName='" + lang.refName + "'data-lang='" + lang.lang + "'><span class='tools'>" +
+                    "' data-refName='" + lang.refName + "'lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
                     "<span class='inline-editor-validate fa fa-check'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
@@ -198,7 +198,7 @@ YUI.add("wegas-i18n", function(Y) {
             } else if (inlineEditor === "string") {
                 return "<span class='wegas-translation wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
                     "' data-trid='" + id +
-                    "' data-refName='" + lang.refName + "'data-lang='" + lang.lang + "'><span class='tools'>" +
+                    "' data-refName='" + lang.refName + "'lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
                     "<span class='inline-editor-validate fa fa-check'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
@@ -235,7 +235,8 @@ YUI.add("wegas-i18n", function(Y) {
                     langs = Y.Array.map(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
                         return {
                             lang: item.get("lang"),
-                            refName: item.get("refName")
+                            refName: item.get("refName"),
+                            code: item.get("code")
                         };
                     });
                     if (forcedLang) {

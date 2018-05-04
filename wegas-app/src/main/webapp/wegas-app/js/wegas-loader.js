@@ -1058,6 +1058,7 @@ YUI().use(function(Y) {
             },
             tinymce: {
                 path: "tinymce/tinymce.min.js"
+                //fullpath: "//unpkg.com/tinymce@4.7.12/tinymce.js"
             },
             excanvas: {
                 path: "excanvas/excanvas.compiled.js"

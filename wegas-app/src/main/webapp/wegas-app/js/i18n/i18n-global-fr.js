@@ -28,7 +28,7 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
         },
         i18n:{
             manager: {
-                title: "Gestionnaire des langues du scéanrio"
+                title: "Gestionnaire de langue"
             },
             languages: "Langues"
         },

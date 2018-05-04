@@ -392,7 +392,7 @@ YUI.add('wegas-text-input', function(Y) {
                 if (this.waitForValue === value) {
                     this.waitForValue = null;
                     if (this.queuedValue) {
-                        this.processSave(this.queuedValue.value,this.queuedValue.descriptor);
+                        this.processSave(this.queuedValue.value, this.queuedValue.descriptor);
                         this.queuedValue = null;
                     }
                 }
@@ -447,12 +447,21 @@ YUI.add('wegas-text-input', function(Y) {
                     }
                 },
                 readonly: {
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    type: 'object',
-                    value: {content: 'return false;'},
+                    type: ["null", "object"],
+                    index: 100,
+                    value: {
+                        "@class": "Script",
+                        "content": "return false;"
+                    },
+                    properties: {
+                        "@class": {type: "string", value: "Script"},
+                        content: {
+                            type: "string"
+                        }
+                    },
                     view: {
-                        label: 'Readonly',
-                        type: 'scriptcondition'
+                        type: 'scriptcondition',
+                        label: 'Readonly'
                     }
                 },
                 showSaveButton: {
@@ -939,13 +948,21 @@ YUI.add('wegas-text-input', function(Y) {
                     view: {label: 'Number of selectable'}
                 },
                 readonly: {
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    value: false,
+                    type: ["null", "object"],
                     index: 100,
-                    required: true,
+                    value: {
+                        "@class": "Script",
+                        "content": "return false;"
+                    },
+                    properties: {
+                        "@class": {type: "string", value: "Script"},
+                        content: {
+                            type: "string"
+                        }
+                    },
                     view: {
-                        label: 'Read only',
-                        type: 'scriptcondition'
+                        type: 'scriptcondition',
+                        label: 'Readonly'
                     }
                 },
                 label: {
