@@ -38,7 +38,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     VERSION_ATTR_DEF = {
         type: NUMBER,
         optional: true,
-        index: -9,
+        index: -19,
         view: {
             type: 'uneditable',
             className: 'wegas-advanced-feature',
@@ -49,8 +49,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     };
     IDATTRDEF = {
         type: NUMBER,
-        optional: true, //                                                  // The id is optional for entites that
-        // have not been persisted
+        optional: true, // The id is optional for entites that have not been persisted
         view: {
             layout: 'shortInline',
             type: HIDDEN
@@ -276,10 +275,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     }
                 },
                 editorTag: {
-                    type: STRING,
+                    type: NULLSTRING,
                     optional: false,
                     value: "",
-                    index: -2,
+                    index: -9,
                     view: {
                         label: "Tag",
                         description: "Never displayed to players"
@@ -287,13 +286,13 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 label: Y.Wegas.Helper.getTranslationAttr({
                     label: "Label",
-                    index: -1,
+                    index: -8,
                     description: "Displayed to players",
                     type: STRING
                 }),
                 name: {
                     type: STRING,
-                    index: -1,
+                    index: -7,
                     view: {
                         className: 'wegas-advanced-feature',
                         label: 'Script alias',
@@ -312,6 +311,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     validator: function(o) {
                         return o instanceof persistence.Scope;
                     },
+                    index: -6,
                     view: {
                         className: 'wegas-advanced-feature'
                     },
@@ -749,7 +749,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             view: {
                                 type: "entityarrayfieldselect",
                                 field: "allowedValues",
-                                returnAttr : "name"
+                                returnAttr: "name"
                             }
                         }]/*,
                          localEval: function(player, v) {
@@ -1609,6 +1609,26 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             type: 'array',
                             value: [],
                             view: {label: 'Attachments'},
+                            preProcessAST: function(argDesc, value, tools) {
+                                if (value && value.type === 'ArrayExpression') {
+                                    for (var i in value.elements) {
+                                        var item = value.elements[i];
+                                        if (item && item.type === 'Literal') {
+                                            value.elements[i] = tools.valueToType(
+                                                {
+                                                    "@class": "Attachment",
+                                                    "file": {
+                                                        "@class": "TranslatableContent",
+                                                        "translations": {
+                                                            "def": item.value
+                                                        }
+                                                    }
+                                                }, argDesc.items);
+                                        }
+                                    }
+                                }
+                                return value;
+                            },
                             items: {
                                 type: "object",
                                 properties: {

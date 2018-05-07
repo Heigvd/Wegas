@@ -457,13 +457,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         type: NUMBER,
                         view: {type: HIDDEN}
                     },
-                    id: {
-                        type: NUMBER,
-                        view: {
-                            type: 'uneditable',
-                            className: 'wegas-advanced-feature'
-                        }
-                    },
+                    id: IDATTRDEF,
                     enabled: {
                         type: BOOLEAN,
                         value: true,

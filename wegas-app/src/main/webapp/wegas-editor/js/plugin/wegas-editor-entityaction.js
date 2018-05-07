@@ -955,7 +955,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
             Wegas.Panel.confirm("Are you sure you want to delete the " +
                 entity.getType().toLowerCase().replace("descriptor", "") +
-                " \"" + entity.get("label") +
+                " \"" + entity.getEditorLabel() +
                 "\" ?",
                 Y.bind(function() {
                     this.showOverlay();

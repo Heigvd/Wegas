@@ -27,8 +27,8 @@ YUI.add('wegas-entity', function(Y) {
         Entity,
         IDATTRDEF = {
             type: NUMBER,
-            optional: true, //                                                  // The id is optional for entites that
-            // have not been persisted
+            optional: true, // The id is optional for entites that have not been persisted
+            index: -20,
             view: {
                 type: HIDDEN
             }
@@ -98,6 +98,19 @@ YUI.add('wegas-entity', function(Y) {
                 type: "object",
                 index: param.index,
                 visible: param.visible,
+                preProcessAST: function(argDesc, value, tools) {
+                    if (value) {
+                        if (value.type === 'Literal') {
+                            return tools.valueToType({
+                                "@class": "TranslatableContent",
+                                "translations": {
+                                    "def": value.value
+                                }
+                            }, argDesc);
+                        }
+                    }
+                    return value;
+                },
                 getter: function(value) {
                     if (typeof value === "string") {
                         //  backward compatibility: raw String to default translation
@@ -147,7 +160,7 @@ YUI.add('wegas-entity', function(Y) {
                     setter: function(val) {
                         return val * 1;
                     },
-                    index: -10,
+                    index: -20,
                     view: {
                         type: 'uneditable',
                         className: 'wegas-advanced-feature',

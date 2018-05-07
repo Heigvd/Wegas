@@ -286,7 +286,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         if (attr) {
                             sub = null;
                             var cfg = entity.getAttrCfgs()[key];
-                            if (!cfg.visible || cfg.visible(attr, attrs)) {
+                            if ((!cfg["transient"] || key === "items") // transient "items" args is allowed
+                                && (!cfg.visible || cfg.visible(attr, attrs))) { // check attre against visible method if any
                                 if (Array.isArray(attr)) {
                                     children = {
                                         nodeName: key,

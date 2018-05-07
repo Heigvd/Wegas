@@ -123,7 +123,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             description: Y.Wegas.Helper.getTranslationAttr({
                 label: "Description",
-                index: -1,
+                index: 1,
                 type: HTML
             }),
             properties: {

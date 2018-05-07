@@ -3,7 +3,7 @@ import { types, print, parse, visit } from 'recast';
 import { isEqual } from 'lodash-es';
 import ArgForm from './ArgForm';
 
-const { builders: b, namedTypes: n } = types;
+const {builders: b, namedTypes: n} = types;
 /**
  * Handle a Form's' schema for unknown datatypes, pass in an entity.
  * @param {{type:string}} schema The schema
@@ -184,7 +184,7 @@ export function updateArgSchema(value, schema) {
     if (
         'const' in schema &&
         !isEqual(schema.const, typeToValue(value, schema))
-    ) {
+        ) {
         return valueToType(schema.const, schema);
     } else if (!matchSchema(value, schema)) {
         return valueToType(schema.value, schema);
