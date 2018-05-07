@@ -77,8 +77,5 @@
     "url-loader": "^1.0.1",
     "webpack": "^4.5.0",
     "webpack-cli": "^2.0.14"
-  },
-  "resolutions": {
-    "@types/node": "9"        
   }
 }
