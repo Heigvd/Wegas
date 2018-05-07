@@ -1,68 +1,85 @@
-import * as React from 'react';
-import MonacoEditor from 'react-monaco-editor';
 import { css } from 'glamor';
-import ReactMonacoEditor from 'react-monaco-editor';
+import * as React from 'react';
+import { editor } from 'monaco-editor';
 
-interface SrcEditorProps {
+interface EditorProps {
   value?: string;
-  language?: string;
+  language?: 'javascript' | 'css' | 'json';
   onChange?: (value: string) => void;
   onBlur?: (value: string) => void;
 }
-const req = {
-  url: 'dist/vs/loader.js',
-  paths: {
-    vs: 'dist/vs',
-  },
-};
 const overflowHide = css({
   overflow: 'hidden',
+  width: '100%',
   height: '100%',
 });
-class SrcEditor extends React.Component<SrcEditorProps> {
-  editor: monaco.editor.ICodeEditor | null = null;
+class SrcEditor extends React.Component<EditorProps> {
+  private editor: editor.IStandaloneCodeEditor | null = null;
+  private lastValue?: string = '';
+  private outsideChange: boolean = false;
+  private container: HTMLDivElement | null = null;
+
   static defaultProps = {
     language: 'javascript',
+    onBlur: () => {},
+    onChange: () => {},
   };
-  private _disposables: monaco.IDisposable[] = [];
-  constructor(props: SrcEditorProps) {
+  constructor(props: EditorProps) {
     super(props);
   }
-  editorDidMount = (editor: ReactMonacoEditor['editor']) => {
-    this.editor = editor;
-    this._disposables.push(
-      this.editor.onDidBlurEditor(() => {
-        if (typeof this.props.onBlur === 'function') {
-          this.props.onBlur(this.getValue());
-        }
-      }),
-    );
-  };
+  componentDidUpdate(prevProps: EditorProps) {
+    if (this.lastValue !== this.props.value) {
+      this.lastValue = this.props.value;
+      this.outsideChange = true;
+      this.editor!.setValue(this.props.value!);
+      this.outsideChange = false;
+    }
+    if (this.props.language !== prevProps.language) {
+      import('monaco-editor').then(monaco => {
+        monaco.editor.setModelLanguage(
+          this.editor!.getModel(),
+          this.props.language!,
+        );
+      });
+    }
+  }
+  componentDidMount() {
+    this.lastValue = this.props.value;
+    import('monaco-editor').then(monaco => {
+      if (this.container != null) {
+        this.editor = monaco.editor.create(this.container, {
+          theme: 'vs-dark',
+          language: this.props.language,
+          value: this.props.value,
+        });
+        this.editor.onDidBlurEditor(() =>
+          this.props.onBlur!(this.editor!.getValue()),
+        );
+        this.editor.onDidChangeModelContent(() => {
+          if (!this.outsideChange) {
+            this.lastValue = this.editor!.getValue();
+            this.props.onChange!(this.lastValue);
+          }
+        });
+      }
+    });
+  }
   getValue() {
     if (this.editor != null) {
       return this.editor.getValue();
     }
-    return '';
+    return this.props.value;
   }
   componentWillMount() {
-    this._disposables.forEach(d => d.dispose());
-    this._disposables.length = 0;
+    if (this.editor != null) {
+      this.editor.dispose();
+    }
   }
+  refContainer = (n: HTMLDivElement | null) => {
+    this.container = n;
+  };
   render() {
-    return (
-      <div {...overflowHide}>
-        <MonacoEditor
-          editorDidMount={this.editorDidMount}
-          width="100%"
-          height="100%"
-          language={this.props.language}
-          theme="vs-dark"
-          value={this.props.value}
-          onChange={this.props.onChange}
-          requireConfig={req}
-        />
-      </div>
-    );
+    return <div {...overflowHide} ref={this.refContainer} />;
   }
 }
 export default SrcEditor;

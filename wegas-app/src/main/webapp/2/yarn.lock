@@ -149,8 +149,8 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.108.tgz#02656af3add2e5b3174f830862c47421c00ef817"
 
 "@types/node@*":
-  version "10.0.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.0.2.tgz#180046ebbc37de8b64777765c2486ebecb59448e"
+  version "10.0.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.0.4.tgz#130598ee56e9a1210a53f557d64935571f05390d"
 
 "@types/pako@^1.0.0":
   version "1.0.0"
@@ -181,13 +181,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-monaco-editor@^0.10.1":
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/@types/react-monaco-editor/-/react-monaco-editor-0.10.1.tgz#7dbea0da7a9109b07de03ea59db193ea1a93752e"
-  dependencies:
-    "@types/react" "*"
-    monaco-editor "^0.10.0"
-
 "@types/react-redux@^5.0.16":
   version "5.0.19"
   resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-5.0.19.tgz#d9e9af54c619b7495fffcfa23a0b8922d68316c4"
@@ -212,6 +205,117 @@
 "@types/webpack-env@^1.13.3":
   version "1.13.6"
   resolved "https://registry.yarnpkg.com/@types/webpack-env/-/webpack-env-1.13.6.tgz#128d1685a7c34d31ed17010fc87d6a12c1de6976"
+
+"@webassemblyjs/ast@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.3.0.tgz#524246cd578c30ff792d0c7b49bb0a0f89191dd2"
+  dependencies:
+    "@webassemblyjs/helper-wasm-bytecode" "1.3.0"
+    "@webassemblyjs/wast-parser" "1.3.0"
+    webassemblyjs "1.3.0"
+
+"@webassemblyjs/floating-point-hex-parser@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/floating-point-hex-parser/-/floating-point-hex-parser-1.3.0.tgz#a32574e1327a946c78711179fda8bcc808285913"
+
+"@webassemblyjs/helper-buffer@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/helper-buffer/-/helper-buffer-1.3.0.tgz#790599218673099863b6f5f84d36cc8caab861b2"
+
+"@webassemblyjs/helper-code-frame@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/helper-code-frame/-/helper-code-frame-1.3.0.tgz#8f7d4cd9a2aed3c633cdd79aa660e96279a349bf"
+  dependencies:
+    "@webassemblyjs/wast-printer" "1.3.0"
+
+"@webassemblyjs/helper-fsm@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/helper-fsm/-/helper-fsm-1.3.0.tgz#515141ec51c47b892def606dfc706e7708d4398a"
+
+"@webassemblyjs/helper-wasm-bytecode@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/helper-wasm-bytecode/-/helper-wasm-bytecode-1.3.0.tgz#d23d55fcef04e4f24d6728e31bda8f1257293f91"
+
+"@webassemblyjs/helper-wasm-section@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/helper-wasm-section/-/helper-wasm-section-1.3.0.tgz#a8c9435faca44734fc67dfaee4911ac8e6627bd7"
+  dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+    "@webassemblyjs/helper-buffer" "1.3.0"
+    "@webassemblyjs/helper-wasm-bytecode" "1.3.0"
+    "@webassemblyjs/wasm-gen" "1.3.0"
+
+"@webassemblyjs/leb128@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/leb128/-/leb128-1.3.0.tgz#b9995160f0f94d785579a149716bb2cb0d102f08"
+  dependencies:
+    leb "^0.3.0"
+
+"@webassemblyjs/validation@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/validation/-/validation-1.3.0.tgz#0a1261f414607a04e2ffebb1b3ea9777b35c97af"
+  dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+
+"@webassemblyjs/wasm-edit@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/wasm-edit/-/wasm-edit-1.3.0.tgz#48551c391aebb07e82634cd4ecf257456208a0d3"
+  dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+    "@webassemblyjs/helper-buffer" "1.3.0"
+    "@webassemblyjs/helper-wasm-bytecode" "1.3.0"
+    "@webassemblyjs/helper-wasm-section" "1.3.0"
+    "@webassemblyjs/wasm-gen" "1.3.0"
+    "@webassemblyjs/wasm-opt" "1.3.0"
+    "@webassemblyjs/wasm-parser" "1.3.0"
+    "@webassemblyjs/wast-printer" "1.3.0"
+    debug "^3.1.0"
+
+"@webassemblyjs/wasm-gen@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/wasm-gen/-/wasm-gen-1.3.0.tgz#acf45b38159f351178aa14135e5efa4172931e9a"
+  dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+    "@webassemblyjs/helper-wasm-bytecode" "1.3.0"
+    "@webassemblyjs/leb128" "1.3.0"
+
+"@webassemblyjs/wasm-opt@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/wasm-opt/-/wasm-opt-1.3.0.tgz#958150b0d631eb407fc9b85b9a852526c849c015"
+  dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+    "@webassemblyjs/helper-buffer" "1.3.0"
+    "@webassemblyjs/wasm-gen" "1.3.0"
+    "@webassemblyjs/wasm-parser" "1.3.0"
+
+"@webassemblyjs/wasm-parser@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/wasm-parser/-/wasm-parser-1.3.0.tgz#66dd5ac632e0f938b1656bd46f01fe5f5f9488d0"
+  dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+    "@webassemblyjs/helper-wasm-bytecode" "1.3.0"
+    "@webassemblyjs/leb128" "1.3.0"
+    "@webassemblyjs/wasm-parser" "1.3.0"
+    webassemblyjs "1.3.0"
+
+"@webassemblyjs/wast-parser@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/wast-parser/-/wast-parser-1.3.0.tgz#bfc692d8a159d5fde7c1fee0f4e6d848d5bbcb71"
+  dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+    "@webassemblyjs/floating-point-hex-parser" "1.3.0"
+    "@webassemblyjs/helper-code-frame" "1.3.0"
+    "@webassemblyjs/helper-fsm" "1.3.0"
+    long "^3.2.0"
+    webassemblyjs "1.3.0"
+
+"@webassemblyjs/wast-printer@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@webassemblyjs/wast-printer/-/wast-printer-1.3.0.tgz#b4ed84f0fea9f222d540e25b262cd5eabfee84d4"
+  dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+    "@webassemblyjs/wast-parser" "1.3.0"
+    long "^3.2.0"
 
 abbrev@1:
   version "1.1.1"
@@ -1336,12 +1440,12 @@ caniuse-api@^1.5.2:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000832"
-  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000832.tgz#afe34c9f7c62139fd1c607db2ab7308bbb6a5158"
+  version "1.0.30000835"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000835.tgz#6556931cdf035903d8655d6303f9501b5915fbe9"
 
 caniuse-lite@^1.0.30000830, caniuse-lite@^1.0.30000832:
-  version "1.0.30000832"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000832.tgz#22a277f1d623774cc9aea2f7c1a65cb1603c63b8"
+  version "1.0.30000835"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000835.tgz#517c4d3807a8527b0cbce1d84c85d4487f877268"
 
 chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
   version "1.1.3"
@@ -1569,8 +1673,8 @@ colors@1.0.3:
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
 
 colors@^1.1.2:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/colors/-/colors-1.2.3.tgz#1b152a9c4f6c9f74bc4bb96233ad0b7983b79744"
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-1.2.4.tgz#e0cb41d3e4b20806b3bfc27f4559f01b94bc2f7c"
 
 colors@~1.1.2:
   version "1.1.2"
@@ -1671,19 +1775,6 @@ copy-concurrently@^1.0.0:
 copy-descriptor@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
-
-copy-webpack-plugin@^4.3.1:
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/copy-webpack-plugin/-/copy-webpack-plugin-4.5.1.tgz#fc4f68f4add837cc5e13d111b20715793225d29c"
-  dependencies:
-    cacache "^10.0.4"
-    find-cache-dir "^1.0.0"
-    globby "^7.1.1"
-    is-glob "^4.0.0"
-    loader-utils "^1.1.0"
-    minimatch "^3.0.4"
-    p-limit "^1.0.0"
-    serialize-javascript "^1.4.0"
 
 core-js@^1.0.0:
   version "1.2.7"
@@ -2085,9 +2176,9 @@ duplexer3@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/duplexer3/-/duplexer3-0.1.4.tgz#ee01dd1cac0ed3cbc7fdbea37dc0a8f1ce002ce2"
 
-duplexify@^3.4.2, duplexify@^3.5.3:
-  version "3.5.4"
-  resolved "https://registry.yarnpkg.com/duplexify/-/duplexify-3.5.4.tgz#4bb46c1796eabebeec4ca9a2e66b808cb7a3d8b4"
+duplexify@^3.4.2, duplexify@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/duplexify/-/duplexify-3.6.0.tgz#592903f5d80b38d037220541264d69a198fb3410"
   dependencies:
     end-of-stream "^1.0.0"
     inherits "^2.0.1"
@@ -2103,12 +2194,12 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
 ejs@^2.5.9:
-  version "2.5.9"
-  resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.5.9.tgz#7ba254582a560d267437109a68354112475b0ce5"
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.1.tgz#498ec0d495655abc6f23cd61868d926464071aa0"
 
 electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.42:
-  version "1.3.44"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.44.tgz#ef6b150a60d523082388cadad88085ecd2fd4684"
+  version "1.3.45"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.45.tgz#458ac1b1c5c760ce8811a16d2bfbd97ec30bafb8"
 
 elegant-spinner@^1.0.1:
   version "1.0.1"
@@ -2780,17 +2871,6 @@ globby@^6.1.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-globby@^7.1.1:
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/globby/-/globby-7.1.1.tgz#fb2ccff9401f8600945dfada97440cca972b8680"
-  dependencies:
-    array-union "^1.0.1"
-    dir-glob "^2.0.0"
-    glob "^7.1.2"
-    ignore "^3.3.5"
-    pify "^3.0.0"
-    slash "^1.0.0"
-
 globby@^8.0.0:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/globby/-/globby-8.0.1.tgz#b5ad48b8aa80b35b814fc1281ecc851f1d2b5b50"
@@ -3051,10 +3131,10 @@ iconv-lite@0.4.19:
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.19.tgz#f7468f60135f5e5dad3399c0a81be9a1603a082b"
 
 iconv-lite@^0.4.17, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
-  version "0.4.21"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.21.tgz#c47f8733d02171189ebc4a400f3218d348094798"
+  version "0.4.22"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.22.tgz#c6b16b9d05bc6c307dc9303a820412995d2eea95"
   dependencies:
-    safer-buffer "^2.1.0"
+    safer-buffer ">= 2.1.2 < 3"
 
 icss-replace-symbols@^1.1.0:
   version "1.1.0"
@@ -3084,9 +3164,9 @@ ignore@^3.3.5:
   version "3.3.8"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.8.tgz#3f8e9c35d38708a3a7e0e9abb6c73e7ee7707b2b"
 
-immer@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-1.2.1.tgz#96e2ae29cdfc428f28120b832701931b92fa597c"
+immer@^1.2.1, immer@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-1.3.0.tgz#b5c462dad2a129ad909eb4a180de63ffaa348d12"
 
 immutable@^3.8.2:
   version "3.8.2"
@@ -3679,6 +3759,10 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
+leb@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/leb/-/leb-0.3.0.tgz#32bee9fad168328d6aea8522d833f4180eed1da3"
+
 listr-silent-renderer@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/listr-silent-renderer/-/listr-silent-renderer-1.1.1.tgz#924b5a3757153770bf1a8e3fbf74b8bbf3f9242e"
@@ -3840,6 +3924,10 @@ loglevelnext@^1.0.1:
     es6-symbol "^3.1.1"
     object.assign "^4.1.0"
 
+long@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/long/-/long-3.2.0.tgz#d821b7138ca1cb581c172990ef14db200b5c474b"
+
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.3.1.tgz#d1a8ad33fa9ce0e713d65fdd0ac8b748d478c848"
@@ -3914,8 +4002,8 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
 
 mem-fs-editor@^4.0.0:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/mem-fs-editor/-/mem-fs-editor-4.0.1.tgz#27e6b59df91b37248e9be2145b1bea84695103ed"
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/mem-fs-editor/-/mem-fs-editor-4.0.2.tgz#55a79b1e824da631254c4c95ba6366602c77af90"
   dependencies:
     commondir "^1.0.1"
     deep-extend "^0.5.1"
@@ -3970,8 +4058,8 @@ merge-descriptors@1.0.1:
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
 
 merge2@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.2.1.tgz#271d2516ff52d4af7f7b710b8bf3e16e183fef66"
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.2.2.tgz#03212e3da8d86c4d8523cebd6318193414f94e34"
 
 methods@~1.1.2:
   version "1.1.2"
@@ -4073,8 +4161,8 @@ minimist@^1.1.3, minimist@^1.2.0:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
 
 minipass@^2.2.1, minipass@^2.2.4:
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.2.4.tgz#03c824d84551ec38a8d1bb5bc350a5a30a354a40"
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.3.0.tgz#2e11b1c46df7fe7f1afbe9a490280add21ffe384"
   dependencies:
     safe-buffer "^5.1.1"
     yallist "^3.0.0"
@@ -4117,9 +4205,13 @@ modern-normalize@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/modern-normalize/-/modern-normalize-0.4.0.tgz#1ccbc52861e1bce258144d28e890dc709b120ed2"
 
-monaco-editor@^0.10.0:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.10.1.tgz#8c96c4f15b6b5258bf92cbde93cad8a7e3007e14"
+monaco-editor-webpack-plugin@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.1.0.tgz#017fd2edb916ce9411f690e2e3d4f931509ea474"
+
+monaco-editor@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.12.0.tgz#cd8621017526b57746245104d764bbf52ad42283"
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -4216,9 +4308,9 @@ node-fetch@^1.0.1:
     encoding "^0.1.11"
     is-stream "^1.0.1"
 
-node-forge@0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.1.tgz#9da611ea08982f4b94206b3beb4cc9665f20c300"
+node-forge@0.7.5:
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.5.tgz#6c152c345ce11c52f465c2abd957e8639cd674df"
 
 node-libs-browser@^2.0.0:
   version "2.1.0"
@@ -4495,7 +4587,7 @@ p-lazy@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/p-lazy/-/p-lazy-1.0.0.tgz#ec53c802f2ee3ac28f166cc82d0b2b02de27a835"
 
-p-limit@^1.0.0, p-limit@^1.1.0:
+p-limit@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-1.2.0.tgz#0e92b6bedcb59f022c13d0f1949dc82d15909f1c"
   dependencies:
@@ -4775,9 +4867,9 @@ postcss-load-plugins@^2.3.0:
     cosmiconfig "^2.1.1"
     object-assign "^4.1.0"
 
-postcss-loader@^2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/postcss-loader/-/postcss-loader-2.1.4.tgz#f44a6390e03c84108b2b2063182d1a1011b2ce76"
+postcss-loader@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/postcss-loader/-/postcss-loader-2.1.5.tgz#3c6336ee641c8f95138172533ae461a83595e788"
   dependencies:
     loader-utils "^1.1.0"
     postcss "^6.0.0"
@@ -5052,10 +5144,10 @@ pump@^2.0.0, pump@^2.0.1:
     once "^1.3.1"
 
 pumpify@^1.3.3:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/pumpify/-/pumpify-1.4.0.tgz#80b7c5df7e24153d03f0e7ac8a05a5d068bd07fb"
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/pumpify/-/pumpify-1.5.0.tgz#30c905a26c88fa0074927af07256672b474b1c15"
   dependencies:
-    duplexify "^3.5.3"
+    duplexify "^3.6.0"
     inherits "^2.0.3"
     pump "^2.0.0"
 
@@ -5188,13 +5280,6 @@ react-dom@^16.3.1:
 react-immutable-proptypes@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/react-immutable-proptypes/-/react-immutable-proptypes-2.1.0.tgz#023d6f39bb15c97c071e9e60d00d136eac5fa0b4"
-
-react-monaco-editor@^0.14.1:
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.14.1.tgz#f5163e119e8a7dc79b992cb3fd7af887547d7efd"
-  dependencies:
-    monaco-editor "^0.10.0"
-    prop-types "^15.5.10"
 
 react-portal@^3.1.0:
   version "3.2.0"
@@ -5546,7 +5631,7 @@ safe-regex@^1.1.0:
   dependencies:
     ret "~0.1.10"
 
-safer-buffer@^2.1.0:
+"safer-buffer@>= 2.1.2 < 3":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
 
@@ -5574,10 +5659,10 @@ selection-is-backward@^1.0.0:
   resolved "https://registry.yarnpkg.com/selection-is-backward/-/selection-is-backward-1.0.0.tgz#97a54633188a511aba6419fc5c1fa91b467e6be1"
 
 selfsigned@^1.9.1:
-  version "1.10.2"
-  resolved "https://registry.yarnpkg.com/selfsigned/-/selfsigned-1.10.2.tgz#b4449580d99929b65b10a48389301a6592088758"
+  version "1.10.3"
+  resolved "https://registry.yarnpkg.com/selfsigned/-/selfsigned-1.10.3.tgz#d628ecf9e3735f84e8bafba936b3cf85bea43823"
   dependencies:
-    node-forge "0.7.1"
+    node-forge "0.7.5"
 
 "semver@2 || 3 || 4 || 5", semver@^5.0.1, semver@^5.3.0, semver@^5.5.0:
   version "5.5.0"
@@ -6260,8 +6345,8 @@ typescript@2.8.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.8.3.tgz#5d817f9b6f31bb871835f4edf0089f21abe6c170"
 
 ua-parser-js@^0.7.9:
-  version "0.7.17"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.17.tgz#e9ec5f9498b9ec910e7ae3ac626a805c4d09ecac"
+  version "0.7.18"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.18.tgz#a7bfd92f56edfb117083b69e31d2aa8882d4b1ed"
 
 uglify-es@^3.3.4:
   version "3.3.9"
@@ -6491,15 +6576,25 @@ wbuf@^1.1.0, wbuf@^1.7.2:
   dependencies:
     minimalistic-assert "^1.0.0"
 
+webassemblyjs@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/webassemblyjs/-/webassemblyjs-1.3.0.tgz#970ca465d5ee45ebe611c5c6f7d461900c3e10b2"
+  dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+    "@webassemblyjs/validation" "1.3.0"
+    "@webassemblyjs/wasm-parser" "1.3.0"
+    "@webassemblyjs/wast-parser" "1.3.0"
+    long "^3.2.0"
+
 webpack-addons@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/webpack-addons/-/webpack-addons-1.1.5.tgz#2b178dfe873fb6e75e40a819fa5c26e4a9bc837a"
   dependencies:
     jscodeshift "^0.4.0"
 
-webpack-cli@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-2.1.2.tgz#9c9a4b90584f7b8acaf591238ef0667e04c817f6"
+webpack-cli@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-2.1.3.tgz#65d166851abaa56067ef3f716b02a97ba6bbe84d"
   dependencies:
     chalk "^2.3.2"
     cross-spawn "^6.0.5"
@@ -6589,10 +6684,13 @@ webpack-sources@^1.0.1, webpack-sources@^1.1.0:
     source-list-map "^2.0.0"
     source-map "~0.6.1"
 
-webpack@^4.7.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.7.0.tgz#a04f68dab86d5545fd0277d07ffc44e4078154c9"
+webpack@^4.8.0:
+  version "4.8.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.8.0.tgz#4faef32daf17db89be76b1cb90434508aeec8d3a"
   dependencies:
+    "@webassemblyjs/ast" "1.3.0"
+    "@webassemblyjs/wasm-edit" "1.3.0"
+    "@webassemblyjs/wasm-parser" "1.3.0"
     acorn "^5.0.0"
     acorn-dynamic-import "^3.0.0"
     ajv "^6.1.0"

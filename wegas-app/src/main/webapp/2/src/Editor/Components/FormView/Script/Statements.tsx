@@ -15,6 +15,7 @@ export function Statements({ statements, onChange }: StatementsProps) {
           isExpressionStatement(s) ? (
             <Impact
               stmt={s}
+              key={i}
               onChange={stmt => {
                 const copy = statements.slice();
                 copy.splice(i, 1, stmt);
@@ -22,7 +23,7 @@ export function Statements({ statements, onChange }: StatementsProps) {
               }}
             />
           ) : (
-            <div>
+            <div key={i}>
               {generate(s).code}
               {/* <SrcEditor
                 language="javascript"

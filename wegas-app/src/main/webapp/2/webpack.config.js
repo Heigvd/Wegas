@@ -1,17 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const PROD = process.env.NODE_ENV === 'production';
 
 const plugins = [
-  new CopyWebpackPlugin([
-    {
-      from: 'node_modules/monaco-editor/min/vs',
-      to: 'vs',
-    },
-  ]),
+  new MonacoWebpackPlugin({
+    languages: ['json', 'css', 'javascript'],
+  }),
   new ForkTsCheckerWebpackPlugin({
     formatter: 'codeframe',
   }),
@@ -46,11 +43,11 @@ module.exports = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
-      {
-        test: /\.js$/,
-        use: ['source-map-loader'],
-        enforce: 'pre',
-      },
+      // {
+      //   test: /\.js$/,
+      //   use: ['source-map-loader'],
+      //   enforce: 'pre',
+      // },
     ],
   },
   devServer: {
