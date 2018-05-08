@@ -23,7 +23,8 @@ async function Editor({ entity, update, del, config, path }: EditorProps) {
     pathEntity = get(entity, path);
   }
   if (pathEntity === undefined) {
-    return <span>There is nothing to edit</span>;
+    // return <span>There is nothing to edit</span>;
+    return null;
   }
   function updatePath(variable: {}) {
     return update(deepUpdate(entity, path, variable));

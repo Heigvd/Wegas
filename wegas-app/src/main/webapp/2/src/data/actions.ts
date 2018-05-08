@@ -15,8 +15,6 @@ export const ActionCreator = {
     createAction(ActionType.ENTITY_UPDATE, data),
   VARIABLE_EDIT: (data: { id: number; config?: Schema; path?: string[] }) =>
     createAction(ActionType.VARIABLE_EDIT, data),
-  RESULT_EDIT: (data: { choiceId: number; id: number }) =>
-    createAction(ActionType.RESULT_EDIT, data),
   VARIABLE_CREATE: (data: { '@class': string; parentId?: number }) =>
     createAction(ActionType.VARIABLE_CREATE, data),
   MANAGED_MODE: (data: {

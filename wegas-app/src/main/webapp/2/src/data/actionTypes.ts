@@ -1,7 +1,5 @@
 export const ENTITY_UPDATE = 'ENTITY/UPDATE';
 
-export const RESULT_EDIT = 'RESULT/EDIT';
-
 export const MANAGED_MODE = 'RESPONSE/MANAGED';
 
 export const VARIABLE_EDIT = 'VARIABLE/EDIT';

@@ -7,13 +7,13 @@ import * as React from 'react';
  * @param Err
  */
 export function asyncSFC<T>(
-  PComp: (props: T) => Promise<JSX.Element>,
+  PComp: (props: T) => Promise<React.ReactNode>,
   Loader: React.SFC<{}> = () => <span />,
   Err: React.SFC<{ err: Error }> = () => <span />,
 ): React.ComponentClass<T> {
   class AsyncDeps extends React.PureComponent<
     T,
-    { el: JSX.Element | null; loaded: boolean }
+    { el: React.ReactNode | null; loaded: boolean }
   > {
     static getDerivedStateFromProps() {
       return { loaded: false };
