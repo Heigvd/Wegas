@@ -66,7 +66,10 @@ public class Views {
     public static class Editor implements EditorI, ExtendedI, IndexI {
     }
 
-    public static class Lobby implements EditorI, ExtendedI, IndexI, LobbyI {
+    /**
+     * View relevant to Lobby without Editor items
+     */
+    public static class Lobby implements ExtendedI, IndexI, LobbyI {
     }
 
     /**
