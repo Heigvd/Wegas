@@ -100,14 +100,14 @@ YUI.add('wegas-react-form', Y => {
                         <LangHandler
                             lang={Y.Wegas.I18n._currentRefName}
                             availableLang={Y.Wegas.Facade.GameModel.cache
-                                .getCurrentGameModel()
-                                .get('languages')
-                                .map((l: any) => {
-                                    return {
-                                        refName: l.get('refName'),
-                                        code: l.get('code'),
-                                        label: l.get('lang'),
-                                    };
+                        .getCurrentGameModel()
+                        .get('languages')
+                        .map((l: any) => {
+                            return {
+                                refName: l.get('refName'),
+                                code: l.get('code'),
+                                label: l.get('lang'),
+                            };
                                 })}
                         >
                             {createPortal(
@@ -124,7 +124,7 @@ YUI.add('wegas-react-form', Y => {
                                     value={value}
                                     onChange={boundFire}
                                 />
-                            </div>,
+                            </div>
 
                         </LangHandler>,
                         this.get('contentBox').getDOMNode()

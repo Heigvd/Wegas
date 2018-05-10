@@ -652,7 +652,6 @@
 .wegas-translation.unsaved .tools{
     display: block;
     order: 2;
-
 }
 .wegas-translation .mce-content-body{
     background-color: #eee;
@@ -798,6 +797,13 @@
     /*padding-left: 0.5em;*/
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--editor .i18n-script .tools {
+    display: none;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .i18n-script.unsaved .tools {
+    display: block;
+}
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .translatedcontent {
     display: flex;
@@ -833,6 +839,11 @@
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation {
     display: flex;
     flex-direction: column;
+}
+
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .i18n-script .wegas-toolbar {
+    display: none;
 }
 
 

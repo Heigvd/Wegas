@@ -9,18 +9,33 @@ package com.wegas.core.i18n.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.statemachine.State;
+import com.wegas.core.persistence.variable.statemachine.Transition;
+import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import com.wegas.mcq.persistence.Result;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.script.ScriptException;
+import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +50,9 @@ public class I18nFacade extends WegasAbstractFacade {
 
     @Inject
     private GameModelFacade gameModelFacade;
+
+    @Inject
+    private ScriptFacade scriptFacade;
 
     /**
      * Create language for the given gamemodel.
@@ -269,5 +287,226 @@ public class I18nFacade extends WegasAbstractFacade {
         content.updateTranslation(refName, newValue);
 
         return content;
+    }
+
+    /**
+     * Parse impact and return location of the AST node to update
+     *
+     * @param impact
+     * @param index
+     * @param refName
+     * @param newValue
+     *
+     * @return
+     *
+     * @throws ScriptException
+     */
+    private Object fishTranslationLocation(String impact, Integer index, String refName, String newValue) throws ScriptException {
+        // JAVA 9 will expose Nashorn parser in java !!!
+        String fisherman = "load(\"nashorn:parser.js\");\n"
+                + "\n"
+                + "    var count = 0, ast, loc;\n"
+                + "    ast = parse(impact, \"impact\", true);\n"
+                + "\n"
+                + "    function fish(node, args) {\n"
+                + "        var key, child, keys, i, j, result;\n"
+                + "        if (node.type === 'ObjectExpression') {\n"
+                + "            var i, p, properties = {}, content;\n"
+                + "            if (node.properties) {\n"
+                + "                for (i in node.properties) {\n"
+                + "                    p = node.properties[i];\n"
+                + "                    properties[p.key.value] = p.value;\n"
+                + "                }\n"
+                + "                if (properties[\"@class\"] && properties[\"@class\"].value === \"TranslatableContent\") {\n"
+                + "                    if (index === count) {\n"
+                + "                        for (i in properties[\"translations\"].properties) {\n"
+                + "                            p = properties[\"translations\"].properties[i];\n"
+                + "                            if (p.key.value === refName) {\n"
+                + "                                p.value.loc.status = 'found';\n"
+                + "                                return p.value.loc;\n"
+                + "                            }\n"
+                + "                        }\n"
+                + "                        properties[\"translations\"].loc.status = 'missingRefName'\n"
+                + "                        return  properties[\"translations\"].loc;\n"
+                + "                    } else {\n"
+                + "                        count++;\n"
+                + "                    }\n"
+                + "                }\n"
+                + "            }\n"
+                + "        }\n"
+                + "\n"
+                + "        keys = Object.keys(node).sort();\n"
+                + "        for (i in keys) {\n"
+                + "            key = keys[i];\n"
+                + "            if (node.hasOwnProperty(key)) {\n"
+                + "                child = node[key];\n"
+                + "                if (Array.isArray(child)) {\n"
+                + "                    // process all items in arry\n"
+                + "                    for (j = 0; j < child.length; j++) {\n"
+                + "                        result = fish(child[j]);\n"
+                + "                        if (result) {\n"
+                + "                            return result;\n"
+                + "                        }\n"
+                + "                    }\n"
+                + "                } else if (child instanceof Object && typeof child.type === \"string\") {\n"
+                + "                    // the child is an object which contains a type property\n"
+                + "                    result = fish(child);\n"
+                + "                    if (result) {\n"
+                + "                        return result;\n"
+                + "                    }\n"
+                + "                }\n"
+                + "            }\n"
+                + "        }\n"
+                + "    }\n"
+                + "\n"
+                //+ "    print(JSON.stringify(ast));\n"
+                + "    loc = fish(ast) || {\n"
+                + "        status: 'misingTranslationContent'\n"
+                + "    };\n"
+                + "    loc.newValue = JSON.stringify(newValue);\n"
+                + "    loc;";
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("impact", impact);
+        args.put("index", index);
+        args.put("refName", refName);
+        args.put("newValue", newValue);
+
+        return scriptFacade.nakedEval(fisherman, args);
+    }
+
+    public String updateScriptWithNewTranslation(String impact, int index, String refName, String newValue) throws ScriptException {
+        JSObject location = (JSObject) fishTranslationLocation(impact, index, refName, newValue);
+
+        if (location != null) {
+
+            String status = (String) location.getMember("status");
+
+            if (location.hasMember("start") && location.hasMember("end")) {
+                JSObject start = (JSObject) location.getMember("start");
+                JSObject end = (JSObject) location.getMember("end");
+
+                Integer startIndex = null;
+                Integer endIndex = null;
+
+                Integer startLine = (Integer) start.getMember("line");
+                Integer startColumn = (Integer) start.getMember("column");
+
+                Integer endLine = (Integer) end.getMember("line");
+                Integer endColumn = (Integer) end.getMember("column");
+
+                String newNewValue = (String) location.getMember("newValue");
+
+                int line = 1;
+                int col = 1;
+
+                // convert column/line nunbers to absolute indexes
+                for (int i = 0; i < impact.length(); i++) {
+                    if (startLine == line) {
+                        startIndex = i + startColumn;
+                    }
+
+                    if (endLine == line) {
+                        endIndex = i + endColumn;
+                    }
+
+                    if (startIndex != null && endIndex != null) {
+                        break;
+                    }
+
+                    if (impact.charAt(i) == '\n') {
+                        line++;
+                        col = 0;
+                    }
+                    col++;
+                }
+
+                System.out.println("Indexes: " + startIndex + " : " + endIndex);
+
+                switch (status) {
+                    case "found":
+                        // update existing translation
+                        if (startIndex != null && endIndex != null) {
+                            StringBuilder sb = new StringBuilder(impact);
+                            sb.replace(startIndex - 1, endIndex + 1, newNewValue);
+                            return sb.toString();
+                        }
+                        break;
+                    case "missingRefName":
+                        StringBuilder sb = new StringBuilder(impact);
+                        // insert new refName property right after opening bracket
+                        sb.replace(startIndex + 1, startIndex + 1, "\"" + refName + "\": " + newNewValue + ", ");
+                        return sb.toString();
+                    default:
+                        break;
+                }
+            }
+        }
+        return null;
+    }
+
+    public AbstractEntity updateInScriptTranslation(String parentClass, Long parentId,
+            String fieldName, Integer index, String refName, String newValue) throws ScriptException {
+        Class theKlass;
+        // hardcoded class name => resolve with a switch is a bad practice, should rely on JSON type name (wait for payara5 / yasson)
+        switch (parentClass) {
+            case "TriggerDescriptor":
+                theKlass = TriggerDescriptor.class;
+                break;
+            case "Result":
+                theKlass = Result.class;
+                break;
+            case "Transition":
+                theKlass = Transition.class;
+                break;
+            case "State":
+                theKlass = State.class;
+                break;
+            default:
+                theKlass = null;
+        }
+
+        if (theKlass != null) {
+            // load the parent
+            Object theParent = this.getEntityManager().find(theKlass, parentId);
+
+            AbstractEntity toReturn = null;
+            switch (parentClass) {
+                case "TriggerDescriptor":
+                    toReturn = (AbstractEntity) theParent;
+                    break;
+                case "Result":
+                    toReturn = ((Result) theParent).getChoiceDescriptor();
+                    break;
+                case "Transition":
+                    toReturn = ((Transition) theParent).getState().getStateMachine();
+                    break;
+                case "State":
+                    toReturn = ((State) theParent).getStateMachine();
+                    break;
+            }
+
+            try {
+                // fetch impact getter and setter
+                PropertyDescriptor property = new PropertyDescriptor(fieldName, theKlass);
+                Method getter = property.getReadMethod();
+
+                // Fetch script to update
+                Script theScript = (Script) getter.invoke(theParent);
+                String source = theScript.getContent();
+
+                String updatedSource = this.updateScriptWithNewTranslation(source, index, refName, newValue);
+                theScript.setContent(updatedSource);
+
+                Method setter = property.getWriteMethod();
+                setter.invoke(theParent, theScript);
+
+                return toReturn;
+
+            } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
+                logger.error("Eroor while setting {}({})#{}.{} to {}", parentClass, parentId, fieldName, index, newValue);
+            }
+        }
+        return null;
     }
 }

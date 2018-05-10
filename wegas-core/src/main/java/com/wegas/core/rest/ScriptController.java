@@ -14,11 +14,13 @@ import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +51,7 @@ public class ScriptController {
      *
      */
     @EJB
-    private ScriptFacade scriptManager;
+    private ScriptFacade scriptFacade;
     /**
      *
      */
@@ -108,7 +110,7 @@ public class ScriptController {
         }
         logger.info("script for player {} : {}", playerId, script.getContent());
 
-        Object r = scriptManager.eval(playerId, script, context);
+        Object r = scriptFacade.eval(playerId, script, context);
         requestFacade.commit();
         return r;
     }
@@ -143,7 +145,7 @@ public class ScriptController {
         }
 
         for (Integer playerId : playerIdList) {
-            Object r = scriptManager.eval(playerId.longValue(), script, context);
+            Object r = scriptFacade.eval(playerId.longValue(), script, context);
             results.add(r);
             requestFacade.commit(playerFacadeFacade.find(playerId.longValue()));
         }

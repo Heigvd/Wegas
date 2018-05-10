@@ -9,10 +9,13 @@ package com.wegas.core.i18n.rest;
 
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
+import com.wegas.core.persistence.game.Script;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.script.ScriptException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -76,6 +79,19 @@ public class I18nController {
     public TranslatableContent updateTranslation(@PathParam("refName") String refName, @PathParam("trId") Long trId, String newValue) {
         logger.trace("UPDATE #{} / {}", trId, refName);
         return i18nfacade.updateTranslation(trId, refName, newValue);
+    }
+
+    @PUT
+    @Path("ScriptTr/{refName : [^\\/]*}/{parentClass: [a-zA-Z]+}/{parentId: [1-9][0-9]*}/{fieldName: [a-zA-Z]+}/{index: [0-9]+}")
+    public AbstractEntity updateScript(
+            @PathParam("refName") String refName,
+            @PathParam("parentClass") String parentClass,
+            @PathParam("parentId") Long parentId,
+            @PathParam("fieldName") String fieldName,
+            @PathParam("index") Integer index,
+            String value) throws ScriptException {
+        return i18nfacade.updateInScriptTranslation(parentClass, parentId, fieldName,
+                index, refName, value);
     }
 
     @DELETE

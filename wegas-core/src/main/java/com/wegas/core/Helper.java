@@ -761,15 +761,14 @@ public class Helper {
         return true;
     }
 
-
     /**
      * @param trContent
      * @param criterias needles
      *
-     * @return true if trContent  is not null and matches all criterias
+     * @return true if trContent is not null and matches all criterias
      */
     public static Boolean insensitiveContainsAll(TranslatableContent trContent, List<String> criterias) {
-        if (trContent != null){
+        if (trContent != null) {
             return trContent.containsAll(criterias);
         }
         return false;

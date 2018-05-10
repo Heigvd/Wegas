@@ -796,7 +796,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
             label: Y.Wegas.Helper.getTranslationAttr({
                 label: "Label",
                 index: -1,
-                type: STRING
+                type: STRING,
+                visible: function(val, formVal) {
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    return parent ? parent.get("@class") === "ChoiceDescriptor" : false;
+                }
             }),
             name: {
                 value: "",

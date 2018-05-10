@@ -188,7 +188,7 @@ YUI.add("wegas-i18n", function(Y) {
 
         function genTranslationMarkup(text, inlineEditor, lang, id, favorite, code) {
             if (inlineEditor === "html") {
-                return "<div class='wegas-translation wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
+                return "<div class='wegas-translation wegas-translation-std wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
                     "' data-trid='" + id +
                     "' data-refName='" + lang.refName + "'lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
                     "<span class='inline-editor-validate fa fa-check'></span>" +
@@ -196,7 +196,7 @@ YUI.add("wegas-i18n", function(Y) {
                     "</span>" +
                     "<div class='wegas-translation--value'>" + text + "</div></div>";
             } else if (inlineEditor === "string") {
-                return "<span class='wegas-translation wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
+                return "<span class='wegas-translation wegas-translation-std wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
                     "' data-trid='" + id +
                     "' data-refName='" + lang.refName + "'lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
                     "<span class='inline-editor-validate fa fa-check'></span>" +
