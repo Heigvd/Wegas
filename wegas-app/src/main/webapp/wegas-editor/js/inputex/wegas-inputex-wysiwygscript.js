@@ -303,7 +303,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             });
 
             function parse(node, args) {
-                var key, child, keys, i, j;
+                var key, child, keys, i, j, subArgs;
+
                 if (!fn || fn.call(null, node, args)) {
 
                     if (node.type === Syntax.CallExpression) {
@@ -334,13 +335,28 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                         if (node.hasOwnProperty(key)) {
                             child = node[key];
                             if (Array.isArray(child)) {
-                                // process all items in arry
+                                // process all items in array
+                                if (args && args.type === 'array' && args.items && args.items.type === "object") {
+                                    subArgs = args.items;
+                                } else {
+                                    subArgs = null;
+                                }
                                 for (j = 0; j < child.length; j++) {
-                                    parse(child[j]);
+                                    if (child[j] instanceof Object && typeof child[j].type === "string") {
+                                        if (!subArgs && args && args.properties && child[j].type === 'Property') {
+                                            parse(child[j].value, args.properties[child[j].key.value]);
+                                        } else {
+                                            parse(child[j], subArgs);
+                                        }
+                                    }
                                 }
                             } else if (child instanceof Object && typeof child.type === "string") {
                                 // the child is an object which contains a type property
-                                parse(child);
+                                if (node.type === "Property" && key === "value") {
+                                    parse(child, args);
+                                } else {
+                                    parse(child);
+                                }
                             }
                         }
                     }

@@ -7,12 +7,13 @@
  */
 package com.wegas.core.i18n.rest;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
-import com.wegas.core.persistence.game.Script;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.script.ScriptException;
@@ -82,17 +83,23 @@ public class I18nController {
     }
 
     @PUT
-    @Path("ScriptTr/{refName : [^\\/]*}/{parentClass: [a-zA-Z]+}/{parentId: [1-9][0-9]*}/{fieldName: [a-zA-Z]+}/{index: [0-9]+}")
-    public AbstractEntity updateScript(
-            @PathParam("refName") String refName,
-            @PathParam("parentClass") String parentClass,
-            @PathParam("parentId") Long parentId,
-            @PathParam("fieldName") String fieldName,
-            @PathParam("index") Integer index,
-            String value) throws ScriptException {
-        return i18nfacade.updateInScriptTranslation(parentClass, parentId, fieldName,
-                index, refName, value);
+    @Path("ScriptTr")
+    public AbstractEntity updateInScript(ScriptUpdate scriptUpdate) throws ScriptException {
+        return i18nfacade.updateInScriptTranslation(scriptUpdate);
     }
+
+    @PUT
+    @Path("ScriptTrBatchUpdate")
+    public List<AbstractEntity> batchUpdateInScript(List<ScriptUpdate> scriptUpdates) throws ScriptException {
+        return i18nfacade.batchUpdateInScriptTranslation(scriptUpdates);
+    }
+
+    @PUT
+    @Path("ScriptBatchUpdate")
+    public List<AbstractEntity> batchScriptUpdate(List<ScriptUpdate> updates) {
+        return i18nfacade.batchScriptUpdate(updates);
+    }
+
 
     @DELETE
     @Path("Tr/{lang : [^\\/]*}")

@@ -15,6 +15,8 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
+import com.wegas.core.i18n.rest.I18nController;
+import com.wegas.core.i18n.rest.ScriptUpdate;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModel;
@@ -28,9 +30,11 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -445,11 +449,10 @@ public class I18nFacade extends WegasAbstractFacade {
         return null;
     }
 
-    public AbstractEntity updateInScriptTranslation(String parentClass, Long parentId,
-            String fieldName, Integer index, String refName, String newValue) throws ScriptException {
+    private AbstractEntity getParent(ScriptUpdate scriptUpdate) {
         Class theKlass;
         // hardcoded class name => resolve with a switch is a bad practice, should rely on JSON type name (wait for payara5 / yasson)
-        switch (parentClass) {
+        switch (scriptUpdate.getParentClass()) {
             case "TriggerDescriptor":
                 theKlass = TriggerDescriptor.class;
                 break;
@@ -468,34 +471,53 @@ public class I18nFacade extends WegasAbstractFacade {
 
         if (theKlass != null) {
             // load the parent
-            Object theParent = this.getEntityManager().find(theKlass, parentId);
+            return (AbstractEntity) this.getEntityManager().find(theKlass, scriptUpdate.getParentId());
+        }
+        return null;
+    }
 
-            AbstractEntity toReturn = null;
-            switch (parentClass) {
+    private AbstractEntity getToReturn(String className, AbstractEntity theParent) {
+        if (theParent != null) {
+            switch (className) {
                 case "TriggerDescriptor":
-                    toReturn = (AbstractEntity) theParent;
-                    break;
+                    return theParent;
                 case "Result":
-                    toReturn = ((Result) theParent).getChoiceDescriptor();
-                    break;
+                    return ((Result) theParent).getChoiceDescriptor();
                 case "Transition":
-                    toReturn = ((Transition) theParent).getState().getStateMachine();
-                    break;
+                    return ((Transition) theParent).getState().getStateMachine();
                 case "State":
-                    toReturn = ((State) theParent).getStateMachine();
-                    break;
+                    return ((State) theParent).getStateMachine();
             }
+        }
+        return null;
+    }
+
+    public List<AbstractEntity> batchUpdateInScriptTranslation(List<ScriptUpdate> scriptUpdates) throws ScriptException {
+        List<AbstractEntity> ret = new ArrayList<>();
+        for (ScriptUpdate update : scriptUpdates) {
+            AbstractEntity updated = this.updateInScriptTranslation(update);
+            if (updated != null) {
+                ret.add(updated);
+            }
+        }
+        return ret;
+    }
+
+    public AbstractEntity updateInScriptTranslation(ScriptUpdate scriptUpdate) throws ScriptException {
+        AbstractEntity theParent = this.getParent(scriptUpdate);
+        if (theParent != null) {
+            AbstractEntity toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
 
             try {
                 // fetch impact getter and setter
-                PropertyDescriptor property = new PropertyDescriptor(fieldName, theKlass);
+                PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
                 Method getter = property.getReadMethod();
 
                 // Fetch script to update
                 Script theScript = (Script) getter.invoke(theParent);
                 String source = theScript.getContent();
 
-                String updatedSource = this.updateScriptWithNewTranslation(source, index, refName, newValue);
+                String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getRefName(), scriptUpdate.getValue());
                 theScript.setContent(updatedSource);
 
                 Method setter = property.getWriteMethod();
@@ -504,9 +526,40 @@ public class I18nFacade extends WegasAbstractFacade {
                 return toReturn;
 
             } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
-                logger.error("Eroor while setting {}({})#{}.{} to {}", parentClass, parentId, fieldName, index, newValue);
+                logger.error("Error while setting {}({})#{}.{} to {}", scriptUpdate.getFieldName(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getIndex(), scriptUpdate.getValue());
             }
         }
         return null;
     }
+
+    public List<AbstractEntity> batchScriptUpdate(List<ScriptUpdate> updates) {
+        List<AbstractEntity> ret = new ArrayList<>();
+        for (ScriptUpdate scriptUpdate : updates) {
+            AbstractEntity theParent = this.getParent(scriptUpdate);
+            if (theParent != null) {
+                try {
+                    AbstractEntity toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
+
+                    // fetch impact getter and setter
+                    PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
+                    Method getter = property.getReadMethod();
+
+                    Script theScript = (Script) getter.invoke(theParent);
+
+                    theScript.setContent(scriptUpdate.getValue());
+
+                    Method setter = property.getWriteMethod();
+                    setter.invoke(theParent, theScript);
+
+                    if (toReturn != null) {
+                        ret.add(toReturn);
+                    }
+                } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
+                    logger.error("Error while setting {}({})#{} to {}", scriptUpdate.getFieldName(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getIndex(), scriptUpdate.getValue());
+                }
+            }
+        }
+        return ret;
+    }
+
 }

@@ -20,7 +20,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -183,5 +182,4 @@ public class ScriptController {
 
         return ret;
     }
-
 }
