@@ -7,7 +7,7 @@
  */
 
 
-/* global I18n, tinyMCE */
+/* global I18n, tinyMCE, Promise */
 
 /**
  * @fileOverview GameModel langueages management widgets
@@ -57,7 +57,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             });
             this.editor = new Y.Wegas.Text({
                 cssClass: "wegas-i18n-manager--editor",
-                content: "editor"
+                content: "loading translation table <i class='fa fa-pulse fa-spinner'></i>"
             });
             this.add(this.title);
             this.add(this.addBtn);
@@ -74,22 +74,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 this.renderLanguage(lang.get("id"), lang.get("code"), lang.get("lang"), lang.get("active"));
             }
 
-
-            this.tree = this.genTree(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel());
-            //this.treeview.set("content", "<ul>" + this.genTreeviewMarkup(this.tree) + "</ul>");
-            //this.treeview.syncUI();
-
-            if (this.tree.containsOutdated && !this.upgrader) {
-                this.upgrader = new Y.Wegas.GameModelScriptUpgrader();
-                this.add(this.upgrader, 1);
-            } else {
-                if (this.upgrader) {
-                    this.upgrader.remove(true);
-                    this.upgrader = null;
-                }
-            }
-
-            this.rebuildEditor();
+            var globals = [Y.Wegas.RForm.Script.getGlobals('getter'), Y.Wegas.RForm.Script.getGlobals('condition')];
+            Promise.all(globals).then(Y.bind(function(globalsP) {
+                this.globals = Y.mix(Y.mix({}, globalsP[0]), globalsP[1]);
+                this.rebuildEditor();
+            }, this));
         },
         renderLanguage: function(id, code, lang, active) {
             if (this.languages.size() && id) {
@@ -201,6 +190,22 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             return langs;
         },
         rebuildEditor: function() {
+            this.tree = this.genTree(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel());
+            //this.treeview.set("content", "<ul>" + this.genTreeviewMarkup(this.tree) + "</ul>");
+            //this.treeview.syncUI();
+
+            if (this.tree.containsOutdated && !this.upgrader) {
+                this.upgrader = new Y.Wegas.GameModelScriptUpgrader();
+                this.handlers.onGmUpgrade = this.upgrader.on("upgraded", Y.bind(this.rebuildEditor, this));
+                this.add(this.upgrader, 1);
+            } else {
+                if (this.upgrader) {
+                    this.handlers.onGmUpgrad && this.handlers.onGmUpgrad.detach();
+                    this.upgrader.remove(true);
+                    this.upgrader = null;
+                }
+            }
+
             this.editor.set("content", this.genEditorMarkup(this.tree, this.getLanguagesToEdit()));
             this.editor.syncUI();
         },
@@ -262,10 +267,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     }
                 }
                 return true;
-            }, this));
-            /*return Y.inputEx.WysiwygScript.formatScript(script, {
-             lang: refName
-             });*/
+            }, this), this.globals);
+
             return {
                 contents: contents,
                 containsOutdated: containsOutdated
@@ -278,7 +281,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 markup.push("<div class='node' data-entityid='", node.entityId, "' data-level='", level, "'>");
                 markup.push("<span class='anchor' data-entityid='", node.entityId, "'></span>");
                 if (node.translations && node.translations.length > 0) {
-                    markup.push("<div class='node-name'>", node.nodeLabel, " <span class='node-scriptalias'>(", node.nodeName, ")</span></div>");
+                    if (node.nodeLabel || node.nodeName) {
+                        markup.push("<div class='node-name'>", (node.nodeLabel || node.nodeName), " <span class='node-scriptalias'>(", node.nodeName, ")</span></div>");
+                    }
                     markup.push("<div class='translatedcontents'>");
                     for (var i in node.translations) {
                         tr = node.translations[i];
@@ -365,7 +370,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     translations: [],
                     children: []
                 };
-                if (entity.getIconCss) {
+                if (node.nodeLabel && entity.getIconCss) {
+                    // prefix non emtpy label with icon if any
                     node.nodeLabel = "<i class='" + entity.getIconCss() + "'></i> " + node.nodeLabel;
                 }
 
@@ -721,9 +727,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         "dynamic_toolbar": Y.Wegas.app.get("base") +
                             "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
                     },
-                    toolbar1: 'bold italic bullist | link image media code addToolbarButton',
+                    toolbar1: 'bold italic bullist | link image media  addToolbarButton', /* 'code' not working!!! */
                     toolbar2: 'forecolor backcolor underline alignleft aligncenter alignright alignjustify table',
                     toolbar3: 'fontsizeselect styleselect',
+                    //selection_toolbar: 'bold italic bullist | quicklink quickimage media ',
                     // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect
                     // fontsizeselect styleselect spellchecker template
                     // contextmenu: 'link image inserttable | cell row
@@ -848,6 +855,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
         initializer: function() {
             this.handlers = {};
+            this.publish('upgraded', {
+                emitFacade: true
+            });
         },
         renderUI: function() {
             this.text = new Y.Wegas.Text({
@@ -862,7 +872,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         bindUI: function() {
             this.handlers.onUpgrade = this.upgradeBtn.on("click", this.execute, this);
         },
-        processScript: function(entity, attrName, attr) {
+        processScript: function(entity, attrName, attr, globals) {
             var toUpgrade = [],
                 payload = [],
                 content = attr.get("content"),
@@ -889,14 +899,14 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     }
                 }
                 return true;
-            }, this));
+            }, this), globals);
             if (toUpgrade.length) {
                 Y.log("Entity: " + entity.get("@class") + "#" + entity.get("id") + "::" + attrName + ": ");
                 Y.log("CONTENT:" + content);
                 // sort by range, last first to not alter first ranges location
                 toUpgrade.sort(function(a, b) {
                     if (a && a.node && a.node.range &&
-                        b && b.node && b.node.range){
+                        b && b.node && b.node.range) {
                         return b.node.range[0] - a.node.range[0];
                     }
                     return 0;
@@ -934,6 +944,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     "value": content
                 });
             }
+            return payload;
+        },
+        saveScripts: function(payload) {
             if (payload.length) {
                 Y.Wegas.Facade.GameModel.sendRequest({
                     request: '/' + Y.Wegas.Facade.GameModel.get('currentGameModelId') + "/I18n/ScriptBatchUpdate",
@@ -949,15 +962,23 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }
         },
         batchSuccess: function(e) {
+            this.fire("upgraded");
         },
         batchFailure: function(e) {
+            alert("SOMETHING WENT WRONG");
         },
         execute: function() {
-            this.extractScripts(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel());
+            var globals = [Y.Wegas.RForm.Script.getGlobals('getter'),
+                Y.Wegas.RForm.Script.getGlobals('condition')];
+            Promise.all(globals).then(Y.bind(function(globals) {
+                var scriptToUpdate = this.extractScripts(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
+                    Y.mix(Y.mix({}, globals[0]), globals[1]));
+                this.saveScripts(scriptToUpdate);
+            }, this));
         },
-        extractScripts: function(entity) {
+        extractScripts: function(entity, globals) {
             var attrs, key, attr, sub, i, child, children,
-                node;
+                results = [];
             if (entity instanceof Y.Wegas.persistence.Entity) {
                 attrs = entity.getAttrs();
                 for (key in attrs) {
@@ -973,14 +994,14 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                         (Y.Lang.isObject(attr) && !(attr instanceof Y.Wegas.persistence.Entity))) {
                                     for (i in attr) {
                                         child = attr[i];
-                                        this.extractScripts(child);
+                                        results = results.concat(this.extractScripts(child, globals));
                                     }
                                     sub = children;
                                 } else if (attr instanceof Y.Wegas.persistence.Script) {
-                                    this.processScript(entity, key, attr);
+                                    results = results.concat(this.processScript(entity, key, attr, globals));
                                     // 
                                 } else {
-                                    this.extractScripts(attr);
+                                    results = results.concat(this.extractScripts(attr, globals));
                                 }
                             }
                         }
@@ -988,8 +1009,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
                 }
             }
-
-            return node;
+            return results;
         },
         destructor: function() {
             var k;

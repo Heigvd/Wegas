@@ -287,15 +287,15 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
          * @param {type} fn callbakc called against each node, returned value => goeepper? true/false
          * @returns {undefined}
          */
-        visitAST: function(script, fn) {
+        visitAST: function(script, fn, globals) {
+            var globalsPromises = [Y.Wegas.RForm.Script.getGlobals('getter'),
+                Y.Wegas.RForm.Script.getGlobals('condition')];
+
             if (script && script.get) {
                 script = script.get("content");
             } else if (Y.Lang.isObject(script)) {
                 script = script.content;
             }
-
-            var globals = Y.mix(Y.mix({}, inputEx.Wegas.VariableDescriptorStatement.prototype.GLOBALMETHODS),
-                inputEx.Wegas.VariableDescriptorCondition.prototype.GLOBALMETHODS);
 
             var tree = window.esprima.parse(script, {
                 raw: true,
@@ -319,7 +319,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             vd = Wegas.Facade.Variable.cache.find("name", node.callee.object.arguments[1].value);
                             method = vd.getMethodCfgs()[node.callee.property.name];
                         } else {
-                            method = globals[node.callee.object.name + "." + node.callee.property.name];
+                            method = globals && globals[node.callee.object.name + "." + node.callee.property.name];
                         }
                         if (method) {
                             for (j = 0; j < node.arguments.length; j++) {
@@ -362,10 +362,10 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     }
                 }
             }
-
             parse(tree);
         },
         formatScript: function(script, i18nConfig) {
+            // todo promise !
             if (script && script.get) {
                 script = script.get("content");
             } else if (Y.Lang.isObject(script)) {
@@ -375,8 +375,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 return "";
             }
             try {
-                var globals = Y.mix(Y.mix({}, inputEx.Wegas.VariableDescriptorStatement.prototype.GLOBALMETHODS),
-                    inputEx.Wegas.VariableDescriptorCondition.prototype.GLOBALMETHODS),
+                var globals = Y.mix(Y.mix({}, Y.Wegas.RForm.Script.getGlobals('getter')),
+                    Y.Wegas.RForm.Script.getGlobals('condition')),
                     findLabel = function(a, n) {
                         var l = Y.Array.find(a, function(i) {
                             return i.value === n;

@@ -378,6 +378,13 @@ YUI.add('wegas-react-form', Y => {
                 }
             );
         },
+        getGlobals: function r(value: string){
+             return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
+                ({getGlobals}) => {
+                    return getGlobals(value);
+                }
+            );
+        },
         MultiVariableMethod(...args: any[]) {
             return Promise.all([
                 import(/* webpackChunkName: "reactForm" */ './Script/index'),
