@@ -1362,6 +1362,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': startSentence(keywords.player.plural.en),
                             'fr': startSentence(keywords.player.plural.fr)
                         },
+                        'TRAINER-MODALE-USERS-NO-PLAYERS': {
+                            'en': "No players have joined yet",
+                            'fr': "Aucun joueur n'a rejoint la partie"
+                        },
                         'TRAINER-MODALE-USERS-TAB-TRAINER': {
                             'en': startSentence(keywords.trainer.plural.en),
                             'fr': startSentence(keywords.trainer.plural.fr)

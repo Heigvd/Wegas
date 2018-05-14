@@ -191,7 +191,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      * @return the teams
      */
     @JsonManagedReference("game-team")
-    @JsonView(Views.IndexI.class)
+    // Exclude this property from the Lobby view and force a fetch in Editor view:
+    @JsonView(Views.EditorI.class)
     public List<Team> getTeams() {
         return this.getGameTeams().getTeams();
     }
@@ -253,7 +254,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      * @return the gameModel
      */
-    @JsonView(Views.LobbyI.class)
+    @JsonView({Views.LobbyI.class, Views.EditorI.class})
     public GameModel getGameModel() {
         return gameModel;
     }
