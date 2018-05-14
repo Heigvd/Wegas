@@ -5,7 +5,7 @@ import Impact, { ErrorCatcher } from './Impact';
 import { methodDescriptor, extractMethod } from './method';
 import { methodDescriptor as globalMethodDescriptor } from './globalMethod';
 import ConditionOperator from './ConditionOperator';
-import { renderForm, valueToType } from './args';
+import { renderForm, valueToAST } from './args';
 import { containerStyle } from '../Views/conditionImpactStyle';
 
 const b = types.builders;
@@ -110,7 +110,7 @@ class Condition extends React.Component {
                 node.operator,
                 node.left,
                 node.right ||
-                    valueToType(defaultValue(descr.returns), {
+                    valueToAST(defaultValue(descr.returns), {
                         type: descr.returns,
                     })
             );
@@ -130,7 +130,7 @@ class Condition extends React.Component {
                     node: {
                         ...n,
                         operator: '===',
-                        right: valueToType(defaultValue(descr.returns), {
+                        right: valueToAST(defaultValue(descr.returns), {
                             type: descr.returns,
                         }),
                     },
