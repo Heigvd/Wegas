@@ -554,7 +554,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     node.label += "(" + el.get("messages").length + ")";
                     for (k = 0; k < el.get("messages").length; k += 1) {
                         node.children.push({
-                            label: el.get("messages")[k].get("subject")
+                            label: I18n.t(el.get("messages")[k].get("subject"))
                         });
                     }
                     break;

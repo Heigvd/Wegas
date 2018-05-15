@@ -753,5 +753,54 @@
     </changeSet>
 
 
+    <!-- Urbactic (client) serverscript -->
+    <changeSet author="maxence (generated)" id="1523014059600-urbactifMigrate">
+        <update tableName="gamemodel">
+            <column name="scripturi">wegas-private/wegas-games/wegas-urbactif/server/;</column>
+            <column name="clientscripturi">wegas-private/wegas-games/wegas-urbactif/client/wegas-urbactif-client.js;</column>
+            <where>lower(name) like '%urbactif%'</where>
+        </update>
+        <sql>
+            delete from gamemodelcontent where scriptlibrary_gamemodel_id in (select id from gamemodel where  lower(name) like '%urbactif%');
+        </sql>
+        <sql>
+            delete from gamemodelcontent where clientscriptlibrary_gamemodel_id in (select id from gamemodel where  lower(name) like '%urbactif%');
+        </sql>
 
+
+        <!-- set default language to french -->
+        <sql>
+            UPDATE gamemodellanguage as gml set code = 'fr', lang = 'Français' FROM (
+            select id as gamemodel_id from gamemodel where lower(name) like '%urbactif%') as FOO
+            WHERE gml.gamemodel_id = FOO.gamemodel_id;
+        </sql>
+    </changeSet>
+
+    <!-- Review now requieres WegasHelper server script -->
+    <changeSet author="maxence (generated)" id="1523014059600-reviewing">
+        <sql>
+            update gamemodel set scripturi = 'wegas-app/js/server/;' || scripturi where scripturi like '%wegas-reviewing/scripts/server/%' and scripturi not like '%wegas-app/js/server%';
+        </sql>
+    </changeSet>
+
+    <!-- TraumaSim & OncoSim -->
+    <changeSet author="maxence (generated)" id="1523014059600-oncotraumaMigrate">
+        <update tableName="gamemodel">
+            <column name="scripturi">wegas-app/js/server/;wegas-private/wegas-traumasim/server-scripts/;wegas-reviewing/scripts/server/;</column>
+            <where>
+                scripturi = 'wegas-app/js/server/;wegas-reviewing/scripts/server/;'
+                AND cssuri = 'wegas-private/wegas-oncosim/css/wegas-oncosim.css';
+            </where>
+        </update>
+        <sql>
+            delete from gamemodelcontent where scriptlibrary_gamemodel_id in (select id from gamemodel where scripturi = 'wegas-app/js/server/;wegas-private/wegas-traumasim/server-scripts/;wegas-reviewing/scripts/server/;');
+        </sql>
+
+        <!-- set default language to french for Trauma & Onco -->
+        <sql>
+            UPDATE gamemodellanguage as gml set code = 'fr', lang = 'Français' FROM (
+            select id as gamemodel_id from gamemodel where cssuri = 'wegas-private/wegas-oncosim/css/wegas-oncosim.css') as FOO
+            WHERE gml.gamemodel_id = FOO.gamemodel_id;
+        </sql>
+    </changeSet>
 </databaseChangeLog>

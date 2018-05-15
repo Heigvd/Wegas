@@ -1012,6 +1012,11 @@ YUI().use(function(Y) {
                 requires: ["wegas-nodeformatter", "wegas-itemselector",
                     "wegas-panel", "wegas-simpledialogue"],
                 ws_provides: "CEPFolder"
+            },
+            "wegas-urbactif": {
+                path: "wegas-private/wegas-games/wegas-urbactif/urba-teamwidget.js",
+                requires: ["wegas-button", "wegas-mcq-tabview", "wegas-layout-list", "wegas-i18n", "wegas-i18n-mcq-fr"],
+                ws_provides: "TeamWidget"
             }
             /* Chess */
             //"wegas-chess": {

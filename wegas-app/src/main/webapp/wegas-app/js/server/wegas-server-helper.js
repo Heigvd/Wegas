@@ -21,7 +21,7 @@ var WegasHelper = (function() {
 
             if (message) {
                 if (typeof inboxNameOrCb === "function") {
-                    inboxNameOrCb(message);
+                    inboxNameOrCb(message, e);
                 } else {
                     //sendDatedMessage(self, from, date, subject, body)
                     Variable.find(gameModel, inboxNameOrCb).sendMessage(self, message);
@@ -44,7 +44,7 @@ var WegasHelper = (function() {
 
             if (message) {
                 if (typeof inboxNameOrCb === "function") {
-                    inboxNameOrCb(message);
+                    inboxNameOrCb(message, e);
                 } else {
                     //sendDatedMessage(self, from, date, subject, body)
                     Variable.find(gameModel, inboxNameOrCb).sendMessage(self, message);
@@ -53,16 +53,48 @@ var WegasHelper = (function() {
         });
     }
 
+    function _getInboxInstanceContent(inboxInstance, inboxName, teamName) {
+        var msgs = inboxInstance.getSortedMessages(),
+            date, body,
+            empty = msgs.length === 0,
+            content = '';
+        if (empty) {
+            content = "<i>(0 messages)</i>";
+        } else {
+            for (var i = 0; i < msgs.length; i++) {
+                var curmsg = msgs[i];
+                if (curmsg.getSubject().length)
+                    content += "<b>" + curmsg.getSubject().translateOrEmpty(self) + "</b>";
+                if (curmsg.getDate()) {
+                    date = curmsg.getDate().translateOrEmpty(self);
+                    if (date.length) {
+                        content += " (" + date + ")";
+                    }
+                }
+                if (curmsg.getBody()) {
+                    body = curmsg.getBody().translateOrEmpty(self);
+                    if (body.length) {
+                        content += "<br/>&nbsp;<br/>" + body + '<hr/><br/>';
+                    }
+                }
+            }
+        }
+        return {"title": teamName + ": " + inboxName, "body": content, "empty": empty};
+    }
+
     return {
         /**
          * historize replyValidate as a message
-         * @param {type} inboxNameOrCb either the name of a inboxDescriptor variable or a callback (function(message))
+         * @param {type} inboxNameOrCb either the name of a inboxDescriptor variable or a callback (function(message, whValidate))
          */
         registerWhValidateListener: function(inboxNameOrCb) {
             _registerWhValidateListener(inboxNameOrCb);
         },
         registerReplyValidateListener: function(inboxNameOrCb, config) {
             return _registerReplyValidateListener(inboxNameOrCb, config);
+        },
+        getInboxInstanceContent: function(inboxInstance, inboxName, teamName) {
+            return _getInboxInstanceContent(inboxInstance, inboxName, teamName);
         }
     };
 }());
