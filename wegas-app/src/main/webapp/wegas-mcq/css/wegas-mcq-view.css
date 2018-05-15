@@ -564,3 +564,52 @@
 .wegas-whview .wegas-string-input ul.wegas-string-input-checkboxes li:first-child {
     margin-left: 0;
 }
+
+
+/*
+ * Histories
+ */
+
+.msg-body .whquestion-history .whquestion-label,
+.msg-body .question-history .question-label {
+    border-bottom:solid 1px grey;
+    width:100%;
+    height:32px;
+    padding: 8px 0px;
+    margin: 12px 0px 12px 0px;
+    box-sizing:border-box;
+    font-weight:600;
+}
+
+.msg-body .whquestion-history .whview-history-answer-title{
+    margin-top: 16px;
+    font-weight:600;
+}
+
+.msg-body .question-history .choice-label,
+.msg-body .question-history .replies-label {
+    margin-top: 32px;
+    font-weight:600;
+}
+
+.msg-body .question-history .replies .replyDiv {
+    border-top: solid 1px #bbb;
+    color: #bbb;
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.msg-body .question-history .cbx-replies .replyDiv .choice-label input {
+    transform: scale(1.4);
+    margin-right: 10px;
+    vertical-align: top;
+}
+
+.msg-body .question-history .cbx-replies .replyDiv .choice-description {
+    padding-top: 5px;
+}
+
+.msg-body .question-history .replies .replyDiv:first-child {
+    border-top: none;
+    color: black;
+}

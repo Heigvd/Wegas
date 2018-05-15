@@ -144,7 +144,7 @@ YUI.add('wegas-widget', function(Y) {
             this.destroy();
             return parent.add(cfg, index).item(0);
         },
-        isPageRoot: function(){
+        isPageRoot: function() {
             var ancestor;
             return this.isRoot && this.isRoot() && (ancestor = this.get("boundingBox").ancestor()) && ancestor.hasClass("wegas-pageloader-content");
         },
@@ -650,11 +650,7 @@ YUI.add('wegas-widget', function(Y) {
                             val.evaluated = ds.script.localEval(toEval);
                         }
                     } catch (e) {
-                        Y.log(
-                            'Unable to read expression: ' + val.content,
-                            'error',
-                            'Wegas.Widget'
-                            );
+                        Y.log('Unable to read expression: ' + val.content, 'error', 'Wegas.Widget');
                         val.evaluated = null;
                     }
                 } else if (val.name) {
@@ -663,15 +659,9 @@ YUI.add('wegas-widget', function(Y) {
                 } else if (val.expr) {
                     // @backwardcompatibility if absent evaluate the expr field
                     try {
-                        val.evaluated = ds.cache.findById(
-                            ds.script.localEval(val.expr)
-                            );
+                        val.evaluated = ds.cache.findById(ds.script.localEval(val.expr));
                     } catch (e) {
-                        Y.log(
-                            'Unable to read expression: ' + val.expr,
-                            'error',
-                            'Wegas.Widget'
-                            );
+                        Y.log('Unable to read expression: ' + val.expr, 'error', 'Wegas.Widget');
                         val.evaluated = null;
                     }
                 }

@@ -672,16 +672,17 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             String description = whValidate.whDescriptor.getDescription().translateOrEmpty(gameModel, refName);
 
             StringBuilder bd = new StringBuilder();
+            bd.append("<div class=\"whquestion-history\">");
 
-            bd.append("<b>").append(title).append("</b>");
+            bd.append("<div class=\"whquestion-label\">").append(title).append("</div>");
             bd.append(description);
 
             for (VariableDescriptor item : whValidate.whDescriptor.getItems()) {
                 if (item instanceof PrimitiveDescriptorI) {
-                    bd.append("<div class=\"whview-history-answer\" style=\"margin-bottom: 10px;\">");
-                    bd.append("<span class=\"whview-history-answer-title\"><b>").
+                    bd.append("<div class=\"whview-history-answer\">");
+                    bd.append("<div class=\"whview-history-answer-title\">").
                             append(item.getLabel().translateOrEmpty(gameModel, refName)).
-                            append("</b></span>");
+                            append("</div>");
 
                     if (item instanceof StringDescriptor && !((StringDescriptor) item).getAllowedValues().isEmpty()) {
                         StringInstance instance = (StringInstance) item.getInstance(self);
@@ -703,6 +704,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                     bd.append("</div>");
                 }
             }
+            bd.append("</div>");
 
             subject.updateTranslation(refName, title);
             body.updateTranslation(refName, bd.toString());
@@ -739,7 +741,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         ChoiceDescriptor cd = (ChoiceDescriptor) ci.getDescriptor();
         String title = cd.getLabel().translateOrEmpty(gameModel, refName);
         if (!Helper.isNullOrEmpty(title)) {
-            sb.append("<div class\"choice-label\">");
+            sb.append("<div class=\"choice-label\">");
             if (labelPrefix != null) {
                 sb.append(labelPrefix);
             }
@@ -748,7 +750,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
         String description = cd.getDescription().translateOrEmpty(gameModel, refName);
         if (!Helper.isNullOrEmpty(description)) {
-            sb.append("<div class\"choice-description\">").append(description).append("</div>");
+            sb.append("<div class=\"choice-description\">").append(description).append("</div>");
         }
     }
 
@@ -794,13 +796,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             String refName = language.getRefName();
 
             StringBuilder bd = new StringBuilder();
+            bd.append("<div class=\"question-history\">");
             String qTitle = qd.getLabel().translateOrEmpty(gameModel, refName);
 
             if (showQuestion) {
                 String description = qd.getDescription().translateOrEmpty(gameModel, refName);
 
-                bd.append("<div class\"question-label\">").append(qTitle).append("</div>");
-                bd.append("<div class\"question-description\">").append(description).append("</div>");
+                bd.append("<div class=\"question-label\">").append(qTitle).append("</div>");
+                bd.append("<div class=\"question-description\">").append(description).append("</div>");
             }
 
             if (!isCbx) {
@@ -811,15 +814,15 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 if (showReplies) {
                     List<Reply> replies = qi.getReplies();
                     String title;
-                    bd.append("<div class=\"replies\">");
                     if (replies.size() > 1) {
                         title = (String) translate.call(i18n, "question.results", refName);
                     } else {
                         title = (String) translate.call(i18n, "question.result", refName);
                     }
-                    bd.append("<div class\"replies\">").append(title).append("</div>");
+                    bd.append("<div class=\"replies-label\">").append(title).append("</div>");
+                    bd.append("<div class=\"replies\">");
                     for (Reply reply : replies) {
-                        bd.append("<div class=\\\"replyDiv\">");
+                        bd.append("<div class=\"replyDiv\">");
                         bd.append(reply.getAnswer().translateOrEmpty(gameModel, refName));
                         bd.append("</div>");
                     }
@@ -833,7 +836,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 } else {
                     title = (String) translate.call(i18n, "question.result", refName);
                 }
-                bd.append("<div class\"cbx-replies\">").append(title).append("</div>");
+                bd.append("<div class=\"replies-label\">").append(title).append("</div>");
+                bd.append("<div class=\"cbx-replies\">");
 
                 for (Reply reply : replies) {
                     Boolean ignored = reply.getIgnored();
@@ -841,12 +845,16 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                     this.appendChoice(bd, reply.getChoiceInstance(), gameModel, refName,
                             "<input type='checkbox' disabled " + (ignored ? "" : "checked") + " />");
                     TranslatableContent trAnswer = ignored ? reply.getIgnorationAnswer() : reply.getAnswer();
-                    String answer = trAnswer.translateOrEmpty(gameModel, refName);
-                    bd.append(answer);
+                    if (trAnswer != null) {
+                        String answer = trAnswer.translateOrEmpty(gameModel, refName);
+                        bd.append(answer);
+                    }
                     bd.append("</div>");
                 }
                 bd.append("</div>");
             }
+
+            bd.append("</div>"); // end question-history
 
             subject.updateTranslation(refName, qTitle);
             body.updateTranslation(refName, bd.toString());
