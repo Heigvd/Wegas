@@ -400,6 +400,14 @@ YUI.add('wegas-entity', function(Y) {
                 value: {},
                 transient: true
             },
+            activeLanguages: {
+                "transient": true,
+                getter: function(val) {
+                    return Y.Array.filter(this.get("languages"), function(l){
+                        return l.get("active");
+                    });
+                }
+            },
             languages: {
                 type: 'array',
                 view: {

@@ -125,12 +125,12 @@ public class PlayerFacade extends BaseFacade<Player> {
         if (languages != null && gmLanguages != null) {
             for (Locale locale : languages) {
                 GameModelLanguage lang = i18nFacade.findLanguageByCode(gameModel, locale.toLanguageTag());
-                if (lang != null) {
+                if (lang != null && lang.isActive()) {
                     preferredRefName = lang.getRefName();
                     break;
                 } else {
                     lang = i18nFacade.findLanguageByCode(gameModel, locale.getLanguage());
-                    if (lang != null) {
+                    if (lang != null && lang.isActive()) {
                         preferredRefName = lang.getRefName();
                         break;
                     }

@@ -46,7 +46,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                 this.plug(Y.Plugin.WidgetMenu);
             }
 
-            var languages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages");
+            var languages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("activeLanguages");
             if (languages.length > 1) {
                 this.menu.add([{
                         type: "Button",
@@ -59,7 +59,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                                         points: ["tr", "tl"]
                                     },
                                     children:
-                                        Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages").map(function(item) {
+                                        languages.map(function(item) {
                                         return {
                                             label: (I18n.getRefName() === item.get("refName") ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
                                             on: {
