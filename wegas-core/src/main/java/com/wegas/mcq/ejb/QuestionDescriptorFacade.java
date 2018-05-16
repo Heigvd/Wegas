@@ -846,8 +846,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                             "<input type='checkbox' disabled " + (ignored ? "" : "checked") + " />");
                     TranslatableContent trAnswer = ignored ? reply.getIgnorationAnswer() : reply.getAnswer();
                     if (trAnswer != null) {
+                        bd.append("<div class='reply-answer'>");
                         String answer = trAnswer.translateOrEmpty(gameModel, refName);
                         bd.append(answer);
+                        bd.append("</div>");
                     }
                     bd.append("</div>");
                 }

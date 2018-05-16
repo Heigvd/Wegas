@@ -101,7 +101,7 @@ YUI.add('wegas-entity', function(Y) {
                 preProcessAST: function(argDesc, value, tools) {
                     if (value) {
                         if (value.type === 'Literal') {
-                            return tools.valueToType({
+                            return tools.valueToAST({
                                 "@class": "TranslatableContent",
                                 "translations": {
                                     "def": value.value

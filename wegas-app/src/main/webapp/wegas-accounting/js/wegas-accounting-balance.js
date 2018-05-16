@@ -206,7 +206,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
                         if (level <= this.get("cDepth")) {
                             children.push({
                                 "amount": item.getValue(),
-                                "label": item.get("label"),
+                                "label": I18n.t(item.get("label")),
                                 "name": item.get("name"),
                                 "editable": true,
                                 "children": []
@@ -218,7 +218,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
 
             return {
                 "amount": sum,
-                "label": directory.get("label"),
+                "label": I18n.t(directory.get("label")),
                 "name": directory.get("name"),
                 "children": children
             };

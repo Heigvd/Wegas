@@ -1614,7 +1614,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     for (var i in value.elements) {
                                         var item = value.elements[i];
                                         if (item && item.type === 'Literal') {
-                                            value.elements[i] = tools.valueToType(
+                                            value.elements[i] = tools.valueToAST(
                                                 {
                                                     "@class": "Attachment",
                                                     "file": {

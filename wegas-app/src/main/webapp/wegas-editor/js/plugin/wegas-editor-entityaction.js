@@ -331,6 +331,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 return true;
                             }
                         } else if (currProp != otherProp) { // Allow conversions like string/int, undefined/null
+                            if (Number.isNaN(currProp) && Number.isNaN(otherProp)) {
+                                // In this specific case, NaN equals NaN
+                                continue;
+                            }
                             if (currProp === "" && otherProp == null) { // Tolerate clicking in and out of an empty field
                                 continue;
                             }

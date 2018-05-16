@@ -816,6 +816,11 @@ font {
     padding-top: 5px;
 }
 
+.question-history .cbx-replies .replyDiv .choice-description,
+.question-history .cbx-replies .replyDiv .reply-answer {
+    padding-left: 24px;
+}
+
 .question-history .replies .replyDiv:first-child {
     border-top: none;
     color: black;

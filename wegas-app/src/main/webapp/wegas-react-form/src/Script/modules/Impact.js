@@ -15,7 +15,7 @@ methodSchema,
     methodDescriptor,
     handleArgs,
     } from './method';
-import { updateArgSchema, matchSchema, valueToType} from './args';
+import { updateArgSchema, matchSchema, valueToAST} from './args';
 import {
 genChoices as genGlobalChoices,
     methodDescriptor as globalMethodDescriptor,
@@ -66,7 +66,7 @@ function getState(node, method, type) {
         argSchema.arguments.forEach((argDesc, i) => {
             if (argDesc.preProcessAST && args[i]) {
                 state.args[i] = argDesc.preProcessAST(argDesc, state.args[i], {
-                    valueToType: valueToType
+                    valueToAST: valueToAST
                 });
             }
         });

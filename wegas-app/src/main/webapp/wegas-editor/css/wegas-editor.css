@@ -856,9 +856,9 @@
     margin-right: 10px;
 }
 
-
+.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value:focus,
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value.mce-edit-focus {
-    border:1px solid blue; 
+    border:1px solid #6AACF1;
 }
 
 @keyframes highlight {
