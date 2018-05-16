@@ -3,13 +3,15 @@ import { connect, Dispatch } from 'react-redux';
 import { VariableDescriptor, GameModel } from '../../../data/selectors';
 import { State } from '../../../data/Reducer/reducers';
 import { Actions } from '../../../data';
-import { Toolbar } from '../Views/Toolbar';
+import { Toolbar } from '../../../Components/Toolbar';
 import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
 import { Combobox, Specialization } from '../Views/Combobox';
 import { children } from '../../EntitiesConfig/ListDescriptor';
 import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
+import {} from '../../EntitiesConfig';
+import { getEntityActions } from '../../editionConfig';
 // import { Tree } from '../Views/Tree';
 
 interface TreeProps {
@@ -28,7 +30,10 @@ const VariableCreate = Combobox as Specialization<{
 
 function TreeView({ variables, dispatch }: TreeProps) {
   function onSelectCreator(variable: IVariableDescriptor, path?: string[]) {
-    return () => dispatch(Actions.EditorActions.editVariable(variable, path));
+    return () =>
+      getEntityActions(variable).then(({ edit }) =>
+        dispatch(edit(variable, path)),
+      );
   }
   return (
     <Toolbar>

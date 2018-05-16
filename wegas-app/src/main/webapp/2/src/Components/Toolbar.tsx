@@ -30,7 +30,7 @@ export namespace Toolbar {
     return <div {...toolbar}>{props.children}</div>;
   };
   export const Content = function Content(props: {
-    children?: React.ReactNode[] | React.ReactNode;
+    children?: React.ReactNode;
   }) {
     return <div {...content}>{props.children}</div>;
   };

@@ -5,7 +5,7 @@ import { State } from '../../../data/Reducer/reducers';
 import SrcEditor from '../SrcEditor';
 import { Page } from '../../../data/selectors';
 import PageEditorHeader from './PageEditorHeader';
-import { Toolbar } from '../Views/Toolbar';
+import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
 
 interface PageDisplayProps {

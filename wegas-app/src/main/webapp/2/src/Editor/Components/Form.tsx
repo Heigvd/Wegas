@@ -1,6 +1,6 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
-import { Toolbar } from './Views/Toolbar';
+import { Toolbar } from '../../Components/Toolbar';
 import './FormView';
 
 interface EditorProps {

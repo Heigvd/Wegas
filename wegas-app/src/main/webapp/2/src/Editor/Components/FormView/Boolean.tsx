@@ -18,7 +18,7 @@ export default class BooleanView extends React.Component<BooleanProps> {
             <>
               <input
                 id={inputId}
-                checked={value}
+                checked={value || false}
                 type="checkbox"
                 onChange={this.onChange}
               />

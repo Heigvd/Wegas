@@ -4,6 +4,8 @@ import Header from './Header';
 import TreeView from './Variable/VariableTree';
 import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
+import { TabLayout } from '../../Components/Tabs';
+import StateMachineEditor from './StateMachineEditor';
 // import GridDemo from './GridDemo';
 
 const layout = css({
@@ -13,7 +15,7 @@ const layout = css({
   gridTemplateColumns: 'auto 1fr auto',
   '& > div': {
     boxSizing: 'border-box',
-    border: '1px solid',
+    borderRight: '1px solid',
   },
 });
 
@@ -39,7 +41,10 @@ export default class AppLayout extends React.Component<
           <TreeView />
         </div>
         <div>
-          <PageDisplay />
+          <TabLayout tabs={['Page', 'StateMachine']}>
+            <PageDisplay />
+            <StateMachineEditor />
+          </TabLayout>
         </div>
         <div>
           <Editor />
