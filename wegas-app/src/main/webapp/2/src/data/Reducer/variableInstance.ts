@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, Actions, managedMode } from '../actions';
+import { ActionType, StateActions, managedMode } from '../actions';
 import { ThunkAction } from 'redux-thunk';
 import { State } from './reducers';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
@@ -10,7 +10,7 @@ export interface VariableInstanceState {
 }
 
 const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
-  function variableInstances(state: VariableInstanceState, action: Actions) {
+  function variableInstances(state: VariableInstanceState, action: StateActions) {
     switch (action.type) {
       case ActionType.MANAGED_MODE:
         const updateList = action.payload.updatedEntities.variableInstances;
@@ -37,7 +37,7 @@ export default variableInstances;
 
 //ACTIONS
 
-export function getAll(): ThunkAction<Promise<Actions>, State, void> {
+export function getAll(): ThunkAction<Promise<StateActions>, State, void> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return VariableInstanceAPI.getAll(gameModelId).then(res =>

@@ -47,7 +47,7 @@ export function normalizeDatas(
 ): NormalizedData {
   return data.reduce(
     (prev, variable) => {
-      prev[discriminant(variable)][variable.id] = variable;
+      prev[discriminant(variable)][variable.id!] = variable;
       return prev;
     },
     {

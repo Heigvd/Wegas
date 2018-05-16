@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, Actions } from '../actions';
+import { ActionType, StateActions } from '../actions';
 import { omit } from 'lodash-es';
 // import normalizeData from '../normalize/index';
 
@@ -11,7 +11,7 @@ export interface GameModelState {
  * Reducer for GameModels
  */
 const gameModels: Reducer<Readonly<GameModelState>> = u<GameModelState>(
-  (state: GameModelState, action: Actions) => {
+  (state: GameModelState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_MODE:
         const gms = action.payload.updatedEntities.gameModels;
@@ -22,6 +22,6 @@ const gameModels: Reducer<Readonly<GameModelState>> = u<GameModelState>(
     }
     return state;
   },
-  { [CurrentGM.id]: CurrentGM },
+  { [CurrentGM.id!]: CurrentGM },
 );
 export default gameModels;

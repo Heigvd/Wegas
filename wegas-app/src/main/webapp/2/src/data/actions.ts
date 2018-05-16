@@ -15,6 +15,8 @@ export const ActionCreator = {
     createAction(ActionType.ENTITY_UPDATE, data),
   VARIABLE_EDIT: (data: { id: number; config?: Schema; path?: string[] }) =>
     createAction(ActionType.VARIABLE_EDIT, data),
+  FSM_EDIT: (data: { id: number; config?: Schema; path?: string[] }) =>
+    createAction(ActionType.FSM_EDIT, data),
   VARIABLE_CREATE: (data: { '@class': string; parentId?: number }) =>
     createAction(ActionType.VARIABLE_CREATE, data),
   MANAGED_MODE: (data: {
@@ -37,7 +39,7 @@ type ActionsUnion<
   A extends { [key: string]: (...args: any[]) => any }
 > = ReturnType<A[keyof A]>;
 
-export type Actions = ActionsUnion<typeof ActionCreator>;
+export type StateActions = ActionsUnion<typeof ActionCreator>;
 
 export function managedMode(payload: ManagedMode) {
   return ActionCreator.MANAGED_MODE({

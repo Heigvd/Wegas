@@ -51,3 +51,10 @@ interface IChoiceInstance extends IVariableInstance {
   replies: IReply[];
   unread: boolean;
 }
+interface IFSMInstance extends IVariableInstance {
+  '@class': 'FSMInstance';
+  currentStateId: number;
+  currentState: IFSMDescriptor.State;
+  enabled: boolean;
+  transitionHistory: number[];
+}

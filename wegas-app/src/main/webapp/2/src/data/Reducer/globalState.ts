@@ -2,7 +2,7 @@
 import u from 'immer';
 import { ThunkAction } from 'redux-thunk';
 import { VariableDescriptor } from '../selectors';
-import { ActionType, Actions, ActionCreator } from '../actions';
+import { ActionType, StateActions, ActionCreator } from '../actions';
 import { State } from './reducers';
 import { Actions as ACTIONS } from '..';
 import { Schema } from 'jsoninput';
@@ -19,6 +19,9 @@ export interface GlobalState {
   currentGameModelId: number;
   currentUser: Readonly<IUser>;
   editing?: Readonly<Edition>;
+  stateMachineEditor?: {
+    id: number;
+  };
   pageEdit: Readonly<boolean>;
   pageSrc: Readonly<boolean>;
   pusherStatus: {
@@ -30,13 +33,22 @@ export interface GlobalState {
  * Reducer for editor's state
  *
  * @param {any} [state=u({}, { currentGameModelId: CurrentGM.id })]
- * @param {Actions} action
+ * @param {StateActions} action
  * @returns {Readonly<GlobalState>}
  */
 const global = u<GlobalState>(
-  (state: GlobalState, action: Actions) => {
+  (state: GlobalState, action: StateActions) => {
     switch (action.type) {
       case ActionType.VARIABLE_EDIT:
+        state.editing = {
+          type: 'Variable',
+          id: action.payload.id,
+          config: action.payload.config,
+          path: action.payload.path,
+        };
+        return;
+      case ActionType.FSM_EDIT:
+        state.stateMachineEditor = { id: action.payload.id };
         state.editing = {
           type: 'Variable',
           id: action.payload.id,
@@ -71,7 +83,7 @@ const global = u<GlobalState>(
     return state;
   },
   {
-    currentGameModelId: CurrentGM.id,
+    currentGameModelId: CurrentGM.id!,
     currentUser: CurrentUser,
     pusherStatus: { status: 'disconnected' },
     pageEdit: false,
@@ -93,7 +105,24 @@ export function editVariable(
   config?: Schema,
 ) {
   return ActionCreator.VARIABLE_EDIT({
-    id: entity.id,
+    id: entity.id!,
+    config,
+    path,
+  });
+}
+/**
+ * Edit StateMachine
+ * @param entity
+ * @param path
+ * @param config
+ */
+export function editStateMachine(
+  entity: IFSMDescriptor,
+  path: string[] = [],
+  config?: Schema,
+) {
+  return ActionCreator.FSM_EDIT({
+    id: entity.id!,
     config,
     path,
   });

@@ -7,6 +7,12 @@ const AVAILABLE_TYPES = rootDescriptors.map(v => ({
 }));
 export const config: ConfigurationSchema<IListDescriptor> = {
   ...VariableDescriptorConfig,
+  '@class': {
+    value: 'ListDescriptor',
+    view: {
+      type: 'hidden',
+    },
+  },
   itemsIds: {
     view: {
       type: 'hidden',
@@ -40,4 +46,4 @@ export const config: ConfigurationSchema<IListDescriptor> = {
     },
   },
 };
-export const children = ['NumberDescriptor', 'ListDescriptor'];
+export const children = ['NumberDescriptor', 'ListDescriptor', 'FSMDescriptor'];

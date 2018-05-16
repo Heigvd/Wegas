@@ -3,6 +3,7 @@ export const ENTITY_UPDATE = 'ENTITY/UPDATE';
 export const MANAGED_MODE = 'RESPONSE/MANAGED';
 
 export const VARIABLE_EDIT = 'VARIABLE/EDIT';
+export const FSM_EDIT = 'FSM/EDIT';
 export const VARIABLE_CREATE = 'VARIABLE/CREATE';
 
 export const PAGE_EDIT_MODE = 'PAGE/EDIT_MODE';

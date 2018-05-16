@@ -1,5 +1,5 @@
 import u from 'immer';
-import { ActionType, Actions, ActionCreator } from '../actions';
+import { ActionType, StateActions, ActionCreator } from '../actions';
 import { ThunkAction } from 'redux-thunk';
 import { State } from './reducers';
 import { PageAPI } from '../../API/pages.api';
@@ -9,7 +9,7 @@ import { compare } from 'fast-json-patch';
 export interface PageState {
   [id: string]: Readonly<Page>;
 }
-const pageState = u<PageState>((state: PageState, action: Actions) => {
+const pageState = u<PageState>((state: PageState, action: StateActions) => {
   switch (action.type) {
     case ActionType.PAGE_FETCH:
       return { ...state, ...action.payload.pages };
@@ -19,7 +19,7 @@ export default pageState;
 
 // Actions
 
-export function getDefault(): ThunkAction<Promise<Actions>, State, void> {
+export function getDefault(): ThunkAction<Promise<StateActions>, State, void> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return PageAPI.getDefault(gameModelId).then(pages =>
@@ -27,7 +27,7 @@ export function getDefault(): ThunkAction<Promise<Actions>, State, void> {
     );
   };
 }
-export function get(id?: string): ThunkAction<Promise<Actions>, State, void> {
+export function get(id?: string): ThunkAction<Promise<StateActions>, State, void> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return PageAPI.get(gameModelId, id).then(pages =>
@@ -39,7 +39,7 @@ export function get(id?: string): ThunkAction<Promise<Actions>, State, void> {
 export function patch(
   id: string,
   page: Page,
-): ThunkAction<Promise<Actions>, State, void> {
+): ThunkAction<Promise<StateActions>, State, void> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const oldPage = Page.select(id);

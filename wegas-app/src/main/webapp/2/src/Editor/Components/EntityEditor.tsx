@@ -17,7 +17,7 @@ interface EditorProps {
   config?: Schema;
 }
 
-async function Editor({ entity, update, del, config, path }: EditorProps) {
+export async function Editor({ entity, update, del, config, path }: EditorProps) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);

@@ -70,3 +70,30 @@ interface IChoiceDescriptor extends IVariableDescriptor<IChoiceInstance> {
 interface ISingleResultChoiceDescriptor extends IChoiceDescriptor {
   results: [IResult];
 }
+interface IFSMDescriptor extends IVariableDescriptor<IFSMInstance> {
+  '@class': 'FSMDescriptor';
+  states: { [id: string]: IFSMDescriptor.State };
+}
+declare namespace IFSMDescriptor {
+  export interface State extends IWegasEntity, IVersionable {
+    '@class': 'State';
+    editorPosition: Coordinate;
+    label?: string | null;
+    onEnterEvent?: IScript | null;
+    stateMachineId?: number;
+    transitions: Transition[];
+  }
+  export interface Transition extends IWegasEntity, IVersionable {
+    '@class': 'Transition';
+    nextStateId: number;
+    triggerCondition?: IScript | null;
+    preStateImpact?: IScript | null;
+    stateId?: number;
+    stateMachineId?: number;
+  }
+  export interface Coordinate {
+    '@class': 'Coordinate';
+    x: number;
+    y: number;
+  }
+}
