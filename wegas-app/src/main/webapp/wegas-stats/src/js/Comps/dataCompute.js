@@ -7,11 +7,11 @@ function genLabel(questionName, snapshot) {
         question.items.forEach(function(choice) {
             if (choice.results.length) {
                 choice.results.forEach(function(result) {
-                    labels.push(JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label +
-                        (result.label ? ` (${result.label})` : ''));
+                    labels.push(JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label.translations.def +
+                        (result.label.translations.def ? ` (${result.label.translations.def})` : ''));
                 });
             } else {
-                labels.push(JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label);
+                labels.push(JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label.translations.def);
             }
         });
     }
@@ -28,7 +28,7 @@ function questionSerie(questionName, questionData, snapshot) {
         choices.set(choice.name, new Map());
         if (choice.results.length) {
             choice.results.forEach(function(result) {
-                choices.get(choice.name).set(result.label, 0);
+                choices.get(choice.name).set(result.label.translations.def, 0);
             });
         } else {
             choices.get(choice.name).set('', 0);
