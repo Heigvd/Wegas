@@ -23,6 +23,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         initializer: function() {
             this.handlers = {};
             this.plug(Y.Plugin.TranslationEditor);
+            this.plug(Y.Plugin.Injector);
             this.showTable = {};
             var langs = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"),
                 i, count = 0;
@@ -183,13 +184,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }
         },
         getLanguagesToEdit: function() {
-            var langs = [];
-            for (var langId in this.showTable) {
-                if (this.showTable[langId]) {
-                    langs.push(this.findLanguage("id", +langId));
-                }
-            }
-            return langs;
+            return Y.Array.filter(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), Y.bind(function(lang) {
+                return this.showTable[lang.get("id")];
+            }, this));
         },
         rebuildEditor: function() {
             this.tree = this.genTree(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel());
