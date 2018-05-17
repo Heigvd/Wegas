@@ -803,4 +803,52 @@
             WHERE gml.gamemodel_id = FOO.gamemodel_id;
         </sql>
     </changeSet>
+
+    <!-- GesTerre -->
+    <changeSet author="maxence (generated)" id="1523014059600-gestTerrMigration">
+        <update tableName="gamemodel">
+            <column name="scripturi">wegas-app/js/server/;wegas-private/wegas-gesterre/scripts/server/;</column>
+            <column name="clientscripturi">wegas-private/wegas-gesterre/js/wegas-gesterre-loader.js;wegas-private/wegas-gesterre/scripts/client/wegas-gesterre-client.js;</column>
+            <where>
+                cssuri = 'wegas-private/wegas-gesterre/css/wegas-gesterre-basic.css';
+            </where>
+        </update>
+        <sql>
+            delete from gamemodelcontent where scriptlibrary_gamemodel_id in (select id from gamemodel where cssuri = 'wegas-private/wegas-gesterre/css/wegas-gesterre-basic.css');
+        </sql>
+        <sql>
+            delete from gamemodelcontent where clientscriptlibrary_gamemodel_id in (select id from gamemodel
+            where cssuri = 'wegas-private/wegas-gesterre/css/wegas-gesterre-basic.css');
+        </sql>
+
+
+        <!-- set default language to french -->
+        <sql>
+            UPDATE gamemodellanguage as gml set code = 'fr', lang = 'Français' FROM (
+            select id as gamemodel_id from gamemodel where cssuri = 'wegas-private/wegas-gesterre/css/wegas-gesterre-basic.css') as FOO
+            WHERE gml.gamemodel_id = FOO.gamemodel_id;
+        </sql>
+    </changeSet>
+
+    <!-- CrimeSim -->
+    <changeSet author="maxence (generated)" id="1523014059600-crimeSimMigration">
+        <update tableName="gamemodel">
+            <column name="clientscripturi">wegas-private/wegas-crimesim/js/wegas-crimesim-loader.js;wegas-private/wegas-crimesim/js/wegas-crimesim-client.js;</column>
+            <where>
+                cssuri = 'wegas-private/wegas-crimesim/css/wegas-crimesim.css';
+            </where>
+        </update>
+        <sql>
+            delete from gamemodelcontent where clientscriptlibrary_gamemodel_id in (select id from gamemodel
+            where cssuri = 'wegas-private/wegas-crimesim/css/wegas-crimesim.css');
+        </sql>
+
+        <!-- set default language to french -->
+        <sql>
+            UPDATE gamemodellanguage as gml set code = 'fr', lang = 'Français' FROM (
+            select id as gamemodel_id from gamemodel where cssuri = 'wegas-private/wegas-crimesim/css/wegas-crimesim.css') as FOO
+            WHERE gml.gamemodel_id = FOO.gamemodel_id;
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
