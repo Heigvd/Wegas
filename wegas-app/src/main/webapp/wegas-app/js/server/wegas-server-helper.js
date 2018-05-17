@@ -82,6 +82,23 @@ var WegasHelper = (function() {
         return {"title": teamName + ": " + inboxName, "body": content, "empty": empty};
     }
 
+
+    // Text field presentation function: returns object { title, body, empty }
+    function getTextContent(textInstance, textName, teamName) {
+        var body = textInstance.getTrValue().translateOrEmpty(self),
+            empty = body.length === 0 || !isModifiedText(textInstance, body);
+        return {"title": teamName + ": " + textName, "body": body, "empty": empty};
+    }
+
+
+    // Tells if given text instance has been edited, i.e. if it's different from its default value:
+    function isModifiedText(textInstance, value) {
+        var defVal = textInstance.getDescriptor().getDefaultInstance().getTrValue().translateOrEmpty(self);
+        return !value.trim().equals(defVal.trim());
+    }
+
+
+
     return {
         /**
          * historize replyValidate as a message
@@ -95,6 +112,9 @@ var WegasHelper = (function() {
         },
         getInboxInstanceContent: function(inboxInstance, inboxName, teamName) {
             return _getInboxInstanceContent(inboxInstance, inboxName, teamName);
+        },
+        getTextInstanceContent: function(textInstance, textName, teamName) {
+            return getTextContent(textInstance, textName, teamName);
         }
     };
 }());
