@@ -321,7 +321,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                         } else {
                             method = globals && globals[node.callee.object.name + "." + node.callee.property.name];
                         }
-                        if (method) {
+                        if (method && node.arguments.length === method.arguments.length) {
+                            // same method name & numner or parameters match number of arguments
                             for (j = 0; j < node.arguments.length; j++) {
                                 parse(node.arguments[j], method.arguments[j]);
                             }
