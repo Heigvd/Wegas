@@ -44,6 +44,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="maxence (generated)" id="1523014059600-1bis">
+        <update tableName="player">
+            <column name="refname">def</column> 
+            <where>refname is null or refname =''</where>
+        </update>
+    </changeSet>
 
     <changeSet author="maxence (generated)" id="1523014059600-2">
         <createTable tableName="translatablecontent">
@@ -752,6 +758,13 @@
         </update>
     </changeSet>
 
+    <!-- PMG serverscript uri -->
+    <changeSet author="maxence (generated)" id="1523014059600-pmeMigrate">
+        <update tableName="gamemodel">
+            <column name="scripturi">wegas-app/js/server;wegas-private/wegas-pme/scripts/server-scripts/;</column>
+            <where>scripturi = 'wegas-private/wegas-pme/scripts/server-scripts/'</where>
+        </update>
+    </changeSet>
 
     <!-- Urbactic (client) serverscript -->
     <changeSet author="maxence (generated)" id="1523014059600-urbactifMigrate">

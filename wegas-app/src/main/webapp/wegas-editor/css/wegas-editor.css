@@ -746,6 +746,7 @@
 .wegas-i18n-manager .wegas-i18n-manager--editor .node-scriptalias {
     display: none;
     font-size: 0.8em;
+    user-select:text;
 }
 
 .wegas-advancedmode .wegas-i18n-manager .wegas-i18n-manager--editor .node-scriptalias {
