@@ -320,9 +320,12 @@ class Transition extends React.Component<{
 }> {
   connection: Connection | null = null;
   componentDidMount() {
+    const src = this.props.parent;
+    const tgt = String(this.props.transition.nextStateId);
     this.connection = this.props.plumb.connect({
-      source: this.props.parent,
-      target: String(this.props.transition.nextStateId),
+      source: src,
+      target: tgt,
+      ...(src === tgt ? ({ connector: ['StateMachine'] } as any) : undefined),
     });
     this.connection.setParameter('transition', this.props.transition);
   }
