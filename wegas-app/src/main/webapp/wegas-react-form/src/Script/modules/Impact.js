@@ -14,13 +14,13 @@ methodSchema,
     buildMethod,
     methodDescriptor,
     handleArgs,
-    } from './method';
+} from './method';
 import { updateArgSchema, matchSchema, valueToAST} from './args';
 import {
 genChoices as genGlobalChoices,
     methodDescriptor as globalMethodDescriptor,
     handleArgs as globalHandleArgs,
-    } from './globalMethod';
+} from './globalMethod';
 import JSEditor from '../Views/asyncJSEditor';
 import { containerStyle } from '../Views/conditionImpactStyle';
 
@@ -63,13 +63,15 @@ function getState(node, method, type) {
             globalMethodDescriptor(state.member, state.method)
             : methodDescriptor(state.variable, state.method);
 
-        argSchema.arguments.forEach((argDesc, i) => {
-            if (argDesc.preProcessAST && args[i]) {
-                state.args[i] = argDesc.preProcessAST(argDesc, state.args[i], {
-                    valueToAST: valueToAST
-                });
-            }
-        });
+        if (argSchema.arguments.length === state.args.length) {
+            argSchema.arguments.forEach((argDesc, i) => {
+                if (argDesc.preProcessAST && args[i]) {
+                    state.args[i] = argDesc.preProcessAST(argDesc, state.args[i], {
+                        valueToAST: valueToAST
+                    });
+                }
+            });
+        }
     }
 
     return state;
@@ -113,9 +115,9 @@ class Impact extends React.Component {
             : methodDescriptor(this.state.variable, this.state.method);
         if (schema) {
             const argsDescr = schema.arguments;
-            if (this.state.args.length > argsDescr.length) {
+            if (this.state.args.length !== argsDescr.length) {
                 // What to do with those additional args
-                throw Error('Too much args');
+                throw Error('Wrong number of arguments');
             }
             this.state.args.forEach((a, i) => {
                 if (!matchSchema(a, argsDescr[i])) {
@@ -236,7 +238,7 @@ class Impact extends React.Component {
                                 updateArgs({
                                     ...prevState,
                                     method: v,
-                                                                                                                                        })
+                                                                                                                                                            })
                             )
                             }
                             />

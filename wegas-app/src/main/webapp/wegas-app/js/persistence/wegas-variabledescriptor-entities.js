@@ -1639,7 +1639,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                         view: {type: HIDDEN}
                                     },
                                     file: Y.Wegas.Helper.getTranslationAttr({
-                                        type: "wegasurl", label: "Select file"
+                                        type: "wegasurl", label: "File"
                                     })
                                 }
                             }

@@ -44,9 +44,17 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }
         },
         renderUI: function() {
+            this.header = new Y.Wegas.FlexList({
+                cssClass: "wegas-i18n-manager--header",
+                direction: 'horizontal'
+            });
+
             this.title = new Y.Wegas.Text({
                 cssClass: "wegas-i18n-manager--title",
                 content: I18n.t("i18n.manager.title")
+            });
+            this.refreshButton = new Y.Button({
+                label: "<i class=\"fa fa-refresh\"></i>"
             });
             this.addBtn = new Y.Wegas.Text({
                 cssClass: "create-button",
@@ -60,7 +68,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 cssClass: "wegas-i18n-manager--editor",
                 content: "loading translation table <i class='fa fa-pulse fa-spinner'></i>"
             });
-            this.add(this.title);
+            this.header.add(this.title);
+            this.header.add(this.refreshButton);
+            this.add(this.header);
             this.add(this.addBtn);
             this.add(this.languages);
             this.add(this.editor);
@@ -103,12 +113,14 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }));
         },
         bindUI: function() {
-            this.get("contentBox").delegate("click", this.addLanguageClick, ".create-button", this);
+            this.get("contentBox").delegate("click", this.addLanguageClick, ".create-button i", this);
             this.languages.get("contentBox").delegate("change", this.toggleShow, ".language input.language-show", this);
             this.languages.get("contentBox").delegate(["input", "change"], this.languageChange, ".language .form input", this);
             this.languages.get("contentBox").delegate("click", this.languageUp, ".move-up", this);
             this.languages.get("contentBox").delegate("click", this.languageSave, ".language .validate", this);
             this.languages.get("contentBox").delegate("click", this.languageCancel, ".language .cancel", this);
+
+            this.handlers.onRefresh = this.refreshButton.on("click", Y.bind(this.rebuildEditor, this));
 
             // scroll on TV select
             this.handlers.onEditEntity = Y.after("edit-entity:edit", function(e) {
@@ -222,56 +234,109 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }
             return null;
         },
-        extractTranslatableContents: function(script) {
-            var contents = [],
-                properties, content,
-                containsOutdated = false;
-            Y.inputEx.WysiwygScript.visitAST(script, Y.bind(function(node, args) {
+        extractTranslatableContents: function(script, key, entity, cfg) {
+            var stack = [],
+                sub,
+                properties,
+                content,
+                goIn,
+                index = 0,
+                goOut;
 
-                if (args && args.properties && args.properties["@class"]
-                    && args.properties["@class"].value === "TranslatableContent") {
-                    // expecting TranslatableContent
-                    properties = this.mapASTObjectProperties(node);
-                    if (!properties || !properties["@class"] || properties["@class"].value !== "TranslatableContent") {
-                        // but no TranslatableContent found
-                        containsOutdated = true;
-                    }
+            goIn = function(name, label) {
+                if (sub) {
+                    stack.push(sub);
                 }
+                sub = {
+                    type: "Script",
+                    nodeName: name,
+                    nodeLabel: label,
+                    hasTranslations: false,
+                    containsOutdated: false,
+                    translations: [],
+                    children: []
+                };
+            };
 
-                if (args && args.properties && args.properties["@class"]
-                    && args.properties["@class"].value === "Attachment") {
-                    // expecting attachment
-                    properties = this.mapASTObjectProperties(node);
-                    if (!properties || !properties["@class"] || properties["@class"].value !== "Attachment") {
-                        // but no Attachement found
-                        containsOutdated = true;
-                    }
+            goOut = function() {
+                var parent = stack.pop();
+                if (parent) {
+                    parent.children.push(sub);
+                    parent.containsOutdated = parent.containsOutdated || sub.containsOutdated;
+                    parent.hasTranslations = parent.hasTranslations || sub.hasTranslations;
+                    sub = parent;
                 }
+            };
+            // init root level
+            goIn(key, cfg && cfg.view && cfg.view.label);
 
-                if (node && node.type && node.type === "ObjectExpression") {
-                    properties = this.mapASTObjectProperties(node);
-                    if (properties) {
-                        if (properties["@class"] && properties["@class"].value === "TranslatableContent") {
-                            content = {
-                                astNode: node,
-                                translations: {},
-                                cfg: args
-                            };
-                            properties["translations"].properties.forEach(function(p) {
-                                content.translations[p.key.value] = p.value.value;
-                            });
-                            contents.push(content);
-                            return false;
+            Y.inputEx.WysiwygScript.visitAST(script, {
+                onEnterFn: Y.bind(function(node, args) {
+                    var method = Y.inputEx.WysiwygScript.parseMethod(node, this.globals);
+                    if (method && method.method) {
+                        goIn(method.methodName, method.methodName);
+                    }
+
+                    if (args && args.properties && args.properties["@class"]
+                        && args.properties["@class"].value === "TranslatableContent") {
+                        // expecting TranslatableContent
+                        properties = this.mapASTObjectProperties(node);
+                        if (!properties || !properties["@class"] || properties["@class"].value !== "TranslatableContent") {
+                            // but no TranslatableContent found
+                            sub.containsOutdated = true;
                         }
                     }
-                }
-                return true;
-            }, this), this.globals);
 
-            return {
-                contents: contents,
-                containsOutdated: containsOutdated
-            };
+                    if (args && args.properties && args.properties["@class"]
+                        && args.properties["@class"].value === "Attachment") {
+                        // expecting attachment
+                        properties = this.mapASTObjectProperties(node);
+                        if (!properties || !properties["@class"] || properties["@class"].value !== "Attachment") {
+                            // but no Attachement found
+                            sub.containsOutdated = true;
+                        }
+                    }
+
+                    if (node && node.type && node.type === "ObjectExpression") {
+                        properties = this.mapASTObjectProperties(node);
+                        if (properties) {
+                            if (properties["@class"] && properties["@class"].value === "TranslatableContent") {
+                                sub.hasTranslations = true;
+                                content = {
+                                    parentClass: entity.get("@class"),
+                                    parentId: entity.get("id"),
+                                    index: index,
+                                    key: key,
+                                    label: null,
+                                    value: {
+                                        astNode: node,
+                                        translations: {},
+                                        cfg: args
+                                    }
+                                };
+                                index++;
+
+                                properties["translations"].properties.forEach(function(p) {
+                                    content.value.translations[p.key.value] = p.value.value;
+                                });
+                                sub.translations.push(content);
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                }, this),
+                onExitFn: Y.bind(function(node) {
+                    var method = Y.inputEx.WysiwygScript.parseMethod(node, this.globals);
+                    if (method && method.method) {
+                        goOut();
+                    }
+                }, this),
+                globals: this.globals
+            });
+
+            return sub;
+
         },
         genEditorMarkup: function(node, languages, level) {
             level = level || 0;
@@ -279,10 +344,12 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             if (node.hasTranslations) {
                 markup.push("<div class='node' data-entityid='", node.entityId, "' data-level='", level, "'>");
                 markup.push("<span class='anchor' data-entityid='", node.entityId, "'></span>");
+
+                if ((node.nodeLabel || node.nodeName) && ((node.translations && node.translations.length > 0) || node.type === 'Script')) {
+                    markup.push("<div class='node-name'>", (node.nodeLabel || node.nodeName), " <span class='node-scriptalias'>(", node.nodeName, ")</span></div>");
+                }
+
                 if (node.translations && node.translations.length > 0) {
-                    if (node.nodeLabel || node.nodeName) {
-                        markup.push("<div class='node-name'>", (node.nodeLabel || node.nodeName), " <span class='node-scriptalias'>(", node.nodeName, ")</span></div>");
-                    }
                     markup.push("<div class='translatedcontents'>");
                     for (var i in node.translations) {
                         tr = node.translations[i];
@@ -308,7 +375,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 markup.push("<span class='translation-language'> [", languages[l].get("code"), "]</span>");
                                 markup.push("</div>"); // /translation title
                                 markup.push("<", domNode, " class='wegas-translation favorite-lang wegas-translation-inscript wegas-translation-", type, "' lang='", languages[l].get("refName"),
-                                    "' data-index='", i,
+                                    "' data-index='", tr.index,
                                     "' data-parentClass='", tr.parentClass,
                                     "' data-parentId='", tr.parentId,
                                     "' data-fieldName='", tr.key,
@@ -431,37 +498,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     });
                                 } else if (attr instanceof Y.Wegas.persistence.Script) {
                                     // extract translatables from script content
-                                    var content = attr.get("content"),
-                                        inScriptTranslations = this.extractTranslatableContents(content);
-                                    children = {};
-                                    // a node for the script
-                                    sub = {
-                                        type: "Script",
-                                        nodeName: key, // fieldName
-                                        nodeLabel: null,
-                                        hasTranslations: false,
-                                        containsOutdated: inScriptTranslations.containsOutdated,
-                                        translations: [],
-                                        children: children
-                                    };
-                                    if (cfg.view) {
-                                        // fieldLabel from config
-                                        sub.nodeLabel = cfg.view.label;
-                                    }
-
-                                    // register each inScript translatable
-                                    for (i in inScriptTranslations.contents) {
-                                        sub.hasTranslations = true;
-                                        sub.translations.push({
-                                            parentClass: entity.get("@class"),
-                                            parentId: entity.get("id"),
-                                            index: i,
-                                            key: key,
-                                            label: null,
-                                            value: inScriptTranslations.contents[i]
-                                        });
-                                    }
-
+                                    sub = this.extractTranslatableContents(attr, key, entity, cfg);
                                 } else {
                                     sub = this.genTree(attr);
                                 }
@@ -696,8 +733,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.currentEditorKey = undefined;
             Y.log("Destroy editor ");
         },
-        selectFileOnKeyDown: function(event){
-            if (event.type === 'keydown'){
+        selectFileOnKeyDown: function(event) {
+            if (event.type === 'keydown') {
                 if (event.keyCode === 13 || event.keyCode === 32) {
                     this.selectFile(event);
                     event.preventDefault();
@@ -906,29 +943,33 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 payload = [],
                 content = attr.get("content"),
                 i, node, newContent, before, after;
-            Y.inputEx.WysiwygScript.visitAST(content, Y.bind(function(node, args) {
-                if (args && args.properties && args.properties["@class"]
-                    && args.properties["@class"].value === "TranslatableContent") {
+            Y.inputEx.WysiwygScript.visitAST(content, {
+                onEnterFn: Y.bind(function(node, args) {
+                    if (args && args.properties && args.properties["@class"]
+                        && args.properties["@class"].value === "TranslatableContent") {
 
-                    if (node && node.type && node.type === "Literal") {
-                        toUpgrade.unshift({
-                            type: "TR",
-                            node: node
-                        });
+                        if (node && node.type && node.type === "Literal") {
+                            toUpgrade.unshift({
+                                type: "TR",
+                                node: node
+                            });
+                        }
                     }
-                }
-                if (args && args.properties && args.properties["@class"]
-                    && args.properties["@class"].value === "Attachment") {
+                    if (args && args.properties && args.properties["@class"]
+                        && args.properties["@class"].value === "Attachment") {
 
-                    if (node && node.type && node.type === "Literal") {
-                        toUpgrade.unshift({
-                            type: "Attachment",
-                            node: node
-                        });
+                        if (node && node.type && node.type === "Literal") {
+                            toUpgrade.unshift({
+                                type: "Attachment",
+                                node: node
+                            });
+                        }
                     }
-                }
-                return true;
-            }, this), globals);
+                    return true;
+                }, this),
+                globals: globals
+            });
+
             if (toUpgrade.length) {
                 Y.log("Entity: " + entity.get("@class") + "#" + entity.get("id") + "::" + attrName + ": ");
                 Y.log("CONTENT:" + content);

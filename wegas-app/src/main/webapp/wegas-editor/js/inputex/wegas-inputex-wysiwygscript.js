@@ -281,15 +281,47 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         }
     });
     Y.mix(WysiwygScript, {
+        parseMethod(node, globals) {
+            var vd;
+            if (node.type === Syntax.CallExpression) {
+                if (node.callee.object.callee
+                    && node.callee.object.callee.object
+                    && (node.callee.object.callee.object.name === "Variable"
+                        || node.callee.object.callee.object.name === "VariableDescriptorFacade") // @backwardcompatibility
+                    && node.callee.object.callee.property && node.callee.object.callee.property.name === "find") {
+
+                    vd = Wegas.Facade.Variable.cache.find("name", node.callee.object.arguments[1].value);
+
+                    if (vd) {
+                        return {
+                            method: vd.getMethodCfgs()[node.callee.property.name],
+                            methodName: node.callee.property.name + " (" + vd.getEditorLabel()  + ")"
+                        };
+                    }
+                } else {
+                    return {
+                        method: globals && globals[node.callee.object.name + "." + node.callee.property.name],
+                        methodName: node.callee.object.name + "." + node.callee.property.name
+                    };
+                }
+            }
+            return null;
+        },
         /**
          * 
          * @param {type} script
-         * @param {type} fn callbakc called against each node, returned value => goeepper? true/false
+         * @param {type} config: {
+         *          onEnterFn: callback called against each node, returned value => go deepper? true/false,
+         *          onOutFn: callback after node has been walked
+         *          globals: global methods to consider
          * @returns {undefined}
          */
-        visitAST: function(script, fn, globals) {
-            var globalsPromises = [Y.Wegas.RForm.Script.getGlobals('getter'),
-                Y.Wegas.RForm.Script.getGlobals('condition')];
+        visitAST: function(script, config) {
+
+            var thiz = this,
+                fn = config && config.onEnterFn,
+                exitFn = config && config.onExitFn,
+                globals = config && config.globals;
 
             if (script && script.get) {
                 script = script.get("content");
@@ -303,31 +335,20 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             });
 
             function parse(node, args) {
-                var key, child, keys, i, j, subArgs;
+                var key, child, keys, i, j, subArgs, method;
 
                 if (!fn || fn.call(null, node, args)) {
 
-                    if (node.type === Syntax.CallExpression) {
-                        // catch calls to wegas method
-                        var method, vd;
-                        if (node.callee.object.callee
-                            && node.callee.object.callee.object
-                            && (node.callee.object.callee.object.name === "Variable"
-                                || node.callee.object.callee.object.name === "VariableDescriptorFacade") // @backwardcompatibility
-                            && node.callee.object.callee.property && node.callee.object.callee.property.name === "find") {
+                    // catch calls to wegas method
+                    method = thiz.parseMethod(node, globals);
 
-                            vd = Wegas.Facade.Variable.cache.find("name", node.callee.object.arguments[1].value);
-                            method = vd.getMethodCfgs()[node.callee.property.name];
-                        } else {
-                            method = globals && globals[node.callee.object.name + "." + node.callee.property.name];
+                    if (method && method.method && node.arguments.length === method.method.arguments.length) {
+                        // same method name & numner or parameters match number of arguments
+                        for (j = 0; j < node.arguments.length; j++) {
+                            parse(node.arguments[j], method.method.arguments[j]);
                         }
-                        if (method && node.arguments.length === method.arguments.length) {
-                            // same method name & numner or parameters match number of arguments
-                            for (j = 0; j < node.arguments.length; j++) {
-                                parse(node.arguments[j], method.arguments[j]);
-                            }
-                            return;
-                        }
+                        exitFn && exitFn.call(null, node);
+                        return;
                     }
 
                     keys = Object.keys(node).sort();
@@ -362,6 +383,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                         }
                     }
                 }
+                exitFn && exitFn.call(null, node);
             }
             parse(tree);
         },

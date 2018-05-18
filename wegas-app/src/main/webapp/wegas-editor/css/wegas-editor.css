@@ -685,13 +685,20 @@
     overflow-y: hidden;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--header{
+    flex-shrink: 0;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--title {
     font-size: 1.4em;
     flex-shrink: 0;
+    flex-grow: 0;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages {
     flex-shrink: 0;
+    padding-bottom: 3px;
+    border-bottom: 1px solid lightgray;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages label {
@@ -728,6 +735,7 @@
 .wegas-i18n-manager .wegas-i18n-manager--editor{
     flex-grow: 1;
     overflow-y: auto;
+    padding-bottom: 25px;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor {
