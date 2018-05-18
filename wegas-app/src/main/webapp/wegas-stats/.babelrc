@@ -1,10 +1,10 @@
 {
     "presets": [
-        "react",
+        "@babel/preset-react",
         [
-            "env",
+            "@babel/preset-env",
             {
-                "useBuiltIns": true,
+                "useBuiltIns": "usage",
                 "debug": false,
                 "modules": false,
                 "loose": true,
@@ -13,8 +13,7 @@
                         "last 2 Chrome versions",
                         "last 2 Safari versions",
                         "last 2 Firefox versions"
-                    ],
-                    "uglify": true
+                    ]
                 },
                 "exclude": ["transform-regenerator"]
             }
