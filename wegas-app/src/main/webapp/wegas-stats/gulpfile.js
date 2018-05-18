@@ -6,21 +6,29 @@
  * Licensed under the MIT License
  */
 
-/*global require*/
+// eslint-disable-next-line
 const gulp = require('gulp');
-gulp.task('default', ['webpack'], function() {
-    'use strict';
-});
-gulp.task('webpack', function(callback) {
-    'use strict';
-    const webpack = require('webpack');
-    const config = require('./webpack.config.prod');
-    webpack(config, function(err, stats) {
+const webpack = require('webpack');
+const config = require('./webpack.config');
+
+gulp.task('default', ['webpack']);
+gulp.task('webpack', (callback) => {
+    webpack({ ...config, mode: 'production' }, (err, stats) => {
         if (err) throw err;
         if (stats.hasErrors()) {
-            throw new Error(stats.toString({ color: true }));
+            throw Error(
+                stats.toString({
+                    color: true,
+                })
+            );
         }
-        console.log('[webpack]', stats.toString({ color: true }));
+        // eslint-disable-next-line
+        console.log(
+            '[webpack]',
+            stats.toString({
+                color: true,
+            })
+        );
         callback();
     });
 });
