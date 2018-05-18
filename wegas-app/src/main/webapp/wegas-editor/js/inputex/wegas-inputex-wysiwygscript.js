@@ -281,7 +281,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         }
     });
     Y.mix(WysiwygScript, {
-        parseMethod(node, globals) {
+        parseMethod: function(node, globals) {
             var vd;
             if (node.type === Syntax.CallExpression) {
                 if (node.callee.object.callee
@@ -295,7 +295,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     if (vd) {
                         return {
                             method: vd.getMethodCfgs()[node.callee.property.name],
-                            methodName: node.callee.property.name + " (" + vd.getEditorLabel()  + ")"
+                            methodName: node.callee.property.name + " (" + vd.getEditorLabel() + ")"
                         };
                     }
                 } else {
