@@ -200,7 +200,9 @@ public class GameFacade extends BaseFacade<Game> {
         if (!game.hasDebugTeam()) {
             DebugTeam debugTeam = new DebugTeam();
             debugTeam.setGame(game);
-            debugTeam.getPlayers().get(0).setStatus(Status.LIVE);
+            Player testPlayer = debugTeam.getPlayers().get(0);
+            testPlayer.setStatus(Status.LIVE);
+            testPlayer.setRefName("def");
             teamFacade.create(debugTeam);
             //Player get = debugTeam.getPlayers().get(0);
             //requestFacade.commit(get, false);
