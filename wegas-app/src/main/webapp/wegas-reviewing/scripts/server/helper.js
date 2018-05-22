@@ -45,7 +45,7 @@ var ReviewHelper = (function() {
         stats.type = "GradeSummary";
         stats.id = descriptor.getId();
         stats.name = descriptor.getName();
-        stats.label = descriptor.getLabel();
+        stats.label = descriptor.getLabel().translateOrEmpty(self);
         stats.data = (includeData ? values : []);
 
         return stats;
@@ -69,7 +69,7 @@ var ReviewHelper = (function() {
         cats = Java.from(descriptor.getCategories());
 
         for (i = 0; i < cats.length; i += 1) {
-            histogram[cats[i]] = 0;
+            histogram[cats[i].getName()] = 0;
         }
 
         for (i in values) {
@@ -84,7 +84,7 @@ var ReviewHelper = (function() {
             type: "CategorizationSummary",
             name: descriptor.getName(),
             id: descriptor.getId(),
-            label: descriptor.getLabel(),
+            label: descriptor.getLabel().translateOrEmpty(self),
             numberOfValues: numberOfValues,
             histogram: histogram,
             data: (includeData ? values : [])
@@ -113,7 +113,7 @@ var ReviewHelper = (function() {
         return {
             type: "TextSummary",
             name: descriptor.getName(),
-            label: descriptor.getLabel(),
+            label: descriptor.getLabel().translateOrEmpty(self),
             id: descriptor.getId(),
             numberOfValues: values.length,
             averageNumberOfWords: wc,
@@ -151,7 +151,7 @@ var ReviewHelper = (function() {
 
         structure = {
             id: "ev-" + evDescriptor.getId(),
-            title: evDescriptor.getLabel(),
+            title: evDescriptor.getLabel().translateOrEmpty(self),
             items: []
         };
 
@@ -166,7 +166,7 @@ var ReviewHelper = (function() {
         } else if (evDescriptor instanceof com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor) {
             cats = Java.from(evDescriptor.getCategories());
             for (i = 0; i < cats.length; i += 1) {
-                structure.items.push({"id": evDescriptor.getId() + "-" + cats[i], "label": cats[i], formatter: null});
+                structure.items.push({"id": evDescriptor.getId() + "-" + cats[i].getName(), "label": cats[i].getLabel().translateOrEmpty(self), formatter: null});
             }
         }
         return structure;
@@ -320,15 +320,15 @@ var ReviewHelper = (function() {
                             case "REVIEWED":
                                 // Reviewer work
                                 /*workDone = true;
-                                evs = Java.from(review.getFeedback());
-                                for (k in evs) {
-                                    if (evs.hasOwnProperty(k)) {
-                                        workDone = workDone && evs[k].getValue();
-                                    }
-                                }
-                                if (!workDone) {
-                                    //nbRDone -= 1;
-                                }*/
+                                 evs = Java.from(review.getFeedback());
+                                 for (k in evs) {
+                                 if (evs.hasOwnProperty(k)) {
+                                 workDone = workDone && evs[k].getValue();
+                                 }
+                                 }
+                                 if (!workDone) {
+                                 //nbRDone -= 1;
+                                 }*/
                                 break;
                             default:
                                 break;

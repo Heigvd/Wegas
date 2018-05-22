@@ -323,13 +323,15 @@ YUI.add('wegas-tabview', function(Y) {
         },
 
         /*
-        ** Shows the plus-menu of the given tabView and hides the other one.
-        ** If we are showing the menu of the Preview tabView, hide the "Preview" entry, otherwise show it.
+         ** Shows the plus-menu of the given tabView and hides the other one.
+         ** If we are showing the menu of the Preview tabView, hide the "Preview" entry, otherwise show it.
          */
         showPlusMenu: function(tabViewId) {
             tabViewId = this.getLongPositionName(tabViewId);
             var plusMenu = Y.one(tabViewId + " .wegas-plus-tab");
-            if (!plusMenu) return;
+            if (!plusMenu) {
+                return;
+            }
             plusMenu.show();
             Y.one(TabView.getOppositeTabView(tabViewId) + " .wegas-plus-tab").hide();
 
@@ -349,12 +351,14 @@ YUI.add('wegas-tabview', function(Y) {
         },
 
         /*
-        ** Returns the "Preview" entry of the plus-menu of the given tabView.
+         ** Returns the "Preview" entry of the plus-menu of the given tabView.
          */
         getPreviewEntry: function(tabViewId) {
             tabViewId = this.getLongPositionName(tabViewId);
             var plusMenu = Y.one(tabViewId + " .wegas-plus-tab");
-            if (!plusMenu) return null;
+            if (!plusMenu) {
+                return null;
+            }
             var menu = Y.Widget.getByNode(plusMenu).hasPlugin("menu"),
                 previewEntry = menu.getMenu().item(0);
             return previewEntry;
@@ -410,9 +414,9 @@ YUI.add('wegas-tabview', function(Y) {
                 return 'center';
             } else if (position.indexOf('right') >= 0) {
                 return 'right';
-            } else if(position.indexOf('left') >= 0) {
+            } else if (position.indexOf('left') >= 0) {
                 return 'left';
-            } else if(position.indexOf('top') >= 0) {
+            } else if (position.indexOf('top') >= 0) {
                 return 'top';
             }
         },
@@ -423,9 +427,9 @@ YUI.add('wegas-tabview', function(Y) {
                 return '#centerTabView';
             } else if (position.indexOf('right') >= 0) {
                 return '#rightTabView';
-            } else if(position.indexOf('left') >= 0) {
+            } else if (position.indexOf('left') >= 0) {
                 return '#leftTabView';
-            } else if(position.indexOf('top') >= 0) {
+            } else if (position.indexOf('top') >= 0) {
                 return '.wegas-layout-hd';
             }
         },
@@ -449,11 +453,15 @@ YUI.add('wegas-tabview', function(Y) {
         // Returns the widget corresponding to #centerTabView or #rightTabView depending on user preferences.
         // Returns null if no suitable tabView is found.
         getPreviewTabView: function() {
-            // Try to make this work even if the Preview tab is not yet rendered:
-            var previewTabView = this.getNonEditorTabViewId();
-            return Y.Widget.getByNode(previewTabView);
-        },
-
+            if (Y.one("body").hasClass("wegas-editmode")) {
+                // Try to make this work even if the Preview tab is not yet rendered:
+                var previewTabView = this.getNonEditorTabViewId();
+                return Y.Widget.getByNode(previewTabView);
+            } else {
+                // no editmode, no preview
+                return null;
+            }
+        }
     });
     Wegas.TabView = TabView;
 
@@ -974,7 +982,7 @@ YUI.add('wegas-tabview', function(Y) {
                 var tabViewObj = this.get("host"),
                     nbTabs = tabViewObj.size(),
                     index = 0;
-                for (var i = nbTabs-1; i >= 0; i--) {
+                for (var i = nbTabs - 1; i >= 0; i--) {
                     var currTab = tabViewObj.item(i);
                     if (currTab.name === "tab") {
                         var cross = currTab.get("boundingBox").one('.yui3-tab-remove');
@@ -1068,9 +1076,9 @@ YUI.add('wegas-tabview', function(Y) {
                                 cssClass: "wegas-editor-menu-separator-above",
                                 wchildren: cfg.children
                             };
-                        menu1.add(menuCfg, menu1.size()-1); // Insert before the "Attributes" entry
+                        menu1.add(menuCfg, menu1.size() - 1); // Insert before the "Attributes" entry
                         menuCfg.tabSelector = "#rightTabView";
-                        menu2.add(menuCfg, menu2.size()-1); // Insert before the "Attributes" entry
+                        menu2.add(menuCfg, menu2.size() - 1); // Insert before the "Attributes" entry
                         t.plug(Hideable);
                     } else {
                         // This is not the scenario editor, just add the given tab to the center tabView:

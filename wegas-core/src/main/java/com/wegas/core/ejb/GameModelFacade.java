@@ -17,6 +17,7 @@ import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.InstanceOwner;
@@ -95,6 +96,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     @Inject
     private StateMachineFacade stateMachineFacade;
 
+    @Inject I18nFacade i18nFacade;
+
     @Inject
     private HazelcastInstance hzInstance;
 
@@ -120,6 +123,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     @Override
     public void create(final GameModel entity) {
+
+        if (entity.getRawLanguages().isEmpty()) {
+            i18nFacade.createLanguage(entity, "def", "default");
+        }
 
         getEntityManager().persist(entity);
         final User currentUser = userFacade.getCurrentUser();
@@ -180,7 +187,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @param create
      */
     public void propagateDefaultInstances(GameModel gameModel, InstanceOwner context, boolean create) {
-        // Propagate default instances 
+        // Propagate default instances
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
             vd.propagateDefaultInstance(context, create);
         }

@@ -257,6 +257,29 @@ public class ScriptFacade extends WegasAbstractFacade {
     }
 
     /**
+     * Eval without any player related context (no server scripts, no API, etc)
+     *
+     * @param script
+     * @param args
+     *
+     * @return
+     *
+     * @throws ScriptException
+     */
+    public Object nakedEval(String script, Map<String, Object> args) throws ScriptException {
+        ScriptContext ctx = new SimpleScriptContext();
+        if (args != null) {
+            for (Entry<String, Object> arg : args.entrySet()) {
+                if (arg.getValue() != null) {
+                    ctx.getBindings(ScriptContext.ENGINE_SCOPE).put(arg.getKey(), arg.getValue());
+                }
+            }
+        }
+
+        return engine.eval(script, ctx);
+    }
+
+    /**
      * Inject script files specified in GameModel's property scriptFiles into
      * engine
      *
@@ -310,7 +333,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         }
     }
 
-    public void clearCache(){
+    public void clearCache() {
         staticCache.clear();
     }
 
@@ -476,6 +499,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      * @param context
      *
      * @return eval result
+     *
      * @throws WegasScriptException
      */
     public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException { // ICI CONTEXT

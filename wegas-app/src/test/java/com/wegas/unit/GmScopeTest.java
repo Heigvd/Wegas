@@ -24,8 +24,6 @@ public class GmScopeTest extends AbstractTest {
     @Test
     public void testScopes() throws IOException{
         this.createGameModelFromFile("src/test/resources/gmScope.json");
-
-        System.out.println("coucou");
     }
 
 }

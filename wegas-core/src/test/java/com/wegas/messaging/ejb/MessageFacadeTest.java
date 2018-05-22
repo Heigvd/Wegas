@@ -76,12 +76,12 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
         List<Message> messages = gettedInbox.getSortedMessages();
 
-        assertEquals("from6", messages.get(0).getFrom());
-        assertEquals("from5", messages.get(1).getFrom());
-        assertEquals("from4", messages.get(2).getFrom());
-        assertEquals("from3", messages.get(3).getFrom());
-        assertEquals("from2", messages.get(4).getFrom());
-        assertEquals("from1", messages.get(5).getFrom());
+        assertEquals("from6", messages.get(0).getFrom().translateOrEmpty(player));
+        assertEquals("from5", messages.get(1).getFrom().translateOrEmpty(player));
+        assertEquals("from4", messages.get(2).getFrom().translateOrEmpty(player));
+        assertEquals("from3", messages.get(3).getFrom().translateOrEmpty(player));
+        assertEquals("from2", messages.get(4).getFrom().translateOrEmpty(player));
+        assertEquals("from1", messages.get(5).getFrom().translateOrEmpty(player));
     }
 
     /**
@@ -115,7 +115,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         // Test
         assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
         assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
-        assertTrue(ii.getMessages().get(0).getBody().equals("test"));
+        assertTrue("test".equals(ii.getMessages().get(0).getBody().translateOrEmpty(player)));
 
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());
@@ -146,7 +146,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
         assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
-        assertTrue(ii.getMessages().get(0).getBody().equals("msg2"));
+        assertEquals("msg2", ii.getMessages().get(0).getBody().translateOrEmpty(player));
         scriptFacade.eval(player, new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg out\");"), null);
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());
@@ -224,9 +224,9 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         Message get = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().equals("test"));
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().equals("test"));
+        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().translateOrEmpty(player));
+        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().translateOrEmpty(player));
+        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().translateOrEmpty(player));
 
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());
@@ -269,7 +269,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         Message get = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
+        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().translateOrEmpty(player).equals("test"));
         assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0) != null);
         assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1) != null);
         assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2) != null);
@@ -303,10 +303,10 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         Message get = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().equals("test"));
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().equals("test"));
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().equals("test"));
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(3).getBody().equals("test"));
+        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().translateOrEmpty(player));
+        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().translateOrEmpty(player));
+        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().translateOrEmpty(player));
+        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(3).getBody().translateOrEmpty(player));
 
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());

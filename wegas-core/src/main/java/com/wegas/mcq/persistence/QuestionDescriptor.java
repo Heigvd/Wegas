@@ -9,8 +9,11 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -20,17 +23,17 @@ import com.wegas.core.rest.util.Views;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
+import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 
 /**
  *
@@ -40,16 +43,21 @@ import javax.persistence.OrderColumn;
 @NamedQueries({
     @NamedQuery(name = "QuestionDescriptor.findDistinctChildrenLabels", query = "SELECT DISTINCT(cd.label) FROM ChoiceDescriptor cd WHERE cd.question.id = :containerId")
 })
+@Table(
+        indexes = {
+            @Index(columnList = "description_id")
+        }
+)
 public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    //@JsonView(Views.ExtendedI.class)
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent description;
+
     /**
      * Set this to true when the choice is to be selected with an HTML
      * radio/checkbox
@@ -94,7 +102,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (a instanceof QuestionDescriptor) {
             super.merge(a);
             QuestionDescriptor other = (QuestionDescriptor) a;
-            this.setDescription(other.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
             this.setMinReplies(other.getMinReplies());
             this.setMaxReplies(other.getMaxReplies());
             this.setCbx(other.getCbx());
@@ -145,15 +153,18 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**
@@ -302,7 +313,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getDescription(), criterias)
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
                 || super.containsAll(criterias);
     }
 

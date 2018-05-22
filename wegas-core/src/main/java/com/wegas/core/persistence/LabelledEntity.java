@@ -7,6 +7,8 @@
  */
 package com.wegas.core.persistence;
 
+import com.wegas.core.i18n.persistence.TranslatableContent;
+
 /**
  * Displayed entity name (in addition to internal entity name)
  *
@@ -14,17 +16,19 @@ package com.wegas.core.persistence;
  */
 public interface LabelledEntity extends NamedEntity {
 
+    public Long getId();
+
     /**
      * Get the entity label. Label is the name to be displayed to end-users
      *
      * @return entity label
      */
-    String getLabel();
+    TranslatableContent getLabel();
 
     /**
      * Set entity label
      *
      * @param newLabel the new label to set
      */
-    void setLabel(String newLabel);
+    void setLabel(TranslatableContent newLabel);
 }

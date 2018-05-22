@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @see PeerReviewDescriptor
  */
 @Entity
-public class EvaluationDescriptorContainer extends AbstractEntity {
+public class EvaluationDescriptorContainer extends AbstractEntity implements Searchable {
 
     private static final long serialVersionUID = 1L;
 
@@ -81,6 +82,15 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
 
     public void setCommentsPeerReviewDescriptor(PeerReviewDescriptor commentsPeerReviewDescriptor) {
         this.commentsPeerReviewDescriptor = commentsPeerReviewDescriptor;
+    }
+
+    @JsonIgnore
+    public PeerReviewDescriptor getParent(){
+        if (this.fbPeerReviewDescriptor !=null){
+            return fbPeerReviewDescriptor;
+        } else {
+            return commentsPeerReviewDescriptor;
+        }
     }
 
     /**
@@ -140,5 +150,15 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getEffectiveDescriptor().getRequieredReadPermission();
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        for (EvaluationDescriptor ed : getEvaluations()){
+            if (ed.containsAll(criterias)){
+                return true;
+            }
+        }
+        return false;
     }
 }

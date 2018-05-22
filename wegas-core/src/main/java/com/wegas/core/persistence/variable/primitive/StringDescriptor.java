@@ -7,15 +7,19 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.OrderColumn;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +31,8 @@ import org.slf4j.LoggerFactory;
 /*@Table(indexes = {
  @Index(columnList = "allowedvalues.stringdescriptor_variabledescriptor_id")
  })*/
-public class StringDescriptor extends VariableDescriptor<StringInstance> implements PrimitiveDescriptorI<String> {
+public class StringDescriptor extends VariableDescriptor<StringInstance>
+        implements PrimitiveDescriptorI<String>, Enumeration {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(StringDescriptor.class);
@@ -38,10 +43,12 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> impleme
     //@Pattern(regexp = "^\\w*$")
     private String validationPattern;
 
-    @ElementCollection
-    //@OrderBy("allowedvalues")
-    @OrderColumn
-    private List<String> allowedValues = new ArrayList<>();
+    /**
+     * List of allowed categories
+     */
+    @OneToMany(mappedBy = "parentString", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonDeserialize(using = EnumItem.ListDeserializer.class)
+    private List<EnumItem> allowedValues = new ArrayList<>();
 
     /**
      *
@@ -67,9 +74,12 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> impleme
             StringDescriptor other = (StringDescriptor) a;
             this.setValidationPattern(other.getValidationPattern());
 
-            this.setAllowedValues(new ArrayList<>());
-            this.getAllowedValues().addAll(other.getAllowedValues());
             super.merge(a);
+
+            // make sure to use getCategories to sort them
+            this.setAllowedValues(ListUtils.mergeLists(this.getAllowedValues(), other.getAllowedValues()));
+
+            Helper.setNameAndLabelForLabelledEntityList(this.getAllowedValues(), "item", this.getGameModel());
 
             /*String value = this.getDefaultInstance().getValue();
             if (!this.isValueAllowed(value)) {
@@ -99,8 +109,13 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> impleme
      *
      * @return list of allowed values
      */
-    public List<String> getAllowedValues() {
-        return allowedValues;
+    public List<EnumItem> getAllowedValues() {
+        return this.getSortedEnumItems();
+    }
+
+    @Override
+    public List<EnumItem> getEnumItems() {
+        return this.allowedValues;
     }
 
     /**
@@ -108,8 +123,20 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> impleme
      *
      * @param allowedValues
      */
-    public void setAllowedValues(List<String> allowedValues) {
+    public void setAllowedValues(List<EnumItem> allowedValues) {
         this.allowedValues = allowedValues;
+        if (this.allowedValues != null) {
+            int i = 0;
+            for (EnumItem aValue : this.allowedValues) {
+                aValue.setOrder(i++);
+                registerItem(aValue);
+            }
+        }
+    }
+
+    @Override
+    public void registerItem(EnumItem item) {
+        item.setParentString(this);
     }
 
     /*
@@ -140,6 +167,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> impleme
      *
      * @param p
      * @param value
+     *
      * @return
      */
     public boolean isValueSelected(Player p, String value) {
@@ -156,6 +184,25 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> impleme
     }
 
     public boolean isValueAllowed(String value) {
-        return allowedValues == null || allowedValues.isEmpty() || value.isEmpty() || allowedValues.contains(value);
+        if (value == null || value.isEmpty()) {
+            return true;
+        }
+
+        if (allowedValues != null && !allowedValues.isEmpty()) {
+            for (EnumItem aValue : this.getAllowedValues()) {
+                if (value.equals(aValue.getName())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        return super.containsAll(criterias)
+                || this.itemsContainsAll(criterias);
     }
 }

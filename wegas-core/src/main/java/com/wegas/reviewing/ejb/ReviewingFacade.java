@@ -22,6 +22,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.EnumItem;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
@@ -33,7 +34,9 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
+import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
+import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -589,9 +592,31 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
             reviewD.setToReview(toReview);
 
             assertScopesAreValid(reviewD);
+
+            this.reviveEvaluations(reviewD.getFeedback(), reviewD);
+            this.reviveEvaluations(reviewD.getFbComments(), reviewD);
         } catch (WegasNoResultException ex) {
             logger.error("Failed te revive ReviewDescriptor", ex);
             reviewD.setToReview(null);
+        }
+    }
+
+    private void reviveEvaluations(EvaluationDescriptorContainer container, PeerReviewDescriptor parent) {
+        for (EvaluationDescriptor ed : container.getEvaluations()) {
+            if (ed.getLabel() != null) {
+                ed.getLabel().setParentDescriptor(parent);
+            }
+            if (ed.getDescription() != null) {
+                ed.getDescription().setParentDescriptor(parent);
+                if (ed instanceof CategorizedEvaluationDescriptor) {
+                    CategorizedEvaluationDescriptor ced = (CategorizedEvaluationDescriptor) ed;
+                    for (EnumItem category: ced.getCategories()){
+                        if (category.getLabel() !=null){
+                            category.getLabel().setParentDescriptor(parent);
+                        }
+                    }
+                }
+            }
         }
     }
 

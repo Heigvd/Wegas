@@ -45,7 +45,8 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
         // Create a dummy descriptor
         final StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);
-        stringDescriptor.setDefaultInstance(new StringInstance(VALUE));
+        stringDescriptor.setDefaultInstance(new StringInstance());
+        stringDescriptor.getDefaultInstance().setValue(VALUE);
         variableDescriptorFacade.create(scenario.getId(), stringDescriptor);
 
         // Eval a dummy script

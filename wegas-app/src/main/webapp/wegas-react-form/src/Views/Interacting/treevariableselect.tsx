@@ -118,7 +118,7 @@ function genVarItems(
     selectableFn: (item: Y.BaseCore) => boolean = defaultTrue,
     classFilter: string[]
 ): Item[] {
-    function mapItem(item: Y.BaseCore) {
+    function mapItem(item: any) {
         const child = item.get('items')
             ? genVarItems(item.get('items'), selectableFn, classFilter)
             : undefined;
@@ -130,7 +130,7 @@ function genVarItems(
             select = false;
         }
         return {
-            label: item.get('label'),
+            label: item.getEditorLabel(),
             value: item.get('name'),
             selectable: select,
             items: child,

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 abstract public class PMGameAbstractTest extends AbstractTest {
 
     public static final String SCRIPTROOT = "src/main/webapp/wegas-private/wegas-pmg/scripts/";
+    public static final String APP_SCRIPTROOT = "src/main/webapp/wegas-app/js/server/";
     private static final Logger logger = LoggerFactory.getLogger(PMGameAbstractTest.class);
 
     protected abstract String getGameModelPath();
@@ -39,12 +40,15 @@ abstract public class PMGameAbstractTest extends AbstractTest {
     public void setUpGM() throws IOException, GlassFishException {
         /* insert script from files*/
         String[] scripts = {
+            APP_SCRIPTROOT + "/wegas-server-helper.js",
+            APP_SCRIPTROOT + "/i18n/wegas-server-i18n.js",
+            APP_SCRIPTROOT + "/i18n/locales/fr.js",
+            APP_SCRIPTROOT + "/i18n/locales/en.js",
             SCRIPTROOT + "server-scripts/locales/fr.js",
             SCRIPTROOT + "server-scripts/locales/en.js",
             SCRIPTROOT + "server-scripts/wegas-pmg-server-backward.js",
             SCRIPTROOT + "server-scripts/wegas-pmg-server-event-listeners.js",
             SCRIPTROOT + "server-scripts/wegas-pmg-server-helper.js",
-            SCRIPTROOT + "server-scripts/wegas-pmg-server-language.js",
             SCRIPTROOT + "server-scripts/wegas-pmg-server-simulation.js",
             SCRIPTROOT + "server-scripts/wegas-pmg-server-util.js",
             SCRIPTROOT + "test-scripts/wegas-pmg-server-test-util.js",

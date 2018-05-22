@@ -39,7 +39,7 @@ public class GameControllerTest extends AbstractArquillianTest {
         trigg.setDefaultInstance(triggerInstance);
         variableDescriptorFacade.create(scenario.getId(), trigg);
 
-        gameController.joinIndividually(game.getId());
+        gameController.joinIndividually(null, game.getId());
 
         final Game g = gameFacade.find(game.getId());
         final Player p = g.getTeams().get(g.getTeams().size() - 1).getPlayers().get(0);

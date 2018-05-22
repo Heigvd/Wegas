@@ -68,6 +68,12 @@ YUI().use(function(Y) {
             "wegas-i18n-global-en": {
                 path: 'js/i18n/i18n-global-en-min.js'
             },
+            "wegas-i18n-global-de": {
+                path: 'js/i18n/i18n-global-de-min.js'
+            },
+            "wegas-i18n-global-it": {
+                path: 'js/i18n/i18n-global-it-min.js'
+            },
             "wegas-i18n-global": {
                 path: 'js/i18n/i18n-global-min.js',
                 requires: ['wegas-i18n']
@@ -755,6 +761,11 @@ YUI().use(function(Y) {
             "wegas-fileexplorercss": {
                 type: CSS
             },
+            "wegas-gamemodel-i18n": {
+                path: "js/widget/wegas-gamemodel-i18n-min.js",
+                requires: ["wegas-layout-list", "wegas-inputex-wysiwygscript"],
+                ws_provides: ["LanguagesManager", "TranslationEditor"]
+            },
             "wegas-gamemodel-extractor": {
                 path: "js/widget/wegas-gamemodel-extractor-min.js",
                 requires: ["wegas-modal", "wegas-plugin"],
@@ -865,6 +876,9 @@ YUI().use(function(Y) {
             "wegas-i18n-mcq-fr": {
                 path: 'js/i18n/i18n-mcq-fr.js'
             },
+            "wegas-i18n-mcq-de": {
+                path: 'js/i18n/i18n-mcq-de.js'
+            },
             "wegas-i18n-mcq-en": {
                 path: 'js/i18n/i18n-mcq-en.js'
             },
@@ -879,8 +893,8 @@ YUI().use(function(Y) {
         base: "./wegas-react-form/",
         root: "/wegas-react-form/",
         modules: {
-            "wegas-react-form-binding":{
-                path:"dist/bundle.js"
+            "wegas-react-form-binding": {
+                path: "dist/bundle.js"
             },
             "wegas-react-form": {
                 path: "dist/bundle.js",
@@ -952,6 +966,9 @@ YUI().use(function(Y) {
                     "TextEvalInput",
                     "CategorizationInput"]
             },
+            "wegas-i18n-review-de": {
+                path: 'js/i18n/i18n-review-de-min.js'
+            },
             "wegas-i18n-review-fr": {
                 path: 'js/i18n/i18n-review-fr-min.js'
             },
@@ -995,6 +1012,11 @@ YUI().use(function(Y) {
                 requires: ["wegas-nodeformatter", "wegas-itemselector",
                     "wegas-panel", "wegas-simpledialogue"],
                 ws_provides: "CEPFolder"
+            },
+            "wegas-urbactif": {
+                path: "wegas-private/wegas-games/wegas-urbactif/urba-teamwidget.js",
+                requires: ["wegas-button", "wegas-mcq-tabview", "wegas-layout-list", "wegas-i18n", "wegas-i18n-mcq-fr"],
+                ws_provides: "TeamWidget"
             }
             /* Chess */
             //"wegas-chess": {
@@ -1041,6 +1063,7 @@ YUI().use(function(Y) {
             },
             tinymce: {
                 path: "tinymce/tinymce.min.js"
+                //fullpath: "//unpkg.com/tinymce@4.7.12/tinymce.js"
             },
             excanvas: {
                 path: "excanvas/excanvas.compiled.js"

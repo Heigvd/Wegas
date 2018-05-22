@@ -216,6 +216,8 @@
                                                         }, {
                                                             "fn": "PageEditor"
                                                         }, {
+                                                            "fn": "TranslationEditor"
+                                                        }, {
                                                             "fn": "Injector"
                                                         }, {
                                                             "fn": "PopupListener"
@@ -274,6 +276,14 @@
                                                 {
                                                     "type": "WysiwygConsole",
                                                     "cssClass": "wegas-console wegas-editor-console"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Translations",
+                                            "wchildren": [
+                                                {
+                                                    "type": "LanguagesManager"
                                                 }
                                             ]
                                         }, {
@@ -362,6 +372,8 @@
                                     }, {
                                         "fn": "PageEditor"
                                     }, {
+                                        "fn": "TranslationEditor"
+                                    }, {
                                         "fn": "Injector"
                                     }, {
                                         "fn": "PopupListener"
@@ -404,6 +416,8 @@
                                                             }
                                                         }, {
                                                             "fn": "PageEditor"
+                                                        }, {
+                                                            "fn": "TranslationEditor"
                                                         }, {
                                                             "fn": "Injector"
                                                         }, {
@@ -468,6 +482,14 @@
                                                 {
                                                     "type": "WysiwygConsole",
                                                     "cssClass": "wegas-console wegas-editor-console"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Translations",
+                                            "wchildren": [
+                                                {
+                                                    "type": "LanguagesManager"
                                                 }
                                             ]
                                         }, {

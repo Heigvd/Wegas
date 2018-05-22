@@ -7,12 +7,16 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -22,39 +26,42 @@ import javax.persistence.Lob;
 public class DialogueTransition extends Transition {
 
     private static final long serialVersionUID = 1L;
-    @Lob
-    private String actionText;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent actionText;
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        if (Helper.insensitiveContainsAll(this.getActionText(), criterias)) {
-            return true;
-        }
-        return super.containsAll(criterias);
+        return Helper.insensitiveContainsAll(getActionText(), criterias)
+                || super.containsAll(criterias);
     }
 
     /**
      * @return the actionText
      */
-    public String getActionText() {
+    public TranslatableContent getActionText() {
         return actionText;
     }
 
     /**
      * @param actionText the actionText to set
      */
-    public void setActionText(String actionText) {
+    public void setActionText(TranslatableContent actionText) {
         this.actionText = actionText;
+        if (this.actionText != null && this.getState() != null) {
+            this.actionText.setParentDescriptor(getState().getStateMachine());
+        }
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof DialogueTransition) {
-            DialogueTransition otherDialogue = (DialogueTransition) other;
-            this.setActionText(otherDialogue.actionText);
+    public void merge(AbstractEntity o) {
+        if (o instanceof DialogueTransition) {
+            DialogueTransition other = (DialogueTransition) o;
+            this.setActionText(TranslatableContent.merger(this.getActionText(), ((DialogueTransition) other).getActionText()));
             super.merge(other);
         } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
+            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + o.getClass().getSimpleName() + ") is not possible");
         }
     }
 }

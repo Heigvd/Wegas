@@ -8,9 +8,12 @@
 package com.wegas.mcq.persistence.wh;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -20,14 +23,15 @@ import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Lob;
+import javax.persistence.Index;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 
 /**
  *
@@ -36,6 +40,11 @@ import javax.persistence.OrderColumn;
 @Entity
 @NamedQuery(name = "WhQuestionDescriptor.findDistinctChildrenLabels",
         query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentWh.id = :containerId")
+@Table(
+        indexes = {
+            @Index(columnList = "description_id")
+        }
+)
 public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         implements DescriptorListI<VariableDescriptor> {
 
@@ -43,9 +52,9 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent description;
 
     @OneToMany(mappedBy = "parentWh", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "whd_items_order")
@@ -54,15 +63,18 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**
@@ -97,7 +109,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         }
     }
 
-    private boolean isAuthorized(VariableDescriptor child){
+    private boolean isAuthorized(VariableDescriptor child) {
         return child instanceof PrimitiveDescriptorI;
     }
 
@@ -119,7 +131,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         if (a instanceof WhQuestionDescriptor) {
             super.merge(a);
             WhQuestionDescriptor other = (WhQuestionDescriptor) a;
-            this.setDescription(other.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -162,7 +174,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         this.setActive(p, false);
     }
 
-    public void reopen(Player p){
+    public void reopen(Player p) {
         this.getInstance(p).setValidated(false);
     }
 
@@ -190,7 +202,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getDescription(), criterias)
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
                 || super.containsAll(criterias);
     }
 

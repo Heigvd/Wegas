@@ -50,7 +50,7 @@ YUI.add("wegas-prettyprinter", function(Y) {
             }
         },
         newFolderStart: function(theVar, level) {
-            return "<span class=\"wegas-pdf-title\">" + theVar.get("label") + "</span>";
+            return "<span class=\"wegas-pdf-title\">" + I18n.t(theVar.get("label")) + "</span>";
         },
         newFolderEnd: function(theVar, level) {
             return "</div>";
@@ -59,7 +59,7 @@ YUI.add("wegas-prettyprinter", function(Y) {
             return this.go(this.get("variable.evaluated"));
         },
         generateOutput: function(theVar) {
-            return "<div>Not yet implemented (\"" + (theVar.get("label")) + "\")</div>";
+            return "<div>Not yet implemented (\"" + I18n.t(theVar.get("label")) + "\")</div>";
         },
         toPdf: function() {
             var pdfLink = Y.Wegas.app.get("base") + "print.html";

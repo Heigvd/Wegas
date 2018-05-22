@@ -35,7 +35,7 @@ const longStyle = css({
     width: '100%',
 });
 
-const infoStyle = css(FormStyles.unselectable, {
+export const infoStyle = css(FormStyles.unselectable, {
     color: '#99a6b2',
     fontSize: '10px',
     fontStyle: 'italic',

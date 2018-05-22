@@ -8,13 +8,17 @@
 package com.wegas.core.persistence.variable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
@@ -74,7 +78,8 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "root_id"),
     @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
-    @Index(columnList = "scope_id")
+    @Index(columnList = "scope_id"),
+    @Index(columnList = "label_id")
 })
 @NamedQueries({
     @NamedQuery(
@@ -178,33 +183,32 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     private GameModel root;
 
     /**
-     *
-     */
-    //@JsonView(Views.EditorI.class)
-    private String label;
-
-    //@BatchFetch(BatchFetchType.JOIN)
-    //@JsonManagedReference
-    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
-    @JoinFetch
-    //@JsonView(value = Views.WithScopeI.class)
-    private AbstractScope scope;
-
-    /**
-     * Title displayed in the for the player, should be removed from variable
-     * descriptor and placed in the required entities (MCQQuestionDrescriptor,
-     * TriggerDescriptor, aso)
-     */
-    @Column(name = "editorLabel")
-    private String title;
-
-    /**
-     *
+     * variable name: used as identifier
      */
     @NotNull
     @Basic(optional = false)
-    //@CacheIndex
     protected String name;
+
+    /**
+     * a token to prefix the label with. For editors only
+     */
+    private String editorTag;
+
+    @Transient
+    @JsonIgnore
+    protected String title;
+
+    /**
+     * Variable descriptor human readable name
+     * Player visible
+     */
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent label;
+
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
+    @JoinFetch
+    private AbstractScope scope;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
@@ -455,11 +459,35 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
         }
     }
 
+    @JsonIgnore
+    public String getEditorLabel() {
+        if (this.getEditorTag() == null && this.getLabel() == null) {
+            return this.getName();
+        }
+        if (this.getEditorTag() == null) {
+            return this.getLabel().translateOrEmpty(this.getGameModel());
+        }
+        return this.getEditorTag() + " - " + this.getLabel();
+    }
+
+    /**
+     * get the editor label prefix.
+     *
+     * @return
+     */
+    public String getEditorTag() {
+        return this.editorTag;
+    }
+
+    public void setEditorTag(String editorTag) {
+        this.editorTag = editorTag;
+    }
+
     /**
      * @return the label
      */
     @Override
-    public String getLabel() {
+    public TranslatableContent getLabel() {
         return label;
     }
 
@@ -467,8 +495,33 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
      * @param label the label to set
      */
     @Override
-    public void setLabel(String label) {
+    public void setLabel(TranslatableContent label) {
         this.label = label;
+        if (this.label != null) {
+            this.label.setParentDescriptor(this);
+        }
+    }
+
+    /**
+     * Backward compat
+     *
+     * @return
+     */
+    @JsonIgnore
+    @Deprecated
+    public String getTitle() {
+        return this.getLabel().translateOrEmpty(this.getGameModel());
+    }
+
+    /**
+     * Backwardcompat
+     *
+     * @param title
+     */
+    @Deprecated
+    @JsonProperty
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**
@@ -511,20 +564,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     }
 
     /**
-     * @return title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * @param title
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
      * @param a
      */
     @Override
@@ -534,8 +573,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
                 VariableDescriptor other = (VariableDescriptor) a;
                 this.setVersion(other.getVersion());
                 this.setName(other.getName());
-                this.setLabel(other.getLabel());
-                this.setTitle(other.getTitle());
+                this.setEditorTag(other.getEditorTag());
+                this.setLabel(TranslatableContent.merger(this.getLabel(), other.getLabel()));
                 this.setComments(other.getComments());
                 this.getDefaultInstance().merge(other.getDefaultInstance());
                 if (other.getScope() != null) {
@@ -616,8 +655,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     @Override
     public Boolean containsAll(final List<String> criterias) {
         Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
+                || Helper.insensitiveContainsAll(this.getEditorTag(), criterias)
                 || Helper.insensitiveContainsAll(this.getLabel(), criterias)
-                || Helper.insensitiveContainsAll(this.getTitle(), criterias)
                 || Helper.insensitiveContainsAll(this.getComments(), criterias);
         if (!found && (this.getDefaultInstance() instanceof Searchable)) {
             return ((Searchable) this.getDefaultInstance()).containsAll(criterias);
@@ -651,6 +690,24 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     }
 
     public void revive(Beanjection beans) {
+        if (this.title != null) {
+            if (title.isEmpty()) {
+                // title is defined but empty -> not prefix, don't change label
+                // eg:  label="[r5b] Meet someone'; title=""; prefix = ""; label="[r5b] Meet someone"
+                this.setEditorTag("");
+            } else {
+                String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
+                if (importedLabel == null) {
+                    importedLabel = "";
+                }
+                // eg:  label="[r5b] Meet someone'; title="Meet someone"; prefix = "[r5b]"; label="Meet someone"
+                // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
+                // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
+                this.setEditorTag(importedLabel.replace(title, "").trim());
+                this.setLabel(TranslatableContent.build("def", title));
+            }
+            this.title = null;
+        }
     }
 
     @Override

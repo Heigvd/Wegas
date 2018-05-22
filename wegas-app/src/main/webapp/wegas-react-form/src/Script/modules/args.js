@@ -3,7 +3,7 @@ import { types, print, parse, visit } from 'recast';
 import { isEqual } from 'lodash-es';
 import ArgForm from './ArgForm';
 
-const { builders: b, namedTypes: n } = types;
+const {builders: b, namedTypes: n} = types;
 /**
  * Handle a Form's' schema for unknown datatypes, pass in an entity.
  * @param {{type:string}} schema The schema
@@ -39,7 +39,8 @@ export function valueToAST(value, schema) {
         case 'identifier':
             return b.identifier(value);
         case 'array':
-        case 'object': {
+        case 'object':
+        {
             const x = parse(`( ${JSON.stringify(value)} )`).program.body[0]
                 .expression;
             return x;
@@ -148,8 +149,8 @@ export function renderForm(astValue, descriptor, onChange, entity, key) {
             schema={descriptor}
             onChange={onChange}
             key={key}
-        />
-    );
+            />
+        );
 }
 /**
  * Generate an array of forms for each function's arguments
@@ -178,7 +179,7 @@ export function handleMethodArgs(methodDescr, args, onChange, entity) {
             },
             entity,
             i
-        );
+            );
     });
 }
 /**

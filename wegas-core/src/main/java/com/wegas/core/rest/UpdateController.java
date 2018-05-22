@@ -16,12 +16,12 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
-import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -123,11 +122,11 @@ public class UpdateController {
         List<VariableDescriptor> findAll = descriptorFacade.findByGameModelId(gameModelId);
         for (VariableDescriptor vd : findAll) {
             List<String> findDistinctNames = descriptorFacade.findDistinctNames(vd.getGameModel());
-            List<String> findDistinctLabels = descriptorFacade.findDistinctLabels(vd.getGameModel());
+            List<TranslatableContent> findDistinctLabels = descriptorFacade.findDistinctLabels(vd.getGameModel());
             findDistinctNames.remove(vd.getName());
             findDistinctLabels.remove(vd.getLabel());
-            Helper.setUniqueName(vd, findDistinctNames);
-            Helper.setUniqueLabel(vd, findDistinctLabels);
+            Helper.setUniqueName(vd, findDistinctNames, vd.getGameModel());
+            Helper.setUniqueLabel(vd, findDistinctLabels, vd.getGameModel());
             descriptorFacade.flush();
         }
         return "Finished";
@@ -285,7 +284,7 @@ public class UpdateController {
         return listDescriptorScope(find);
     }
 
-    private String rtsUpdateScope(GameModel gameModel) {
+    /*private String rtsUpdateScope(GameModel gameModel) {
         Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -310,7 +309,7 @@ public class UpdateController {
         sb.append("]");
 
         return sb.toString();
-    }
+    }*/
 
     private void updateListDescriptorScope(GameModel gameModel) {
         Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
@@ -349,12 +348,14 @@ public class UpdateController {
         return lawUpdateScope(find);
     }
 
+    /*
     @GET
     @Path("RtsUpdateScope/{gameModelId : ([1-9][0-9]*)}")
     public String rtsScopeUpdate(@PathParam("gameModelId") Long gameModelId) {
         GameModel find = gameModelFacade.find(gameModelId);
         return rtsUpdateScope(find);
     }
+    */
 
     private String newScope(GameModel gameModel, VariableDescriptor vd) {
         StringBuilder sb = new StringBuilder();
@@ -382,6 +383,7 @@ public class UpdateController {
         return sb.toString();
     }
 
+    /*
     private String rtsNewScope(GameModel gameModel) {
         Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
@@ -410,13 +412,16 @@ public class UpdateController {
 
         return sb.toString();
     }
+    */
 
+    /*
     @GET
     @Path("RtsNewScope/{gameModelId : ([1-9][0-9]*)}")
     public String rtsNewScope(@PathParam("gameModelId") Long gameModelId) {
         GameModel find = gameModelFacade.find(gameModelId);
         return rtsNewScope(find);
     }
+    */
 
     private String addVariable(GameModel gm, String json, String varName, String parentName) {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();

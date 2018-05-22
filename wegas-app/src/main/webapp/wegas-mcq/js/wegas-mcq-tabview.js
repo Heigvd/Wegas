@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -102,7 +104,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             return  '<div class="'
                 + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unread" : "")
                 + '"><div class="index-label">'
-                + (question.get("title") || question.get("label") || "undefined") + "</div>"
+                + (I18n.t(question.get("label"))) + "</div>"
                 + '<div class="index-status">' + label + "</div>"
                 + '</div>';
 
@@ -129,7 +131,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                         }
                     } else { // Find the last selected replies
                         choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                        label = choiceDescriptor.get("title") || "";
+                        label = I18n.t(choiceDescriptor.get("label"));
                         label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
                     }
                 }
@@ -142,7 +144,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 if (question.get("maxReplies") === 1) {
                     // Find the last selected replies
                     choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                    label = choiceDescriptor.get("title") || "";
+                    label = I18n.t(choiceDescriptor.get("label"));
                     label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
                 } else {
                     label = questionInstance.get("replies").length + "x";
@@ -156,7 +158,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             return  '<div class="'
                 + (highlightUnanswered ? "unread" : "")
                 + '"><div class="index-label">'
-                + (question.get("title") || question.get("label") || "undefined") + "</div>"
+                + I18n.t(question.get("label")) + "</div>"
                 + '<div class="index-status">' + label + "</div>"
                 + '</div>';
         },

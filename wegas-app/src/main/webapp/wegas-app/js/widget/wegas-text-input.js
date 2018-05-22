@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -19,11 +21,8 @@ YUI.add('wegas-text-input', function(Y) {
      * @class class to edit text
      * @constructor
      */
-    TextInput = Y.Base.create(
-        'wegas-text-input',
-        Y.Widget,
-        [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable],
-        {
+    TextInput = Y.Base.create('wegas-text-input', Y.Widget,
+        [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
             /** @lends Y.Wegas.TextInput# */
 
             CONTENT_TEMPLATE: '<div>' +
@@ -120,14 +119,8 @@ YUI.add('wegas-text-input', function(Y) {
                                         });
                                     }
                                     // Update on editor update
-                                    editor.on(
-                                        'change',
-                                        Y.bind(this._onChange, this)
-                                        ); // click on taskbar buttons
-                                    editor.on(
-                                        'keyUp',
-                                        Y.bind(this._onChange, this)
-                                        ); // text input & ctrl-related operations
+                                editor.on('change', Y.bind(this._onChange, this)); // click on taskbar buttons
+                                editor.on('keyUp', Y.bind(this._onChange, this)); // text input & ctrl-related operations
                                     //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
                                     // Callback for when the editor has been initialized and setContent is allowed:
                                     editor.on('init',
@@ -396,7 +389,7 @@ YUI.add('wegas-text-input', function(Y) {
                 if (this.waitForValue === value) {
                     this.waitForValue = null;
                     if (this.queuedValue) {
-                        this.processSave(this.queuedValue.value,this.queuedValue.descriptor);
+                    this.processSave(this.queuedValue.value, this.queuedValue.descriptor);
                         this.queuedValue = null;
                     }
                 }
@@ -431,8 +424,7 @@ YUI.add('wegas-text-input', function(Y) {
                     this.addButton.destroy();
                 }
             }
-        },
-        {
+    }, {
             /** @lends Y.Wegas.TextInput */
             EDITORNAME: 'TextInput',
             ATTRS: {
@@ -451,12 +443,22 @@ YUI.add('wegas-text-input', function(Y) {
                     }
                 },
                 readonly: {
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    type: 'object',
-                    value: {content: 'return false;'},
+                type: ["null", "object"],
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                index: 100,
+                value: {
+                    "@class": "Script",
+                    "content": "false;"
+                },
+                properties: {
+                    "@class": {type: "string", value: "Script"},
+                    content: {
+                        type: "string"
+                    }
+                },
                     view: {
-                        label: 'Readonly',
-                        type: 'scriptcondition'
+                    type: 'scriptcondition',
+                    label: 'Readonly'
                     }
                 },
                 showSaveButton: {
@@ -526,14 +528,12 @@ YUI.add('wegas-text-input', function(Y) {
                     view: {label: 'Context menu'}
                 }
             }
-        }
-    );
+    });
     Y.Wegas.TextInput = TextInput;
-    StringInput = Y.Base.create(
-        'wegas-string-input',
-        Y.Widget,
-        [Y.WidgetChild, Wegas.Widget, Wegas.Editable],
-        {
+
+
+    StringInput = Y.Base.create('wegas-string-input', Y.Widget,
+        [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
             CONTENT_TEMPLATE: '<div>' +
                 '<div class="wegas-input-label"></div>' +
                 '<div class="wegas-input-body">' +
@@ -583,23 +583,17 @@ YUI.add('wegas-text-input', function(Y) {
                     cb = this.get('contentBox'),
                     allowedValues = desc.get('allowedValues');
                 if (allowedValues && allowedValues.length > 0) {
-                    if (
-                        !(this.get('allowNull') && value === '') &&
-                        !Y.Array.find(
-                            allowedValues,
-                            function(item) {
-                                return item === value;
-                            },
-                            this
-                            )
-                        ) {
-                        this.showMessage(
-                            'error',
-                            Y.Wegas.I18n.t('errors.prohibited', {
-                                value: value,
-                                values: allowedValues
+                if (!(this.get('allowNull') && value === '') &&
+                    !Y.Array.find(allowedValues, function(item) {
+                        return item.get("name") === value;
+                    }, this))
+                {
+                    this.showMessage('error', Y.Wegas.I18n.t('errors.prohibited', {
+                        value: desc.getLabelForAllowedValue(value),
+                        values: Y.Array.map(allowedValues, function(item) {
+                            return I18n.t(item.get("label"));
                             })
-                            );
+                    }));
                         return false;
                     }
                     numSelectable = this.get('numSelectable');
@@ -618,12 +612,9 @@ YUI.add('wegas-text-input', function(Y) {
                             values.splice(values.indexOf(value), 1);
                         } else {
                             if (values.length >= numSelectable) {
-                                this.showMessage(
-                                    'error',
-                                    Y.Wegas.I18n.t('errors.limitReached', {
+                            this.showMessage('error', Y.Wegas.I18n.t('errors.limitReached', {
                                         num: numSelectable
-                                    })
-                                    );
+                            }));
                                 return false;
                             } else {
                                 values.push(value);
@@ -702,22 +693,13 @@ YUI.add('wegas-text-input', function(Y) {
                     if (!this.get('clickSelect')) {
                         // SELECT
                         content = ['<select>'];
-                        content.push(
-                            '<option value="" disabled selected>--select--</option>'
-                            );
+                    content.push('<option value="" ' + (this.get("allowNull") ? 'disabled' : '') + 'selected>' +
+                        '--select--</option>');
                         for (i in allowedValues) {
                             value = allowedValues[i];
-                            content.push(
-                                '<option value=' +
-                                JSON.stringify(value) +
-                                ' ' +
-                                (value === inst.get('value')
-                                    ? "selected=''"
-                                    : '') +
-                                '>' +
-                                value +
-                                '</option>'
-                                );
+                        content.push('<option value=' + JSON.stringify(value.get("name")) + ' ' +
+                            (value.get("name") === inst.get('value') ? "selected=''" : '') + '>' +
+                            I18n.t(value.get("label")) + '</option>');
                         }
                         content.push('</select>');
                         input.setContent(content.join(''));
@@ -728,25 +710,13 @@ YUI.add('wegas-text-input', function(Y) {
                         ];
                         for (i in allowedValues) {
                             value = allowedValues[i];
-                            content.push(
-                                '<li data-value=' +
-                                JSON.stringify(value) +
-                                ' ' +
-                                (value === inst.get('value')
-                                    ? "class='selected'"
-                                    : '') +
-                                '>' +
-                                value +
-                                '</li>'
-                                );
+                        content.push('<li data-value=' + JSON.stringify(value.get("name")) + ' ' +
+                            (value.get("name") === inst.get('value') ? "class='selected'" : '') + '>' +
+                            I18n.t(value.get("label")) + '</li>');
                         }
 
                         if (this.get('allowNull')) {
-                            content.push(
-                                '<li data-value="">' +
-                                I18n.t('global.dunno') +
-                                '</li>'
-                                );
+                        content.push('<li data-value="">' + I18n.t('global.dunno') + '</li>');
                         }
                         content.push('</ul>');
                         input.setContent(content.join(''));
@@ -775,18 +745,19 @@ YUI.add('wegas-text-input', function(Y) {
                     if (!this.get('clickSelect')) {
                         select = CB.one('select');
                         select.set('disabled', readonly);
+
+                    if (value.indexOf("[") === 0) {
+                        value = JSON.parse(value)[0];
+                    }
+
                         if (this._initialValue !== value) {
                             this._initialValue = value;
-                            option = select.one(
-                                "option[value='" + value + "']"
-                                );
+                        select.all("option").removeAttribute('selected');
+                        option = select.one("option[value='" + value + "']");
                             option && option.setAttribute('selected');
                         }
 
-                        if (
-                            readonly &&
-                            this.get('displayChoicesWhenReadonly')
-                            ) {
+                    if (readonly && this.get('displayChoicesWhenReadonly')) {
                             //CB.one("select").addClass("hidden");
                             input = CB.one('.wegas-input-text');
                             input.all('ul').each(function(ul) {
@@ -795,14 +766,8 @@ YUI.add('wegas-text-input', function(Y) {
                             select = ['<ul>'];
                             for (i in allowedValues) {
                                 option = allowedValues[i];
-                                select.push(
-                                    '<li class="',
-                                    (value === option
-                                        ? 'selected'
-                                        : 'unselected') + '">',
-                                    option,
-                                    '</li>'
-                                    );
+                            select.push('<li class="', (value === option.get("name") ? 'selected' : 'unselected') + '">',
+                                I18n.t(option.get("label")), '</li>');
                             }
                             select.push('</ul>');
                             input.append(select.join(''));
@@ -823,15 +788,13 @@ YUI.add('wegas-text-input', function(Y) {
                         }
                         var maxReached = values.length >= this.get("numSelectable");
 
-                        select.toggleClass("maximumReached", maxReached);
+                    select.toggleClass("maximumReached", maxReached && this.get("numSelectable") !== 1);
 
                         /*if (!Y.Lang.isArray(values)) {
                          values = [values];
                          }*/
                         for (i in values) {
-                            select
-                                .all('li[data-value="' + values[i] + '"]')
-                                .addClass('selected');
+                        select.all('li[data-value="' + values[i] + '"]').addClass('selected');
                         }
 
                         //} else {
@@ -868,7 +831,7 @@ YUI.add('wegas-text-input', function(Y) {
                 }
                 ul = this.get(CONTENTBOX).one('ul');
                 if (ul) {
-                    this.handlers.push(this.get(CONTENTBOX).delegate( 'click',
+                this.handlers.push(this.get(CONTENTBOX).delegate('click',
                         this.updateFromUl, 'li', this));
                 }
                 this.on('save', this._save);
@@ -907,8 +870,7 @@ YUI.add('wegas-text-input', function(Y) {
                     this.updateValue(value);
                 }
             }
-        },
-        {
+    }, {
             /** @lends Y.Wegas.StringInput */
             EDITORNAME: 'StringInput',
             ATTRS: {
@@ -980,14 +942,22 @@ YUI.add('wegas-text-input', function(Y) {
                     view: {label: 'Number of selectable'}
                 },
                 readonly: {
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    value:{"@class":"Script", content:"return false"},
-                    type: "object",
+                type: ["null", "object"],
                     index: 100,
-                    required: true,
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                value: {
+                    "@class": "Script",
+                    "content": "false;"
+                },
+                properties: {
+                    "@class": {type: "string", value: "Script"},
+                    content: {
+                        type: "string"
+                    }
+                },
                     view: {
-                        label: 'Read only',
-                        type: 'scriptcondition'
+                    type: 'scriptcondition',
+                    label: 'Readonly'
                     }
                 },
                 label: {
@@ -996,7 +966,6 @@ YUI.add('wegas-text-input', function(Y) {
                     view: {label: 'Label'}
                 }
             }
-        }
-    );
+    });
     Wegas.StringInput = StringInput;
 });

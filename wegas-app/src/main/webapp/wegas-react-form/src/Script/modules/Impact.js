@@ -8,16 +8,16 @@ import { css } from 'glamor';
 import { schema as variableSchema, varExist } from './Variable';
 // import ArgForm from './ArgForm';
 import {
-    methodSchema,
+methodSchema,
     genChoices,
     extractMethod,
     buildMethod,
     methodDescriptor,
     handleArgs,
 } from './method';
-import { updateArgSchema, matchSchema } from './args';
+import { updateArgSchema, matchSchema, valueToAST} from './args';
 import {
-    genChoices as genGlobalChoices,
+genChoices as genGlobalChoices,
     methodDescriptor as globalMethodDescriptor,
     handleArgs as globalHandleArgs,
 } from './globalMethod';
@@ -47,8 +47,8 @@ const upgradeSchema = (varSchema, methodType = 'getter') => {
     return ret;
 };
 function getState(node, method, type) {
-    const { global, method: m, member, variable, args } = extractMethod(node);
-    return {
+    const {global, method: m, member, variable, args} = extractMethod(node);
+    let state = {
         global,
         variable,
         method: m,
@@ -56,6 +56,25 @@ function getState(node, method, type) {
         args,
         methodSchem: methodSchema(method, variable, type),
     };
+
+    // assert attrs
+    if (state.method) {
+        const argSchema = state.global ?
+            globalMethodDescriptor(state.member, state.method)
+            : methodDescriptor(state.variable, state.method);
+
+        if (argSchema.arguments.length === state.args.length) {
+            argSchema.arguments.forEach((argDesc, i) => {
+                if (argDesc.preProcessAST && args[i]) {
+                    state.args[i] = argDesc.preProcessAST(argDesc, state.args[i], {
+                        valueToAST: valueToAST
+                    });
+                }
+            });
+        }
+    }
+
+    return state;
 }
 /**
  * Update args inside state. return a new state.
@@ -73,7 +92,7 @@ function updateArgs(state) {
             ),
         };
     }
-    return { ...state, args: [] };
+    return {...state, args: []};
 }
 /**
  * handles method call on VariableDescriptor
@@ -96,17 +115,17 @@ class Impact extends React.Component {
             : methodDescriptor(this.state.variable, this.state.method);
         if (schema) {
             const argsDescr = schema.arguments;
-            if (this.state.args.length > argsDescr.length) {
+            if (this.state.args.length !== argsDescr.length) {
                 // What to do with those additional args
-                throw Error('Too much args');
+                throw Error('Wrong number of arguments');
             }
             this.state.args.forEach((a, i) => {
                 if (!matchSchema(a, argsDescr[i])) {
                     throw Error(
                         `Unexpected arg [${i}]. Value ( ${
-                            print(a).code
+                        print(a).code
                         } ) does not match type '${argsDescr[i].type}'`
-                    );
+                        );
                 }
             });
         }
@@ -122,7 +141,7 @@ class Impact extends React.Component {
                     this.state.args,
                     (val, oth, key) => (key === 'loc' ? true : undefined)
                 ))
-        ) {
+            ) {
             this.props.onChange(buildMethod(this.state, this.props.type));
         }
     }
@@ -136,13 +155,13 @@ class Impact extends React.Component {
                     !globalMethodDescriptor(
                         this.state.member,
                         this.state.method
-                    )
-                ) {
+                        )
+                    ) {
                     throw Error(
                         `Global function '${this.state.member}.${
-                            this.state.method
+                        this.state.method
                         }' not found`
-                    );
+                        );
                 }
             }
             if (this.state.variable && !varExist(this.state.variable)) {
@@ -171,7 +190,7 @@ class Impact extends React.Component {
                     props.view.method,
                     v,
                     props.type
-                );
+                    );
                 return updateArgs({
                     ...prevState,
                     global: false,
@@ -183,27 +202,27 @@ class Impact extends React.Component {
                         !methodSchem.view.choices.some(
                             c => c.value === prevState.method
                         )
-                            ? undefined
-                            : prevState.method,
+                        ? undefined
+                        : prevState.method,
                     member: undefined,
                 });
             });
         }
     }
     render() {
-        const { view, type } = this.props;
+        const {view, type} = this.props;
         this.checkHandled();
         let child = [
             <div key="variable" className={containerStyle}>
                 <Form
                     schema={upgradeSchema(variableSchema(view.variable), type)}
                     value={
-                        this.state.global
-                            ? `${this.state.member}.${this.state.method}`
-                            : this.state.variable
+                this.state.global
+                    ? `${this.state.member}.${this.state.method}`
+                    : this.state.variable
                     }
                     onChange={this.handleVariableChange}
-                />
+                    />
             </div>,
         ];
         if (this.state.variable) {
@@ -215,109 +234,109 @@ class Impact extends React.Component {
                             schema={schema}
                             value={this.state.method}
                             onChange={v =>
-                                this.setState(prevState =>
-                                    updateArgs({
-                                        ...prevState,
-                                        method: v,
-                                    })
-                                )
+                            this.setState(prevState =>
+                                updateArgs({
+                                    ...prevState,
+                                    method: v,
+                                                                                                                                                            })
+                            )
                             }
-                        />
+                            />
                     </div>
-                );
+                    );
+                }
+            }
+            if (this.state.method && this.state.variable) {
+                const {variable, method, args} = this.state;
+                // const methodDesc = methodDescriptor(variable, method);
+                // const argsDescr = (methodDesc && methodDesc.arguments) || [];
+                child = child.concat(
+                    handleArgs(variable, method, args, v => {
+                        this.setState(() => ({args: v}));
+                    })
+                    );
+            }
+            if (this.state.member && this.state.method) {
+                const {member, method, args} = this.state;
+
+                child = child.concat(
+                    globalHandleArgs(member, method, args, v =>
+                        this.setState(() => ({args: v}))
+                    )
+                    );
+            }
+            return <span>{child}</span>;
+        }
+    }
+    Impact.propTypes = {
+        node: PropTypes.object,
+        onChange: PropTypes.func.isRequired,
+        view: PropTypes.object,
+        type: PropTypes.oneOf(['getter', 'condition']),
+    };
+    Impact.defaultProps = {
+        node: undefined,
+        view: {},
+        type: 'getter',
+    };
+// eslint-disable-next-line
+    export class ErrorCatcher extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {error: undefined};
+            this.handleErrorBlur = this.handleErrorBlur.bind(this);
+        }
+        componentWillReceiveProps() {
+            this.setState(() => ({error: undefined}));
+        }
+        handleErrorBlur(target, editor) {
+            const val = editor.getValue();
+            try {
+                const body =
+                    parse(val).program.body[0] || types.builders.emptyStatement();
+                this.props.onChange(body);
+            } catch (e) {
+                // do nothing
             }
         }
-        if (this.state.method && this.state.variable) {
-            const { variable, method, args } = this.state;
-            // const methodDesc = methodDescriptor(variable, method);
-            // const argsDescr = (methodDesc && methodDesc.arguments) || [];
-            child = child.concat(
-                handleArgs(variable, method, args, v => {
-                    this.setState(() => ({ args: v }));
-                })
-            );
+        componentDidCatch(error, info) {
+            this.setState(() => ({
+                    hasErrored: true,
+                    error,
+                    info,
+                }));
         }
-        if (this.state.member && this.state.method) {
-            const { member, method, args } = this.state;
+        render() {
+            const {node, children} = this.props;
 
-            child = child.concat(
-                globalHandleArgs(member, method, args, v =>
-                    this.setState(() => ({ args: v }))
-                )
+            if (this.state.error) {
+                return (
+                    <div>
+                        <JSEditor
+                            value={print(node).code}
+                            maxLines={5}
+                            onBlur={this.handleErrorBlur}
+                            />
+                        <div className={errorStyle}>{this.state.error.message}</div>
+                    </div>
+                    );
+            }
+            return children;
+        }
+    }
+    ErrorCatcher.propTypes = {
+        node: PropTypes.object,
+        children: PropTypes.element,
+        onChange: PropTypes.func.isRequired,
+    };
+    export default function SecuredImpact(props) {
+        return (
+            <ErrorCatcher node={props.node} onChange={props.onChange}>
+                <Impact {...props} />
+            </ErrorCatcher>
             );
-        }
-        return <span>{child}</span>;
     }
-}
-Impact.propTypes = {
-    node: PropTypes.object,
-    onChange: PropTypes.func.isRequired,
-    view: PropTypes.object,
-    type: PropTypes.oneOf(['getter', 'condition']),
-};
-Impact.defaultProps = {
-    node: undefined,
-    view: {},
-    type: 'getter',
-};
-// eslint-disable-next-line
-export class ErrorCatcher extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { error: undefined };
-        this.handleErrorBlur = this.handleErrorBlur.bind(this);
-    }
-    componentWillReceiveProps() {
-        this.setState(() => ({ error: undefined }));
-    }
-    handleErrorBlur(target, editor) {
-        const val = editor.getValue();
-        try {
-            const body =
-                parse(val).program.body[0] || types.builders.emptyStatement();
-            this.props.onChange(body);
-        } catch (e) {
-            // do nothing
-        }
-    }
-    componentDidCatch(error, info) {
-        this.setState(() => ({
-            hasErrored: true,
-            error,
-            info,
-        }));
-    }
-    render() {
-        const { node, children } = this.props;
-
-        if (this.state.error) {
-            return (
-                <div>
-                    <JSEditor
-                        value={print(node).code}
-                        maxLines={5}
-                        onBlur={this.handleErrorBlur}
-                    />
-                    <div className={errorStyle}>{this.state.error.message}</div>
-                </div>
-            );
-        }
-        return children;
-    }
-}
-ErrorCatcher.propTypes = {
-    node: PropTypes.object,
-    children: PropTypes.element,
-    onChange: PropTypes.func.isRequired,
-};
-export default function SecuredImpact(props) {
-    return (
-        <ErrorCatcher node={props.node} onChange={props.onChange}>
-            <Impact {...props} />
-        </ErrorCatcher>
-    );
-}
-SecuredImpact.propTypes = {
-    node: PropTypes.object,
-    onChange: PropTypes.func.isRequired,
-};
+    SecuredImpact.propTypes = {
+        node: PropTypes.object,
+        onChange: PropTypes.func.isRequired,
+    };

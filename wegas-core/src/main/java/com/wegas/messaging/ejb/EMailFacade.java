@@ -110,6 +110,6 @@ public class EMailFacade {
      */
     public void send(Player p, Message msg) throws MessagingException {
 
-        this.send(p, "noreply@" + Helper.getWegasProperty("mail.default_domain"), msg.getSubject(), msg.getBody());
+        this.send(p, "noreply@" + Helper.getWegasProperty("mail.default_domain"), msg.getSubject().translateOrEmpty(p), msg.getBody().translateOrEmpty(p));
     }
 }

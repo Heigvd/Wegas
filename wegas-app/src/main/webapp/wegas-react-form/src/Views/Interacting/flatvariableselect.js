@@ -26,7 +26,7 @@ function genChoices(items, level, maxLevel, classFilter, selectable) {
                 );
                 if (newItems.length > 0 || enableFolder) {
                     ret.push({
-                        label: genSpaces(level) + i.get('label'),
+                        label: genSpaces(level) + i.getEditorLabel(),
                         value: i.get('name'),
                         children: newItems,
                         disabled:
@@ -40,7 +40,7 @@ function genChoices(items, level, maxLevel, classFilter, selectable) {
                 classFilter.indexOf(i.get('@class')) !== -1
             ) {
                 ret.push({
-                    label: genSpaces(level) + i.get('label'),
+                    label: genSpaces(level) + i.getEditorLabel(),
                     value: i.get('name'),
                     disabled: selectable && selectable.indexOf(level) === -1,
                 });

@@ -92,16 +92,16 @@ public class UIResult extends UIComponentBase {
         // For editors and players who selected this
         if (editorMode || hasBeenSelected) {
             String title;
-            if (result.getChoiceDescriptor().getTitle() != null && !result.getChoiceDescriptor().getTitle().trim().isEmpty()){
-                title = result.getChoiceDescriptor().getTitle();
+            if (result.getChoiceDescriptor().getLabel() != null && !result.getChoiceDescriptor().getLabel().translateOrEmpty(player).trim().isEmpty()) {
+                title = result.getChoiceDescriptor().getLabel().translateOrEmpty(player);
             } else {
                 title = UIHelper.TEXT_IMPACT_TEXT;
             }
-            
+
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE);
 
-            UIHelper.printTextArea(context, writer, result.getAnswer(), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
+            UIHelper.printTextArea(context, writer, result.getAnswer().translateOrEmpty(player), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
             UIHelper.endDiv(writer);
             //UIHelper.printPropertyTextArea(context, writer, title, result.getAnswer(), false, editorMode);
         }
