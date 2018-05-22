@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -83,10 +85,13 @@ YUI.add('wegas-template', function(Y) {
 
                 if (desc) {
                     if (desc instanceof Y.Wegas.persistence.VariableInstance) {
-                        data.value = this.undefinedToEmpty(desc.get('value'));
-                        desc = Y.Wegas.Facade.Variable.cache.findById(
-                            desc.get('descriptorId')
-                            );
+                        if (desc.get("trValue")) {
+                            data.value = this.undefinedToEmpty(I18n.t(desc.get('trValue')));
+                        } else {
+                            data.value = this.undefinedToEmpty(desc.get('value'));
+                        }
+
+                        desc = Y.Wegas.Facade.Variable.cache.findById(desc.get('descriptorId'));
                     } else {
                         data.value = undefined;
                     }
@@ -102,9 +107,13 @@ YUI.add('wegas-template', function(Y) {
                             )();
                     }
                     if (data.value === undefined) {
-                        data.value = this.undefinedToEmpty(
-                            desc.getInstance().get('value')
-                            );
+                        if (desc.getInstance().get("trValue")) {
+                            data.value = this.undefinedToEmpty(I18n.t(desc.getInstance().get('trValue')));
+                        } else {
+                            data.value = this.undefinedToEmpty(
+                                desc.getInstance().get('value')
+                                );
+                        }
                     }
                     data.maxValue = this.undefinedToEmpty(desc.get('maxValue'));
                     data.minValue = this.undefinedToEmpty(desc.get('minValue'));

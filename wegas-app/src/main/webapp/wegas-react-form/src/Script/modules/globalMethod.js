@@ -133,3 +133,7 @@ export function register(type, methodsObject) {
         ...methodsObject
     };
 }
+
+export function getGlobals(type){
+    return IMPACT[type];
+    };

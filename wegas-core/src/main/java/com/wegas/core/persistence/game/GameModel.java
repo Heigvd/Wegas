@@ -15,6 +15,7 @@ import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -82,6 +83,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
     private String name;
 
+    @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<GameModelLanguage> languages = new ArrayList<>();
+
     /**
      *
      */
@@ -94,7 +98,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      */
     @Enumerated(value = EnumType.STRING)
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
@@ -303,6 +306,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
             this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
             this.setComments(other.getComments());
             this.getProperties().merge(other.getProperties());
+            //this.setLanguages(ListUtils.mergeLists(this.getLanguages(), other.getLanguages())); // Note For Modeler-> not in default merge
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + n.getClass().getSimpleName() + ") is not possible");
         }
@@ -562,6 +566,35 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * Return a test player.
+     * It may be a player in any team of a DebugGame or a player in a DebugTeam
+     *
+     * @return testPlayer
+     */
+    @JsonIgnore
+    public Player findTestPlayer() {
+        Player p = null;
+        for (Game game : this.getGames()) {
+            if (game instanceof DebugGame) {
+                p = game.getAnyLivePlayer();
+                if (p != null) {
+                    return p;
+                }
+            } else {
+                for (Team team : game.getTeams()) {
+                    if (team instanceof DebugTeam) {
+                        p = team.getAnyLivePlayer();
+                        if (p != null) {
+                            return p;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return the createdTime
      */
     public Date getCreatedTime() {
@@ -761,7 +794,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         if (this.pages != null) {
             try (final Pages pagesDAO = new Pages(this.id)) {
                 pagesDAO.delete();                                              // Remove existing pages
-                // Pay Attention: this.pages != this.getPages() ! 
+                // Pay Attention: this.pages != this.getPages() !
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
                 for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
@@ -827,6 +860,108 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     public void setCreatedByName(String createdByName) {
         // Here so game deserialization works
+    }
+
+    @JsonIgnore
+    public List<GameModelLanguage> getRawLanguages() {
+        return this.languages;
+    }
+
+    public List<GameModelLanguage> getLanguages() {
+        return Helper.copyAndSort(this.languages, new EntityComparators.OrderComparator<>());
+    }
+
+    public void setLanguages(List<GameModelLanguage> languages) {
+        this.languages = languages;
+        int i = 0;
+        for (GameModelLanguage lang : this.languages) {
+            lang.setIndexOrder(i++);
+            lang.setGameModel(this);
+        }
+    }
+
+    /**
+     *
+     * @param code
+     *
+     * @return
+     */
+    public GameModelLanguage getLanguageByCode(String code) {
+        if (code != null) {
+            for (GameModelLanguage lang : this.getLanguages()) {
+                if (code.equals(lang.getCode())){
+                    return lang;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * get list of language refName, sorted according to player preferences if such a player is provided;
+     *
+     * @param player may be null
+     *
+     * @return list
+     */
+    public List<String> getPreferredLanguagesRefName(Player player) {
+        List<GameModelLanguage> sortedLanguages = getLanguages();
+        ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
+
+        for (GameModelLanguage gml : sortedLanguages) {
+            if (player != null && gml.getRefName().equals(player.getRefName())) {
+                langs.add(0, gml.getRefName());
+            } else {
+                langs.add(gml.getRefName());
+            }
+        }
+
+        return langs;
+    }
+
+    /**
+     * get list of language code, the given one first
+     *
+     *
+     * @param preferredRefName preferred refName, may be null or empty
+     *
+     * @return list
+     */
+    public List<String> getPreferredLanguagesCode(String preferredRefName) {
+        List<GameModelLanguage> sortedLanguages = getLanguages();
+        ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
+
+        for (GameModelLanguage gml : sortedLanguages) {
+            if (gml.getRefName().equals(preferredRefName)) {
+                langs.add(0, gml.getCode());
+            } else {
+                langs.add(gml.getCode());
+            }
+        }
+
+        return langs;
+    }
+
+    /**
+     * get list of language refName, the given one first
+     *
+     *
+     * @param preferredRefName preferred refName, may be null or empty
+     *
+     * @return list
+     */
+    public List<String> getPreferredLanguagesRefName(String preferredRefName) {
+        List<GameModelLanguage> sortedLanguages = getLanguages();
+        ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
+        for (GameModelLanguage gml : sortedLanguages) {
+            if (gml.getRefName().equals(preferredRefName)) {
+                langs.add(0, gml.getRefName());
+            } else {
+                langs.add(gml.getRefName());
+            }
+        }
+
+        return langs;
     }
 
     /**

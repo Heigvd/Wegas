@@ -9,8 +9,11 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -18,13 +21,11 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
-import javax.persistence.Basic;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Index;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -66,7 +67,8 @@ import javax.validation.constraints.NotNull;
         indexes = {
             @Index(columnList = "fbcomments_id"),
             @Index(columnList = "toreview_id"),
-            @Index(columnList = "feedback_id")
+            @Index(columnList = "feedback_id"),
+            @Index(columnList = "description_id")
         }
 )
 public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance> {
@@ -133,9 +135,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     private Integer maxNumberOfReviewer;
 
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent description;
 
     /**
      * List of evaluations that compose one feedback. Here, en empty list does
@@ -166,15 +168,15 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             super.merge(a);
 
             this.setMaxNumberOfReview(other.getMaxNumberOfReview());
-            this.setDescription(other.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
             this.setToReview(other.getToReview());
             this.setToReviewName(other.getToReviewName());
             this.getFeedback().merge(other.getFeedback());
             this.getFbComments().merge(other.getFbComments());
             this.setIncludeEvicted(other.getIncludeEvicted());
 
-            Helper.setNamesAndLabelForEvaluationList(this.getFeedback().getEvaluations());
-            Helper.setNamesAndLabelForEvaluationList(this.getFbComments().getEvaluations());
+            Helper.setNameAndLabelForLabelledEntityList(this.getFeedback().getEvaluations(), "input", this.getGameModel());
+            Helper.setNameAndLabelForLabelledEntityList(this.getFbComments().getEvaluations(), "input", this.getGameModel());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -246,22 +248,25 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         if (maxNumberOfReviewer >= 0) {
             this.maxNumberOfReviewer = maxNumberOfReviewer;
         } else {
-            this.maxNumberOfReviewer = 1; // TODO throw error ? 
+            this.maxNumberOfReviewer = 1; // TODO throw error ?
         }
     }
 
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**
@@ -334,7 +339,16 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     }
 
     @Override
+    public Boolean containsAll(List<String> criterias) {
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
+                || this.getFeedback().containsAll(criterias)
+                || this.getFbComments().containsAll(criterias)
+                || super.containsAll(criterias);
+    }
+
+    @Override
     public void revive(Beanjection beans) {
+        super.revive(beans);
         beans.getReviewingFacade().revivePeerReviewDescriptor(this);
     }
 }

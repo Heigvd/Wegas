@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -40,10 +41,12 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         login(scenarist);
         TextDescriptor text = new TextDescriptor();
         text.setName("testText");
-        text.setLabel("testLabel");
+        text.setLabel(TranslatableContent.build("def", "testLabel"));
         text.setTitle("testTitle");
         text.setComments("testComments");
-        text.setDefaultInstance(new TextInstance("instance value"));
+        TextInstance textInstance = new TextInstance();
+        textInstance.setTrValue(TranslatableContent.build("def", "instance value"));
+        text.setDefaultInstance(textInstance);
         variableDescriptorFacade.create(gameModel.getId(), text);
         Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testTex").contains(text.getId()));
 
@@ -81,12 +84,12 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         System.out.println("MCQ");
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
-        question.setDescription("Find me");
+        question.setDescription(TranslatableContent.build("en", "Find me"));
         variableDescriptorFacade.create(gameModel.getId(), question);
 
         ChoiceDescriptor choice = new ChoiceDescriptor();
         choice.setDefaultInstance(new ChoiceInstance());
-        choice.setDescription("Find me");
+        choice.setDescription(TranslatableContent.build("def", "Find me"));
         Result r = new Result("Reply 1");
         choice.addResult(r);
         Result r2 = new Result("Reply 2");

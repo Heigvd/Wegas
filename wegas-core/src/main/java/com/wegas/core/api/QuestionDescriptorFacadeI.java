@@ -9,9 +9,13 @@ package com.wegas.core.api;
 
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade.ReplyValidate;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade.WhValidate;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
+import com.wegas.messaging.persistence.Message;
+import jdk.nashorn.api.scripting.JSObject;
 
 /**
  *
@@ -145,5 +149,30 @@ public interface QuestionDescriptorFacadeI {
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
     void validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException;
+
+    /**
+     * According to whValidate event, create a message to be send to an inbox
+     *
+     * @param self       message recipient
+     * @param whValidate open question event
+     * @param i18n       the JS i18n object
+     *
+     * @return a message which summarise the answer
+     */
+    Message buildWhValidateMessage(Player self, WhValidate whValidate, JSObject i18n);
+
+    /**
+     * According to ReplyValidate event, create a message to be send to an inbox
+     *
+     * @param self          message recipient
+     * @param replyValidate QuestionDescription replyValidate event
+     * @param config        key/value object which may contains: <ul>
+     * <li>includeHistory :boolean </li>
+     * </ul>
+     * @param i18n          the JS i18n object
+     *
+     * @return a message which summarise the answer
+     */
+    Message buildReplyValidateMessage(Player self, ReplyValidate replyValidate, JSObject i18n, JSObject config);
 
 }

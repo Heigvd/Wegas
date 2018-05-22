@@ -98,8 +98,8 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
 
         CategorizedEvaluationDescriptor cEvalD = new CategorizedEvaluationDescriptor();
         cEvalD.setName("cEvalD");
-        cEvalD.addCategory("weak");
-        cEvalD.addCategory("strong");
+        cEvalD.addEnumItem("weak");
+        cEvalD.addEnumItem("strong");
         fEvaluations.add(cEvalD);
 
         feedback.setEvaluations(fEvaluations);

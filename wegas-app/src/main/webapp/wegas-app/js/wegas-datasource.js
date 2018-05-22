@@ -404,7 +404,6 @@ YUI.add('wegas-datasource', function(Y) {
                 if (toUpdate) { // No Update ? No-update...
                     if (!e.error) { // If there was an server error, do not update the cache
                         for (i = 0; i < response.length; i += 1) {
-                            // ICI
                             this.updateCache(e.cfg.method, response[i], collector);
                         }
                         return;
@@ -1219,6 +1218,23 @@ YUI.add('wegas-datasource', function(Y) {
         },
         getCurrentGameModel: function() {
             return this.findById(this.get('currentGameModelId'));
+        },
+        /**
+         * hack to forward VariableInstances and VariableDescriptors to the correct cache
+         * @param {type} method
+         * @param {type} entity
+         * @param {type} eventsCollector
+         * @returns {Boolean}
+         */
+        updateCache: function(method, entity, eventsCollector) {
+            if (entity instanceof Wegas.persistence.GameModel) {
+                return GameModelCache.superclass.updateCache.apply(this, arguments);
+            } else if (entity instanceof Wegas.persistence.VariableInstance) {
+                return Y.Wegas.Facade.Instance.cache.updateCache(method, entity, eventsCollector);
+            } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
+                return Y.Wegas.Facade.Variable.cache.updateCache(method, entity, eventsCollector);
+            }
+            return false;
         }
     }, {
         NS: "cache",

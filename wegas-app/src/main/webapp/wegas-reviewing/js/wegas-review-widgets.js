@@ -104,7 +104,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                     //}).render(this.get(CONTENTBOX));
             }).render(this.get(CONTENTBOX).one(".refresh"));
 
-            this.get("contentBox").one(".header h2").setContent(I18n.t("review.orchestrator.mainTitle", {variableName: prd.get("label")}));
+            this.get("contentBox").one(".header h2").setContent(I18n.t("review.orchestrator.mainTitle", {variableName: I18n.t(prd.get("label"))}));
 
             this.request = "ReviewHelper.summarize('" + prd.get("name") + "');";
         },
@@ -533,7 +533,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             data = {
                 labels: [],
                 series: [{
-                        "name": descriptor.get("label"),
+                        "name": I18n.t(descriptor.get("label")),
                         data: []
                     }]
             };
@@ -571,7 +571,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             data = {
                 labels: [],
                 series: [{
-                        "name": descriptor.get("label"),
+                        "name": I18n.t(descriptor.get("label")),
                         data: []
                     }]
             };
@@ -586,7 +586,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             };
 
             for (key in summary.histogram) {
-                data.labels.push(key);
+                data.labels.push(descriptor.getLabelForName(key));
                 data.series[0].data.push(summary.histogram[key]);
             }
             this.chart = new Chartist.Bar(klass, data, options);
@@ -609,7 +609,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 data = summary[evD.get("id")].get("val");
                 if (evD.get("@class") === "GradeDescriptor") {
                     this.createGradeChart("." + klass + " .chart", data, evD, maxY);
-                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("label") + "</h3>");
+                    node.one("." + klass + " .title").setContent("<h3>" + I18n.t(evD.get("label")) + "</h3>");
                     //node.one("." + klass + " .legend").append(math);
                     node.one("." + klass + " .legend").append("<p>" +
                         I18n.t("review.orchestrator.stats.mean") + ": " + this._formatNumber(data.mean) +
@@ -621,11 +621,11 @@ YUI.add("wegas-review-widgets", function(Y) {
                     node.one("." + klass + " .legend").append("<p>" + I18n.t("review.orchestrator.stats.basedOn", {available: data.numberOfValues || 0, expected: summary.maxNumberOfValue}) + "</p>");
                 } else if (evD.get("@class") === "CategorizedEvaluationDescriptor") {
                     this.createCategoryChart("." + klass + " .chart", summary[evD.get("id")].get("val"), evD, maxY);
-                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("label") + "</h3>");
+                    node.one("." + klass + " .title").setContent("<h3>" + I18n.t(evD.get("label")) + "</h3>");
 
                     node.one("." + klass + " .legend").append("<p>" + I18n.t("review.orchestrator.stats.basedOn", {available: data.numberOfValues || 0, expected: summary.maxNumberOfValue}) + "</p>");
                 } else if (evD.get("@class") === "TextEvaluationDescriptor") {
-                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("label") + "</h3>");
+                    node.one("." + klass + " .title").setContent("<h3>" + I18n.t(evD.get("label")) + "</h3>");
                     node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgWc") + ": " + (data.averageNumberOfWords ? I18n.formatNumber(data.averageNumberOfWords, 'fixed') : "n/a") + "</p>");
                     node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgCc") + ": " + (data.averageNumberOfCharacters ? I18n.formatNumber(data.averageNumberOfCharacters, 'fixed') : "n/a") + "</p>");
                     node.one("." + klass + " .legend").append("<p>" + I18n.t("review.orchestrator.stats.basedOn", {available: data.numberOfValues || 0, expected: summary.maxNumberOfValue}) + "</p>");
@@ -1085,8 +1085,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (data) {
                 switch (data.type) {
                     case "REVIEW":
-                        this.renderReviewWidget(data.review, e.target.get("label"),
-                            data.reviewer);
+                        this.renderReviewWidget(data.review, e.target.get("label"), data.reviewer);
                         break;
                     default:
                         Y.later(0, this, function() {
@@ -1533,8 +1532,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"),
                 CB = this.get("contentBox"), min, max;
             this.evId = ev.get("id");
-            CB.one(".wegas-review-evaluation-label").setContent(desc.get("label"));
-            CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
+            CB.one(".wegas-review-evaluation-label").setContent(I18n.t(desc.get("label")));
+            CB.one(".wegas-review-evaluation-desc").setContent(I18n.t(desc.get("description")));
 
             if (!this.get("readonly")) {
                 //this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", ev.get("value"));
@@ -1695,8 +1694,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"),
                 CB = this.get("contentBox");
 
-            CB.one(".wegas-review-evaluation-label").setContent(desc.get("label"));
-            CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
+            CB.one(".wegas-review-evaluation-label").setContent(I18n.t(desc.get("label")));
+            CB.one(".wegas-review-evaluation-desc").setContent(I18n.t(desc.get("description")));
             this._initialContent = ev.get("value");
 
             if (this.get("readonly.evaluated") && !this._initialContent) {
@@ -1742,7 +1741,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 Y.later(100, this, function() {
                     var content = this.getInitialContent();
                     this.currentValue = content;
-                    this.editor.setContent(content);
+                    this.editor && this.editor.setContent(content);
                     /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
                      if (tmceI) {
                      tmceI.setContent(this.getInitialContent());
@@ -1799,8 +1798,8 @@ YUI.add("wegas-review-widgets", function(Y) {
         renderUI: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"), categs, i,
                 categ, frag, CB = this.get("contentBox");
-            CB.one(".wegas-review-evaluation-label").setContent(desc.get("label") + ": ");
-            CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
+            CB.one(".wegas-review-evaluation-label").setContent(I18n.t(desc.get("label")));
+            CB.one(".wegas-review-evaluation-desc").setContent(I18n.t(desc.get("description")));
 
             if (!this.get("readonly")) {
                 frag = ['<select>'];
@@ -1809,9 +1808,9 @@ YUI.add("wegas-review-widgets", function(Y) {
                 for (i in categs) {
                     if (categs.hasOwnProperty(i)) {
                         categ = categs[i];
-                        frag.push("<option value=\"" + encodeURIComponent(categ) + "\" " +
+                        frag.push("<option value=\"" + encodeURIComponent(categ.get("name")) + "\" " +
                             (categ === ev.get("value") ? "selected=''" : "") +
-                            ">" + categ + "</option>");
+                            ">" + I18n.t(categ.get("label")) + "</option>");
                     }
                 }
                 frag.push('</select>');
@@ -1838,6 +1837,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             evl = this.get("evaluation");
             value = evl.get("value");
             if (this.get("readonly")) {
+                value = this.get("evaluation").get("descriptor").getLabelForName(value);
                 if (!value) {
                     value = "<i>" + I18n.t("review.editor.noValueProvided") + '</i>';
                 }

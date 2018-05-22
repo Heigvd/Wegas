@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -90,6 +92,7 @@ YUI.add('wegas-app', function(Y) {
                         }
                         this.plug(Y.Plugin.LockManager);
                         this.fire("preRender");
+                        I18n.setRefName(Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("refName"))
                         Y.later(10, this, function() { // Let the loading div update
                             this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
                                 .render(); // and render it

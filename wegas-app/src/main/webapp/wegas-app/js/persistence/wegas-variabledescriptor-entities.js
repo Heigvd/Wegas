@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -33,11 +35,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         VERSION_ATTR_DEF,
         IDATTRDEF,
         SELFARG;
-
     VERSION_ATTR_DEF = {
         type: NUMBER,
         optional: true,
-        index: -9,
+        index: -19,
         view: {
             type: 'uneditable',
             className: 'wegas-advanced-feature',
@@ -48,8 +49,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     };
     IDATTRDEF = {
         type: NUMBER,
-        optional: true, //                                                  // The id is optional for entites that
-        // have not been persisted
+        optional: true, // The id is optional for entites that have not been persisted
         view: {
             layout: 'shortInline',
             type: HIDDEN
@@ -61,7 +61,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         const: SELF,
         view: {type: HIDDEN}
     };
-
     AVAILABLE_TYPES = [
         {
             label: 'String',
@@ -199,7 +198,19 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
              * @returns {String}
              */
             getLabel: function() {
-                return this.get('label');
+                return I18n.t(this.get('label'));
+            },
+            getEditorLabel: function() {
+                var trLabel = this.getLabel();
+                if (!this.get("editorTag") && !trLabel) {
+                    return this.get("name");
+                } else if (!this.get("editorTag")) {
+                    return trLabel;
+                } else if (!trLabel) {
+                    return this.get("editorTag");
+                } else {
+                    return this.get("editorTag") + " - " + trLabel;
+                }
             },
             getIconCss: function() {
                 return (
@@ -260,27 +271,28 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         type: 'textarea',
                         className: 'wegas-comments',
                         borderTop: true,
-                        label: 'Comments'
+                        label: 'Comments',
                     }
                 },
-                label: {
-                    type: STRING,
-                    value: undefined,
-                    errored: function(v) {
-                        return v ? '' : 'is required';
-                    },
-                    index: -1,
-                    transient: false,
-                    getter: function(val) {
-                        return val || this.get(NAME);
-                    },
+                editorTag: {
+                    type: NULLSTRING,
+                    optional: false,
+                    value: "",
+                    index: -9,
                     view: {
-                        label: 'Name'
+                        label: "Tag",
+                        description: "Never displayed to players"
                     }
                 },
+                label: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Label",
+                    index: -8,
+                    description: "Displayed to players",
+                    type: STRING
+                }),
                 name: {
                     type: STRING,
-                    index: -1,
+                    index: -7,
                     view: {
                         className: 'wegas-advanced-feature',
                         label: 'Script alias',
@@ -299,6 +311,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     validator: function(o) {
                         return o instanceof persistence.Scope;
                     },
+                    index: -6,
                     view: {
                         className: 'wegas-advanced-feature'
                     },
@@ -332,7 +345,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             errored: function(val, formVal) {
                                 var errors = [],
                                     scope = formVal.scope;
-
                                 if (scope["@class"] === "TeamScope" && val === "PlayerScope" ||
                                     scope["@class"] === "GameModelScope" && (val === "PlayerScope" || val === "TeamScope")) {
                                     errors.push('Invalid combination');
@@ -601,6 +613,33 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         }
     );
+    persistence.EnumItem = Base.create('EnumItem', persistence.Entity, [], {
+        getEditorLabel: function() {
+            return I18n.t(this.get("label"));
+        }
+    }, {
+        ATTRS: {
+            name: {
+                type: STRING,
+                index: -1,
+                view: {
+                    className: 'wegas-advanced-feature',
+                    label: 'Script alias',
+                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+                },
+                validator: function(s) {
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                index: -1,
+                description: "Displayed to players",
+                type: STRING
+            })
+        }
+    });
     /**
      * StringDescriptor mapper
      */
@@ -609,6 +648,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         persistence.VariableDescriptor,
         [persistence.PrimitiveDescriptor],
         {
+            getLabelForAllowedValue: function(name) {
+                var cats = this.get("allowedValues"),
+                    i;
+                for (i in cats) {
+                    if (cats[i].get("name") === name) {
+                        return I18n.t(cats[i].get("label"));
+                    }
+                }
+            },
             getIconCss: function() {
                 return 'fa fa-font';
             }
@@ -618,26 +666,14 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 '@class': {
                     value: 'StringDescriptor'
                 },
-                title: {
-                    type: NULLSTRING,
-                    optional: true,
-                    value: "",
-                    index: -1,
-                    visible: function(val, formVal) {
-                        // hack: only show label when embedded within an WhQuestion
-                        var parent;
-                        if (formVal.id) {
-                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
-                            return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
-                        }
-                        return false;
-                    },
-                    view: {
-                        label: "Label",
-                        description: "Displayed to players"
-                    }
-                },
                 defaultInstance: {
+                    valueFn: function() {
+                        return {
+                            trValue: {
+                                translations: {}
+                            }
+                        };
+                    },
                     properties: {
                         '@class': {
                             type: STRING,
@@ -648,29 +684,45 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
-                        value: {
-                            type: STRING,
-                            optional: true,
-                            value: '',
-                            view: {
-                                label: 'Default value'
-                            }
-                        },
+                        trValue: Y.Wegas.Helper.getTranslationAttr({
+                            label: 'Default value',
+                            index: -1,
+                            type: STRING
+                        }),
                         descriptorId: IDATTRDEF
                     }
                 },
                 allowedValues: {
                     type: ARRAY,
                     items: {
-                        type: STRING,
-                        required: true
+                        type: "object",
+                        properties: {
+                            "@class": {
+                                type: STRING,
+                                value: "EnumItem",
+                                view: {type: HIDDEN}
+                            },
+                            id: IDATTRDEF,
+                            name: {
+                                type: STRING,
+                                view: {
+                                    className: 'wegas-advanced-feature',
+                                    label: 'Script alias',
+                                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                                    description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+                                }
+                            },
+                            label: Y.Wegas.Helper.getTranslationAttr({
+                                label: "Label",
+                                index: -1,
+                                description: "Displayed to players",
+                                type: STRING
+                            })
+                        }
                     },
                     view: {
                         label: 'Allowed Values',
-                        elementType: {
-                            required: true,
-                            type: 'string'
-                        }
+                        sortable: true
                     }
                 }
             },
@@ -679,12 +731,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     label: 'set',
                     arguments: [
                         SELFARG,
-                        {
-                            type: STRING,
-                            value: '',
-                            required: false,
-                            view: {layout: 'shortInline'}
-                        }
+                        Y.Wegas.Helper.getTranslationAttr({type: STRING})
                     ]
                 },
                 getValue: {
@@ -692,7 +739,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     returns: STRING,
                     arguments: [SELFARG],
                     localEval: function(player) {
-                        return this.getInstance(player).get(VALUE);
+                        return I18n.t(this.getInstance(player).get("trValue"));
                     }
                 },
                 isValueSelected: {
@@ -701,21 +748,22 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             type: STRING,
                             view: {
                                 type: "entityarrayfieldselect",
-                                field: "allowedValues"
+                                field: "allowedValues",
+                                returnAttr: "name"
                             }
                         }]/*,
-                    localEval: function(player, v) {
-                        var value = this.getInstance(player).get(VALUE);
-                        if (value && value.indexOf("[") === 0) {
-                            var values = JSON.parse(value);
-                            for (i in values){
-                                if (values[i] === v){
-                                    return true;
-                                }
-                            }
-                        }
-                        return v === value;
-                    }*/
+                         localEval: function(player, v) {
+                         var value = this.getInstance(player).get(VALUE);
+                         if (value && value.indexOf("[") === 0) {
+                         var values = JSON.parse(value);
+                         for (i in values){
+                         if (values[i] === v){
+                         return true;
+                         }
+                         }
+                         }
+                         return v === value;
+                         }*/
                 }
             }
         }
@@ -734,13 +782,31 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: 'StringInstance'
                 },
                 value: {
+                    type: "string",
+                    transient: true,
+                    getter: function() {
+                        return I18n.t(this.get("trValue"));
+                    },
+                    setter: function(newVal) {
+                        var newTr = {
+                            "@class": "TranslatableContent",
+                            translations: {
+                            }
+                        };
+                        newTr.translations[I18n._currentRefName || "def"] = newVal;
+                        this.set("trValue", newTr);
+                    }
+                },
+                trValue: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Value",
+                    index: -1,
                     type: STRING
-                }
+                })
             }
         }
     );
     /**
-     * StringDescriptor mapper
+     * TextDescriptor mapper
      */
     persistence.TextDescriptor = Base.create(
         'TextDescriptor',
@@ -756,26 +822,14 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 '@class': {
                     value: 'TextDescriptor'
                 },
-                title: {
-                    type: NULLSTRING,
-                    optional: true,
-                    value: "",
-                    index: -1,
-                    visible: function(val, formVal) {
-                        // hack: only show label when embedded within an WhQuestion
-                        var parent;
-                        if (formVal.id) {
-                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
-                            return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
-                        }
-                        return false;
-                    },
-                    view: {
-                        label: "Label",
-                        description: "Displayed to players"
-                    }
-                },
                 defaultInstance: {
+                    valueFn: function() {
+                        return {
+                            trValue: {
+                                translations: {}
+                            }
+                        };
+                    },
                     properties: {
                         '@class': {
                             type: STRING,
@@ -787,14 +841,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
                         descriptorId: IDATTRDEF,
-                        value: {
-                            type: STRING,
-                            value: '',
-                            view: {
-                                label: 'Default value',
-                                type: HTML
-                            }
-                        }
+                        trValue: Y.Wegas.Helper.getTranslationAttr({
+                            label: 'Default value',
+                            index: -1,
+                            type: HTML
+                        })
                     }
                 }
             },
@@ -804,12 +855,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     className: 'wegas-method-returnline',
                     arguments: [
                         SELFARG,
-                        {
-                            type: STRING,
-                            value: '',
-                            required: true,
-                            view: {type: HTML}
-                        }
+                        Y.Wegas.Helper.getTranslationAttr({type: HTML})
                     ]
                 },
                 getValue: {
@@ -817,7 +863,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     returns: STRING,
                     arguments: [SELFARG],
                     localEval: function(player) {
-                        return this.getInstance(player).get(VALUE);
+                        return I18n.t(this.getInstance(player).get("trValue"));
                     }
                 }
             }
@@ -837,213 +883,199 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: 'TextInstance'
                 },
                 value: {
-                    type: STRING,
-                    view: {
-                        type: HTML
+                    type: "string",
+                    transient: true,
+                    getter: function() {
+                        return I18n.t(this.get("trValue"));
+                    },
+                    setter: function(newVal) {
+                        var newTr = {
+                            "@class": "TranslatableContent",
+                            translations: {
+                            }
+                        };
+                        newTr.translations[I18n._currentRefName || "def"] = newVal;
+                        this.set("trValue", newTr);
                     }
-                }
+                },
+                trValue: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Value",
+                    index: -1,
+                    type: HTML
+                })
             }
         }
     );
     /**
      * NumberDescriptor mapper
      */
-    persistence.NumberDescriptor = Base.create(
-        'NumberDescriptor',
-        persistence.VariableDescriptor,
-        [persistence.PrimitiveDescriptor],
-        {
-            getMaxValue: function() {
-                return this.get('maxValue');
+    persistence.NumberDescriptor = Base.create('NumberDescriptor', persistence.VariableDescriptor,
+        [persistence.PrimitiveDescriptor], {
+        getMaxValue: function() {
+            return this.get('maxValue');
+        },
+        getMinValue: function() {
+            return this.get('minValue');
+        },
+        getIconCss: function() {
+            return 'fa wegas-icon-numberdescriptor';
+        }
+    }, {
+        ATTRS: {
+            '@class': {
+                value: 'NumberDescriptor'
             },
-            getMinValue: function() {
-                return this.get('minValue');
+            minValue: {
+                type: ['null', NUMBER],
+                optional: true,
+                errored: function(val, formVal) {
+                    var errors = [],
+                        max = typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity,
+                        min = typeof val === 'number' ? val : -Infinity;
+                    if (min > formVal.defaultInstance.value) {
+                        errors.push('Minimum is greater than default value');
+                    }
+                    if (min > max) {
+                        errors.push('Minimum is greater than maximum');
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Minimum',
+                    placeholder: "-∞",
+                    layout: 'shortInline'
+                }
             },
-            getIconCss: function() {
-                return 'fa wegas-icon-numberdescriptor';
+            maxValue: {
+                type: ['null', NUMBER],
+                optional: true,
+                errored: function(val, formVal) {
+                    var errors = [],
+                        max = typeof val === 'number' ? val : Infinity,
+                        min = typeof formVal.minValue === 'number' ? formVal.minValue : -Infinity;
+                    if (max < formVal.defaultInstance.value) {
+                        errors.push('Maximum is less than default value');
+                    }
+                    if (max < min) {
+                        errors.push('Maximum is less than minimum');
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Maximum',
+                    placeholder: "∞",
+                    layout: 'shortInline'
+                }
+            },
+            historySize: {
+                type: ['null', NUMBER],
+                value: 20,
+                optional: true,
+                view: {
+                    className: 'wegas-advanced-feature',
+                    label: 'Maximum history size'
+                }
+            },
+            value: {
+                transient: true,
+                getter: function() {
+                    if (this.getInstance()) {
+                        return this.getInstance().get(VALUE);
+                    } else {
+                        return null;
+                    }
+                }
+            },
+            defaultValue: {
+                type: STRING,
+                transient: true
+            },
+            defaultInstance: {
+                properties: {
+                    '@class': {
+                        type: STRING,
+                        value: 'NumberInstance',
+                        view: {
+                            type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
+                    value: {
+                        type: NUMBER,
+                        required: true,
+                        errored: function(val, formVal) {
+                            var errors = [],
+                                max = typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity,
+                                min = typeof formVal.minValue === 'number' ? formVal.minValue : -Infinity;
+                            if (val > max) {
+                                errors.push('Default value is greater than maximum');
+                            }
+                            if (val < min) {
+                                errors.push('Default value is less than minimum');
+                            }
+                            return errors.join(', ');
+                        },
+                        view: {
+                            label: 'Default value',
+                            layout: 'shortInline'
+                        }
+                    },
+                    history: {
+                        type: ARRAY,
+                        view: {
+                            className: 'wegas-advanced-feature',
+                            label: 'History'
+                        }
+                    }
+                }
             }
         },
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'NumberDescriptor'
-                },
-                minValue: {
-                    type: ['null', NUMBER],
-                    optional: true,
-                    errored: function(val, formVal) {
-                        var errors = [],
-                            max = typeof formVal.maxValue === 'number'
-                            ? formVal.maxValue
-                            : Infinity,
-                            min = typeof val === 'number' ? val : -Infinity;
-                        if (min > formVal.defaultInstance.value) {
-                            errors.push(
-                                'Minimum is greater than default value'
-                                );
-                        }
-                        if (min > max) {
-                            errors.push('Minimum is greater than maximum');
-                        }
-                        return errors.join(', ');
-                    },
-                    view: {
-                        label: 'Minimum',
-                        placeholder: "-∞",
-                        layout: 'shortInline'
-                    }
-                },
-                maxValue: {
-                    type: ['null', NUMBER],
-                    optional: true,
-                    errored: function(val, formVal) {
-                        var errors = [],
-                            max = typeof val === 'number' ? val : Infinity,
-                            min = typeof formVal.minValue === 'number'
-                            ? formVal.minValue
-                            : -Infinity;
-                        if (max < formVal.defaultInstance.value) {
-                            errors.push('Maximum is less than default value');
-                        }
-                        if (max < min) {
-                            errors.push('Maximum is less than minimum');
-                        }
-                        return errors.join(', ');
-                    },
-                    view: {
-                        label: 'Maximum',
-                        placeholder: "∞",
-                        layout: 'shortInline'
-                    }
-                },
-                title: {
-                    type: NULLSTRING,
-                    optional: true,
-                    value: "",
-                    index: -1,
-                    visible: function(val, formVal) {
-                        // hack: only show label when embedded within an WhQuestion
-                        var parent;
-                        if (formVal.id) {
-                            parent = Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent();
-                            return Y.Wegas.persistence.WhQuestionDescriptor && parent instanceof Y.Wegas.persistence.WhQuestionDescriptor;
-                        }
-                        return false;
-                    },
-                    view: {
-                        label: "Label",
-                        description: "Displayed to players"
-                    }
-                },
-                historySize: {
-                    type: ['null', NUMBER],
-                    value: 20,
-                    optional: true,
-                    view: {
-                        className: 'wegas-advanced-feature',
-                        label: 'Maximum history size'
-                    }
-                },
-                value: {
-                    transient: true,
-                    getter: function() {
-                        if (this.getInstance()) {
-                            return this.getInstance().get(VALUE);
-                        } else {
-                            return null;
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {
+            add: {
+                arguments: [
+                    SELFARG,
+                    {
+                        type: NUMBER,
+                        required: true,
+                        view: {
+                            layout: 'extraShortInline'
                         }
                     }
-                },
-                defaultValue: {
-                    type: STRING,
-                    transient: true
-                },
-                defaultInstance: {
-                    properties: {
-                        '@class': {
-                            type: STRING,
-                            value: 'NumberInstance',
-                            view: {
-                                type: HIDDEN
-                            }
-                        },
-                        id: IDATTRDEF,
-                        version: VERSION_ATTR_DEF,
-                        descriptorId: IDATTRDEF,
-                        value: {
-                            type: NUMBER,
-                            required: true,
-                            errored: function(val, formVal) {
-                                var errors = [],
-                                    max = typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity,
-                                    min = typeof formVal.minValue === 'number' ? formVal.minValue : -Infinity;
-                                if (val > max) {
-                                    errors.push('Default value is greater than maximum');
-                                }
-                                if (val < min) {
-                                    errors.push('Default value is less than minimum');
-                                }
-                                return errors.join(', ');
-                            },
-                            view: {
-                                label: 'Default value',
-                                layout: 'shortInline'
-                            }
-                        },
-                        history: {
-                            type: ARRAY,
-                            view: {
-                                className: 'wegas-advanced-feature',
-                                label: 'History'
-                            }
-                        }
+                ]
+            } /*
+             sub: {
+             label: "subtract",
+             "arguments": [{
+             type: HIDDEN,
+             value: SELF
+             }, {
+             type: NUMBER,
+             required: true
+             }]
+             },*/,
+            setValue: {
+                label: 'set',
+                arguments: [
+                    SELFARG,
+                    {
+                        type: NUMBER,
+                        required: true,
+                        view: {layout: 'extraShortInline'}
                     }
-                }
+                ]
             },
-            /**
-             * Defines methods available in wysiwyge script editor
-             */
-            METHODS: {
-                add: {
-                    arguments: [
-                        SELFARG,
-                        {
-                            type: NUMBER,
-                            required: true,
-                            view: {
-                                layout: 'extraShortInline'
-                            }
-                        }
-                    ]
-                } /*
-                 sub: {
-                 label: "subtract",
-                 "arguments": [{
-                 type: HIDDEN,
-                 value: SELF
-                 }, {
-                 type: NUMBER,
-                 required: true
-                 }]
-                 },*/,
-                setValue: {
-                    label: 'set',
-                    arguments: [
-                        SELFARG,
-                        {
-                            type: NUMBER,
-                            required: true,
-                            view: {layout: 'extraShortInline'}
-                        }
-                    ]
-                },
-                getValue: {
-                    label: VALUE,
-                    returns: NUMBER,
-                    arguments: [SELFARG]
-                }
+            getValue: {
+                label: VALUE,
+                returns: NUMBER,
+                arguments: [SELFARG]
             }
         }
+    }
     );
     /**
      * NumberInstance mapper
@@ -1071,7 +1103,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         }
     );
-
     /**
      * ListDescriptor mapper
      */
@@ -1147,6 +1178,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             },
             getTreeEditorLabel: function() {
                 return '\u229e ' + this.getEditorLabel();
+            },
+            getIconCss: function() {
+                return 'fa fa-folder';
+                //return "fa fa-envelope-o";
             }
         },
         {
@@ -1236,6 +1271,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                         type: 'AddEntityChildButton',
                                         label: '<span class="wegas-icon-numberdescriptor"></span> Number',
                                         targetClass: 'NumberDescriptor'
+                                    },
+                                    {
+                                        type: 'AddEntityChildButton',
+                                        label: '<span class="fa fa-paragraph"></span> Static Content',
+                                        targetClass: 'StaticTextDescriptor'
                                     },
                                     {
                                         type: 'AddEntityChildButton',
@@ -1544,28 +1584,21 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     className: 'wegas-method-sendmessage',
                     arguments: [
                         SELFARG,
+                        Y.Wegas.Helper.getTranslationAttr({
+                            type: STRING, label: "From" //required + layout: 'short'
+                        }),
+                        Y.Wegas.Helper.getTranslationAttr({
+                            type: STRING, label: "Date" //required + layout: 'short'
+                        }),
+                        Y.Wegas.Helper.getTranslationAttr({
+                            type: STRING, label: "Subject" //required + layout: 'short'
+                        }),
+                        Y.Wegas.Helper.getTranslationAttr({
+                            type: HTML, label: "Body"
+                        }),
                         {
                             type: STRING,
-                            required: true,
-                            view: {label: 'From', layout: 'short'}
-                        },
-                        {
-                            type: STRING,
-                            value: '',
-                            view: {label: 'Date', layout: 'short'}
-                        },
-                        {
-                            type: STRING,
-                            view: {label: 'Subject', layout: 'short'},
-                            required: true
-                        },
-                        {
-                            type: STRING,
-                            view: {type: HTML, label: 'Body'},
-                            required: true
-                        },
-                        {
-                            type: STRING,
+                            value: "", // prevent undefined as Java will interprets such a value as a literat "undefined" !
                             view: {
                                 label: 'Token',
                                 className: 'wegas-advanced-feature',
@@ -1576,15 +1609,40 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             type: 'array',
                             value: [],
                             view: {label: 'Attachments'},
+                            preProcessAST: function(argDesc, value, tools) {
+                                if (value && value.type === 'ArrayExpression') {
+                                    for (var i in value.elements) {
+                                        var item = value.elements[i];
+                                        if (item && item.type === 'Literal') {
+                                            value.elements[i] = tools.valueToAST(
+                                                {
+                                                    "@class": "Attachment",
+                                                    "file": {
+                                                        "@class": "TranslatableContent",
+                                                        "translations": {
+                                                            "def": item.value
+                                                        }
+                                                    }
+                                                }, argDesc.items);
+                                        }
+                                    }
+                                }
+                                return value;
+                            },
                             items: {
-                                type: STRING,
-                                required: true,
-                                view: {
-                                    type: 'wegasurl',
-                                    label: 'Select file'
+                                type: "object",
+                                properties: {
+                                    id: IDATTRDEF,
+                                    "@class": {
+                                        type: STRING,
+                                        value: "Attachment",
+                                        view: {type: HIDDEN}
+                                    },
+                                    file: Y.Wegas.Helper.getTranslationAttr({
+                                        type: "wegasurl", label: "File"
+                                    })
                                 }
                             }
-
                         }
                     ]
                 },
@@ -1647,6 +1705,26 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * Message mapper
      */
+    persistence.Attachment = Base.create(
+        'Attachment',
+        persistence.Entity,
+        [],
+        {},
+        {
+            ATTRS: {
+                '@class': {
+                    value: 'Attachment'
+                },
+                file: Y.Wegas.Helper.getTranslationAttr({
+                    label: "File",
+                    type: "wegasurl"
+                })
+            }
+        }
+    );
+    /**
+     * Message mapper
+     */
     persistence.Message = Base.create(
         'Message',
         persistence.Entity,
@@ -1657,19 +1735,31 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 '@class': {
                     value: 'Message'
                 },
-                subject: {},
-                body: {},
+                from: Y.Wegas.Helper.getTranslationAttr({
+                    label: "From",
+                    type: STRING
+                }),
+                subject: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Subject",
+                    type: STRING
+                }),
+                body: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Subject",
+                    type: HTML
+                }),
+                date: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Subject",
+                    type: STRING
+                }),
                 unread: {
                     value: false,
                     type: BOOLEAN
                 },
-                from: {},
                 token: {},
-                date: {},
                 time: {
                     transient: true
                 },
-                attachements: {}
+                attachments: {}
             }
         }
     );

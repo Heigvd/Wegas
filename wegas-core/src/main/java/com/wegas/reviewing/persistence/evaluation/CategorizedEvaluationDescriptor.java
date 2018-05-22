@@ -7,12 +7,18 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.wegas.core.persistence.variable.primitive.Enumeration;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.primitive.EnumItem;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 
 /**
  * Define an evaluation as a categorisation. For instance : [ very bad ; bad ;
@@ -23,23 +29,31 @@ import javax.persistence.Entity;
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Entity
-public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<CategorizedEvaluationInstance> {
+public class CategorizedEvaluationDescriptor
+        extends EvaluationDescriptor<CategorizedEvaluationInstance>
+        implements Enumeration {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * List of allowed categories
      */
-    @ElementCollection
-    private List<String> categories = new ArrayList<>();
+    @OneToMany(mappedBy = "parentEvaluation", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonDeserialize(using = EnumItem.ListDeserializer.class)
+    private List<EnumItem> categories = new ArrayList<>();
 
     /**
      * Get the list of allowed categories
      *
      * @return allowed categories
      */
-    public List<String> getCategories() {
-        return categories;
+    public List<EnumItem> getCategories() {
+        return this.getSortedEnumItems();
+    }
+
+    @Override
+    public List<EnumItem> getEnumItems() {
+        return this.categories;
     }
 
     /**
@@ -47,28 +61,20 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
      *
      * @param categories allowed categories
      */
-    public void setCategories(List<String> categories) {
+    public void setCategories(List<EnumItem> categories) {
         this.categories = categories;
-    }
-
-    /**
-     * Add a category to the list
-     *
-     * @param category the category to add
-     */
-    public void addCategory(String category) {
-        if (!categories.contains(category)) {
-            categories.add(category);
+        if (categories != null) {
+            int i = 0;
+            for (EnumItem category : this.categories) {
+                category.setOrder(i++);
+                registerItem(category);
+            }
         }
     }
 
-    /**
-     * remove a category from the list
-     *
-     * @param category
-     */
-    public void removeCategory(String category) {
-        categories.remove(category);
+    @Override
+    public void registerItem(EnumItem item) {
+        item.setParentEvaluation(this);
     }
 
     @Override
@@ -76,11 +82,17 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
         if (a instanceof CategorizedEvaluationDescriptor) {
             super.merge(a);
             CategorizedEvaluationDescriptor o = (CategorizedEvaluationDescriptor) a;
-            this.categories = new ArrayList<>();
-            this.categories.addAll(o.getCategories());
+            // make sure to use getCategories to sort them
+            this.setCategories(ListUtils.mergeLists(this.getCategories(), o.getCategories()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        return super.containsAll(criterias)
+                || this.itemsContainsAll(criterias);
     }
 
     @Override

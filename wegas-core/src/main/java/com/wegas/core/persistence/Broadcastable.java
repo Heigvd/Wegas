@@ -15,11 +15,12 @@ import java.util.Map;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public interface Broadcastable {
+public interface Broadcastable extends WithPermission {
 
     /**
      * get all entities that should be propagated when this has been
-     * created/updated/deleted, sorted by audience
+     * created/updated/deleted.
+     * Entities to propagate (entry value) are sorted by audience (entry key)
      *
      * key identifier may be: private-GameModel-ID, private-Game-ID, private-Team-ID or
      * private-Player-ID

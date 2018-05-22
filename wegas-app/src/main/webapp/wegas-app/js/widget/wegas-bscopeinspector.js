@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Maxence 
@@ -31,7 +33,7 @@ YUI.add('wegas-bscopeinspector', function(Y) {
             var theVar = this.get("variable.evaluated"),
                 theScope = theVar.get("scope");
 
-            this.get(CONTENTBOX).one("h1").setHTML(theVar.get("label") + " (" + theVar.get("name") + ")");
+            this.get(CONTENTBOX).one("h1").setHTML(I18n.t(theVar.get("label")) + " (" + theVar.get("name") + ")");
             this.get(CONTENTBOX).one("h3").setHTML(theScope.get("@class") + " / " + theScope.get("broadcastScope") + ")");
         },
         bindUI: function() {

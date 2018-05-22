@@ -342,7 +342,7 @@ div.inputEx-description {
 }
 
 .inputEx-WysiwygScript .wegas-method-sendmessage .inputEx-ListField-addButton + span::after {
-    content: "Attachements";
+    content: "Attachments";
 }
 
 .inputEx-WysiwygScript option:disabled,

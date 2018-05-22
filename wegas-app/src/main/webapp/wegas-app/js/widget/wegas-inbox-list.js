@@ -44,14 +44,14 @@ YUI.add('wegas-inbox-list', function(Y) {
              */
             TEMPLATES: {
                 "default": Micro.compile("<div class='msg msg-toggled'><div class='msg-header'>"
-                    + "<div class='msg-subject'><%=this.get('subject')%></div>"
-                    + "<% if (this.get('date')) { %><div class='msg-date'><%= this.get('date') %></div><% } %>"
+                    + "<div class='msg-subject'><%= I18n.t(this.get('subject')) %></div>"
+                    + "<% var date =I18n.t(this.get('date')); if (date) { %><div class='msg-date'><%= date %></div><% } %>"
                     + "<div style=\"clear: both;\"></div>"
-                    + "<% if (this.get('from')) { %><div class='msg-from'><%= this.get('from') %></div><% } %>"
-                    + "<% if (this.get('attachements') && this.get('attachements').length) {%>"
-                    + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>"
+                    + "<% var from = I18n.t(this.get('from')); if (from) { %><div class='msg-from'><%= from %></div><% } %>"
+                    + "<% if (this.get('attachments') && this.get('attachments').length) {%>"
+                    + "<div class='msg-attachment'><% Y.Array.each(this.get('attachments'), function(a){ var file=I18n.t(a.get('file')); %><a href='<%= file %>' data-file='<%= file %>' target='_blank'><%= file.split('/').pop() %></a>;<% }); %></div>"
                     + "<% } %><div style=\"clear: both;\"></div></div>"
-                    + "<div class='msg-body'><div class='msg-body-content'><%== this.get('body') %></div></div>"
+                    + "<div class='msg-body'><div class='msg-body-content'><%== I18n.t(this.get('body')) %></div></div>"
                     + "<a href='#' class='msg-showmore'>More...</a>"
                     + "</div>"),
 
@@ -59,17 +59,17 @@ YUI.add('wegas-inbox-list', function(Y) {
                     + "<div class='msg-icon'><i class='fa fa-2x fa-envelope<%= this.get('unread') ? '' : '-open'%>-o'></i></div>"
                     + "<div class='msg-clean--header'>"
                     + "<div class='msg-firstLine'>"
-                    + "<span class='msg-subject'><%== this.get('subject')%></span>"
-                    + "<% if (this.get('date')){ %><span class='msg-date'><%== this.get('date') %></span><% } %>"
+                    + "<span class='msg-subject'><%== I18n.t(this.get('subject')) %></span>"
+                    + "<% var date =I18n.t(this.get('date')); if (date) { %><span class='msg-date'><%= date %></span><% } %>"
                     + "</div>"
                     + "<div style=\"clear: both;\"></div>"
-                    + "<% if (this.get('from')){ %><div class='msg-from'><span><%== this.get('from') %></span></div><% } %>"
+                    + "<% var from = I18n.t(this.get('from')); if (from) { %><div class='msg-from'><%= from %></div><% } %>"
                     + "</div>"
-                    + "<% if (this.get('attachements') && this.get('attachements').length) {%>"
-                    + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>"
+                    + "<% if (this.get('attachments') && this.get('attachments').length) {%>"
+                    + "<div class='msg-attachment'><% Y.Array.each(this.get('attachments'), function(a){ var file=I18n.t(a.get('file'));%><a href='<%= file %>' data-file='<%= file %>' target='_blank'><%= file.split('/').pop() %></a>;<% }); %></div>"
                     + "<% } %>"
                     + "<div style=\"clear: both;\"></div>"
-                    + "<div class='msg-body'> <%== this.get('body') %></div>"
+                    + "<div class='msg-body'> <%== I18n.t(this.get('body')) %></div>"
                     + "</div>"
                 )
             },
@@ -237,6 +237,8 @@ YUI.add('wegas-inbox-list', function(Y) {
                         choices: [
                             {
                                 value: 'default'
+                            },{
+                                value: 'clean'
                             }
                         ],
                         label: 'Template',
@@ -246,7 +248,10 @@ YUI.add('wegas-inbox-list', function(Y) {
                 },
                 chronological: {
                     value: true,
-                    type: "boolean"
+                    type: "boolean",
+                    view: {
+                        label: "chronological"
+                    }
                 }
             }
         }

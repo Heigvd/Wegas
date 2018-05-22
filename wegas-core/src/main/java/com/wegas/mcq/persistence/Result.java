@@ -11,9 +11,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.game.Script;
@@ -36,9 +39,13 @@ import javax.persistence.*;
         name = "MCQResult",
         uniqueConstraints = {
             @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"})
+        },
         indexes = {
-            @Index(columnList = "choicedescriptor_id")
+            @Index(columnList = "choicedescriptor_id"),
+            @Index(columnList = "label_id"),
+            @Index(columnList = "answer_id"),
+            @Index(columnList = "ignorationanswer_id")
         }
 )
 @NamedQueries({
@@ -75,22 +82,23 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /**
      * Displayed name
      */
-    private String label;
-    /**
-     *
-     */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    //@JsonView(Views.ExtendedI.class)
-    private String answer;
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent label;
 
     /**
-     *
+     * Displayed answer when result selected and validated
      */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    //@JsonView(Views.ExtendedI.class)
-    private String ignorationAnswer;
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent answer;
+
+    /**
+     * Displayed answer when MCQ result not selected and validated
+     */
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent ignorationAnswer;
 
     /*
      *
@@ -148,14 +156,16 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @param name
      */
     public Result(String name) {
-        this(name, name);
+        this.label = new TranslatableContent();
+        this.label.getModifiableTranslations().put("def", name);
+        this.name = name;
     }
 
     /**
      * @param name
      * @param label
      */
-    public Result(String name, String label) {
+    public Result(String name, TranslatableContent label) {
         this.name = name;
         this.label = label;
     }
@@ -163,6 +173,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     public Result(String name, Script impact) {
         this(name, impact, null);
     }
+
     /**
      *
      * @param name
@@ -170,8 +181,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @param ignorationImpact
      */
     public Result(String name, Script impact, Script ignorationImpact) {
-        this.name = name;
-        this.label = name;
+        this(name);
         this.impact = impact;
         this.ignorationImpact = ignorationImpact;
     }
@@ -179,9 +189,10 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     @Override
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
+                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
                 || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
-                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
                 || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
+                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
                 || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
     }
 
@@ -204,10 +215,10 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
             Result other = (Result) a;
             this.setVersion(other.getVersion());
             this.setName(other.getName());
-            this.setLabel(other.getLabel());
-            this.setAnswer(other.getAnswer());
+            this.setLabel(TranslatableContent.merger(this.getLabel(), other.getLabel()));
+            this.setAnswer(TranslatableContent.merger(this.getAnswer(), other.getAnswer()));
             this.setImpact(other.getImpact());
-            this.setIgnorationAnswer(other.getIgnorationAnswer());
+            this.setIgnorationAnswer(TranslatableContent.merger(this.getIgnorationAnswer(), other.getIgnorationAnswer()));
             this.setIgnorationImpact(other.getIgnorationImpact());
             this.setFiles(other.getFiles());
             this.setChoiceDescriptor(other.getChoiceDescriptor());
@@ -251,15 +262,18 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /**
      * @return the answer
      */
-    public String getAnswer() {
+    public TranslatableContent getAnswer() {
         return answer;
     }
 
     /**
      * @param answer the answer to set
      */
-    public void setAnswer(String answer) {
+    public void setAnswer(TranslatableContent answer) {
         this.answer = answer;
+        if (this.answer != null) {
+            this.answer.setParentDescriptor(this.getChoiceDescriptor());
+        }
     }
 
     /**
@@ -279,15 +293,18 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /**
      * @return the ignoration answer
      */
-    public String getIgnorationAnswer() {
+    public TranslatableContent getIgnorationAnswer() {
         return ignorationAnswer;
     }
 
     /**
      * @param answer the answer to set
      */
-    public void setIgnorationAnswer(String answer) {
+    public void setIgnorationAnswer(TranslatableContent answer) {
         this.ignorationAnswer = answer;
+        if (this.ignorationAnswer != null) {
+            this.ignorationAnswer.setParentDescriptor(this.getChoiceDescriptor());
+        }
     }
 
     /**
@@ -324,7 +341,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @return the label
      */
     @Override
-    public String getLabel() {
+    public TranslatableContent getLabel() {
         return label;
     }
 
@@ -332,8 +349,11 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @param label the label to set
      */
     @Override
-    public void setLabel(String label) {
+    public void setLabel(TranslatableContent label) {
         this.label = label;
+        if (this.label != null) {
+            this.label.setParentDescriptor(this.getChoiceDescriptor());
+        }
     }
 
     /**

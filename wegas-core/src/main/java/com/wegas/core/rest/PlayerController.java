@@ -26,6 +26,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collection;
+import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -77,7 +80,8 @@ public class PlayerController {
      * @return HTTP 201 with the team or 4xx if something went wrong
      */
     @POST
-    public Response create(@PathParam("teamId") Long teamId) {
+    public Response create(@Context HttpServletRequest request,
+            @PathParam("teamId") Long teamId) {
         User currentUser;
         try {
             currentUser = userFacade.getCurrentUser();
@@ -92,7 +96,7 @@ public class PlayerController {
                 if (requestManager.tryLock("join-" + teamToJoin.getGameId() + "-" + currentUser.getId())) {
 
                     if (!playerFacade.isInGame(teamToJoin.getGameId(), currentUser.getId())) {
-                        gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId());
+                        gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId(), Collections.list(request.getLocales()));
                         // reload up to date team
                         teamFacade.detach(teamToJoin);
                         teamToJoin = teamFacade.find(teamToJoin.getId());

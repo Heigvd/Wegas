@@ -26,6 +26,12 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             variableNotFound: "Impossible de trouver la variable \"{{name}}\"",
             logout: "déconnexion"
         },
+        i18n:{
+            manager: {
+                title: "Gestionnaire de langue"
+            },
+            languages: "Langues"
+        },
         errors: {
             conflict: "Votre requête ne peut pas être traitée car un conflit s'est produit durant son éxecution. Cela signifie probablement que vous avez tentez de modifier un élément en même temps qu'un autre utilisateur.",
             greaterThan: "{{value}} est plus grand que {{max}}",
@@ -34,7 +40,7 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             nan: "\"{{value}}\" n'est pas un nombre",
             notAPositiveInteger: "\"{{value}}\" n'est pas un entier positif",
             outOfBounds: "{{value}} n'est pas compris dans [{{min}},{{max}}]",
-            prohibited: "\"{{value}}\" n'est pas permise. Elle doit être choisie parmis : {{values}}"
+            prohibited: "\"{{value}}\" n'est pas permise. Elle doit être choisie parmi : {{values}}"
         },
         inbox: {
             deleteEmailConfirmation: "Êtes-vous sûr de vouloir supprimer le message {{subject}} de manière définitive ?",

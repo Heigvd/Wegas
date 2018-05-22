@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Anthony Geiser <antho.geiser@gmail.com>
@@ -40,7 +42,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
                 return;
             }
             var state = this.currentDialogue.getCurrentState();
-            this.displayText(state.get('text'));
+            this.displayText(I18n.t(state.get('text')));
             if (!(state instanceof Y.Wegas.persistence.DialogueState)) {
                 Y.log("State isn't a dialogue state.", 'error', 'SimpleDialogue');
                 return;
@@ -75,7 +77,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
             }
 
             for (i = 0; i < availableActions.length; i++) {
-                responseNode.insert('<li data-response_no="' + i + '">' + availableActions[i].get('actionText') + '</li>');
+                responseNode.insert('<li data-response_no="' + i + '">' + I18n.t(availableActions[i].get('actionText')) + '</li>');
             }
         }
     }, {

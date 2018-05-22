@@ -26,9 +26,9 @@ YUI.add('wegas-entity', function(Y) {
         Base = Y.Base,
         Entity,
         IDATTRDEF = {
-            type: STRING,
-            optional: true, //                                                  // The id is optional for entites that
-            // have not been persisted
+            type: NUMBER,
+            optional: true, // The id is optional for entites that have not been persisted
+            index: -20,
             view: {
                 type: HIDDEN
             }
@@ -59,7 +59,80 @@ YUI.add('wegas-entity', function(Y) {
                 className: 'wegas-advanced-feature'
             }
         };
+    /**
+     * 
+     * @param {{type:"string" | "html", description?:string, label?:string, index?:number}} param 
+     */
+    Y.Wegas.Helper.getTranslationAttr = function(param) {
+        var TRANSLATION_CONTENT_ATTR_DEF = {
+            id: IDATTRDEF,
+            "@class": {
+                value: "TranslatableContent",
+                type: STRING,
+                view: {
+                    type: HIDDEN
+                }
+            },
+            translations: {
+                type: "object",
+                value: {},
+                additionalProperties: {
+                    type: ["null", STRING],
+                    required: true,
+                    view: {
+                        label: "translation",
+                        type: ""
+                    }
+                },
+                view: {
+                    type: "I18n" + param.type,
+                    keyLabel: "lang",
+                    label: param.label,
+                    description: param.description,
+                    borderTop: param.borderTop
 
+                }
+            }
+        },
+            TRANSLATION_VIEW = {
+                type: "object",
+                index: param.index,
+                visible: param.visible,
+                preProcessAST: function(argDesc, value, tools) {
+                    if (value) {
+                        if (value.type === 'Literal') {
+                            return tools.valueToAST({
+                                "@class": "TranslatableContent",
+                                "translations": {
+                                    "def": value.value
+                                }
+                            }, argDesc);
+                        }
+                    }
+                    return value;
+                },
+                getter: function(value) {
+                    if (typeof value === "string") {
+                        //  backward compatibility: raw String to default translation
+                        return {
+                            "@class": "TranslatableContent",
+                            "translations": {
+                                "def": value
+                            }
+                        };
+                    }
+                    return value;
+                },
+                /*valueFn: function() {
+                 return {
+                 "@class": "TranslatableContent",
+                 translations: {}
+                 };
+                 },*/
+                properties: TRANSLATION_CONTENT_ATTR_DEF
+            };
+        return TRANSLATION_VIEW;
+    };
     /**
      * @class Entity is used to represent db objects
      * @name Y.Wegas.persistence.Entity
@@ -87,7 +160,7 @@ YUI.add('wegas-entity', function(Y) {
                     setter: function(val) {
                         return val * 1;
                     },
-                    index: -10,
+                    index: -20,
                     view: {
                         type: 'uneditable',
                         className: 'wegas-advanced-feature',
@@ -103,12 +176,6 @@ YUI.add('wegas-entity', function(Y) {
                     view: {
                         type: HIDDEN
                     }
-                },
-                label: {
-                    transient: true,
-                    getter: function(val) {
-                        return val || this.get(NAME);
-                    }
                 }
             },
             /**
@@ -122,7 +189,6 @@ YUI.add('wegas-entity', function(Y) {
         }
     );
     persistence.Entity = Entity;
-
     /**
      *
      */
@@ -144,7 +210,6 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     );
-
     /**
      * ManagedResponse mapper
      */
@@ -167,7 +232,6 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     );
-
     /**
      *
      */
@@ -184,7 +248,6 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     );
-
     persistence.VariableContainer = function() {};
     Y.mix(persistence.VariableContainer.prototype, {
         /**
@@ -238,8 +301,75 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     };
+    // I18N
 
-
+    persistence.GameModelLanguage = Base.create("GameModelLanguage", persistence.Entity, [], {}, {
+        EDITORNAME: "Language",
+        ATTRS: {
+            id: IDATTRDEF,
+            '@class': {
+                type: "string",
+                value: 'GameModelLanguage',
+                view: {
+                    type: HIDDEN
+                }
+            },
+            refName: {
+                type: "string",
+                view: {
+                    type: 'uneditable',
+                    label: "refName",
+                    description: "Internal identifier"
+                }
+            },
+            code: {
+                type: "string",
+                view: {
+                    label: "language code name"
+                }
+            },
+            active: {
+                type: "boolean",
+                view: {
+                    label: "Active"
+                }
+            },
+            lang: {
+                type: "string",
+                view: {
+                    label: "language full name"
+                }
+            }
+        }
+    });
+    persistence.TranslatableContent = Base.create("TranslatableContent", persistence.Entity, [], {}, {
+        EDITORNAME: "TranslatableContent",
+        ATTRS: {
+            id: IDATTRDEF,
+            '@class': {
+                type: "string",
+                value: 'TranslatableContent',
+                view: {
+                    type: HIDDEN
+                }
+            },
+            translations: {
+                type: "object",
+                additionalProperties: {
+                    type: STRING,
+                    required: true,
+                    view: {
+                        label: "translation"
+                    }
+                },
+                view: {
+                    label: "lang",
+                    type: "hashlist",
+                    keyLabel: "lang"
+                }
+            }
+        }
+    });
     /**
      * GameModel mapper
      */
@@ -269,6 +399,20 @@ YUI.add('wegas-entity', function(Y) {
             cssLibrary: {
                 value: {},
                 transient: true
+            },
+            activeLanguages: {
+                "transient": true,
+                getter: function(val) {
+                    return Y.Array.filter(this.get("languages"), function(l){
+                        return l.get("active");
+                    });
+                }
+            },
+            languages: {
+                type: 'array',
+                view: {
+                    type: "hidden"
+                }
             },
             properties: {
                 type: 'object',
@@ -377,7 +521,6 @@ YUI.add('wegas-entity', function(Y) {
         EDITMENU: []
     }
     );
-
     /**
      * Game mapper
      */
@@ -470,14 +613,12 @@ YUI.add('wegas-entity', function(Y) {
         }
     );
     persistence.DebugGame = persistence.Game;
-
     /**
      * Team mapper
      */
     persistence.Team = Base.create("Team", persistence.Entity, [], {
         getPlayerByStatus: function(statuses) {
             var i, player;
-
             if (!Array.isArray(statuses)) {
                 statuses = [statuses];
             }
@@ -490,7 +631,6 @@ YUI.add('wegas-entity', function(Y) {
             }
 
             return null;
-
         },
         getLivePlayer: function() {
             return this.getPlayerByStatus("LIVE");
@@ -555,7 +695,6 @@ YUI.add('wegas-entity', function(Y) {
         {},
         {}
     );
-
     /**
      * Player mapper
      */
@@ -590,12 +729,14 @@ YUI.add('wegas-entity', function(Y) {
                 },
                 status: {
                     "transient": true
+                },
+                refName: {
+                    type: "string"
                 }
             },
             EDITMENU: []
         }
     );
-
     /**
      * User mapper
      */
@@ -629,7 +770,6 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     );
-
     /**
      * Role mapper
      */
@@ -662,7 +802,6 @@ YUI.add('wegas-entity', function(Y) {
             ]
         }
     );
-
     /**
      * JpaAccount mapper
      */
@@ -771,7 +910,6 @@ YUI.add('wegas-entity', function(Y) {
             ]
         }
     );
-
     /**
      * AaiAccount mapper
      */
@@ -842,7 +980,6 @@ YUI.add('wegas-entity', function(Y) {
             ]
         }
     );
-
     /**
      * GuestJpaAccount mapper
      */

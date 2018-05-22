@@ -39,10 +39,14 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Player.findPlayerByGameModelIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.gameModel.id = :gameModelId"),
-    @NamedQuery(name = "Player.findPlayerByGameIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.id = :gameId"),
-    @NamedQuery(name = "Player.findPlayerByTeamIdAndUserId", query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId"),
-    @NamedQuery(name = "Player.findToPopulate", query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
+    @NamedQuery(name = "Player.findPlayerByGameModelIdAndUserId",
+            query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.gameModel.id = :gameModelId"),
+    @NamedQuery(name = "Player.findPlayerByGameIdAndUserId",
+            query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.id = :gameId"),
+    @NamedQuery(name = "Player.findPlayerByTeamIdAndUserId",
+            query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId"),
+    @NamedQuery(name = "Player.findToPopulate",
+            query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
@@ -62,6 +66,12 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    /**
+     * RefName of player preferred language
+     */
+    @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
+    private String refName;
 
     @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
@@ -103,7 +113,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      *
      */
     @Enumerated(value = EnumType.STRING)
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
     private Status status = Status.WAITING;
 
@@ -175,6 +184,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     public void merge(AbstractEntity a) {
         Player p = (Player) a;
         this.setName(p.getName());
+        this.setRefName(p.getRefName());
     }
 
     @Override
@@ -196,6 +206,14 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @JsonBackReference(value = "player-user")
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getRefName() {
+        return refName;
+    }
+
+    public void setRefName(String refName) {
+        this.refName = refName;
     }
 
     /**

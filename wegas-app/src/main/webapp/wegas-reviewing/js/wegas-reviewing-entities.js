@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
@@ -18,15 +20,12 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         VERSION_ATTR_DEF,
         SELFARG,
         IDATTRDEF;
-
     VERSION_ATTR_DEF = {
         type: NUMBER,
         view: {
             type: HIDDEN
         }
     };
-
-
     IDATTRDEF = {
         type: NUMBER,
         optional: true, // The id is optional for entities that have not been persisted
@@ -34,13 +33,11 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             type: HIDDEN
         }
     };
-
     SELFARG = {
         type: 'identifier',
         value: 'self',
         view: {type: HIDDEN}
     };
-
     /**
      * PeerReviewescriptor mapper
      */
@@ -84,15 +81,10 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     classFilter: ["TextDescriptor", "NumberDescriptor"]
                 }
             },
-            description: {
-                type: NULLSTRING,
-                format: HTML,
-                optional: true,
-                view: {
-                    type: HTML,
-                    label: "Description"
-                }
-            },
+            description: Y.Wegas.Helper.getTranslationAttr({
+                type: HTML,
+                label: "Description"
+            }),
             feedback: {
                 type: OBJECT,
                 value: {
@@ -159,7 +151,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                         value: [],
                         view: {type: HIDDEN}
                     },
-
                 },
                 index: 3
             }
@@ -386,6 +377,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * EvaluationDescriptor
      */
     persistence.EvaluationDescriptor = Y.Base.create("EvaluationDescriptor", persistence.Entity, [], {
+        getEditorLabel: function() {
+            return I18n.t(this.get("label"));
+        }
     }, {
         ATTRS: {
             "@class": {
@@ -399,28 +393,20 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     description: "Internal name"
                 }
             },
-            label: {
-                type: STRING,
-                transient: false,
-                required: true,
-                view: {
-                    label: "Name",
-                    description: "Displayed to players"
-                }
-            },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                index: -1,
+                description: "Displayed to players",
+                type: STRING
+            }),
             index: {
                 type: NUMBER,
                 view: {label: "Index"}
             },
-            description: {
-                type: NULLSTRING,
-                optional: true,
-                view: {
-                    type: HTML,
-                    label: "Description",
-                    height: '50px'
-                }
-            }
+            description: Y.Wegas.Helper.getTranslationAttr({
+                label: "Description",
+                type: HTML
+            })
         },
         EDITMENU: [{
                 type: BUTTON,
@@ -530,7 +516,17 @@ YUI.add('wegas-reviewing-entities', function(Y) {
     /**
      * CategorizedEvaluationDescriptor
      */
-    persistence.CategorizedEvaluationDescriptor = Y.Base.create("CategorizedEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+    persistence.CategorizedEvaluationDescriptor = Y.Base.create("CategorizedEvaluationDescriptor",
+        persistence.EvaluationDescriptor, [], {
+        getLabelForName: function(name) {
+            var cats = this.get("categories"),
+                i;
+            for (i in cats) {
+                if (cats[i].get("name") === name) {
+                    return I18n.t(cats[i].get("label"));
+                }
+            }
+        },
         getIconCss: function() {
             return "fa fa-list-ul";
         }
@@ -542,12 +538,33 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             categories: {
                 type: ARRAY,
                 items: {
-                    required: true,
-                    type: STRING
+                    type: "object",
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            value: "EnumItem",
+                            view: {type: HIDDEN}
+                        },
+                        id: IDATTRDEF,
+                        name: {
+                            type: STRING,
+                            view: {
+                                className: 'wegas-advanced-feature',
+                                label: 'Script alias',
+                                //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                                description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+                            }
+                        },
+                        label: Y.Wegas.Helper.getTranslationAttr({
+                            label: "Label",
+                            index: -1,
+                            description: "Displayed to players",
+                            type: STRING
+                        })
+                    }
                 },
                 view: {
-                    label: "Categories",
-                    type: ARRAY
+                    label: 'Categories'
                 }
             }
         }

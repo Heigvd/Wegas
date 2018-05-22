@@ -12,21 +12,24 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.ListUtils.Updater;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.persistence.Permission;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +41,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(indexes = {
-    @Index(columnList = "question_id")
+    @Index(columnList = "question_id"),
+    @Index(columnList = "description_id")
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @JsonSubTypes(value = {
@@ -59,7 +63,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      *
      */
     @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id")
+    //    @OrderBy("id")
     @OrderColumn
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
@@ -67,10 +71,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     /**
      *
      */
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @Lob
-    //@JsonView(Views.ExtendedI.class)
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent description;
 
     /**
      *
@@ -105,7 +108,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     public void merge(AbstractEntity a) {
         if (a instanceof ChoiceDescriptor) {
             ChoiceDescriptor other = (ChoiceDescriptor) a;
-            this.setDescription(other.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
             super.merge(a);
             this.setMaxReplies(other.getMaxReplies());
             this.setDuration(other.getDuration());
@@ -133,32 +136,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 }
             }));
 
-            // Default instance has already been merged,
-            // has its currentResult been removed ?
-            /*ChoiceInstance defaultInstance = this.getDefaultInstance();
-
-            if (defaultInstance.getCurrentResult() != null && !this.getResults().contains(defaultInstance.getCurrentResult())) {
-                defaultInstance.setCurrentResult(null);
-            }*/
-            // Detect new results
-            List<String> labels = new ArrayList<>();
-            List<String> names = new ArrayList<>();
-            List<Result> newResults = new ArrayList<>();
-
-            for (Result r : this.getResults()) {
-                if (r.getId() != null) {
-                    // Store name and label existing result
-                    labels.add(r.getLabel());
-                    names.add(r.getName());
-                } else {
-                    newResults.add(r);
-                }
-            }
-
-            // set names and labels unique
-            for (Result r : newResults) {
-                Helper.setNameAndLabelForLabelledEntity(r, names, labels, "result");
-            }
+            Helper.setNameAndLabelForLabelledEntityList(this.getResults(), "result", this.getGameModel());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -235,15 +213,18 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**
@@ -495,7 +476,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Override
     public void setRoot(GameModel rootGameModel) {
         super.setRoot(rootGameModel);
-        if (this.getRoot() != null){
+        if (this.getRoot() != null) {
             this.setQuestion(null);
         }
     }
@@ -503,7 +484,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Override
     public void setParentList(ListDescriptor parentList) {
         super.setParentList(parentList);
-        if (this.getParentList() != null){
+        if (this.getParentList() != null) {
             this.setQuestion(null);
         }
     }
@@ -511,14 +492,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     @Override
     public void setParentWh(WhQuestionDescriptor parentWh) {
         super.setParentWh(parentWh);
-        if (this.getParentWh() != null){
+        if (this.getParentWh() != null) {
             this.setQuestion(null);
         }
     }
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        if (Helper.insensitiveContainsAll(this.getDescription(), criterias)
+        if (Helper.insensitiveContainsAll(getDescription(), criterias)
                 || super.containsAll(criterias)) {
             return true;
         }
@@ -528,5 +509,35 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             }
         }
         return false;
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        if (this.title != null) {
+            String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
+            if (importedLabel == null) {
+                importedLabel = "";
+            }
+            // title = "", label= "" => prefix = "", label=""
+            // title = "", label= "[r5b] Meet someone" => prefix = "[r5b] Meet someone", label=""
+            // title = "Meet someone", label= "[r5b] Meet someone" => prefix = "[r5b]", label="Meet someone"
+            // title = "Meet someone", label="" => prefix = "", label="Meet someone"
+            this.setEditorTag(importedLabel.replace(title, "").trim());
+
+            this.setLabel(TranslatableContent.build("def", title));
+            this.title = null;
+        }
+        for (Result r : results) {
+            if (r.getLabel() != null) {
+                r.getLabel().setParentDescriptor(this);
+            }
+            if (r.getAnswer() != null) {
+                r.getAnswer().setParentDescriptor(this);
+            }
+            if (r.getIgnorationAnswer() != null) {
+                r.getIgnorationAnswer().setParentDescriptor(this);
+            }
+        }
+        super.revive(beans);
     }
 }
