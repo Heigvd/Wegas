@@ -5114,13 +5114,13 @@ modern-normalize@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/modern-normalize/-/modern-normalize-0.4.0.tgz#1ccbc52861e1bce258144d28e890dc709b120ed2"
 
-monaco-editor-webpack-plugin@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.1.0.tgz#017fd2edb916ce9411f690e2e3d4f931509ea474"
+monaco-editor-webpack-plugin@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.2.0.tgz#8d0b6bb1986350b714f6de409ca438ef93ebe650"
 
-monaco-editor@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.12.0.tgz#cd8621017526b57746245104d764bbf52ad42283"
+monaco-editor@^0.13.1:
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.13.1.tgz#6b9ce20e4d1c945042d256825eb133cb23315a52"
 
 move-concurrently@^1.0.1:
   version "1.0.1"

@@ -16,22 +16,16 @@ const content = css({
   height: 0,
 });
 
-export function Toolbar(props: { children: React.ReactElement<{}>[] }) {
-  return (
-    <div {...flex}>
-      {props.children}
-    </div>
-  );
-}
-export namespace Toolbar {
-  export const Header = function Toolbar(props: {
-    children?: React.ReactNode[] | React.ReactNode;
-  }) {
-    return <div {...toolbar}>{props.children}</div>;
-  };
-  export const Content = function Content(props: {
-    children?: React.ReactNode;
-  }) {
-    return <div {...content}>{props.children}</div>;
-  };
-}
+export const Toolbar = Object.assign(
+  (props: { children: React.ReactElement<{}>[] }) => {
+    return <div {...flex}>{props.children}</div>;
+  },
+  {
+    Header(props: { children?: React.ReactNode[] | React.ReactNode }) {
+      return <div {...toolbar}>{props.children}</div>;
+    },
+    Content(props: { children?: React.ReactNode }) {
+      return <div {...content}>{props.children}</div>;
+    },
+  },
+);
