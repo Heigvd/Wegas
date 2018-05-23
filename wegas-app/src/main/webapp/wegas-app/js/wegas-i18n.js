@@ -25,9 +25,6 @@ YUI.add("wegas-i18n", function(Y) {
                 },
                 colonize: function() {
                     return this + " :";
-                },
-                pluralize: function() {
-                    return this + "s"; // mostly...
                 }
             },
             en: {
@@ -36,9 +33,14 @@ YUI.add("wegas-i18n", function(Y) {
                 },
                 colonize: function() {
                     return this + ":";
+                }
+            },
+            de: {
+                capitalize: function() {
+                    return this.slice(0, 1).toUpperCase() + this.slice(1);
                 },
-                pluralize: function() {
-                    return this + "s";
+                colonize: function() {
+                    return this + ":";
                 }
             }
         };
@@ -71,13 +73,6 @@ YUI.add("wegas-i18n", function(Y) {
          */
         I18nString.prototype.colonize = function() {
             this.value = config[currentLanguage()].colonize.call(this.value)
-            return this;
-        }
-        /**
-         * Pluralize sentence's last word, language dependant.
-         */
-        I18nString.prototype.pluralize = function() {
-            this.value = config[currentLanguage()].pluralize.call(this.value)
             return this;
         }
         /*
@@ -385,6 +380,28 @@ YUI.add("wegas-i18n", function(Y) {
             });
         }
 
+        function resetPlayerRefName(cb) {
+            var languages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"),
+                language;
+
+            if (languages && languages.length) {
+
+                // first active language
+                language = Y.Array.find(languages, function(item) {
+                    return item.get("active");
+                });
+
+                if (!language) {
+                    // or first language if none is active
+                    language = languages[0];
+                }
+
+                if (language && language.get("refName")) {
+                    setCurrentPlayerRefName(language.get("refName"), cb);
+                }
+            }
+        }
+
         function findLanguageByRefName(refName) {
             return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
                 return item.get("refName") === refName;
@@ -427,7 +444,6 @@ YUI.add("wegas-i18n", function(Y) {
                     Y.Wegas.I18n._currentLocale = locale;
                     String.prototype.capitalize = config[lang].capitalize; // don't
                     String.prototype.colonize = config[lang].colonize; // don't
-                    String.prototype.pluralize = config[lang].pluralize; // don't
                 });
             }
         }
@@ -453,6 +469,29 @@ YUI.add("wegas-i18n", function(Y) {
             }
             return ret;
         }
+
+        function setCurrentPlayerRefName(refName, cb) {
+            var self = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
+            self.set("refName", refName);
+            Y.Wegas.Facade.Game.cache.sendRequest({
+                request: "/Team/" + self.get("teamId") + "/Player/" + self.get("id"),
+                cfg: {
+                    method: "put",
+                    data: self
+                },
+                on: {
+                    success: function(response) {
+                        if (cb) {
+                            cb.call(null, response.response.entity.get("refName"));
+                        } else {
+                            I18n.setRefName(response.response.entity.get("refName"));
+                            Y.Widget.getByNode(Y.one(".wegas-playerview")).reload();
+                        }
+                    }
+                }
+            });
+        }
+        ;
 
         return {
             /**
@@ -489,6 +528,15 @@ YUI.add("wegas-i18n", function(Y) {
             },
             loadModule: function(moduleName) {
                 return loadModule(moduleName);
+            },
+            setCurrentPlayerRefName: function(refName, cb) {
+                return setCurrentPlayerRefName(refName, cb);
+            },
+            findLanguageByRefName: function(refName) {
+                return findLanguageByRefName(refName);
+            },
+            resetPlayerRefName: function(cb) {
+                return resetPlayerRefName(cb);
             }
         };
     }());

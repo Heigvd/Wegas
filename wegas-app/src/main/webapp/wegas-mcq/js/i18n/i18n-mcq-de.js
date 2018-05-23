@@ -15,6 +15,7 @@ YUI.add("wegas-i18n-mcq-de", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-mcq", "de", {
         mcq: {
             result: "Ergebnis",
+            results: "Ergebnissen",
             empty: "Zur Zeit sind keine Fragen verfügbar",
             submit: "einreichen",
             answered : "beantwortet",

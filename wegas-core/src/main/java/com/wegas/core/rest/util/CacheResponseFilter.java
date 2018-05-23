@@ -19,10 +19,11 @@ import javax.ws.rs.core.HttpHeaders;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class CacheResponseFilter implements ContainerResponseFilter {
+
     /**
      *
      */
-    public static final String NO_CACHE = "no-cache, no-store, must-revalidate";
+    public static final String NO_CACHE_NO_STORE = "no-cache, no-store, must-revalidate";
     private final String headers;
 
     /**
@@ -38,13 +39,14 @@ public class CacheResponseFilter implements ContainerResponseFilter {
      */
     public CacheResponseFilter() {
         /*Default to no-cache as most clients have this behaviour*/
-        this.headers = NO_CACHE;
+        this.headers = NO_CACHE_NO_STORE;
     }
 
     /**
      *
      * @param request
      * @param response
+     *
      * @throws java.io.IOException
      */
     @Override

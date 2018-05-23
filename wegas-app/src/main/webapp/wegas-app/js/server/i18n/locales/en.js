@@ -20,7 +20,7 @@ var i18nOrdinate = (function(module) {
 I18n.add("en", {
     question: {
         result: "Result",
-        results: "Résultats"
+        results: "Results"
     }
 });
 

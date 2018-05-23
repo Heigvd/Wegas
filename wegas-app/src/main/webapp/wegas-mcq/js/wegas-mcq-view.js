@@ -826,7 +826,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             if (!cbxType) {
                 if (totalNumberOfReplies > 0) {
                     ret.push('<div class="mcq-replies-section">');
-                    ret.push('<div class="mcq-replies-title">', (totalNumberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize().capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize()), '</div>');
+                    ret.push('<div class="mcq-replies-title">', (totalNumberOfReplies > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize()), '</div>');
                     ret.push('<div class="mcq-replies">');
                     for (i = totalNumberOfReplies - 1; i >= 0; i -= 1) {
                         reply = allReplies[i];
@@ -890,7 +890,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                      * Step two : build markup
                      */
                     ret.push('<div class="mcq-replies-section">');
-                    ret.push('<div class="mcq-replies-title">', (repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.result').pluralize() : Y.Wegas.I18n.t('mcq.result')), '</div>');
+                    ret.push('<div class="mcq-replies-title">', (repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.results') : Y.Wegas.I18n.t('mcq.result')), '</div>');
                     ret.push('<div class="mcq-replies">');
                     for (j in repliesToDisplay) {
                         reply = repliesToDisplay[j];

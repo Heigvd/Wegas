@@ -189,7 +189,7 @@ angular.module('private.scenarist.settings.directives', [
             templateUrl: 'app/private/scenarist/settings/directives.tmpl/infos-form.html'
         };
     })
-    .directive('scenaristCustomizeAdvanced', function() {
+.directive('scenaristCustomizeAdvanced', function() {
         "use strict";
         return {
             scope: {
