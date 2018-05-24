@@ -268,7 +268,7 @@ YUI.add("wegas-i18n", function(Y) {
             }
             if (inlineEditor === "html") {
                 return "<div class='wegas-translation missing' data-trid='" + trId + "' data-refName=''>MISSING TRANSLATION</div>";
-            } else if (inlineEditor === "html") {
+            } else if (inlineEditor === "string") {
                 return "<span class='wegas-translation missing' data-trid='" + trId + "' data-refName=''>MISSING TRANSLATION</span>";
             } else {
                 return "MISSING TRANSLATION";
