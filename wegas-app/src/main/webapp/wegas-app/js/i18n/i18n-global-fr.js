@@ -15,7 +15,9 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-global", "fr", {
         wegas: {
             player: "joueur",
-            team: "équipe"
+            players: "joueurs",
+            team: "équipe",
+            teams: "équipes"
         },
         global: {
             and: "et",

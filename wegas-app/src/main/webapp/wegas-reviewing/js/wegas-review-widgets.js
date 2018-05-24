@@ -224,16 +224,17 @@ YUI.add("wegas-review-widgets", function(Y) {
         generateMissingText: function(nbMissing, total) {
             var subject, text = "";
             if (nbMissing) {
-                subject = this._freeForAll ? I18n.t("wegas.player") : I18n.t("wegas.team");
                 text = "<i>";
                 if (nbMissing === total) {
                     text += I18n.t("review.editor.no" + (this._freeForAll ? "Player" : "Team") + "Provide");
                 } else {
                     text = "<hr /><i>" + nbMissing + " ";
                     if (nbMissing > 1) {
-                        text += subject.pluralize() + " " + I18n.t("review.editor.didNotProvidePluralized");
+                        text += (this._freeForAll ? I18n.t("wegas.players") : I18n.t("wegas.teams"))
+                            + " " + I18n.t("review.editor.didNotProvidePluralized");
                     } else {
-                        text += subject + " " + I18n.t("review.editor.didNotProvide");
+                        text += (this._freeForAll ? I18n.t("wegas.player") : I18n.t("wegas.team"))
+                            + " " + I18n.t("review.editor.didNotProvide");
                     }
                 }
                 text += "</i>";
