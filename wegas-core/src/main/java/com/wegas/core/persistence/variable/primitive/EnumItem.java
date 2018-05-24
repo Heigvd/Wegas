@@ -17,9 +17,12 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.Orderable;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -75,6 +78,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     /**
      * Internal identifier
      */
+    @WegasEntityProperty
     private String name;
 
     @Column(name = "item_order")
@@ -82,6 +86,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     private Integer order;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private TranslatableContent label;
 
     @Override
@@ -153,6 +158,24 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
         }
     }
 
+    private Mergeable getParent() {
+        if (this.getParentString() != null) {
+            return getParentString();
+        } else {
+            return getParentEvaluation();
+        }
+    }
+
+    @Override
+    public ModelScoped.Visibility getInheritedVisibility() {
+        return getParent().getInheritedVisibility();
+    }
+
+    @Override
+    public boolean isProtected() {
+        return getParent().isProtected();
+    }
+
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         if (this.parentEvaluation != null) {
@@ -173,15 +196,6 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
         }
 
         return null;
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof EnumItem) {
-            EnumItem o = (EnumItem) other;
-            this.setName(o.getName());
-            this.setLabel(TranslatableContent.merger(this.getLabel(), o.getLabel()));
-        }
     }
 
     @Override

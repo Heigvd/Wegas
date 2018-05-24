@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.jta.JCRConnectorProviderTx;
@@ -29,6 +30,7 @@ import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.EnumItem;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
@@ -104,7 +106,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     private ObjectDescriptor createObjectDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, String... values) {
         ObjectDescriptor desc = new ObjectDescriptor();
         desc.setName(name);
-        desc.setLabel(label);
+        desc.setLabel(TranslatableContent.build("def", label));
         desc.setVisibility(visibility);
         desc.setScope(new TeamScope());
 
@@ -134,7 +136,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
             hist.add(h);
         }
         desc.setName(name);
-        desc.setLabel(label);
+        desc.setLabel(TranslatableContent.build("def", label));
         desc.setVisibility(visibility);
         desc.setScope(new TeamScope());
         desc.setMinValue(min);
@@ -156,11 +158,16 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         StringDescriptor desc = new StringDescriptor();
         desc.setDefaultInstance(new StringInstance());
         desc.setName(name);
-        desc.setLabel(label);
+        desc.setLabel(TranslatableContent.build("def", label));
 
+        List<EnumItem> items = new ArrayList<>();
         for (String aV : allowedValues) {
-            desc.getAllowedValues().add(aV);
+            EnumItem enumItem = new EnumItem();
+            enumItem.setName(aV);
+            enumItem.setLabel(TranslatableContent.build("def", label));
+            items.add(enumItem);
         }
+        desc.setAllowedValues(items);
 
         desc.getDefaultInstance().setValue(value);
 
@@ -177,7 +184,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         ListDescriptor desc = new ListDescriptor();
         desc.setDefaultInstance(new ListInstance());
         desc.setName(name);
-        desc.setLabel(label);
+        desc.setLabel(TranslatableContent.build("def", label));
 
         if (parent == null) {
             variableDescriptorFacade.create(gameModel.getId(), desc);
@@ -631,8 +638,14 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.update(o1.getId(), o1);
 
         StringDescriptor s1 = (StringDescriptor) getDescriptor(gameModel1, "aString");
-        s1.getAllowedValues().remove(1);
-        s1.getAllowedValues().add("v11");
+        List<EnumItem> allowedValues = s1.getAllowedValues();
+        allowedValues.remove(1);
+        EnumItem enumItem = new EnumItem();
+        enumItem.setName("v11");
+        enumItem.setLabel(TranslatableContent.build("def", "v11"));
+        allowedValues.add(enumItem);
+        s1.setAllowedValues(allowedValues);
+
         variableDescriptorFacade.update(s1.getId(), s1);
 
         NumberDescriptor nm = (NumberDescriptor) getDescriptor(model, "aNumber");
@@ -680,8 +693,8 @@ public class ModelFacadeTest extends AbstractArquillianTest {
                 ((NumberDescriptor) getDescriptor(gameModel1, "aNumber")).getDefaultInstance().getHistory(),
                 ((NumberDescriptor) getDescriptor(gameModel2, "aNumber")).getDefaultInstance().getHistory());
 
-        List<String> allowedValues1 = ((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues();
-        List<String> allowedValues2 = ((StringDescriptor) getDescriptor(gameModel2, "aString")).getAllowedValues();
+        List<EnumItem> allowedValues1 = ((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues();
+        List<EnumItem> allowedValues2 = ((StringDescriptor) getDescriptor(gameModel2, "aString")).getAllowedValues();
 
         allowedValues1.size();
         allowedValues2.size();
@@ -862,7 +875,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("Create Model");
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
         VariableDescriptor xModel = getDescriptor(model, "x");
-        xModel.setLabel("New Label for x");
+        xModel.setLabel(TranslatableContent.build("def", "New Label for x"));
         variableDescriptorFacade.update(xModel.getId(), xModel);
         modelFacade.propagateModel(model.getId());
 
@@ -1158,15 +1171,15 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         NumberDescriptor yModel = (NumberDescriptor) variableDescriptorFacade.find(model, "y");
         NumberDescriptor zModel = (NumberDescriptor) variableDescriptorFacade.find(model, "z");
 
-        xModel.setLabel("my X");
+        xModel.setLabel(TranslatableContent.build("def", "my X"));
         xModel.getDefaultInstance().setValue(11.0);
         variableDescriptorFacade.update(xModel.getId(), xModel);
 
-        yModel.setLabel("my Y");
+        yModel.setLabel(TranslatableContent.build("def", "my Y"));
         yModel.getDefaultInstance().setValue(12.0);
         variableDescriptorFacade.update(yModel.getId(), yModel);
 
-        zModel.setLabel("my Z");
+        zModel.setLabel(TranslatableContent.build("def", "my Z"));
         zModel.getDefaultInstance().setValue(13.0);
         zModel.getDefaultInstance().getHistory().add(13.0);
         variableDescriptorFacade.update(zModel.getId(), zModel);
@@ -1291,7 +1304,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
          */
         NumberDescriptor y1 = (NumberDescriptor) getDescriptor(model, "y");
 
-        y1.setLabel("my Y");
+        y1.setLabel(TranslatableContent.build("def", "my Y"));
         y1.getDefaultInstance().setValue(22.0);
         variableDescriptorFacade.update(y1.getId(), y1);
         variableDescriptorFacade.move(getDescriptor(model, "y").getId(), 0);
@@ -1577,7 +1590,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         User u = new User();
         userFacade.create(u);
 
-        return gameFacade.joinTeam(t.getId(), u.getId());
+        return gameFacade.joinTeam(t.getId(), u.getId(), null);
     }
 
     /**

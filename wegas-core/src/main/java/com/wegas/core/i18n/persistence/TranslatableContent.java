@@ -11,11 +11,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -68,6 +71,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<Translation> translations = new ArrayList<>();
 
     @Override
@@ -141,13 +145,6 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         this.translations.clear();
         for (Entry<String, String> entry : translations.entrySet()) {
             this.translations.add(new Translation(entry.getKey(), entry.getValue()));
-        }
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof TranslatableContent) {
-            this.setTranslations(((TranslatableContent) other).getTranslations());
         }
     }
 
@@ -335,6 +332,24 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
             return owner.getEntities();
         }
         return null;
+    }
+
+    private Mergeable getParent() {
+        if (this.getParentDescriptor() != null) {
+            return getParentDescriptor();
+        } else {
+            return getParentInstance();
+        }
+    }
+
+    @Override
+    public boolean isProtected() {
+        return getParent().isProtected();
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return getParent().getInheritedVisibility();
     }
 
     /**

@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;

@@ -9,8 +9,10 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Orderable;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
@@ -59,11 +61,13 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
      * short name like en, en_uk, or fr_ch
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
+    @WegasEntityProperty
     private String code;
 
     /**
      * Language name to display
      */
+    @WegasEntityProperty
     private String lang;
 
     /**
@@ -72,6 +76,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     private Integer indexOrder;
 
     @Column(columnDefinition = "boolean default true")
+    @WegasEntityProperty
     private boolean active = true;
 
     @ManyToOne
@@ -81,6 +86,11 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     @Override
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public ModelScoped.Visibility getInheritedVisibility() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -148,12 +158,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof GameModelLanguage) {
-            GameModelLanguage lg = (GameModelLanguage) other;
-            this.setCode(lg.getCode());
-            this.setActive(lg.isActive());
-            this.setLang(lg.getLang());
-        }
+    public boolean isProtected() {
+        return this.getGameModel().isProtected();
     }
 }

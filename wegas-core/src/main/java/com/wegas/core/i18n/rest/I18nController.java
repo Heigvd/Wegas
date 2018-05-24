@@ -7,7 +7,6 @@
  */
 package com.wegas.core.i18n.rest;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;

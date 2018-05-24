@@ -9,7 +9,6 @@ package com.wegas.messaging.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;

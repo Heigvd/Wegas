@@ -7,7 +7,6 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Entity;
 
 /**

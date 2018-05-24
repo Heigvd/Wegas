@@ -19,7 +19,9 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -69,6 +71,7 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
      */
     @JsonDeserialize(using = TranslationDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private TranslatableContent file;
 
     @Override
@@ -114,11 +117,13 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Attachment) {
-            Attachment o = (Attachment) other;
-            this.setFile(TranslatableContent.merger(this.getFile(), o.getFile()));
-        }
+    public boolean isProtected() {
+        return this.getMessage().isProtected();
+    }
+
+    @Override
+    public ModelScoped.Visibility getInheritedVisibility() {
+        return this.getMessage().getInheritedVisibility();
     }
 
     @Override

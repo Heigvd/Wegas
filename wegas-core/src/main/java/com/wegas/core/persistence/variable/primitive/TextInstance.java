@@ -11,10 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -23,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import java.util.List;
-import javax.persistence.Column;
 import javax.persistence.CascadeType;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;

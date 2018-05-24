@@ -143,25 +143,25 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testMergeAssignmentsOrder() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel("Paul");
+        res.setLabel(TranslatableContent.build("def", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task1 = new TaskDescriptor();
-        task1.setLabel("My task");
+        task1.setLabel(TranslatableContent.build("def", "My task"));
         task1.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task1);
 
         // Create a task1
         TaskDescriptor task2 = new TaskDescriptor();
-        task2.setLabel("My second task");
+        task2.setLabel(TranslatableContent.build("def", "My second task"));
         task2.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task2);
 
         // Create a task3
         TaskDescriptor task3 = new TaskDescriptor();
-        task3.setLabel("My third task");
+        task3.setLabel(TranslatableContent.build("def", "My third task"));
         task3.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task3);
 
