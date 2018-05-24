@@ -7,9 +7,11 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
+import jdk.nashorn.api.scripting.JSObject;
 
 /**
  *
@@ -17,14 +19,12 @@ import javax.persistence.Entity;
  */
 @Entity
 public class TextDescriptor extends VariableDescriptor<TextInstance>
-implements PrimitiveDescriptorI<String>{
+        implements PrimitiveDescriptorI<String> {
 
     private static final long serialVersionUID = 1L;
 
     // ~~~ Sugar for scripts ~~~
-
     /**
-     *
      * @param p
      * @param value
      */
@@ -36,6 +36,26 @@ implements PrimitiveDescriptorI<String>{
     /**
      *
      * @param p
+     * @param value
+     */
+    public void setValue(Player p, TranslatableContent value) {
+        this.getInstance(p).setValue(value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     */
+    public void setValue(Player p, JSObject value) {
+        this.getInstance(p).setValue(value);
+    }
+
+
+    /**
+     *
+     * @param p
+     *
      * @return value of player instance
      */
     @Override
@@ -43,4 +63,13 @@ implements PrimitiveDescriptorI<String>{
         return this.getInstance(p).getValue();
     }
 
+    /**
+     *
+     * @param p
+     *
+     * @return value of player instance
+     */
+    public TranslatableContent getTrValue(Player p) {
+        return this.getInstance(p).getTrValue();
+    }
 }

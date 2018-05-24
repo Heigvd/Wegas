@@ -35,7 +35,7 @@ interface IAsyncSelectProps {
 const selectStyle = css({
     padding: '2px 4px 3px 4px',
     border: '1px solid lightgray',
-    width: '130px',
+    maxWidth: '100%',
 });
 
 function genItems(o: string | Choice, i: number) {

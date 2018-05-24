@@ -8,6 +8,8 @@
 package com.wegas.reviewing.persistence;
 
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
@@ -19,6 +21,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 /**
  * Instance of the PeerReviewDescriptor variable Author:<br />
@@ -31,9 +34,13 @@ import javax.persistence.OneToMany;
  * @see PeerReviewDescriptor
  */
 @Entity
-public class PeerReviewInstance extends VariableInstance {
+public class PeerReviewInstance extends VariableInstance implements AcceptInjection {
 
     private static final long serialVersionUID = 1L;
+
+    @JsonIgnore
+    @Transient
+    private Beanjection beans;
 
     /**
      * Current review state
@@ -135,24 +142,21 @@ public class PeerReviewInstance extends VariableInstance {
         beans.getReviewingFacade().revivePeerReviewInstance(this);
     }
 
-    /**
-     * Skip this {@link #getRequieredReadPermission() } implementation.
-     * call super one.
-     */
-    private Collection<WegasPermission> super_getRequieredReadPermission() {
-        return super.getRequieredReadPermission();
-    }
-
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         Collection<WegasPermission> ps = super.getRequieredReadPermission();
+
         // reviewer also have right to read
         for (Review r : getReviewed()) {
-            ps.addAll(r.getReviewer().super_getRequieredReadPermission()); // avoid infinite loop
+            // review may not be fully loaded yet...
+            r.setBeanjection(this.beans);
+            ps.addAll(r.getRequieredReadPermission());
         }
         // so authors have
         for (Review r : getToReview()) {
-            ps.addAll(r.getAuthor().super_getRequieredReadPermission()); // avoid infinite loop
+            // review may not be fully loaded yet...
+            r.setBeanjection(this.beans);
+            ps.addAll(r.getRequieredReadPermission());
         }
         return ps;
     }
@@ -181,5 +185,10 @@ public class PeerReviewInstance extends VariableInstance {
             }
         }
         return ps;
+    }
+
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
     }
 }

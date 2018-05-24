@@ -9,18 +9,12 @@
  * @fileoverview
  * @author Maxence Laurent <maxence.laurent> <gmail.com>
  */
-var i18nOrdinate = (function(module) {
-    return module;
-}(i18nOrdinate || {})),
-    i18nTable = (function(module) {
-        return module;
-    }(i18nTable || {}));
 /*
  * REGEX
  * Accent detection : [^\w\s\d\{\}\[\],.%\*\/\(\)<>@.:\"\\=;|\'-+&#]
  *
  */
-i18nTable.fr = {
+I18n.add("fr" , {
     wc: "Nombre de mots",
     cc: "Nombre de signes",
     data: "Textes",
@@ -41,13 +35,4 @@ i18nTable.fr = {
     ready: "Terminé",
     na: "N/A",
     evicted: "Évincé"
-};
-i18nOrdinate.fr = function(number) {
-    "use strict";
-    switch (number) {
-        case 1:
-            return number + "er";
-        default:
-            return number + "e";
-    }
-};
+});

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import ReactSelect from 'react-select';
 
 class GameSelect extends React.Component {

@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -81,6 +83,7 @@ YUI.add('wegas-app', function(Y) {
                 events = [], event,
                 requestCounter = 0, //                                          // Request counter 
                 onRequest = function() { // When a response to initial requests is received
+                    var playerRefName, playerLanguage;
                     requestCounter -= 1;
                     Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
 
@@ -90,12 +93,31 @@ YUI.add('wegas-app', function(Y) {
                         }
                         this.plug(Y.Plugin.LockManager);
                         this.fire("preRender");
-                        Y.later(10, this, function() { // Let the loading div update
-                            this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
-                                .render(); // and render it
-                            this.fire("render"); // Fire a render event for some eventual post processing
-                            Y.one(".wegas-loading-app").remove();
-                        });
+
+                        playerRefName = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("refName");
+                        playerLanguage = I18n.findLanguageByRefName(playerRefName);
+                        if (playerLanguage && playerLanguage.get("active")) {
+                            I18n.setRefName(playerRefName);
+
+                            Y.later(10, this, function() { // Let the loading div update
+                                this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
+                                    .render(); // and render it
+                                this.fire("render"); // Fire a render event for some eventual post processing
+                                Y.one(".wegas-loading-app").remove();
+                            });
+                        } else {
+                            I18n.resetPlayerRefName(Y.bind(function(newRefName) {
+                                I18n.setRefName(newRefName);
+                                Y.later(10, this, function() { // Let the loading div update
+                                    this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
+                                        .render(); // and render it
+                                    this.fire("render"); // Fire a render event for some eventual post processing
+                                    Y.one(".wegas-loading-app").remove();
+                                });
+                            }, this));
+                        }
+
+
                     }
                 };
 

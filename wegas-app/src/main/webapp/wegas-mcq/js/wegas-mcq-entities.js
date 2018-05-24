@@ -36,7 +36,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
         value: 'self',
         view: {type: HIDDEN}
     };
-
     /**
      * QuestionDescriptor mapper
      */
@@ -52,16 +51,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             "@class": {
                 type: STRING,
                 value: "QuestionDescriptor"
-            },
-            title: {
-                type: STRING,
-                optional: true,
-                value: "",
-                index: -1,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players"
-                }
             },
             minReplies: {
                 type: ['null', NUMBER],
@@ -138,14 +127,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 index: 10
             },
-            description: {
-                type: STRING,
-                value: "",
-                optional: true,
-                format: HTML,
+            description: Y.Wegas.Helper.getTranslationAttr({
+                label: "Description",
                 index: 12,
-                view: {type: HTML, label: "Description"}
-            },
+                type: HTML
+            }),
             defaultInstance: {
                 type: "object",
                 required: true,
@@ -333,25 +319,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 "@class": {
                     value: "ChoiceDescriptor"
                 },
-                title: {
-                    type: STRING,
-                    value: "",
-                    optional: true,
-                    index: -1,
-                    view: {
-                        label: "Label",
-                        description: "Displayed to players"
-                    }
-                },
-                description: {
-                    type: STRING,
-                    value: "",
-                    optional: true,
-                    view: {
-                        type: HTML,
-                        label: "Description"
-                    }
-                },
+                description: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Description",
+                    type: HTML
+                }),
                 defaultInstance: {
                     properties: {
                         '@class': {
@@ -587,9 +558,23 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     type: ARRAY,
                     maxItems: 1,
                     minItems: 1,
-                    value: [{
-                            "@class": "Result"
-                        }],
+                    valueFn: function() {
+                        return [{
+                                "@class": "Result",
+                                label: {
+                                    "@class": "TranslatableContent",
+                                    translations: {}
+                                },
+                                answer: {
+                                    "@class": "TranslatableContent",
+                                    translations: {}
+                                },
+                                ignorationAnswer: {
+                                    "@class": "TranslatableContent",
+                                    translations: {}
+                                }
+                            }];
+                    },
                     view: {type: ARRAY},
                     items: {
                         type: OBJECT,
@@ -622,23 +607,18 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 }
                             },
                             label: {
-                                type: NULLSTRING,
+                                type: "object",
                                 optional: true,
                                 view: {
                                     type: HIDDEN
                                 }
                             },
-                            answer: {
-                                type: STRING,
-                                value: "",
-                                optional: true,
+                            answer: Y.Wegas.Helper.getTranslationAttr({
+                                label: "Feedback",
                                 index: 1,
-                                view: {
-                                    type: HTML,
-                                    label: "Feedback",
-                                    borderTop: true
-                                }
-                            },
+                                type: HTML,
+                                borderTop: true
+                            }),
                             impact: {
                                 optional: true,
                                 index: 2,
@@ -654,19 +634,15 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                     type: SCRIPT
                                 }
                             },
-                            ignorationAnswer: {
-                                type: NULLSTRING,
+                            ignorationAnswer: Y.Wegas.Helper.getTranslationAttr({
+                                label: "Feedback when ignored",
                                 index: 4,
+                                borderTop: true,
                                 visible: function(val, formVal) {
                                     return Y.Wegas.Facade.Variable.cache.findById(formVal.id).getParent().get("cbx");
                                 },
-                                view: {
-                                    type: HTML,
-                                    label: "Feedback when ignored",
-                                    description: "Only for checkbox replies",
-                                    borderTop: true
-                                }
-                            },
+                                type: HTML
+                            }),
                             ignorationImpact: {
                                 type: ["null", OBJECT],
                                 properties: {
@@ -683,7 +659,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                     type: SCRIPT
                                 },
                                 index: 5,
-
                             },
                             choiceDescriptorId: IDATTRDEF,
                             files: {
@@ -759,7 +734,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             return this.get("label");
         },
         getEditorLabel: function() {
-            return this.get("label");
+            return I18n.t(this.get("label"));
         },
         getIconCss: function() {
             return "fa fa-cog";
@@ -780,17 +755,15 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 index: -1
             },
-            label: {
-                type: STRING,
-                "transient": false,
-                getter: function(val) {
-                    return val || this.get("name");
-                },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
                 index: -1,
-                view: {
-                    label: "Name"
+                type: STRING,
+                visible: function(val, formVal) {
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    return parent ? parent.get("@class") === "ChoiceDescriptor" : false;
                 }
-            },
+            }),
             name: {
                 value: "",
                 type: STRING,
@@ -806,16 +779,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
-            answer: {
-                type: NULLSTRING,
-                optional: true,
-                view: {
-                    type: HTML,
-                    label: "Feedback",
-                    borderTop: true
-                },
-                index: 10
-            },
+            answer: Y.Wegas.Helper.getTranslationAttr({
+                label: "Feedback",
+                index: 10,
+                type: HTML
+            }),
             impact: {
                 type: ["null", OBJECT],
                 properties: {
@@ -830,20 +798,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 index: 11
             },
-            ignorationAnswer: {
-                type: NULLSTRING,
-                optional: true,
+            ignorationAnswer: Y.Wegas.Helper.getTranslationAttr({
+                label: "Feedback when ignored",
+                index: 12,
+                borderTop: true,
                 visible: function(val, formVal) {
                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
                     return parent ? parent.getParent().get("cbx") : false;
                 },
-                view: {
-                    type: HTML,
-                    label: "Feedback when ignored",
-                    borderTop: true
-                },
-                index: 12
-            },
+                type: HTML
+            }),
             ignorationImpact: {
                 type: ["null", OBJECT],
                 properties: {
@@ -1041,13 +1005,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             },
             answer: {
-                type: STRING,
+                type: OBJECT,
                 view: {
                     type: HIDDEN
                 }
             },
             ignorationAnswer: {
-                type: STRING,
+                type: OBJECT,
                 view: {
                     type: HIDDEN
                 }
@@ -1063,9 +1027,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             }
         }
     });
-
-
-
     /*
      * Wh-Questions
      */
@@ -1084,22 +1045,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 value: "WhQuestionDescriptor"
             },
-            title: {
-                type: NULLSTRING,
-                optional: true,
-                value: "",
-                index: -1,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players"
-                }
-            },
-            description: {
-                type: NULLSTRING,
-                format: HTML,
+            description: Y.Wegas.Helper.getTranslationAttr({
+                label: "Description",
                 index: 12,
-                view: {type: HTML, label: "Description"}
-            },
+                type: HTML
+            }),
             defaultInstance: {
                 type: "object",
                 required: true,
@@ -1220,8 +1170,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             }
         }
     });
-
-
     /**
      * WhQuestionInstance mapper
      */

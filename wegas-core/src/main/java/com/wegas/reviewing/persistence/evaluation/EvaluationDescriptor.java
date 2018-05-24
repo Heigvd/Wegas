@@ -13,9 +13,14 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
@@ -41,7 +46,9 @@ import javax.persistence.*;
             @UniqueConstraint(columnNames = {"container_id", "name"}),
             @UniqueConstraint(columnNames = {"container_id", "label"}),},
         indexes = {
-            @Index(columnList = "container_id")
+            @Index(columnList = "container_id"),
+            @Index(columnList = "label_id"),
+            @Index(columnList = "description_id")
         }
 )
 @JsonSubTypes(value = {
@@ -50,7 +57,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance>
-        extends AbstractEntity implements LabelledEntity {
+        extends AbstractEntity implements LabelledEntity, Searchable {
 
     @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
@@ -79,15 +86,18 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * Evaluation label as displayed to players
      */
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonDeserialize(using = TranslationDeserializer.class)
     @WegasEntityProperty
-    private String label;
+    private TranslatableContent label;
 
     /**
      * Textual descriptor to be displayed to players
      */
-    @Lob
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonDeserialize(using = TranslationDeserializer.class)
     @WegasEntityProperty
-    private String description;
+    private TranslatableContent description;
 
     /**
      * the parent,
@@ -120,13 +130,16 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     }
 
     @Override
-    public String getLabel() {
+    public TranslatableContent getLabel() {
         return label;
     }
 
     @Override
-    public void setLabel(String label) {
+    public void setLabel(TranslatableContent label) {
         this.label = label;
+        if (this.label != null && this.getContainer() != null) {
+            this.label.setParentDescriptor(this.getContainer().getParent());
+        }
     }
 
     /**
@@ -149,18 +162,15 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
         this.name = name;
     }
 
-    /**
-     * @return the description
-     */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null && this.getContainer() != null) {
+            this.description.setParentDescriptor(this.getContainer().getParent());
+        }
     }
 
     /**
@@ -260,5 +270,12 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getEffectiveContainer().getRequieredReadPermission();
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        return  Helper.insensitiveContainsAll(getName(), criterias)
+                || Helper.insensitiveContainsAll(getLabel(), criterias)
+                || Helper.insensitiveContainsAll(getDescription(), criterias);
     }
 }

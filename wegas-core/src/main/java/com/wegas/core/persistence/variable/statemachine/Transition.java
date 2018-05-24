@@ -29,14 +29,14 @@ import javax.persistence.*;
  */
 @Entity
 @Access(AccessType.FIELD)
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
 @Table(
         indexes = {
-            @Index(columnList = "state_id")
+            @Index(columnList = "state_id"),
+            @Index(columnList = "actiontext_id")
         }
 )
 public class Transition extends AbstractEntity implements Searchable, Scripted {

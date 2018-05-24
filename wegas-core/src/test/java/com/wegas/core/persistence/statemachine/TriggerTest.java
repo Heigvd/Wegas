@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.statemachine;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
@@ -55,12 +56,12 @@ public class TriggerTest {
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
         assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(this.triggerDescriptor.getPostTriggerEvent()));
         //testing onLoad method
-        this.triggerDescriptor.setTriggerEvent(null);
-        this.triggerDescriptor.setPostTriggerEvent(null);
+        this.triggerDescriptor.setTriggerEvent(new Script());
+        this.triggerDescriptor.setPostTriggerEvent(new Script());
         this.triggerDescriptor.buildStateMachine();
-        assertTrue(this.triggerDescriptor.getPostTriggerEvent() == null);
-        assertTrue(this.triggerDescriptor.getTriggerEvent() == null);
-        assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent() == null);
+        assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getPostTriggerEvent().getContent()));
+        assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getTriggerEvent().getContent()));
+        assertTrue(Helper.isNullOrEmpty(triggerDescriptor.getStates().get(2L).getOnEnterEvent().getContent()));
     }
 
     /**
@@ -76,11 +77,11 @@ public class TriggerTest {
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
         assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(scriptEntity));
         //testing onLoad method
-        this.triggerDescriptor.setTriggerEvent(null);
-        this.triggerDescriptor.setPostTriggerEvent(null);
+        this.triggerDescriptor.setTriggerEvent(new Script());
+        this.triggerDescriptor.setPostTriggerEvent(new Script());
         this.triggerDescriptor.buildStateMachine();
-        assertTrue(this.triggerDescriptor.getPostTriggerEvent() == null);
-        assertTrue(this.triggerDescriptor.getTriggerEvent() == null);
+        assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getPostTriggerEvent().getContent()));
+        assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getTriggerEvent().getContent()));
     }
 
     @Test

@@ -162,7 +162,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
                 }
                 if (transition instanceof DialogueTransition
                         && ((DialogueTransition) transition).getActionText() != null
-                        && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
+                        && !((DialogueTransition) transition).getActionText().translateOrEmpty(player).isEmpty()) {                 // Dialogue, don't eval if not null or empty
                     continue;
                 } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;

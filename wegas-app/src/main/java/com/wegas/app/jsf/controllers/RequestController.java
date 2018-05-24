@@ -9,6 +9,7 @@ package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
@@ -196,6 +197,10 @@ public class RequestController implements Serializable {
      */
     public void setDebug(String debug) {
         this.debug = debug;
+    }
+
+    public boolean useYUICDN(){
+        return Boolean.valueOf(Helper.getWegasProperty("useYUICDN", "false"));
     }
 
     public Boolean debugMode() {

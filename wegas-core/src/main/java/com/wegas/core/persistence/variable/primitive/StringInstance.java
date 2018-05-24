@@ -7,25 +7,37 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.IOException;
+import javax.persistence.CascadeType;
+import javax.persistence.Index;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import java.util.List;
-import javax.persistence.Column;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+@Table(indexes = {
+    @Index(columnList = "trvalue_id")
+})
 @Entity
 public class StringInstance extends VariableInstance implements Searchable {
 
@@ -33,28 +45,75 @@ public class StringInstance extends VariableInstance implements Searchable {
 
     private static final Logger logger = LoggerFactory.getLogger(StringInstance.class);
 
-    @Column(name = "val")
-    @WegasEntityProperty
-    private String value;
-
     /**
      *
      */
-    public StringInstance() {
-    }
-
-    /**
-     * @param value
-     */
-    public StringInstance(String value) {
-        this.value = value;
-    }
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @WegasEntityProperty
+    private TranslatableContent trValue;
 
     /**
      * @return the value
      */
+    public TranslatableContent getTrValue() {
+        return trValue;
+    }
+
+    @JsonIgnore
     public String getValue() {
-        return value;
+        return this.getTrValue().translateOrEmpty(this.getEffectiveOwner().getAnyLivePlayer());
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setTrValue(TranslatableContent value) {
+        this.trValue = value;
+        if (this.trValue != null) {
+            this.trValue.setParentInstance(this);
+        }
+    }
+
+    public void setValue(TranslatableContent trValue) {
+        this.setTrValue(trValue);
+    }
+
+    /**
+     * Setter used by nashorn
+     *
+     * @param value
+     */
+    public void setValue(JSObject value) {
+        TranslatableContent readFromNashorn = TranslatableContent.readFromNashorn(value);
+        if (readFromNashorn != null && this.getTrValue() != null) {
+            this.getTrValue().merge(readFromNashorn);
+        }
+    }
+
+    /**
+     * Value can be a string "as-is", or JSON array of string.
+     * <p>
+     * If the StringDescriptor defines some allowed values, the as-is value or
+     * each string in the array must equal one of the allowed values. Otherwise,
+     * a WegasErrorMessage is therown.
+     *
+     * @param value the value to set
+     */
+    @JsonProperty
+    public void setValue(String value) {
+        VariableDescriptor vd = this.findDescriptor();
+        if (vd instanceof StringDescriptor && value != null) {
+            StringDescriptor sd = (StringDescriptor) vd;
+            String[] values = this.parseValues(value);
+            for (String v : values) {
+                if (!sd.isValueAllowed(v)) {
+                    throw WegasErrorMessage.error("Value \"" + value + "\" not allowed !");
+                }
+            }
+        }
+
+        this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build("def", value)));
     }
 
     /**
@@ -78,32 +137,8 @@ public class StringInstance extends VariableInstance implements Searchable {
         return values;
     }
 
-    /**
-     * Value can be a string "as-is", or JSON array of string.
-     * <p>
-     * If the StringDescriptor defines some allowed values, the as-is value or
-     * each string in the array must equal one of the allowed values. Otherwise,
-     * a WegasErrorMessage is therown.
-     *
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        VariableDescriptor vd = this.findDescriptor();
-        if (vd instanceof StringDescriptor && value != null) {
-            StringDescriptor sd = (StringDescriptor) vd;
-            String[] values = this.parseValues(value);
-            for (String v : values) {
-                if (!sd.isValueAllowed(v)) {
-                    throw WegasErrorMessage.error("Value \"" + value + "\" not allowed !");
-                }
-            }
-        }
-
-        this.value = value;
-    }
-
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getValue(), criterias);
+        return Helper.insensitiveContainsAll(getTrValue(), criterias);
     }
 }

@@ -1,8 +1,9 @@
 import React from 'react';
 import { types, print, parse, visit } from 'recast';
+import { isEqual } from 'lodash-es';
 import ArgForm from './ArgForm';
 
-const { builders: b } = types;
+const {builders: b, namedTypes: n} = types;
 /**
  * Handle a Form's' schema for unknown datatypes, pass in an entity.
  * @param {{type:string}} schema The schema
@@ -26,7 +27,7 @@ export const argSchema = (schema, entity) => {
  * and
  * @returns {Object} AST node
  */
-export function valueToType(value, schema) {
+export function valueToAST(value, schema) {
     if (value === undefined) {
         return b.identifier('undefined');
     }
@@ -38,7 +39,8 @@ export function valueToType(value, schema) {
         case 'identifier':
             return b.identifier(value);
         case 'array':
-        case 'object': {
+        case 'object':
+        {
             const x = parse(`( ${JSON.stringify(value)} )`).program.body[0]
                 .expression;
             return x;
@@ -50,23 +52,23 @@ export function valueToType(value, schema) {
 
 /**
  * Convert AST to value based on a type
- * @param {Object} value the AST node value
+ * @param {Object} ast the AST node value
  * @param {{type:string}} schema value's jsonschema
  * @returns {?} The inferred value.
  */
-export function typeToValue(value, schema) {
+export function astToValue(ast, schema) {
     const tmp = [];
     let tmpNum;
-    if (!value || value.name === 'undefined') {
+    if (!ast || ast.name === 'undefined') {
         return undefined;
     }
     switch (schema.type) {
         case 'string':
         case 'boolean':
-            return value.value;
+            return ast.value;
         case 'number':
             // handle negative values.
-            visit(value, {
+            visit(ast, {
                 visitNode() {
                     throw Error('Unhandled');
                 },
@@ -82,34 +84,48 @@ export function typeToValue(value, schema) {
             tmpNum = tmp.join('');
             return Number.isNaN(Number(tmpNum)) ? tmpNum : Number(tmpNum);
         case 'identifier':
-            return value.name;
+            return ast.name;
         case 'array':
         case 'object':
             // eslint-disable-next-line no-new-func
-            tmpNum = Function(`"use strict";return ${print(value).code};`)();
+            tmpNum = Function(`"use strict";return ${print(ast).code};`)();
             return typeof tmpNum === 'object' ? tmpNum : undefined;
         default:
             throw Error(`Unknown schema.type ${schema.type}`);
     }
 }
 
+function isLiteralNumber(AST) {
+    return n.Literal.check(AST) && typeof AST.value === 'number';
+}
 /**
  * Check if a given AST matches its schema
- * @param {Object} value The ast node
+ * @param {Object} ast The ast node
  * @param {{type:string}} schema The schema to check against
  */
-export function matchSchema(value, schema) {
-    const newVal = typeToValue(value, schema);
+export function matchSchema(ast, schema) {
+    // undefined matches everything
+    if (n.Identifier.check(ast) && ast.name === 'undefined') {
+        return true;
+    }
     switch (schema.type) {
         case 'string':
         case 'boolean':
-        case 'number':
             // eslint-disable-next-line
-            return typeof newVal === schema.type;
+            return n.Literal.check(ast) && typeof ast.value === schema.type;
+        case 'number':
+            return (
+                isLiteralNumber(ast) ||
+                (n.UnaryExpression.check(ast) &&
+                    ['+', '-'].includes(ast.operator) &&
+                    isLiteralNumber(ast.argument))
+            );
         case 'array':
-            return Array.isArray(newVal);
+            return n.ArrayExpression.check(ast);
         case 'object':
-            return !Array.isArray(newVal) && typeof newVal === 'object';
+            return n.ObjectExpression.check(ast);
+        case 'identifier':
+            return n.Identifier.check(ast);
         default:
             return false;
     }
@@ -133,8 +149,8 @@ export function renderForm(astValue, descriptor, onChange, entity, key) {
             schema={descriptor}
             onChange={onChange}
             key={key}
-        />
-    );
+            />
+        );
 }
 /**
  * Generate an array of forms for each function's arguments
@@ -150,7 +166,7 @@ export function handleMethodArgs(methodDescr, args, onChange, entity) {
         return [];
     }
     const argDescr = methodDescr.arguments;
-    const ret = argDescr.map((v, i) => args[i] || valueToType(undefined, v));
+    const ret = argDescr.map((v, i) => args[i] || valueToAST(undefined, v));
 
     return argDescr.map((a, i) => {
         const val = ret[i];
@@ -163,6 +179,24 @@ export function handleMethodArgs(methodDescr, args, onChange, entity) {
             },
             entity,
             i
-        );
+            );
     });
+}
+/**
+ * Update an argument given a schema.
+ * Force const or replace with default value if value does
+ * not match a schema.
+ * @param {*} value
+ * @param {{const?:*, value?:*, type:string}} schema
+ */
+export function updateArgSchema(value, schema) {
+    if (
+        'const' in schema &&
+        !isEqual(schema.const, astToValue(value, schema))
+    ) {
+        return valueToAST(schema.const, schema);
+    } else if (!matchSchema(value, schema)) {
+        return valueToAST(schema.value, schema);
+    }
+    return value;
 }

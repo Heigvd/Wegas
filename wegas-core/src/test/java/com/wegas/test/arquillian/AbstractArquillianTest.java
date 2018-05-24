@@ -103,7 +103,7 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         team.setName("test-team");
         teamFacade.create(game.getId(), team);
 
-        player = gameFacade.joinTeam(team.getId(), user.getId());
+        player = gameFacade.joinTeam(team.getId(), user.getId(), null);
 
         login(admin);
         requestFacade.setPlayer(player.getId());
@@ -126,10 +126,10 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         teamFacade.create(game.getId(), team2);
 
         login(user21);
-        player21 = gameFacade.joinTeam(team2.getId(), user21.getId());
+        player21 = gameFacade.joinTeam(team2.getId(), user21.getId(), null);
 
         login(user22);
-        player22 = gameFacade.joinTeam(team2.getId(), user22.getId());
+        player22 = gameFacade.joinTeam(team2.getId(), user22.getId(), null);
 
         login(admin);
         requestFacade.setPlayer(player.getId());

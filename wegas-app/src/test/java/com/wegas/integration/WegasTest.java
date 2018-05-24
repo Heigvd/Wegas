@@ -203,7 +203,8 @@ public class WegasTest {
     public void createGameTest() throws IOException, JSONException {
         Game myGame = client.postJSON_asString("/rest/GameModel/" + this.artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}", Game.class);
 
-        Game myGameFromGet = client.get("/rest/GameModel/Game/" + myGame.getId(), Game.class);
+        /* Use Editor view to load teams: */
+        Game myGameFromGet = client.get("/rest/Editor/GameModel/Game/" + myGame.getId(), Game.class);
 
 
         /* Is the debug team present */

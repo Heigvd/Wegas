@@ -10,7 +10,7 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  * @author Gérald Eberle
  */
-/*global Chartist*/
+/*global Chartist, I18n*/
 YUI.add("wegas-statistics", function(Y) {
     "use strict";
     var Data,
@@ -104,6 +104,13 @@ YUI.add("wegas-statistics", function(Y) {
                         series: []
                     },
                     CHART_BAR_OPT);
+
+                // Todo: should use kind of gameModel.flatten(filter: QuestionDescriptor) to keep treeview order
+                questions.sort(function(a, b) {
+                    var aPath = getPath(a),
+                        bPath = getPath(b);
+                    return (aPath < bPath ? -1 : 1);
+                });
                 Y.Array.each(questions, function(i) {
                     selectQNode.appendChild("<option value='" + i.get("name") + "'>" + getPath(i) + "</option>");
                 });
@@ -263,7 +270,7 @@ YUI.add("wegas-statistics", function(Y) {
             Y.Array.each(question.get("items"), function(i) {
                 choices[(i.get("name"))] = {};
                 Y.Array.each(i.get("results"), function(r) {
-                    choices[(i.get("name"))][r.get("label")] = 0;
+                    choices[(i.get("name"))][I18n.t(r.get("label"))] = 0;
                 });
 
             });
@@ -273,7 +280,7 @@ YUI.add("wegas-statistics", function(Y) {
             });
             Y.Object.each(choices, function(v, k) {
                 Y.Object.each(v, function(val, key) {
-                    labels.push(Y.Wegas.Facade.Variable.cache.find("name", k).get("label") +
+                    labels.push(I18n.t(Y.Wegas.Facade.Variable.cache.find("name", k).get("label")) +
                         (key ? " (" + key + ")" : ""));
                     res.push(val / (count ? count : 1) * 100);
                 });

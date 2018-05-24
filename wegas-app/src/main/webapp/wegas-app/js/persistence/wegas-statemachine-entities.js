@@ -281,10 +281,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             stateMachineId: IDATTRDEF,
             version: VERSION_ATTR_DEF,
             label: {
-                type: STRING,
+                type: [NULL, STRING],
                 "transient": false,
                 view: {
-                    label: "Name"
+                    label: "Label"
                 }
             },
             onEnterEvent: {
@@ -419,13 +419,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         type: NUMBER,
                         view: {type: HIDDEN}
                     },
-                    id: {
-                        type: NUMBER,
-                        view: {
-                            type: 'uneditable',
-                            className: 'wegas-advanced-feature'
-                        }
-                    },
+                    id: IDATTRDEF,
                     enabled: {
                         type: BOOLEAN,
                         value: true,
@@ -569,14 +563,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "DialogueDescriptor"
             },
-            title: {
-                type: [NULL, STRING],
-                index: 0,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players"
-                }
-            },
             states: {
                 valueFn: function() {
                     return {
@@ -614,18 +600,11 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "DialogueTransition"
             },
-            actionText: {
-                type: STRING,
+            actionText: Y.Wegas.Helper.getTranslationAttr({
+                label: "Text",
                 index: -1,
-                value: null,
-                validator: function(s) {
-                    return s === null || Y.Lang.isString(s);
-                },
-                view: {
-                    type: HTML,
-                    label: "Text"
-                }
-            }
+                type: HTML
+            })
         }
     });
 
@@ -681,36 +660,25 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             this.set(TEXT, a.join(token));
         }
     }, {
-            EDITORNAME: "server text",
-            ATTRS: {
-                "@class": {
-                    value: "DialogueState"
-                },
-                version: VERSION_ATTR_DEF,
-                text: {
-                    type: [NULL, STRING],
-                    value: null,
-                    index: -1,
-                    validator: function(s) {
-                        return s === null || Y.Lang.isString(s);
-                    },
-                    view: {
-                        type: HTML,
-                        label: "Text"
-                    }
-                },
-                view: {
-                    type: HTML,
-                    label: "Text"
-                }
+        EDITORNAME: "server text",
+        ATTRS: {
+            "@class": {
+                value: "DialogueState"
             },
+            version: VERSION_ATTR_DEF,
+
+            text: Y.Wegas.Helper.getTranslationAttr({
+                label: "Text",
+                index: -1,
+                type: HTML
+            }),
             label: {
                 view: {
                     type: HIDDEN
                 }
             }
         }
-    );
+    });
     /**
      * Coordinate embeddable mapper
      **/

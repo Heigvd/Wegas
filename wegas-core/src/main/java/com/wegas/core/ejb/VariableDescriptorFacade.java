@@ -13,6 +13,7 @@ import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.merge.utils.MergeHelper;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -141,19 +142,28 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
 
         List<String> usedNames = this.findDistinctNames(gameModel, entity.getRefId());
-        List<String> usedLabels = this.findDistinctLabels(list);
+        List<TranslatableContent> usedLabels = this.findDistinctLabels(list);
 
-        boolean hasName = !Helper.isNullOrEmpty(entity.getName());
-        boolean hasLabel = !Helper.isNullOrEmpty(entity.getLabel());
+        String baseLabel = null;
 
-        if (hasName && !hasLabel) {
-            entity.setLabel(entity.getName());
-        } else if (hasLabel && !hasName) {
-            entity.setName(entity.getLabel());
+        if (entity.getLabel() != null) {
+            // fetch the most preferred label
+            baseLabel = entity.getLabel().translateOrEmpty(gameModel);
         }
 
-        Helper.setUniqueName(entity, usedNames);
-        Helper.setUniqueLabel(entity, usedLabels);
+        if (Helper.isNullOrEmpty(entity.getName()) && !Helper.isNullOrEmpty(baseLabel)) {
+            // no name, but a label
+            entity.setName(baseLabel);
+        }
+
+
+        if (Helper.isNullOrEmpty(entity.getName()) && !Helper.isNullOrEmpty(entity.getEditorTag())) {
+            // still no name but a tag
+            entity.setName(entity.getEditorTag());
+        }
+
+        Helper.setUniqueName(entity, usedNames, gameModel);
+        Helper.setUniqueLabel(entity, usedLabels, gameModel);
 
         list.addItem(entity);
         this.revive(gameModel, entity, true);
@@ -429,26 +439,26 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @return all descriptor labels already in use within the given descriptor
      *         container
      */
-    public List<String> findDistinctLabels(final DescriptorListI<? extends VariableDescriptor> container) {
+    public List<TranslatableContent> findDistinctLabels(final DescriptorListI<? extends VariableDescriptor> container) {
         if (container instanceof GameModel) {
-            TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("GameModel.findDistinctChildrenLabels", String.class);
+            TypedQuery<TranslatableContent> distinctLabels = getEntityManager().createNamedQuery("GameModel.findDistinctChildrenLabels", TranslatableContent.class);
             distinctLabels.setParameter("containerId", container.getId());
             return distinctLabels.getResultList();
         } else if (container instanceof ListDescriptor) {
-            TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("ListDescriptor.findDistinctChildrenLabels", String.class);
+            TypedQuery<TranslatableContent> distinctLabels = getEntityManager().createNamedQuery("ListDescriptor.findDistinctChildrenLabels", TranslatableContent.class);
             distinctLabels.setParameter("containerId", container.getId());
             return distinctLabels.getResultList();
         } else if (container instanceof QuestionDescriptor) {
-            TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("QuestionDescriptor.findDistinctChildrenLabels", String.class);
+            TypedQuery<TranslatableContent> distinctLabels = getEntityManager().createNamedQuery("QuestionDescriptor.findDistinctChildrenLabels", TranslatableContent.class);
             distinctLabels.setParameter("containerId", container.getId());
             return distinctLabels.getResultList();
         } else if (container instanceof WhQuestionDescriptor) {
-            TypedQuery<String> distinctLabels = getEntityManager().createNamedQuery("WhQuestionDescriptor.findDistinctChildrenLabels", String.class);
+            TypedQuery<TranslatableContent> distinctLabels = getEntityManager().createNamedQuery("WhQuestionDescriptor.findDistinctChildrenLabels", TranslatableContent.class);
             distinctLabels.setParameter("containerId", container.getId());
             return distinctLabels.getResultList();
         } else {
             // fallback case
-            List<String> list = new ArrayList<>();
+            List<TranslatableContent> list = new ArrayList<>();
             for (VariableDescriptor child : container.getItems()) {
                 list.add(child.getLabel());
             }
@@ -501,17 +511,17 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     /**
      * @param gameModel
-     * @param title     title we look for
+     * @param prefix    prefix we look for
      *
      * @return all gameModel descriptors with the given title
      */
     @Override
-    public List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title) {
+    public List<VariableDescriptor> findByPrefix(final GameModel gameModel, final String prefix) {
 
         List<VariableDescriptor> result = new ArrayList<>();
-        if (title != null) {
+        if (prefix != null) {
             for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
-                if (title.equals(vd.getTitle())) {
+                if (prefix.equals(vd.getEditorTag())) {
                     result.add(vd);
                 }
             }
@@ -625,7 +635,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             final Comparator<VariableDescriptor> comparator = new Comparator<VariableDescriptor>() {
                 @Override
                 public int compare(VariableDescriptor o1, VariableDescriptor o2) {
-                    return alphanumericComparator.compare(o1.getLabel(), o2.getLabel());
+                    return alphanumericComparator.compare(o1.getEditorLabel(), o2.getEditorLabel());
                 }
             };
 

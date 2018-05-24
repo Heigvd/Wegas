@@ -47,7 +47,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 testFn: searchFn
                     /*  return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
                      e.get("name"),
-                     e.get("title"),
                      e.get("label"),
                      e.get("comments")
                      ].join("|"));*/
@@ -421,7 +420,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         var container = entity.get(category),
                             children = Y.Array.map(container.get("evaluations"), function(ev) {
                                 return {
-                                    label: ev.get("label"),
+                                    label: ev.getEditorLabel(),
                                     selected: (ev.get(ID) === this.currentSelection) ? 2 : 0,
                                     data: {
                                         entity: ev,
@@ -555,7 +554,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     node.label += "(" + el.get("messages").length + ")";
                     for (k = 0; k < el.get("messages").length; k += 1) {
                         node.children.push({
-                            label: el.get("messages")[k].get("subject")
+                            label: I18n.t(el.get("messages")[k].get("subject"))
                         });
                     }
                     break;

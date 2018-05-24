@@ -26,8 +26,8 @@ import javax.persistence.*;
 @Table(name = "FSMDescriptor")
 @JsonTypeName(value = "FSMDescriptor")
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
-        @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
+    @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
+    @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
 })
 @NamedQueries(
         @NamedQuery(
@@ -41,7 +41,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /**
      *
      */
-    @OneToMany(mappedBy ="stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
     @WegasEntityProperty(ignoreNull = true)
@@ -69,7 +69,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return states;
     }
 
-    public State addState(Long index, State state){
+    public State addState(Long index, State state) {
         this.getStates().put(index, state);
         state.setStateMachine(this);
         return state;
@@ -94,7 +94,6 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /*
      * script methods
      */
-
     /**
      * @param p
      */
@@ -111,6 +110,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     /**
      * @param p
+     *
      * @return is player instance enabled ?
      */
     public boolean isEnabled(Player p) {
@@ -119,6 +119,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     /**
      * @param p
+     *
      * @return is player instance disabled ?
      */
     public boolean isDisabled(Player p) {

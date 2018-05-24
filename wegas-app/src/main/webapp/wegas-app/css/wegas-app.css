@@ -765,3 +765,63 @@ font {
     width: calc(100% - 40px);
     display: inline-block;
 }
+
+/* I18N */
+
+.wegas-translation .tools{
+    display:none;
+}
+
+
+/*
+ * Histories
+ */
+
+.whquestion-history .whquestion-label,
+.question-history .question-label {
+    border-bottom:solid 1px grey;
+    width:100%;
+    height:32px;
+    padding: 8px 0px;
+    margin: 12px 0px 12px 0px;
+    box-sizing:border-box;
+    font-weight:600;
+}
+
+.whquestion-history .whview-history-answer-title{
+    margin-top: 16px;
+    font-weight:600;
+}
+
+.question-history .choice-label,
+.question-history .replies-label {
+    margin-top: 32px;
+    font-weight:600;
+}
+
+.question-history .replies .replyDiv {
+    border-top: solid 1px #bbb;
+    color: #bbb;
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.question-history .cbx-replies .replyDiv .choice-label input {
+    transform: scale(1.4);
+    margin-right: 10px;
+    vertical-align: top;
+}
+
+.question-history .cbx-replies .replyDiv .choice-description {
+    padding-top: 5px;
+}
+
+.question-history .cbx-replies .replyDiv .choice-description,
+.question-history .cbx-replies .replyDiv .reply-answer {
+    padding-left: 24px;
+}
+
+.question-history .replies .replyDiv:first-child {
+    border-top: none;
+    color: black;
+}

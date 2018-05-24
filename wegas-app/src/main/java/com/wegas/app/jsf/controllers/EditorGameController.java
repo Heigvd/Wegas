@@ -77,7 +77,7 @@ public class EditorGameController extends AbstractGameController {
                 currentPlayer = teamFacade.find(this.teamId).getPlayers().get(0);// Return the first player
 
             } catch (ArrayIndexOutOfBoundsException ex) {
-                errorController.dispatch("Team " + teamFacade.find(this.teamId).getName() + " has no player.");
+                errorController.dispatch("Empty Game", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
 
             }
 
@@ -85,7 +85,7 @@ public class EditorGameController extends AbstractGameController {
             currentPlayer = playerFacade.findDebugPlayerByGameModelId(this.gameModelId);
             if (currentPlayer == null) {
 
-                errorController.dispatch("Model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
+                errorController.dispatch("Empty GameModel", "Model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
             }
 
         } else if (this.gameId != null) {
@@ -95,14 +95,14 @@ public class EditorGameController extends AbstractGameController {
             if (currentPlayer == null) {
                 Game g = gameFacade.find(this.gameId);
                 if (g != null) {
-                    errorController.dispatch("Game " + g.getName() + " has no players.");
+                    errorController.dispatch("Empty Game", "Game " + g.getName() + " has no players.");
                 } else {
-                    errorController.dispatch("This game could not be found.");
+                    errorController.gameNotFound();
                 }
             }
         }
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            errorController.dispatch("Team " + teamFacade.find(this.teamId).getName() + " has no player.");
+            errorController.dispatch("Empty Team", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
         } else if (!requestManager.hasGameWriteRight(currentPlayer.getGame())) {
             errorController.accessDenied();
         }

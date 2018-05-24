@@ -16,7 +16,9 @@ YUI.add("wegas-i18n-global-en", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-global", "en", {
         wegas: {
             player: "player",
-            team: "team"
+            players: "players",
+            team: "team",
+            teams: "teams"
         },
         global: {
             and: "and",
@@ -26,6 +28,12 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             dunno: "I don't know",
             variableNotFound: "Unable to found \"{{name}}\" variable",
             logout: "logout"
+        },
+        i18n:{
+            manager: {
+                title: "Languages Manager"
+            },
+            languages: "Languages"
         },
         errors: {
             conflict: "Your request could not be completed due to a conflict. This usually means you tried to update an outdated element.",

@@ -371,7 +371,10 @@ code {
 
 /* Level: TabView styles */
 
-.wegas-proggame-level .yui3-tabview, .wegas-proggame-level .yui3-tabview a {
+.wegas-proggame-level .yui3-treenode-content-label,
+.wegas-proggame-level .yui3-treeleaf-content-label,
+.wegas-proggame-level .yui3-tabview, 
+.wegas-proggame-level .yui3-tabview a {
     color: white;
 }
 
@@ -443,6 +446,10 @@ code {
     top: 99px;
     left: 46px;
     width: 180px;
+}
+
+.proggame-api {
+    margin-top: 15px;
 }
 
 .proggame-api .selected>div>.yui3-treeleaf-content-header, .proggame-api .selected>.yui3-treenode-content-header {

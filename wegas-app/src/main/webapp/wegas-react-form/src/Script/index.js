@@ -8,7 +8,7 @@ import Impact from './modules/Impact';
 import Condition from './modules/Condition';
 import Variable from './modules/Variable';
 import condition from './condition';
-import { register } from './modules/globalMethod';
+import { register, getGlobals } from './modules/globalMethod';
 import statefulScript from './statefulScript';
 
 const VariableStatement = scriptObject(parsed(singleStatement(Variable)));
@@ -52,6 +52,7 @@ export {
     MultiVariableMethod,
     MultiVariableCondition,
     register,
+    getGlobals,
     IndependantMultiVariableCondition,
     IndependantMultiVariableMethod,
     IndependantVariableStatement,

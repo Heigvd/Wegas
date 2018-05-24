@@ -71,6 +71,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
 
     /**
      * is the trigger designed to trigger only once ?
+     *
      * @return true if the trigger is designed to be trigged only once
      */
     public Boolean isOneShot() {
@@ -142,6 +143,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * Override to make this function transient
      *
      * @return underlying statemachine states
+     *
      * @see StateMachineDescriptor#getStates
      */
     @Override
@@ -212,13 +214,19 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         }
 
         // Condition
-        this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
+        if (this.triggerEvent != null) {
+            this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
+        }
 
         // Impact
-        this.getStates().get(2L).setOnEnterEvent(this.postTriggerEvent);
+        if (this.postTriggerEvent != null) {
+            this.getStates().get(2L).setOnEnterEvent(this.postTriggerEvent);
+        }
 
         // Reset transition
-        this.getStates().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
+        if (this.oneShot != null) {
+            this.getStates().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
+        }
     }
 
     @Override

@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.Orderable;
 import java.io.Serializable;
 import javax.persistence.Column;

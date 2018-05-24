@@ -29,24 +29,20 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
                 }).item(0);
 
                 fullScreenButton.after('pressedChange', function(event) {
-                        if (event.newVal) {
-                            this.swapNode
-                                .siblings()
-                                .each(function(n) {
-                                    n.hide();
-                                });
-                        }
-                        host
-                            .get('boundingBox')
-                            .swap(this.swapNode);
-                        if (!event.newVal) {
-                            this.swapNode
-                                .siblings()
-                                .each(function(n) {
-                                    n.show();
-                                });
-                        }
-                    }, this);
+                    Y.one("body").toggleClass("fullscreened", event.newVal);
+                    if (event.newVal) {
+                        this.swapNode.siblings().each(function(n) {
+                            n.hide();
+                        });
+                    }
+                    host.get('boundingBox')
+                        .swap(this.swapNode);
+                    if (!event.newVal) {
+                        this.swapNode.siblings().each(function(n) {
+                            n.show();
+                        });
+                    }
+                }, this);
 
                 /** Refresh **/
                 this.refreshButton = host.toolbar.add({

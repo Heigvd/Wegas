@@ -37,6 +37,7 @@ import io.prometheus.client.Gauge;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -47,6 +48,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 import javax.cache.Cache;
+import javax.cache.processor.EntryProcessor;
+import javax.cache.processor.EntryProcessorException;
 import javax.cache.processor.MutableEntry;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -304,8 +307,8 @@ public class WebsocketFacade {
                 if (eventClass == EntityDestroyedEvent.class) {
                     List<DestroyedEntity> refreshed = new ArrayList<>();
                     /*
-                     * Not possible to find an already destroyed entity, so, in 
-                     * this case (and since those informations are sufficient), 
+                     * Not possible to find an already destroyed entity, so, in
+                     * this case (and since those informations are sufficient),
                      * only id and class name are propagated
                      */
                     for (AbstractEntity ae : toPropagate) {
@@ -346,8 +349,8 @@ public class WebsocketFacade {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ba.length; i++) {
             // @hack convert to uint array
-            /* 
-             * Sending a byte[] through pusher result takes lot of place cause 
+            /*
+             * Sending a byte[] through pusher result takes lot of place cause
              * json is like "data: [31, 8, -127, ...]", full text
              */
             sb.append(Character.toString((char) Byte.toUnsignedInt(ba[i])));
@@ -572,16 +575,8 @@ public class WebsocketFacade {
     @Asynchronous
     public void touchOnlineUser(Long userId) {
         if (userId != null) {
-            onlineUsers.invoke(userId, (MutableEntry<Long, OnlineUser> entry, Object... arguments) -> {
-                if (entry != null) {
-                    OnlineUser value = entry.getValue();
-                    if (value != null) {
-                        value.touch();
-                        entry.setValue(value);
-                    }
-                }
-                return null;
-            });
+            // do not use lambda since
+            onlineUsers.invoke(userId, new OnlineUserToucher());
         }
     }
 
@@ -816,6 +811,28 @@ public class WebsocketFacade {
     public void onOnlineUserMetric(@Inbound(eventName = COMMANDS_EVENT) @Observes String command) {
         if (UPDATE_OU_METRIC_CMD.equals(command)) {
             onlineUsersGauge.set(this.getLocalOnlineUsers().size());
+        }
+    }
+
+    /**
+     * Atomic EntryProcessor to update a OnlineUer lastActivity time.
+     * <p>
+     * One SHALL NOT convert this to a lamba expression (unless the lamba is serializable)
+     */
+    public static class OnlineUserToucher implements EntryProcessor<Long, OnlineUser, Object>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public Object process(MutableEntry<Long, OnlineUser> entry, Object... arguments) throws EntryProcessorException {
+            if (entry != null) {
+                OnlineUser value = entry.getValue();
+                if (value != null) {
+                    value.touch();
+                    entry.setValue(value);
+                }
+            }
+            return null;
         }
     }
 }

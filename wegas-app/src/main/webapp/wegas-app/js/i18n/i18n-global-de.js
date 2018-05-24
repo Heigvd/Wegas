@@ -14,6 +14,42 @@
 
 YUI.add("wegas-i18n-global-de", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-global", "de", {
+        wegas: {
+            player: "Spieler",
+            players: "Spieler",
+            team: "Team",
+            teams: "Teams"
+        },
+        global: {
+            and: "und",
+            description: "Beschreibung",
+            details: "Details",
+            delete: "lôschen",
+            dunno: "Ich weiss es nicht",
+            variableNotFound: "Kann Variable \"{{name}}\" nicht finden",
+            logout: "abmelden"
+        },
+        i18n: {
+            manager: {
+                title: "Sprachen-Manager"
+            },
+            languages: "Sprachen"
+        },
+        errors: {
+            conflict: "Ihre Anfrage kann nicht bearbeitet werden, da bei der Ausführung ein Konflikt aufgetreten ist. Dies bedeutet wahrscheinlich, dass Sie versucht haben, ein Element gleichzeitig mit einem anderen Benutzer zu ändern.",
+            greaterThan: "{{value}} ist  grösser als {{max}}",
+            lessThan: "{{value}} ist kleiner als {{min}}",
+            limitReached: "Sie können nich mehr als {{num}} Antworten auswählen",
+            nan: "\"{{value}}\" ist keine Nummer",
+            notAPositiveInteger: "\"{{value}}\" ist keine positive ganze Zahl",
+            outOfBounds: "{{value}} ist nicht im Intervall [{{min}},{{max}}] enthalten",
+            prohibited: "\"{{value}}\" ist nicht erlaubt. Es muss ausgewählt werden aus: {{values}}"
+        },
+        inbox: {
+            deleteEmailConfirmation: "Sind Sie sicher, dass Sie die E-Mail \"{{subject}}\" dauerhaft löschen wollen?",
+            noMessages: "Keine E-Mail",
+            noMessageSelected: "Wählen Sie eine E-Mail auf der linken Seite aus."
+        }
     }, {
         base: {
             prefix: "",
@@ -27,7 +63,7 @@ YUI.add("wegas-i18n-global-de", function(Y) {
                 prefix: "CHF ",
                 decimalPlaces: 2
             },
-            euro:{
+            euro: {
                 prefix: "€",
                 decimalPlaces: 2
             },

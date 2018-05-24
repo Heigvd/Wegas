@@ -10,23 +10,24 @@ package com.wegas.reviewing.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
-import javax.persistence.Basic;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Index;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -68,7 +69,8 @@ import javax.validation.constraints.NotNull;
         indexes = {
             @Index(columnList = "fbcomments_id"),
             @Index(columnList = "toreview_id"),
-            @Index(columnList = "feedback_id")
+            @Index(columnList = "feedback_id"),
+            @Index(columnList = "description_id")
         }
 )
 @WegasEntity(callback = PeerReviewDescriptor.PRDCallback.class)
@@ -138,12 +140,12 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     @WegasEntityProperty
     @Column(name = "maxNumberOfReviewer")
-    private Integer maxNumberOfReview;
+    private Integer maxNumberOfReviewer;
 
-    @Lob
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonDeserialize(using = TranslationDeserializer.class)
     @WegasEntityProperty
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    private String description;
+    private TranslatableContent description;
 
     /**
      * List of evaluations that compose one feedback. Here, en empty list does
@@ -218,7 +220,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * @return expected number of reviewers
      */
     public Integer getMaxNumberOfReview() {
-        return maxNumberOfReview;
+        return maxNumberOfReviewer;
     }
 
     /**
@@ -229,24 +231,27 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public void setMaxNumberOfReview(Integer maxNumberOfReview) {
         if (maxNumberOfReview >= 0) {
-            this.maxNumberOfReview = maxNumberOfReview;
+            this.maxNumberOfReviewer = maxNumberOfReview;
         } else {
-            this.maxNumberOfReview = 1; // TODO throw error ? 
+            this.maxNumberOfReviewer = 1; // TODO throw error ?
         }
     }
 
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**
@@ -323,7 +328,16 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     }
 
     @Override
+    public Boolean containsAll(List<String> criterias) {
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
+                || this.getFeedback().containsAll(criterias)
+                || this.getFbComments().containsAll(criterias)
+                || super.containsAll(criterias);
+    }
+
+    @Override
     public void revive(Beanjection beans) {
+        super.revive(beans);
         beans.getReviewingFacade().revivePeerReviewDescriptor(this);
     }
 
@@ -333,8 +347,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         public void postUpdate(Mergeable entity, Object ref, Object identifier) {
             if (entity instanceof PeerReviewDescriptor) {
                 PeerReviewDescriptor prd = (PeerReviewDescriptor) entity;
-                Helper.setNamesAndLabelForEvaluationList(prd.getFeedback().getEvaluations());
-                Helper.setNamesAndLabelForEvaluationList(prd.getFbComments().getEvaluations());
+
+                Helper.setNameAndLabelForLabelledEntityList(prd.getFeedback().getEvaluations(), "input", prd.getGameModel());
+                Helper.setNameAndLabelForLabelledEntityList(prd.getFbComments().getEvaluations(), "input", prd.getGameModel());
             }
         }
     }

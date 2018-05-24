@@ -176,6 +176,11 @@ public class EntityListener {
 
     @PostLoad
     void onPostLoad(Object o) {
+        if (o instanceof AcceptInjection) {
+            AcceptInjection id = (AcceptInjection) o;
+            id.setBeanjection(getBeansjection());
+        }
+
         if (o instanceof AbstractEntity) {
             logger.debug("PostLoad {}", o);
             ((AbstractEntity) o).setPersisted(true);
@@ -184,11 +189,6 @@ public class EntityListener {
             } else {
                 logger.error("PostLOAD NO SECURITY FACADE");
             }
-        }
-
-        if (o instanceof AcceptInjection) {
-            AcceptInjection id = (AcceptInjection) o;
-            id.setBeanjection(getBeansjection());
         }
 
         if (o instanceof JCRClient) {

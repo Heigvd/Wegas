@@ -95,7 +95,7 @@ YUI.add('wegas-chart', function(Y) {
                             this.get('variables')[i].label || ''
                             )();
                     } else {
-                        label = vd.get('label');
+                        label = I18n.t(vd.get('label'));
                     }
 
                     legendNode.append(

@@ -1026,6 +1026,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Advanced",
                             'fr': "Réglages avancés"
                         },
+                        'PRIVATE-MODALE-TABS-LANGUAGES': {
+                            'en': "Languages",
+                            'fr': "Langues"
+                        },
                         'PRIVATE-MODALE-TABS-ACCESS-LINK-TITLE': {
                             'en': "Direct link as guest",
                             'fr': "Lien direct comme invité"
@@ -1092,6 +1096,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'PRIVATE-SCENARIOS-COMMENTS-PLACEHOLDER-INPUT': {
                             'en': "Comments are optional",
                             'fr': "Les commentaires sont optionnels"
+                        },
+                        'PRIVATE-SCENARIOS-LANGUAGES-CHECKBOX': {
+                            'en': "Active Languages",
+                            'fr': "Langues Disponibles"
                         },
                         'PRIVATE-SCENARIOS-TYPE-LABEL-CHECKBOX': {
                             'en': "Game type",
@@ -1385,6 +1393,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'TRAINER-MODALE-USERS-TAB-PLAYER': {
                             'en': startSentence(keywords.player.plural.en),
                             'fr': startSentence(keywords.player.plural.fr)
+                        },
+                        'TRAINER-MODALE-USERS-NO-PLAYERS': {
+                            'en': "No players have joined yet",
+                            'fr': "Aucun joueur n'a rejoint la partie"
                         },
                         'TRAINER-MODALE-USERS-TAB-TRAINER': {
                             'en': startSentence(keywords.trainer.plural.en),

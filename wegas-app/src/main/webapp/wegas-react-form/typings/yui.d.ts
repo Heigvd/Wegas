@@ -753,6 +753,7 @@ declare module Y {
         get(attr: string): any;
         hide(name: string, config: any, callback: Function): Node;
         getComputedStyle(attr: string): string;
+        getDOMNode(): HTMLElement;
         getStyle(attr: string): string;
         getY(): number;
         getX(): number;

@@ -14,11 +14,19 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.mcq.persistence.*;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
+import com.wegas.messaging.persistence.Message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +38,8 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
+import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -599,6 +609,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
         //getEntityManager().refresh(validateQuestion);
         validateQuestion.setValidated(true);
+
+        ReplyValidate qValidate = new ReplyValidate(null, null, validateQuestion, player);
+        scriptEvent.fire(player, "replyValidate", qValidate);
         //getEntityManager().flush();
     }
 
@@ -634,6 +647,77 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         entity.getQuestion().remove(entity);
     }
 
+    /**
+     *
+     * @param self       current player
+     * @param whValidate whValidate script event
+     * @param i18n       to fetch some translations
+     *
+     * @return
+     */
+    @Override
+    public Message buildWhValidateMessage(Player self, WhValidate whValidate, JSObject i18n) {
+        Message history = new Message();
+
+        TranslatableContent from = new TranslatableContent();
+        TranslatableContent subject = new TranslatableContent();
+        TranslatableContent body = new TranslatableContent();
+        TranslatableContent date = new TranslatableContent();
+
+        GameModel gameModel = whValidate.whDescriptor.getGameModel();
+        for (GameModelLanguage language : gameModel.getRawLanguages()) {
+            String refName = language.getRefName();
+
+            String title = whValidate.whDescriptor.getLabel().translateOrEmpty(gameModel, refName);
+            String description = whValidate.whDescriptor.getDescription().translateOrEmpty(gameModel, refName);
+
+            StringBuilder bd = new StringBuilder();
+            bd.append("<div class=\"whquestion-history\">");
+
+            bd.append("<div class=\"whquestion-label\">").append(title).append("</div>");
+            bd.append(description);
+
+            for (VariableDescriptor item : whValidate.whDescriptor.getItems()) {
+                if (item instanceof PrimitiveDescriptorI) {
+                    bd.append("<div class=\"whview-history-answer\">");
+                    bd.append("<div class=\"whview-history-answer-title\">").
+                            append(item.getLabel().translateOrEmpty(gameModel, refName)).
+                            append("</div>");
+
+                    if (item instanceof StringDescriptor && !((StringDescriptor) item).getAllowedValues().isEmpty()) {
+                        StringInstance instance = (StringInstance) item.getInstance(self);
+                        String[] values = instance.parseValues(instance.getValue());
+                        for (String value : values) {
+                            bd.append("<div class=\"whview-history-answer-value\" style=\"margin-left : 10px;\">").
+                                    append(value).
+                                    append("</div>");
+                        }
+
+                    } else {
+                        Object value = ((PrimitiveDescriptorI) item).getValue(self);
+
+                        bd.append("<div class=\"whview-history-answer-value\" style=\"margin-left : 10px;\">").
+                                append(value).
+                                append("</div>");
+                    }
+
+                    bd.append("</div>");
+                }
+            }
+            bd.append("</div>");
+
+            subject.updateTranslation(refName, title);
+            body.updateTranslation(refName, bd.toString());
+        }
+
+        history.setFrom(from);
+        history.setSubject(subject);
+        history.setBody(body);
+        history.setDate(date);
+
+        return history;
+    }
+
     public static class WhValidate {
 
         final public WhQuestionDescriptor whDescriptor;
@@ -643,6 +727,148 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             this.whInstance = validateQuestion;
             this.whDescriptor = (WhQuestionDescriptor) validateQuestion.findDescriptor();
         }
+    }
+
+    private Object getConfig(JSObject config, String key, Object defaultValue) {
+        Object value = config.getMember(key);
+        if (value == null || ScriptObjectMirror.isUndefined(value)) {
+            return defaultValue;
+        }
+        return value;
+    }
+
+    private void appendChoice(StringBuilder sb, ChoiceInstance ci, GameModel gameModel, String refName, String labelPrefix) {
+        ChoiceDescriptor cd = (ChoiceDescriptor) ci.getDescriptor();
+        String title = cd.getLabel().translateOrEmpty(gameModel, refName);
+        if (!Helper.isNullOrEmpty(title)) {
+            sb.append("<div class=\"choice-label\">");
+            if (labelPrefix != null) {
+                sb.append(labelPrefix);
+            }
+            sb.append(title).append("</div>");
+        }
+
+        String description = cd.getDescription().translateOrEmpty(gameModel, refName);
+        if (!Helper.isNullOrEmpty(description)) {
+            sb.append("<div class=\"choice-description\">").append(description).append("</div>");
+        }
+    }
+
+    /**
+     *
+     * @param self          current player
+     * @param replyValidate
+     * @param i18n          to fetch some translations
+     * @param config        options : { showQuestion:boolean, showReplies:boolean}
+     *
+     * @return
+     */
+    @Override
+    public Message buildReplyValidateMessage(Player self, ReplyValidate replyValidate, JSObject i18n, JSObject config) {
+        QuestionInstance qi = replyValidate.question;
+        QuestionDescriptor qd = (QuestionDescriptor) qi.getDescriptor();
+        ChoiceInstance ci = replyValidate.choice;
+
+        boolean isCbx = false;
+        if (qd.getCbx()) {
+            if (ci != null) {
+                // skip cbx question's individual replyValidate, wait for the global one (the one with neigher a choice nor a reply)
+                return null;
+            } else {
+                isCbx = true;
+            }
+        }
+
+        Message history = new Message();
+        JSObject translate = (JSObject) i18n.getMember("t");
+
+        Boolean showQuestion = (Boolean) this.getConfig(config, "showQuestion", true);
+        Boolean showReplies = (Boolean) this.getConfig(config, "showReplies", true);
+
+        TranslatableContent from = new TranslatableContent();
+        TranslatableContent subject = new TranslatableContent();
+        TranslatableContent body = new TranslatableContent();
+        TranslatableContent date = new TranslatableContent();
+
+        GameModel gameModel = replyValidate.player.getGameModel();
+
+        for (GameModelLanguage language : gameModel.getRawLanguages()) {
+            String refName = language.getRefName();
+
+            StringBuilder bd = new StringBuilder();
+            bd.append("<div class=\"question-history\">");
+            String qTitle = qd.getLabel().translateOrEmpty(gameModel, refName);
+
+            if (showQuestion) {
+                String description = qd.getDescription().translateOrEmpty(gameModel, refName);
+
+                bd.append("<div class=\"question-label\">").append(qTitle).append("</div>");
+                bd.append("<div class=\"question-description\">").append(description).append("</div>");
+            }
+
+            if (!isCbx) {
+                if (ci != null) {
+                    this.appendChoice(bd, ci, gameModel, refName, null);
+                }
+
+                if (showReplies) {
+                    List<Reply> replies = qi.getReplies();
+                    String title;
+                    if (replies.size() > 1) {
+                        title = (String) translate.call(i18n, "question.results", null, refName);
+                    } else {
+                        title = (String) translate.call(i18n, "question.result", null, refName);
+                    }
+                    bd.append("<div class=\"replies-label\">").append(title).append("</div>");
+                    bd.append("<div class=\"replies\">");
+                    for (Reply reply : replies) {
+                        bd.append("<div class=\"replyDiv\">");
+                        bd.append(reply.getAnswer().translateOrEmpty(gameModel, refName));
+                        bd.append("</div>");
+                    }
+                    bd.append("</div>");
+                }
+            } else {
+                List<Reply> replies = qi.getReplies();
+                String title;
+                if (replies.size() > 1) {
+                    title = (String) translate.call(i18n, "question.results", null, refName);
+                } else {
+                    title = (String) translate.call(i18n, "question.result", null, refName);
+                }
+                bd.append("<div class=\"replies-label\">").append(title).append("</div>");
+                bd.append("<div class=\"cbx-replies\">");
+
+                for (Reply reply : replies) {
+                    Boolean ignored = reply.getIgnored();
+                    bd.append("<div class=\"replyDiv ").append(ignored ? "ignored" : "selected").append(" \">");
+                    this.appendChoice(bd, reply.getChoiceInstance(), gameModel, refName,
+                            "<input type='checkbox' disabled " + (ignored ? "" : "checked") + " />");
+                    TranslatableContent trAnswer = ignored ? reply.getIgnorationAnswer() : reply.getAnswer();
+                    if (trAnswer != null) {
+                        bd.append("<div class='reply-answer'>");
+                        String answer = trAnswer.translateOrEmpty(gameModel, refName);
+                        bd.append(answer);
+                        bd.append("</div>");
+                    }
+                    bd.append("</div>");
+                }
+                bd.append("</div>");
+            }
+
+            bd.append("</div>"); // end question-history
+
+            subject.updateTranslation(refName, qTitle);
+            body.updateTranslation(refName, bd.toString());
+
+        }
+
+        history.setFrom(from);
+        history.setSubject(subject);
+        history.setBody(body);
+        history.setDate(date);
+
+        return history;
     }
 
     /**
@@ -669,6 +895,19 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
          *
          */
         final public Player player;
+
+        /**
+         * Fox cbx question only !
+         *
+         * @param question
+         * @param player
+         */
+        public ReplyValidate(QuestionInstance question, Player player) {
+            this.reply = null;
+            this.choice = null;
+            this.question = question;
+            this.player = player;
+        }
 
         /**
          * @param reply

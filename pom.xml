@@ -663,7 +663,7 @@
                     <version>3.0.2</version>
                 </plugin>
 
-                <!-- Reource attachement -->
+                <!-- Reource attachment -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.0.2</version>

@@ -121,22 +121,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "ResourceDescriptor"
             },
-            title: {
-                type: NULLSTRING,
-                optional: true,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players",
-                    lengthType: "short"
-                },
-                index: -1
-            },
-            description: {
-                type: NULLSTRING,
-                view: {type: HTML, label: "Description"},
-                optional: true,
-                index: -1
-            },
+            description: Y.Wegas.Helper.getTranslationAttr({
+                label: "Description",
+                index: 1,
+                type: HTML
+            }),
             properties: {
                 type: OBJECT,
                 additionalProperties: {
@@ -550,21 +539,13 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "TaskDescriptor"
             },
-            title: {
-                type: NULLSTRING,
-                optional: true,
-                index: -1,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players",
-                }
-            },
             index: {
                 type: STRING,
                 index: -1,
                 required: true,
                 view: {
                     label: "Task number",
+                    layout: "extraShort"
                 }
             },
             predecessors: {
@@ -598,15 +579,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     label: "Predecessors"
                 }
             },
-            description: {
-                type: NULLSTRING,
-                optional: true,
+            description: Y.Wegas.Helper.getTranslationAttr({
+                label: "Description",
                 index: -1,
-                view: {
-                    label: "Description",
-                    type: HTML
-                }
-            },
+                type: HTML
+            }),
             defaultInstance: {
                 properties: {
                     '@class': {
@@ -639,14 +616,16 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     type: STRING,
                                     view: {
                                         type: SELECT,
-                                        choices: persistence.Resources.SKILLS
+                                        choices: persistence.Resources.SKILLS,
+                                        layout: "shortInline"
                                     }
                                 },
                                 level: {
                                     type: NUMBER,
                                     view: {
                                         type: SELECT,
-                                        choices: persistence.Resources.LEVELS
+                                        choices: persistence.Resources.LEVELS,
+                                        layout: "shortInline"
                                     }
                                 },
                                 quantity: {
@@ -654,7 +633,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     required: true,
                                     value: 1,
                                     view: {
-                                        label: 'Quantity'
+                                        label: 'Quantity',
+                                        layout: "extraShortInline"
                                     }
                                 },
                                 limit: {
@@ -662,7 +642,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     required: true,
                                     value: 100,
                                     view: {
-                                        label: 'Limit'
+                                        label: 'Limit',
+                                        layout: "extraShortInline"
                                     }
                                 },
                                 completeness: {
@@ -988,14 +969,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         ATTRS: {
             "@class": {
                 value: "BurndownDescriptor"
-            },
-            title: {
-                type: STRING,
-                view: {
-                    label: "Label",
-                    description: "Displayed to players",
-                },
-                index: -1
             },
             description: {
                 type: STRING,

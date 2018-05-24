@@ -29,16 +29,15 @@ YUI.add('wegas-text', function(Y) {
             /** @lends Y.Wegas.Text# */
 
             /**
-         * @function
-         * @private
-         * @description set the "content" ATTRS (which set the contentbox)
-         */
+             * @function
+             * @private
+             * @description set the "content" ATTRS (which set the contentbox)
+             */
             syncUI: function() {
                 //this.set("content", this.get("content"));
                 this.cleanMarkup();
                 this.get(CONTENTBOX).setContent(
-                    Y.Template.Micro.compile(this.get('content') || '')()
-                );
+                    Y.Template.Micro.compile(I18n.t(this.get('content'), {fallback: ''}))());
             },
             cleanMarkup: function() {
                 this.get(CONTENTBOX).all('video').each(function(e) {
@@ -73,13 +72,17 @@ YUI.add('wegas-text', function(Y) {
                  * The string to display, the content of this widget's contentbox
                  * Format html.
                  */
-                content: {
-                    type: 'string',
-                    view: {
-                        type: 'html',
-                        label: 'Content'
-                    }
-                }
+                content: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Content",
+                    type: "html"
+                })
+                    /*content: {
+                     type: 'string',
+                     view: {
+                     type: 'html',
+                     label: 'Content'
+                     }
+                     }*/
             }
         }
     );

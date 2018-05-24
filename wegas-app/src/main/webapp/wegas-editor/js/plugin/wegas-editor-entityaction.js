@@ -332,6 +332,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 return true;
                             }
                         } else if (currProp != otherProp) { // Allow conversions like string/int, undefined/null
+                            if (Number.isNaN(currProp) && Number.isNaN(otherProp)) {
+                                // In this specific case, NaN equals NaN
+                                continue;
+                            }
                             if (currProp === "" && otherProp == null) { // Tolerate clicking in and out of an empty field
                                 continue;
                             }
@@ -794,7 +798,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
                     dataSource.cache.put(assoc.descriptor.toObject(), {
                         on: {
-                            success: EditEntityAction.destroyEditionTab,
+                            success: Y.bind(function() {
+                                this.hideOverlay();
+                                EditEntityAction.destroyEditionTab();
+                            }, this),
                             failure: Y.bind(this.hideOverlay, this)
                         }
                     });
@@ -953,7 +960,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
             Wegas.Panel.confirm("Are you sure you want to delete the " +
                 entity.getType().toLowerCase().replace("descriptor", "") +
-                " \"" + entity.get("label") +
+                " \"" + entity.getEditorLabel() +
                 "\" ?",
                 Y.bind(function() {
                     this.showOverlay();

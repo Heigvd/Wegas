@@ -2,39 +2,21 @@ import React from 'react';
 import Form from 'jsoninput';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash-es';
-import { argSchema, valueToType, typeToValue, matchSchema } from './args';
+import { argSchema, valueToAST, astToValue } from './args';
 
 export default class ArgFrom extends React.Component {
+    static getDerivedStateFromProps(nextProps) {
+        return {
+            schema: argSchema(nextProps.schema),
+            value: astToValue(nextProps.value, nextProps.schema),
+        };
+    }
     constructor(props) {
         super(props);
-        this.state = {
-            schema: argSchema(props.schema),
-            value: typeToValue(props.value, props.schema),
-        };
+        this.state = {};
         this.onChange = this.onChange.bind(this);
     }
-    componentDidMount() {
-        this.checkConst();
-    }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.schema !== this.props.schema) {
-            this.setState({
-                schema: argSchema(nextProps.schema),
-            });
-        }
-        const newValue = typeToValue(nextProps.value, nextProps.schema);
-        if (
-            !isEqual(this.props.schema, nextProps.schema) &&
-            !matchSchema(nextProps.value, nextProps.schema)
-        ) {
-            setTimeout(() => nextProps.onChange(valueToType(undefined)), 10);
-        } else if (this.state.value !== newValue) {
-            this.setState({
-                value: newValue,
-            });
-        }
-    }
     shouldComponentUpdate(nextProps, nextState) {
         return (
             !isEqual(this.state.schema, nextState.schema) ||
@@ -42,24 +24,8 @@ export default class ArgFrom extends React.Component {
             this.props.entity !== nextProps.entity
         );
     }
-    componentDidUpdate() {
-        this.checkConst();
-    }
     onChange(value) {
-        this.props.onChange(valueToType(value, this.props.schema));
-    }
-    checkConst() {
-        if (
-            'const' in this.state.schema &&
-            !isEqual(
-                this.state.schema.const,
-                typeToValue(this.props.value, this.props.schema)
-            )
-        ) {
-            this.props.onChange(
-                valueToType(this.state.schema.const, this.props.schema)
-            );
-        }
+        this.props.onChange(valueToAST(value, this.props.schema));
     }
     render() {
         const { entity } = this.props;

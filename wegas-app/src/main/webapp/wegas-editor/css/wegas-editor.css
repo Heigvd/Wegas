@@ -38,12 +38,22 @@
     background-size: 100% 80px;
 }
 
+.yui3-skin-sam.fullscreened .wegas-editview {
+    height: 42px !important;
+}
 
 .editor-preview {
     width: 100%;
     height: 100%;
 }
 
+
+.fullscreened .editor-preview .wegas-toolbar{
+    position: fixed;
+    top: 0;
+    left: 50%;
+    width: auto;
+}
 
 .wegas-stdmode .wegas-treeview-advanced-children .yui3-treenode-content-toggle{
     cursor: default;
@@ -710,4 +720,245 @@
 .wegas-modeler-mode .wegas-entity--visibility-attribute,
 .wegas-advancedmode .wegas-entity--visibility-attribute{
     display: block;
+}
+
+/* I18N */
+
+.wegas-translation.unsaved {
+    display: flex;
+    flex-direction: column;
+}
+
+.wegas-translation.unsaved .tools{
+    display: block;
+    order: 2;
+}
+.wegas-translation .mce-content-body{
+    background-color: #eee;
+}
+
+.wegas-translation.unsaved .tools span{
+    cursor: pointer;
+    font-size:1.2em;
+}
+
+.wegas-advancedmode .wegas-translation.not-favorite-lang {
+    background-color: pink;
+}
+
+.wegas-advancedmode .wegas-translation.missing {
+    background-color: hotpink;
+}
+
+/*
+ * I18n manager
+ */
+
+.wegas-i18n-manager {
+    height: 100%;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--header{
+    flex-shrink: 0;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--title {
+    font-size: 1.4em;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages {
+    flex-shrink: 0;
+    padding-bottom: 3px;
+    border-bottom: 1px solid lightgray;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages label {
+    width: 45px;
+    display: inline-block;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .form {
+    margin-bottom: 20px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .language .tools {
+    display: none;
+    cursor: pointer;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .move-up {
+    cursor: pointer;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .language.unsaved .tools {
+    display:block;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-text{
+    padding: 0 10px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .create-button {
+    cursor: pointer;
+}
+
+
+.wegas-i18n-manager .wegas-i18n-manager--editor{
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 25px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor {
+    /*border: 1px dashed #eee;*/
+    /*background-color: #db70937d;*/
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-name {
+    border-bottom: 2px solid #D3ECF6;
+    font-size: 18px;
+    margin-bottom: 5px;
+    margin-top: 20px;
+    user-select: none;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-scriptalias {
+    display: none;
+    font-size: 0.8em;
+    user-select:text;
+}
+
+.wegas-advancedmode .wegas-i18n-manager .wegas-i18n-manager--editor .node-scriptalias {
+    display: inline-block;
+}
+
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='0'] .node-name
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='1'] .node-name,
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='2'] .node-name {
+    margin-left : 5px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='3'] .node-name {
+    margin-left : 10px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='4'] .node-name {
+    margin-left : 15px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='5'] .node-name {
+    margin-left : 20px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='6'] .node-name {
+    margin-left : 25px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='7'] .node-name {
+    margin-left : 30px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='8'] .node-name {
+    margin-left : 35px;
+}
+
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .translatedcontents,
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-name {
+    margin-left : 60px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-name i {
+    font-size:14px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-children {
+    /*padding-left: 0.5em;*/
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .i18n-script .tools {
+    display: none;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .i18n-script.unsaved .tools {
+    display: block;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .translatedcontent {
+    display: flex;
+    flex-direction: row;
+    /*border: 1px dashed grey;*/
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .translation {
+    flex-grow:1;
+    flex-shrink:1;
+    flex-basis: 0;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .translation-title {
+    /*border-bottom: 1px solid #eee;*/
+    margin-bottom: 2px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .translation .field-name {
+    font-size: 1.15em;
+    color:#888;
+    user-select: none;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .translation .translation-language {
+    user-select: none;
+    cursor: default;
+    color: #99a6b2;
+    font-size: 10px;
+    font-style: italic;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .i18n-script .wegas-toolbar {
+    display: none;
+}
+
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value {
+    min-height: 1.2em;
+    min-width: 5em;
+    display:inline-block;
+    cursor: text;
+    border:1px solid #BFBFBF;
+    margin-right: 10px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value:focus,
+.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value.mce-edit-focus {
+    border:1px solid #6AACF1;
+}
+
+@keyframes highlight {
+    0% {
+        background: #cecece
+    }
+    100% {
+        background: #f5f5f5;
+    }
+}
+.wegas-i18n-manager .wegas-i18n-manager--editor .highlight {
+    animation: highlight 3s;
+    background: #f5f5f5;
 }

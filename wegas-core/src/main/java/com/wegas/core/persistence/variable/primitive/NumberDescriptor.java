@@ -225,7 +225,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
 
                 if (!nd.isValueValid(value)) {
                     throw new WegasOutOfBoundException(nd.getMinValue(),
-                            nd.getMaxValue(), value, nd.getName(), nd.getLabel());
+                            nd.getMaxValue(), value, nd.getName(), nd.getLabel().translateOrEmpty(nd.getGameModel()));
                 }
             }
         }

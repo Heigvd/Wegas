@@ -25,6 +25,7 @@ import KeyChoice from './Views/keychoice';
 import PageLoaderSelect from './Views/Interacting/pageloaderselect';
 import html from './Views/html';
 import Tuple from './Views/tuple';
+import translatable from './HOC/translatable';
 
 setDefaultWidgets({
     array: ArrayView,
@@ -36,6 +37,7 @@ setDefaultWidgets({
     hashlist: HashlistView,
     hidden: HiddenView,
     html,
+    I18nhtml: translatable(html),
     keychoice: KeyChoice,
     number: StringView,
     object: ObjectView,
@@ -46,10 +48,14 @@ setDefaultWidgets({
     scriptcondition: MultiVariableCondition,
     select: SelectView,
     string: StringView,
+    I18nstring: translatable(StringView),
     textarea: TextareaView,
     treevariableselect: TreeVariableSelect,
     uneditable: UneditableView,
     variableselect: VariableStatement,
     wegasimageurl: WegasImageUrl,
     wegasurl: WegasUrl,
+    I18nwegasurl: translatable(WegasUrl),
 });
+// Make TS happy ...
+export default undefined;

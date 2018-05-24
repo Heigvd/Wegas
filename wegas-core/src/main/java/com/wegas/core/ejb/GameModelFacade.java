@@ -19,6 +19,7 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
@@ -102,6 +103,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     @Inject
     private StateMachineFacade stateMachineFacade;
 
+    @Inject I18nFacade i18nFacade;
+
     @Inject
     private PageFacade pageFacade;
 
@@ -134,7 +137,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     @Override
     public void create(final GameModel entity) {
 
-        // So What? 
+        if (entity.getRawLanguages().isEmpty()) {
+            i18nFacade.createLanguage(entity, "def", "default");
+        }
+
+        // So What?
         getEntityManager().persist(entity);
 
         try {
@@ -202,7 +209,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @param create
      */
     public void propagateDefaultInstances(GameModel gameModel, InstanceOwner context, boolean create) {
-        // Propagate default instances 
+        // Propagate default instances
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
             vd.propagateDefaultInstance(context, create);
         }

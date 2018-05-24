@@ -11,37 +11,44 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.Views;
 import java.util.Iterator;
-import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Index;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
+@Table(
+        indexes = {
+            @Index(columnList = "description_id")
+        }
+)
 public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @JsonView(Views.ExtendedI.class)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
-    private String description;
+    private TranslatableContent description;
     /**
      *
      */
@@ -56,22 +63,26 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
         return properties;
     }
 
-
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
-    /**** Sugar for editor ***/
+    /**
+     * ** Sugar for editor **
+     */
     /**
      *
      * @param p
@@ -339,5 +350,11 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      */
     public void desactivate(Player p) {
         this.setActive(p, false);
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
+                || super.containsAll(criterias);
     }
 }

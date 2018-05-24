@@ -10,6 +10,7 @@ package com.wegas.reviewing.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -41,9 +42,16 @@ import javax.persistence.*;
     @Index(columnList = "author_id"),
     @Index(columnList = "reviewer_id")
 })
-public class Review extends AbstractEntity implements DatedEntity {
+@NamedNativeQueries({
+    @NamedNativeQuery(name = "Review.findOwners", query = "SELECT CASE WHEN player_id is not null THEN 'PLAYER' ELSE 'TEAM' END, COALESCE(player_id, team_id)  from review r join variableinstance vi on  vi.id = r.author_id or vi.id = r.reviewer_id  where r.id = ?1")
+})
+public class Review extends AbstractEntity implements DatedEntity, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
+
+    @JsonIgnore
+    @Transient
+    private Beanjection beans;
 
     /**
      * Review state:<ul>
@@ -281,6 +289,7 @@ public class Review extends AbstractEntity implements DatedEntity {
         return p;
     }
      */
+
     @Override
     public boolean isProtected() {
         return this.getAuthor().isProtected();
@@ -294,9 +303,13 @@ public class Review extends AbstractEntity implements DatedEntity {
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        ArrayList<WegasPermission> p = new ArrayList<>(this.getAuthor().getRequieredReadPermission());
-        p.addAll(this.getReviewer().getRequieredReadPermission());
-        return p;
+        if (this.beans != null) {
+            return beans.getReviewingFacade().getReviewReadPermission(this);
+        } else {
+            ArrayList<WegasPermission> p = new ArrayList<>(this.getAuthor().getRequieredReadPermission());
+            p.addAll(this.getReviewer().getRequieredReadPermission());
+            return p;
+        }
     }
 
     @Override
@@ -318,4 +331,10 @@ public class Review extends AbstractEntity implements DatedEntity {
             }
         }
     }
+
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
+    }
+
 }

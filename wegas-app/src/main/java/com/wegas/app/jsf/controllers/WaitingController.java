@@ -20,14 +20,11 @@ import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 /**
@@ -102,7 +99,6 @@ public class WaitingController extends AbstractGameController {
      */
     @PostConstruct
     public void init() {
-        final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         long currentUserId = userFacade.getCurrentUser().getId();
 
         if (this.playerId != null) {
@@ -157,16 +153,14 @@ public class WaitingController extends AbstractGameController {
             }
         }
 
-        if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            errorController.dispatch("The game you are looking for could not be found.");
+        if (currentPlayer == null) {
+            // If no player could be found, we redirect to an error page
+            errorController.gameNotFound();
         } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
             currentPlayer.setQueueSize(populatorFacade.getQueue().indexOf(currentPlayer) + 1);
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
                 && !requestManager.hasPlayerRight(currentPlayer)) {
-            try {
-                externalContext.dispatch("/wegas-app/jsf/error/accessdenied.xhtml");
-            } catch (IOException ex) {
-            }
+            errorController.accessDenied();
         }
     }
 

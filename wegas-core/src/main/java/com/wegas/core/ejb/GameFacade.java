@@ -22,8 +22,10 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -200,7 +202,9 @@ public class GameFacade extends BaseFacade<Game> {
         if (!game.hasDebugTeam()) {
             DebugTeam debugTeam = new DebugTeam();
             debugTeam.setGame(game);
-            debugTeam.getPlayers().get(0).setStatus(Status.LIVE);
+            Player testPlayer = debugTeam.getPlayers().get(0);
+            testPlayer.setStatus(Status.LIVE);
+            testPlayer.setRefName("def");
             teamFacade.create(debugTeam);
             //Player get = debugTeam.getPlayers().get(0);
             //requestFacade.commit(get, false);
@@ -418,11 +422,12 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param teamId
      * @param userId
+     * @param languages
      *
      * @return a new player, linked to user, who just joined the team
      */
-    public Player joinTeam(Long teamId, Long userId) {
-        return this.joinTeam(teamId, userId, null);
+    public Player joinTeam(Long teamId, Long userId, List<Locale> languages) {
+        return this.joinTeam(teamId, userId, null, languages);
     }
 
     /**
@@ -431,11 +436,12 @@ public class GameFacade extends BaseFacade<Game> {
      * @param teamId     id of the team to join
      * @param userId     id of the user to create a player for, may be null to create an anonymous player
      * @param playerName common name of the player
+     * @param languages
      *
      * @return a new player, linked to a user, who just joined the team
      */
-    public Player joinTeam(Long teamId, Long userId, String playerName) {
-        Long playerId = playerFacade.joinTeamAndCommit(teamId, userId, playerName);
+    public Player joinTeam(Long teamId, Long userId, String playerName, List<Locale> languages) {
+        Long playerId = playerFacade.joinTeamAndCommit(teamId, userId, playerName, languages);
         Player player = playerFacade.find(playerId);
         populatorScheduler.scheduleCreation();
         playerFacade.detach(player);
@@ -454,10 +460,10 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @return a new player anonymous player who just joined the team
      */
-    public Player joinTeam(Long teamId, String playerName) {
+    public Player joinTeam(Long teamId, String playerName, List<Locale> languages) {
         Long id = requestManager.getCurrentUser().getId();
         logger.info("Adding user {} to team {}", id, teamId);
-        return this.joinTeam(teamId, id, playerName);
+        return this.joinTeam(teamId, id, playerName, languages);
     }
 
     /**

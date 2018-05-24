@@ -1,10 +1,11 @@
-import { Schema } from 'jsoninput';
+import Form, {Schema} from 'jsoninput';
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
-import { css } from 'glamor';
-import { debounce, cloneDeep } from 'lodash-es';
+import {render, unmountComponentAtNode, createPortal} from 'react-dom';
+import {css} from 'glamor';
+import {debounce, cloneDeep} from 'lodash-es';
 import promised from './HOC/loadAsyncComp';
 import './index';
+import {LangHandler, LangToggler} from './LangContext';
 
 const FORM = 'form';
 
@@ -50,7 +51,7 @@ const AsyncForm = promised(() => {
     ]).then(([RForm]) => {
         return (props: {
             schema: Schema;
-            formRef: React.Ref<React.Component>;
+            formRef: React.Ref<Form>;
             value?: {};
             onChange: (value: any) => void;
         }) => <RForm.default ref={props.formRef} {...props} />;
@@ -58,8 +59,8 @@ const AsyncForm = promised(() => {
 });
 
 YUI.add('wegas-react-form', Y => {
-    const Wegas: { [key: string]: any } = Y.Wegas;
-    const Form = Y.Base.create(
+    const Wegas: {[key: string]: any} = Y.Wegas;
+    const RForm = Y.Base.create(
         'wegas-react-form',
         Y.Widget,
         [Y.WidgetChild, Wegas.Widget, Wegas.Editable],
@@ -77,6 +78,11 @@ YUI.add('wegas-react-form', Y => {
             },
             renderUI() {
                 Y.Array.each(this.get('buttons'), this.addButton, this);
+                const langNode = Y.Node.create('<span/>', window.document);
+                this.langSelectorNode = langNode.getDOMNode();
+
+                this.toolbar.get('header').append(langNode);
+
                 // ctrl-s shortcut
                 this.get('contentBox').on(
                     'key',
@@ -91,14 +97,36 @@ YUI.add('wegas-react-form', Y => {
                         this.fire('updated', val);
                     };
                     render(
-                        <div className={containerForm.toString()}>
-                            <AsyncForm
-                                formRef={form => this.set(FORM, form)}
-                                schema={schema}
-                                value={value}
-                                onChange={boundFire}
-                            />
-                        </div>,
+                        <LangHandler
+                            lang={Y.Wegas.I18n._currentRefName}
+                            availableLang={Y.Wegas.Facade.GameModel.cache
+                        .getCurrentGameModel()
+                        .get('languages')
+                        .map((l: any) => {
+                            return {
+                                refName: l.get('refName'),
+                                code: l.get('code'),
+                                label: l.get('lang'),
+                            };
+                                })}
+                        >
+                            {createPortal(
+                                <LangToggler />,
+                                this.langSelectorNode
+                            )}
+                            <div className={containerForm.toString()}>
+                                <AsyncForm
+                                    // force new instance of component. Usefull for script validation.
+                                    // New impact vs update one. Should find a better way to do this.
+                                    key={value ? (value as any).id : undefined}
+                                    formRef={form => this.set(FORM, form)}
+                                    schema={schema}
+                                    value={value}
+                                    onChange={boundFire}
+                                />
+                            </div>
+
+                        </LangHandler>,
                         this.get('contentBox').getDOMNode()
                     );
                 }
@@ -251,7 +279,7 @@ YUI.add('wegas-react-form', Y => {
                         type: {
                             type: 'string',
                             value: 'object',
-                            view: { type: 'hidden' },
+                            view: {type: 'hidden'},
                         },
                         properties: {
                             type: 'object',
@@ -267,15 +295,15 @@ YUI.add('wegas-react-form', Y => {
                                             label: 'Type',
                                             type: 'select',
                                             choices: [
-                                                { value: 'string' },
-                                                { value: 'number' },
-                                                { value: 'boolean' },
+                                                {value: 'string'},
+                                                {value: 'number'},
+                                                {value: 'boolean'},
                                             ],
                                         },
                                     },
                                     required: {
                                         type: 'boolean',
-                                        view: { label: 'Required' },
+                                        view: {label: 'Required'},
                                     },
                                     view: {
                                         type: 'object',
@@ -321,17 +349,17 @@ YUI.add('wegas-react-form', Y => {
                             action: 'submit',
                             cssClass: wegasSimpleButtonStyle.toString(),
                             label:
-                                '<span class="wegas-save-form-button fa fa-floppy-o ' +
-                                inactiveSaveBtnStyle.toString() +
-                                '" title="No changes to save"></span>',
+                            '<span class="wegas-save-form-button fa fa-floppy-o ' +
+                            inactiveSaveBtnStyle.toString() +
+                            '" title="No changes to save"></span>',
                         },
                     ],
-                    view: { type: 'hidden' },
+                    view: {type: 'hidden'},
                 },
             },
         }
     );
-    (Form as any).Script = {
+    (RForm as any).Script = {
         // Register Global script methods
         register: function r(
             value: string,
@@ -345,8 +373,15 @@ YUI.add('wegas-react-form', Y => {
             }
         ) {
             import(/* webpackChunkName: "reactForm" */ './Script/index').then(
-                ({ register }) => {
+                ({register}) => {
                     register(value, methodObjects);
+                }
+            );
+        },
+        getGlobals: function r(value: string){
+             return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
+                ({getGlobals}) => {
+                    return getGlobals(value);
                 }
             );
         },
@@ -354,26 +389,26 @@ YUI.add('wegas-react-form', Y => {
             return Promise.all([
                 import(/* webpackChunkName: "reactForm" */ './Script/index'),
                 import(/* webpackChunkName: "reactForm" */ './defaultViews'),
-            ]).then(([{ IndependantMultiVariableMethod }]) =>
+            ]).then(([{IndependantMultiVariableMethod}]) =>
                 IndependantMultiVariableMethod(...args)
-            );
+                );
         },
 
         MultiVariableCondition(...args: any[]) {
             return Promise.all([
                 import(/* webpackChunkName: "reactForm" */ './Script/index'),
                 import(/* webpackChunkName: "reactForm" */ './defaultViews'),
-            ]).then(([{ IndependantMultiVariableCondition }]) =>
+            ]).then(([{IndependantMultiVariableCondition}]) =>
                 IndependantMultiVariableCondition(...args)
-            );
+                );
         },
         VariableStatement(...args: any[]) {
             return Promise.all([
                 import(/* webpackChunkName: "reactForm" */ './Script/index'),
                 import(/* webpackChunkName: "reactForm" */ './defaultViews'),
-            ]).then(([{ IndependantVariableStatement }]) =>
+            ]).then(([{IndependantVariableStatement}]) =>
                 IndependantVariableStatement(...args)
-            );
+                );
         },
     };
 
@@ -385,5 +420,5 @@ YUI.add('wegas-react-form', Y => {
     //     data: 'SaveObjectAction'
     // });
 
-    Wegas.RForm = Form;
+    Wegas.RForm = RForm;
 });

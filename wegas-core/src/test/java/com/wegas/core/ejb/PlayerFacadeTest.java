@@ -59,12 +59,12 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
 
         Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().size()); // debugTeam and team
 
-        Player p1 = gameFacade.joinTeam(t.getId(), user.getId());
+        Player p1 = gameFacade.joinTeam(t.getId(), user.getId(), null);
 
         Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1
 
         login(user21);
-        Player p2 = gameFacade.joinTeam(t.getId(), user21.getId());
+        Player p2 = gameFacade.joinTeam(t.getId(), user21.getId(), null);
 
         Game ng = gameFacade.find(g.getId());
 
@@ -120,7 +120,7 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
     private WegasUser createPlayer(Team t, int i, int j) {
         WegasUser u = this.signup("massive_player_" + i + "_" + j + "@local");
         login(u);
-        gameFacade.joinTeam(t.getId(), u.getUsername());
+        gameFacade.joinTeam(t.getId(), u.getUsername(), null);
         u.setUser(userFacade.find(u.getId()));
 
         return u;

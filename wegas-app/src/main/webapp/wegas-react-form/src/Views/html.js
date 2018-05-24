@@ -1,11 +1,10 @@
-/* eslint-disable jsx-a11y/label-has-for */
-/* global tinymce:true */
+import { Editor } from '@tinymce/tinymce-react/lib/es2015';
+import { css } from 'glamor';
+import { debounce } from 'lodash-es';
 import PropTypes from 'prop-types';
 import React from 'react';
-import TinyMCE from 'react-tinymce';
-import { css } from 'glamor';
-import labeled from '../HOC/labeled';
 import commonView from '../HOC/commonView';
+import labeled from '../HOC/labeled';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
 
@@ -58,10 +57,11 @@ function onFileBrowserClick(fieldName, url, type, win) {
 
 const TINY_CONFIG = {
     inline: false,
+    browser_spellcheck: true,
     plugins: [
-        'autolink link image lists code media table contextmenu',
+        'autolink link image lists code media table',
         'paste advlist textcolor dynamic_toolbar',
-        // textcolor wordcount autosave
+        // textcolor wordcount autosave contextmenu
         // advlist charmap print preview hr anchor pagebreak spellchecker
         // directionality
     ],
@@ -174,59 +174,45 @@ function toInjectorStyle(content) {
             'data-file="$3"'
         ); // Replace absolute path with injector style path
 }
-// A click on the container transfers the focus to the inner DIV containing TinyMCE.
-function focusChildOnClick(event) {
-    const elem = event.target.firstChild;
-    if (elem && elem.focus) {
-        elem.focus();
-    }
-}
 class HTMLView extends React.Component {
+    static getDerivedStateFromProps(nextProps, state) {
+        if (nextProps.value !== state.content) {
+            return {
+                content: nextProps.value,
+            };
+        }
+        return null;
+    }
     constructor(props) {
         super(props);
-        this.state = { key: 0, content: props.value };
-        this.onChangeHandler = this.onChangeHandler.bind(this);
-        this.doNotCheck = false;
+        this.state = { content: props.value };
+        this.onChangeHandler = debounce(this.onChangeHandler.bind(this), 200);
     }
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.value !== this.state.content) {
-            // Generate a new key to force TinyMCE to re-render.
-            this.setState({
-                key: (this.state.key + 1) % 100, // avoid potential overflow
-                content: nextProps.value,
-            });
-            this.doNotCheck = true;
-        }
+    componentWillUnmount() {
+        this.onChangeHandler.flush();
     }
-
-    componentDidUpdate() {
-        this.doNotCheck = false;
-    }
-
-    // Listens both to tinyMCE's synthetic 'change' events and to its basic 'onKeyup' events.
-    // NB: the event parameter is not the same in both cases.
-    onChangeHandler() {
+    onChangeHandler(content) {
         if (this.doNotCheck) {
             return;
         }
         const oldContent = this.state.content;
-        const newContent = toInjectorStyle(tinymce.activeEditor.getContent());
+        const newContent = toInjectorStyle(content);
         if (oldContent !== newContent) {
-            this.setState({ content: newContent }, () =>
-                this.props.onChange(newContent)
-            );
+            this.setState({ content: newContent }, () => {
+                this.props.onChange(newContent);
+            });
         }
     }
 
     render() {
         return (
-            <div {...tinymceStyle} onClick={focusChildOnClick}>
-                <TinyMCE
-                    key={this.state.key}
-                    content={toTinyMCE(this.state.content)}
-                    config={TINY_CONFIG}
-                    onChange={this.onChangeHandler}
-                    onKeyup={this.onChangeHandler}
+            <div
+                {...tinymceStyle}
+            >
+                <Editor
+                    value={toTinyMCE(this.state.content)}
+                    init={TINY_CONFIG}
+                    onEditorChange={this.onChangeHandler}
                 />
             </div>
         );

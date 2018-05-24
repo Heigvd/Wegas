@@ -12,11 +12,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -28,12 +34,14 @@ import javax.persistence.*;
  */
 @Entity
 @JsonTypeName(value = "Message")
-
 @Table(indexes = {
-    @Index(columnList = "inboxinstance_id")
+    @Index(columnList = "inboxinstance_id"),
+    @Index(columnList = "subject_id"),
+    @Index(columnList = "from_id"),
+    @Index(columnList = "date_id"),
+    @Index(columnList = "body_id")
 })
-
-public class Message extends AbstractEntity implements DatedEntity {
+public class Message extends AbstractEntity implements DatedEntity, Searchable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -46,20 +54,26 @@ public class Message extends AbstractEntity implements DatedEntity {
     /**
      *
      */
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
-    private String subject;
+    private TranslatableContent subject;
+
     /**
-     *
+     * Kind of message identifier
      */
     @Column(length = 64, columnDefinition = "character varying(64) default ''::character varying")
     @WegasEntityProperty
     private String token;
 
-    @Lob
-    @JsonView(Views.ExtendedI.class)
+    /**
+     * Message body
+     */
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    private String body;
+    private TranslatableContent body;
+
     /**
      * real world time for sorting purpose
      */
@@ -71,8 +85,10 @@ public class Message extends AbstractEntity implements DatedEntity {
     /**
      * Simulation date, for display purpose
      */
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
-    private String date;
+    private TranslatableContent date;
     /**
      *
      */
@@ -81,16 +97,18 @@ public class Message extends AbstractEntity implements DatedEntity {
     /**
      *
      */
-    @Column(name = "mfrom")
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
-    private String from;
+    private TranslatableContent from;
     /**
      *
      */
-    @ElementCollection
+    @OneToMany(mappedBy = "message", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonDeserialize(using = Attachment.ListDeserializer.class)
     @JsonView(Views.ExtendedI.class)
     @WegasEntityProperty
-    private List<String> attachements;
+    private List<Attachment> attachments = new ArrayList<>();
     /**
      *
      */
@@ -117,9 +135,7 @@ public class Message extends AbstractEntity implements DatedEntity {
      * @param body
      */
     public Message(String from, String subject, String body) {
-        this.from = from;
-        this.subject = subject;
-        this.body = body;
+        this(from, subject, body, null, null, null);
     }
 
     /**
@@ -127,13 +143,10 @@ public class Message extends AbstractEntity implements DatedEntity {
      * @param from
      * @param subject
      * @param body
-     * @param attachements
+     * @param attachments
      */
-    public Message(String from, String subject, String body, List<String> attachements) {
-        this.from = from;
-        this.subject = subject;
-        this.body = body;
-        this.attachements = attachements;
+    public Message(String from, String subject, String body, List<String> attachments) {
+        this(from, subject, body, null, null, attachments);
     }
 
     /**
@@ -144,10 +157,7 @@ public class Message extends AbstractEntity implements DatedEntity {
      * @param date
      */
     public Message(String from, String subject, String body, String date) {
-        this.from = from;
-        this.subject = subject;
-        this.body = body;
-        this.date = date;
+        this(from, subject, body, date, null, null);
     }
 
     /**
@@ -156,14 +166,10 @@ public class Message extends AbstractEntity implements DatedEntity {
      * @param subject
      * @param body
      * @param date
-     * @param attachements
+     * @param attachments
      */
-    public Message(String from, String subject, String body, String date, List<String> attachements) {
-        this.from = from;
-        this.subject = subject;
-        this.body = body;
-        this.date = date;
-        this.attachements = attachements;
+    public Message(String from, String subject, String body, String date, List<String> attachments) {
+        this(from, subject, body, date, null, attachments);
     }
 
     /**
@@ -173,15 +179,21 @@ public class Message extends AbstractEntity implements DatedEntity {
      * @param body
      * @param date
      * @param token
-     * @param attachements
+     * @param attachments
      */
-    public Message(String from, String subject, String body, String date, String token, List<String> attachements) {
-        this.from = from;
-        this.subject = subject;
-        this.body = body;
-        this.date = date;
+    public Message(String from, String subject, String body, String date, String token, List<String> attachments) {
+        this.from = TranslatableContent.build("def", from);
+        this.subject = TranslatableContent.build("def", subject);
+        this.date = TranslatableContent.build("def", date);
+        this.body = TranslatableContent.build("def", body);
         this.token = token;
-        this.attachements = attachements;
+        if (attachments != null) {
+            for (String strA : attachments) {
+                Attachment a = new Attachment();
+                a.setFile(TranslatableContent.build("def", strA));
+                this.attachments.add(a);
+            }
+        }
     }
 
     @Override
@@ -194,13 +206,12 @@ public class Message extends AbstractEntity implements DatedEntity {
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getInboxInstance().getEntities();
     }*/
-
     /**
      * Get the message subject
      *
      * @return the message subject
      */
-    public String getSubject() {
+    public TranslatableContent getSubject() {
         return this.subject;
     }
 
@@ -209,8 +220,11 @@ public class Message extends AbstractEntity implements DatedEntity {
      *
      * @param subject new subject
      */
-    public void setSubject(String subject) {
+    public void setSubject(TranslatableContent subject) {
         this.subject = subject;
+        if (this.subject != null && this.getInboxInstance() != null) {
+            this.subject.setParentInstance(this.getInboxInstance());
+        }
     }
 
     /**
@@ -218,15 +232,18 @@ public class Message extends AbstractEntity implements DatedEntity {
      *
      * @return the body
      */
-    public String getBody() {
+    public TranslatableContent getBody() {
         return body;
     }
 
     /**
      * @param body the body to set
      */
-    public void setBody(String body) {
+    public void setBody(TranslatableContent body) {
         this.body = body;
+        if (this.body != null && this.getInboxInstance() != null) {
+            this.body.setParentInstance(this.getInboxInstance());
+        }
     }
 
     @Override
@@ -265,6 +282,17 @@ public class Message extends AbstractEntity implements DatedEntity {
      */
     public void setInboxInstance(InboxInstance inboxInstance) {
         this.inboxInstance = inboxInstance;
+        if (this.inboxInstance != null) {
+            this.getFrom().setParentInstance(this.inboxInstance);
+            this.getSubject().setParentInstance(this.inboxInstance);
+            this.getBody().setParentInstance(this.inboxInstance);
+            this.getDate().setParentInstance(this.inboxInstance);
+            if (this.getAttachments() != null) {
+                for (Attachment a : this.getAttachments()) {
+                    a.getFile().setParentInstance(this.inboxInstance);
+                }
+            }
+        }
     }
 
     /**
@@ -272,7 +300,7 @@ public class Message extends AbstractEntity implements DatedEntity {
      *
      * @return message sent time
      */
-    public String getDate() {
+    public TranslatableContent getDate() {
         return date;
     }
 
@@ -281,8 +309,11 @@ public class Message extends AbstractEntity implements DatedEntity {
      *
      * @param date
      */
-    public void setDate(String date) {
+    public void setDate(TranslatableContent date) {
         this.date = date;
+        if (this.date != null && this.getInboxInstance() != null) {
+            this.date.setParentInstance(this.getInboxInstance());
+        }
     }
 
     /**
@@ -316,29 +347,38 @@ public class Message extends AbstractEntity implements DatedEntity {
     /**
      * @return the from
      */
-    public String getFrom() {
+    public TranslatableContent getFrom() {
         return from;
     }
 
     /**
      * @param from the from to set
      */
-    public void setFrom(String from) {
+    public void setFrom(TranslatableContent from) {
         this.from = from;
+
+        if (this.from != null && this.getInboxInstance() != null) {
+            this.from.setParentInstance(this.getInboxInstance());
+        }
     }
 
     /**
-     * @return the attachements
+     * @return the attachments
      */
-    public List<String> getAttachements() {
-        return attachements;
+    public List<Attachment> getAttachments() {
+        return attachments;
     }
 
     /**
-     * @param attachements the attachements to set
+     * @param attachments the attachments to set
      */
-    public void setAttachements(List<String> attachements) {
-        this.attachements = attachements;
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
+        if (this.attachments != null) {
+            for (Attachment a : this.attachments) {
+                a.setMessage(this);
+            }
+        }
     }
 
     @Override
@@ -359,5 +399,23 @@ public class Message extends AbstractEntity implements DatedEntity {
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getInboxInstance().getRequieredReadPermission();
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        if (Helper.insensitiveContainsAll(getFrom(), criterias)
+                || Helper.insensitiveContainsAll(getSubject(), criterias)
+                || Helper.insensitiveContainsAll(getBody(), criterias)
+                || Helper.insensitiveContainsAll(getDate(), criterias)) {
+            return true;
+        }
+        if (this.attachments != null) {
+            for (Attachment a : this.attachments) {
+                if (a.containsAll(criterias)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

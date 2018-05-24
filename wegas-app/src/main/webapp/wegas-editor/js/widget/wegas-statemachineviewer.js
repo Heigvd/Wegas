@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -387,8 +389,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                                 this.highlightUnusedStates();
                                 this.hideOverlay();
                                 /*Wegas.Facade.Variable.cache.getWithView(e.response.entity, "Editor", {
-                                    on: {
-                                        success: Y.bind(function (e) {
+                                 on: {
+                                 success: Y.bind(function (e) {
                                  this.get(ENTITY).setAttrs(e.response.entity.getAttrs());
                                  this.hideOverlay();
                                  }, this)
@@ -535,7 +537,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 impact = Y.inputEx.WysiwygScript.formatScript(entity.get("onEnterEvent"));
 
             if (entity instanceof Wegas.persistence.DialogueState) {
-                label = entity.get("text");
+                label = I18n.t(entity.get("text"));
             } else if (entity.get("label")) {
                 label = "<div style='text-align: center;'>" + entity.get("label") + "</div>";
             } else {
@@ -572,7 +574,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                     cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
-                        click: Y.bind(function () {
+                        click: Y.bind(function() {
                             var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
                                 "transitions"), newNode;
                             state.editorPosition = new Wegas.persistence.Coordinate(state.editorPosition);
@@ -776,7 +778,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             // (id !== null) { fsmViewer.get(ENTITY).setInitialStateId(id);
             // fsmViewer.get(BOUNDING_BOX).all(".initial-state").removeClass("initial-state");
             // fsmViewer.nodes[id].syncUI(); } }
-            if(!noSave){
+            if (!noSave) {
                 fsmViewer.save();
             }
         }
@@ -814,11 +816,11 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                     cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
-                        click: Y.bind(function () {
+                        click: Y.bind(function() {
                             var entity = this.get(ENTITY).toObject("id"), tr;
                             tr = this.get(PARENT).addTransition(this.getTargetState(),
                                 new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
-                            );
+                                );
                             Y.one(tr.connection.getLabelOverlay().getElement()).simulate(CLICK);
                         }, this)
                     }
@@ -899,7 +901,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             if (index > -1) {
                 transitions.splice(index, 1);
             }
-            if(!noSave){
+            if (!noSave) {
                 this.get(PARENT).get(PARENT).save();
             }
 
@@ -930,7 +932,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 label;
 
             if (entity instanceof Wegas.persistence.DialogueTransition) {
-                label = entity.get("actionText");
+                label = I18n.t(entity.get("actionText"));
                 if (condition) {
                     if (label) {
                         label = "<div class=\"transition-label-title\">Text: </div><div class=\"transition-label-content\" >" + label + "</div>";

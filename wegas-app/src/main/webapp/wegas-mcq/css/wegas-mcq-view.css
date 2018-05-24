@@ -242,10 +242,12 @@
     visibility: visible;
 }
 
-.wegas-mcqview .mcq-question button:hover {
+.wegas-mcqview .mcq-question button:hover,
+.wegas-whview .wegas-whview--submit-button:hover {
     background:#4f8c5f;
     color: rgb(255, 255, 204);
 }
+
 .wegas-mcqview.locked .mcq-question button:hover {
     background: #69bd7f;
     color: white;
@@ -359,8 +361,8 @@
     -moz-user-select: none;
     -ms-user-select: none;
 }
-.wegas-whview__mainlist audio, 
-.wegas-whview__mainlist img, 
+.wegas-whview__mainlist audio,
+.wegas-whview__mainlist img,
 .wegas-whview__mainlist video {
     /*pointer-events: auto;*/
 }
@@ -381,11 +383,11 @@
 
 .wegas-whview__partial-none:before{
     content:"\f040";
-    color: orange;   
+    color: orange;
 }
 
 .wegas-whview__partial-auto:before{
-    color: orange;   
+    color: orange;
 }
 
 .wegas-whview__info {
@@ -394,7 +396,7 @@
     background-color: #444;
     border: 1px solid #bbb;
     color: white;
-    width:300px; 
+    width:300px;
 }
 
 
@@ -493,13 +495,14 @@
     height: 24px;
     margin: 2px 5px 4px 15px;
     font-size: 11px;
-    font-weight: normal;
+    font-weight: bold;
     padding: 4px 8px 4px 24px;
     border-radius: 6px;
     color: white;
     transition: .3s;
+    right: 20px;
+    left: auto !important;
 }
-
 
 .wegas-whview--submit-button:before{
     content:"\f00c";
@@ -561,3 +564,4 @@
 .wegas-whview .wegas-string-input ul.wegas-string-input-checkboxes li:first-child {
     margin-left: 0;
 }
+

@@ -23,12 +23,14 @@ import com.wegas.core.ejb.nashorn.JavaObjectInvocationHandler;
 import com.wegas.core.ejb.nashorn.NHClassLoader;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.WegasErrorMessageManager;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.UserFacade;
@@ -187,6 +189,14 @@ public class ScriptFacade extends WegasAbstractFacade {
 
     private ScriptContext populate(Player player) {
         final Bindings bindings = engine.createBindings();
+        if (player == null) {
+            throw WegasErrorMessage.error("ScriptFacade.populate requires a player !!!");
+        }
+
+        if (player.getStatus() != Populatable.Status.LIVE) {
+            throw WegasErrorMessage.error("ScriptFacade.populate requires a LIVE player !!!");
+        }
+
         bindings.put("self", player);                           // Inject current player
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
 
@@ -247,6 +257,29 @@ public class ScriptFacade extends WegasAbstractFacade {
     }
 
     /**
+     * Eval without any player related context (no server scripts, no API, etc)
+     *
+     * @param script
+     * @param args
+     *
+     * @return
+     *
+     * @throws ScriptException
+     */
+    public Object nakedEval(String script, Map<String, Object> args) throws ScriptException {
+        ScriptContext ctx = new SimpleScriptContext();
+        if (args != null) {
+            for (Entry<String, Object> arg : args.entrySet()) {
+                if (arg.getValue() != null) {
+                    ctx.getBindings(ScriptContext.ENGINE_SCOPE).put(arg.getKey(), arg.getValue());
+                }
+            }
+        }
+
+        return engine.eval(script, ctx);
+    }
+
+    /**
      * Inject script files specified in GameModel's property scriptFiles into
      * engine
      *
@@ -300,7 +333,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         }
     }
 
-    public void clearCache(){
+    public void clearCache() {
         staticCache.clear();
     }
 
@@ -466,6 +499,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      * @param context
      *
      * @return eval result
+     *
      * @throws WegasScriptException
      */
     public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException { // ICI CONTEXT

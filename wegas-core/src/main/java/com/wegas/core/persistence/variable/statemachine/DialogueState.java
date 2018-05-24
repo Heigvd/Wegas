@@ -7,13 +7,15 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -26,30 +28,25 @@ public class DialogueState extends State {
     /**
      *
      */
-    @Lob
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
-    private String text;
+    private TranslatableContent text;
 
     @Override
     public Boolean containsAll(final List<String> criterias) {
-        if (Helper.insensitiveContainsAll(this.getText(), criterias)) {
-            return true;
-        }
-        return super.containsAll(criterias);
+        return Helper.insensitiveContainsAll(getText(), criterias)
+                || super.containsAll(criterias);
     }
 
-    /**
-     * @return the text
-     */
-    public String getText() {
+    public TranslatableContent getText() {
         return text;
     }
 
-    /**
-     * @param text the text to set
-     */
-    public void setText(String text) {
+    public void setText(TranslatableContent text) {
         this.text = text;
+        if (this.text != null) {
+            this.text.setParentDescriptor(this.getStateMachine());
+        }
     }
-
 }

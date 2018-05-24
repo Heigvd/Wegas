@@ -97,7 +97,7 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
         teamFacade.create(g.getId(), t);
         Assert.assertNotNull(t.getId());
 
-        Player p = gameFacade.joinTeam(t.getId(), "John A. Player");
+        Player p = gameFacade.joinTeam(t.getId(), "John A. Player", null);
 
         Assert.assertNotNull(p.getId());
 

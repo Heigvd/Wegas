@@ -40,9 +40,9 @@ YUI.add("wegas-historydialog", function(Y) {
             historyNode.empty(true);
             for (i in history) {
                 if (history[i] instanceof persistence.DialogueTransition) {
-                    historyNode.append("<div class='response h" + history[i].get('id') + "'>" + (history[i].get("actionText") === null ? "" : history[i].get("actionText")) + "</ul>");
+                    historyNode.append("<div class='response h" + history[i].get('id') + "'>" + (history[i].get("actionText") === null ? "" : I18n.t(history[i].get("actionText"))) + "</ul>");
                 } else if (history[i] instanceof persistence.DialogueState) {
-                    historyNode.append("<div class='talk h" + history[i].get('id') + "'>" + (history[i].get("text") === null ? "" : history[i].get("text")) + "</div>");
+                    historyNode.append("<div class='talk h" + history[i].get('id') + "'>" + (history[i].get("text") === null ? "" : I18n.t(history[i].get("text"))) + "</div>");
                 }
             }
         }

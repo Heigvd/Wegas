@@ -16,6 +16,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -322,7 +323,7 @@ public class SerializationTest {
 
         TaskDescriptor taskD = new TaskDescriptor();
         TaskDescriptor taskD2 = new TaskDescriptor();
-        taskD.setDescription("DESC");
+        taskD.setDescription(TranslatableContent.build("def", "DESC"));
         taskD.addPredecessor(taskD2);
         taskD.setName("taskD");
         taskD.setProperty("descriptorProperty", propertyValue);
@@ -347,7 +348,7 @@ public class SerializationTest {
 
         ResourceDescriptor resourceD = new ResourceDescriptor();
         resourceD.setName("resourceD");
-        resourceD.setDescription("DESC");
+        resourceD.setDescription(TranslatableContent.build("def", "DESC"));
         ResourceInstance resourceI = new ResourceInstance();
         resourceD.setDefaultInstance(resourceI);
         resourceI.setProperty("Level", "8");
@@ -378,7 +379,9 @@ public class SerializationTest {
 
     @Test
     public void testExceptionMapper() throws JsonProcessingException {
-        NumberDescriptor nd = new NumberDescriptor("x");
+        NumberDescriptor nd = new NumberDescriptor();
+        nd.setName("x");
+        nd.setLabel(TranslatableContent.build("def", "x"));
         NumberInstance ns = new NumberInstance(0);
 
         nd.setDefaultInstance(ns);
@@ -389,7 +392,7 @@ public class SerializationTest {
 
         nd.getDefaultInstance().setValue(-10);
 
-        String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd.getName(), nd.getLabel()));
+        String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd.getName(), nd.getLabel().translateOrEmpty(nd.getGameModel())));
         System.out.println("WOOB: " + json);
         assertPropertyEquals(json, "@class", "WegasOutOfBoundException");
 
@@ -411,7 +414,7 @@ public class SerializationTest {
         CustomEvent custom = new CustomEvent("Dummy CustomEvent", payload);
 
         List<WegasRuntimeException> exceptions = new ArrayList<>();
-        exceptions.add(new WegasOutOfBoundException(0.0, 10.0, 15.0, ndPayload.getLabel(), ndPayload.getLabel()));
+        exceptions.add(new WegasOutOfBoundException(0.0, 10.0, 15.0, "ndPayload.getLabel()", "ndPayload.getLabel()"));
         exceptions.add(WegasErrorMessage.error("Error Message"));
         exceptions.add(new WegasScriptException("var a = truc;", 123, "OUPS"));
 

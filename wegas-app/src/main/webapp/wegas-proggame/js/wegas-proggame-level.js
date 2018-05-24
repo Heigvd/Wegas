@@ -318,8 +318,9 @@ YUI.add('wegas-proggame-level', function(Y) {
         doIdleAnimation: function() {
             var texts = this.get("invites");
             if (texts.length === 0) {
-                texts = ["HELP! HELP!!! SOMEBODY HERE? PLEASE HELP ME!",
-                    "PLEASE HELP ME!", "WHY ME? TELL ME WHY?", "WOULD ANYBODY BE KIND ENOUGH AS TO GET ME OUT OF HERE?"];
+                texts = ["Bonjour ? Il y a quelqu'un ? Moi, je suis là !",
+                    "Tape le bon code pour me rejoindre !",
+                    "Y a-t-il quelqu'un pour me tenir compagnie ?"];
             }
 
             if (this.get(STATE) === IDLE) {
@@ -1399,9 +1400,6 @@ YUI.add('wegas-proggame-level', function(Y) {
             }, {
                 node: ".proggame-buttons",
                 html: "<div>Pour exécuter votre code, cliquez sur la flèche verte.</div>"
-            }, {
-                node: ".barre",
-                html: "<div>L'éditeur de code peut être agrandi en tirant sur cette barre</div>"
             }, {
                 node: ".proggame-lefttab",
                 html: "<div>L'<b>API</b>(Application Programming Interface) expose les instructions que vous avez à disposition.<br/><br/>" +

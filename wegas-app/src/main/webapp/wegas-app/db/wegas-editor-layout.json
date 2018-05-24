@@ -264,6 +264,9 @@
                                                             "fn": "PageEditor"
                                                         },
                                                         {
+                                                            "fn": "TranslationEditor"
+                                                        },
+                                                        {
                                                             "fn": "Injector"
                                                         },
                                                         {
@@ -332,8 +335,15 @@
                                                     "cssClass": "wegas-console wegas-editor-console"
                                                 }
                                             ]
-                                        },
-                                        {
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Translations",
+                                            "wchildren": [
+                                                {
+                                                    "type": "LanguagesManager"
+                                                }
+                                            ]
+                                        }, {
                                             "type": "Button",
                                             "cssClass": "wegas-advanced-feature",
                                             "label": "Scenario properties",
@@ -425,8 +435,9 @@
                                     },
                                     {
                                         "fn": "PageEditor"
-                                    },
-                                    {
+                                    }, {
+                                        "fn": "TranslationEditor"
+                                    }, {
                                         "fn": "Injector"
                                     },
                                     {
@@ -479,6 +490,8 @@
                                                             "fn": "PageEditor"
                                                         },
                                                         {
+                                                            "fn": "TranslationEditor"
+                                                        }, {
                                                             "fn": "Injector"
                                                         },
                                                         {
@@ -552,8 +565,15 @@
                                                     "cssClass": "wegas-console wegas-editor-console"
                                                 }
                                             ]
-                                        },
-                                        {
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "label": "Translations",
+                                            "wchildren": [
+                                                {
+                                                    "type": "LanguagesManager"
+                                                }
+                                            ]
+                                        }, {
                                             "type": "Button",
                                             "cssClass": "wegas-advanced-feature",
                                             "label": "Scenario properties",
