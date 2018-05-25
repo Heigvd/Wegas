@@ -43,12 +43,24 @@ const DropContext = React.createContext<{
 
 class ContextContainer extends React.Component<
   ContainerProps,
-  { context: { onDropResult: NonNullable<ContainerProps['onDropResult']> } }
-> {
-  state = { context: { onDropResult: noop } };
-  static getDerivedStateFromProps(props: ContainerProps) {
-    return { context: { onDropResult: props.onDropResult || noop} };
+  {
+    context: { onDropResult: NonNullable<ContainerProps['onDropResult']> };
+    oldProps: ContainerProps;
   }
+> {
+  static getDerivedStateFromProps(
+    nextProps: ContainerProps,
+    { oldProps }: { oldProps: ContainerProps },
+  ) {
+    if (oldProps === nextProps) {
+      return null;
+    }
+    return {
+      oldProps: nextProps,
+      context: { onDropResult: nextProps.onDropResult || noop },
+    };
+  }
+  state = { context: { onDropResult: noop }, oldProps: this.props };
   render() {
     const { parent } = this.props;
     let index = 0;
@@ -57,7 +69,7 @@ class ContextContainer extends React.Component<
     }
     return (
       <DropContext.Provider value={this.state.context}>
-         {this.props.children({ nodeProps })}
+        {this.props.children({ nodeProps })}
       </DropContext.Provider>
     );
   }

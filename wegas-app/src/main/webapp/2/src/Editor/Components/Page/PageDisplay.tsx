@@ -15,15 +15,21 @@ interface PageDisplayProps {
 }
 class PageDisplay extends React.Component<
   PageDisplayProps,
-  { currentPageId: string }
+  { currentPageId: string; oldProps: PageDisplayProps }
 > {
-  static getDerivedStateFromProps(nextProps: PageDisplayProps) {
-    return { currentPageId: nextProps.defaultPageId };
+  static getDerivedStateFromProps(
+    nextProps: PageDisplayProps,
+    { oldProps }: { oldProps: PageDisplayProps },
+  ) {
+    if (oldProps === nextProps) {
+      return null;
+    }
+    return { oldProps: nextProps, currentPageId: nextProps.defaultPageId };
   }
   editor?: SrcEditor | null;
   constructor(props: PageDisplayProps) {
     super(props);
-    this.state = { currentPageId: props.defaultPageId };
+    this.state = { oldProps: props, currentPageId: props.defaultPageId };
   }
   render() {
     return (

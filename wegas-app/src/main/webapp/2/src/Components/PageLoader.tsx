@@ -6,7 +6,7 @@ import { Actions } from '../data/index';
 
 /**
  * Test Widget to be removed
- * @param props 
+ * @param props
  */
 function Print(props: any) {
   return (
@@ -124,14 +124,25 @@ interface PageLoaderProps {
   id?: string;
 }
 
-class PageLoader extends React.Component<PageLoaderProps, { json?: Page }> {
-  static getDerivedStateFromProps(nextProps: PageLoaderProps) {
-    return { json: nextProps.page };
+class PageLoader extends React.Component<
+  PageLoaderProps,
+  { json?: Page; oldProps: PageLoaderProps }
+> {
+  static getDerivedStateFromProps(
+    nextProps: PageLoaderProps,
+    state: { json?: Page; oldProps: PageLoaderProps },
+  ) {
+    const json = state.oldProps !== nextProps ? nextProps.page : state.json;
+    return {
+      oldProps: nextProps,
+      json,
+    };
   }
   constructor(props: PageLoaderProps) {
     super(props);
     this.state = {
       json: props.page,
+      oldProps: props,
     };
     this.update = this.update.bind(this);
   }

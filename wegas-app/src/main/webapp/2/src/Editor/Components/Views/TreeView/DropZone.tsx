@@ -103,10 +103,17 @@ interface ConDropZoneProps extends DropZoneProps {
 }
 class DropZoneContainer extends React.Component<
   ConDropZoneProps,
-  { where: DropLocation }
+  { where: DropLocation; oldProps: ConDropZoneProps }
 > {
-  static getDerivedStateFromProps(nextProps: ConDropZoneProps) {
+  static getDerivedStateFromProps(
+    nextProps: ConDropZoneProps,
+    { oldProps }: { oldProps: ConDropZoneProps },
+  ) {
+    if (oldProps === nextProps) {
+      return null;
+    }
     return {
+      oldProps: nextProps,
       where: nextProps.where,
     };
   }
@@ -114,6 +121,7 @@ class DropZoneContainer extends React.Component<
   constructor(props: ConDropZoneProps) {
     super(props);
     this.state = {
+      oldProps: props,
       where: props.where,
     };
   }

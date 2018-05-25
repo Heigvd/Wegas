@@ -17,14 +17,23 @@ interface FormProps extends EditorProps {
 
 export type IForm = typeof Form;
 
-export class Form extends React.Component<FormProps, { val: any }> {
+export class Form extends React.Component<
+  FormProps,
+  { val: any; oldProps: FormProps }
+> {
   form?: JSONForm;
-  static getDerivedStateFromProps(nextProps: FormProps) {
-    return { val: nextProps.entity }; // check for others
+  static getDerivedStateFromProps(
+    nextProps: FormProps,
+    state: { oldProps: FormProps },
+  ) {
+    if (state.oldProps === nextProps) {
+      return null;
+    }
+    return { val: nextProps.entity, oldProps: nextProps };
   }
   constructor(props: FormProps) {
     super(props);
-    this.state = { val: props.entity };
+    this.state = { oldProps: props, val: props.entity };
   }
   render() {
     return (

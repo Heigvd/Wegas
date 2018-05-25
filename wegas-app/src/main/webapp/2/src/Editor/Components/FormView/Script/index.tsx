@@ -41,12 +41,17 @@ interface ScriptProps extends WidgetProps.BaseProps<LabeledView & CommonView> {
 interface ScriptState {
   srcMode: boolean;
   error?: string;
+  oldProps: ScriptProps;
 }
 export class Script extends React.Component<ScriptProps, ScriptState> {
-  static getDerivedStateFromProps() {
-    return { error: undefined };
+  static getDerivedStateFromProps(nextProps: ScriptProps, state: ScriptState) {
+    if (state.oldProps === nextProps) {
+      return null;
+    }
+    return { oldProps: nextProps, error: undefined };
   }
   state: ScriptState = {
+    oldProps: this.props,
     srcMode: true,
     error: undefined,
   };

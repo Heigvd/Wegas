@@ -13,15 +13,25 @@ export function asyncSFC<T>(
 ): React.ComponentClass<T> {
   class AsyncDeps extends React.PureComponent<
     T,
-    { el: React.ReactNode | null; loaded: boolean }
+    { el: React.ReactNode | null; loaded: boolean; oldProps: T }
   > {
-    static getDerivedStateFromProps() {
-      return { loaded: false };
+    static getDerivedStateFromProps(
+      nextProps: T,
+      { oldProps }: { oldProps: T },
+    ) {
+      if (oldProps !== nextProps) {
+        return {
+          loaded: false,
+          oldProps: nextProps,
+        };
+      }
+      return null;
     }
     mount: boolean = true;
     constructor(props: T) {
       super(props);
       this.state = {
+        oldProps: props,
         loaded: false,
         el: Loader({}),
       };

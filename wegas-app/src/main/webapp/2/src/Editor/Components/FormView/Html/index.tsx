@@ -56,28 +56,35 @@ interface HtmlProps extends WidgetProps.BaseProps<CommonView & LabeledView> {
 interface HtmlState {
   value: Value;
   rawValue: string;
+  oldProps: HtmlProps;
 }
 export default class Html extends React.Component<HtmlProps, HtmlState> {
   static getDerivedStateFromProps(nextProps: HtmlProps, state: HtmlState) {
-    if (state.rawValue === nextProps.value) {
+    if (state.oldProps === nextProps) {
       return null;
     }
-    return {
-      value: html.deserialize(nextProps.value || ''),
-      rawValue: nextProps.value,
-    };
+    if (state.rawValue !== nextProps.value) {
+      return {
+        oldProps: nextProps,
+        value: html.deserialize(nextProps.value || ''),
+        rawValue: nextProps.value,
+      };
+    }
+    return { oldProps: nextProps };
   }
   state = {
+    oldProps: this.props,
     rawValue: '',
     value: EMPTY_VALUE,
   };
   onChange = ({ value }: Change) => {
     if (this.state.value.document !== value.document) {
-      this.setState({ rawValue: html.serialize(value) }, () =>
+      this.setState({ rawValue: html.serialize(value), value }, () =>
         this.props.onChange(this.state.rawValue),
       );
+    } else {
+      this.setState({ value });
     }
-    this.setState({ value });
   };
   render() {
     return (

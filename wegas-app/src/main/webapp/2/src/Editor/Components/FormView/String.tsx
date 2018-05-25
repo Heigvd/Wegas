@@ -38,14 +38,20 @@ function undefToEmpty(val?: string | number) {
 }
 export default class StringInput extends React.Component<
   StringInputProps,
-  { value?: string | number }
+  { value?: string | number; oldProps: StringInputProps }
 > {
-  static getDerivedStateFromProps(nextProps: StringInputProps) {
-    return { value: nextProps.value };
+  static getDerivedStateFromProps(
+    nextProps: StringInputProps,
+    { oldProps }: { oldProps: StringInputProps },
+  ) {
+    if (nextProps !== oldProps) {
+      return { oldProps: nextProps, value: nextProps.value };
+    }
+    return null;
   }
   constructor(props: StringInputProps) {
     super(props);
-    this.state = { value: props.value };
+    this.state = { value: props.value, oldProps: props };
   }
   debouncedOnChange = debounce((value: string) => {
     this.props.onChange(value);

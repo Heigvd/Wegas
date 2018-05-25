@@ -56,14 +56,24 @@ interface StateMachineEditorProps {
 }
 class StateMachineEditor extends React.Component<
   StateMachineEditorProps,
-  { plumb?: jsPlumbInstance; stateMachine?: IFSMDescriptor }
+  {
+    plumb?: jsPlumbInstance;
+    stateMachine?: IFSMDescriptor;
+    oldProps: StateMachineEditorProps;
+  }
 > {
-  static getDerivedStateFromProps(nextProps: StateMachineEditorProps) {
-    return { stateMachine: nextProps.stateMachine };
+  static getDerivedStateFromProps(
+    nextProps: StateMachineEditorProps,
+    { oldProps }: { oldProps: StateMachineEditorProps },
+  ) {
+    if (oldProps === nextProps) {
+      return null;
+    }
+    return { oldProps: nextProps, stateMachine: nextProps.stateMachine };
   }
   constructor(props: StateMachineEditorProps) {
     super(props);
-    this.state = { stateMachine: props.stateMachine };
+    this.state = { oldProps: props, stateMachine: props.stateMachine };
   }
   container: Element | null = null;
   update(stateMachine: IFSMDescriptor) {
@@ -77,7 +87,7 @@ class StateMachineEditor extends React.Component<
     transiton: IFSMDescriptor.Transition;
   }) => {
     this.setState(
-      produce<{ stateMachine: IFSMDescriptor }>(state => {
+      produce<{ stateMachine: IFSMDescriptor; oldProps: any }>(state => {
         const { states } = state.stateMachine!;
         states[from].transitions = states[from].transitions.filter(
           t => t.id !== transiton.id,
@@ -87,7 +97,7 @@ class StateMachineEditor extends React.Component<
   };
   createTransition = ({ from, to }: { from: number; to: number }) => {
     this.setState(
-      produce<{ stateMachine: IFSMDescriptor }>(state => {
+      produce<{ stateMachine: IFSMDescriptor; oldProps: any }>(state => {
         const { states } = state.stateMachine;
         states[from].transitions.push({
           '@class': 'Transition',
@@ -101,7 +111,7 @@ class StateMachineEditor extends React.Component<
   };
   deleteState = (id: string) => {
     this.setState(
-      produce<{ stateMachine: IFSMDescriptor }>(state => {
+      produce<{ stateMachine: IFSMDescriptor; oldProps: any }>(state => {
         const { states } = state.stateMachine!;
         delete states[id];
         // delete transitions pointing to deleted state
@@ -116,7 +126,7 @@ class StateMachineEditor extends React.Component<
   createState = (state: IFSMDescriptor.State): Promise<number> => {
     return new Promise(resolve =>
       this.setState(
-        produce<{ stateMachine: IFSMDescriptor }>(store => {
+        produce<{ stateMachine: IFSMDescriptor; oldProps: any }>(store => {
           const nextId =
             Object.keys(store.stateMachine.states).reduce(
               (p, c) => Math.max(Number(c), p),
