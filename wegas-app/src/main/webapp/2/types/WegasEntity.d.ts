@@ -14,6 +14,18 @@ interface IScript {
   content: string;
   language: 'JavaScript';
 }
+interface IGameModelLanguage extends IWegasEntity {
+  '@class': 'GameModelLanguage';
+  active: boolean;
+  code: string;
+  indexOrder: number;
+  lang: string;
+  refName: string;
+}
+interface ITranslatableContent extends IWegasEntity {
+  '@class': 'TranslatableContent';
+  translations: { [ref: string]: string };
+}
 interface IGameModelProperties {
   freeForAll: boolean;
   pagesUri: string;
@@ -33,6 +45,8 @@ interface IGameModel extends IWegasEntity, IParentDescriptor {
   comments: string | null;
   createdTime: number;
   scriptLibrary: any;
+  uiversion: 1 | 2;
+  languages: IGameModelLanguage[];
   cssLibrary: any;
   clientScriptLibrary: any;
   properties: IGameModelProperties;

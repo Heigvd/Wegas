@@ -6,8 +6,8 @@ interface IVariableDescriptor<T extends IVariableInstance = IVariableInstance>
   extends IWegasEntity,
     IVersionable {
   name: string;
-  label: string;
-  title: string | null;
+  label: ITranslatableContent;
+  editorTag: string | null;
   defaultInstance: T;
   scope: IScope;
   parentDescriptorId: number;

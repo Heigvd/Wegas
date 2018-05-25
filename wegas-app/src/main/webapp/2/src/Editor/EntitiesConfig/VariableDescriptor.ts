@@ -75,12 +75,12 @@ const scopeConfig: ConfigurationSchema<IScope> = {
 export const config: ConfigurationSchema<IVariableDescriptor> = {
   ...wegasEntityConfig,
   label: {
-    type: 'string',
+    type: 'object',
     required: true,
     index: -12,
     minLength: 1,
     view: {
-      label: 'Name',
+      label: 'Label',
     },
   },
   version: {
@@ -91,11 +91,12 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
       label: 'Version',
     },
   },
-  title: {
+  editorTag: {
     type: ['string', 'null'],
     index: -11,
     view: {
-      type: 'hidden',
+      type: 'string',
+      label: 'Tag',
     },
   },
   name: {
@@ -115,7 +116,7 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
     },
     view: {
       type: 'string',
-      label: 'Script alias',
+      label: 'Name',
       description:
         "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
     },
