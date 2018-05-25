@@ -815,9 +815,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                     List<Reply> replies = qi.getReplies();
                     String title;
                     if (replies.size() > 1) {
-                        title = (String) translate.call(i18n, "question.results", refName);
+                        title = (String) translate.call(i18n, "question.results", null, refName);
                     } else {
-                        title = (String) translate.call(i18n, "question.result", refName);
+                        title = (String) translate.call(i18n, "question.result", null, refName);
                     }
                     bd.append("<div class=\"replies-label\">").append(title).append("</div>");
                     bd.append("<div class=\"replies\">");
@@ -832,9 +832,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 List<Reply> replies = qi.getReplies();
                 String title;
                 if (replies.size() > 1) {
-                    title = (String) translate.call(i18n, "question.results", refName);
+                    title = (String) translate.call(i18n, "question.results", null, refName);
                 } else {
-                    title = (String) translate.call(i18n, "question.result", refName);
+                    title = (String) translate.call(i18n, "question.result", null, refName);
                 }
                 bd.append("<div class=\"replies-label\">").append(title).append("</div>");
                 bd.append("<div class=\"cbx-replies\">");

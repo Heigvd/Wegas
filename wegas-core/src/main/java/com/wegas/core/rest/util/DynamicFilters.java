@@ -26,7 +26,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class DynamicFilters implements DynamicFeature {
 
-    private static final CacheResponseFilter noCacheResponseFilter = new CacheResponseFilter(CacheResponseFilter.NO_CACHE);
+    private static final CacheResponseFilter noCacheNoStoreResponseFilter = new CacheResponseFilter(CacheResponseFilter.NO_CACHE_NO_STORE);
 
     private static final String private_cache = "private, ";
 
@@ -54,7 +54,7 @@ public class DynamicFilters implements DynamicFeature {
                 context.register(new CacheResponseFilter(genCacheString(cma)));
                 //} else if (nc != null) {
             } else {
-                context.register(noCacheResponseFilter);
+                context.register(noCacheNoStoreResponseFilter);
             }
         }
 

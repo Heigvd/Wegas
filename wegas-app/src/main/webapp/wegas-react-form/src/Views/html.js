@@ -176,16 +176,23 @@ function toInjectorStyle(content) {
 }
 class HTMLView extends React.Component {
     static getDerivedStateFromProps(nextProps, state) {
+        if (state.oldProps === nextProps) {
+            return null;
+        }
         if (nextProps.value !== state.content) {
             return {
-                content: nextProps.value,
+                content: nextProps.value || '',
             };
         }
         return null;
     }
     constructor(props) {
         super(props);
-        this.state = { content: props.value };
+        this.state = {
+            // eslint-disable-next-line
+            oldProps: props,
+            content: props.value,
+        };
         this.onChangeHandler = debounce(this.onChangeHandler.bind(this), 200);
     }
     componentWillUnmount() {
@@ -206,9 +213,7 @@ class HTMLView extends React.Component {
 
     render() {
         return (
-            <div
-                {...tinymceStyle}
-            >
+            <div {...tinymceStyle}>
                 <Editor
                     value={toTinyMCE(this.state.content)}
                     init={TINY_CONFIG}

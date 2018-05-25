@@ -15,6 +15,7 @@ YUI.add("wegas-i18n-mcq-fr", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-mcq", "fr", {
         mcq: {
             result: "Résultat",
+            results: "Résultats",
             empty: "Aucune question disponible actuellement",
             submit: "valider",
             answered : "répondue",

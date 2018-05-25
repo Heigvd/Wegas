@@ -13,6 +13,7 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -62,6 +63,21 @@ public class I18nController {
     }
 
     @PUT
+    @Path("Langs")
+    public List<GameModelLanguage> updateLanguages(@PathParam("gameModelId") Long gameModelId,
+            List<GameModelLanguage> languages) {
+        logger.trace("UPDATE languages {} for gameModel #{}", languages, gameModelId);
+
+        List<GameModelLanguage> updated = new ArrayList<>();
+
+        for (GameModelLanguage language : languages) {
+             updated.add(i18nfacade.updateLanguage(language));
+        }
+
+        return updated;
+    }
+
+    @PUT
     @Path("Lang/{langId: [1-9][0-9]*}/Up")
     public GameModel updateLanguage(@PathParam("gameModelId") Long gameModelId,
             @PathParam("langId") Long langId) {
@@ -99,7 +115,6 @@ public class I18nController {
     public List<AbstractEntity> batchScriptUpdate(List<ScriptUpdate> updates) {
         return i18nfacade.batchScriptUpdate(updates);
     }
-
 
     @DELETE
     @Path("Tr/{lang : [^\\/]*}")

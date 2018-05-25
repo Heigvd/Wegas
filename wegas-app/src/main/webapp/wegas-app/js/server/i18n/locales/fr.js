@@ -23,7 +23,7 @@ var i18nOrdinate = (function(module) {
 I18n.add("fr", {
     question: {
         result: "Résultat",
-        results: "Résultat"
+        results: "Résultats"
     }
 });
 
