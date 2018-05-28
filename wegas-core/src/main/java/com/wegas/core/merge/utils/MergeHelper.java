@@ -36,7 +36,7 @@ public class MergeHelper {
      * @param forceRecursion do not follow includeByDefault=false properted unless forceRecursion is true
      * @param visitor
      */
-    private static void visitMergeable(Mergeable target, Mergeable reference,
+    public static void visitMergeable(Mergeable target, Mergeable reference,
             Boolean forceRecursion, MergeableVisitor visitor) {
 
         if (target != null) {

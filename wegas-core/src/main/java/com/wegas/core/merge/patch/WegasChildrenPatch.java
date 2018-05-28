@@ -330,6 +330,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                         if (parentMode == PatchMode.DELETE
                                 && ((childrenList != null && childrenList.size() > 0)
                                 || (childrenMap != null && childrenMap.size() > 0))) {
+                            // children
                             logger.info("orphans: {}", children);
 
                             for (WegasCallback cb : callbacks) {

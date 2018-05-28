@@ -43,7 +43,7 @@ public class LifecycleCollector {
 
     /**
      *
-     * @param parent     used to be orphans parent
+     * @param parent     used to be orphan parent
      * @param identifier parent property which contains orphans
      * @param orphans    orphans themselves
      */
@@ -87,14 +87,14 @@ public class LifecycleCollector {
         sb.append("New Entities ").append(created.size()).append(":");
         sb.append(System.lineSeparator());
         for (Entry<String, CollectedEntity> entry : created.entrySet()) {
-            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry.getValue().getEntity().toString());
+            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry);
             sb.append(System.lineSeparator());
         }
 
         sb.append("Destroyed Entities ").append(deleted.size()).append(":");
         sb.append(System.lineSeparator());
         for (Entry<String, CollectedEntity> entry : deleted.entrySet()) {
-            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry.getValue().getEntity().toString());
+            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry);
             sb.append(System.lineSeparator());
         }
 
@@ -150,16 +150,23 @@ public class LifecycleCollector {
 
     public static final class CollectedEntity {
 
+        private Object parent;
+
+        private Object identifier;
+
         private Mergeable entity;
 
         private Mergeable payload;
 
         List<WegasCallback> callbacks;
 
-        public CollectedEntity(Mergeable entity, Mergeable payload, List<WegasCallback> callbacks) {
+        public CollectedEntity(Mergeable entity, Mergeable payload, List<WegasCallback> callbacks,
+                Object parent, Object identifier) {
             this.entity = entity;
             this.payload = payload;
             this.callbacks = callbacks;
+            this.parent = parent;
+            this.identifier = identifier;
         }
 
         public Mergeable getEntity() {
@@ -184,6 +191,27 @@ public class LifecycleCollector {
 
         public void setPayload(Mergeable payload) {
             this.payload = payload;
+        }
+
+        public Object getParent() {
+            return parent;
+        }
+
+        public void setParent(Object parent) {
+            this.parent = parent;
+        }
+
+        public Object getIdentifier() {
+            return identifier;
+        }
+
+        public void setIdentifier(Object identifier) {
+            this.identifier = identifier;
+        }
+
+        @Override
+        public String toString(){
+            return parent + "::" + identifier + " -> " + entity;
         }
     }
 }

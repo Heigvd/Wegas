@@ -9,6 +9,7 @@ package com.wegas.core.merge.patch;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
 import com.wegas.core.merge.utils.EmptyCallback;
@@ -114,8 +115,10 @@ public final class WegasEntityPatch extends WegasPatch {
 
         super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, protectionLevel);
 
-        if ((from == null && to == null) // both entity are null
-                || (from != null && to != null && !from.getClass().equals(to.getClass()))) {
+        if (from == null && to == null) {// both entity are null
+            logger.error("BOTH ARE NULL");
+        }
+        if (from != null && to != null && !from.getClass().equals(to.getClass())) {
             throw WegasErrorMessage.error("imcompatible entities");
         }
 
@@ -125,6 +128,7 @@ public final class WegasEntityPatch extends WegasPatch {
             this.toEntity = to;
 
             this.patches = new ArrayList<>();
+            this.entityCallbacks = new ArrayList<>();
 
             if (fromEntity != null || this.toEntity != null) {
                 Class klass = (fromEntity != null) ? fromEntity.getClass() : toEntity.getClass();
@@ -133,7 +137,6 @@ public final class WegasEntityPatch extends WegasPatch {
 
                 this.factory = entityIterator.getFactory();
 
-                this.entityCallbacks = new ArrayList<>();
                 this.entityCallbacks.addAll(entityIterator.getEntityCallbacks());
 
                 // process @WegasEntityProperty fields
@@ -308,7 +311,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                             for (WegasCallback cb : callbacks) {
                                                 cb.add(target, null, identifier);
                                             }
-                                            collector.getCreated().put(target.getRefId(), new LifecycleCollector.CollectedEntity(target, toEntity, callbacks));
+                                            collector.getCreated().put(target.getRefId(), new LifecycleCollector.CollectedEntity(target, toEntity, callbacks, targetObject, identifier));
 
                                         }
                                         if (setter != null) {
@@ -331,7 +334,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                             String refId = fromEntity.getRefId();
                                             // Should include all Mergeable contained within target, so they can be reused by CREATE case
-                                            collector.getDeleted().put(refId, new LifecycleCollector.CollectedEntity(target, fromEntity, callbacks));
+                                            collector.getDeleted().put(refId, new LifecycleCollector.CollectedEntity(target, fromEntity, callbacks, targetObject, identifier));
 
                                             for (WegasCallback cb : callbacks) {
                                                 cb.remove(target, null, identifier);
@@ -487,6 +490,23 @@ public final class WegasEntityPatch extends WegasPatch {
                                         }
                                     }
 
+                                    /*
+                                     * restore label to clone
+                                     */
+                                    for (CollectedEntity candidate : deleted.values()) {
+                                        if (candidate.getEntity() instanceof TranslatableContent
+                                                && candidate.getIdentifier().equals("label")
+                                                && candidate.getParent().equals(p)) {
+                                            TranslatableContent label = (TranslatableContent) candidate.getEntity();
+
+                                            Object orphans1 = orphans.get(label).get("translations").getOrphans();
+
+                                            //label.updateTranslation(refName, translation);
+                                            p.setLabel(label);
+                                            break;
+                                        }
+                                    }
+
                                     VariableDescriptor substituteParent = (VariableDescriptor) p.shallowClone();
 
                                     // Privatise substitue parent
@@ -495,6 +515,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                     MergeHelper.resetVisibility(substituteParent, Visibility.PRIVATE);
 
                                     p.setDefaultInstance(null);
+                                    p.setLabel(null);
 
                                     if (grandparent instanceof GameModel) {
                                         // root level substitute

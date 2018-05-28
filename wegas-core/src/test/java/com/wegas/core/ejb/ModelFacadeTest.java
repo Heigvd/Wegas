@@ -18,6 +18,9 @@ import com.wegas.core.jcr.jta.JCRConnectorProviderTx;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.jcr.tools.RepositoryVisitor;
 import com.wegas.core.merge.patch.WegasPatch;
+import com.wegas.core.merge.utils.MergeHelper;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
@@ -53,6 +56,7 @@ import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -86,7 +90,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         reflections = new Reflections("com.wegas");
     }
 
-    //@BeforeClass
+    @BeforeClass
     public static void setLoggerLevels() {
         Helper.setLoggerLevel(logger, Level.INFO);
         mfLevel = Helper.setLoggerLevel(ModelFacade.class, Level.DEBUG);
@@ -164,7 +168,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         for (String aV : allowedValues) {
             EnumItem enumItem = new EnumItem();
             enumItem.setName(aV);
-            enumItem.setLabel(TranslatableContent.build("def", label));
+            enumItem.setLabel(TranslatableContent.build("def", aV));
             items.add(enumItem);
         }
         desc.setAllowedValues(items);
@@ -217,6 +221,32 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         for (int i = 0; i < expected.size(); i++) {
             Assert.assertEquals(expected.get(i), list[i]);
+        }
+    }
+
+    private void assertTranslatableEquals(TranslatableContent a, TranslatableContent b) {
+        Map<String, String> aT = a.getTranslations();
+        Map<String, String> bT = b.getTranslations();
+
+        Assert.assertEquals(aT.keySet().size(), bT.keySet().size());
+
+        for (String key : aT.keySet()) {
+            Assert.assertEquals(aT.get(key), bT.get(key));
+        }
+    }
+
+    private void assertEnumItemsListEquals(List<EnumItem> list, String... expected) {
+        Assert.assertEquals(expected.length, list.size());
+
+        for (int i = 0; i < list.size(); i++) {
+            EnumItem get = list.get(i);
+            Assert.assertEquals(expected[i], get.getName());
+
+            for (int j = 0; j < list.size(); j++) {
+                for (String v : list.get(i).getLabel().getTranslations().values()) {
+                    Assert.assertEquals(v, expected[i]);
+                }
+            }
         }
     }
 
@@ -720,8 +750,8 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals("value0", properties.get("prop0"));
         Assert.assertEquals("value1.0", properties.get("prop1"));
 
-        assertListEquals(((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues(), "v1", "v11");
-        assertListEquals(((StringDescriptor) getDescriptor(gameModel2, "aString")).getAllowedValues(), "v1", "v10");
+        assertEnumItemsListEquals(((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues(), "v1", "v11", "v10");
+        assertEnumItemsListEquals(((StringDescriptor) getDescriptor(gameModel2, "aString")).getAllowedValues(), "v1", "v10");
 
         assertListEquals(((NumberDescriptor) getDescriptor(gameModel1, "aNumber")).getDefaultInstance().getHistory(), 1.1, 1.2, 1.3, 1.4, 1.3, 1.2, 1.2, 1.1, 1.0);
 
@@ -1013,6 +1043,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("DeleteMyFirstFolder");
         variableDescriptorFacade.remove(variableDescriptorFacade.find(model, "myFirstFolder").getId());
 
+        logger.error(Helper.printGameModel(model));
+        logger.error(Helper.printGameModel(gameModel1));
+        logger.error(Helper.printGameModel(gameModel2));
+
         model = modelFacade.propagateModel(model.getId());
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
@@ -1024,7 +1058,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals("gameModel1 #descriptors fails", 0, gameModel1.getChildVariableDescriptors().size());
         Assert.assertEquals("gameModel2 #descriptors fails", 1, gameModel2.getChildVariableDescriptors().size());
 
-        Assert.assertEquals("gameModel2 substitute folder label does not match", "My First Folder", gameModel2.getChildVariableDescriptors().get(0).getLabel());
+        Assert.assertEquals("gameModel2 substitute folder label does not match", "My First Folder", gameModel2.getChildVariableDescriptors().get(0).getLabel().translateOrEmpty(gameModel2));
 
         Assert.assertNotNull("Y does not exists any longer in gameModel2", getDescriptor(gameModel2, "y"));
     }
@@ -1125,9 +1159,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         xi2 = (NumberInstance) getInstance(gameModel2, "x");
         xi3 = (NumberInstance) getInstance(gameModel3, "x");
 
-        Assert.assertEquals("X", xi1.findDescriptor().getLabel());
-        Assert.assertEquals("X", xi2.findDescriptor().getLabel());
-        Assert.assertEquals("X", xi3.findDescriptor().getLabel());
+        Assert.assertEquals("X", xi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assert.assertEquals("X", xi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assert.assertEquals("X", xi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
         Assert.assertEquals(1.0, xi1.getValue(), 0.00001);
         Assert.assertEquals(1.0, xi2.getValue(), 0.00001);
         Assert.assertEquals(1.0, xi3.getValue(), 0.00001);
@@ -1140,9 +1174,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         yi2 = (NumberInstance) getInstance(gameModel2, "y");
         yi3 = (NumberInstance) getInstance(gameModel3, "y");
 
-        Assert.assertEquals("Y", yi1.findDescriptor().getLabel());
-        Assert.assertEquals("Y", yi2.findDescriptor().getLabel());
-        Assert.assertEquals("Y", yi3.findDescriptor().getLabel());
+        Assert.assertEquals("Y", yi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assert.assertEquals("Y", yi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assert.assertEquals("Y", yi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
         Assert.assertEquals(2.0, yi1.getValue(), 0.00001);
         Assert.assertEquals(2.0, yi2.getValue(), 0.00001);
         Assert.assertEquals(2.5, yi3.getValue(), 0.00001);
@@ -1159,9 +1193,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.error("Z {} history {}", zi2, zi2.getHistory());
         logger.error("Z {} history {}", zi3, zi3.getHistory());
 
-        Assert.assertEquals("Z", zi1.findDescriptor().getLabel());
-        Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel());
-        Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel());
+        Assert.assertEquals("Z", zi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
         Assert.assertEquals(3.0, zi1.getValue(), 0.00001);
         Assert.assertEquals(3.0, zi2.getValue(), 0.00001);
         Assert.assertEquals(3.5, zi3.getValue(), 0.00001);
@@ -1194,9 +1228,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         xi2 = (NumberInstance) getInstance(gameModel2, "x");
         xi3 = (NumberInstance) getInstance(gameModel3, "x");
 
-        Assert.assertEquals("my X", xi1.findDescriptor().getLabel());
-        Assert.assertEquals("my X", xi2.findDescriptor().getLabel());
-        Assert.assertEquals("my X", xi3.findDescriptor().getLabel());
+        Assert.assertEquals("my X", xi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assert.assertEquals("my X", xi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assert.assertEquals("my X", xi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
         Assert.assertEquals(11.0, xi1.getValue(), 0.00001);
         Assert.assertEquals(11.0, xi2.getValue(), 0.00001);
         Assert.assertEquals(11.0, xi3.getValue(), 0.00001);
@@ -1209,9 +1243,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         yi2 = (NumberInstance) getInstance(gameModel2, "y");
         yi3 = (NumberInstance) getInstance(gameModel3, "y");
 
-        Assert.assertEquals("my Y", yi1.findDescriptor().getLabel());
-        Assert.assertEquals("my Y", yi2.findDescriptor().getLabel());
-        Assert.assertEquals("my Y", yi3.findDescriptor().getLabel());
+        Assert.assertEquals("my Y", yi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assert.assertEquals("my Y", yi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assert.assertEquals("my Y", yi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
         Assert.assertEquals(12.0, yi1.getValue(), 0.00001);
         Assert.assertEquals(12.0, yi2.getValue(), 0.00001);
         Assert.assertEquals(2.5, yi3.getValue(), 0.00001);
@@ -1228,9 +1262,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.error("Z {} history {}", zi2, zi2.getHistory());
         logger.error("Z {} history {}", zi3, zi3.getHistory());
 
-        Assert.assertEquals("my Z", zi1.findDescriptor().getLabel());
-        Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel());
-        Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel());
+        Assert.assertEquals("my Z", zi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
         Assert.assertEquals(13.0, zi1.getValue(), 0.00001);
         Assert.assertEquals(13.0, zi2.getValue(), 0.00001);
         Assert.assertEquals(3.5, zi3.getValue(), 0.00001);

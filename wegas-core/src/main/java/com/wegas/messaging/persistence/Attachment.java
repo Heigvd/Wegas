@@ -118,7 +118,10 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
 
     @Override
     public boolean isProtected() {
-        return this.getMessage().isProtected();
+        if (this.getMessage() != null) {
+            return this.getMessage().isProtected();
+        }
+        return false;
     }
 
     @Override

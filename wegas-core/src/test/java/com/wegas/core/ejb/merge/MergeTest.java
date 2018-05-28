@@ -78,14 +78,14 @@ public class MergeTest extends AbstractArquillianTest {
         TextInstance defaultInstance = textD.getDefaultInstance();
 
         defaultInstance.setValue("newvalue");
-        Assert.assertEquals("initialvalue", ((TextInstance) variableDescriptorFacade.find(textD.getId()).getDefaultInstance()).getValue());
-        Assert.assertEquals("newvalue", defaultInstance.getValue());
+        Assert.assertEquals("initialvalue", ((TextInstance) variableDescriptorFacade.find(textD.getId()).getDefaultInstance()).getTrValue().translateOrEmpty(gameModel));
+        Assert.assertEquals("newvalue", defaultInstance.getTrValue().translateOrEmpty(gameModel));
 
         variableDescriptorFacade.update(textD.getId(), textD);
         textD = (TextDescriptor) variableDescriptorFacade.find(textD.getId());
         defaultInstance = textD.getDefaultInstance();
 
-        Assert.assertEquals("newvalue", defaultInstance.getValue());
+        Assert.assertEquals("newvalue", defaultInstance.getTrValue().translateOrEmpty(gameModel));
     }
 
     @Test

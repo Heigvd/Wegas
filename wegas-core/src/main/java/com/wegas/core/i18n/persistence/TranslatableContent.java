@@ -344,7 +344,11 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
 
     @Override
     public boolean isProtected() {
-        return getParent().isProtected();
+        Mergeable parent = getParent();
+        if (parent !=null){
+            return parent.isProtected();
+        }
+        return false;
     }
 
     @Override

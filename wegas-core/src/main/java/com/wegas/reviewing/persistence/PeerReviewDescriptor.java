@@ -44,7 +44,7 @@ import javax.validation.constraints.NotNull;
  * <li> is define as, at least, one evaluation, defined as a 'feedback', wrapped
  * within a container</li>
  * <li> is done by several players/teams (reviewers) (up to
- * 'maxNumberOfReviewer'). Each author is reviewed the given number of times and
+ * 'maxNumberOfReview'). Each author is reviewed the given number of times and
  * is a 'reviewer' for the same number of others authors</li>
  * </ul>
  * <p>
@@ -140,7 +140,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     @WegasEntityProperty
     @Column(name = "maxNumberOfReviewer")
-    private Integer maxNumberOfReviewer;
+    private Integer maxNumberOfReview;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonDeserialize(using = TranslationDeserializer.class)
@@ -220,7 +220,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * @return expected number of reviewers
      */
     public Integer getMaxNumberOfReview() {
-        return maxNumberOfReviewer;
+        return maxNumberOfReview;
     }
 
     /**
@@ -231,9 +231,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public void setMaxNumberOfReview(Integer maxNumberOfReview) {
         if (maxNumberOfReview >= 0) {
-            this.maxNumberOfReviewer = maxNumberOfReview;
+            this.maxNumberOfReview = maxNumberOfReview;
         } else {
-            this.maxNumberOfReviewer = 1; // TODO throw error ?
+            this.maxNumberOfReview = 1; // TODO throw error ?
         }
     }
 
