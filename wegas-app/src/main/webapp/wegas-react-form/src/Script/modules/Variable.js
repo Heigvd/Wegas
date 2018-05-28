@@ -5,7 +5,7 @@ import Form from 'jsoninput';
 import isMatch from 'lodash-es/isMatch';
 import { getY } from '../../index';
 
-const {builders: b, visit} = types;
+const { builders: b, visit } = types;
 export const isVariable = node =>
     isMatch(node, {
         type: 'CallExpression',
@@ -20,7 +20,8 @@ export const isVariable = node =>
                 name: 'find',
             },
         },
-    }) || isMatch(node, {
+    }) ||
+    isMatch(node, {
         type: 'CallExpression',
         callee: {
             type: 'MemberExpression',
@@ -70,18 +71,18 @@ export const build = v =>
     b.callExpression(
         b.memberExpression(b.identifier('Variable'), b.identifier('find')),
         [b.identifier('gameModel'), b.literal(v)]
-        );
+    );
 export const schema = optView => ({
-        type: 'string',
-        required: 'true',
-        view: Object.assign({}, optView, {
-            type: 'treevariableselect',
-        }),
-    });
+    type: 'string',
+    required: 'true',
+    view: Object.assign({}, optView, {
+        type: 'treevariableselect',
+    }),
+});
 /**
  * Variable statement
  */
-function Variable( { node, onChange, view }) {
+function Variable({ node, onChange, view }) {
     const value = extractVar(node);
     if (value && !varExist(value)) {
         throw Error(`Unknown variable '${value}'`);
@@ -91,8 +92,8 @@ function Variable( { node, onChange, view }) {
             schema={schema(view)}
             value={value}
             onChange={v => onChange(build(v))}
-            />
-        );
+        />
+    );
 }
 
 Variable.propTypes = {
