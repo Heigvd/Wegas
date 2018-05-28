@@ -181,11 +181,12 @@ class HTMLView extends React.Component {
         }
         if (nextProps.value !== state.sent) {
             return {
+                oldProps: nextProps,
                 sent: nextProps.value,
                 content: toTinyMCE(nextProps.value) || '',
             };
         }
-        return null;
+        return { oldProps: nextProps };
     }
     constructor(props) {
         super(props);
