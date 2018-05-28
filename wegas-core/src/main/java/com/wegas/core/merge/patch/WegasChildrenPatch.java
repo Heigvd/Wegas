@@ -175,55 +175,56 @@ public final class WegasChildrenPatch extends WegasPatch {
                         final Object finalChildren = children;
 
                         Map<Object, Object> tmpMap = asMap(children);
-                        List<WegasCallback> callbacks = this.getCallbacks(callback);
+                        if ((this.primitive != null && !this.primitive) || parentMode != PatchMode.DELETE) { // no need to delete primitive collections
+                            List<WegasCallback> callbacks = this.getCallbacks(callback);
 
-                        WegasCallback registerChild = new WegasCallback() {
-                            @Override
-                            public void add(Object child, Object container, Object identifier) {
+                            WegasCallback registerChild = new WegasCallback() {
+                                @Override
+                                public void add(Object child, Object container, Object identifier) {
 
-                                if (childrenList != null) {
-                                    logger.info("Add child {}", child);
-                                    if (identifier != null && identifier instanceof Integer) {
-                                        childrenList.add((Integer) identifier, child);
-                                    } else {
-                                        childrenList.add(child);
+                                    if (childrenList != null) {
+                                        logger.info("Add child {}", child);
+                                        if (identifier != null && identifier instanceof Integer) {
+                                            childrenList.add((Integer) identifier, child);
+                                        } else {
+                                            childrenList.add(child);
+                                        }
+                                    } else if (childrenMap != null) {
+                                        childrenMap.put(identifier, child);
                                     }
-                                } else if (childrenMap != null) {
-                                    childrenMap.put(identifier, child);
+
+                                    for (WegasCallback cb : callbacks) {
+                                        cb.add(child, finalChildren, identifier);
+                                    }
                                 }
 
-                                for (WegasCallback cb : callbacks) {
-                                    cb.add(child, finalChildren, identifier);
+                                @Override
+                                public Object remove(Object child, Object container, Object identifier) {
+                                    Object key = null;
+                                    if (childrenList != null) {
+                                        logger.info("remove child {}", child);
+                                        int indexOf = childrenList.indexOf(child);
+                                        if (indexOf >= 0) {
+                                            key = indexOf;
+                                            childrenList.remove(child);
+                                        }
+                                    } else if (childrenMap != null) {
+                                        childrenMap.remove(identifier);
+                                        key = identifier;
+                                    }
+
+                                    for (WegasCallback cb : callbacks) {
+                                        cb.remove(child, finalChildren, identifier);
+                                    }
+                                    return key;
                                 }
+                            };
+
+                            for (WegasCallback cb : callbacks) {
+                                cb.preUpdate(targetEntity, to, identifier);
                             }
 
-                            @Override
-                            public Object remove(Object child, Object container, Object identifier) {
-                                Object key = null;
-                                if (childrenList != null) {
-                                    logger.info("remove child {}", child);
-                                    int indexOf = childrenList.indexOf(child);
-                                    if (indexOf >= 0) {
-                                        key = indexOf;
-                                        childrenList.remove(child);
-                                    }
-                                } else if (childrenMap != null) {
-                                    childrenMap.remove(identifier);
-                                    key = identifier;
-                                }
-
-                                for (WegasCallback cb : callbacks) {
-                                    cb.remove(child, finalChildren, identifier);
-                                }
-                                return key;
-                            }
-                        };
-
-                        for (WegasCallback cb : callbacks) {
-                            cb.preUpdate(targetEntity, to, identifier);
-                        }
-
-                        /*
+                            /*
                         if (parentMode == PatchMode.OVERRIDE) {
 
                             // effective children keys from patches
@@ -253,95 +254,97 @@ public final class WegasChildrenPatch extends WegasPatch {
 
                             // force sub-patches to create nodes
                         }*/
+                            logger.info("Pre Patch: target: {} from: {} to: {}", children, from, to);
+                            for (WegasPatch patch : patches) {
+                                Object key = patch.getIdentifier();
+                                Object child = tmpMap.get(key);
 
-                        logger.info("Pre Patch: target: {} from: {} to: {}", children, from, to);
-                        for (WegasPatch patch : patches) {
-                            Object key = patch.getIdentifier();
-                            Object child = tmpMap.get(key);
-
-                            patch.apply(targetGameModel, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
-                        }
-
-                        logger.info("Post Patch: target: {} from: {} to: {}", children, from, to);
-
-                        if (childrenList != null && numPass > 1 && !childrenList.isEmpty()) {
-                            /*
-                             * RESTORE LIST ORDER !
-                             */
-                            logger.info("Restore list order");
-                            int i, j, delta = 0, newPos;
-                            final List<Object> toList = new ArrayList<>();
-
-                            if (primitive) {
-                                tmpMap = new HashMap<>();
-                                for (Object child : childrenList) {
-                                    Long count = (Long) tmpMap.get(child);
-                                    if (count == null) {
-                                        count = 0l;
-                                    }
-                                    count++;
-                                    tmpMap.put(child, count);
-                                }
-                            } else {
-                                tmpMap = asMap(children);
+                                patch.apply(targetGameModel, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                             }
-                            for (Object entity : (List<Object>) to) {
+
+                            logger.info("Post Patch: target: {} from: {} to: {}", children, from, to);
+
+                            if (childrenList != null && numPass > 1 && !childrenList.isEmpty()) {
+                                /*
+                                 * RESTORE LIST ORDER !
+                                 */
+                                logger.info("Restore list order");
+                                int i, j, delta = 0, newPos;
+                                final List<Object> toList = new ArrayList<>();
+
                                 if (primitive) {
-                                    Long count = (Long) tmpMap.get(entity);
-                                    if (count != null && count > 0) {
-                                        count--;
-                                        tmpMap.put(entity, count);
-                                        toList.add(entity);
+                                    tmpMap = new HashMap<>();
+                                    for (Object child : childrenList) {
+                                        Long count = (Long) tmpMap.get(child);
+                                        if (count == null) {
+                                            count = 0l;
+                                        }
+                                        count++;
+                                        tmpMap.put(child, count);
                                     }
                                 } else {
-                                    if (tmpMap.containsKey(((Mergeable) entity).getRefId())) {
-                                        toList.add(entity);
+                                    tmpMap = asMap(children);
+                                }
+                                for (Object entity : (List<Object>) to) {
+                                    if (primitive) {
+                                        Long count = (Long) tmpMap.get(entity);
+                                        if (count != null && count > 0) {
+                                            count--;
+                                            tmpMap.put(entity, count);
+                                            toList.add(entity);
+                                        }
+                                    } else {
+                                        if (tmpMap.containsKey(((Mergeable) entity).getRefId())) {
+                                            toList.add(entity);
+                                        }
                                     }
+                                }
+                                logger.info("sort {} against {}", childrenList, toList);
+
+                                for (i = 0; i < childrenList.size(); i++) {
+                                    Object childA = childrenList.get(i);
+                                    for (j = i - delta; j < toList.size(); j++) {
+                                        Object childB = toList.get(j);
+
+                                        if ((childA.equals(childB))
+                                                || (childA instanceof Mergeable && childB instanceof Mergeable
+                                                && (((Mergeable) childA).getRefId() != null && ((Mergeable) childA).getRefId().equals(((Mergeable) childB).getRefId())))) {
+                                            break;
+                                        }
+                                    }
+                                    if (j < toList.size()) {
+                                        newPos = j + delta;
+                                        if (newPos > i) {
+                                            Object child = childrenList.remove(i);
+                                            childrenList.add(childrenList.size(), child);
+                                            i--;
+                                        }
+                                    } else {
+                                        delta++;
+                                    }
+                                }
+
+                                logger.info("sorted: {}", childrenList);
+                            }
+
+                            if (parentMode == PatchMode.DELETE
+                                    && ((childrenList != null && childrenList.size() > 0)
+                                    || (childrenMap != null && childrenMap.size() > 0))) {
+                                // children
+                                logger.info("orphans: {}", children);
+
+                                for (WegasCallback cb : callbacks) {
+                                    cb.registerOrphans(children);
                                 }
                             }
-                            logger.info("sort {} against {}", childrenList, toList);
 
-                            for (i = 0; i < childrenList.size(); i++) {
-                                Object childA = childrenList.get(i);
-                                for (j = i - delta; j < toList.size(); j++) {
-                                    Object childB = toList.get(j);
-
-                                    if ((childA.equals(childB))
-                                            || (childA instanceof Mergeable && childB instanceof Mergeable
-                                            && (((Mergeable) childA).getRefId() != null && ((Mergeable) childA).getRefId().equals(((Mergeable) childB).getRefId())))) {
-                                        break;
-                                    }
-                                }
-                                if (j < toList.size()) {
-                                    newPos = j + delta;
-                                    if (newPos > i) {
-                                        Object child = childrenList.remove(i);
-                                        childrenList.add(childrenList.size(), child);
-                                        i--;
-                                    }
-                                } else {
-                                    delta++;
-                                }
-                            }
-
-                            logger.info("sorted: {}", childrenList);
-                        }
-
-                        if (parentMode == PatchMode.DELETE
-                                && ((childrenList != null && childrenList.size() > 0)
-                                || (childrenMap != null && childrenMap.size() > 0))) {
-                            // children
-                            logger.info("orphans: {}", children);
+                            setter.invoke(targetEntity, children);
 
                             for (WegasCallback cb : callbacks) {
-                                cb.registerOrphans(children);
+                                cb.postUpdate(targetEntity, to, identifier);
                             }
-                        }
-
-                        setter.invoke(targetEntity, children);
-
-                        for (WegasCallback cb : callbacks) {
-                            cb.postUpdate(targetEntity, to, identifier);
+                        } else {
+                            logger.debug("SKIP: no need to delete primitives");
                         }
                     } else {
                         logger.debug("REJECT PATCH: INIT ONLY");

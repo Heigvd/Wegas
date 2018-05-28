@@ -499,9 +499,6 @@ public final class WegasEntityPatch extends WegasPatch {
                                                 && candidate.getParent().equals(p)) {
                                             TranslatableContent label = (TranslatableContent) candidate.getEntity();
 
-                                            Object orphans1 = orphans.get(label).get("translations").getOrphans();
-
-                                            //label.updateTranslation(refName, translation);
                                             p.setLabel(label);
                                             break;
                                         }
@@ -539,9 +536,6 @@ public final class WegasEntityPatch extends WegasPatch {
                                     WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(substituteParent.getClass());
                                     WegasFieldProperties field = entityIterator.getField(fieldId.toString());
                                     field.getPropertyDescriptor().getWriteMethod().invoke(substituteParent, theOrphans);
-
-                                    // restore label
-                                    substituteParent.setLabel(p.getLabel());
                                 } catch (CloneNotSupportedException | SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
                                     logger.error("EPIC FAIL");
                                 }
