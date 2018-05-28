@@ -123,12 +123,12 @@ YUI.add('wegas-entity', function(Y) {
                     }
                     return value;
                 },
-                /*valueFn: function() {
-                 return {
-                 "@class": "TranslatableContent",
-                 translations: {}
-                 };
-                 },*/
+                valueFn: function() {
+                    return {
+                        "@class": "TranslatableContent",
+                        translations: {}
+                    };
+                },
                 properties: TRANSLATION_CONTENT_ATTR_DEF
             };
         return TRANSLATION_VIEW;
@@ -403,7 +403,7 @@ YUI.add('wegas-entity', function(Y) {
             activeLanguages: {
                 "transient": true,
                 getter: function(val) {
-                    return Y.Array.filter(this.get("languages"), function(l){
+                    return Y.Array.filter(this.get("languages"), function(l) {
                         return l.get("active");
                     });
                 }
