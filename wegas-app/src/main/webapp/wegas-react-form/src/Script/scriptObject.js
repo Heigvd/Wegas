@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { css } from 'glamor';
 import FormStyles from '../Views/form-styles';
-import commonView from '../HOC/commonView';
 import validator from './validator';
 /**
  * HOC Handle Wegas' script object
@@ -33,7 +32,6 @@ function renderLabel(label) {
     return null;
 }
 function scriptObject(Comp) {
-    const CommonComp = commonView(Comp);
     /**
      * @template Script
      * @param {{value:Script,onChange:(script:Script)=>void, view:Object}} props Component's props
@@ -59,14 +57,15 @@ function scriptObject(Comp) {
                         title={warn}
                     />
                 ) : null}
-                <CommonComp
+                <Comp
                     {...props}
                     value={val.content}
                     onChange={v =>
                         onChange({
                             '@class': 'Script',
                             content: v,
-                        })}
+                        })
+                    }
                 />
             </div>
         );
