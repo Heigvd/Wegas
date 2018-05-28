@@ -189,6 +189,7 @@ YUI.add("wegas-i18n", function(Y) {
                     "<span class='inline-editor-validate fa fa-check'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
+                    "<div class='wegas-translation--toolbar'></div>" +
                     "<div tabindex='0' class='wegas-translation--value'>" + text + "</div></div>";
             } else if (inlineEditor === "string") {
                 return "<span class='wegas-translation wegas-translation-std wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
@@ -197,6 +198,7 @@ YUI.add("wegas-i18n", function(Y) {
                     "<span class='inline-editor-validate fa fa-check'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
+                    "<span class='wegas-translation--toolbar'></span>" +
                     "<span tabindex='0' class='wegas-translation--value'>" + text + "</span></span>";
             } else {
                 return text;
