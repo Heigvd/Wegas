@@ -95,7 +95,10 @@ YUI.add("wegas-simpledialogue", function(Y) {
             readonly: {
                 type: "boolean",
                 value: false,
-                optional: true
+                optional: true,
+                view: {
+                    label: "Readonly"
+                }
             }
         }
     });

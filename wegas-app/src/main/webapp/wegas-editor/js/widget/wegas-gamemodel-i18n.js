@@ -385,6 +385,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     "<span class='inline-editor-validate fa fa-check'></span>" +
                                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                                     "</span>",
+                                    "<", domNode ," class='wegas-translation--toolbar'></", domNode,">" +
                                     "<", domNode, " tabindex='0'");
 
                                 if (type === "wegasurl") {
@@ -796,6 +797,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     toolbar2: 'forecolor backcolor underline alignleft aligncenter alignright alignjustify table',
                     toolbar3: 'fontsizeselect styleselect',
                     //selection_toolbar: 'bold italic bullist | quicklink quickimage media ',
+                    fixed_toolbar_container: "#" + cfg.node.get("id") + " .wegas-translation--toolbar",
                     // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect
                     // fontsizeselect styleselect spellchecker template
                     // contextmenu: 'link image inserttable | cell row

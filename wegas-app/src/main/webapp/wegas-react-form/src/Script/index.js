@@ -10,13 +10,18 @@ import Variable from './modules/Variable';
 import condition from './condition';
 import { register, getGlobals } from './modules/globalMethod';
 import statefulScript from './statefulScript';
+import commonView from '../HOC/commonView';
 
-const VariableStatement = scriptObject(parsed(singleStatement(Variable)));
+const VariableStatement = commonView(
+    scriptObject(parsed(singleStatement(Variable)))
+);
 
-const MultiVariableMethod = scriptObject(parsed(multipleStatement(Impact)));
+const MultiVariableMethod = commonView(
+    scriptObject(parsed(multipleStatement(Impact)))
+);
 
-const MultiVariableCondition = scriptObject(
-    parsed(condition(multipleStatement(Condition)))
+const MultiVariableCondition = commonView(
+    scriptObject(parsed(condition(multipleStatement(Condition))))
 );
 
 // Using Script edition outside form.

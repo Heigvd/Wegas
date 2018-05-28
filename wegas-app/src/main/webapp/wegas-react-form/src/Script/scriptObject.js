@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { css } from 'glamor';
 import FormStyles from '../Views/form-styles';
-import commonView from '../HOC/commonView';
 import validator from './validator';
 /**
  * HOC Handle Wegas' script object
@@ -33,43 +32,49 @@ function renderLabel(label) {
     return null;
 }
 function scriptObject(Comp) {
-    const CommonComp = commonView(Comp);
-    /**
-     * @template Script
-     * @param {{value:Script,onChange:(script:Script)=>void, view:Object}} props Component's props
-     */
-    function ScriptObject(props) {
-        const { value, onChange, view } = props;
-        const val = value || { content: '' };
-        let warn;
-        try {
-            warn = validator(val.content).join('\n');
-        } catch (e) {
-            // There was an error. certainly a parse error.
-            // It's handled elsewhere
-            warn = '';
+    class ScriptObject extends React.Component {
+        constructor(props) {
+            super(props);
+            this.onChange = this.onChange.bind(this);
         }
-        return (
-            <div className={containerStyle}>
-                {renderLabel(view.label)}
-                {warn.length ? (
-                    <span
-                        {...warnStyle}
-                        className="fa fa-warning"
-                        title={warn}
+        shouldComponentUpdate(nextProps) {
+            return this.props.value !== nextProps.value;
+        }
+        onChange(v) {
+            this.props.onChange({
+                '@class': 'Script',
+                content: v,
+            });
+        }
+        render() {
+            const { value, view } = this.props;
+            const val = value || { content: '' };
+            let warn;
+            try {
+                warn = validator(val.content).join('\n');
+            } catch (e) {
+                // There was an error. certainly a parse error.
+                // It's handled elsewhere
+                warn = '';
+            }
+            return (
+                <div className={containerStyle}>
+                    {renderLabel(view.label)}
+                    {warn.length ? (
+                        <span
+                            {...warnStyle}
+                            className="fa fa-warning"
+                            title={warn}
+                        />
+                    ) : null}
+                    <Comp
+                        {...this.props}
+                        value={val.content}
+                        onChange={this.onChange}
                     />
-                ) : null}
-                <CommonComp
-                    {...props}
-                    value={val.content}
-                    onChange={v =>
-                        onChange({
-                            '@class': 'Script',
-                            content: v,
-                        })}
-                />
-            </div>
-        );
+                </div>
+            );
+        }
     }
     ScriptObject.propTypes = {
         value: PropTypes.shape({

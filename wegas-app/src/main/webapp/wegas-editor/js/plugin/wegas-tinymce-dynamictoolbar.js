@@ -10,6 +10,7 @@ tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
     function showHideToolbar() {
         var toolbar = editor.theme.panel.find('toolbar');
         var resizeY = 0;
+        var fullHeight = 26;
         if (first) {
             this.active(false);
             first = false;
@@ -27,6 +28,7 @@ tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
             for (i = 0; i < barToHide.length; i += 1) {
                 toolbar[barToHide[i] - 1].show();
                 resizeY += 26;
+                fullHeight += 26;
             }
         } else {
             for (i = 0; i < barToHide.length; i += 1) {
@@ -35,8 +37,13 @@ tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
             }
         }
         if (editor.settings.inline) {
-            editor.theme.panel.resizeBy(0, resizeY);
-            editor.theme.panel.moveBy(0, -resizeY);
+            if (editor.theme.panel.resizeBy) {
+                editor.theme.panel.resizeBy(0, resizeY);
+                editor.theme.panel.moveBy(0, -resizeY);
+            } else {
+                editor.theme.panel.getEl().style.height = fullHeight + "px";
+                editor.theme.panel.getEl().firstChild.style.height = fullHeight + "px";
+            }
         }
     }
 

@@ -26,7 +26,7 @@ gulp.task("setup-dev", function (cb) {
     rootPath = "/Wegas/";
     cb();
 });
-gulp.task("submodule", ["yarn install"], function () {
+gulp.task("submodule", [], function () {
     "use strict";
     return gulp.src([
         'target/Wegas/*/gulpfile.js'

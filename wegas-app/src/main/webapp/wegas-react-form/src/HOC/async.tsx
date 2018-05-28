@@ -12,15 +12,20 @@ function promised<P, O>(Comp: React.ComponentType<O>) {
         interface IAsyncState {
             result?: O;
             status: STATUS;
+            oldProps: P;
         }
         class Async extends React.Component<P, IAsyncState> {
             static getDerivedStateFromProps(props: P, state: IAsyncState) {
-                return { status: STATUS.RUN };
+                if (props === state.oldProps) {
+                    return null;
+                }
+                return { status: STATUS.RUN, oldProps: props };
             }
             mounted: boolean = true;
             constructor(props: P) {
                 super(props);
                 this.state = {
+                    oldProps: props,
                     status: STATUS.STOP,
                 };
             }

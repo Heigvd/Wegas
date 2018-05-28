@@ -5,8 +5,12 @@ import { isEqual } from 'lodash-es';
 import { argSchema, valueToAST, astToValue } from './args';
 
 export default class ArgFrom extends React.Component {
-    static getDerivedStateFromProps(nextProps) {
+    static getDerivedStateFromProps(nextProps, state) {
+        if (state.prevProps === nextProps) {
+            return null;
+        }
         return {
+            prevProps: nextProps,
             schema: argSchema(nextProps.schema),
             value: astToValue(nextProps.value, nextProps.schema),
         };
