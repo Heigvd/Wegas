@@ -53,7 +53,7 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             prefix: "",
             suffix: "",
             decimalPlaces: "",
-            thousandsSeparator: " ",
+            thousandsSeparator: "&nbsp;",
             decimalSeparator: ","
         },
         extra: {
