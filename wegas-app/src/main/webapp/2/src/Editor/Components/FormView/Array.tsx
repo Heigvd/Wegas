@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Cover } from '../../../Components/Cover';
 import { IconButton } from '../../../Components/Button/IconButton';
@@ -85,9 +85,9 @@ function ArrayWidget(props: IArrayProps) {
   const disabled = props.view.disabled;
   function renderChild(child: React.ReactChild, index: number) {
     return (
-      <div className={listElementContainerStyle.toString()}>
-        <span className={listElementStyle.toString()}>{child}</span>
-        <span className={transparentStyle.toString()}>
+      <div className={listElementContainerStyle}>
+        <span className={listElementStyle}>{child}</span>
+        <span className={transparentStyle}>
           {minItems < valueLength && !disabled ? (
             <IconButton
               icon="trash"

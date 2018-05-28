@@ -1,4 +1,4 @@
-import { css } from 'glamor';
+import { css } from 'emotion';
 import produce from 'immer';
 import { Connection, Defaults, jsPlumb, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
@@ -7,7 +7,7 @@ import { IconButton } from '../../Components/Button/IconButton';
 import { State as DataStore } from '../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../data/selectors';
 
-const EndpointStyle = css({
+const endpointStyle = css({
   color: 'transparent',
   ':hover': {
     color: 'tomato',
@@ -22,7 +22,7 @@ const JS_PLUMB_OPTIONS: Defaults = {
     'Dot',
     {
       radius: 7,
-      cssClass: String(EndpointStyle),
+      cssClass: endpointStyle,
     },
   ],
   // @ts-ignore
@@ -289,7 +289,7 @@ class State extends React.Component<{
     const { state, initialState } = this.props;
     return (
       <div
-        {...stateStyle}
+        className={stateStyle}
         id={this.props.id}
         ref={n => {
           this.container = n;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Downshift, { ControllerStateAndHelpers } from 'downshift';
-import { css } from 'glamor';
+import { css, cx } from 'emotion';
 import matchSorter, { Options } from 'match-sorter';
 import { FontAwesome } from './FontAwesome';
 
@@ -63,7 +63,7 @@ export class Combobox<T> extends React.Component<ComboboxProps<T>> {
           openMenu,
         }) => {
           return (
-            <span {...inline}>
+            <span className={inline}>
               <label {...getLabelProps()}>{this.props.label}</label>
               <span>
                 <input
@@ -77,14 +77,16 @@ export class Combobox<T> extends React.Component<ComboboxProps<T>> {
                 </button>
               </span>
               {isOpen ? (
-                <div {...menuStyle}>
+                <div className={menuStyle}>
                   {matchSorter(this.props.items, inputValue, {
                     keys: this.props.searchKeys,
                   }).map((i, index) => {
                     return (
                       <div
                         {...getItemProps({
-                          ...(highlightedIndex === index ? highlighted : {}),
+                          className: cx({
+                            [highlighted]: highlightedIndex === index,
+                          }),
                           item: i,
                           key: index,
                         })}

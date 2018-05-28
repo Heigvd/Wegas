@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
-import { css } from 'glamor';
+import { css } from 'emotion';
 interface TabLayoutProps {
   active?: number;
   tabs: React.ReactChild[];

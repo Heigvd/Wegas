@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonViewContainer, CommonView } from './commonView';
 
@@ -23,12 +23,11 @@ function ObjectView(
   return (
     <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
       <fieldset
-        {...reset}
-        className={classNames({
-          [`${borderTopStyle}`]: props.view.label !== undefined,
+        className={classNames(reset, {
+          [borderTopStyle]: props.view.label !== undefined,
         })}
       >
-        <legend {...legendStyle}>{props.view.label}</legend>
+        <legend className={legendStyle}>{props.view.label}</legend>
         {props.children}
       </fieldset>
     </CommonViewContainer>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import * as classNames from 'classnames';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { FontAwesomeProps } from '@fortawesome/react-fontawesome';
@@ -61,9 +61,9 @@ export function IconButton(props: Props) {
       // tabIndex={0}
       aria-pressed={pressed}
       onClick={event => !disabled && onClick(event)}
-      className={classNames(`${shapeStyle}`, {
-        [`${disabledStyle}`]: disabled,
-        [`${activeStyle}`]: pressed,
+      className={classNames(shapeStyle, {
+        [disabledStyle]: disabled,
+        [activeStyle]: pressed,
       })}
     >
       {prefixedLabel && label}

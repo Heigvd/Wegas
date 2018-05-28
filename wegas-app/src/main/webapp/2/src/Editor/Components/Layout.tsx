@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import Header from './Header';
 import TreeView from './Variable/VariableTree';
 import Editor from './EntityEditor';
@@ -33,8 +33,8 @@ export default class AppLayout extends React.Component<
   }
   render() {
     return (
-      <div {...layout}>
-        <div {...fullWidth}>
+      <div className={layout}>
+        <div className={fullWidth}>
           <Header />
         </div>
         <div>

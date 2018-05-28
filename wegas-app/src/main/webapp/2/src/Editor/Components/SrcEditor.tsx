@@ -1,4 +1,4 @@
-import { css } from 'glamor';
+import { css } from 'emotion';
 import * as React from 'react';
 import { editor } from 'monaco-editor';
 
@@ -79,7 +79,7 @@ class SrcEditor extends React.Component<EditorProps> {
     this.container = n;
   };
   render() {
-    return <div {...overflowHide} ref={this.refContainer} />;
+    return <div className={overflowHide} ref={this.refContainer} />;
   }
 }
 export default SrcEditor;

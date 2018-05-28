@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FontAwesome } from './FontAwesome';
-import { css } from 'glamor';
+import { css } from 'emotion';
 
 interface TreeProps {
   expanded?: boolean;
@@ -24,7 +24,7 @@ const emptyMessageCss = css(
   indent,
 );
 function EmptyMessage() {
-  return <span {...emptyMessageCss}>empty</span>;
+  return <span className={emptyMessageCss}>empty</span>;
 }
 export class Tree extends React.Component<TreeProps, { expanded?: boolean }> {
   constructor(props: TreeProps) {
@@ -46,17 +46,17 @@ export class Tree extends React.Component<TreeProps, { expanded?: boolean }> {
       const c = children.length ? children : <EmptyMessage />;
       return (
         <div>
-          <span {...toggle} onClick={this.toggleExpand}>
+          <span className={toggle} onClick={this.toggleExpand}>
             <FontAwesome icon={expanded ? 'caret-down' : 'caret-right'} />
           </span>
           {header}
-          <div {...indent}>{expanded ? c : null}</div>
+          <div className={indent}>{expanded ? c : null}</div>
         </div>
       );
     }
     return (
       <div>
-        <span {...toggle} />
+        <span className={toggle} />
         {header}
       </div>
     );

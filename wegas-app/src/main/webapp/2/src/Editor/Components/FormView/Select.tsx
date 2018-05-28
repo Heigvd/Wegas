@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import { CommonViewContainer, CommonView } from './commonView';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled, LabeledView } from './labeled';
@@ -79,7 +79,7 @@ function SelectView(props: ISelectProps) {
             <div>
               <select
                 id={inputId}
-                className={`${selectStyle}`}
+                className={selectStyle}
                 value={value}
                 onChange={onChange}
               >

@@ -3,7 +3,7 @@ import { debounce } from 'lodash-es';
 import { Labeled, LabeledView } from './labeled';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonViewContainer, CommonView } from './commonView';
-import { css } from 'glamor';
+import { css } from 'emotion';
 
 export interface StringInputProps
   extends WidgetProps.BaseProps<
@@ -83,7 +83,7 @@ export default class StringInput extends React.Component<
                   {labelNode}
                   <div>
                     <textarea
-                      {...inputStyle}
+                      className={inputStyle}
                       id={inputId}
                       value={undefToEmpty(this.state.value)}
                       rows={view.rows}
@@ -103,7 +103,7 @@ export default class StringInput extends React.Component<
                 <div>
                   <input
                     type="text"
-                    {...inputStyle}
+                    className={inputStyle}
                     id={inputId}
                     value={undefToEmpty(this.state.value)}
                     onChange={this.onChange}

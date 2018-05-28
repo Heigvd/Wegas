@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css, cx } from 'emotion';
 import { AnyAction } from 'redux';
 import { Actions } from '../../../data/index';
 import { connect } from 'react-redux';
@@ -8,7 +8,7 @@ import { State } from '../../../data/Reducer/reducers';
 
 const pressed = css({ borderStyle: 'inset', outline: 'none' });
 function press(value: boolean) {
-  return value ? pressed : {};
+  return cx({ [pressed]: value });
 }
 interface PageEditorHeaderProps {
   edition: boolean;
@@ -23,7 +23,7 @@ function PageEditorHeader(props: PageEditorHeaderProps) {
   return (
     <div>
       <button
-        {...press(props.edition)}
+        className={press(props.edition)}
         onClick={() =>
           props.dispatch(Actions.EditorActions.pageEditMode(!props.edition))
         }
@@ -31,7 +31,7 @@ function PageEditorHeader(props: PageEditorHeaderProps) {
         Edit
       </button>
       <button
-        {...press(props.src)}
+        className={press(props.src)}
         onClick={() =>
           props.dispatch(Actions.EditorActions.pageSrcMode(!props.src))
         }

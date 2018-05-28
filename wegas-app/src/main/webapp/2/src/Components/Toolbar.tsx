@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from 'emotion';
 
 const flex = css({
   display: 'inline-flex',
@@ -18,14 +18,14 @@ const content = css({
 
 export const Toolbar = Object.assign(
   (props: { children: React.ReactElement<{}>[] }) => {
-    return <div {...flex}>{props.children}</div>;
+    return <div className={flex}>{props.children}</div>;
   },
   {
     Header(props: { children?: React.ReactNode[] | React.ReactNode }) {
-      return <div {...toolbar}>{props.children}</div>;
+      return <div className={toolbar}>{props.children}</div>;
     },
     Content(props: { children?: React.ReactNode }) {
-      return <div {...content}>{props.children}</div>;
+      return <div className={content}>{props.children}</div>;
     },
   },
 );

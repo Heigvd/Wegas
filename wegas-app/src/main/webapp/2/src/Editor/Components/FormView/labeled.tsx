@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from 'emotion';
 
 export interface LabeledView {
   label?: string;
@@ -31,7 +31,7 @@ export class Labeled extends React.Component<LabeledProps> {
     return children({
       inputId: this.id,
       labelNode: (
-        <label {...titleStyle} htmlFor={this.id} title={description}>
+        <label className={titleStyle} htmlFor={this.id} title={description}>
           {label}
         </label>
       ),

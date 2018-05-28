@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import * as className from 'classnames';
 
 const containerStyle = css({
@@ -44,14 +44,12 @@ export function CommonViewContainer({
   const layout = view.layout ? String(LAYOUTS[view.layout]) : '';
   return (
     <div
-      {...containerStyle}
-      className={className({
+      className={className(containerStyle, layout, {
         [`${borderTop}`]: view.borderTop,
-        [`${layout}`]: Boolean(layout),
       })}
     >
       {children}
-      <div {...errorStyle}>{error}</div>
+      <div className={errorStyle}>{error}</div>
     </div>
   );
 }

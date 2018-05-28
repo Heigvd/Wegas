@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { WidthProvider, Responsive } from 'react-grid-layout';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -17,19 +17,19 @@ function GridDemo({ editable = false }: GridDemoProps) {
         isDraggable={editable}
         cols={{ lg: 24, md: 10, sm: 6, xs: 4, xxs: 2 }}
       >
-        <div {...items} key="a">
+        <div className={items} key="a">
           a
         </div>
-        <div {...items} key="b">
+        <div className={items} key="b">
           b
         </div>
-        <div {...items} key="c">
+        <div className={items} key="c">
           c
         </div>
-        <div {...items} key="d">
+        <div className={items} key="d">
           d
         </div>
-        <div {...items} key="e">
+        <div className={items} key="e">
           e
         </div>
       </ResponsiveReactGridLayout>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { State } from '../data/Reducer/reducers';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import { Actions } from '../data/index';
 
 /**
@@ -89,8 +89,8 @@ function editable<T>(Comp: React.ComponentType<T>, name?: string) {
       });
       if (this.props.__editMode) {
         return (
-          <span {...maskRoot} onClick={this.edit}>
-            <span {...mask} />
+          <span className={maskRoot} onClick={this.edit}>
+            <span className={mask} />
             <Comp {...cleanedProps} />
           </span>
         );

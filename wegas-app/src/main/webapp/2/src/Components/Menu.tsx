@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Downshift from 'downshift';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import { IconButton } from './Button/IconButton';
 import { IconProp } from '@fortawesome/fontawesome';
 interface KV {
@@ -59,7 +59,7 @@ export class Menu extends React.Component<MenuProps> {
         itemToString={() => ''}
         render={({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
           <div className={String(container)}>
-            <div {...itemStyle} onClick={() => toggleMenu()}>
+            <div className={itemStyle} onClick={() => toggleMenu()}>
               {label}
               <IconButton
                 icon={`caret-${direction}` as IconProp}
@@ -99,9 +99,9 @@ export class Menu extends React.Component<MenuProps> {
                   return (
                     <div
                       key={index}
-                      {...(!item.disabled ? itemStyle : undefined)}
                       {...(!item.disabled
                         ? getItemProps({
+                            className: itemStyle,
                             item: item,
                             onClick: stopPropagation,
                           })

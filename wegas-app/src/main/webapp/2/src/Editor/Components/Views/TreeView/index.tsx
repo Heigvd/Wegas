@@ -7,7 +7,7 @@ import {
   DragSourceOptions,
 } from 'react-dnd';
 import * as classNames from 'classnames';
-import { css } from 'glamor';
+import { css } from 'emotion';
 import {
   DropZone,
   TREEVIEW_ITEM_TYPE,
@@ -81,7 +81,7 @@ function DropPreview({
 }) {
   return (
     <div
-      {...isOverPrevStyle}
+      className={isOverPrevStyle}
       style={{
         height: boundingRect ? boundingRect.height : undefined,
       }}
@@ -165,7 +165,7 @@ class TreeNode extends React.Component<
       expanded && (
         <DropZone id={id} where="INSIDE" index={0}>
           {({ isOver, boundingRect }) => (
-            <div {...childrenContainer}>
+            <div className={childrenContainer}>
               {isOver && <DropPreview boundingRect={boundingRect} />}
               {children}
             </div>
@@ -176,7 +176,7 @@ class TreeNode extends React.Component<
       <div
         ref={n => (this.root = n)}
         className={classNames({
-          [`${isDraggingStyle}`]: isDragging,
+          [isDraggingStyle]: isDragging,
         })}
       >
         <DropZone id={parent} index={index!} where={'AUTO'}>

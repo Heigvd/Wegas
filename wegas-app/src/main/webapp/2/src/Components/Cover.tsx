@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'glamor';
+import { css } from 'emotion';
 
 const absolute = css({ position: 'absolute', zIndex: 1 });
 
@@ -21,9 +21,9 @@ interface Props {
 export function Cover(props: Props) {
   // NB: The cover will not be dynamically readjusted if the frame is resized when the cover is displayed.
   return (
-    <div {...css({ position: 'relative', zIndex: props.zIndex })}>
-      <div {...coverStyle} onClick={props.onClick} />
-      <div {...absolute}>{props.children}</div>
+    <div className={css({ position: 'relative', zIndex: props.zIndex })}>
+      <div className={coverStyle} onClick={props.onClick} />
+      <div className={absolute}>{props.children}</div>
     </div>
   );
 }
