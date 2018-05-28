@@ -18,10 +18,7 @@ interface LangProviderProps {
 }
 export class LangHandler extends React.Component<LangProviderProps, Context> {
     static getDerivedStateFromProps(props: LangProviderProps, state: Context) {
-        if (props.availableLang !== state.availableLang) {
-            return { availableLang: props.availableLang };
-        }
-        return null;
+        return { availableLang: props.availableLang };
     }
     toggleLang: (lang: string) => void;
     constructor(props: LangProviderProps) {
