@@ -179,9 +179,10 @@ class HTMLView extends React.Component {
         if (state.oldProps === nextProps) {
             return null;
         }
-        if (nextProps.value !== state.content) {
+        if (nextProps.value !== state.sent) {
             return {
-                content: nextProps.value || '',
+                sent: nextProps.value,
+                content: toTinyMCE(nextProps.value) || '',
             };
         }
         return null;
@@ -191,6 +192,7 @@ class HTMLView extends React.Component {
         this.state = {
             // eslint-disable-next-line
             oldProps: props,
+            sent: props.value,
             content: props.value,
         };
         this.onChangeHandler = debounce(this.onChangeHandler.bind(this), 200);
@@ -199,13 +201,10 @@ class HTMLView extends React.Component {
         this.onChangeHandler.flush();
     }
     onChangeHandler(content) {
-        if (this.doNotCheck) {
-            return;
-        }
-        const oldContent = this.state.content;
+        const oldContent = this.state.sent;
         const newContent = toInjectorStyle(content);
         if (oldContent !== newContent) {
-            this.setState({ content: newContent }, () => {
+            this.setState({ content, sent: newContent }, () => {
                 this.props.onChange(newContent);
             });
         }
@@ -215,7 +214,7 @@ class HTMLView extends React.Component {
         return (
             <div {...tinymceStyle}>
                 <Editor
-                    value={toTinyMCE(this.state.content)}
+                    value={this.state.content}
                     init={TINY_CONFIG}
                     onEditorChange={this.onChangeHandler}
                 />
