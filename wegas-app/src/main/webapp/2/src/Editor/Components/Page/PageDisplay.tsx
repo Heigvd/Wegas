@@ -1,17 +1,18 @@
 import * as React from 'react';
 import PageLoader from '../../../Components/PageLoader';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { State } from '../../../data/Reducer/reducers';
 import SrcEditor from '../SrcEditor';
 import { Page } from '../../../data/selectors';
 import PageEditorHeader from './PageEditorHeader';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
+import { StoreDispatch } from '../../../data/store';
 
 interface PageDisplayProps {
   srcMode: boolean;
   defaultPageId: string;
-  dispatch: Dispatch<State>;
+  dispatch: StoreDispatch;
 }
 class PageDisplay extends React.Component<
   PageDisplayProps,

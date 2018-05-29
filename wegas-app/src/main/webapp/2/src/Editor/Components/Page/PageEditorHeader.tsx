@@ -1,10 +1,11 @@
-import * as React from 'react';
 import { css, cx } from 'emotion';
-import { AnyAction } from 'redux';
-import { Actions } from '../../../data/index';
+import * as React from 'react';
 import { connect } from 'react-redux';
-import { Page } from '../../../data/selectors';
+import { Dispatch } from 'redux';
 import { State } from '../../../data/Reducer/reducers';
+import { StateActions } from '../../../data/actions';
+import { Actions } from '../../../data/index';
+import { Page } from '../../../data/selectors';
 
 const pressed = css({ borderStyle: 'inset', outline: 'none' });
 function press(value: boolean) {
@@ -15,7 +16,7 @@ interface PageEditorHeaderProps {
   src: boolean;
   page: Page | undefined;
   pageId?: string;
-  dispatch: (action: AnyAction) => void;
+  dispatch: Dispatch<StateActions>;
 }
 
 function PageEditorHeader(props: PageEditorHeaderProps) {

@@ -1,11 +1,10 @@
 // import { Reducer } from 'redux';
 import u from 'immer';
-import { ThunkAction } from 'redux-thunk';
-import { VariableDescriptor } from '../selectors';
-import { ActionType, StateActions, ActionCreator } from '../actions';
-import { State } from './reducers';
-import { Actions as ACTIONS } from '..';
 import { Schema } from 'jsoninput';
+import { Actions as ACTIONS } from '..';
+import { ActionCreator, ActionType, StateActions } from '../actions';
+import { VariableDescriptor } from '../selectors';
+import { ThunkResult } from '../store';
 
 type Edition =
   | { type: 'Variable'; id: number; config?: Schema; path?: string[] }
@@ -150,11 +149,11 @@ export function editComponent(page: string, path: string[]) {
  *
  * @export
  * @param {IWegasEntity} value
- * @returns {ThunkAction<void, State, void>}
+ * @returns {ThunkResult}
  */
 export function saveEditor(
   value: IWegasEntity,
-): ThunkAction<void, State, void> {
+): ThunkResult {
   return function save(dispatch, getState) {
     const editMode = getState().global.editing;
     if (editMode == null) {

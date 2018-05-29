@@ -1,9 +1,8 @@
 import { Reducer } from 'redux';
 import u from 'immer';
 import { ActionType, StateActions, managedMode } from '../actions';
-import { ThunkAction } from 'redux-thunk';
-import { State } from './reducers';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
+import { ThunkResult } from '../store';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;
@@ -37,7 +36,7 @@ export default variableInstances;
 
 //ACTIONS
 
-export function getAll(): ThunkAction<Promise<StateActions>, State, void> {
+export function getAll(): ThunkResult<Promise<StateActions>> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return VariableInstanceAPI.getAll(gameModelId).then(res =>

@@ -1,18 +1,27 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import thunk from 'redux-thunk';
+import thunk, { ThunkMiddleware, ThunkAction } from 'redux-thunk';
 import reducers, { State } from './Reducer/reducers';
 // import { update } from './Reducer/actions';
 import { Actions } from './index';
 import WebSocketListener from '../API/websocket';
+import { StateActions } from './actions';
 
 // Used by redux dev tool extension
-const composeEnhancers =
+const composeEnhancers: typeof compose =
   (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-export const store = createStore<State>(
-  combineReducers<State>(reducers),
-  composeEnhancers(applyMiddleware(thunk)),
+export const store = createStore(
+  combineReducers<State, StateActions>(reducers),
+  composeEnhancers(
+    applyMiddleware(thunk as ThunkMiddleware<State, StateActions>),
+  ),
 );
-
+export type ThunkResult<R = void> = ThunkAction<
+  R,
+  State,
+  undefined,
+  StateActions
+>;
+export type StoreDispatch = typeof store.dispatch;
 function storeInit() {
   // store.dispatch(update([CurrentGM]));
   store.dispatch(Actions.VariableDescriptorActions.getAll());

@@ -9,6 +9,7 @@ import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
 import { IForm } from './Form';
+import { StoreDispatch } from '../../data/store';
 interface EditorProps {
   entity?: IVariableDescriptor;
   update: (variable: IWegasEntity) => void;
@@ -17,7 +18,13 @@ interface EditorProps {
   config?: Schema;
 }
 
-export async function Editor({ entity, update, del, config, path }: EditorProps) {
+export async function Editor({
+  entity,
+  update,
+  del,
+  config,
+  path,
+}: EditorProps) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);
@@ -84,7 +91,7 @@ export default connect(
     }
     return {};
   },
-  dispatch => {
+  (dispatch: StoreDispatch) => {
     return {
       update(entity: IWegasEntity) {
         dispatch(Actions.EditorActions.saveEditor(entity));

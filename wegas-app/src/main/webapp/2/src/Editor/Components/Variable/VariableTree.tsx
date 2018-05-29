@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { VariableDescriptor, GameModel } from '../../../data/selectors';
 import { State } from '../../../data/Reducer/reducers';
 import { Actions } from '../../../data';
@@ -10,13 +10,13 @@ import { Combobox, Specialization } from '../Views/Combobox';
 import { children } from '../../EntitiesConfig/ListDescriptor';
 import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
-import {} from '../../EntitiesConfig';
 import { getEntityActions } from '../../editionConfig';
+import { StoreDispatch } from '../../../data/store';
 // import { Tree } from '../Views/Tree';
 
 interface TreeProps {
-  variables?: number[];
-  dispatch: Dispatch<State>;
+  variables: number[];
+  dispatch: StoreDispatch;
 }
 const items = children.map(v => ({
   value: v,
@@ -106,71 +106,71 @@ const CTree = connect(
     const v = VariableDescriptor.select(props.variableId);
     if (Array.isArray(props.subPath) && props.subPath.length > 0) {
       return {
-        variable: get(v, props.subPath),
+        variable: get(v, props.subPath) as IVariableDescriptor,
       };
     }
     return { variable: v };
   },
-)(function VTree({
-  variable,
-  onSelectCreator,
-  nodeProps,
-}: {
-  variable: IVariableDescriptor | undefined;
-  nodeProps: () => {};
-  onSelectCreator: (
-    entity: IWegasEntity,
-    path?: (string | number)[],
-  ) => () => void;
-}): JSX.Element {
-  if (variable) {
-    return (
-      <Node
-        {...nodeProps()}
-        header={
-          <span onClick={onSelectCreator(variable)}>
-            {`${variable['@class']}: ${variable.label}`}
-          </span>
-        }
-        id={variable}
-      >
-        {({ nodeProps }) =>
-          varIsList(variable)
-            ? variable.itemsIds.map(i => (
-                <CTree
-                  nodeProps={nodeProps}
-                  key={i}
-                  variableId={i}
-                  onSelectCreator={onSelectCreator}
-                />
-              ))
-            : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
-              ? variable.results.map((r, index) => (
+)(
+  ({
+    variable,
+    onSelectCreator,
+    nodeProps,
+  }: {
+    variable: IVariableDescriptor | undefined;
+    nodeProps: () => {};
+    onSelectCreator: (
+      entity: IWegasEntity,
+      path?: (string | number)[],
+    ) => () => void;
+  }): JSX.Element => {
+    if (variable) {
+      return (
+        <Node
+          {...nodeProps()}
+          header={
+            <span onClick={onSelectCreator(variable)}>
+              {`${variable['@class']}: ${variable.label}`}
+            </span>
+          }
+          id={variable}
+        >
+          {({ nodeProps }) =>
+            varIsList(variable)
+              ? variable.itemsIds.map(i => (
                   <CTree
                     nodeProps={nodeProps}
-                    key={r.id}
-                    variableId={r.choiceDescriptorId}
-                    subPath={['results', index]}
-                    onSelectCreator={function(v: IResult) {
-                      return onSelectCreator(
-                        VariableDescriptor.select(v.choiceDescriptorId)!,
-                        ['results', index],
-                      );
-                    }}
+                    key={i}
+                    variableId={i}
+                    onSelectCreator={onSelectCreator}
                   />
                 ))
-              : null
-        }
-      </Node>
-    );
-  }
-  return <div>Loading...</div>;
-});
+              : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
+                ? variable.results.map((r, index) => (
+                    <CTree
+                      nodeProps={nodeProps}
+                      key={r.id}
+                      variableId={r.choiceDescriptorId}
+                      subPath={['results', index]}
+                      onSelectCreator={function(v: IResult) {
+                        return onSelectCreator(
+                          VariableDescriptor.select(v.choiceDescriptorId)!,
+                          ['results', index],
+                        );
+                      }}
+                    />
+                  ))
+                : null
+          }
+        </Node>
+      );
+    }
+    return <div>Loading...</div>;
+  },
+);
 export default connect(
-  (_state: State) => ({
+  () => ({
     variables: GameModel.selectCurrent().itemsIds,
   }),
-  dispatch => ({
-    dispatch,
-  }),
+  dispatch => ({ dispatch }),
 )(TreeView);
