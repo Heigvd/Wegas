@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -17,10 +17,9 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.persistence.*;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -29,8 +28,8 @@ import java.util.Map.Entry;
 @Table(name = "FSMDescriptor")
 @JsonTypeName(value = "FSMDescriptor")
 @JsonSubTypes(value = {
-        @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
-        @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
+    @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
+    @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
 })
 @NamedQueries(
         @NamedQuery(
@@ -44,8 +43,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /**
      *
      */
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
+    @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
     private Map<Long, State> states = new HashMap<>();
@@ -66,13 +64,13 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     }
 
     /**
-     * @return
+     * @return all stated mapped by index numbers
      */
     public Map<Long, State> getStates() {
         return states;
     }
 
-    public State addState(Long index, State state){
+    public State addState(Long index, State state) {
         this.getStates().put(index, state);
         state.setStateMachine(this);
         return state;
@@ -107,7 +105,6 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /*
      * script methods
      */
-
     /**
      * @param p
      */
@@ -124,7 +121,8 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     /**
      * @param p
-     * @return
+     *
+     * @return is player instance enabled ?
      */
     public boolean isEnabled(Player p) {
         return this.getInstance(p).getEnabled();
@@ -132,14 +130,15 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     /**
      * @param p
-     * @return
+     *
+     * @return is player instance disabled ?
      */
     public boolean isDisabled(Player p) {
         return !this.getInstance(p).getEnabled();
     }
 
     private void mergeStates(Map<Long, State> newStates) {
-        for (Iterator<Entry<Long, State>> it = this.states.entrySet().iterator(); it.hasNext(); ) {
+        for (Iterator<Entry<Long, State>> it = this.states.entrySet().iterator(); it.hasNext();) {
             Entry<Long, State> oldState = it.next();
             Long oldKeys = oldState.getKey();
             if (newStates.get(oldKeys) == null) {
@@ -148,10 +147,13 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
                 oldState.getValue().merge(newStates.get(oldKeys));
             }
         }
-        for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext(); ) {
-            Entry<Long, State> newState = it.next();
-            Long newKey = newState.getKey();
-            this.getStates().putIfAbsent(newKey, newState.getValue());
+        for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext();) {
+            Entry<Long, State> newStateEntry = it.next();
+            Long newKey = newStateEntry.getKey();
+            State newState = newStateEntry.getValue();
+            // link the new state to correct (managed) stateMachine
+            newState.setStateMachine(this);
+            this.getStates().putIfAbsent(newKey, newState);
         }
     }
 

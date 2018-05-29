@@ -2,30 +2,27 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
-import com.wegas.core.persistence.variable.primitive.NumberInstance;
-import com.wegas.core.persistence.variable.primitive.ObjectInstance;
-import com.wegas.core.persistence.variable.primitive.StringDescriptor;
-import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
-import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.Transition;
@@ -37,12 +34,18 @@ import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.resourceManagement.persistence.Occupation;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -52,20 +55,9 @@ import javax.persistence.criteria.Root;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import javax.inject.Inject;
-import javax.persistence.Query;
-import org.eclipse.persistence.config.CacheUsage;
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.config.QueryType;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -78,19 +70,25 @@ public class UpdateController {
     private static Logger logger = LoggerFactory.getLogger(UpdateController.class);
 
     @EJB
-    VariableDescriptorFacade descriptorFacade;
+    private VariableDescriptorFacade descriptorFacade;
 
     @EJB
-    VariableDescriptorController descriptorController;
+    private VariableDescriptorController descriptorController;
 
     @EJB
-    GameModelFacade gameModelFacade;
+    private GameModelFacade gameModelFacade;
 
     @Inject
-    ResourceFacade resourceFacade;
+    private GameFacade gameFacade;
 
     @Inject
-    RequestManager requestManager;
+    private ResourceFacade resourceFacade;
+
+    @Inject
+    private RequestManager requestManager;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     /**
      * @return Some String encoded HTML
@@ -115,6 +113,7 @@ public class UpdateController {
      * Retrieve
      *
      * @param gameModelId
+     *
      * @return static "Finished" string...
      */
     @GET
@@ -123,11 +122,11 @@ public class UpdateController {
         List<VariableDescriptor> findAll = descriptorFacade.findByGameModelId(gameModelId);
         for (VariableDescriptor vd : findAll) {
             List<String> findDistinctNames = descriptorFacade.findDistinctNames(vd.getGameModel());
-            List<String> findDistinctLabels = descriptorFacade.findDistinctLabels(vd.getGameModel());
+            List<TranslatableContent> findDistinctLabels = descriptorFacade.findDistinctLabels(vd.getGameModel());
             findDistinctNames.remove(vd.getName());
             findDistinctLabels.remove(vd.getLabel());
-            Helper.setUniqueName(vd, findDistinctNames);
-            Helper.setUniqueLabel(vd, findDistinctLabels);
+            Helper.setUniqueName(vd, findDistinctNames, vd.getGameModel());
+            Helper.setUniqueLabel(vd, findDistinctLabels, vd.getGameModel());
             descriptorFacade.flush();
         }
         return "Finished";
@@ -135,12 +134,13 @@ public class UpdateController {
 
     /**
      * @param gameModelId
+     *
      * @return static "Finished" string...
      */
     @GET
     @Path("UpdateScript/{gameModelId : ([1-9][0-9]*)}")
     public String script(@PathParam("gameModelId") Long gameModelId) {
-        List<VariableDescriptor> findAll = descriptorFacade.findAll(gameModelId);
+        Set<VariableDescriptor> findAll = descriptorFacade.findAll(gameModelId);
         List<String> keys = new ArrayList<>();
         List<String> values = new ArrayList<>();
         for (VariableDescriptor vd : findAll) {
@@ -248,7 +248,8 @@ public class UpdateController {
         if (!(vd.getScope() instanceof GameModelScope)) {
             EntityManager em = this.getEntityManager();
 
-            Collection<VariableInstance> values = vd.getScope().getVariableInstancesByKeyId().values();
+            Collection<VariableInstance> values = this.descriptorFacade.getInstances(vd).values();
+
             for (VariableInstance vi : values) {
                 em.remove(vi);
             }
@@ -262,7 +263,7 @@ public class UpdateController {
     }
 
     private String listDescriptorScope(GameModel gameModel) {
-        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -283,8 +284,8 @@ public class UpdateController {
         return listDescriptorScope(find);
     }
 
-    private String rtsUpdateScope(GameModel gameModel) {
-        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+    /*private String rtsUpdateScope(GameModel gameModel) {
+        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -308,10 +309,10 @@ public class UpdateController {
         sb.append("]");
 
         return sb.toString();
-    }
+    }*/
 
     private void updateListDescriptorScope(GameModel gameModel) {
-        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
 
         for (VariableDescriptor vd : variableDescriptors) {
             if (vd instanceof ListDescriptor) {
@@ -327,7 +328,7 @@ public class UpdateController {
         try {
             sb.append("[");
 
-            ListDescriptor etapes = (ListDescriptor) VariableDescriptorFacade.lookup().find(gameModel, "etapes");
+            ListDescriptor etapes = (ListDescriptor) descriptorFacade.find(gameModel, "etapes");
             for (VariableDescriptor item : etapes.getItems()) {
                 this.updateScope(item);
             }
@@ -347,12 +348,14 @@ public class UpdateController {
         return lawUpdateScope(find);
     }
 
+    /*
     @GET
     @Path("RtsUpdateScope/{gameModelId : ([1-9][0-9]*)}")
     public String rtsScopeUpdate(@PathParam("gameModelId") Long gameModelId) {
         GameModel find = gameModelFacade.find(gameModelId);
         return rtsUpdateScope(find);
     }
+    */
 
     private String newScope(GameModel gameModel, VariableDescriptor vd) {
         StringBuilder sb = new StringBuilder();
@@ -365,7 +368,7 @@ public class UpdateController {
             scope.setBroadcastScope("GameScope");
             vd.setScope(scope);
             String json = vd.toJson(Views.Export.class);
-            logger.error("JSON for " + parentName + "/" + name + " variable: " + json);
+            logger.error("JSON for {}/{} variable: ", parentName, name, json);
 
             descriptorFacade.remove(vd.getId());
             descriptorFacade.flush();
@@ -380,8 +383,9 @@ public class UpdateController {
         return sb.toString();
     }
 
+    /*
     private String rtsNewScope(GameModel gameModel) {
-        List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -408,33 +412,36 @@ public class UpdateController {
 
         return sb.toString();
     }
+    */
 
+    /*
     @GET
     @Path("RtsNewScope/{gameModelId : ([1-9][0-9]*)}")
     public String rtsNewScope(@PathParam("gameModelId") Long gameModelId) {
         GameModel find = gameModelFacade.find(gameModelId);
         return rtsNewScope(find);
     }
+    */
 
     private String addVariable(GameModel gm, String json, String varName, String parentName) {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        logger.error("Going to add " + parentName + "/" + varName + " variable");
+        logger.error("Going to add {}/{} variable", parentName, varName);
 
         try {
             // Does the variable already exists ? 
             descriptorFacade.find(gm, varName);
-            logger.error("  -> variable " + varName + " exists : SKIP");
+            logger.error("  -> variable {} exists : SKIP", varName);
             return "already exists";
         } catch (WegasNoResultException ex) {
-            logger.error("  -> variable " + varName + " not found : PROCEED");
+            logger.error("  -> variable {} not found : PROCEED", varName);
         }
 
         try {
             // assert the parent already exists ? 
             descriptorFacade.find(gm, parentName);
-            logger.error("  -> variable " + parentName + " exists : PROCEED");
+            logger.error("  -> variable {} exists : PROCEED", parentName);
         } catch (WegasNoResultException ex) {
-            logger.error("  -> variable " + parentName + " not found : FAILED");
+            logger.error("  -> variable {} not found : FAILED", parentName);
             return "parent not found";
         }
         try {
@@ -443,10 +450,10 @@ public class UpdateController {
             descriptorFacade.flush();
             return "OK";
         } catch (WegasNotFoundException ex) {
-            logger.error("Error white adding the variable : parent " + parentName + " not found", ex);
+            logger.error("Error white adding the variable : parent {} not found", parentName);
             return "Parent (2) not found";
         } catch (IOException ex) {
-            logger.error("Error While Reading JSON: " + json, ex);
+            logger.error("Error While Reading JSON: {}", json);
             return "JSON Error";
         }
     }
@@ -480,7 +487,7 @@ public class UpdateController {
             ret.append(pmg.getName());
             ret.append("/");
             ret.append(pmg.getId());
-            status = addVariable(pmg, "{\"@class\":\"BooleanDescriptor\",\"comments\":\"\",\"defaultInstance\":{\"@class\":\"BooleanInstance\",\"value\":false},\"label\":\"burndownEnabled\",\"scope\":{\"@class\":\"GameScope\",\"broadcastScope\":\"TeamScope\"},\"title\":null,\"name\":\"burndownEnabled\"}", "burndownEnabled", "properties");
+            status = addVariable(pmg, "{\"@class\":\"BooleanDescriptor\",\"comments\":\"\",\"defaultInstance\":{\"@class\":\"BooleanInstance\",\"value\":false},\"label\":\"burndownEnabled\",\"scope\":{\"@class\":\"GameModelScope\",\"broadcastScope\":\"TeamScope\"},\"title\":null,\"name\":\"burndownEnabled\"}", "burndownEnabled", "properties");
             ret.append(" burndownEnabled: ");
             ret.append(status);
 
@@ -509,14 +516,14 @@ public class UpdateController {
 
         /* Kill'em all */
         for (VariableInstance vi : findOrphans) {
-            logger.error("Remove instance: " + vi.getId());
+            logger.error("Remove instance: {}", vi.getId());
             String descName;
             if (vi.getScope() != null) {
                 descName = vi.getDescriptor().getName();
             } else {
                 descName = "NOPE";
             }
-            logger.error("    DESC: " + descName);
+            logger.error("    DESC: {}", descName);
             em.remove(vi);
 
             if (++counter == 3000) {
@@ -533,11 +540,12 @@ public class UpdateController {
         int counter = 0;
 
         for (Game g : findNoDebugTeamGames) {
-            logger.error("Restore Game: " + g.getName() + "/" + g.getId());
+            logger.error("Restore Game: {}/{}", g.getName(), g.getId());
             DebugTeam dt = new DebugTeam();
             g.addTeam(dt);
             this.getEntityManager().persist(dt);
-            g.getGameModel().propagateDefaultInstance(dt, true);
+            gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true); // restart missing debugTeam
+            stateMachineFacade.runStateMachines(dt);
             this.getEntityManager().flush();
             if (++counter == 25) {
                 break;
@@ -590,8 +598,9 @@ public class UpdateController {
             /**
              * make sure each occupation exists for each resources
              */
-            Collection<ResourceInstance> resourceInstances = rd.getScope().getPrivateInstances().values();
-            for (ResourceInstance resourceInstance : resourceInstances) {
+            Collection<VariableInstance> resourceInstances = descriptorFacade.getInstances(rd).values();
+            for (VariableInstance vi : resourceInstances) {
+                ResourceInstance resourceInstance = (ResourceInstance) vi;
                 for (Entry<Long, List<Occupation>> entry : map.entrySet()) {
                     if (!hasOccupation(resourceInstance, entry.getKey().doubleValue())) {
                         resourceFacade.addOccupation(resourceInstance.getId(), false, entry.getKey());
@@ -636,80 +645,6 @@ public class UpdateController {
             }
         }
         return noDebugTeamGames;
-    }
-
-    @GET
-    @Path("Duplicata")
-    public String getDuplicata() {
-        return this.deleteDuplicata();
-    }
-
-    private String deleteDuplicata() {
-
-        StringBuilder sb = new StringBuilder();
-
-        String sql = "SELECT vi.gameScope, vi.game FROM VariableInstance vi WHERE vi.gameScope IS NOT NULL GROUP BY vi.gameScope.id, vi.game.id HAVING count(vi) > 1";
-        Query createQuery = this.getEntityManager().createQuery(sql);
-
-        List resultList = createQuery.getResultList();
-        int i = 0;
-        for (Object o : resultList) {
-            Object[] array = (Object[]) o;
-            GameScope scope = (GameScope) array[0];
-            Game game = (Game) array[1];
-            //VariableInstance variableInstance = scope.getVariableInstance(game);
-            //System.out.println("DELETE: " + variableInstance);
-
-            sb.append("DELETE: ");
-            sb.append(i++);
-            sb.append(". ");
-
-            String sql2 = "SELECT vi from VariableInstance vi WHERE vi.gameScope.id = :scopeId and vi.game.id = :gameId";
-
-            TypedQuery<VariableInstance> query2 = this.getEntityManager().createQuery(sql2, VariableInstance.class);
-            query2.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-            //@QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
-
-            query2.setParameter("scopeId", scope.getId());
-            query2.setParameter("gameId", game.getId());
-
-            List<VariableInstance> list = query2.getResultList();
-
-            sb.append(list.get(0));
-            sb.append(" SCOPE - TEAM " + scope.getId() + "   " + game.getId());
-
-            sb.append(("<br />"));
-
-            if (list.size() != 2) {
-                sb.append("   -> NOT 2 but " + list.size());
-            } else {
-
-                VariableInstance get = list.get(0);
-                VariableInstance get2 = list.get(1);
-                if (get instanceof BooleanInstance) {
-                    if (((BooleanInstance) get).getValue() != ((BooleanInstance) get2).getValue()) {
-                        sb.append(("   -> NOT EQUALS"));
-                    } else {
-                        this.getEntityManager().remove(get2);
-                    }
-                } else if (get instanceof NumberInstance) {
-                    if (((NumberInstance) get).getValue() != ((NumberInstance) get2).getValue()) {
-                        sb.append(("   -> NOT EQUALS"));
-                    } else {
-                        this.getEntityManager().remove(get2);
-                    }
-                } else if (get instanceof StringInstance) {
-                    if (!((StringInstance) get).getValue().equals(((StringInstance) get2).getValue())) {
-                        sb.append(("   -> NOT EQUALS"));
-                    } else {
-                        this.getEntityManager().remove(get2);
-                    }
-                }
-
-            }
-            sb.append(("<br />"));
-        }
-        return sb.toString();
     }
 
     private Long countOrphans() {

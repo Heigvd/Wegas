@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
@@ -10,29 +10,33 @@ package com.wegas.mcq.persistence;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-
+import java.util.List;
 import javax.persistence.*;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "Reply")
 @JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
-    @Index(columnList = "variableinstance_id")
-    ,
+    @Index(columnList = "choiceinstance_id"),
     @Index(columnList = "result_id")
 })
 @NamedQueries({
-    @NamedQuery(name = "Reply.countForInstance", query = "SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :instanceId")
+    @NamedQuery(name = "Reply.findByResultId", query = "SELECT r FROM Reply r WHERE r.result.id = :resultId")
 })
 public class Reply extends AbstractEntity implements DatedEntity {
 
@@ -42,36 +46,45 @@ public class Reply extends AbstractEntity implements DatedEntity {
      */
     @Id
     @GeneratedValue
+    @JsonView(Views.IndexI.class)
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
     /**
-     * /
-     **
      * <p>
      */
     private Long startTime;
     /**
      *
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean unread = false;
     /**
      *
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean ignored = false;
     /**
      *
      */
     @ManyToOne(optional = false)
     private Result result;
+
+    @Transient
+    private String resultName;
+
+    @Transient
+    private String choiceName;
+
     /**
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "variableinstance_id", nullable = false)
+    @JoinColumn(nullable = false)
     @JsonBackReference
-    private QuestionInstance questionInstance;
+    private ChoiceInstance choiceInstance;
 
     /**
      * @param a
@@ -81,9 +94,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
         if (a instanceof Reply) {
             Reply other = (Reply) a;
             this.setUnread(other.getUnread());
-            //this.setResult(other.getResult());
+            this.setResultName(other.getResultName());
+            this.setChoiceName(other.getChoiceName());
             this.setStartTime(other.getStartTime());
             this.setIgnored(other.getIgnored());
+            this.setCreatedTime(other.getCreatedTime());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -126,19 +141,49 @@ public class Reply extends AbstractEntity implements DatedEntity {
     /**
      * @return the MCQDescriptor
      */
-    //@XmlTransient
     @JsonIgnore
     @JsonBackReference
-    public QuestionInstance getQuestionInstance() {
-        return questionInstance;
+    public ChoiceInstance getChoiceInstance() {
+        return choiceInstance;
     }
 
     /**
-     * @param questionInstance
+     * @param choiceInstance
      */
     @JsonBackReference
-    public void setQuestionInstance(QuestionInstance questionInstance) {
-        this.questionInstance = questionInstance;
+    public void setChoiceInstance(ChoiceInstance choiceInstance) {
+        this.choiceInstance = choiceInstance;
+    }
+
+    public String getChoiceName() {
+        if (!Helper.isNullOrEmpty(choiceName)) {
+            return choiceName;
+        }
+        if (this.getResult() != null && this.getResult().getChoiceDescriptor() != null) {
+            return this.getResult().getChoiceDescriptor().getName();
+        } else {
+            return null;
+        }
+    }
+
+    public void setChoiceName(String choiceName) {
+        this.choiceName = choiceName;
+    }
+
+    public String getResultName() {
+        if (resultName != null) {
+            // for backward compat, empty string is a valid result name
+            return resultName;
+        }
+        if (this.getResult() != null) {
+            return this.getResult().getName();
+        } else {
+            return null;
+        }
+    }
+
+    public void setResultName(String resultName) {
+        this.resultName = resultName;
     }
 
     /**
@@ -172,29 +217,66 @@ public class Reply extends AbstractEntity implements DatedEntity {
     /**
      * @return the result
      */
+    @JsonIgnore
     public Result getResult() {
         return result;
     }
 
-    /**
-     * @param result the result to set
-     */
-    public void setResult(Result result) {
-        this.result = result;
+    public void setResult(Result r) {
+        this.result = r;
+        this.setResultName(null);
+        this.setChoiceName(null);
+    }
+
+    public TranslatableContent getAnswer() {
+        if (result != null) {
+            return result.getAnswer();
+        } else {
+            return null;
+        }
+    }
+
+    public void setAnswer(String answer) {
+        // Make Jackson happy
+    }
+
+    public TranslatableContent getIgnorationAnswer() {
+        if (result != null) {
+            return result.getIgnorationAnswer();
+        } else {
+            return null;
+        }
+    }
+
+    public void setIgnorationAnswer(String answer) {
+        // Make Jackson happy
+    }
+
+    public List<String> getFiles() {
+        if (result != null) {
+            return result.getFiles();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    public void setFiles(List<String> files) {
+        // Make Jackson happy
     }
 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
-        QuestionDescriptorFacade qF = beans.getQuestionDescriptorFacade();
         VariableInstanceFacade vif = beans.getVariableInstanceFacade();
-        QuestionInstance qInst = this.getQuestionInstance();
-        if (qInst != null) {
-            qInst = (QuestionInstance) vif.find(qInst.getId());
-            if (qInst != null) {
-                qInst.removeReply(this);
+        ChoiceInstance cInst = this.getChoiceInstance();
+        if (cInst != null) {
+            cInst = (ChoiceInstance) vif.find(cInst.getId());
+            if (cInst != null) {
+                cInst.removeReply(this);
             }
         }
 
+        /*
+        QuestionDescriptorFacade qF = beans.getQuestionDescriptorFacade();
         Result theResult = this.getResult();
         if (theResult != null) {
             theResult = qF.findResult(theResult.getId());
@@ -202,7 +284,17 @@ public class Reply extends AbstractEntity implements DatedEntity {
                 theResult.removeReply(this);
             }
         }
-
+         */
         super.updateCacheOnDelete(beans);
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getChoiceInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getChoiceInstance().getRequieredReadPermission();
     }
 }

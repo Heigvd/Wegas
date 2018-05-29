@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
@@ -11,45 +11,52 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import javax.persistence.*;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "Result")
 @JsonTypeName(value = "Result")
 @Table(
         name = "MCQResult",
         uniqueConstraints = {
             @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"}),},
+            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"})
+        },
         indexes = {
-            @Index(columnList = "choicedescriptor_id")
+            @Index(columnList = "choicedescriptor_id"),
+            @Index(columnList = "label_id"),
+            @Index(columnList = "answer_id"),
+            @Index(columnList = "ignorationanswer_id")
         }
 )
 @NamedQueries({
     @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
 })
-public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
+public class Result extends AbstractEntity implements Searchable, Scripted, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {
@@ -75,22 +82,23 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * Displayed name
      */
-    private String label;
-    /**
-     *
-     */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    //@JsonView(Views.ExtendedI.class)
-    private String answer;
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent label;
 
     /**
-     *
+     * Displayed answer when result selected and validated
      */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    //@JsonView(Views.ExtendedI.class)
-    private String ignorationAnswer;
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent answer;
+
+    /**
+     * Displayed answer when MCQ result not selected and validated
+     */
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent ignorationAnswer;
 
     /*
      *
@@ -120,23 +128,24 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      */
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "choicedescriptor_id")
     private ChoiceDescriptor choiceDescriptor;
+
     /**
      * This link is here so the reference is updated on remove.
      */
-    @OneToMany(mappedBy = "currentResult", cascade = CascadeType.MERGE)
-    //@XmlTransient
-    @JsonIgnore
-    private List<ChoiceInstance> choiceInstances = new ArrayList<>();
+    /*
+      @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
+      @JsonIgnore
+      private CurrentResult currentResult;
+     */
     /**
      * This field is here so deletion will be propagated to replies.
      */
-    @OneToMany(mappedBy = "result", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    //@XmlTransient
+    /*
+    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Reply> replies;
-
+    private Replies replies;
+     */
     /**
      *
      */
@@ -147,24 +156,43 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      * @param name
      */
     public Result(String name) {
+        this.label = new TranslatableContent();
+        this.label.getModifiableTranslations().put("def", name);
         this.name = name;
-        this.label = name;
     }
 
     /**
      * @param name
+     * @param label
      */
-    public Result(String name, String label) {
+    public Result(String name, TranslatableContent label) {
         this.name = name;
         this.label = label;
+    }
+
+    public Result(String name, Script impact) {
+        this(name, impact, null);
+    }
+
+    /**
+     *
+     * @param name
+     * @param impact
+     * @param ignorationImpact
+     */
+    public Result(String name, Script impact, Script ignorationImpact) {
+        this(name);
+        this.impact = impact;
+        this.ignorationImpact = ignorationImpact;
     }
 
     @Override
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
+                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
                 || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
-                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
                 || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
+                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
                 || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
     }
 
@@ -187,10 +215,10 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
             Result other = (Result) a;
             this.setVersion(other.getVersion());
             this.setName(other.getName());
-            this.setLabel(other.getLabel());
-            this.setAnswer(other.getAnswer());
+            this.setLabel(TranslatableContent.merger(this.getLabel(), other.getLabel()));
+            this.setAnswer(TranslatableContent.merger(this.getAnswer(), other.getAnswer()));
             this.setImpact(other.getImpact());
-            this.setIgnorationAnswer(other.getIgnorationAnswer());
+            this.setIgnorationAnswer(TranslatableContent.merger(this.getIgnorationAnswer(), other.getIgnorationAnswer()));
             this.setIgnorationImpact(other.getIgnorationImpact());
             this.setFiles(other.getFiles());
             this.setChoiceDescriptor(other.getChoiceDescriptor());
@@ -199,17 +227,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
         }
     }
 
-    //    @PreRemove
-//    private void preRemove() {                                                  // When a response is destroyed
-//
-//        for (ChoiceInstance c : this.getChoiceInstances()) {                    // remove it from all the instance it is the current result
-//            c.setCurrentResult(null);
-//            c.setCurrentResultId(null);
-//        }
-//        while (!this.getChoiceInstances().isEmpty()) {
-//            this.getChoiceInstances().remove(0);
-//        }
-//    }
     @Override
     public Long getId() {
         return this.id;
@@ -218,7 +235,6 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * @return the choiceDescriptor
      */
-    //@XmlTransient
     @JsonIgnore
     public ChoiceDescriptor getChoiceDescriptor() {
         return choiceDescriptor;
@@ -246,15 +262,18 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * @return the answer
      */
-    public String getAnswer() {
+    public TranslatableContent getAnswer() {
         return answer;
     }
 
     /**
      * @param answer the answer to set
      */
-    public void setAnswer(String answer) {
+    public void setAnswer(TranslatableContent answer) {
         this.answer = answer;
+        if (this.answer != null) {
+            this.answer.setParentDescriptor(this.getChoiceDescriptor());
+        }
     }
 
     /**
@@ -274,15 +293,18 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
     /**
      * @return the ignoration answer
      */
-    public String getIgnorationAnswer() {
+    public TranslatableContent getIgnorationAnswer() {
         return ignorationAnswer;
     }
 
     /**
      * @param answer the answer to set
      */
-    public void setIgnorationAnswer(String answer) {
+    public void setIgnorationAnswer(TranslatableContent answer) {
         this.ignorationAnswer = answer;
+        if (this.ignorationAnswer != null) {
+            this.ignorationAnswer.setParentDescriptor(this.getChoiceDescriptor());
+        }
     }
 
     /**
@@ -319,7 +341,7 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      * @return the label
      */
     @Override
-    public String getLabel() {
+    public TranslatableContent getLabel() {
         return label;
     }
 
@@ -327,8 +349,11 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
      * @param label the label to set
      */
     @Override
-    public void setLabel(String label) {
+    public void setLabel(TranslatableContent label) {
         this.label = label;
+        if (this.label != null) {
+            this.label.setParentDescriptor(this.getChoiceDescriptor());
+        }
     }
 
     /**
@@ -347,47 +372,99 @@ public class Result extends NamedEntity implements Searchable, Scripted, Labelle
 
     /**
      * @return the choiceInstances
+     *
+     * @JsonIgnore
+     * public List<ChoiceInstance> getChoiceInstances() {
+     * return currentResult.getChoiceInstances();
+     * }
      */
-    //@XmlTransient
-    @JsonIgnore
-    public List<ChoiceInstance> getChoiceInstances() {
-        return choiceInstances;
-    }
 
-    /**
-     * @param choiceInstances the choiceInstances to set
-     */
-    public void setChoiceInstances(List<ChoiceInstance> choiceInstances) {
-        this.choiceInstances = choiceInstances;
-    }
-
+    /*
     public void addChoiceInstance(ChoiceInstance choiceInstance) {
-        if (!this.choiceInstances.contains(choiceInstance)) {
-            this.choiceInstances.add(choiceInstance);
+        if (this.currentResult == null) {
+            this.currentResult = new CurrentResult();
+            this.currentResult.setResult(this);
+        }
+
+        if (!this.currentResult.getChoiceInstances().contains(choiceInstance)) {
+            this.currentResult.getChoiceInstances().add(choiceInstance);
         }
     }
-
+     */
+ /*
     public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
-        return this.choiceInstances.remove(choiceInstance);
+        return this.currentResult.remove(choiceInstance);
     }
+     */
 
+ /*
+    public CurrentResult getCurrentResult() {
+        return currentResult;
+    }
+     */
+ /*
+    public Replies getReplies() {
+        return replies;
+    }
+     */
+
+ /*
     public void addReply(Reply reply) {
+        if (replies == null) {
+            replies = new Replies();
+            replies.setResult(this);
+        }
         this.replies.add(reply);
     }
+     */
 
+ /*
     void removeReply(Reply reply) {
         this.replies.remove(reply);
     }
-
+     */
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
         VariableInstanceFacade vif = beans.getVariableInstanceFacade();
 
-        for (ChoiceInstance cInstance : this.getChoiceInstances()) {
-            cInstance = (ChoiceInstance) vif.find(cInstance.getId());
+        // JPA query to fetch ChoiceInstance ci
+        Collection<ChoiceInstance> choiceInstances = beans.getQuestionDescriptorFacade().getChoiceInstancesByResult(this);
+
+        // clear currentResult
+        for (ChoiceInstance cInstance : choiceInstances) {
             if (cInstance != null) {
-                cInstance.setCurrentResult(null);
+                cInstance = (ChoiceInstance) vif.find(cInstance.getId());
+                if (cInstance != null) {
+                    cInstance.setCurrentResult(null);
+                }
             }
         }
+
+        // Destroy replies
+        beans.getQuestionDescriptorFacade().cascadeDelete(this);
     }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getChoiceDescriptor().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getChoiceDescriptor().getRequieredReadPermission();
+    }
+
+    /*
+    @PrePersist
+    private void prePersist() {
+        if (replies == null) {
+            replies = new Replies();
+            replies.setResult(this);
+        }
+        if (currentResult == null) {
+            currentResult = new CurrentResult();
+            currentResult.setResult(this);
+        }
+    }
+     */
 }

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -134,7 +134,7 @@ public class WebsocketController {
     /**
      * Retrieve the list of online users
      *
-     * @return
+     * @return the list of current online users
      */
     @GET
     @Path("OnlineUser")
@@ -148,7 +148,7 @@ public class WebsocketController {
     /**
      * Retrieve the list of online users
      *
-     * @return
+     * @return the list of current online users
      */
     @GET
     @Path("OnlineUser/Sync")
@@ -169,4 +169,12 @@ public class WebsocketController {
     public void clearOnlineUsers() {
         websocketFacade.clearOnlineUsers();
     }
+
+    @POST
+    @Path("RequestClientReload")
+    @RequiresRoles("Administrator")
+    public void requestClientReload() {
+        websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.OUTDATED, null);
+    }
+
 }

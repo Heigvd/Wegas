@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -20,10 +20,6 @@ YUI.add("wegas-parent", function(Y) {
      */
     function Parent() {
         Y.Wegas.Widget.apply(this, arguments);
-        /* When a child is going to be removed, hide its overlay */
-        /*this.on("removeChild", function(e) {
-            e.child.hideAllOverlay();
-        });*/
         /*Check for Y.WidgetParent*/
         if (!this._add) {
             Y.log("Extension 'Y.WidgetParent' must be defined before Y.Wegas.Parent in " + this.constructor.NAME,
@@ -50,15 +46,18 @@ YUI.add("wegas-parent", function(Y) {
          * @description Children serialization
          */
         toObject: function() {
-            var i, object,
-                children = [],
+            var object,
                 args = Array.prototype.slice.call(arguments);
             object = Y.Wegas.Editable.prototype.toObject.apply(this, args);
+            object.children = this.getChildren(args);
+            return object;
+        },
+        getChildren: function(args) {
+            var i, children = [];
             for (i = 0; i < this.size(); i = i + 1) {
                 children.push(this.item(i).toObject(args));
             }
-            object.children = children;
-            return object;
+            return children;
         },
         getEditorLabel: function() {
             return;
@@ -71,7 +70,13 @@ YUI.add("wegas-parent", function(Y) {
                 "transient": true
             },
             children: {
-                "transient": true
+                "transient": true,
+                type: "array",
+                getter: function(v) {
+                    return this.getChildren();
+                },
+                value: [],
+                view: {type: "hidden"}
             },
             root: {
                 "transient": true
@@ -177,7 +182,6 @@ YUI.add("wegas-parent", function(Y) {
                                 }, {
                                     type: BUTTON,
                                     label: "Input",
-                                    cssClass: "wegas-advanced-feature",
                                     plugins: [{
                                             fn: "WidgetMenu",
                                             cfg: {
@@ -334,6 +338,15 @@ YUI.add("wegas-parent", function(Y) {
                                                             }]
                                                     }, {
                                                         type: BUTTON,
+                                                        label: "Single Open Question",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    childType: "WhView"
+                                                                }
+                                                            }]
+                                                    }, {
+                                                        type: BUTTON,
                                                         label: "Inbox",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
@@ -447,6 +460,15 @@ YUI.add("wegas-parent", function(Y) {
                                                     }, {
                                                         type: BUTTON,
                                                         label: "List",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    childType: "FlexList"
+                                                                }
+                                                            }]
+                                                    }, {
+                                                        type: BUTTON,
+                                                        label: "Float List",
                                                         cssClass: "wegas-advanced-feature",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
@@ -507,7 +529,7 @@ YUI.add("wegas-parent", function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "DuplicateWidgetAction"
                     }]

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global Chartist, I18n */
@@ -14,9 +14,9 @@
 YUI.add("wegas-review-widgets", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox", WIDGET = "widget", PAGEID = "pageId",
-        Wegas = Y.Wegas, ReviewVariableEditor, pageloaderErrorMessageClass = "wegas-pageloader-error",
-        SUBPAGE = "wegas-review-subpage", BUTTON = "wegas-review-button",
-        ReviewOrchestrator, ReviewWidget, ReviewTabView, ReviewTreeView, ReviewTV,
+        Wegas = Y.Wegas, ReviewVariableEditor,
+        BUTTON = "wegas-review-button",
+        ReviewOrchestrator, ReviewWidget, ReviewTreeView, ReviewTV,
         GradeInput, TextEvalInput, CategorizationInput;
 
     /**
@@ -29,45 +29,45 @@ YUI.add("wegas-review-widgets", function(Y) {
      */
     ReviewOrchestrator = Y.Base.create("wegas-review-orchestrator", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.ReviewOrchestrator# */
-        CONTENT_TEMPLATE: "<div>" +
-            "<div class=\"summary\">" +
-            "<div class=\"header\">" +
-            "<h2>" + I18n.t("review.orchestrator.mainTitle") + "</h2>" +
-            "<span class=\"refresh\"></span>" +
-            "</div>" +
-            "<div class=\"control-panel\">" +
-            "<div class=\"state not-started\">" +
-            "<h7>" + I18n.t("review.orchestrator.state.edition.title") + "</h7>" +
-            I18n.t("review.orchestrator.state.edition.description") +
-            "</div>" +
-            "<div class=\"transition start-review\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
-            "<div class=\"state reviewing\">" +
-            "<h7>" + I18n.t("review.orchestrator.state.reviewing.title") + "</h7>" +
-            I18n.t("review.orchestrator.state.reviewing.description") +
-            "</div>" +
-            "<div class=\"transition close-review\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
-            "<div class=\"state commenting\">" +
-            "<h7>" + I18n.t("review.orchestrator.state.commenting.title") + "</h7>" +
-            I18n.t("review.orchestrator.state.commenting.description") +
-            "</div>" +
-            "<div class=\"transition close-comment\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
-            "<div class=\"state closed\">" +
-            "<h7>" + I18n.t("review.orchestrator.state.completed.title") + "</h7>" +
-            I18n.t("review.orchestrator.state.completed.description") +
-            "</div>" +
-            "<div style=\"clear: both;\"></div>" +
-            "</div>" +
-            "<div class=\"properties\"><h2>" + I18n.t("review.orchestrator.properties").capitalize() + "</h2>" +
-            "<div class=\"include-evicted\">" +
-            "<span class=\"checkbox\">" + I18n.t("review.orchestrator.includeEvicted") +
-            "</span>" +
-            "</div>" +
-            "</div>" +
-            "<div class=\"overview\"><h2>" + I18n.t("review.orchestrator.overview").capitalize() + "</h2></div>" +
-            "<div class=\"reviews\"><h2>" + I18n.t("review.orchestrator.reviews").capitalize() + "</h2></div>" +
-            "<div class=\"comments\"><h2>" + I18n.t("review.orchestrator.comments").capitalize() + "</h2></div>" +
-            "</div>" +
-            "<div class=\"charts\"></div>" +
+        CONTENT_TEMPLATE:
+            "<div>" +
+            "    <div class=\"summary\">" +
+            "        <div class=\"top-header\">" +
+            "            <div class=\"header\">" +
+            "                <h2>" + I18n.t("review.orchestrator.mainTitle") + "</h2>" +
+            "                <span class=\"refresh\"></span>" +
+            "            </div>" +
+            "            <div class=\"control-panel\">" +
+            "               <div class=\"state not-started\">" +
+            "                   <h7>" + I18n.t("review.orchestrator.state.edition.title") + "</h7>" + I18n.t("review.orchestrator.state.edition.description") +
+            "               </div>" +
+            "               <div class=\"transition start-review\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
+            "               <div class=\"state reviewing\">" +
+            "                   <h7>" + I18n.t("review.orchestrator.state.reviewing.title") + "</h7>" + I18n.t("review.orchestrator.state.reviewing.description") +
+            "               </div>" +
+            "               <div class=\"transition close-review\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
+            "               <div class=\"state commenting\">" +
+            "                   <h7>" + I18n.t("review.orchestrator.state.commenting.title") + "</h7>" + I18n.t("review.orchestrator.state.commenting.description") +
+            "               </div>" +
+            "               <div class=\"transition close-comment\"><span class=\"fa fa-arrow-circle-right fa-4x\"></span></div>" +
+            "               <div class=\"state closed\">" +
+            "                   <h7>" + I18n.t("review.orchestrator.state.completed.title") + "</h7>" + I18n.t("review.orchestrator.state.completed.description") +
+            "               </div>" +
+            "               <div style=\"clear: both;\"></div>" +
+            "           </div>" +
+            "       </div>" +
+            "       <div class=\"content\">" +
+            "            <div class=\"properties\"><h2>" + I18n.t("review.orchestrator.properties").capitalize() + "</h2>" +
+            "               <div class=\"include-evicted\">" +
+            "                   <span class=\"checkbox\">" + I18n.t("review.orchestrator.includeEvicted") + "</span>" +
+            "               </div>" +
+            "            </div>" +
+            "            <div class=\"overview\"><h2>" + I18n.t("review.orchestrator.overview").capitalize() + "</h2></div>" +
+            "            <div class=\"reviews\"><h2>" + I18n.t("review.orchestrator.reviews").capitalize() + "</h2></div>" +
+            "            <div class=\"comments\"><h2>" + I18n.t("review.orchestrator.comments").capitalize() + "</h2></div>" +
+            "            <div class=\"charts\"></div>" +
+            "        </div>" +
+            "    </div>" +
             "</div>",
         initializer: function() {
             this.handlers = [];
@@ -81,7 +81,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 visible: false
             }).render(this.get("contentBox"));
 
-            this.detailsOverlay.get("contentBox").addClass("wegas-review-orchestrator--popup-overlay");
+            this.detailsOverlay.get("contentBox").addClass("wegas-review-orchestrator--popup-overlay").addClass("wegas-template-content")
 
         },
         countByStatus: function(instances) {
@@ -98,13 +98,13 @@ YUI.add("wegas-review-widgets", function(Y) {
             var prd = this.get("variable.evaluated"), ctx;
             ctx = this;
             this.refreshButton = new Y.Button({
-                label: "force update <i class=\"fa fa-refresh\"></i>",
+                label: "<i class=\"fa fa-3x fa-refresh\"></i>",
                 //label: "<span class=\"wegas-icon wegas-icon-refresh\"></span>",
                 visible: true
                     //}).render(this.get(CONTENTBOX));
             }).render(this.get(CONTENTBOX).one(".refresh"));
 
-            this.get("contentBox").one(".header h2").setContent(I18n.t("review.orchestrator.mainTitle", {variableName: prd.get("label")}));
+            this.get("contentBox").one(".header h2").setContent(I18n.t("review.orchestrator.mainTitle", {variableName: I18n.t(prd.get("label"))}));
 
             this.request = "ReviewHelper.summarize('" + prd.get("name") + "');";
         },
@@ -125,8 +125,12 @@ YUI.add("wegas-review-widgets", function(Y) {
                     success: function(e) {
                         ctx._monitoredData = e.response.results;
                         ctx.syncTable();
-                    }//,
-                    //failure: reject
+                    },
+                    failure: function(e) {
+                        if (e && e.response && e.response.results && e.response.results.message && e.response.results.message.indexOf("undefined in ReviewHelper")) {
+                            ctx.showMessage("error", "Please include server script : \"wegas-reviewing/scripts/server/\"");
+                        }
+                    }
                 }
             });
             //});
@@ -220,16 +224,17 @@ YUI.add("wegas-review-widgets", function(Y) {
         generateMissingText: function(nbMissing, total) {
             var subject, text = "";
             if (nbMissing) {
-                subject = this._freeForAll ? I18n.t("wegas.player") : I18n.t("wegas.team");
                 text = "<i>";
                 if (nbMissing === total) {
                     text += I18n.t("review.editor.no" + (this._freeForAll ? "Player" : "Team") + "Provide");
                 } else {
                     text = "<hr /><i>" + nbMissing + " ";
                     if (nbMissing > 1) {
-                        text += subject.pluralize() + " " + I18n.t("review.editor.didNotProvidePluralized");
+                        text += (this._freeForAll ? I18n.t("wegas.players") : I18n.t("wegas.teams"))
+                            + " " + I18n.t("review.editor.didNotProvidePluralized");
                     } else {
-                        text += subject + " " + I18n.t("review.editor.didNotProvide");
+                        text += (this._freeForAll ? I18n.t("wegas.player") : I18n.t("wegas.team"))
+                            + " " + I18n.t("review.editor.didNotProvide");
                     }
                 }
                 text += "</i>";
@@ -297,7 +302,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             var ctx = this,
                 columns = {}, data = {}, formatter, nodeFormatter,
                 game, team, globalStatus, teamStatus, prd, childEntry,
-                group, item, i, j, teamId, entry, key, section;
+                group, item, i, j, teamId, entry, key, section,
+                states = [];
 
             this.refreshButton.get("contentBox").one("i").addClass("fa-spin");
 
@@ -391,10 +397,17 @@ YUI.add("wegas-review-widgets", function(Y) {
                 }
             }
 
-            this.get(CONTENTBOX).one(".state.not-started").removeClass("current");
-            this.get(CONTENTBOX).one(".state.reviewing").removeClass("current");
-            this.get(CONTENTBOX).one(".state.commenting").removeClass("current");
-            this.get(CONTENTBOX).one(".state.closed").removeClass("current");
+            states = [
+                this.get(CONTENTBOX).one(".state.not-started"),
+                this.get(CONTENTBOX).one(".state.reviewing"),
+                this.get(CONTENTBOX).one(".state.commenting"),
+                this.get(CONTENTBOX).one(".state.closed")
+            ];
+            for (i in states) {
+                states[i].removeClass("past");
+                states[i].removeClass("current");
+                states[i].removeClass("future");
+            }
 
             this.get(CONTENTBOX).one(".transition.start-review span").removeClass("active");
             this.get(CONTENTBOX).one(".transition.close-review span").removeClass("active");
@@ -406,23 +419,37 @@ YUI.add("wegas-review-widgets", function(Y) {
                 case "NOT_STARTED":
                     this.get(CONTENTBOX).one(".transition.start-review span").addClass("active");
                     this.get(CONTENTBOX).one(".properties .include-evicted").addClass("enabled");
-                    this.get(CONTENTBOX).one(".state.not-started").addClass("current");
+
+                    states[0].addClass("current");
+                    states[1].addClass("future");
+                    states[2].addClass("future");
+                    states[3].addClass("future");
                     break;
                 case "REVIEWING":
                     this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
-                    this.get(CONTENTBOX).one(".state.reviewing").addClass("current");
+
+                    states[0].addClass("past");
+                    states[1].addClass("current");
+                    states[2].addClass("future");
+                    states[3].addClass("future");
                     break;
                 case "COMMENTING":
                     this.get(CONTENTBOX).one(".transition.close-comment span").addClass("active");
-                    this.get(CONTENTBOX).one(".state.commenting").addClass("current");
+                    states[0].addClass("past");
+                    states[1].addClass("past");
+                    states[2].addClass("current");
+                    states[3].addClass("future");
                     break;
                 case "CLOSED":
-                    this.get(CONTENTBOX).one(".state.closed").addClass("current");
+                    states[0].addClass("past");
+                    states[1].addClass("past");
+                    states[2].addClass("past");
+                    states[3].addClass("current");
                     break;
                 case "N/A":
                     this.get(CONTENTBOX).one(".transition.start-review span").addClass("active");
                     this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
-                    this.get(CONTENTBOX).one(".transition.close-review span").addClass("active");
+                    this.get(CONTENTBOX).one(".transition.close-comment span").addClass("active");
                     break;
             }
 
@@ -458,7 +485,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         syncSummary: function() {
             var data = this._monitoredData,
-                evalSummary,
+                evalSummary, maxY,
                 node, prd;
 
             prd = this.get("variable.evaluated");
@@ -470,37 +497,74 @@ YUI.add("wegas-review-widgets", function(Y) {
             node.append("<div class=\"feedback\"><h2>" + I18n.t("review.orchestrator.charts").capitalize() + " " + I18n.t("review.orchestrator.reviews") + "</h2></div>");
             node.append("<div class=\"comments\"><h2>" + I18n.t("review.orchestrator.charts").capitalize() + " " + I18n.t("review.orchestrator.comments") + "</h2></div>");
 
-            this.buildCharts(prd.get("feedback").get("evaluations"), node.one(".feedback"), evalSummary);
-            this.buildCharts(prd.get("fbComments").get("evaluations"), node.one(".comments"), evalSummary);
+            maxY = this.getMaxY([prd.get("feedback").get("evaluations"), prd.get("fbComments").get("evaluations")], evalSummary);
+            this.buildCharts(prd.get("feedback").get("evaluations"), node.one(".feedback"), evalSummary, maxY);
+            this.buildCharts(prd.get("fbComments").get("evaluations"), node.one(".comments"), evalSummary, maxY);
         },
-        createGradeChart: function(klass, summary, descriptor) {
-            var min, max, data, options, i, bar;
+        getMaxY: function(reviews, summary) {
+            var i, j, k, evals, evD, data, maxY = 0;
+            for (j in reviews) {
+                evals = reviews[j];
+                for (i in evals) {
+                    evD = evals[i];
+                    data = summary[evD.get("id")].get("val");
+                    if (evD.get("@class") === "GradeDescriptor") {
+                        for (k in data.histogram) {
+                            maxY = Math.max(maxY, data.histogram[k].count);
+                        }
+                    } else if (evD.get("@class") === "CategorizedEvaluationDescriptor") {
+                        for (k in data.histogram) {
+                            maxY = Math.max(maxY, data.histogram[k]);
+                        }
+                    }
+                }
+            }
+            return maxY;
+        },
+        createGradeChart: function(klass, summary, descriptor, maxY) {
+            var min, max, data, options, i, bar,
+                formatNumber = function(x) {
+                    if (Number.isInteger(x)) {
+                        return I18n.formatNumber(x);
+                    } else {
+                        return I18n.formatNumber(x, 'fixed2');
+                    }
+                };
 
             data = {
                 labels: [],
                 series: [{
-                        "name": descriptor.get("name"),
+                        "name": I18n.t(descriptor.get("label")),
                         data: []
                     }]
             };
 
             options = {
                 width: 400,
-                height: 250
+                height: 250,
+                axisY: {
+                    onlyInteger: true,
+                    high: maxY
+                }
             };
 
             for (i in summary.histogram) {
                 bar = summary.histogram[i];
                 min = bar.min || Number.NaN;
                 max = bar.max || Number.NaN;
-                data.labels.push("[" + min.toFixed(2) + "," + max.toFixed(2) + "[");
+
+                if (Math.abs(bar.max - bar.min) < 1.0) {
+                    data.labels.push(formatNumber(Math.floor(bar.max)));
+                } else {
+                    data.labels.push("[" + formatNumber(bar.min) + ", " + formatNumber(bar.max) + (i < summary.histogram.length - 1 ? "[" : "]"));
+                }
                 data.series[0].data.push(bar.count);
             }
             this.chart = new Chartist.Bar(klass, data, options);
 
 
         },
-        createCategoryChart: function(klass, summary, descriptor) {
+        createCategoryChart: function(klass, summary, descriptor, maxY) {
             var min, max, data, options, key;
             min = summary.min;
             max = summary.max;
@@ -508,28 +572,33 @@ YUI.add("wegas-review-widgets", function(Y) {
             data = {
                 labels: [],
                 series: [{
-                        "name": descriptor.get("name"),
+                        "name": I18n.t(descriptor.get("label")),
                         data: []
                     }]
             };
 
             options = {
                 width: 400,
-                height: 250
+                height: 250,
+                axisY: {
+                    onlyInteger: true,
+                    high: maxY
+                }
             };
 
             for (key in summary.histogram) {
-                data.labels.push(key);
+                data.labels.push(descriptor.getLabelForName(key));
                 data.series[0].data.push(summary.histogram[key]);
             }
             this.chart = new Chartist.Bar(klass, data, options);
         },
         _formatNumber: function(value, nD) {
             nD = nD || 2;
-            return Y.Lang.isNumber(value) ? value.toFixed(nD) : "n/a";
+            return Y.Lang.isNumber(value) ? I18n.formatNumber(value.toFixed(nD)) : "n/a";
         },
-        buildCharts: function(evals, node, summary) {
-            var i, evD, klass, data;/*math,*/
+        buildCharts: function(evals, node, summary, maxY) {
+            var i, evD, klass, data, k;
+
             for (i in evals) {
                 evD = evals[i];
                 klass = "eval-" + evD.get("id");
@@ -540,43 +609,8 @@ YUI.add("wegas-review-widgets", function(Y) {
                     "</div>");
                 data = summary[evD.get("id")].get("val");
                 if (evD.get("@class") === "GradeDescriptor") {
-                    /*
-                     math = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
-                     "<mrow>" +
-                     "<mstyle displaystyle=\"true\" scriptlevel=\"0\"> " +
-                     "<mrow> " +
-                     "<mrow> " +
-                     "<mover> " +
-                     "<mi>x</mi> " +
-                     "<mo stretchy=\"false\">¯<!-- ¯ --></mo> " +
-                     "</mover> " +
-                     "</mrow> " +
-                     "<mo>=</mo>" +
-                     "<mn>"  + data.mean.toFixed(2) + "</mn>" +
-                     "<mo>;</mo>" +
-                     "</mrow> " +
-                     "<mrow>"+
-                     "<mrow>"+
-                     "<mover> " +
-                     "<mi>x</mi> " +
-                     "<mo stretchy=\"false\">~<!-- ~ --></mo> " +
-                     "</mover> " +
-                     "</mrow> " +
-                     "</mrow> " +
-                     "<mo>=</mo>" +
-                     "<mn>"  + data.median.toFixed(2) + "</mn>" +
-                     "<mo>;</mo>" +
-                     "<mrow> " +
-                     "<mi>σ<!-- σ --></mi> " +
-                     "</mrow> " +
-                     "<mo>=</mo>" +
-                     "<mn>"  + data.sd.toFixed(2) + "</mn>" +
-                     "<mo>;</mo>" +
-                     "</mstyle> " +
-                     "</mrow> " +
-                     "</math>";*/
-                    this.createGradeChart("." + klass + " .chart", data, evD);
-                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
+                    this.createGradeChart("." + klass + " .chart", data, evD, maxY);
+                    node.one("." + klass + " .title").setContent("<h3>" + I18n.t(evD.get("label")) + "</h3>");
                     //node.one("." + klass + " .legend").append(math);
                     node.one("." + klass + " .legend").append("<p>" +
                         I18n.t("review.orchestrator.stats.mean") + ": " + this._formatNumber(data.mean) +
@@ -587,14 +621,14 @@ YUI.add("wegas-review-widgets", function(Y) {
 
                     node.one("." + klass + " .legend").append("<p>" + I18n.t("review.orchestrator.stats.basedOn", {available: data.numberOfValues || 0, expected: summary.maxNumberOfValue}) + "</p>");
                 } else if (evD.get("@class") === "CategorizedEvaluationDescriptor") {
-                    this.createCategoryChart("." + klass + " .chart", summary[evD.get("id")].get("val"), evD);
-                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
+                    this.createCategoryChart("." + klass + " .chart", summary[evD.get("id")].get("val"), evD, maxY);
+                    node.one("." + klass + " .title").setContent("<h3>" + I18n.t(evD.get("label")) + "</h3>");
 
                     node.one("." + klass + " .legend").append("<p>" + I18n.t("review.orchestrator.stats.basedOn", {available: data.numberOfValues || 0, expected: summary.maxNumberOfValue}) + "</p>");
                 } else if (evD.get("@class") === "TextEvaluationDescriptor") {
-                    node.one("." + klass + " .title").setContent("<h3>" + evD.get("name") + "</h3>");
-                    node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgWc") + ": " + (data.averageNumberOfWords ? data.averageNumberOfWords.toFixed(2) : "n/a") + "</p>");
-                    node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgCc") + ": " + (data.averageNumberOfCharacters ? data.averageNumberOfCharacters.toFixed(2) : "n/a") + "</p>");
+                    node.one("." + klass + " .title").setContent("<h3>" + I18n.t(evD.get("label")) + "</h3>");
+                    node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgWc") + ": " + (data.averageNumberOfWords ? I18n.formatNumber(data.averageNumberOfWords, 'fixed') : "n/a") + "</p>");
+                    node.one("." + klass + " .chart").append("<p>" + I18n.t("review.orchestrator.stats.avgCc") + ": " + (data.averageNumberOfCharacters ? I18n.formatNumber(data.averageNumberOfCharacters, 'fixed') : "n/a") + "</p>");
                     node.one("." + klass + " .legend").append("<p>" + I18n.t("review.orchestrator.stats.basedOn", {available: data.numberOfValues || 0, expected: summary.maxNumberOfValue}) + "</p>");
                 }
             }
@@ -660,11 +694,11 @@ YUI.add("wegas-review-widgets", function(Y) {
              */
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                type: "object",
+                view: {
+                    type: "variableselect",
                     label: "Peer Review Descriptor",
                     classFilter: ["PeerReviewDescriptor"],
-                    wrapperClassName: "inputEx-fieldWrapper"
                 }
             }
         }
@@ -820,17 +854,17 @@ YUI.add("wegas-review-widgets", function(Y) {
         ATTRS: {
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                type: "object",
+                view: {
+                    type: "variableselect",
                     label: "Peer Review Descriptor",
-                    classFilter: ["PeerReviewDescriptor"],
-                    wrapperClassName: "inputEx-fieldWrapper"
+                    classFilter: ["PeerReviewDescriptor"]
                 }
             },
             showSubmitButton: {
                 type: "boolean",
                 value: true,
-                _inputex: {
+                view: {
                     label: "Display submit button"
                 }
             }
@@ -843,7 +877,7 @@ YUI.add("wegas-review-widgets", function(Y) {
     Y.Wegas.ReviewTV = ReviewTV;
 
     /**
-     * @name Y.Wegas.ReviewTabView
+     * @name Y.Wegas.ReviewTreeView
      * @extends Y.Widget
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class
@@ -862,13 +896,15 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.destroyAll();
 
             this._treeview = new Y.Wegas.ReviewTV({
+                editable: false
             });
             this._treeview.addTarget(this);
 
             //this.plug(Y.Plugin.RememberExpandedTreeView);
 
-            this._panel = new Y.Wegas.AbsoluteLayout({
-                cssClass: "wegas-review-treeview__panel"
+            this._panel = new Y.Wegas.FlexList({
+                cssClass: "wegas-review-treeview__panel",
+                editable: false
             });
 
             this.add(this._treeview);
@@ -1050,8 +1086,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (data) {
                 switch (data.type) {
                     case "REVIEW":
-                        this.renderReviewWidget(data.review, e.target.get("label"),
-                            data.reviewer);
+                        this.renderReviewWidget(data.review, e.target.get("label"), data.reviewer);
                         break;
                     default:
                         Y.later(0, this, function() {
@@ -1078,17 +1113,17 @@ YUI.add("wegas-review-widgets", function(Y) {
         ATTRS: {
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                type: "object",
+                view: {
+                    type: "variableselect",
                     label: "Peer Review Descriptor",
-                    classFilter: ["PeerReviewDescriptor"],
-                    wrapperClassName: "inputEx-fieldWrapper"
+                    classFilter: ["PeerReviewDescriptor"]
                 }
             },
             showSubmitButton: {
                 type: "boolean",
                 value: true,
-                _inputex: {
+                view: {
                     label: "Display submit button"
                 }
             }
@@ -1113,7 +1148,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             + "    <div class=\"toReview\">"
             + "      <div class=\"subtitle\"></div>"
             + "      <div class=\"description\"></div>"
-            + "      <div class=\"content\"></div>"
+            + "      <div class=\"content wegas-template-content\"></div>"
             + "    </div>"
             + "  </div>"
             + "  <div class=\"container\">"
@@ -1176,7 +1211,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             return widget;
         },
         renderUI: function() {
-            var review = this.get("review"), widget,
+            var review = this.get("review"),
                 i, evls,
                 reviewer = this.get("reviewer"),
                 desc = this.get("descriptor"),
@@ -1371,7 +1406,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         _sendRequest: function(action, updateCache, cb) {
             if (!this.get("destroyed") && !this.get("predestroyed")) {
-                this.showOverlay();
+                //this.showOverlay();
             }
             Y.Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/PeerReviewController/" + action
@@ -1383,11 +1418,11 @@ YUI.add("wegas-review-widgets", function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        this.hideOverlay();
+                        //this.hideOverlay();
                         cb && cb.call(this, e);
                     }, this),
                     failure: Y.bind(function(e) {
-                        this.hideOverlay();
+                        //this.hideOverlay();
                         cb && cb.call(this, e);
                         this.showMessage("error", "Something went wrong: " + action + " review");
                     }, this)
@@ -1447,16 +1482,16 @@ YUI.add("wegas-review-widgets", function(Y) {
             },
             showPage: {
                 type: "string",
-                _inputex: {
+                view: {
                     label: "Show page",
-                    _type: "pageselect",
-                    required: true
-                }
+                    type: "pageselect"
+                },
+                required: true
             },
             showSubmitButton: {
                 type: "boolean",
                 value: true,
-                _inputex: {
+                view: {
                     label: "Display submit button"
                 }
             }
@@ -1467,14 +1502,14 @@ YUI.add("wegas-review-widgets", function(Y) {
 
     GradeInput = Y.Base.create("wegas-review-gradeinput", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div class=\"wegas-review-evaluation\">" +
-            "<div class=\"wegas-review-evaluation-label\"></div>" +
-            "<div class=\"wegas-review-evaluation-desc\"></div>" +
-            "<div class=\"wegas-review-evaluation-content\">" +
-            "<div class=\"wegas-review-grade-instance-slider\"></div>" +
-            "<div class=\"wegas-review-grade-instance-input-container\">" +
-            "<input class=\"wegas-review-grade-instance-input\" />" +
-            "</div>" +
-            "</div>" +
+            "  <div class=\"wegas-review-evaluation-label\"></div>" +
+            "  <div class=\"wegas-review-evaluation-desc\"></div>" +
+            "  <div class=\"wegas-review-evaluation-content\">" +
+            "    <div class=\"wegas-review-grade-instance-slider\"></div>" +
+            "    <div class=\"wegas-review-grade-instance-input-container\">" +
+            "      <input class=\"wegas-review-grade-instance-input\" />" +
+            "    </div>" +
+            "  </div>" +
             "</div>",
         initializer: function() {
             this.handlers = [];
@@ -1496,19 +1531,27 @@ YUI.add("wegas-review-widgets", function(Y) {
         },
         renderUI: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"),
-                CB = this.get("contentBox");
+                CB = this.get("contentBox"), min, max;
             this.evId = ev.get("id");
-            CB.one(".wegas-review-evaluation-label").setContent(desc.get("name"));
-            CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
+            CB.one(".wegas-review-evaluation-label").setContent(I18n.t(desc.get("label")));
+            CB.one(".wegas-review-evaluation-desc").setContent(I18n.t(desc.get("description")));
 
             if (!this.get("readonly")) {
                 //this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", ev.get("value"));
-                if (Y.Lang.isNumber(desc.get("minValue")) && Y.Lang.isNumber(desc.get("maxValue"))) {
+                min = desc.get("minValue");
+                max = desc.get("maxValue");
+                if (Y.Lang.isNumber(min) && Y.Lang.isNumber(max)) {
+                    if (max - min < 10) {
+                        this.get(CONTENTBOX).addClass("small-range-grade");
+                    }
+
                     this.xSlider = new Y.Slider({
-                        min: desc.get("minValue"),
-                        max: desc.get("maxValue"),
+                        min: min,
+                        max: max,
                         value: +ev.get("value")
                     }).render(this.get(CONTENTBOX).one(".wegas-review-grade-instance-slider"));
+                    this.get(CONTENTBOX).one(".wegas-review-grade-instance-slider .yui3-slider-rail-cap-left").setAttribute("data-value", min);
+                    this.get(CONTENTBOX).one(".wegas-review-grade-instance-slider .yui3-slider-rail-cap-right").setAttribute("data-value", max);
                 }
                 //} else {
                 //    this.get(CONTENTBOX).one(".wegas-review-grade-instance-input-container").setContent('<p>' +
@@ -1529,6 +1572,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (!this.get("readonly")) {
                 this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", value);
                 if (this.xSlider) {
+                    this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", Y.Lang.isNumber(value) ? value : "");
                     this.xSlider.set("value", value);
                 }
             } else {
@@ -1599,6 +1643,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 value = this.xSlider.get("value");
 
             if (this.updateValue(value)) {
+                this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", Y.Lang.isNumber(value) ? value : "");
                 input.set("value", value);
             }
         },
@@ -1615,6 +1660,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.timer = null;
                 if (this.updateValue(value)) {
                     if (this.xSlider) {
+                        this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", Y.Lang.isNumber(value) ? value : "");
                         this.xSlider.set("value", +value);
                     }
                 }
@@ -1649,8 +1695,8 @@ YUI.add("wegas-review-widgets", function(Y) {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"),
                 CB = this.get("contentBox");
 
-            CB.one(".wegas-review-evaluation-label").setContent(desc.get("name"));
-            CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
+            CB.one(".wegas-review-evaluation-label").setContent(I18n.t(desc.get("label")));
+            CB.one(".wegas-review-evaluation-desc").setContent(I18n.t(desc.get("description")));
             this._initialContent = ev.get("value");
 
             if (this.get("readonly.evaluated") && !this._initialContent) {
@@ -1696,7 +1742,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 Y.later(100, this, function() {
                     var content = this.getInitialContent();
                     this.currentValue = content;
-                    this.editor.setContent(content);
+                    this.editor && this.editor.setContent(content);
                     /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
                      if (tmceI) {
                      tmceI.setContent(this.getInitialContent());
@@ -1753,8 +1799,8 @@ YUI.add("wegas-review-widgets", function(Y) {
         renderUI: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"), categs, i,
                 categ, frag, CB = this.get("contentBox");
-            CB.one(".wegas-review-evaluation-label").setContent(desc.get("name") + ": ");
-            CB.one(".wegas-review-evaluation-desc").setContent(desc.get("description"));
+            CB.one(".wegas-review-evaluation-label").setContent(I18n.t(desc.get("label")));
+            CB.one(".wegas-review-evaluation-desc").setContent(I18n.t(desc.get("description")));
 
             if (!this.get("readonly")) {
                 frag = ['<select>'];
@@ -1763,9 +1809,9 @@ YUI.add("wegas-review-widgets", function(Y) {
                 for (i in categs) {
                     if (categs.hasOwnProperty(i)) {
                         categ = categs[i];
-                        frag.push("<option value=\"" + encodeURIComponent(categ) + "\" " +
+                        frag.push("<option value=\"" + encodeURIComponent(categ.get("name")) + "\" " +
                             (categ === ev.get("value") ? "selected=''" : "") +
-                            ">" + categ + "</option>");
+                            ">" + I18n.t(categ.get("label")) + "</option>");
                     }
                 }
                 frag.push('</select>');
@@ -1792,6 +1838,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             evl = this.get("evaluation");
             value = evl.get("value");
             if (this.get("readonly")) {
+                value = this.get("evaluation").get("descriptor").getLabelForName(value);
                 if (!value) {
                     value = "<i>" + I18n.t("review.editor.noValueProvided") + '</i>';
                 }

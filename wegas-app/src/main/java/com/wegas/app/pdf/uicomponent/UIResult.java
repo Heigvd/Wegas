@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf.uicomponent;
@@ -84,7 +84,7 @@ public class UIResult extends UIComponentBase {
 
         boolean hasBeenSelected = false;
 
-        for (Reply r : result.getChoiceDescriptor().getQuestion().getInstance(defaultValues, player).getReplies()) {
+        for (Reply r : result.getChoiceDescriptor().getQuestion().getInstance(defaultValues, player).getReplies(player)) {
             if (r.getResult().getChoiceDescriptor().equals(result.getChoiceDescriptor())) {
                 hasBeenSelected = true;
             }
@@ -92,16 +92,16 @@ public class UIResult extends UIComponentBase {
         // For editors and players who selected this
         if (editorMode || hasBeenSelected) {
             String title;
-            if (result.getChoiceDescriptor().getTitle() != null && !result.getChoiceDescriptor().getTitle().trim().isEmpty()){
-                title = result.getChoiceDescriptor().getTitle();
+            if (result.getChoiceDescriptor().getLabel() != null && !result.getChoiceDescriptor().getLabel().translateOrEmpty(player).trim().isEmpty()) {
+                title = result.getChoiceDescriptor().getLabel().translateOrEmpty(player);
             } else {
                 title = UIHelper.TEXT_IMPACT_TEXT;
             }
-            
+
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE);
 
-            UIHelper.printTextArea(context, writer, result.getAnswer(), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
+            UIHelper.printTextArea(context, writer, result.getAnswer().translateOrEmpty(player), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
             UIHelper.endDiv(writer);
             //UIHelper.printPropertyTextArea(context, writer, title, result.getAnswer(), false, editorMode);
         }

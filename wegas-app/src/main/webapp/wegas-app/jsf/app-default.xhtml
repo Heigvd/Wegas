@@ -2,12 +2,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:composition template="page-default.xhtml">
-
         <ui:define name="page">
-            <h:body class="yui3-skin-sam wegas-app-default #{cookie['customstyle'].value} wegas-stdmode #{requestController.currentRoles} ">
+            <ui:insert name="app-init">
+                <c:set var="extraBodyClass" value=""/>
+            </ui:insert>
+
+            <h:body class="yui3-skin-sam wegas-app-default #{cookie['customstyle'].value} wegas-stdmode #{requestController.currentRoles} #{extraBodyClass}">
 
                 <!-- Loading -->
                 <div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>
@@ -53,6 +57,7 @@
                         useBrowserConsole: true,
                         insertBefore: 'customstyles',
                         lang: "#{requestController.locale.toLanguageTag()}",
+                        preferredLocale: "#{requestController.getPreferredLocale()}",
                         charset: "#{wegasConfig.encoding}",
                         debug: #{requestController.debugMode()},
                         throwFail:#{requestController.debugMode()}, //          // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
@@ -107,18 +112,18 @@
                         ix.root = "/lib/inputex/src/";
                         ix.comboBase = YUI_config.Wegas.comboBase;
                         ix.combine = #{!requestController.debugMode()};
+
+                        YUI_config.groups.gallery = {
+                            base: 'https://cdn.rawgit.com/yui/yui3-gallery/gallery-2014.07.31-18-26/build/',
+                            patterns: {
+                                "gallery-": {},
+                                "gallerycss-": {type: "css"}
+                            }
+                        };
                 </script>
 
                 <!-- Page body, overridden in sub templates -->
                 <ui:insert name="body" />
-
-                <!-- Google Analytics -->
-                <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
-                    <ui:include src="template/googleanalytics.xhtml" />
-                </ui:fragment>
-
-                <!-- Uservoice -->
-                <!--<ui:include src="template/uservoice.xhtml" />-->
 
             </h:body>
         </ui:define>

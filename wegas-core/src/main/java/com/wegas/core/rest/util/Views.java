@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -37,6 +37,12 @@ public class Views {
     }
 
     /**
+     * TO be included in exports
+     */
+    public interface ExportI {
+    }
+
+    /**
      * Provides VariableDescriptor instances
      */
     public interface InstanceI {
@@ -60,7 +66,10 @@ public class Views {
     public static class Editor implements EditorI, ExtendedI, IndexI {
     }
 
-    public static class Lobby implements EditorI, ExtendedI, IndexI, LobbyI {
+    /**
+     * View relevant to Lobby without Editor items
+     */
+    public static class Lobby implements ExtendedI, IndexI, LobbyI {
     }
 
     /**
@@ -72,7 +81,7 @@ public class Views {
     /**
      * Do not include ids nor VariableInstances, Export usage
      */
-    public static class Export implements EditorI, ExtendedI {
+    public static class Export implements EditorI, ExtendedI, ExportI {
     }
 
 }

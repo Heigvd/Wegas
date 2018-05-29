@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.page;
@@ -14,16 +14,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.wegas.core.Helper;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import java.io.IOException;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class Page {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Page.class);
@@ -32,9 +30,7 @@ public class Page {
 
     static final protected String NAME_KEY = "pageName";
 
-    @JsonIgnore
-    //@XmlTransient
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = null;
 
     private String id;
 
@@ -51,11 +47,11 @@ public class Page {
     public Page(String id, JsonNode content) {
         this.id = id;
         this.setContent(content);
-        this.extractAttrs();
     }
 
     /**
      * @param n
+     *
      * @throws RepositoryException
      * @throws IOException
      */
@@ -68,7 +64,6 @@ public class Page {
         if (n.hasProperty(INDEX_KEY)) {
             this.index = Helper.longToInt(n.getProperty(INDEX_KEY).getLong());
         }
-        this.injectAttrs();
     }
 
     /**
@@ -78,7 +73,7 @@ public class Page {
     }
 
     /**
-     * @return
+     * @return page id
      */
     public String getId() {
         return id;
@@ -92,9 +87,16 @@ public class Page {
     }
 
     /**
-     * @return
+     * @return page content as a JSONNode
      */
     public JsonNode getContent() {
+        return content;
+    }
+
+    public JsonNode getContentWithMeta() {
+        ObjectNode content = this.content.deepCopy();
+        content.put("@name", this.name);
+        content.put("@index", this.index);
         return content;
     }
 
@@ -104,23 +106,33 @@ public class Page {
     @JsonIgnore
     public final void setContent(JsonNode content) {
         this.content = content;
+        this.extractAttrs();
+    }
+
+    private static synchronized ObjectMapper getMapper() {
+        if (Page.mapper == null) {
+            Page.mapper = new ObjectMapper();
+        }
+        return Page.mapper;
     }
 
     /**
      * @param content
+     *
      * @throws IOException
      */
     @JsonIgnore
     public final void setContent(String content) {
         try {
-            this.content = mapper.readTree(content);
+            this.content = getMapper().readTree(content);
+            this.extractAttrs();
         } catch (IOException e) {
 
         }
     }
 
     /**
-     * @return
+     * @return page name
      */
     public String getName() {
         return name;
@@ -151,26 +163,20 @@ public class Page {
         }
     }
 
-    @JsonIgnore
-    private void injectAttrs() {
-        ((ObjectNode) this.content).put("@name", this.name);
-        ((ObjectNode) this.content).put("@index", this.index);
-    }
-
     /**
      * @param patch RFC6902: patch Array
      */
     public void patch(JsonNode patch) throws IOException, JsonPatchException {
-        final JsonNode target = JsonPatch.fromJson(patch).apply(this.getContent());
+        final JsonNode target = JsonPatch.fromJson(patch).apply(this.getContentWithMeta());
         logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + target.asText());
         this.setContent(target);
     }
 
     //@TODO : tokenizer
-
     /**
      * @param jsonPath
-     * @return
+     *
+     * @return  some extracted node as text
      */
     public String extract(String jsonPath) {
         JsonNode node = this.content;
@@ -191,7 +197,7 @@ public class Page {
         return index;
     }
 
-    protected void setIndex(int index) {
+    public void setIndex(int index) {
         this.index = index;
     }
 }

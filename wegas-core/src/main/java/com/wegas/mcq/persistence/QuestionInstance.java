@@ -2,49 +2,34 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
-import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
-import org.eclipse.persistence.annotations.BatchFetch;
-import org.eclipse.persistence.annotations.BatchFetchType;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import static java.lang.Boolean.FALSE;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@Table(name = "MCQQuestionInstance")
 public class QuestionInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @BatchFetch(BatchFetchType.JOIN)
-    @JsonManagedReference
-    //@JoinFetch
-    private List<Reply> replies = new ArrayList<>();
+
     /**
      *
      */
@@ -57,6 +42,7 @@ public class QuestionInstance extends VariableInstance {
      * False until the user has clicked on the global question-wide "submit"
      * button.
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean validated = FALSE;
 
     /**
@@ -71,8 +57,6 @@ public class QuestionInstance extends VariableInstance {
             this.setUnread(other.getUnread());
             Boolean v = other.getValidated();
             this.setValidated(v);
-            this.setReplies(new ArrayList<>()); //@TODO merge them
-            this.addReplies(other.getReplies());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -97,44 +81,36 @@ public class QuestionInstance extends VariableInstance {
      */
     @JsonIgnore
     public List<Reply> getSortedReplies() {
-        return Helper.copyAndSort(this.replies, new EntityComparators.CreateTimeComparator<>());
+        return Helper.copyAndSort(this.getReplies(), new EntityComparators.CreateTimeComparator<>());
     }
 
-    /**
-     * @return the replies
-     */
-    @JsonManagedReference
-    public List<Reply> getReplies() {
+    @JsonIgnore
+    public List<Reply> getSortedReplies(Player p) {
+        return Helper.copyAndSort(this.getReplies(p), new EntityComparators.CreateTimeComparator<>());
+    }
+
+    public List<Reply> getReplies(Player p) {
+        List<Reply> replies = new ArrayList<>();
+        QuestionDescriptor qD = (QuestionDescriptor) this.findDescriptor();
+
+        for (ChoiceDescriptor cd : qD.getItems()) {
+            if (this.isDefaultInstance()) {
+                replies.addAll(cd.getDefaultInstance().getReplies());
+            } else {
+                replies.addAll(cd.getInstance(p).getReplies());
+            }
+        }
+
         return replies;
     }
 
-    /**
-     * @param replies the replies to set
-     */
-    @JsonManagedReference
+    @JsonIgnore
+    public List<Reply> getReplies() {
+        InstanceOwner owner = this.getOwner();
+        return this.getReplies(owner != null ? owner.getAnyLivePlayer() : null);
+    }
+
     public void setReplies(List<Reply> replies) {
-        this.replies = replies;
-    }
-
-    /**
-     * @param reply
-     */
-    public void addReply(Reply reply) {
-        reply.setQuestionInstance(this);
-        this.setReplies(ListUtils.cloneAdd(this.getReplies(), reply));
-    }
-
-    void removeReply(Reply reply) {
-        this.replies.remove(reply);
-    }
-
-    /**
-     * @param replies
-     */
-    public void addReplies(List<Reply> replies) {
-        for (Reply r : replies) {
-            this.addReply(r);
-        }
     }
 
     /**
@@ -151,7 +127,7 @@ public class QuestionInstance extends VariableInstance {
         this.unread = unread;
     }
 
-    // *** Sugar *** //
+    // ~~~ Sugar ~~~
     /**
      *
      */
@@ -163,6 +139,13 @@ public class QuestionInstance extends VariableInstance {
      *
      */
     public void desactivate() {
+        this.deactivate();
+    }
+
+    /**
+     *
+     */
+    public void deactivate() {
         this.setActive(false);
     }
 
@@ -192,8 +175,25 @@ public class QuestionInstance extends VariableInstance {
     @JsonIgnore
     public boolean isSelectable() {
         QuestionDescriptor qd = (QuestionDescriptor) this.findDescriptor();
-        return (qd.getCbx() && !this.getValidated()) // a not yet validated cbx question
-                || qd.getAllowMultipleReplies() // OR several answers are allowed 
-                || this.getReplies().isEmpty(); // OR no reply yet
+        Integer maxReplies = qd.getMaxReplies();
+        // the question must be selectable
+        boolean selectable = (qd.getCbx() && !this.getValidated()) // a not yet validated cbx question
+                || maxReplies == null // OR number of answers is unlimited
+                || this.getReplies().size() < maxReplies; // OR maximum number not reached
+        if (selectable) {
+            //and at least one choice should bee selectable too
+            InstanceOwner owner = this.getOwner();
+            Player p = owner != null ? owner.getAnyLivePlayer() : null;
+
+            for (ChoiceDescriptor cd : qd.getItems()) {
+                if (cd.isSelectable(p)) {
+                    // at least 1 choice is still selectable -> OK
+                    return true;
+                }
+            }
+            // no selectable left
+            return false;
+        }
+        return selectable;
     }
 }

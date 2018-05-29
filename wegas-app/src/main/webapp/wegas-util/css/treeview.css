@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
 */
 .yui3-treeview {
@@ -19,19 +19,31 @@
     margin-left: 20px;
     font-style: italic;
 }
+
 .yui3-treenode-content-toggle {
+    /* color: #d4d4d4; */
+    font-size: 14px;
+    padding-right: 6px;
+    cursor:pointer;
     display: inline-block;
     width: 14px;
-    height: 14px;
-    background-image: url(../../wegas-app/images/wegas-icon-toggle.png);
-    background-repeat: no-repeat;
-    background-position: -0px -112px;
-    cursor:pointer;
-    margin-left: -3px;
 }
-.yui3-treenode-collapsed .yui3-treenode-content-toggle{
-    background-position: 0px -74px;
+
+.yui3-treenode-content-toggle:before {
+    content: "▼";
+    color: #ccc;
 }
+
+.yui3-treenode-collapsed .yui3-treenode-content-toggle:before {
+    content: "►";
+    color: #ccc;
+}
+
+.yui3-treenode-content-toggle:hover:before,
+.yui3-treenode-collapsed .yui3-treenode-content-toggle:hover:before {
+    color: #4E525E;
+}
+
 .yui3-treenode-content-icon,
 .yui3-treeleaf-content-icon {
     display:inline-block;
@@ -140,12 +152,12 @@
 .yui3-treenode-content-label,
 .yui3-treeleaf-content-label{
     display:inline-block;
-    white-space: normal;
     vertical-align: text-top;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     width: 100%;
+    color: black;
 }
 .yui3-treeview [contenteditable="true"]{
     display: inline-block;
@@ -167,11 +179,21 @@
 }
 .selected > div > .yui3-treeleaf-content-header,
 .selected > .yui3-treenode-content-header,
-.yui3-treeview-multiselect .sub-fully-selected > .yui3-treenode-content-header{
-    background-color:#EDEDED;
-    box-shadow: 0px 0px 1px #6D6D6D;
-    font-weight: bolder;
+.yui3-treeview-multiselect .sub-fully-selected > .yui3-treenode-content-header {
+    background-color: #A7CEF6;
 }
+
+.wegas-editor-variabletreeview .selected .yui3-treenode-content-icon,
+.wegas-editor-variabletreeview .selected .yui3-treeleaf-content-icon {
+    color: #4E525E;
+}
+
+/* Sub-items of selected items: */
+.wegas-editor-variabletreeview .selected .yui3-treenode .yui3-treenode-content-icon,
+.wegas-editor-variabletreeview .selected .yui3-treeleaf .yui3-treeleaf-content-icon {
+    color: #4E525E;
+}
+
 .yui3-treeview-multiselect .sub-partially-selected > .yui3-treenode-content-header{
     background-color: transparent;
     box-shadow: 0px 0px 1px #6D6D6D;
@@ -193,7 +215,8 @@
     display: block;
     text-align: center;
 }
-.yui3-treenode-collapsed ul:empty::before{
+.yui3-treenode-collapsed ul:empty::before, 
+.yui3-treeview-content .filter-no-match ul:empty::before {
     content: "";
 }
 /** FILTER **/
@@ -207,7 +230,7 @@
 .yui3-treeview-content .filter-match > .content-header,
 .yui3-treeview-content .filter-match > div > .content-header{
     opacity: 1;
-    background: rgba(0, 70, 139, 0.06);
+    /*background: rgba(0, 70, 139, 0.06);*/
 }
 .yui3-treeview-content .filter-no-match > .content-header,
 .yui3-treeview-content .filter-no-match > div > .content-header{
@@ -218,4 +241,14 @@
 .yui3-treeview-content .yui3-sortable-widget {
     opacity: 0.5;
     border: dashed 1px grey;
+    position: relative;
+}
+/* Layer to prevent element click.
+mousedown / mouseup on different targets */
+.yui3-treeview-content .yui3-sortable-widget:before{
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
 }

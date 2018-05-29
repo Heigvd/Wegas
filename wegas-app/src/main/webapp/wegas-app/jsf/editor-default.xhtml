@@ -10,10 +10,20 @@
         <ui:define name="head">
 
             <!-- Page styles -->
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            <ui:fragment rendered="#{requestController.debugMode()}">
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
+            </ui:fragment>
+            <ui:fragment rendered="#{!requestController.debugMode()}">
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            </ui:fragment>
 
             <!-- Stylesheets from current game model style library -->
-            <style type="text/css">#{editorGameController.styleSheets}</style>
+            <!--<style type="text/css"># {editorGameController.combinedStyleSheet}</style>-->
+            <ui:repeat var="sheet" value="#{editorGameController.currentGameModel.cssLibraryList}" varStatus="status">
+                <style type="text/css"  id="css-library-#{sheet.getContentKey()}">
+                    #{sheet.getContent().replaceAll("\\.\\./", "")}
+                </style>
+            </ui:repeat>
 
             <!-- Stylesheets from current game model cssUri property -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.properties.cssUri != ''}"
@@ -45,7 +55,10 @@
                                 source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
-                                        fn: "VariableDescriptorCache"
+                                        fn: "VariableDescriptorCache",
+                                        cfg: {
+                                            indexes: ["id", "name"]
+                                        }
                                     }, {
                                         fn: "ScriptEval"
                                     }, {/*
@@ -79,11 +92,11 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.pagesUri != ''}">
                                  */
                                 source: "#{editorGameController.currentGameModel.properties.pagesUri}",
-                                    /* THIS IS NOT A COMMENT
-                                     * </ui:fragment>
-                                     */
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
 
-                                    initialFullRequest: '<ui:insert name="pageUri">/wegas-app/db/wegas-editor-layout.json</ui:insert>',
+                                initialFullRequest: '<ui:insert name="pageUri">/wegas-app/db/wegas-editor-layout.json</ui:insert>',
                                 //initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
                                 //initialRequest 'EditorLayout',
                                 plugins: [{
@@ -208,14 +221,6 @@
                     app.render();                                               // Render app
                 });
             </script>
-            <!-- Uservoice -->
-            <ui:include src="/wegas-app/jsf/template/uservoice.xhtml" />
         </ui:define>
-
-        <!-- User voice -->
-        <ui:define name="uservoice_trigger_position">top-right</ui:define>
-        <ui:define name="uservoice_trigger_background_color">white</ui:define>
-        <ui:define name="uservoice_trigger_color">#03283A</ui:define>
-
     </ui:composition>
 </html>

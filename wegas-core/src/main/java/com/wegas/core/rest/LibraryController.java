@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -16,7 +16,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 
 /**
@@ -44,7 +43,9 @@ public class LibraryController {
      *
      * @param gameModelId
      * @param library
+     *
      * @return all gameModel given library entries
+     *
      * @throws AuthorizationException current user doesn't have access to the
      *                                gameModel
      */
@@ -52,8 +53,6 @@ public class LibraryController {
     @Path("{library:.*}")
     public Map get(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library) {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
         return libraryFacade.findLibrary(gameModelId, library);
     }
@@ -63,17 +62,17 @@ public class LibraryController {
      * @param gameModelId
      * @param library
      * @param key
+     *
      * @return up to date library entry content
+     *
      * @throws AuthorizationException current user doesn't have access to the
      *                                gameModel
      */
     @GET
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
-    public String edit(@PathParam("gameModelId") Long gameModelId,
+    public String read(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
         return libraryFacade.findLibrary(gameModelId, library).get(key).getContent();
     }
@@ -84,19 +83,42 @@ public class LibraryController {
      * @param library
      * @param script
      * @param key
+     *
      * @return game model with the new library entry
+     *
      * @throws AuthorizationException current user doesn't have access to the
      *                                gameModel
      */
-    @POST
+    @PUT
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
     public GameModel edit(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        libraryFacade.update(gameModelId, library, key, script);
 
-        libraryFacade.findLibrary(gameModelId, library).put(key, script);
+        return gameModelFacade.find(gameModelId);
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param library
+     * @param script
+     * @param key
+     *
+     * @return game model with the new library entry
+     *
+     * @throws AuthorizationException current user doesn't have access to the
+     *                                gameModel
+     */
+    @POST
+    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    public GameModel create(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("library") String library,
+            @PathParam("key") String key, GameModelContent script) {
+
+        libraryFacade.create(gameModelId, library, key, script);
         // return Response.ok().build();
         return gameModelFacade.find(gameModelId);
     }
@@ -106,7 +128,9 @@ public class LibraryController {
      * @param gameModelId
      * @param library
      * @param key
+     *
      * @return gameModel with up to date library
+     *
      * @throws AuthorizationException current user doesn't have access to the
      *                                gameModel
      */
@@ -116,9 +140,7 @@ public class LibraryController {
             @PathParam("library") String library,
             @PathParam("key") String key) {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-
-        libraryFacade.findLibrary(gameModelId, library).remove(key);
+        libraryFacade.delete(gameModelId, library, key);
         // return Response.ok().build();
         return gameModelFacade.find(gameModelId);
     }

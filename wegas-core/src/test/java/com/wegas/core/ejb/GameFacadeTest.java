@@ -2,25 +2,19 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.rest.GameController;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.persistence.User;
+import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
-import java.util.List;
-import javax.naming.NamingException;
+import javax.ejb.EJB;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,48 +23,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class GameFacadeTest extends AbstractEJBTest {
+public class GameFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(GameFacadeTest.class);
-    private static GameFacade gameFacade;
-    private static GameController gameController;
 
-    @BeforeClass
-    public static void init() throws NamingException {
-        gameFacade = lookupBy(GameFacade.class);
-        gameController = lookupBy(GameController.class);
-    }
-
-    /**
-     * Test registeredGames
-     */
-    @Test
-    public void testFindRegisteredGames() throws Exception {
-        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
-        final PlayerFacade playerFacade = lookupBy(PlayerFacade.class);
-        final UserFacade userFacade = lookupBy(UserFacade.class);
-
-        final Game g = new Game("game");
-        g.setGameModel(gameModel);
-        gameFacade.create(g);
-        final Team t = new Team("team");
-        t.setGame(g);
-        teamFacade.create(t);
-        final User u = new User();
-        final JpaAccount abstractAccount = new JpaAccount();
-        abstractAccount.setEmail("a@a.local");
-        u.addAccount(abstractAccount);
-        userFacade.create(u);
-        final Player p = new Player("player");
-        p.setUser(u);
-        p.setTeam(t);
-        playerFacade.create(p);
-
-        final List<Game> registeredGames = gameFacade.findRegisteredGames(u.getId());
-        assertEquals("game", registeredGames.get(0).getName());
-
-        gameFacade.remove(g.getId());
-    }
+    @EJB
+    private GameController gameController;
 
     @Test
     public void testNames() throws Exception {
@@ -80,7 +38,7 @@ public class GameFacadeTest extends AbstractEJBTest {
 
         for (i = 0; i < names.length; i++) {
             final Game g = new Game(names[i]);
-            g.setGameModel(gameModel);
+            g.setGameModel(scenario);
             String result;
 
             try {
@@ -103,7 +61,7 @@ public class GameFacadeTest extends AbstractEJBTest {
 
         for (i = 0; i < names.length; i++) {
             final Game g = new Game(names[i]);
-            g.setGameModel(gameModel);
+            g.setGameModel(scenario);
             gameFacade.create(g);
 
             assertTrue("Token " + g.getToken() + " not match " + expected[i], g.getToken().matches(expected[i] + "-.."));
@@ -113,17 +71,18 @@ public class GameFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testGameCreation() throws IOException {
-        VariableDescriptorFacade vdf = VariableDescriptorFacade.lookup();
+        //Update the gameModel
+        login(scenarist);
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
         newGame.setGameModel(gameModel);
-        //newGame.setGameModelId(gameModel.getId());
 
         BooleanDescriptor desc = new BooleanDescriptor("Bln");
         desc.setDefaultInstance(new BooleanInstance(true));
 
-        vdf.create(gameModel.getId(), desc);
+        variableDescriptorFacade.create(gameModel.getId(), desc);
 
+        login(trainer);
         gameFacade.publishAndCreate(gameModel.getId(), newGame);
 
         newGame = gameFacade.find(newGame.getId());
@@ -137,8 +96,9 @@ public class GameFacadeTest extends AbstractEJBTest {
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
         newGame.setGameModel(gameModel);
-        //newGame.setGameModelId(gameModel.getId());
+        //newGame.setGameModelId(scenario.getId());
 
+        login(trainer);
         gameController.create(gameModel.getId(), newGame);
         newGame = gameFacade.find(newGame.getId());
 

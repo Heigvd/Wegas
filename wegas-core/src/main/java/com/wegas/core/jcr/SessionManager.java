@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr;
@@ -22,7 +22,7 @@ public class SessionManager {
     final static private SimpleCredentials admin = new SimpleCredentials(Helper.getWegasProperty("jcr.admin.username"), Helper.getWegasProperty("jcr.admin.password").toCharArray());
 
     /**
-     * @return
+     * @return JCR session, logged as admin
      * @throws RepositoryException
      */
     public static Session getSession() throws RepositoryException {

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
@@ -12,15 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-//import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     /**
@@ -51,9 +48,8 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return true if the directory stands at /
      */
-    //@XmlTransient
     @JsonIgnore
     public boolean isRootDirectory() {
         return this.fileSystemAbsolutePath.equals("/");
@@ -61,7 +57,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     /**
      *
-     * @return
+     * @return ?????  sum of bytes of children ???
      */
     @JsonProperty("bytes")
     @Override
@@ -82,7 +78,6 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
      *
      * @return @throws RepositoryException
      */
-    //@XmlTransient
     @JsonIgnore
     public List<AbstractContentDescriptor> list() throws RepositoryException {
         NodeIterator nodeIterator = this.connector.listChildren(this.fileSystemAbsolutePath);

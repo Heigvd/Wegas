@@ -27,13 +27,26 @@ angular.module('private.trainer.users.directives', [
                     ctrl.trainers = trainers;
                 });
             },
+            callbackCleanup = function() {
+                if (ctrl.session.properties.freeForAll) {
+                    formatPlayer();
+                }
+                updatePermission();
+            },
             callbackSession = function(response) {
                 if (!response.isErroneous()) {
                     ctrl.session = response.data;
-                    if (ctrl.session.properties.freeForAll) {
-                        formatPlayer();
+                    // If necessary, fetch the full session including the teams:
+                    if (ctrl.session && !ctrl.session.teams) {
+                        SessionsModel.refreshSession(ctrl.kindsOfSession, ctrl.session).then(function(refreshed) {
+                            if (refreshed.data) {
+                                ctrl.session = refreshed.data;
+                            }
+                            callbackCleanup();
+                        });
+                    } else {
+                        callbackCleanup();
                     }
-                    updatePermission();
                 } else {
                     response.flash();
                 }

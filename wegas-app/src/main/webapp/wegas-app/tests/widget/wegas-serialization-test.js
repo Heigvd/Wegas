@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -143,11 +143,11 @@ YUI.add('wegas-serialization-test', function(Y) {
          */
         'should instantiate and serialize crimesim widgets cfg': function() {
             this.log("Crimesim pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-crimesim/db/wegas-crimesim-pages.json");
+            this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-private/wegas-crimesim/db/wegas-crimesim-pages.json");
         },
         'should instantiate and serialize cep game widgets cfg': function() {
             this.log("CEP pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-cep/db/wegas-cep-pages.json");
+            this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-private/wegas-cep/db/wegas-cep-pages.json");
         },
         'should instantiate and serialize proggame widgets cfg': function() {
 //            this.log("Proggame pages");

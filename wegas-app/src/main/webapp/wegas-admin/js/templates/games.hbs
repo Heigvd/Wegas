@@ -37,7 +37,7 @@
             {{else}}
                 <td {{action "editComment" on="click"}}>{{textarea class="form-control" value=game.comments focus-out="acceptComment" rows="1" disabled="true"}}</td>
             {{/if}}
-            <td class="centeredText"><a target="_blank" {{bind-attr href="game.gameLink"}}>View</a></td>
+            <td class="centeredText">{{#unless game.isSuppressed}}<a target="_blank" {{bind-attr href="game.gameLink"}}>View</a>{{/unless}}</td>
             <td class="centeredText">{{#if game.isDelete}}
                 <a class="mouse-pointer" target="_blank" {{action "forceDeletion" on="click"}}>Delete</a>
             {{/if}}</td>

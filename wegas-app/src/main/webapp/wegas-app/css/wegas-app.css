@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -14,12 +14,20 @@
 
 /* Override default browser styles and counter YUI's cssreset. */
 
-html, body {
-    height: 100%;
-}
-
+html,
 body {
+    height: 100%;
     overflow: hidden;
+    font-family: Lato, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+}
+input, textarea, select, button{
+    font-family: inherit;
+}
+.mce-ico.fa {
+    /* @hack teach tinymce, we may have tinymce on player page, thus here it is */
+    font-family: FontAwesome !important;
 }
 
 select {
@@ -241,6 +249,15 @@ font {
     font-size: 1.3em;
 }
 
+/** Hide all advanced feature while in std mode */
+.wegas-forbidden-feature,
+.wegas-stdmode .wegas-advanced-feature {
+    display: none !important;
+}
+
+.wegas-advanced-feature {
+    font-style: italic;
+}
 
 .wegas-advancedmode .wegas-loading.pusher-update .wegas-loading-overlay {
     background: rgba(0, 0, 0, 0.1);
@@ -387,8 +404,27 @@ font {
 }
 
 
-/* List styles */
+.wegas-flexlist {
+    overflow:auto;
+}
 
+.wegas-flexlist-horizontal{
+    display: flex;
+}
+
+.wegas-flexlist-vertical{
+    display: flex;
+    flex-direction: column;
+}
+
+.wegas-flexlist-vertical > div,
+.wegas-flexlist-horizontal > div {
+    display: block;
+    flex-shrink: 0;
+    vertical-align: top;
+}
+
+/* List styles */
 .wegas-list-horizontal > div {
     display: block;
     float: left;
@@ -588,7 +624,6 @@ font {
     margin-left: 2px;
     background-color: #0981A9;
     box-shadow: 1px 0px 1px white;
-    font-family: Arial;
     font-size: 0.9em;
     padding: 3px 7px 3px 6px;
     border-radius: 16px;
@@ -691,4 +726,102 @@ font {
 
 .locked {
     /*background-color: hotpink !important;*/
+}
+
+.wegas-notification-area {
+    position: fixed;
+    top: 5px;
+    right: 20px;
+    z-index: 999;
+}
+
+.wegas-editmode .wegas-notification-area,
+.wegas-hostmode .wegas-notification-area {
+    left: calc(50% - 125px);
+    right: auto;
+}
+
+.wegas-editmode .wegas-notification-area{
+    top: 3px;
+}
+.wegas-hostmode .wegas-notification-area {
+    top: 10px;
+}
+
+.wegas-notification-area .wegas-notification {
+    border: 1px solid;
+    border-radius: 3px;
+    padding: 16px;
+    background-color: #616161;
+    color: white;
+    animation: fadein 1s 1;
+    z-index: 999;
+    width: 250px;
+    text-align: center;
+}
+
+
+.wegas-notification-area .wegas-notification .wegas-notification-message {
+    width: calc(100% - 40px);
+    display: inline-block;
+}
+
+/* I18N */
+
+.wegas-translation .tools{
+    display:none;
+}
+
+
+/*
+ * Histories
+ */
+
+.whquestion-history .whquestion-label,
+.question-history .question-label {
+    border-bottom:solid 1px grey;
+    width:100%;
+    height:32px;
+    padding: 8px 0px;
+    margin: 12px 0px 12px 0px;
+    box-sizing:border-box;
+    font-weight:600;
+}
+
+.whquestion-history .whview-history-answer-title{
+    margin-top: 16px;
+    font-weight:600;
+}
+
+.question-history .choice-label,
+.question-history .replies-label {
+    margin-top: 32px;
+    font-weight:600;
+}
+
+.question-history .replies .replyDiv {
+    border-top: solid 1px #bbb;
+    color: #bbb;
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.question-history .cbx-replies .replyDiv .choice-label input {
+    transform: scale(1.4);
+    margin-right: 10px;
+    vertical-align: top;
+}
+
+.question-history .cbx-replies .replyDiv .choice-description {
+    padding-top: 5px;
+}
+
+.question-history .cbx-replies .replyDiv .choice-description,
+.question-history .cbx-replies .replyDiv .reply-answer {
+    padding-left: 24px;
+}
+
+.question-history .replies .replyDiv:first-child {
+    border-top: none;
+    color: black;
 }

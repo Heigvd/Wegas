@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -26,7 +26,7 @@ public interface Propertable {
      * Internal representation. please do not use as this may change at any time.
      * Please set this method protected
      *
-     * @return
+     * @return internal properties representation, use with caution
      */
     public List<VariableProperty> getInternalProperties();
 

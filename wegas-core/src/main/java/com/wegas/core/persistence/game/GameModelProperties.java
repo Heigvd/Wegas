@@ -2,25 +2,23 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.XmlType;
-import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Embeddable
-//@XmlRootElement
-//@XmlType(name = "")
+@JsonIgnoreProperties(value = {"imageUri"})
 public class GameModelProperties implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -28,6 +26,10 @@ public class GameModelProperties implements Serializable {
      *
      */
     private Boolean freeForAll = false;
+    /**
+     *
+     */
+    private Boolean guestAllowed = false;
     /**
      *
      */
@@ -63,10 +65,6 @@ public class GameModelProperties implements Serializable {
     /**
      *
      */
-    private String imageUri = "";
-    /**
-     *
-     */
     private String iconUri = "";
 
     /**
@@ -81,9 +79,9 @@ public class GameModelProperties implements Serializable {
      */
     public void merge(GameModelProperties other) {
         this.setFreeForAll(other.getFreeForAll());
+        this.setGuestAllowed(other.getGuestAllowed());
         this.setPagesUri(other.getPagesUri());
         this.setIconUri(other.getIconUri());
-        this.setImageUri(other.getImageUri());
         this.setWebsocket(other.getWebsocket());
         this.setLogID(other.getLogID());
         this.setCssUri(other.getCssUri());
@@ -92,7 +90,28 @@ public class GameModelProperties implements Serializable {
     }
 
     /**
-     * @return the freeForAll
+     * Is a guest allowed to create/join a team on this gameModel ?
+     *
+     * @return whether or not a guest is allowed to create or join a team within this gameModel
+     */
+    public Boolean getGuestAllowed() {
+        return guestAllowed;
+    }
+
+    /*
+     * Allow or forbid guest to create or join team
+     *
+     * @param guestAllowed is a guest allowed to create or join a team ?
+     */
+    public void setGuestAllowed(Boolean guestAllowed) {
+        this.guestAllowed = guestAllowed;
+    }
+
+    /**
+     * Is the game designed to be played individually (freeForAll = true) or played as a team (freeForAll =false)
+     * "FreeForAll" iz bad wording...
+     *
+     * @return the freeForAll true if the game is designed to be played alone
      */
     public Boolean getFreeForAll() {
         return freeForAll;
@@ -177,20 +196,6 @@ public class GameModelProperties implements Serializable {
      */
     public void setScriptUri(String scriptUri) {
         this.scriptUri = scriptUri;
-    }
-
-    /**
-     * @return the imageUri
-     */
-    public String getImageUri() {
-        return imageUri;
-    }
-
-    /**
-     * @param imageUri the imageUri to set
-     */
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
     }
 
     /**

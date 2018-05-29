@@ -1,4 +1,3 @@
-
 /*
  |--------------------------------------------------------------------------
  | Browser-sync config file
@@ -14,7 +13,7 @@
  */
 /**
  * Works only for YUI based (non-min, non-combo) files as no build is made.
- * Sources are directly served. 
+ * Sources are directly served.
  */
 module.exports = {
     "ui": {
@@ -24,17 +23,24 @@ module.exports = {
         }
     },
     "files": ["src/main/webapp/**/*.js", "src/main/webapp/**/*.css"],
-    "watchOptions": {},
+    "watchOptions": {
+        ignored: ["src/**/src/**", "**/node_modules/**"]
+    },
     "server": false,
     "proxy": "http://localhost:8080/Wegas/",
     "port": 3000,
     "middleware": [
+        // remove /Wegas prefix
         function (req, res, next) {
-            req.url = req.url.replace(/Wegas\/(?!lib\/|.*min\.js$)(?=.*\.js$)/, "");
-            req.url = req.url.replace(/Wegas\/(?!lib\/|.*min\.css$)(?=.*\.css(\?.*)?$)/, "");
+            req.url = req.url.replace(/^\/Wegas/, "");
             next();
         },
-        require("serve-static")("src/main/webapp")
+        require("serve-static")("src/main/webapp"),
+        // restore /Wegas prefix
+        function (req, res, next) {
+            req.url = "/Wegas" + req.url;
+            next();
+        }
     ],
     "serveStatic": [],
     "ghostMode": {

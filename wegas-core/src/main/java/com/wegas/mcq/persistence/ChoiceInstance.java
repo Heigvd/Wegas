@@ -2,33 +2,47 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
+import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.BatchFetchType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "ChoiceInstance")
-@Table(name = "MCQChoiceInstance",
-        indexes = {
-            @Index(columnList = "result_id")
-        }
-)
+@Table(indexes = {
+    @Index(columnList = "currentresult_id")
+})
+@NamedQueries({
+    @NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
+})
 public class ChoiceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger logger = LoggerFactory.getLogger(ChoiceInstance.class);
+
     /**
      *
      */
@@ -39,11 +53,26 @@ public class ChoiceInstance extends VariableInstance {
     private Boolean unread = true;
     /**
      *
+     * @ManyToOne(fetch = FetchType.LAZY)
+     * @JsonIgnore
+     * private CurrentResult currentResult;
+     */
+
+    /**
+     *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id")
     @JsonIgnore
     private Result currentResult;
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "choiceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @BatchFetch(BatchFetchType.JOIN)
+    @JsonManagedReference
+    //@JoinFetch
+    private List<Reply> replies = new ArrayList<>();
 
     /**
      *
@@ -65,6 +94,7 @@ public class ChoiceInstance extends VariableInstance {
      * currentResult if defined, the first otherwise
      *
      * @return the currentResult or the first one
+     *
      * @throws WegasErrorMessage if not result are defined
      */
     @JsonIgnore
@@ -85,16 +115,13 @@ public class ChoiceInstance extends VariableInstance {
      * @return the currentResultName
      */
     public String getCurrentResultName() {
-        if (this.getCurrentResult() != null) {
+        if (!Helper.isNullOrEmpty(currentResultName)) {
+            return currentResultName;
+        } else if (this.getCurrentResult() != null) {
             return getCurrentResult().getName();
         } else {
             return null;
         }
-    }
-
-    @JsonIgnore
-    public String getDeserializedCurrentResultName() {
-        return currentResultName;
     }
 
     /**
@@ -105,8 +132,8 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     /**
-     * @deprecated 
-     * @return 
+     * @deprecated
+     * @return the currentResult index
      */
     @JsonIgnore
     public Integer getCurrentResultIndex() {
@@ -114,7 +141,7 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      */
     @JsonProperty
     public void setCurrentResultIndex(Integer index) {
@@ -133,16 +160,38 @@ public class ChoiceInstance extends VariableInstance {
             ChoiceInstance other = (ChoiceInstance) a;
             this.setActive(other.getActive());
             this.setUnread(other.getUnread());
-            this.setCurrentResultName(other.getDeserializedCurrentResultName());
+
+            this.setReplies(ListUtils.mergeLists(replies, other.getReplies()));
+
+            // Normal
+            this.setCurrentResultName(other.getCurrentResultName());
+
+            // Backward compat
             this.setCurrentResultIndex(other.getCurrentResultIndex());
-            if (other.getCurrentResult() != null) {
-                Result previousResult = this.getCurrentResult();
-                Result newResult = other.getCurrentResult();
-                if (previousResult != null) {
-                    previousResult.removeChoiceInstance(this);
+
+            if (this.currentResultIndex == null && this.currentResultName == null) {
+                this.setCurrentResult(null);
+            }
+
+            if (!Helper.isNullOrEmpty(this.currentResultName)) {
+                ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
+                if (choiceDesc != null) {
+                    // if choiceDesc is null, the following will eventually be
+                    // done by with the help of an InstanceReviveEvent
+                    /*Result previousResult = this.getCurrentResult();
+                    if (previousResult != null) {
+                        previousResult.removeChoiceInstance(this);
+                    }
+                     */
+                    try {
+                        Result newResult = choiceDesc.getResultByName(this.currentResultName);
+                        this.setCurrentResult(newResult);
+                        //newResult.addChoiceInstance(this);
+                    } catch (WegasNoResultException ex) {
+                        this.setCurrentResult(null);
+                    }
                 }
-                this.setCurrentResult(newResult);
-                newResult.addChoiceInstance(this);
+
             }
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
@@ -177,7 +226,47 @@ public class ChoiceInstance extends VariableInstance {
         this.unread = unread;
     }
 
-    // *** Sugar *** //
+    /**
+     * @return the replies
+     */
+    @JsonManagedReference
+    public List<Reply> getReplies() {
+        return replies;
+    }
+
+    /**
+     * @param replies the replies to set
+     */
+    @JsonManagedReference
+    public void setReplies(List<Reply> replies) {
+        this.replies = replies;
+        for (Reply r : this.replies) {
+            r.setChoiceInstance(this);
+        }
+    }
+
+    /**
+     * @param reply
+     */
+    public void addReply(Reply reply) {
+        reply.setChoiceInstance(this);
+        this.setReplies(ListUtils.cloneAdd(this.getReplies(), reply));
+    }
+
+    void removeReply(Reply reply) {
+        this.replies.remove(reply);
+    }
+
+    /**
+     * @param replies
+     */
+    public void addReplies(List<Reply> replies) {
+        for (Reply r : replies) {
+            this.addReply(r);
+        }
+    }
+
+    // ~~~ Sugar ~~~
     /**
      *
      */
@@ -195,7 +284,6 @@ public class ChoiceInstance extends VariableInstance {
     /**
      * @return the currentResult
      */
-    //@XmlTransient
     @JsonIgnore
     public Result getCurrentResult() {
         return this.currentResult;
@@ -206,5 +294,33 @@ public class ChoiceInstance extends VariableInstance {
      */
     public void setCurrentResult(Result currentResult) {
         this.currentResult = currentResult;
+        this.setCurrentResultName(null);
+    }
+
+    /*
+    @Override
+    public void updateCacheOnDelete(Beanjection beans) {
+        Result cr = this.getCurrentResult();
+        if (cr != null) {
+            ChoiceDescriptor cd = cr.getChoiceDescriptor();
+            if (cd != null) {
+                VariableDescriptorFacade vdf = beans.getVariableDescriptorFacade();
+                cd = (ChoiceDescriptor) vdf.find(cd.getId());
+                if (cd != null) {
+                    try {
+                        cr = cd.getResultByName(cr.getName());
+                        cr.removeChoiceInstance(this);
+                    } catch (WegasNoResultException ex) {
+                    }
+
+                }
+            }
+        }
+
+        super.updateCacheOnDelete(beans);
+    }*/
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getQuestionDescriptorFacade().reviveChoiceInstance(this);
     }
 }

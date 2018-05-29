@@ -1,4 +1,4 @@
-<label class="advanced">
+<div class="advanced">
 
     <label class="infos__label">{{'PRIVATE-MODALE-TABS-ACCESS-LINK-TITLE' | translate}}</label>
     <label class="indented">{{'PRIVATE-MODALE-TABS-INFOS-ACCESS-LINK' | translate}} <span class="link link--selector" title="{{'PRIVATE-MODALE-TABS-INFOS-ACCESS-LINK-SELECT-TITLE' | translate}}"><i class="fa fa-text-width"></i></span><span class="tool tool--selectable indented" text-selectable>{{activeInfos.baseUrl}}#/play/{{activeInfos.token}}</a></span></label>
@@ -25,6 +25,10 @@
 
         <label class="infos__label">{{'PRIVATE-SCENARIOS-LOG-ID-LABEL-INPUT' | translate}}</label>
         <input ng-model="activeInfos.logID" class="input input--small" type="text" />
+
+        <input ng-model="activeInfos.guestAllowed" type="checkbox" id="guestAllowed" />
+        <label class="infos__label" for="guestAllowed" style="display:inline-block; padding-left:4px">{{'PRIVATE-SCENARIOS-GUEST-ALLOWED-LABEL-CHECKBOX'| translate}}</label>
+        <div></div>
 
         <label class="infos__label">{{'PRIVATE-SCENARIOS-SERVER-SCRIPT-LABEL-INPUT' | translate}}</label>
         <input ng-model="activeInfos.scriptUri" class="input input--small" type="text" />

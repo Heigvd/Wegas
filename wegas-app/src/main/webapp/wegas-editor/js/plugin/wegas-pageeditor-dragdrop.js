@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -57,15 +57,27 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 node: this.get("host").get(CONTENTBOX)
             });
             this._ddNode.before("mousedown", function(e) {
-                this.detachHandlers();
-                this._dd.set("dragNode", this.overlayWidget.get(BOUNDINGBOX));
-                this._dd.con.set("constrain", this.get("host").get("widget").get(CONTENTBOX));
-                this._ddNode.show();
+                var unsaved = Y.Plugin.EditEntityAction.isUnsaved();
+                Y.Plugin.EditEntityAction.allowDiscardingEdits(
+                    Y.bind(function () {
+                        this.detachHandlers();
+                        this._dd.set("dragNode", this.overlayWidget.get(BOUNDINGBOX));
+                        this._dd.con.set("constrain", this.get("host").get("widget").get(CONTENTBOX));
+                        this._ddNode.show();
+                        if (unsaved) {
+                            // Reload the form to discard any edits:
+                            this._syncWidgetEdition();
+                        }
+                    }, this));
             }, this);
             this._ddNode.after("mouseup", function(e) {
                 this.bind();
             }, this);
             this._dd.before("drag:start", function(e) {
+                if (Y.Plugin.EditEntityAction.isUnsaved()) {
+                    e.halt(true);
+                    return false;
+                }
                 var node = this._dd.get("dragNode");
                 node.setXY(node.getXY()); //Init left, top in case they are missing
                 this._dd._initPos = {
@@ -86,6 +98,10 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 this.fixedOverlay(this.shownOverlay._widget);
             }, this);
             this._dd.on("drag:end", function(e) {
+                if (Y.Plugin.EditEntityAction.isUnsaved()) {
+                    e.halt(true);
+                    return false;
+                }
                 var bb = this._dd.get("dragNode"),
                     widget = Y.Widget.getByNode(bb),
                     oldStyles = widget.CSSPosition.get("styles"),
@@ -105,9 +121,9 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                                     newStyles[style] = bb.getComputedStyle(style);
                             }
                         } else {
-                            /* 
-                             * if no properties are defined horizontally or vertically 
-                             * specify respectively "left" or "top 
+                            /*
+                             * if no properties are defined horizontally or vertically
+                             * specify respectively "left" or "top
                              */
                             switch (style) {
                                 case "left":
@@ -128,7 +144,7 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                     }
                 }
                 widget.CSSPosition.set("styles", newStyles);
-                /* 
+                /*
                  * Remove Size and set them through CSSSize if it exists
                  */
                 bb.setStyles({

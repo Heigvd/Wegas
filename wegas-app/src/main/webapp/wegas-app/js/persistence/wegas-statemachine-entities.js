@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -17,12 +17,20 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         SELF = "self",
         BOOLEAN = "boolean",
         NUMBER = "number",
+        NULL = "null",
+        ARRAY = "array",
+        OBJECT = "object",
         BUTTON = "Button",
         SCRIPT = "script",
         TEXT = "text",
         STATES = "states",
         ID = "id",
         HTML = "html",
+        SELFARG = {
+            type: 'identifier',
+            value: SELF,
+            view: {type: HIDDEN}
+        },
         Wegas = Y.Wegas,
         persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
@@ -30,19 +38,19 @@ YUI.add("wegas-statemachine-entities", function(Y) {
 
     VERSION_ATTR_DEF = {
         type: NUMBER,
-        optional: true,
-        _inputex: {
-            _type: "uneditable",
-            wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-advanced-feature"
+        view: {
+            label: 'Version',
+            type: "uneditable",
+            className: "wegas-advanced-feature"
                 //_type: HIDDEN
         }
     };
 
     IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
+        type: NUMBER,
+        view: {
+            label: 'Id',
+            type: HIDDEN
         }
     };
 
@@ -58,8 +66,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             currentStateId: {
                 value: 1,
                 type: NUMBER,
-                _inputex: {
-                    label: "Current state id"
+                view: {
+                    label: "Current state id",
+                    className: "wegas-advanced-feature"
                 }
             },
             currentState: {
@@ -69,20 +78,22 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             enabled: {
                 type: BOOLEAN,
                 value: true,
-                _inputex: {
+                view: {
                     label: 'Active'
                 }
             },
             transitionHistory: {
                 value: [],
-                type: "uneditable",
-                _inputex: {
-                    label: "Transition History"
-                        //,
-                        //elementType:{
-                        //    type:NUMBER,
-                        //    readonly:true
-                        //}
+                type: ARRAY,
+                view: {
+                    label: "Transition History",
+                    disabled: true,
+                },
+                items: {
+                    type: "number",
+                    view: {
+                        disabled: true
+                    }
                 }
             }
         },
@@ -164,26 +175,38 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 properties: {
                     '@class': {
                         type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: 'FSMInstance'
+                        value: 'FSMInstance',
+                        view: {
+                            type: HIDDEN
                         }
                     },
                     id: IDATTRDEF,
+                    descriptorId: {
+                        view: {
+                            type: HIDDEN
+                        }
+                    },
                     version: VERSION_ATTR_DEF,
                     currentStateId: {
                         type: NUMBER,
-                        _inputex: {
-                            label: "Default state id",
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                            value: 1
+                        value: 1,
+                        view: {
+                            label: "Current state id",
+                            className: "wegas-advanced-feature"
                         }
                     },
                     enabled: {
                         type: BOOLEAN,
                         value: true,
-                        _inputex: {
+                        view: {
                             label: 'Active by default'
+                        }
+                    },
+                    transitionHistory: {
+                        type: ARRAY,
+                        value: [],
+                        view: {
+                            type: HIDDEN
                         }
                     }
                 }
@@ -195,8 +218,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     };
                 },
                 //writeOnce: "initOnly",
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             }
         },
@@ -208,7 +231,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
@@ -243,29 +266,28 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                                 }]
                         }
                     }]
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }
         ],
         METHODS: {
             enable: {
                 label: "activate",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                arguments: [SELFARG]
             },
             disable: {
-                label: "desactivate",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                label: "deactivate",
+                arguments: [SELFARG]
             },
             isEnabled: {
                 label: "is active",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
+                arguments: [SELFARG],
                 returns: BOOLEAN,
                 localEval: function(self) {
                     return this.getInstance(self).get("enabled");
@@ -273,10 +295,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             isDisabled: {
                 label: "is inactive",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
+                arguments: [SELFARG],
                 returns: BOOLEAN,
                 localEval: function(self) {
                     return !this.getInstance(self).get("enabled");
@@ -289,7 +308,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
      */
     persistence.State = Y.Base.create("State", persistence.Entity, [], {
         // *** Lifecycle methods *** //
-        initializer: function() {}
+        initializer: function() {
+        }
 
         // *** Private methods *** //
     }, {
@@ -297,25 +317,32 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "State"
             },
-            stateMachineId: VERSION_ATTR_DEF,
+            stateMachineId: IDATTRDEF,
             version: VERSION_ATTR_DEF,
             label: {
-                type: STRING,
+                type: [NULL, STRING],
                 "transient": false,
-                optional: true,
-                _inputex: {
-                    label: "Name"
+                view: {
+                    label: "Label"
                 }
             },
             onEnterEvent: {
-                optional: true,
-                _inputex: {
-                    _type: "script",
-                    label: "On enter impact"
+                type: [NULL, OBJECT],
+                properties: {
+                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
+                    content: {
+                        type: STRING
+                    }
+                },
+                view: {
+                    label: "On enter impact",
+                    type: SCRIPT
                 }
             },
             transitions: {
-                value: []
+                type: ARRAY,
+                value: [],
+                view: {type: HIDDEN}
             },
             editorPosition: {
                 valueFn: function() {
@@ -323,6 +350,17 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         x: 30,
                         y: 30
                     });
+                },
+                view: {
+                    label: 'Box position',
+                    className: 'wegas-advanced-feature'
+                },
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "Coordinate",
+                        view: {type: HIDDEN}
+                    }
                 }
             }
         }
@@ -334,38 +372,47 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         ATTRS: {
             "@class": {
                 value: "Transition",
-                _inputex: {
-                    _type: HIDDEN
+            },
+            triggerCondition: {
+                type: [NULL, OBJECT],
+                properties: {
+                    "@class": {type: STRING, value: "Script"},
+                    content: {
+                        type: STRING
+                    }
+                },
+                view: {
+                    type: 'scriptcondition',
+                    label: 'Conditions'
                 }
             },
             version: VERSION_ATTR_DEF,
-            triggerCondition: {
-                optional: true,
-                _inputex: {
-                    _type: SCRIPT,
-                    label: 'Condition',
-                    expects: "condition"
-                }
-            },
-            stateId: VERSION_ATTR_DEF,
-            stateMachineId: VERSION_ATTR_DEF,
+            stateId: IDATTRDEF,
+            stateMachineId: IDATTRDEF,
             preStateImpact: {
-                optional: true,
-                _inputex: {
-                    _type: SCRIPT,
-                    label: 'Impact'
+                type: [NULL, OBJECT],
+                properties: {
+                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
+                    content: {
+                        type: STRING
+                    }
+                },
+                view: {
+                    label: 'Impacts',
+                    type: SCRIPT
                 }
             },
             nextStateId: {
-                _inputex: {
-                    _type: HIDDEN
+                type: NUMBER,
+                view: {
+                    type: HIDDEN
                 }
             },
             index: {
                 type: NUMBER,
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                    value: 0
+                value: 0,
+                view: {
+                    className: 'wegas-advanced-feature'
                 }
             }
         }
@@ -393,61 +440,88 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 properties: {
                     '@class': {
                         type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: 'TriggerInstance'
+                        value: 'TriggerInstance',
+                        view: {
+                            type: HIDDEN
                         }
                     },
-                    id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
                     currentStateId: {
                         type: NUMBER,
-                        optional: true,
-                        _inputex: {
+                        view: {
                             label: 'Initial state id',
-                            _type: HIDDEN
+                            type: HIDDEN
                         }
                     },
+                    descriptorId: {
+                        type: NUMBER,
+                        view: {type: HIDDEN}
+                    },
+                    id: IDATTRDEF,
                     enabled: {
                         type: BOOLEAN,
-                        _inputex: {
+                        value: true,
+                        view: {
                             label: 'Active by default'
                         }
+                    },
+                    transitionHistory: {
+                        value: [],
+                        type: ARRAY,
+                        view: {type: HIDDEN}
                     }
                 }
             },
             disableSelf: {
                 type: BOOLEAN,
                 value: true,
-                _inputex: {
+                index: 1,
+                view: {
                     label: 'Disable itself',
-                    description: 'Disable once triggered.<br> May be rearmed afterwards',
-                    index: 1
+                    description: 'Disable once triggered. May be rearmed afterwards'
                 }
             },
             oneShot: {
                 type: BOOLEAN,
                 value: false,
-                _inputex: {
+                index: 2,
+                view: {
                     label: 'Only once',
                     description: 'Allowed to trigger only once',
-                    index: 2
                 }
             },
             triggerEvent: {
-                optional: true,
-                _inputex: {
-                    _type: SCRIPT,
-                    label: 'Condition',
-                    expects: "condition",
-                    index: 3
+                type: [NULL, OBJECT],
+                index: 3,
+                properties: {
+                    "@class": {type: STRING, value: "Script"},
+                    content: {
+                        type: STRING
+                    }
+                },
+                view: {
+                    type: 'scriptcondition',
+                    label: 'Conditions'
                 }
             },
             postTriggerEvent: {
-                _inputex: {
-                    _type: SCRIPT,
-                    label: 'Impact',
-                    index: 4
+                type: ["null", OBJECT],
+                properties: {
+                    "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
+                    content: {
+                        errored: function(val) {
+                            if (!val) {
+                                return "Required";
+                            }
+                        },
+                        type: STRING
+                    }
+                },
+                required: true,
+                index: 4,
+                view: {
+                    type: SCRIPT,
+                    label: 'Impacts'
                 }
             },
             states: {
@@ -458,12 +532,20 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
             }, {
                 type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }]
     });
     /*
@@ -475,11 +557,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: "TriggerInstance"
             },
             currentStateId: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    label: "Trigger state",
-                    disabled: true
+                type: NUMBER,
+                view: {
+                    type: HIDDEN
                 }
             }
         }
@@ -532,25 +612,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "DialogueDescriptor"
             },
-            title: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    label: "Label",
-                    description: "Displayed to players",
-                    index: -1
-                }
-            },
             states: {
                 valueFn: function() {
                     return {
                         1: new persistence.DialogueState({})
                     };
-                },
-                /*writeOnce: "initOnly",*/
-                _inputex: {
-                    _type: HIDDEN
                 }
+                /*writeOnce: "initOnly",*/
             }
         },
         EDITORNAME: "Dialog",
@@ -567,12 +635,20 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
             }, {
                 type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }]
     });
 
@@ -585,25 +661,11 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "DialogueTransition"
             },
-            actionText: {
-                type: STRING,
-                format: HTML,
-                value: null,
-                optional: true,
-                validator: function(s) {
-                    return s === null || Y.Lang.isString(s);
-                },
-                _inputex: {
-                    index: -1,
-                    label: "Text"
-                }
-            },
-            index: {
-                type: NUMBER,
-                _inputex: {
-                    value: 0
-                }
-            }
+            actionText: Y.Wegas.Helper.getTranslationAttr({
+                label: "Text",
+                index: -1,
+                type: HTML
+            })
         }
     });
 
@@ -665,21 +727,14 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: "DialogueState"
             },
             version: VERSION_ATTR_DEF,
-            text: {
-                type: STRING,
-                format: HTML,
-                value: null,
-                optional: true,
-                validator: function(s) {
-                    return s === null || Y.Lang.isString(s);
-                },
-                _inputex: {
-                    index: -1
-                }
-            },
+            text: Y.Wegas.Helper.getTranslationAttr({
+                label: "Text",
+                index: -1,
+                type: HTML
+            }),
             label: {
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             }
         }

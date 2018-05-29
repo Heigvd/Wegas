@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -318,8 +318,9 @@ YUI.add('wegas-proggame-level', function(Y) {
         doIdleAnimation: function() {
             var texts = this.get("invites");
             if (texts.length === 0) {
-                texts = ["HELP! HELP!!! SOMEBODY HERE? PLEASE HELP ME!",
-                    "PLEASE HELP ME!", "WHY ME? TELL ME WHY?", "WOULD ANYBODY BE KIND ENOUGH AS TO GET ME OUT OF HERE?"];
+                texts = ["Bonjour ? Il y a quelqu'un ? Moi, je suis là !",
+                    "Tape le bon code pour me rejoindre !",
+                    "Y a-t-il quelqu'un pour me tenir compagnie ?"];
             }
 
             if (this.get(STATE) === IDLE) {
@@ -790,9 +791,9 @@ YUI.add('wegas-proggame-level', function(Y) {
         ATTRS: {
             intro: {
                 type: STRING,
-                format: "html",
                 optional: true,
-                _inputex: {
+                view: {
+                    type: "html",
                     label: "Intro text"
                 }
             },
@@ -801,12 +802,36 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             label: {
                 type: STRING,
-                _inputex: {
-                    index: -1
+                index: -1,
+                view: {
+                    label: "Label"
                 }
             },
             map: {
                 type: ARRAY,
+                items: {
+                    type: ARRAY,
+                    view:{ label: true, description: "Path", horizontal: true, highlight: true },
+                    items: {
+                        type: "object",
+                        view: { label: true },
+                        properties: {
+                            x: {
+                                type: NUMBER,
+                                value: 0,
+                                view: {type:HIDDEN}
+                            },
+                            y: {
+                                type: NUMBER,
+                                value: 0,
+                                view: {
+                                    type: "boolean",
+                                    layout: "inlineShort"
+                                }
+                            }
+                        }
+                    }
+                },
                 value: [
                     [{
                         x: 0,
@@ -905,12 +930,131 @@ YUI.add('wegas-proggame-level', function(Y) {
                     }]
                 ],
                 validator: Y.Lang.isArray,
-                _inputex: {
+                view: {
+                    label:"Map matrix",
                     _type: "proggamemap"
                 }
             },
             objects: {
                 type: ARRAY,
+                view:{
+                    label:"Objects",
+                    highlight: true,
+                    choices:[{
+                        label: "Trap",
+                        value: {
+                            components:"Trap",
+                            id: "Trap",
+                            enabled: true
+                        }},{
+
+                        label: "NPC",
+                        value: {
+                            components:"NPC",
+                            id: "NPC",
+                            direction: 4,
+                            collides: false
+                        }},{
+                        label: "Player",
+                        value: {
+                            components:"PC",
+                            id: "Player",
+                            direction: 2,
+                            collides: false
+                        }},{
+                        label: "Panel",
+                        value: {
+                            components:"Panel",
+                            id: "Panel",
+                            value: "Hello, World!",
+                            collides: false
+                        }},{
+                        label: "Door",
+                        value: {
+                            components:"Door",
+                            id: "Door",
+                            open: false
+                        }
+                        // doesn't work
+                        // },{
+                        // label: "Controller",
+                        // value: {
+                        //     components:"Controller",
+                        //     id: "Controller",
+                        //     enabled: false
+                        // }
+                    }]
+                },
+                items: {
+                    type:"object",
+                    properties: {
+                        components: {
+                            type: "string",
+                            required: true,
+                            view: {
+                                label: "Component",
+                                required: true,
+                                type: "uneditable"
+                            }
+                        },
+                        id: {
+                            type: STRING,
+                            required: true,
+                            view: { label: "Id", description: "MUST be unique accross current map" }
+                        },
+                        x: {
+                            type: NUMBER,
+                            required: true,
+                            view: { label:"X" }
+                        },
+                        y: {
+                            type: NUMBER,
+                            required: true,
+                            view: { label:"Y" }
+                        },
+                        // enabled:{
+                        //     type:BOOLEAN,
+                        //     view:{
+                        //         label: "Active by default",
+                        //         description: "only for traps"
+                        //     }
+                        // }
+                    },
+                    patternProperties:{
+                        "^direction$":{
+                            type: NUMBER,
+                            view:{
+                            label: "direction",
+                                type: "select",
+                                choices: [
+                                    {
+                                        value: 2,
+                                        label: "right"
+                                    },
+                                    {
+                                        value: 1,
+                                        label: "down"
+                                    },
+                                    {
+                                        value: 3,
+                                        label: "up"
+                                    },
+                                    {
+                                        value: 4,
+                                        label: "left"
+                                    }]
+                            }
+                        },
+                        "^collides$":{
+                            view:{type:"hidden"}
+                        }
+                    },
+                    additionalProperties:{
+                        view: {
+                            label: true
+                        }
+                    }
+                },
                 _inputex: {
                     sortable: true,
                     elementType: {
@@ -1116,56 +1260,69 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             api: {
                 type: ARRAY,
-                value: []
+                value: [],
+                uniqueItems: true,
+                view: {
+                    label: "API"
+                },
+                items:{
+                    type:STRING,
+                    view:{
+                        type: "select",
+                        choices: function() {
+                            return Object.keys(ProgGameLevel.API)
+                        }
+                    }
+                }
             },
             winningCondition: {
                 type: STRING,
                 value: "comparePos(find('Player'), find('Enemy'))",
-                _inputex: {
-                    _type: ACE
+                view: {
+                    label: "Winning Condition"
                 }
             },
             onStart: {
                 type: STRING,
                 optional: true,
-                _inputex: {
-                    _type: ACE
+                view: {
+                    label: "On Start"
                 }
             },
             onAction: {
                 type: STRING,
-                format: TEXT,
-                optional: true,
-                _inputex: {
-                    _type: ACE
+                view: {
+                    label: "On Action"
                 }
             },
             onWin: {
                 type: STRING,
-                optional: true,
-                _inputex: {
-                    _type: ACE
+                view: {
+                    label: "On Win"
                 }
             },
             defaultCode: {
                 type: STRING,
-                optional: true,
                 value: "//Put your code here...\n",
-                _inputex: {
-                    label: "Player's starting code",
-                    _type: ACE
+                view: {
+                    label: "Code input placeholder"
                 }
             },
             invites: {
                 type: ARRAY,
-                value: []
+                value: [],
+                view: {
+                    label: "Invites",
+                    description: "Make NPC yell",
+                    className: 'wegas-advanced-feature'
+                }
             },
             maxTurns: {
                 type: STRING,
                 value: 1,
-                _inputex: {
+                view: {
                     label: "Max turns",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    className: 'wegas-advanced-feature'
                 }
             }
         //arguments: {
@@ -1243,9 +1400,6 @@ YUI.add('wegas-proggame-level', function(Y) {
             }, {
                 node: ".proggame-buttons",
                 html: "<div>Pour exécuter votre code, cliquez sur la flèche verte.</div>"
-            }, {
-                node: ".barre",
-                html: "<div>L'éditeur de code peut être agrandi en tirant sur cette barre</div>"
             }, {
                 node: ".proggame-lefttab",
                 html: "<div>L'<b>API</b>(Application Programming Interface) expose les instructions que vous avez à disposition.<br/><br/>" +

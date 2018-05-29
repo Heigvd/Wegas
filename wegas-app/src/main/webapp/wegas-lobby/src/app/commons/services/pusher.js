@@ -44,9 +44,9 @@ angular.module('wegas.service.pusher', [])
                         if (user) {
                             userChannel = channels["user"] = pusher.subscribe('private-User-' + user.id);
                             if (user.isAdmin) {
-                                adminChannel = channels["admin"] = pusher.subscribe('private-Admin');
-                                initListening();
+                                adminChannel = channels["admin"] = pusher.subscribe('private-Role-Administrator');
                             }
+                            initListening();
                         }
                     });
                 }
@@ -78,9 +78,25 @@ angular.module('wegas.service.pusher', [])
             return roles;
         };
 
+        service.requestClientReload = function() {
+            return $http.post(ServiceURL + "rest/Pusher/RequestClientReload");
+        };
+
         function initListening() {
-            adminChannel.bind('online-users', function() {
-                $rootScope.$emit('wegaspusher:update-members');
-            });
+            if (adminChannel) {
+                adminChannel.bind('online-users', function(data) {
+                    $rootScope.$emit('wegaspusher:update-members', JSON.parse(data));
+                });
+            }
+            if (userChannel) {
+                userChannel.bind('team-update', function(strTeam) {
+                    $rootScope.$emit('wegaspusher:team-update', JSON.parse(strTeam));
+                });
+            }
+            if (presence) {
+                presence.bind('populateQueue-dec', function(size) {
+                    $rootScope.$emit('wegaspusher:populateQueue-dec', size);
+                });
+            }
         }
     });

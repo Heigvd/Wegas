@@ -1,25 +1,24 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
 package com.wegas.core.security.ejb;
 
-import com.wegas.core.Helper;
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.TestHelper;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJBException;
-import javax.ejb.embeddable.EJBContainer;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,64 +26,40 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Yannick Lagger
  */
-public class UserFacadeTest {
+public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
     private static final Logger logger = LoggerFactory.getLogger(UserFacadeTest.class);
 
-    private static GameModelFacade gameModelFacade;
+    private JpaAccount abstractAccount;
 
-    private static GameFacade gameFacade;
+    private WegasUser u;
 
-    private static UserFacade userFacade;
+    private Role role1;
 
-    private static RoleFacade roleFacade;
+    private Role role2;
 
-    private static AccountFacade accountFacade;
+    private static final String ROLE_1 = "Role_1";
 
-    private static AbstractAccount abstractAccount;
+    private static final String ROLE_2 = "Role_2";
 
-    private static User u;
+    private static final String EMAIL = "userfacadetest@local";
 
-    private static EJBContainer container;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        container = TestHelper.getEJBContainer();
-        userFacade = Helper.lookupBy(container.getContext(), UserFacade.class);
-        roleFacade = Helper.lookupBy(container.getContext(), RoleFacade.class);
-        accountFacade = Helper.lookupBy(container.getContext(), AccountFacade.class);
-
-        gameModelFacade = GameModelFacade.lookup();
-
-        gameFacade = GameFacade.lookup();
-
-        u = userFacade.guestLogin();
-        abstractAccount = u.getMainAccount();
-        RequestFacade.lookup().getRequestManager().setCurrentUser(u);
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        userFacade.remove(u.getId());
-        TestHelper.closeContainer();
-    }
-
-    /*private GameModel gameModel;
-    private Game game;
-     */
     @Before
-    public void setUp() {
-        /*
-        gameModel = new GameModel();
-        gameModelFacade.create(gameModel);
+    public void setUp() throws Exception {
+        login(admin);
+        role1 = new Role(ROLE_1);
+        roleFacade.create(role1);
 
-        game = new Game();
-        game.setName("aGame");
-        game.setToken("aGameToken");
-        game.setAccess(Game.GameAccess.OPEN);
+        role2 = new Role(ROLE_2);
+        roleFacade.create(role2);
 
-        gameFacade.create(gameModel.getId(), game);
-         */
+        u = this.signup(EMAIL);
+        login(u);
+        abstractAccount = (JpaAccount) u.getUser().getMainAccount();
+
+        login(admin);
+        addRoles(u, role1, role2);
+        requestManager.clearEntities();
     }
 
     /**
@@ -95,10 +70,14 @@ public class UserFacadeTest {
 
         // findAll()
         List<User> users = userFacade.findAll();
-        Assert.assertEquals(u, users.get(0));
+        Assert.assertTrue(users.contains(u.getUser()));
+        Assert.assertTrue(users.contains(admin.getUser()));
+
+        Assert.assertEquals(2l, users.size()); // admin + u
 
         // find
-        Assert.assertEquals(u, userFacade.find(u.getId()));
+        Assert.assertEquals(u.getUser(), userFacade.find(u.getId()));
+        Assert.assertEquals(admin.getUser(), userFacade.find(admin.getId()));
     }
 
     @Test
@@ -106,39 +85,21 @@ public class UserFacadeTest {
         final String PERM = "GameModel:*:*";
         final String PERM2 = "Game2:*:*";
 
-        userFacade.addUserPermission(u, PERM);
+        userFacade.addUserPermission(u.getUser(), PERM);
         accountFacade.update(abstractAccount.getId(), abstractAccount);
         AbstractAccount a = accountFacade.find(abstractAccount.getId());
-        Assert.assertEquals(PERM, u.getPermissions().get(0).getValue());
+        Assert.assertEquals(PERM, u.getUser().getPermissions().get(0).getValue());
 
-        userFacade.addUserPermission(u, PERM2);
+        userFacade.addUserPermission(u.getUser(), PERM2);
         accountFacade.update(abstractAccount.getId(), a);
         a = accountFacade.find(abstractAccount.getId());
-        Assert.assertEquals(PERM2, u.getPermissions().get(1).getValue());
+        Assert.assertEquals(PERM2, u.getUser().getPermissions().get(1).getValue());
 
-        u.removePermission(new Permission(PERM));
-        u.removePermission(new Permission(PERM2));
+        u.getUser().removePermission(PERM);
+        u.getUser().removePermission(PERM2);
         accountFacade.update(a.getId(), a);
         a = accountFacade.find(abstractAccount.getId());
         Assert.assertTrue(a.getPermissions().isEmpty());
-    }
-
-    @Test
-    public void testRoleUpdate() throws Exception {
-        Role role = new Role("JustARole");
-        roleFacade.create(role);
-
-        final String PERM = "Game:*:*";
-
-        role.addPermission(PERM);
-        roleFacade.update(role.getId(), role);
-        Role r = roleFacade.find(role.getId());
-        Assert.assertEquals(PERM, r.getPermissions().get(0).getValue());
-
-        r.removePermission(PERM);
-        roleFacade.update(r.getId(), r);
-        r = roleFacade.find(r.getId());
-        Assert.assertTrue(r.getPermissions().isEmpty());
     }
 
     /**
@@ -165,10 +126,10 @@ public class UserFacadeTest {
      */
     //@Test
     public void testSendNewPassword() throws Exception {
-        JpaAccount acc = accountFacade.findJpaByEmail("a@a.local");
+        JpaAccount acc = accountFacade.findJpaByEmail(EMAIL);
         String oldPwd = acc.getPasswordHex();
-        userFacade.sendNewPassword("a@a.local");
-        acc = accountFacade.findJpaByEmail("a@a.local");
+        userFacade.sendNewPassword(EMAIL);
+        acc = accountFacade.findJpaByEmail(EMAIL);
         Assert.assertFalse(oldPwd.equals(acc.getPasswordHex()));
     }
 
@@ -177,45 +138,52 @@ public class UserFacadeTest {
      */
     @Test(expected = EJBException.class)
     public void testCreateSameUser() throws WegasErrorMessage {
-        u.addAccount(abstractAccount);
-        userFacade.create(u);
+        u.getUser().addAccount(abstractAccount);
+        userFacade.create(u.getUser());
+    }
+
+    @Test
+    public void testLoginForbidden() {
+        System.setProperty("guestallowed", "false");
+
+        try {
+            this.guestLogin();
+            Assert.fail("Should throw exception !");
+        } catch (Exception ex) {
+        }
+
+        System.setProperty("guestallowed", "true");
+    }
+
+    @Test
+    public void testDuplicateUsername() {
+        this.signup("user_1234@local");
+        try {
+            this.signup("user_1234@local");
+            Assert.fail("Shoudl throw exception !");
+        } catch (WegasConflictException ex) {
+        }
     }
 
     @Test
     public void testIdleGuestRemoval() {
-        userFacade.guestLogin();                                                // Log in as guest
+        int nbUser = userFacade.findAll().size();
 
-        Assert.assertEquals(2, userFacade.findAll().size());                    // Assert creation
+        userFacade.guestLogin();
+        Assert.assertEquals(nbUser + 1, userFacade.findAll().size());
 
-        User user = userFacade.getCurrentUser();                                // Set created time to 3 month ago
+        // Since guests are removed only oif they were create more than three month ago,
+        // override this guest createdTime
+        User newGuestUser = userFacade.getCurrentUser();
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 13);
-        AbstractAccount account = user.getMainAccount();
+        AbstractAccount account = newGuestUser.getMainAccount();
         account.setCreatedTime(calendar.getTime());
         accountFacade.merge(account);
 
-        userFacade.removeIdleGuests();                                          // Run idle guest account removal
+        login(admin);
+        userFacade.removeIdleGuests();
 
-        Assert.assertEquals(1, userFacade.findAll().size());                    // Assert removal succes
-    }
-
-    @Test
-    public void testRemoveRole() {
-
-        Role r = new Role("Test");
-        roleFacade.create(r);
-        //r = roleFacade.find(r.getId());
-
-        Assert.assertEquals("Test", roleFacade.find(r.getId()).getName());
-
-        userFacade.addRole(u.getId(), r.getId());
-
-        //roleFacade.merge(r);
-        //accountFacade.merge(abstractAccount);
-        Assert.assertEquals(1, accountFacade.find(abstractAccount.getId()).getRoles().size());
-        Assert.assertEquals(1, roleFacade.find(r.getId()).getNumberOfMember());
-        roleFacade.remove(r.getId());
-
-        Assert.assertNull(roleFacade.find(r.getId()));                                             // A not NoResultException should be thrown here
+        Assert.assertEquals(nbUser, userFacade.findAll().size());
     }
 }

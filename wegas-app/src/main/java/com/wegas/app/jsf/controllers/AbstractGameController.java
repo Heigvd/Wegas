@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
@@ -15,20 +15,24 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.ComboController;
-
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.context.FacesContext;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import javax.ejb.EJB;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.context.FacesContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class AbstractGameController implements Serializable {
+
+    private static final long serialVersionUID = -1511995063657626077L;
+    private static final Logger logger = LoggerFactory.getLogger(AbstractGameController.class);
 
     /**
      *
@@ -92,7 +96,7 @@ public class AbstractGameController implements Serializable {
     public String getStaticClientScripts() throws IOException, WegasForbiddenException {
         String clientScriptUri = this.getCurrentGameModel().getProperties().getClientScriptUri();
         final List<String> files = new ArrayList<>();
-        if (clientScriptUri != null) {
+        if (!Helper.isNullOrEmpty(clientScriptUri)) {
             for (String s : clientScriptUri.split(";")) {
                 s = s.trim();
                 s = s.startsWith("/") ? s : "/" + s;
@@ -106,7 +110,12 @@ public class AbstractGameController implements Serializable {
         return libraryFacade.getLibraryContent(this.getCurrentGameModel().getId(), "ClientScript");
     }
 
-    public String getStyleSheets() {
+    /**
+     * Get all style-sheets defined in the current gameModel CSS library concatenated within a single string
+     *
+     * @return
+     */
+    public String getCombinedStyleSheet() {
         return libraryFacade.getLibraryContent(this.getCurrentGameModel().getId(), "CSS");
     }
 
@@ -118,7 +127,7 @@ public class AbstractGameController implements Serializable {
     }
 
     /**
-     * @return
+     * @return the gameModel linked to the currentGame
      */
     public GameModel getCurrentGameModel() {
         return this.getCurrentGame().getGameModel();
@@ -147,5 +156,13 @@ public class AbstractGameController implements Serializable {
 
     public String getWegasProperty(String property) {
         return Helper.getWegasProperty(property);
+    }
+
+    public void dispatch(String view) {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().dispatch(view);
+        } catch (IOException ex) {
+            logger.error("Unable to find error page", ex);
+        }
     }
 }

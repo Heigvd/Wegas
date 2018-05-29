@@ -2,12 +2,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
@@ -51,7 +50,7 @@ public class GradeInstance extends EvaluationInstance {
             GradeDescriptor desc = (GradeDescriptor) this.getDescriptor();
             if ((desc.getMaxValue() != null && value > desc.getMaxValue())
                     || (desc.getMinValue() != null && value < desc.getMinValue())) {
-                throw new WegasOutOfBoundException(desc.getMinValue().doubleValue(), desc.getMaxValue().doubleValue(), value, desc.getName());
+                throw new WegasOutOfBoundException(desc.getMinValue().doubleValue(), desc.getMaxValue().doubleValue(), value, desc.getName(), desc.getName());
             }
         }
 

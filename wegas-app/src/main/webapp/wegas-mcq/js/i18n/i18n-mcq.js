@@ -3,18 +3,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
  * @fileoverview
  * @author Maxence Laurent <maxence.laurent> <gmail.com>
  */
-/*global I18n, YUI*/
+/*global I18n*/
 
-
-var lang = I18n._currentLocale;
-YUI.add("wegas-i18n-mcq", function(Y) {
-    "use strict";
-    Y.log("MCQ " + lang + " translation loaded");
-}, 1.0, {requires: ["wegas-i18n-mcq-" + lang]});
+I18n.loadModule("wegas-i18n-mcq");

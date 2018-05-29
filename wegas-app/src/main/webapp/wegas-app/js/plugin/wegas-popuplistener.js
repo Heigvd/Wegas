@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -43,7 +43,8 @@ YUI.add('wegas-popuplistener', function(Y) {
             var host = this.get(HOST),
                 cfg = Y.mix({
                     align: {
-                        node: host.get(this.get("alignAttr")),
+                        // Align on page loader if inside editor, otherwise align on viewport:
+                        node: this.get("alignAttr") ? host.get(this.get("alignAttr")) : null,
                         points: [Y.WidgetPositionAlign.TC, Y.WidgetPositionAlign.TC]
                     },
                     centered: false,
@@ -110,7 +111,7 @@ YUI.add('wegas-popuplistener', function(Y) {
     Plugin.PopupListener = PopupListener;
 
     /**
-     * 
+     *
      */
     Plugin.ServerPopupListener = Y.Base.create("wegas-serverpopuplistener", Plugin.Base, [], {
         initializer: function() {

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
@@ -12,9 +12,9 @@ import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-////import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
+public class NumberDescriptor extends VariableDescriptor<NumberInstance> implements PrimitiveDescriptorI<Double>{
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(NumberDescriptor.class);
@@ -39,6 +39,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     /**
      *
      */
+    @Column(columnDefinition = "integer default 20")
     private Integer historySize;
 
     /**
@@ -58,15 +59,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @param name
-     * @param defaultInstance
-     */
-    public NumberDescriptor(String name, NumberInstance defaultInstance) {
-        super(name, defaultInstance);
-    }
-
-    /**
-     *
      * @param a
      */
     @Override
@@ -79,7 +71,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         super.merge(a);
         if (!this.isValueValid(this.getDefaultValue())) {
             throw new WegasOutOfBoundException(this.getMinValue(),
-                    this.getMaxValue(), this.getDefaultValue(), this.getLabel());
+                    this.getMaxValue(), this.getDefaultValue(), this.getName(), this.getLabel().translateOrEmpty(this.getGameModel()));
         }
     }
 
@@ -113,9 +105,8 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @return
+     * @return the max value
      */
-    //@XmlTransient
     @JsonIgnore
     @Transient
     public double getMaxValueD() {
@@ -124,9 +115,8 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @return
+     * @return the minimum value
      */
-    //@XmlTransient
     @JsonIgnore
     @Transient
     public double getMinValueD() {
@@ -145,13 +135,14 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         }
     }
 
-    // **** Sugar for scripts *** //
+    // ~~~ Sugar for scripts ~~~
     /**
      *
      * @param p
      * @param value
      */
-    public void setValue(Player p, double value) {
+    @Override
+    public void setValue(Player p, Double value) {
         this.getInstance(p).setValue(value);
     }
 
@@ -166,7 +157,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
 
     /**
      *
-     * @return
+     * @return the defaule value
      */
     @Transient
     public double getDefaultValue() {
@@ -187,8 +178,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      * @param value
      */
     public void add(Player p, double value) {
-        NumberInstance instance = this.getInstance(p);
-        instance.setValue(instance.getValue() + value);
+        this.getInstance(p).add(value);
     }
 
     /**
@@ -207,16 +197,15 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      * @param value
      */
     public void add(Player p, int value) {
-        NumberInstance instance = this.getInstance(p);
-        instance.setValue(instance.getValue() + value);
+        this.getInstance(p).add(value);
     }
 
     /**
      *
      * @param p
-     * @return
+     * @return value of player p instance
      */
-    public double getValue(Player p) {
+    public Double getValue(Player p) {
         return this.getInstance(p).getValue();
     }
 

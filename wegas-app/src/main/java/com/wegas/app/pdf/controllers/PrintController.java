@@ -2,21 +2,24 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf.controllers;
 
 import com.wegas.app.jsf.controllers.*;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -38,18 +41,24 @@ public class PrintController {
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
+
+    @Inject
+    private GameModelFacade gameModelFacade;
     /**
      *
      */
     @Inject
     ErrorController errorController;
+
+    @Inject
+    private RequestManager requestManager;
 
     private Player currentPlayer = null;
 
@@ -60,14 +69,14 @@ public class PrintController {
     private Long playerId;
 
     /**
-     * CASE# 2 export from scenarist/trainer lobby -> fetch default user
+     * CASE# 2 export from scenarist/trainer lobby: fetch default user
      */
     @ManagedProperty("#{param.gameModelId}")
     private Long gameModelId;
 
     /**
      *
-     * @return
+     * @return the playerId
      */
     public Long getPlayerId() {
         return playerId;
@@ -83,7 +92,7 @@ public class PrintController {
 
     /**
      *
-     * @return
+     * @return gameModelId queryString parameter
      */
     public Long getGameModelId() {
         return gameModelId;
@@ -105,8 +114,8 @@ public class PrintController {
     }
 
     /**
-     *
-     * @return
+     * Get the gameModel linked to the currentPlayer
+     * @return get the current gameModel
      */
     public GameModel getGameModel() {
         return getCurrentPlayer().getGameModel();
@@ -122,21 +131,30 @@ public class PrintController {
         // Case #1: print against a specific user 
         if (this.playerId != null) {
             currentPlayer = playerFacade.find(this.playerId);
-            if (currentPlayer.getGame() instanceof DebugGame) {
-                permissionToCheck = "GameModel:View:gm" + getGameModel().getId();
-            } else {
-                permissionToCheck = "Game:View:g" + currentPlayer.getGame().getId();
-            }
         }
 
         // Case #2: Export against a gameModel
         if (this.gameModelId != null) {
-            try {
-                // Select any player in the first game of the game model -> Test Team
-                currentPlayer = playerFacade.findByGameModelId(gameModelId);
-                permissionToCheck = "GameModel:View:gm" + getGameModel().getId();
-            } catch (WegasNoResultException ex) {
-                errorController.dispatch("Model " + gameModelId + " has no players.");
+            GameModel gameModel = gameModelFacade.find(this.gameModelId);
+            if (gameModel != null) {
+                if (gameModel.getTemplate()) {
+                    // use the debug player from the debug game
+                    currentPlayer = gameModel.getAnyLivePlayer();
+                } else {
+                    currentPlayer = playerFacade.findPlayerInGameModel(this.gameModelId, userFacade.getCurrentUser().getId());
+
+                    if (currentPlayer == null) {
+                        // fallback: use a test player
+                        for (Game g : gameModel.getGames()) {
+                            for (Team t : g.getTeams()) {
+                                if (t instanceof DebugTeam) {
+                                    currentPlayer = t.getAnyLivePlayer();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -144,13 +162,7 @@ public class PrintController {
             // If no player could be found, we redirect to an error page
             errorController.dispatch("The game you are looking for could not be found.");
         } else {
-            try {
-                if (!userFacade.matchCurrentUser(currentPlayer.getId())
-                        && !SecurityUtils.getSubject().isPermitted(permissionToCheck)) {
-
-                    errorController.accessDenied();
-                }
-            } catch (WegasNotFoundException ex) {
+            if (!requestManager.hasPlayerRight(currentPlayer)) {
                 errorController.accessDenied();
             }
         }

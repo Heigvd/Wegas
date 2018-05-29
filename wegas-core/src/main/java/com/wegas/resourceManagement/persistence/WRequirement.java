@@ -2,44 +2,43 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-//import javax.xml.bind.annotation.XmlTransient;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import javax.persistence.Index;
 
 /**
  *
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
-
 @Table(uniqueConstraints = @UniqueConstraint(
-        columnNames = {"requirements_variableinstance_id", "wrequirement_name"}),
+        columnNames = {"taskinstance_id", "wrequirement_name"}),
         indexes = {
-            @Index(columnList = "requirements_variableinstance_id")
+            @Index(columnList = "taskinstance_id")
         }
 )
 public class WRequirement extends AbstractEntity {
@@ -49,7 +48,7 @@ public class WRequirement extends AbstractEntity {
      *
      */
     @Id
-    @Column(name = "wrequirement_id")
+    @Column(name = "id")
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
@@ -78,7 +77,6 @@ public class WRequirement extends AbstractEntity {
      *
      */
     @ManyToOne
-    @JoinColumn(name = "requirements_variableinstance_id")
     private TaskInstance taskInstance;
     /*
      *
@@ -97,7 +95,6 @@ public class WRequirement extends AbstractEntity {
      *
      */
     @OneToMany(mappedBy = "requirement", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@XmlTransient
     @JsonIgnore
     private List<Activity> activities = new ArrayList<>();
 
@@ -259,7 +256,6 @@ public class WRequirement extends AbstractEntity {
      *
      * @param taskInstance
      */
-    //@XmlTransient
     @JsonIgnore
     public void setTaskInstance(TaskInstance taskInstance) {
         this.taskInstance = taskInstance;
@@ -269,6 +265,7 @@ public class WRequirement extends AbstractEntity {
      *
      * @deprecated (I hope so)
      * @param variable
+     *
      * @return just not a clue...
      */
     public double getVariableValue(String variable) {
@@ -336,5 +333,15 @@ public class WRequirement extends AbstractEntity {
         if (name == null || name.isEmpty()) {
             name = work + level + quantity + Helper.genToken(4);
         }
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getTaskInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getTaskInstance().getRequieredReadPermission();
     }
 }

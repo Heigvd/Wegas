@@ -40,6 +40,7 @@ angular.module('wegas.models.users', [])
                             // Actually, there is only one and this explains the below simplification
                             _.each(data.updatedEntities, function(user) {
                                 user.account = user.accounts[0];
+                                user.isVerified = user.account['@class'] === 'AaiAccount';
                             });
                             users.cache.data = data.updatedEntities;
                             deferred.resolve(true);
@@ -249,6 +250,13 @@ angular.module('wegas.models.users', [])
                                     delete user.hash;
                                     delete user.name;
                                     delete user.password2;
+
+                                    if (user.roles) {
+                                        for (var i = 0; i < user.roles.length; i++) {
+                                            // Additional attribute created in user admin code:
+                                            delete user.roles[i].users;
+                                        }
+                                    }
 
                                     var url = "rest/Extended/User/Account/" + user.id;
                                     $http

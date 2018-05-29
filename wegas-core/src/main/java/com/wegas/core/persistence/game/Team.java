@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -10,28 +10,51 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-////import javax.xml.bind.annotation.XmlTransient;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(
-        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "parentgame_id"}),
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "gameteams_id"}),
         indexes = {
-            @Index(columnList = "parentgame_id")
+            @Index(columnList = "gameteams_id"),
+            @Index(columnList = "createdby_id")
         }
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -39,8 +62,10 @@ import java.util.Map;
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.game.id = :gameId")})
-public class Team extends AbstractEntity implements Broadcastable, BroadcastTarget, DatedEntity {
+    @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameTeams.game.id = :gameId"),
+    @NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
+})
+public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,7 +87,16 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
+
+    /**
+     *
+     */
+    @Enumerated(value = EnumType.STRING)
+
+    @Column(length = 24, columnDefinition = "character varying(24) default 'WAITING'::character varying")
+    private Status status = Status.WAITING;
 
     /**
      *
@@ -88,22 +122,23 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
     private List<VariableInstance> privateInstances = new ArrayList<>();
 
     /**
-     * The game model this belongs to
+     * The game this team belongs to
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "parentgame_id")
-    //@XmlTransient
     @JsonIgnore
-    //@XmlInverseReference(mappedBy = "teams")
-    @JsonBackReference(value = "game-team")
-    private Game game;
+    private GameTeams gameTeams;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User createdBy;
+
+    @Transient
+    private User createdBy_transient;
 
     /**
      *
+     * @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
+     * private Long gameId;
      */
-    @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
-    private Long gameId;
-
     /**
      *
      */
@@ -123,7 +158,28 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      */
     public Team(String name, int declaredSize) {
         this.name = name;
-        this.setDeclaredSize(declaredSize);
+        this.declaredSize = declaredSize;
+    }
+
+    @JsonIgnore
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy_transient) {
+        if (createdBy_transient == null) {
+            this.createdBy = null;
+        }
+        this.createdBy_transient = createdBy_transient;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        // setting createdBy is only allowed before team is actually presisted
+        this.createdBy = createdBy_transient;
+        if (createdBy != null) {
+            createdBy.getTeams().add(this);
+        }
     }
 
     /**
@@ -136,12 +192,20 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
         this.setNotes(t.getNotes());
     }
 
+    public GameTeams getGameTeams() {
+        return gameTeams;
+    }
+
+    public void setGameTeams(GameTeams gameTeams) {
+        this.gameTeams = gameTeams;
+    }
+
     /**
      * @return the gameModel
      */
     @JsonBackReference(value = "game-team")
     public Game getGame() {
-        return game;
+        return getGameTeams().getGame();
     }
 
     /**
@@ -149,21 +213,32 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      */
     @JsonBackReference(value = "game-team")
     public void setGame(Game game) {
-        this.game = game;
+        this.setGameTeams(game.getGameTeams());
     }
 
     /**
      * @return the players
      */
     @JsonManagedReference(value = "player-team")
+    @Override
     public List<Player> getPlayers() {
         return players;
+    }
+
+    @JsonIgnore
+    @Override
+    public Player getAnyLivePlayer() {
+        for (Player p : this.getPlayers()) {
+            if (p.getStatus().equals(Populatable.Status.LIVE)) {
+                return p;
+            }
+        }
+        return null;
     }
 
     /**
      * @param p
      */
-    //@XmlTransient
     @JsonIgnore
     public void addPlayer(Player p) {
         this.players.add(p);
@@ -223,7 +298,7 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      * @return the gameId
      */
     public Long getGameId() {
-        return (game != null ? game.getId() : null);
+        return (getGame() != null ? getGame().getId() : null);
     }
 
     /**
@@ -244,6 +319,16 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    @Override
+    public Status getStatus() {
+        return status;
+    }
+
+    @Override
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Integer getDeclaredSize() {
@@ -288,8 +373,19 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
      *
      * @return all team's teamScoped instances
      */
+    @Override
     public List<VariableInstance> getPrivateInstances() {
         return privateInstances;
+    }
+
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        List<VariableInstance> instances = new ArrayList<>();
+        instances.addAll(getPrivateInstances());
+        for (Player p : getPlayers()) {
+            instances.addAll(p.getAllInstances());
+        }
+        return instances;
     }
 
     /**
@@ -310,5 +406,43 @@ public class Team extends AbstractEntity implements Broadcastable, BroadcastTarg
     @JsonIgnore
     public String getChannel() {
         return Helper.TEAM_CHANNEL_PREFIX + this.getId();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        /*
+         * since a player should be able to join a team by itself
+         * restricting update permission is not possible.
+         *
+         * A player shouldn't be authorized to join a team by itself.
+         * A player should be able to create a team and a team member should be able 
+         * to invite other players in the team. Such behaviour allow to set an updatePermission
+         */
+        return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        switch (this.getGame().getAccess()) {
+            case OPEN:
+                return null; // everybody can register en new team
+            default:
+                return WegasPermission.FORBIDDEN; // nobody can create
+        }
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
+    }
+
+    @Override
+    public WegasPermission getAssociatedReadPermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.TEAM);
+    }
+
+    @Override
+    public WegasPermission getAssociatedWritePermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.TEAM);
     }
 }

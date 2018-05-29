@@ -2,9 +2,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -44,7 +46,36 @@ YUI.add("wegas-loginbutton", function(Y) {
                 this.plug(Y.Plugin.WidgetMenu);
             }
 
-            this.menu.add([{
+            var languages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("activeLanguages");
+
+            if (languages.length > 1) {
+                this.menu.add([{
+                        type: "Button",
+                        label: I18n.t('i18n.languages'),
+                        plugins: [{
+                                fn: "WidgetMenu",
+                                cfg: {
+                                    event: "mouseenter",
+                                    menuCfg: {
+                                        points: ["tr", "tl"]
+                                    },
+                                    children:
+                                        languages.map(function(item) {
+                                            return {
+                                                label: (I18n.getRefName() === item.get("refName") ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
+                                                on: {
+                                                    click: function() {
+                                                        I18n.setCurrentPlayerRefName(item.get("refName"));
+                                                    }
+                                                }
+                                            };
+                                        })
+                                }
+                            }]
+                    }]);
+            }
+            this.menu.add([
+                {
                     type: "Button",
                     label: Y.Wegas.I18n.t('global.logout').capitalize(),
                     plugins: [{
@@ -65,15 +96,15 @@ YUI.add("wegas-loginbutton", function(Y) {
         syncUI: function() {
             Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
-            var cUser = Wegas.Facade.User.get("currentUser"),
+            var cUser = Wegas.Facade.User.cache.get("currentUser"),
                 cPlayer = Wegas.Facade.Game.cache.getCurrentPlayer(),
                 cTeam = Wegas.Facade.Game.cache.getCurrentTeam(),
                 mainAccount = cUser.getMainAccount(),
                 gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel();
 
-            if (mainAccount instanceof Wegas.persistence.GuestJpaAccount) { // If current account is a Guest,
-                this.menu.getMenu().item(0).hide(); // hide the "Preference" button
-            }
+            /*if (mainAccount instanceof Wegas.persistence.GuestJpaAccount) { // If current account is a Guest,
+             this.menu.getMenu().item(0).hide(); // hide the "Preference" button
+             }*/
 
             if (this.get("forcedLabel")) {
                 this.set("label", this.get("forcedLabel"));
@@ -109,7 +140,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             forcedLabel: {
                 type: "string",
                 optional: true,
-                _inputex: {
+                view: {
                     label: "Label",
                     description: "Player name is used if blank"
                 }
@@ -121,12 +152,12 @@ YUI.add("wegas-loginbutton", function(Y) {
              * targetPageLoader: Zone to display the page which contains widget userPreferences
              */
             targetPageLoader: {
+                type: "string",
                 value: "maindisplayarea",
-                _inputex: {
+                view: {
                     label: "Target zone",
-                    _type: "string",
                     //_type: "pageloaderselect",//@fixme There a bug with this widget when the target page is not loaded
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    className: 'wegas-advanced-feature'
                 }
             }
         }
@@ -159,7 +190,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             autologin: {
                 value: true,
                 type: "boolean",
-                _inputex: {
+                view: {
                     label: "Auto login",
                     description: "If allowed, will try to login with a new guest."
                 }
@@ -282,14 +313,16 @@ YUI.add("wegas-loginbutton", function(Y) {
         syncUI: function() {
             Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
-            var cUser = Wegas.Facade.User.get("currentUser"),
-                name = cUser.get("name") || "undefined",
-                mainAccount = cUser.getMainAccount();
-
-            if (mainAccount) {
-                name = "<img src=\"//www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
-            }
-            this.set("label", name);
+            /*
+             var cUser = Wegas.Facade.User.get("currentUser"),
+             name = cUser.get("name") || "undefined",
+             mainAccount = cUser.getMainAccount();
+             
+             if (mainAccount) {
+             name = "<img src=\"//www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
+             }
+             */
+            this.set("label", '<i class="fa fa-sign-out" title="Logout"></i>');
         },
         destructor: function() {
             for (var k in this.handlers) {

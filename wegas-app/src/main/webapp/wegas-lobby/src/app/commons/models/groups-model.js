@@ -214,7 +214,6 @@ angular.module('wegas.models.groups', [])
 
         model.updateGroup = function(group) {
             var deferred = $q.defer();
-
             var url = "rest/Role/" + group.id;
             $http.put(ServiceURL + url, group, {
                 "headers": {
@@ -286,6 +285,14 @@ angular.module('wegas.models.groups', [])
                 url = "rest/User/FindUsersWithRole/" + groupId;
             $http.get(ServiceURL + url, {})
                 .success(function(data) {
+                    if (data !== undefined && data.length !== 0) {
+                        _.each(data, function (user) {
+                            // NB: User has been thought to have multiple accounts (ways to authenticate)
+                            // Actually, there is only one and this explains the below simplification
+                            user.account = user.accounts[0];
+                            user.isVerified = user.account['@class'] === 'AaiAccount';
+                        });
+                    }
                     deferred.resolve(data);
                 });
             return deferred.promise;

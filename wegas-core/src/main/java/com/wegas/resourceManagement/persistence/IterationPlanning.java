@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015, 2016, 2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -24,7 +24,7 @@ public class IterationPlanning implements Serializable {
     @Column(name = "workload")
     private Double workload;
 
-    @Column(name = "period")
+    @Column(name = "num_period")
     private Long period;
 
     public IterationPlanning() {

@@ -2,21 +2,14 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
  * @fileoverview
  * @author Maxence Laurent <maxence.laurent> <gmail.com>
  */
-var i18nOrdinate = (function(module) {
-    return module;
-}(i18nOrdinate || {})),
-    i18nTable = (function(module) {
-        return module;
-    }(i18nTable || {}));
-
-i18nTable.en = {
+I18n.add("en", {
     wc: "Words count",
     cc: "Characters count",
     data: "Data",
@@ -24,7 +17,7 @@ i18nTable.en = {
     median: "Median",
     sd: "standard deviation",
     overview: "Overview",
-    status: "Status",
+    editionStatus: "Edit",
     reviewDoneTitle: "Feddbacks Done",
     commentsDoneTitle: "Comments Done",
     reviewDone: "Feddbacks Done",
@@ -37,18 +30,4 @@ i18nTable.en = {
     ready: "Done",
     na: "N/A",
     evicted: "Evicted"
-};
-
-i18nOrdinate.en = function(number) {
-    "use strict";
-    switch (number) {
-        case 1:
-            return number + "st";
-        case 2:
-            return number + "nd";
-        case 3:
-            return number + "rd";
-        default:
-            return number + "th";
-    }
-};
+});

@@ -2,9 +2,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -140,7 +142,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             }).render(field);
 
             field.prepend(this.viewSrc.get("boundingBox")).prepend(this.sortButton.get("boundingBox")).prepend(this.runButton.get("boundingBox")).prepend(this.addButton.get("boundingBox"))                     // Move view src and add buttons to the top of the the wysiwyg list
-                    .append("<em class=\"msg\"></em>");                             // Add a div for messages
+                .append("<em class=\"msg\"></em>");                             // Add a div for messages
 
             this.on("updated", function() {
                 if (this.options.viewSrc) {
@@ -178,7 +180,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     failure: Y.bind(function(e) {
                         parentWidget.hideOverlay();
                         parentWidget.showMessage("error",
-                                "Error executing impact: <br /><br />" + (e.response.results.exception || e.response));
+                            "Error executing impact: <br /><br />" + (e.response.results.exception || e.response));
                     }, this)
                 }
             }, undefined, parentWidget.get("form").getValue().id);
@@ -263,7 +265,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         },
         sortInputex: function(fields) {
             var order = [];
-            Y.Array.each(Wegas.Facade.Variable.data, function(item) {
+            Y.Array.each(Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items"), function(item) {
                 if (item.flatten) {
                     Y.Array.each(item.flatten(), function(i) {
                         order.push(i.get("name"));
@@ -279,7 +281,114 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         }
     });
     Y.mix(WysiwygScript, {
-        formatScript: function(script) {
+        parseMethod: function(node, globals) {
+            var vd;
+            if (node.type === Syntax.CallExpression) {
+                if (node.callee.object.callee
+                    && node.callee.object.callee.object
+                    && (node.callee.object.callee.object.name === "Variable"
+                        || node.callee.object.callee.object.name === "VariableDescriptorFacade") // @backwardcompatibility
+                    && node.callee.object.callee.property && node.callee.object.callee.property.name === "find") {
+
+                    vd = Wegas.Facade.Variable.cache.find("name", node.callee.object.arguments[1].value);
+
+                    if (vd) {
+                        return {
+                            method: vd.getMethodCfgs()[node.callee.property.name],
+                            methodName: node.callee.property.name + " (" + vd.getEditorLabel() + ")"
+                        };
+                    }
+                } else {
+                    return {
+                        method: globals && globals[node.callee.object.name + "." + node.callee.property.name],
+                        methodName: node.callee.object.name + "." + node.callee.property.name
+                    };
+                }
+            }
+            return null;
+        },
+        /**
+         * 
+         * @param {type} script
+         * @param {type} config: {
+         *          onEnterFn: callback called against each node, returned value => go deepper? true/false,
+         *          onOutFn: callback after node has been walked
+         *          globals: global methods to consider
+         * @returns {undefined}
+         */
+        visitAST: function(script, config) {
+
+            var thiz = this,
+                fn = config && config.onEnterFn,
+                exitFn = config && config.onExitFn,
+                globals = config && config.globals;
+
+            if (script && script.get) {
+                script = script.get("content");
+            } else if (Y.Lang.isObject(script)) {
+                script = script.content;
+            }
+
+            var tree = window.esprima.parse(script, {
+                raw: true,
+                range: true
+            });
+
+            function parse(node, args) {
+                var key, child, keys, i, j, subArgs, method;
+
+                if (!fn || fn.call(null, node, args)) {
+
+                    // catch calls to wegas method
+                    method = thiz.parseMethod(node, globals);
+
+                    if (method && method.method && node.arguments.length === method.method.arguments.length) {
+                        // same method name & numner or parameters match number of arguments
+                        for (j = 0; j < node.arguments.length; j++) {
+                            parse(node.arguments[j], method.method.arguments[j]);
+                        }
+                        exitFn && exitFn.call(null, node);
+                        return;
+                    }
+
+                    keys = Object.keys(node).sort();
+                    for (i in keys) {
+                        key = keys[i];
+                        if (node.hasOwnProperty(key)) {
+                            child = node[key];
+                            if (Array.isArray(child)) {
+                                // process all items in array
+                                if (args && args.type === 'array' && args.items && args.items.type === "object") {
+                                    subArgs = args.items;
+                                } else {
+                                    subArgs = null;
+                                }
+                                for (j = 0; j < child.length; j++) {
+                                    if (child[j] instanceof Object && typeof child[j].type === "string") {
+                                        if (!subArgs && args && args.properties && child[j].type === 'Property') {
+                                            parse(child[j].value, args.properties[child[j].key.value]);
+                                        } else {
+                                            parse(child[j], subArgs);
+                                        }
+                                    }
+                                }
+                            } else if (child instanceof Object && typeof child.type === "string") {
+                                // the child is an object which contains a type property
+                                if (node.type === "Property" && key === "value") {
+                                    parse(child, args);
+                                } else {
+                                    parse(child);
+                                }
+                            }
+                        }
+                    }
+                }
+                exitFn && exitFn.call(null, node);
+            }
+            parse(tree);
+        },
+        formatScript: function(script, i18nConfig) {
+            // todo promise !
             if (script && script.get) {
                 script = script.get("content");
             } else if (Y.Lang.isObject(script)) {
@@ -289,37 +398,57 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 return "";
             }
             try {
-                var globals = Y.mix(Y.mix({}, inputEx.Wegas.VariableDescriptorStatement.prototype.GLOBALMETHODS),
-                            inputEx.Wegas.VariableDescriptorCondition.prototype.GLOBALMETHODS), findLabel = function(a, n) {
+                var globals = Y.mix(Y.mix({}, Y.Wegas.RForm.Script.getGlobals('getter')),
+                    Y.Wegas.RForm.Script.getGlobals('condition')),
+                    findLabel = function(a, n) {
                         var l = Y.Array.find(a, function(i) {
                             return i.value === n;
                         });
                         return l ? l.label : n;
-                    }, source = function(range) {
+                    },
+                    source = function(range) {
                         return script.substring.apply(script, range);
-                    }, formatArgs = function(a, cfg) {
-                        return Y.Array.map(Y.Array.filter(a, function(o, index) {
+                    },
+                    getArgValue = function(arg) {
+                        var src = source(arg.range);
+                        if (arg.type === "ObjectExpression") {
+                            var obj = JSON.parse(src);
+                            if (obj["@class"] === "TranslatableContent") {
+                                return I18n.t(obj, i18nConfig);
+                            }
+                        }
+                        return src;
+                    },
+                    formatArgs = function(args, cfg) {
+                        return Y.Array.map(Y.Array.filter(args, function(o, index) {
                             return cfg[index].type !== "hidden" && cfg[index].type !== "list";
                         }), function(o) {
-                            return Wegas.Helper.trimLength(Wegas.Helper.stripHtml(source(o.range)), 50, "...\"");// Args are limited to 50 char
+                            return Wegas.Helper.trimLength(Wegas.Helper.stripHtml(getArgValue(o)), 50, "...\"");// Args are limited to 50 char
                         }).join(", ");
-                    }, parse = function(i) {
+                    },
+                    parse = function(i) {
                         switch (i.type) {
                             case Syntax.EmptyStatement:
                                 return "";
                             case Syntax.CallExpression:
-                                if (i.callee.object.callee && i.callee.object.callee.object && (i.callee.object.callee.object.name === "Variable" || i.callee.object.callee.object.name === "VariableDescriptorFacade") // @backwardcompatibility
+                                if (i.callee.object.callee
+                                    && i.callee.object.callee.object
+                                    && (i.callee.object.callee.object.name === "Variable"
+                                        || i.callee.object.callee.object.name === "VariableDescriptorFacade") // @backwardcompatibility
                                     && i.callee.object.callee.property && i.callee.object.callee.property.name === "find") {
                                     var vd = Wegas.Facade.Variable.cache.find("name",
-                                                i.callee.object.arguments[1].value), methodName = i.callee.property.name, method = vd.getMethodCfgs()[methodName];
+                                        i.callee.object.arguments[1].value), methodName = i.callee.property.name, method = vd.getMethodCfgs()[methodName];
 
-                                    return vd.get("label") + " " + (i.callee.property.name !== "getValue" ? "<em>" + (method.label ? method.label.toLowerCase() : methodName) + "</em> " : "") + formatArgs(i.arguments.slice(1),
-                                                    method.arguments.slice(1));
+                                    return I18n.t(vd.get("label"), i18nConfig) +
+                                        " " + (i.callee.property.name !== "getValue" ? "<em>" +
+                                            (method.label ? method.label.toLowerCase() : methodName) + "</em> " : "") +
+                                        formatArgs(i.arguments.slice(1),
+                                            method.arguments.slice(1));
                                 } else {
                                     var global = globals[i.callee.object.name + "." + i.callee.property.name];
                                     if (global) {
                                         return "<em>" + global.label + "</em> " + formatArgs(i.arguments,
-                                                        global.arguments);
+                                            global.arguments);
                                     } else {
                                         return source(i.range);
                                     }
@@ -328,15 +457,26 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                 return parse(i.expression);
                             case Syntax.LogicalExpression:
                                 return parse(i.left) + " <em>" + findLabel(Y.inputEx.Wegas.VariableDescriptorSelect.LOGICALOPERATORS,
-                                                i.operator) + "</em> " + parse(i.right);
+                                    i.operator) + "</em> " + parse(i.right);
                             case Syntax.BinaryExpression:
+                                // Try to prevent display of "undefined" for right-hand operands:
+                                if (!i.right.value) {
+                                    var right = i.right;
+                                    if (right.type === 'UnaryExpression' && right.operator === '-') {
+                                        var arg = right.argument;
+                                        if (arg.type === 'Literal' && typeof arg.value === 'number') {
+                                            i.right.value = -arg.value;
+                                        }
+                                    }
+                                }
                                 //return parse(i.left) + " <em>" + findLabel(Y.inputEx.Wegas.BINARYOPERATORS, i.operator) + "</em> " + i.right.value;
                                 return parse(i.left) + " <em>" + i.operator.replace("===",
-                                                "=").replace("!==", "<>") + "</em> " + i.right.value;
+                                    "=").replace("!==", "<>") + "</em> " + i.right.value;
                             default:
                                 return source(i.range);
                         }
-                    }, tree = window.esprima.parse(script, {
+                    },
+                    tree = window.esprima.parse(script, {
                         raw: true,
                         range: true
                     });
@@ -447,7 +587,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                         case Syntax.LogicalExpression:
                             if (expression.operator === "&&") {
                                 return Parser.generateExpression(expression.left,
-                                        options).concat(Parser.generateExpression(expression.right, options));
+                                    options).concat(Parser.generateExpression(expression.right, options));
                             }
                             break;
                         case Syntax.CallExpression:
@@ -456,20 +596,20 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                     return Parser.generateExpression(i, options);
                                 }, this);
                                 return [{
-                                    type: options.expects,
-                                    classFilter: options.classFilter,
-                                    raw: expression.range,
-                                    value: "GLOBAL" + expression.callee.name,
-                                    "arguments": args
-                                }];
+                                        type: options.expects,
+                                        classFilter: options.classFilter,
+                                        raw: expression.range,
+                                        value: "GLOBAL" + expression.callee.name,
+                                        "arguments": args
+                                    }];
                             }
                             switch (expression.callee.object.type) {
                                 case Syntax.Identifier:
-                                    switch (expression.callee.object.name) {
-                                        case "Variable":
-                                        case "VariableDescriptorFacade":        // @backwardcompatibility
-                                            //Assume function is "find"
-                                            return [{
+                                switch (expression.callee.object.name) {
+                                    case "Variable":
+                                    case "VariableDescriptorFacade":        // @backwardcompatibility
+                                        //Assume function is "find"
+                                        return [{
                                                 type: options.expects,
                                                 classFilter: options.classFilter,
                                                 raw: expression.range,
@@ -477,18 +617,18 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                             }];
                                         //                                        case "RequestManager":
                                         //                                        case "Event":
-                                        default:
-                                            args = Y.Array.map(expression["arguments"], function(i) {
-                                                return Parser.generateExpression(i, options);
-                                            }, this);
-                                            return [{
+                                    default:
+                                        args = Y.Array.map(expression["arguments"], function(i) {
+                                            return Parser.generateExpression(i, options);
+                                        }, this);
+                                        return [{
                                                 type: options.expects,
                                                 classFilter: options.classFilter,
                                                 raw: expression.range,
                                                 value: "GLOBAL" + expression.callee.object.name + "." + expression.callee.property.name,
                                                 "arguments": args
                                             }];
-                                    }
+                                }
                                 default:
                                     vdSelect = Parser.generateExpression(expression.callee.object, options);
                                     args = Y.Array.map(expression["arguments"], function(i) {
@@ -511,36 +651,36 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             },
             join: function(scripts, joinType) {
                 var i, j, tree, next, script = "", tmp, write = function(script, type, nextScript) {
-                        switch (type) {
-                            case Syntax.EmptyStatement:                         /** STATEMENT **/
-                                return false; //Skip it
-                            case Syntax.ExpressionStatement:
-                                next = nextScript ? eparse(scripts[i + 1]).body[0].type : null;
-                                if (joinType === "condition" && next === Syntax.ExpressionStatement) { //Join 2 conditional expression
-                                    return script.replace(/;*\s*$/, " && ");
-                                } else {
-                                    return script.replace(/;*\s*$/, ";\n");
-                                }
-                            case Syntax.BlockStatement:
-                            case Syntax.IfStatement:
-                            case Syntax.WithStatement:
-                            case Syntax.SwitchStatement:
-                            case Syntax.ThrowStatement:
-                            case Syntax.TryStatement:
-                            case Syntax.WhileStatement:
-                            case Syntax.DoWhileStatement:
-                            case Syntax.ForStatement:
-                            case Syntax.ForInStatement:
-                            case Syntax.ForOfStatement:
-                            case Syntax.LabeledStatement:
-                            case Syntax.DebuggerStatement:
-                            case Syntax.FunctionDeclaration:                    /** DECLARATION **/
-                                return scripts[i] + "\n";
-                            case Syntax.VariableDeclaration:
-                                return scripts[i].replace(/;*\s*$/, ";\n");
-                        }
-                        return "";
-                    };
+                    switch (type) {
+                        case Syntax.EmptyStatement:                         /** STATEMENT **/
+                            return false; //Skip it
+                        case Syntax.ExpressionStatement:
+                            next = nextScript ? eparse(scripts[i + 1]).body[0].type : null;
+                            if (joinType === "condition" && next === Syntax.ExpressionStatement) { //Join 2 conditional expression
+                                return script.replace(/;*\s*$/, " && ");
+                            } else {
+                                return script.replace(/;*\s*$/, ";\n");
+                            }
+                        case Syntax.BlockStatement:
+                        case Syntax.IfStatement:
+                        case Syntax.WithStatement:
+                        case Syntax.SwitchStatement:
+                        case Syntax.ThrowStatement:
+                        case Syntax.TryStatement:
+                        case Syntax.WhileStatement:
+                        case Syntax.DoWhileStatement:
+                        case Syntax.ForStatement:
+                        case Syntax.ForInStatement:
+                        case Syntax.ForOfStatement:
+                        case Syntax.LabeledStatement:
+                        case Syntax.DebuggerStatement:
+                        case Syntax.FunctionDeclaration:                    /** DECLARATION **/
+                            return scripts[i] + "\n";
+                        case Syntax.VariableDeclaration:
+                            return scripts[i].replace(/;*\s*$/, ";\n");
+                    }
+                    return "";
+                };
 
                 for (i = 0; i < scripts.length; i += 1) {
                     if (scripts[i]) {

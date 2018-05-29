@@ -2,40 +2,37 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb.statemachine;
 
+import com.wegas.core.api.StateMachineFacadeI;
 import com.wegas.core.ejb.*;
-import com.wegas.core.event.internal.DescriptorRevivedEvent;
-import com.wegas.core.event.internal.PlayerAction;
-import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.*;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.script.ScriptException;
+import java.util.Set;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import org.slf4j.LoggerFactory;
 
 /**
  * Run state machines.
@@ -44,7 +41,8 @@ import javax.script.ScriptException;
  */
 @Stateless
 @LocalBean
-public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
+public class StateMachineFacade extends WegasAbstractFacade implements  StateMachineFacadeI {
+//public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> implements  StateMachineFacadeI {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
 
@@ -70,9 +68,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     private PlayerFacade playerFacade;
 
     @EJB
-    private VariableInstanceFacade variableInstanceFacade;
-
-    @EJB
     private ScriptFacade scriptManager;
 
     @Inject
@@ -87,33 +82,29 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     @Inject
     private ScriptEventFacade scriptEvent;
 
-    /**
-     * Manage internal event transition.
-     */
-    //private InternalStateMachineEventCounter stateMachineEventsCounter;
-    /**
-     *
-     */
-    public StateMachineFacade() {
-        super(StateMachineDescriptor.class);
-    }
-
     public Transition findTransition(Long transitionId) {
         return getEntityManager().find(Transition.class, transitionId);
     }
 
     /**
-     * @param playerAction
-     * @throws com.wegas.core.exception.internal.NoPlayerException
+     * Run stateMachine for all players within the given context
+     *
+     * @param context a gameModel, a game, a team or a player
      */
-    public void playerActionListener(@Observes PlayerAction playerAction) throws NoPlayerException, WegasScriptException {
-        logger.debug("Received PlayerAction event");
-        Player player = playerAction.getPlayer();
-        if (player == null) {
+    public void runStateMachines(InstanceOwner context) throws WegasScriptException {
+
+        List<Player> players;
+        if (context == null || context.getPlayers() == null) {
+            logger.error("No Player Provided...");
+            Player player = null;
             for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
                 for (AbstractEntity entity : entry.getValue()) {
                     if (entity instanceof VariableInstance) {
-                        player = variableInstanceFacade.findAPlayer((VariableInstance) entity);
+                        VariableInstance vi = (VariableInstance) entity;
+                        InstanceOwner owner = vi.getOwner();
+                        if (owner != null) {
+                            player = owner.getAnyLivePlayer();
+                        }
                         break;
                     }
                 }
@@ -122,18 +113,22 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
                 }
             }
             if (player == null) {
-                throw new NoPlayerException("StateMachine Facade: NO PLAYER");
+                throw WegasErrorMessage.error("StateMachine Facade: NO PLAYER");
             }
+            players = new ArrayList<>();
+            players.add(player);
+        } else {
+            players = context.getPlayers();
         }
 
-        this.runForPlayers(player);
+        this.runForPlayers(players.get(0));
         /*
         Force resources release
-         */
-        getEntityManager().flush();
+        //getEntityManager().flush();
         if (playerAction.getClear()) {
             requestManager.clear();
         }
+         */
     }
 
     private List<Player> getPlayerFromAudiences(List<String> audiences) {
@@ -229,23 +224,14 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     }
 
     /**
-     * @param resetEvent
+     * Get all stateMachine defined within the gameModel
+     *
+     * @param gameModel the gameModel we search state machine in
+     *
+     * @return all stateMachines which exists in gameModel
      */
-    public void resetEventListener(@Observes ResetEvent resetEvent) throws WegasScriptException {
-        requestManager.clearFsmData();
-        getEntityManager().flush();
-
-        List<Player> concernedPlayers = resetEvent.getConcernedPlayers();
-        Player player = null;
-        if (concernedPlayers.size() > 0) {
-            player = concernedPlayers.get(0);
-        }
-        this.runForPlayers(player);
-        getEntityManager().flush();
-    }
-
     private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {
-        final List<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        final Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         final List<StateMachineDescriptor> stateMachineDescriptors = new ArrayList<>();
         for (VariableDescriptor vd : variableDescriptors) {
             if (vd instanceof StateMachineDescriptor) {
@@ -293,7 +279,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
     private void run(Map<StateMachineInstance, Player> instances) throws WegasScriptException {
 
         List<SelectedTransition> selectedTransitions = new ArrayList<>();
-        StateMachineCounter stateMachineCounter = requestManager.getStateMachineCounter();
+        StateMachineCounter stateMachineCounter = requestManager.getEventCounter();
 
         StateMachineInstance smi;
         Boolean validTransition;
@@ -320,13 +306,13 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
 
                     if (transition instanceof DialogueTransition
                             && ((DialogueTransition) transition).getActionText() != null
-                            && !((DialogueTransition) transition).getActionText().isEmpty()) {
+                            && !((DialogueTransition) transition).getActionText().translateOrEmpty(player).isEmpty()) {
                         /**
                          * a DialogueTransition with a text means that
                          * transition can only be triggered by hand by a player
                          */
-                        continue;
-                    } else if (this.isNotDefined(transition.getTriggerCondition())) {
+                    continue;
+                } else if (this.isNotDefined(transition.getTriggerCondition())) {
                         // Empty condition is always valid :no need to eval
                         validTransition = true;
                     } else {
@@ -402,7 +388,8 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
      * Test if a script is not defined, ie empty or null
      *
      * @param script to test
-     * @return
+     *
+     * @return true if the script is undefined
      */
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
@@ -447,16 +434,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         return stateMachineInstance;
     }
 
-    @Override
-    public void create(StateMachineDescriptor entity) {
-        variableDescriptorFacade.create(entity);
-    }
-
-    @Override
-    public void remove(StateMachineDescriptor entity) {
-        variableDescriptorFacade.remove(entity);
-    }
-
     /**
      * Access from nashhorn event callback
      */
@@ -477,6 +454,7 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
         }
     }
 
+    @Override
     public long countValidTransition(DialogueDescriptor dialogueDescriptor, Player currentPlayer) {
         long count = 0;
         DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();
@@ -501,7 +479,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
      *
      * @param event
      * @throws com.wegas.core.exception.internal.WegasNoResultException
-     */
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) throws ScriptException {
         logger.error("Received DescriptorRevivedEvent event");
         if (event.getEntity() instanceof StateMachineDescriptor) {
@@ -517,5 +494,6 @@ public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> {
             }
         }
     }
+     */
 
 }

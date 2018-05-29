@@ -2,26 +2,24 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.persistence.*;
 
 /**
  *
@@ -30,13 +28,11 @@ import com.wegas.core.persistence.EntityComparators;
 @Entity
 @Table(name = "FSMinstance"/*, 
         indexes = {
-            @Index(columnList = "transitionHistory.statemachineinstance_variableinstance_id")
+            @Index(columnList = "transitionHistory.statemachineinstance_id")
         }*/
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Access(AccessType.FIELD)
-//@XmlRootElement
-//@XmlType(name = "FSMInstance")
 @JsonTypeName(value = "FSMInstance")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class)
@@ -52,6 +48,7 @@ public class StateMachineInstance extends VariableInstance {
     /**
      *
      */
+    @Column(columnDefinition = "boolean default true")
     private Boolean enabled = true;
     /**
      *
@@ -69,7 +66,7 @@ public class StateMachineInstance extends VariableInstance {
 
     /**
      *
-     * @return
+     * @return the current state
      */
     @JsonProperty("currentState")
     public State getCurrentState() {
@@ -102,7 +99,7 @@ public class StateMachineInstance extends VariableInstance {
 
     /**
      *
-     * @return
+     * @return true if the state machine enabled ?
      */
     public Boolean getEnabled() {
         return enabled;
@@ -118,7 +115,7 @@ public class StateMachineInstance extends VariableInstance {
 
     /**
      *
-     * @return
+     * @return list of walked transitions 
      */
     @JsonProperty
     public List<Long> getTransitionHistory() {

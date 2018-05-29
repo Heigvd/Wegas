@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -28,7 +28,7 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                     },
                     commenting: {
                         title: "Commentaires",
-                        description: "Les auteurs prennent connaissance des avis de leurs pairs.<br /><br /><i>Ils commentent ces avis</i>"
+                        description: "Les auteurs prennent connaissance des avis de leurs pairs<br /><br /><i>Ils commentent ces avis</i>"
                     },
                     completed: {
                         title: "Terminé",
@@ -76,7 +76,6 @@ YUI.add("wegas-i18n-review-fr", function(Y) {
                 ask_comment: "Que pensez vous du feedback reçu ?",
                 comment: "Ce que vous pensez du feedback reçu",
                 author_comment: "Ce que l'auteur pense de votre feedback",
-                oob: "Votre note ",
                 noValueProvided: "Aucune évaluation n'a été fournie",
                 didNotProvide: "n'a pas fourni d'évaluation",
                 didNotProvidePluralized: "n'ont pas fourni d'évaluation",

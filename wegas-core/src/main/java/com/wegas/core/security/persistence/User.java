@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -12,26 +12,25 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
+import javax.persistence.*;
 
-////import javax.xml.bind.annotation.XmlTransient;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "users")
-
 @NamedQueries({
-    @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance")
-    ,
-    @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id")
-    ,
+    @NamedQuery(name = "User.findUserPermissions", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :instance"),
+    @NamedQuery(name = "User.findUsersWithRole", query = "SELECT DISTINCT users FROM User users JOIN users.roles r WHERE r.id = :role_id"),
     @NamedQuery(name = "User.findUserWithPermission", query = "SELECT DISTINCT users FROM User users JOIN users.permissions p WHERE p.value LIKE :permission AND p.user.id =:userId")
 })
-public class User extends AbstractEntity implements Comparable<User> {
+public class User extends AbstractEntity implements Comparable<User>, PermissionOwner {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,9 +44,24 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      *
      */
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH} /*, orphanRemoval = true */)
-    @JsonManagedReference(value = "player-user")
+    @OneToMany(mappedBy = "user", cascade = {
+        CascadeType.DETACH,
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REFRESH
+    } /*, orphanRemoval = true */)
+    //@JsonManagedReference(value = "player-user")
+    @JsonIgnore
     private List<Player> players = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "createdBy", cascade = {
+        CascadeType.DETACH,
+        CascadeType.MERGE,
+        CascadeType.PERSIST,
+        CascadeType.REFRESH
+    } /*, orphanRemoval = true */)
+    private List<Team> teams = new ArrayList<>();
 
     /**
      *
@@ -64,10 +78,10 @@ public class User extends AbstractEntity implements Comparable<User> {
     @JsonView(Views.ExtendedI.class)
     @JoinTable(name = "users_roles",
             joinColumns = {
-                @JoinColumn(name = "users_id", referencedColumnName = "id")},
+                @JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {
-                @JoinColumn(name = "roles_id", referencedColumnName = "id")})
-    private Set<Role> roles = new HashSet<>();
+                @JoinColumn(name = "role_id", referencedColumnName = "id")})
+    private Collection<Role> roles = new ArrayList<>();
 
     /**
      *
@@ -95,9 +109,8 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      * @return all user's players
      */
-    //@XmlTransient
-    @JsonIgnore
-    @JsonManagedReference(value = "player-user")
+    //@JsonIgnore
+    //@JsonManagedReference(value = "player-user")
     public List<Player> getPlayers() {
         return players;
     }
@@ -105,9 +118,17 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      * @param players the players to set
      */
-    @JsonManagedReference(value = "player-user")
+    //@JsonManagedReference(value = "player-user")
     public void setPlayers(List<Player> players) {
         this.players = players;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
     }
 
     /**
@@ -135,7 +156,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      * @return first user account
      */
-    //@XmlTransient
     @JsonIgnore
     public final AbstractAccount getMainAccount() {
         if (!this.accounts.isEmpty()) {
@@ -158,16 +178,21 @@ public class User extends AbstractEntity implements Comparable<User> {
         }
     }
 
+    public void setName(String name) {
+    }
+
     /**
-     * @return the permissions
+     * {@inheritDoc }
      */
+    @Override
     public List<Permission> getPermissions() {
         return this.permissions;
     }
 
     /**
-     * @param permissions the permissions to set
+     * {@inheritDoc }
      */
+    @Override
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
         for (Permission p : this.permissions) {
@@ -175,34 +200,29 @@ public class User extends AbstractEntity implements Comparable<User> {
         }
     }
 
-    public boolean removePermission(Permission permission) {
-        return this.permissions.remove(permission);
-    }
-
     /**
-     * @param permission
-     * @return true id the permission has successfully been added
+     * {@inheritDoc }
      */
+    @Override
     public boolean addPermission(Permission permission) {
-        if (!this.permissions.contains(permission)) {
+        if (!this.hasPermission(permission)) {
             permission.setUser(this);
             return this.permissions.add(permission);
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
      * @return the roles
      */
-    public Set<Role> getRoles() {
+    public Collection<Role> getRoles() {
         return roles;
     }
 
     /**
      * @param roles the roles to set
      */
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
 
@@ -225,5 +245,25 @@ public class User extends AbstractEntity implements Comparable<User> {
     @Override
     public int compareTo(User o) {
         return this.getName().toLowerCase(Locale.ENGLISH).compareTo(o.getName().toLowerCase(Locale.ENGLISH));
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        Collection<WegasPermission> p = WegasPermission.getAsCollection(
+                new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.USER)
+        );
+        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel
+        return p;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return null;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        //Sign-Up
+        return null;
     }
 }

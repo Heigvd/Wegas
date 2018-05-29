@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -14,11 +14,45 @@ import java.util.*;
  */
 public class ListUtils {
 
+    /**
+     * Callback to update JPA shared cache
+     */
     public interface Updater {
 
         void addEntity(AbstractEntity entity);
 
         void removeEntity(AbstractEntity entity);
+    }
+
+    /**
+     * Simple interface to retrieve a key from an object.
+     *
+     * @param <K> the key class
+     * @param <V> the object class
+     */
+    public interface KeyExtractorI<K, V> {
+
+        /**
+         * retrieve a key from an object
+         *
+         * @param item
+         *
+         * @return the key
+         */
+        K getKey(V item);
+    }
+
+    /**
+     * Default KeyExtractor implementation
+     * Extract Id from an abstractEntity
+     * <p>
+     */
+    public static class IdExtractor implements KeyExtractorI<Object, AbstractEntity> {
+
+        @Override
+        public Object getKey(AbstractEntity item) {
+            return item.getId();
+        }
     }
 
     /**
@@ -61,44 +95,26 @@ public class ListUtils {
      * Convert a list of object to a map. The key is based on a unique
      * identifier.<br/> Example:
      * <pre>{@code
-     *   ListUtils.ListKeyToMap<Long, Transition> converter = new ListUtils.ListKeyToMap<Long, Transition>() {
-     *       public Long getKey(Transition item) {
-     *           return item.getId(); //Assume an Id exists
-     *       }
-     *   }; Map<Long, Transition> transitionMap =
+     * ListUtils.KeyExtractorI<Long, Transition> converter = new ListUtils.KeyExtractorI<Long, Transition>() {
+     * public Long getKey(Transition item) {
+     * return item.getId(); //Assume an Id exists
+     * }
+     * }; Map<Long, Transition> transitionMap =
      * ListUtils.listAsMap(transitionList, converter); }</pre>
      *
      * @param <K>  The key class
      * @param <V>  The value class
      * @param list The List to convert
-     * @param key  ListKeyToMap object
+     * @param key  KeyExtractorI object
      *
      * @return Map
      */
-    public static <K, V> Map<K, V> listAsMap(final Collection<V> list, final ListKeyToMap<K, V> key) {
+    public static <K, V> Map<K, V> listAsMap(final Collection<V> list, final KeyExtractorI<K, V> key) {
         final Map<K, V> map = new HashMap<>();
         for (V item : list) {
             map.put(key.getKey(item), item);
         }
         return map;
-    }
-
-    /**
-     * Simple interface to retrieve a key from an object.
-     *
-     * @param <K> the key class
-     * @param <V> the object class
-     */
-    public interface ListKeyToMap<K, V> {
-
-        /**
-         * retrieve a key from an object
-         *
-         * @param item
-         *
-         * @return the key
-         */
-        K getKey(V item);
     }
 
     public static <K, V, E> Map<K, V> mapEntries(final Collection<E> list, final EntryExtractor<K, V, E> extractor) {
@@ -117,136 +133,143 @@ public class ListUtils {
     }
 
     /**
-     * This function takes two lists and merge them. This does not preserve any
-     * order.
+     * This function takes two lists and update the first with the content of the second, preserving the second order.
      * <br/> Assumptions:<br/>
-     * - An element from the new list is new if it has no <code>ID</code> or if
-     * it's <code>ID</code> is missing in the old list<br/>
-     * - 2 Abstract entities with the same <code>ID</code> have to be
+     * - An element from otherList is new if it has no <code>KEY</code> or if
+     * it's <code>key</code> is missing in the theList<br/>
+     * - 2 Abstract entities with the same <code>KEY</code> have to be
      * merged<br/>
-     * - An element from the old list has to be removed if its <code>ID</code>
-     * is missing in the new list
+     * - An element from the theList has to be removed if its <code>KEY</code>
+     * is missing in the otherList
+     * - the otherList and its elemnt remain unchanged
      *
-     * @param <E>      extends (@see AbstractEntity) the element type
-     * @param oldList  The list containing old elements
-     * @param newList  The list containing new elements
-     * @param callback
+     * @param <E>       extends (@see AbstractEntity) the element type
+     * @param theList   The list containing elements ("oldList")
+     * @param otherList The list containing new elements (the "newList")
+     * @param callback  to maintain cache integrity
+     * @param converter allow to use a peronalised element identifier (if null, elemenet.id will be used)
      *
-     * @return A merged list
+     * @return A brand new up-to-date list, which is a clone of theList
      */
-    public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList, Updater callback, ListKeyToMap<Object, E> converter) {
+    public static <E extends AbstractEntity> List<E> mergeLists(List<E> theList, List<E> otherList, Updater callback, KeyExtractorI<Object, E> converter) {
+        if (theList != otherList) {
 
+            if (converter == null) {
+                /**
+                 * No converter provided: use id as default key
+                 */
+                converter = (KeyExtractorI<Object, E>) new IdExtractor();
+            }
 
-        /*
-         * Shall we use the default converter ? 
+            /* map otherElements by their key */
+            Map<Object, E> otherElements = ListUtils.listAsMap(otherList, converter); // maps elements to process
+
+            /**
+             * Process theList
+             * <p>
+             * Extract elements which are to be merged to merged list, remove others
+             */
+            Map<Object, E> merged = new HashMap<>();
+            for (E e : theList) {
+                Object key = converter.getKey(e);
+                // Only keep element still in otherList
+                if (otherElements.containsKey(key)) {
+                    // element exists in both list
+                    // merge it and store it in the merged list
+                    e.merge(otherElements.get(key));
+                    merged.put(key, e);
+                } else {
+                    // element does not exists anylonger
+                    if (callback != null) {
+                        callback.removeEntity(e);
+                    }
+                }
+            }
+            /**
+             * All elements from theList have been processed
+             * Those who will survive have been merged, and stored within the merged list
+             * Others have been deleted
+             */
+            theList.clear(); // make room in theList in order to preserve order
+
+            /**
+             * Process otherList.
+             * there is two cases:
+             * 1. element existed in theList and has already been merged : put it back in theList
+             * 2. element did not exists in theList: clone it and add the clone in theList
+             */
+            for (E e : otherList) {
+                Object key = converter.getKey(e);
+                if (merged.containsKey(key)) {
+                    // Element already merged, put it back to theList
+                    theList.add(merged.get(key));
+                } else {
+                    /**
+                     * Either e came from another "world" (e.g. from defaultInstance to scoped-instance)
+                     * either it's a new one
+                     * <p>
+                     * In both case : clone it (cloning element avoids mixing elements
+                     * from different entities -- remember the so-called occupations multiplication issue)
+                     */
+                    theList.add((E) e.clone());
+
+                    /*
+                 * Since a new element is added to the destinationList, the callback has to be called
+                     */
+                    if (callback != null) {
+                        callback.addEntity(e);
+                    }
+                }
+            }
+        }
+
+        /**
+         * Using brand new list makes JPA cache manager happier
          */
-        if (converter == null) {
-            // Use id as default key
-            converter = new ListUtils.ListKeyToMap<Object, E>() {
-                @Override
-                public Long getKey(E item) {
-                    return item.getId();
-                }
-            };
-        }
-
-        List<E> newElements = new ArrayList<>();
-        //do NOT modify newList
-        newList = clone(newList);
-        for (Iterator<E> it = newList.iterator(); it.hasNext();) {                 //remove AbstractEntities without id and store them
-            E element = it.next();
-            if (converter.getKey(element) == null) {
-                newElements.add(element);
-                it.remove();
-            }
-        }
-
-        Map<Object, E> elementMap = ListUtils.listAsMap(newList, converter);      //Create a map with newList based on Ids
-        for (Iterator<E> it = oldList.iterator(); it.hasNext();) {
-            E element = it.next();
-            Object key = converter.getKey(element);
-            if (elementMap.containsKey(key)) {                      //old element still exists
-                element.merge(elementMap.get(key));                 //Then merge them
-                elementMap.remove(key);                             //remove element from map
-            } else {
-                if (callback != null) {
-                    callback.removeEntity(element);
-                }
-                it.remove();                                                    //else remove that old element
-            }
-        }
-        for (Iterator<E> it = elementMap.values().iterator(); it.hasNext();) {  //Process remaining elements
-            try {
-                E element = it.next();
-                E newElement = (E) element.getClass().newInstance();
-                newElement.merge(element);
-                newElements.add(newElement);
-
-            } catch (InstantiationException | IllegalAccessException ex) {
-            }
-        }
-        //Add all new elements
-        for (E newEntity : newElements) {
-            // cloning newElement avoids mixing elements from different entities (remember the so-called occupations multiplication issue)
-            E clone = (E) newEntity.clone();
-            oldList.add(clone);
-            if (callback != null) {
-                callback.addEntity(clone);
-            }
-        }
-        //oldList.addAll(newElements);
         final List<E> ret = new ArrayList<>();
-        ret.addAll(oldList);
+        ret.addAll(theList);
         return ret;
     }
 
-    public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList, Updater callback) {
-        return mergeLists(oldList, newList, callback, null);
-    }
-
-    public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList, ListKeyToMap<Object, E> converter) {
-        return mergeLists(oldList, newList, null, converter);
-    }
-
-    public static <E extends AbstractEntity> List<E> mergeLists(List<E> oldList, List<E> newList) {
-        return mergeLists(oldList, newList, null, null);
+    /**
+     * @param <E>
+     * @param theList   the original list to update
+     * @param otherList the list to take new elements from
+     * @param updater   callback to update the cache
+     *
+     * @return same as {@link #mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.KeyExtractorI) without any converter
+     *
+     * @see ListUtils#mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.ListKeyToMap)
+     */
+    public static <E extends AbstractEntity> List<E> mergeLists(List<E> theList, List<E> otherList, Updater updater) {
+        return mergeLists(theList, otherList, updater, null);
     }
 
     /**
-     * This function takes two lists and replace the content of the first one
-     * with the content from the second one.<br/>
-     * Merging elements with same <code>id</code> and preserving second list's
-     * order.
      *
-     * @param <E>     extends (@see AbstractEntity) the element type
-     * @param oldList The list containing old elements
-     * @param newList The list containing new elements
+     * @param <E>
+     * @param theList   the original list to update
+     * @param otherList the list to take new elements from
+     * @param converter allow to identify element with a different key (element's id is the default one)
      *
-     * @return A merged list
+     * @return same as {@link #mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.KeyExtractorI) without any updated
+     *
+     * @see ListUtils#mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.ListKeyToMap)
      */
-    public static <E extends AbstractEntity> List<E> mergeReplace(List<E> oldList, List<E> newList) {
-        final List<E> updatedList = new ArrayList<>();
-        ListUtils.ListKeyToMap<Long, E> converter = new ListUtils.ListKeyToMap<Long, E>() {
-            @Override
-            public Long getKey(E item) {
-                return item.getId();
-            }
-        };
-        Map<Long, E> elementMap = ListUtils.listAsMap(oldList, converter);      //Create a map with oldList based on Ids
-        //  oldList.clear();
-        for (E element : newList) {
-            if (elementMap.containsKey(element.getId())) {                      //old element still exists
-                elementMap.get(element.getId()).merge(element);                 //Then merge them
-                updatedList.add(elementMap.get(element.getId()));
-            } else {
-                try {
-                    E newElement = (E) element.getClass().newInstance();
-                    newElement.merge(element);
-                    updatedList.add(newElement);
-                } catch (InstantiationException | IllegalAccessException ex) {
-                }
-            }
-        }
-        return updatedList;
+    public static <E extends AbstractEntity> List<E> mergeLists(List<E> theList, List<E> otherList, KeyExtractorI<Object, E> converter) {
+        return mergeLists(theList, otherList, null, converter);
+    }
+
+    /**
+     * @param <E>
+     * @param theList   the original list to update
+     * @param otherList the list to take new elements from
+     *
+     * @return same as {@link #mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.KeyExtractorI) without any updated nor converter
+     *
+     * @see ListUtils#mergeLists(java.util.List, java.util.List, com.wegas.core.persistence.ListUtils.Updater, com.wegas.core.persistence.ListUtils.ListKeyToMap)
+     */
+    public static <E extends AbstractEntity> List<E> mergeLists(List<E> theList, List<E> otherList) {
+        return mergeLists(theList, otherList, null, null);
     }
 }

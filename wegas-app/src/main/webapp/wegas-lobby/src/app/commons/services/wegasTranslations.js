@@ -44,107 +44,107 @@ angular.module('wegas.service.wegasTranslations', [])
             },
             $get: function() {
                 var keywords = {
-                        'user': {
-                            singular: {
-                                en: "user",
-                                fr: "utilisateur"
-                            },
-                            plural: {
-                                en: "users",
-                                fr: "utilisateurs"
-                            }
+                    'user': {
+                        singular: {
+                            en: "user",
+                            fr: "utilisateur"
                         },
-                        'player': {
-                            singular: {
-                                en: "player",
-                                fr: "joueur"
-                            },
-                            plural: {
-                                en: "players",
-                                fr: "joueurs"
-                            }
-                        },
-                        'trainer': {
-                            singular: {
-                                en: "trainer",
-                                fr: "animateur"
-                            },
-                            plural: {
-                                en: "trainers",
-                                fr: "animateurs"
-                            }
-                        },
-                        'scenarist': {
-                            singular: {
-                                en: "scenarist",
-                                fr: "scénariste"
-                            },
-                            plural: {
-                                en: "scenarists",
-                                fr: "scénaristes"
-                            }
-                        },
-                        'admin': {
-                            singular: {
-                                en: "administrator",
-                                fr: "administrateur"
-                            },
-                            plural: {
-                                en: "administrators",
-                                fr: "administrateurs"
-                            }
-                        },
-                        'team': {
-                            singular: {
-                                en: "team",
-                                fr: "équipe"
-                            },
-                            plural: {
-                                en: "teams",
-                                fr: "équipes"
-                            }
-                        },
-                        'session': {
-                            singular: {
-                                en: "session",
-                                fr: "partie"
-                            },
-                            plural: {
-                                en: "sessions",
-                                fr: "parties"
-                            }
-                        },
-                        'scenario': {
-                            singular: {
-                                en: "scenario",
-                                fr: "scénario"
-                            },
-                            plural: {
-                                en: "scenarios",
-                                fr: "scénarios"
-                            }
-                        },
-                        'token': {
-                            singular: {
-                                en: "access key",
-                                fr: "clé d'accès"
-                            },
-                            plural: {
-                                en: "access keys",
-                                fr: "clés d'accès"
-                            }
-                        },
-                        'workspace': {
-                            singular: {
-                                en: "workspace",
-                                fr: "espace de travail"
-                            },
-                            plural: {
-                                en: "workspaces",
-                                fr: "espaces de travail"
-                            }
+                        plural: {
+                            en: "users",
+                            fr: "utilisateurs"
                         }
                     },
+                    'player': {
+                        singular: {
+                            en: "player",
+                            fr: "joueur"
+                        },
+                        plural: {
+                            en: "players",
+                            fr: "joueurs"
+                        }
+                    },
+                    'trainer': {
+                        singular: {
+                            en: "trainer",
+                            fr: "animateur"
+                        },
+                        plural: {
+                            en: "trainers",
+                            fr: "animateurs"
+                        }
+                    },
+                    'scenarist': {
+                        singular: {
+                            en: "scenarist",
+                            fr: "scénariste"
+                        },
+                        plural: {
+                            en: "scenarists",
+                            fr: "scénaristes"
+                        }
+                    },
+                    'admin': {
+                        singular: {
+                            en: "administrator",
+                            fr: "administrateur"
+                        },
+                        plural: {
+                            en: "administrators",
+                            fr: "administrateurs"
+                        }
+                    },
+                    'team': {
+                        singular: {
+                            en: "team",
+                            fr: "équipe"
+                        },
+                        plural: {
+                            en: "teams",
+                            fr: "équipes"
+                        }
+                    },
+                    'session': {
+                        singular: {
+                            en: "session",
+                            fr: "partie"
+                        },
+                        plural: {
+                            en: "sessions",
+                            fr: "parties"
+                        }
+                    },
+                    'scenario': {
+                        singular: {
+                            en: "scenario",
+                            fr: "scénario"
+                        },
+                        plural: {
+                            en: "scenarios",
+                            fr: "scénarios"
+                        }
+                    },
+                    'token': {
+                        singular: {
+                            en: "access key",
+                            fr: "clé d'accès"
+                        },
+                        plural: {
+                            en: "access keys",
+                            fr: "clés d'accès"
+                        }
+                    },
+                    'workspace': {
+                        singular: {
+                            en: "workspace",
+                            fr: "espace de travail"
+                        },
+                        plural: {
+                            en: "workspaces",
+                            fr: "espaces de travail"
+                        }
+                    }
+                },
                     startSentence = function(word) {
                         return word.charAt(0).toUpperCase() + word.slice(1);
                     };
@@ -212,11 +212,11 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Veuillez renseigner l'email et le mot de passe"
                         },
                         /*
-                        'CREATE-ACCOUNT-LABEL': {
-                            'en': "New user?",
-                            'fr': "Nouvel utilisateur ?"
-                        },
-                        */
+                         'CREATE-ACCOUNT-LABEL': {
+                         'en': "New user?",
+                         'fr': "Nouvel utilisateur ?"
+                         },
+                         */
                         'LOGIN-AAI-ACCOUNT-BTN': {
                             'en': "Recommended to AAI users:",
                             'fr': "Recommandé aux utilisateurs AAI:"
@@ -417,6 +417,18 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Error while joining " + keywords.session.singular.en,
                             'fr': "Erreur durant la tentative de rejoindre la " + keywords.session.singular.fr
                         },
+                        'COMMONS-TEAMS-JOIN-QUEUED': {
+                            'en': "Scheduled for initialization",
+                            'fr': "En attente de création"
+                        },
+                        'COMMONS-TEAMS-JOIN-TIME-TO-GO': {
+                            'en': "Still {{t}}s to go",
+                            'fr': "Encore {{t}}s"
+                        },
+                        'COMMONS-TEAMS-JOIN-PROCESSING': {
+                            'en': "In progress",
+                            'fr': "En cours de création"
+                        },
                         'COMMONS-TEAMS-ALREADY-JOIN-FLASH-INFO': {
                             'en': "You have already joined this " + keywords.session.singular.en,
                             'fr': "Vous avez déjà rejoint cette " + keywords.session.singular.fr
@@ -506,7 +518,7 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         // Referenced server side:
                         'COMMONS-SESSIONS-TAKEN-TOKEN-ERROR': {
-                            'en': "This access key is already used for another "  + keywords.session.singular.en,
+                            'en': "This access key is already used for another " + keywords.session.singular.en,
                             'fr': "Cette clé d'accès est déjà utilisée pour une autre " + keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR': {
@@ -882,7 +894,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Droits de l'" + keywords.trainer.singular.fr + " enlevés"
                         },
                         'COMMONS-PERMISSIONS-SESSIONS-DELETE-FLASH-ERROR': {
-                            'en': "Error while removiong " + keywords.trainer.singular.en,
+                            'en': "Error while removing " + keywords.trainer.singular.en,
                             'fr': "Une erreur est survenue durant la suppression des droits de l'" +
                                 keywords.trainer.singular.fr
                         },
@@ -909,7 +921,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Permissions enlevées"
                         },
                         'COMMONS-PERMISSIONS-SCENARIOS-DELETE-FLASH-ERROR': {
-                            'en': "Error while removiong permissions",
+                            'en': "Error while removing permissions",
                             'fr': "Une erreur est survenue durant l'édition des permissions"
                         },
 
@@ -990,6 +1002,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Advanced",
                             'fr': "Réglages avancés"
                         },
+                        'PRIVATE-MODALE-TABS-LANGUAGES': {
+                            'en': "Languages",
+                            'fr': "Langues"
+                        },
                         'PRIVATE-MODALE-TABS-ACCESS-LINK-TITLE': {
                             'en': "Direct link as guest",
                             'fr': "Lien direct comme invité"
@@ -1006,7 +1022,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Cliquer ici pour sélectionner le lien"
                         },
                         'PRIVATE-MODALE-TABS-ADVANCED-WARNING': {
-                            'en': "Warning! Update these values only if you know what you do",
+                            'en': "Warning! Update these values only if you know what you are doing",
                             'fr': "Attention! Ne modifier les paramètres avancés qu'en connaissance de cause"
                         },
                         'PRIVATE-MODALE-SETTINGS-NOT-SAVED-WARNING': {
@@ -1057,6 +1073,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Comments are optional",
                             'fr': "Les commentaires sont optionnels"
                         },
+                        'PRIVATE-SCENARIOS-LANGUAGES-CHECKBOX': {
+                            'en': "Active Languages",
+                            'fr': "Langues Disponibles"
+                        },
                         'PRIVATE-SCENARIOS-TYPE-LABEL-CHECKBOX': {
                             'en': "Game type",
                             'fr': "Type de jeu"
@@ -1072,6 +1092,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'PRIVATE-SCENARIOS-LOG-ID-LABEL-INPUT': {
                             'en': "Log ID",
                             'fr': "Log ID"
+                        },
+                        'PRIVATE-SCENARIOS-GUEST-ALLOWED-LABEL-CHECKBOX': {
+                            'en': "Guests allowed",
+                            'fr': "Invités autorisés"
                         },
                         'PRIVATE-SCENARIOS-SERVER-SCRIPT-LABEL-INPUT': {
                             'en': "Server script",
@@ -1262,6 +1286,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Add " + keywords.session.singular.en,
                             'fr': "Créer une " + keywords.session.singular.fr
                         },
+                        'TRAINER-INDEX-ME-FIRST-TITLE': {
+                            'en': "List my " + keywords.session.plural.en + " first",
+                            'fr': "Lister mes " + keywords.session.plural.fr + " en premier"
+                        },
+                        'TRAINER-INDEX-ME-FIRST-TOOLTIP': {
+                            'en': startSentence(keywords.session.plural.en) + " are always ordered by creation date, optionally starting with my own",
+                            'fr': "Les " + keywords.session.plural.fr + " sont ordonnées par date de création, en option avec les miennes en premier"
+                        },
                         'TRAINER-INDEX-ADD-NAME-INPUT': {
                             'en': startSentence(keywords.session.singular.en) + " name",
                             'fr': "Nom de la " + keywords.session.singular.fr
@@ -1298,6 +1330,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': startSentence(keywords.scenario.singular.en),
                             'fr': startSentence(keywords.scenario.singular.fr)
                         },
+                        'TRAINER-CARD-DETAILS-CREATED-ON': {
+                            'en': "Created on ",
+                            'fr': "Créée le "
+                        },
+                        'TRAINER-CARD-DETAILS-CREATED-BY': {
+                            'en': " by ",
+                            'fr': " par "
+                        },
                         'TRAINER-CARD-ACCESS-CLOSE': {
                             'en': "Closed to new " + keywords.player.plural.en,
                             'fr': "Fermé aux nouveaux " + keywords.player.plural.fr
@@ -1329,6 +1369,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'TRAINER-MODALE-USERS-TAB-PLAYER': {
                             'en': startSentence(keywords.player.plural.en),
                             'fr': startSentence(keywords.player.plural.fr)
+                        },
+                        'TRAINER-MODALE-USERS-NO-PLAYERS': {
+                            'en': "No players have joined yet",
+                            'fr': "Aucun joueur n'a rejoint la partie"
                         },
                         'TRAINER-MODALE-USERS-TAB-TRAINER': {
                             'en': startSentence(keywords.trainer.plural.en),
@@ -1410,6 +1454,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "New " + keywords.scenario.singular.en,
                             'fr': "Nouveau " + keywords.scenario.singular.fr
                         },
+                        'SCENARIST-INDEX-ME-FIRST-TITLE': {
+                            'en': "List my " + keywords.scenario.plural.en + " first",
+                            'fr': "Lister mes " + keywords.scenario.plural.fr + " en premier"
+                        },
+                        'SCENARIST-INDEX-ME-FIRST-TOOLTIP': {
+                            'en': startSentence(keywords.scenario.plural.en) + " are always ordered by creation date, optionally starting with my own",
+                            'fr': "Les " + keywords.scenario.plural.fr + " sont ordonnés par date de création, en option avec les miens en premier"
+                        },
                         'SCENARIST-INDEX-ADD-NAME-INPUT': {
                             'en': startSentence(keywords.scenario.singular.en) + " name",
                             'fr': "Nom du " + keywords.scenario.singular.fr
@@ -1487,6 +1539,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'SCENARIST-CARD-EDIT-BTN': {
                             'en': "Edit " + keywords.scenario.singular.en,
                             'fr': "Modifier le " + keywords.scenario.singular.fr
+                        },
+                        'SCENARIST-CARD-CREATED-ON': {
+                            'en': "Created on ",
+                            'fr': "Créé le "
+                        },
+                        'SCENARIST-CARD-CREATED-BY': {
+                            'en': " by ",
+                            'fr': " par "
                         },
                         'SCENARIST-MODALE-USERS-TITLE': {
                             'en': "Co-" + keywords.scenarist.plural.en,
@@ -1600,6 +1660,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "sync online user list",
                             'fr': "synchroniser la liste des utilisateurs connectés"
                         },
+                        'ADMIN-WHO-REQUESTRELOAD-BTN': {
+                            'en': "Request user to reload the page",
+                            'fr': "Demxmander aux utilisateurs de recharger leur page"
+                        },
                         'ADMIN-WHO-SINGULAR-TITLE': {
                             'en': "connected user",
                             'fr': "utilisateur connecté"
@@ -1689,12 +1753,24 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Modifier le groupe"
                         },
                         'ADMIN-GROUPS-CARD-MEMBER-BTN': {
-                            'en': "Goup members",
+                            'en': "Group members",
                             'fr': "Membres du groupe"
+                        },
+                        'ADMIN-GROUPS-CARD-TOGGLE-MEMBERS-BTN': {
+                            'en': "Show/Hide group members",
+                            'fr': "Afficher/Cacher les membres du groupe"
+                        },
+                        'ADMIN-GROUPS-NO-MEMBERS-ERROR': {
+                            'en': "This group is empty!",
+                            'fr': "Ce groupe est vide !"
                         },
                         'ADMIN-GROUPS-CARD-DELETE-BTN': {
                             'en': "Delete group",
                             'fr': "Supprimer le groupe"
+                        },
+                        'ADMIN-GROUPS-CARD-EMAILS-BTN': {
+                            'en': "Get e-mail addresses",
+                            'fr': "Obtenir les adresses e-mail"
                         },
                         'ADMIN-GROUPS-CARD-DELETE-CONFIRM': {
                             'en': "Are you sure you want to delete this group ? This action is irreversible.",
@@ -1737,13 +1813,13 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Expression de la permission"
                         },
                         /*
-                        'UPGRADE-ACCOUNT': {
-                            'en': "You can start the game now. But if you want to keep this " + keywords.session.singular.en +
-                                  ", you should first login or create a user account.",
-                            'fr': "Vous pouvez commencer le jeu. Mais si vous voulez conserver cette " +
-                                  keywords.session.singular.fr + ", il faut d'abord vous connecter ou créer un compte."
-                        },
-                        */
+                         'UPGRADE-ACCOUNT': {
+                         'en': "You can start the game now. But if you want to keep this " + keywords.session.singular.en +
+                         ", you should first login or create a user account.",
+                         'fr': "Vous pouvez commencer le jeu. Mais si vous voulez conserver cette " +
+                         keywords.session.singular.fr + ", il faut d'abord vous connecter ou créer un compte."
+                         },
+                         */
                         // So Long, and Thanks for All the Fish
                         'END': {
                             'en': "This is the end",
@@ -1792,4 +1868,4 @@ angular.module('wegas.service.wegasTranslations', [])
             }
         };
     })
-;
+    ;

@@ -2,12 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.Helper;
+import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -18,21 +18,23 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.security.util.SecurityHelper;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -71,9 +73,14 @@ public class GameController {
     @EJB
     private PlayerFacade playerFacade;
 
+    @Inject
+    private PopulatorFacade populatorFacade;
+
     /**
      * @param entityId
+     *
      * @return game matching entityId
+     *
      * @throws AuthorizationException current user doesn't have access to the
      *                                requested game
      */
@@ -81,28 +88,8 @@ public class GameController {
     @Path("{entityId : [1-9][0-9]*}")
     public Game find(@PathParam("entityId") Long entityId) {
         Game g = gameFacade.find(entityId);
-        SecurityHelper.checkAnyPermission(g, Arrays.asList("View"));
 
         return g; // was: gameFacade.find(entityId);
-    }
-
-    /**
-     * @param gameModelId
-     * @return all gameModel games
-     */
-    @GET
-    public Collection<Game> index(@PathParam("gameModelId") String gameModelId) {
-        final Collection<Game> retGames = new ArrayList<>();
-        final Collection<Game> games = (!gameModelId.isEmpty())
-                ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
-                : gameFacade.findAll(Game.Status.LIVE);
-
-        for (Game g : games) {
-            if (SecurityHelper.isPermitted(g, "Edit")) {
-                retGames.add(g);
-            }
-        }
-        return retGames;
     }
 
     /**
@@ -110,11 +97,14 @@ public class GameController {
      *
      * @param gameModelId
      * @param game
+     *
      * @return the new game with its debug team filtered out
+     *
      * @throws IOException
      */
     @POST
     public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws IOException {
+        // Special instantiate permission is not handled by automatic permission system
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.publishAndCreate(gameModelId, game);
@@ -132,13 +122,16 @@ public class GameController {
      *
      * @param gameModelId
      * @param entity
+     *
      * @return the new game with its debug team filtered out
+     *
      * @throws IOException
      */
     @POST
     @Path("ShadowCreate")
     @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
+        // Special instantiate permission is not handled by automatic permission system
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.create(gameModelId, entity);
@@ -150,7 +143,9 @@ public class GameController {
      *
      * @param gameModelId
      * @param entity
+     *
      * @return the new game with its debug team
+     *
      * @throws IOException
      */
     @POST
@@ -162,32 +157,16 @@ public class GameController {
     /**
      * @param entityId
      * @param entity
+     *
      * @return up to date game
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public Game update(@PathParam("entityId") Long entityId, Game entity) {
 
-        SecurityHelper.checkPermission(gameFacade.find(entityId), "Edit");
+        requestManager.assertGameTrainer(entity);
 
         return gameFacade.update(entityId, entity);
-    }
-
-    /**
-     * Due to strange unpredictable bug, some users might not have rights to
-     * view the game. This method check if all player within the game have the
-     * correct rights and create them if it's not the case
-     *
-     * @param gameId id of the game one want to recover players rights
-     * @return the game
-     */
-    @PUT
-    @Path("{gameId: [1-9][0-9]*}/recoverRights")
-    public Game recoverRights(@PathParam("gameId") Long gameId) {
-        Game game = gameFacade.find(gameId);
-        SecurityHelper.checkPermission(game, "Edit");
-        gameFacade.recoverRights(game);
-        return game;
     }
 
     /**
@@ -195,13 +174,14 @@ public class GameController {
      *
      * @param entityId
      * @param status
+     *
      * @return the game with up to date status
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
     public Game changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final Game.Status status) {
         Game game = gameFacade.find(entityId);
-        SecurityHelper.checkPermission(game, "Edit");
+        requestManager.assertGameTrainer(game);
         switch (status) {
             case LIVE:
                 gameFacade.live(game);
@@ -220,21 +200,9 @@ public class GameController {
      * Get all game with given status
      *
      * @param status
+     *
      * @return all game having the given status
      */
-    @GET
-    @Path("status_old/{status: [A-Z]*}")
-    public Collection<Game> findByStatus_old(@PathParam("status") final Game.Status status) {
-        final Collection<Game> retGames = new ArrayList<>();
-        final Collection<Game> games = gameFacade.findAll(status);
-        for (Game g : games) {
-            if (SecurityHelper.isPermitted(g, "Edit")) {
-                retGames.add(gameFacade.getGameWithoutDebugTeam(g));
-            }
-        }
-        return retGames;
-    }
-
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<Game> findByStatus(@PathParam("status") final Game.Status status) {
@@ -245,6 +213,7 @@ public class GameController {
      * Count games by status
      *
      * @param status
+     *
      * @return number of game having the given status
      */
     @GET
@@ -276,7 +245,7 @@ public class GameController {
         final Collection<Game> retGames = new ArrayList<>();
         final Collection<Game> games = gameFacade.findAll(Game.Status.BIN);
         for (Game g : games) {
-            if (SecurityHelper.isPermitted(g, "Edit")) {
+            if (requestManager.hasAnyPermission(g.getRequieredDeletePermission())) {
                 gameFacade.delete(g);
                 retGames.add(g);
             }
@@ -290,12 +259,17 @@ public class GameController {
      * Check if the game is played individually, Create a new team with a new
      * player linked on the current user for the game found.
      *
+     * @param request
      * @param gameId
+     *
      * @return Response
+     *
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     @POST
     @Path("{id}/Player")
-    public Response joinIndividually(@PathParam("id") Long gameId) throws WegasNoResultException {
+    public Response joinIndividually(@Context HttpServletRequest request,
+            @PathParam("id") Long gameId) throws WegasNoResultException {
         Response r = Response.status(Response.Status.UNAUTHORIZED).build();
         User currentUser = userFacade.getCurrentUser();
         if (currentUser != null) {
@@ -305,13 +279,20 @@ public class GameController {
                 r = Response.status(Response.Status.CONFLICT).build();
                 if (game.getAccess() == Game.GameAccess.OPEN) {
                     if (requestManager.tryLock("join-" + gameId + "-" + currentUser.getId())) {
-                        Player player = playerFacade.checkExistingPlayer(game.getId(), currentUser.getId());
-                        if (player == null) {
+                        if (!playerFacade.isInGame(game.getId(), currentUser.getId())) {
                             if (game.getGameModel().getProperties().getFreeForAll()) {
-                                Team team = new Team("Ind-" + Helper.genToken(12), 1);
+                                Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
                                 teamFacade.create(game.getId(), team); // return managed team
-                                playerFacade.create(team, currentUser);
-                                //Team find = teamFacade.find(team.getId());
+                                team = teamFacade.find(team.getId());
+                                gameFacade.joinTeam(team.getId(), currentUser.getId(), request != null ? Collections.list(request.getLocales()) : null);
+                                /**
+                                 * Detach and re-find to fetch the new player
+                                 */
+                                teamFacade.detach(team);
+                                team = teamFacade.find(team.getId());
+                                Player p = team.getPlayers().get(0);
+                                p.setQueueSize(populatorFacade.getQueue().indexOf(p) + 1);
+
                                 r = Response.status(Response.Status.CREATED).entity(team).build();
                             }
                         }
@@ -324,6 +305,7 @@ public class GameController {
 
     /**
      * @param token
+     *
      * @return game which matches the token, without its debug team
      */
     @GET
@@ -337,13 +319,15 @@ public class GameController {
      * Resets all the variables of a given game
      *
      * @param gameId gameId id of game to reset
+     *
      * @return HTTP 200 Ok
      */
     @GET
     @Path("{gameId : [1-9][0-9]*}/Reset")
     public Response reset(@PathParam("gameId") Long gameId) {
 
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
+        Game game = gameFacade.find(gameId);
+        requestManager.assertUpdateRight(game);
 
         gameFacade.reset(gameId);
         return Response.ok().build();

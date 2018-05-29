@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
@@ -17,24 +17,21 @@ import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @EntityListeners(NumberListener.class)
-
 /*@Table(indexes = {
- @Index(columnList = "history.numberinstance_variableinstance_id")
+ @Index(columnList = "history.numberinstance_id")
  })*/
 public class NumberInstance extends VariableInstance {
 
@@ -81,11 +78,11 @@ public class NumberInstance extends VariableInstance {
     public void setValue(double value) {
         try {
             VariableDescriptor vd = this.findDescriptor();
-            if (vd instanceof NumberDescriptor) { // @fixme (Occurs when numberinstance are used for list descriptors) (IS THAT FUCKIN EXISTING ANY MORE ???)
+            if (vd instanceof NumberDescriptor) { // @fixme (Occurs when numberinstance are used for list descriptors) (IS THAT FUCKIN EXISTS ANY MORE ???)
                 NumberDescriptor desc = (NumberDescriptor) vd;
 
                 if (!desc.isValueValid(value)) {
-                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getLabel());
+                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getName(), desc.getLabel().translateOrEmpty(this.getGameModel()));
                 }
             }
         } catch (NullPointerException e) {
@@ -93,6 +90,14 @@ public class NumberInstance extends VariableInstance {
         }
 
         this.val = value;
+    }
+
+    public void add(double value) {
+        this.setValue(this.getValue() + value);
+    }
+
+    public void add(int value) {
+        this.setValue(this.getValue() + value);
     }
 
     /**
@@ -105,7 +110,7 @@ public class NumberInstance extends VariableInstance {
     }
 
     /**
-     * @return
+     * @return history of values
      */
     public List<Double> getHistory() {
         List<NumberHistoryEntry> copy = Helper.copyAndSort(this.history, new EntityComparators.OrderComparator<>());
@@ -128,7 +133,7 @@ public class NumberInstance extends VariableInstance {
 
             if (theDesc instanceof NumberDescriptor) {
                 /*
-                select vd.* from variabledescriptor as vd inner join variableinstance as vi on vi.variableinstance_id = vd.defaultinstance_variableinstance_id  where vd.dtype = 'ListDescriptor' and vi.dtype <> 'ListInstance';
+                select vd.* from variabledescriptor as vd inner join variableinstance as vi on vi.id = vd.defaultinstance_id  where vd.dtype = 'ListDescriptor' and vi.dtype <> 'ListInstance';
                  */
                 maxHSize = ((NumberDescriptor) theDesc).getHistorySize();
             }

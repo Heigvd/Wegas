@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -11,7 +11,7 @@
  * @fileoverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-/*global YUI*/
+/*global YUI, I18n*/
 YUI.add("wegas-entitychooser", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox", EntityChooser, EntityChooser2,
@@ -66,7 +66,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                             (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
                                 items[i].getInstance().get("enabled"))) {
                             entityBox.append("<li class='chooser-entity' data-name='" + items[i].get("name") + "'>" +
-                                (items[i].get("title") || items[i].get("label")) + "</li>");
+                                (I18n.t(items[i].get("label"))) + "</li>");
                         }
                     }
                 }
@@ -126,42 +126,47 @@ YUI.add("wegas-entitychooser", function(Y) {
         {
             ATTRS: {
                 variable: {
+                    type: 'object',
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    _inputex: {
-                        _type: "variableselect",
+                    view: {
+                        type: "variableselect",
                         label: "Folder",
                         classFilter: ["ListDescriptor"]
                     }
                 },
                 widget: {
+                    type: "object",
                     value: {
                         type: "HistoryDialog"
                     },
+                    properties:{
+                        type: {
+                            type: "string",
+                            view: { label: "Type" }
+                        }
+                    },
                     getter: function(v) {
                         return Y.JSON.parse(Y.JSON.stringify(v));
-                    },
-                    _inputex: {
-                        _type: "group",
-                        fields: [{
-                                type: "string",
-                                name: "type",
-                                label: "Type"
-                            }]
                     }
                 },
                 widgetAttr: {
                     value: "dialogueVariable",
-                    type: "string"
+                    type: "string",
+                    view: { label: "Widget Attribute" }
                 },
                 flatten: {
                     type: "boolean",
-                    value: "true"
+                    value: "true",
+                    view: { label: "Flatten" }
                 },
                 classFilter: {
                     type: "array",
-                    _inputex: {
-                        elementType: {
-                            required: true,
+                    value: [],
+                    required: true,
+                    view:{ label: "ClassFilter" },
+                    items: {
+                        type: "string",
+                        view: {
                             type: "select",
                             choices: Y.Wegas.persistence.AVAILABLE_TYPES
                         }
@@ -202,7 +207,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                         (!items[i].getInstance().getAttrs().hasOwnProperty("enabled") ||
                             items[i].getInstance().get("enabled"))) {
                         getLabel = this.get("widgets")[items[i].get("@class")].getLabel;
-                        label = (items[i].get("title") || items[i].get("label"));
+                        label = I18n.t(items[i].get("label"));
 
                         li = entityBox.appendChild("<li class='chooser-entity' data-type='" +
                             items[i].get("@class") + "'data-name='" +
@@ -315,75 +320,39 @@ YUI.add("wegas-entitychooser", function(Y) {
         {
             ATTRS: {
                 variable: {
+                    type: 'object',
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    _inputex: {
-                        _type: "variableselect",
-                        legend: "Folder",
+                    view: {
+                        type: "variableselect",
+                        label: "Folder",
                         classFilter: ["ListDescriptor"]
                     }
                 },
                 widgets: {
-                    optional: false,
-                    _inputex: {
-                        _type: "hashlist",
-                        keyField: "dataType",
-                        valueField: "config",
-                        elementType: {
-                            type: "combine",
-                            fields: [{
-                                    name: "dataType",
-                                    type: "select",
-                                    value: "DialogueDescriptor",
-                                    choices: Y.Wegas.persistence.AVAILABLE_TYPES
-                                }, {
-                                    name: "config",
-                                    type: "group",
-                                    fields: [{
-                                            name: "widget",
-                                            type: "group",
-                                            value: {
-                                                type: "HistoryDialogue"
-                                            },
-                                            fields: [{
-                                                    type: "string",
-                                                    name: "type",
-                                                    label: "Type"
-                                                }]
-                                        }, {
-                                            name: "widgetAttr",
-                                            value: "dialogueVariable",
-                                            type: "string"
-                                        }, {
-                                            name: "getLabel",
-                                            value: null,
-                                            type: "function"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
+                    required: true,
+                    view:{ type: "hidden" }
                 },
                 markUnread: {
                     type: "boolean",
-                    value: false
+                    value: false,
+                    view: { label: "Mark as unread"}
                 },
                 autoSelectFirstUnread: {
                     type: "boolean",
                     value: true,
-                    optional: true
+                    view: { label:"Autoselect first unread" }
                 },
                 userCounters: {
                     type: "object",
                     value: {},
-                    optional: true,
-                    _inputex: {
+                    view: {
                         type: "hidden"
                     }
                 },
                 flatten: {
                     type: "boolean",
-                    value: "true"
+                    value: true,
+                    view: {label:"flatter"}
                 }
             }
         });

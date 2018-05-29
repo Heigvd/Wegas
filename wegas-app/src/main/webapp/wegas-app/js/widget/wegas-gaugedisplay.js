@@ -2,9 +2,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -160,7 +162,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
 
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").
-                setContent(value);
+                setContent(I18n.formatNumber(value));
             this.gauge.animationSpeed = 32;
         },
         getEditorLabel: function() {
@@ -243,9 +245,10 @@ YUI.add('wegas-gaugedisplay', function(Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
+                type: 'object',
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "variable",
                     classFilter: ["NumberDescriptor"]
                 }
@@ -256,23 +259,25 @@ YUI.add('wegas-gaugedisplay', function(Y) {
              */
             label: {
                 type: "string",
-                optional: true,
+                index: 0,
                 validator: Y.Lang.isString,
-                _inputex: {
+                view: {
                     label: "Label"
                 }
             },
             minValue: {
-                type: "number",
-                optional: true,
-                _inputex: {
+                type: ["number", "string"],
+                index: 1,
+                maxLength: 0,
+                view: {
                     label: "Display from"
                 }
             },
             maxValue: {
-                type: "number",
-                optional: true,
-                _inputex: {
+                type: ["number", "string"],
+                index: 2,
+                maxLength: 0,
+                view: {
                     label: "to"
                 }
             },
@@ -280,58 +285,99 @@ YUI.add('wegas-gaugedisplay', function(Y) {
              * The configuration of the gauge (object)
              */
             cfg: {
+                type: "object",
+                index: 4,
                 value: {},
-                _inputex: {
-                    _type: "wegasobject",
+                view: {
+                    type: "keychoice",
                     label: "Configuration",
-//                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                    elementType: {
-                        type: "wegaskeyvalue",
-                        availableFields: [{
-                                name: "pointer",
-                                type: "group",
-                                fields: [
-                                    {type: "number", name: 'pointerlength', typeInvite: "length 0.5 [0.1 - ...]", required: true},
-                                    {type: "number", name: 'strokeWidth', typeInvite: "width 0.035 [0.02 - 0.5]", required: true},
-                                    {type: "colorpicker", name: 'color', required: true}
-                                ]
-                            }, {
-                                label: "background colors",
-                                name: "backgroundPercentColors",
-                                type: "list",
-                                elementType: {
-                                    type: "combine",
-                                    fields: [
-                                        {type: "string", name: "value", typeInvite: "[0 - 1]"},
-                                        {type: "colorpicker", name: "color"}
-                                    ]
-                                },
-                                palette: 3
-                            }, {
-                                name: "percentColors",
-                                label: "percent colors",
-                                type: "list",
-                                elementType: {
-                                    type: "combine",
-                                    fields: [
-                                        {type: "string", name: "value", typeInvite: "[0 - 1]"},
-                                        {type: "colorpicker", name: "color"}
-                                    ]
-                                },
-                                palette: 3
-                            }, {
-                                name: "lineWidth",
-                                label: "arc width",
+                    addKeyLabel: "Add configuration"
+                },
+                properties:{
+                    pointer:{
+                        type: "object",
+                        properties:{
+                            pointerlength:{
+                                type:"number",
+                                required:true,
+                                view: {
+                                    label: "Pointer length",
+                                    description:"length 0.5 [0.1 - ...]"
+                                }
+                            },
+                            strokeWidth:{
                                 type: "number",
-                                typeInvite: "0.44 [0 - 0.7]",
-                                required: true
-                            }, {
-                                name: "angle",
-                                label: "arc angle",
-                                type: "number",
-                                typeInvite: "126° [0° - 180°]",
-                                required: true
-                            }]
+                                required: true,
+                                view:{
+                                    label:"Stroke Width",
+                                    description:"width 0.035 [0.02 - 0.5]"
+                                }
+                            },
+                            color:{
+                                type: "string",
+                                required:true,
+                                view:{
+                                    type: "colorpicker",
+                                    label: "Color"
+                                }
+                            }
+                        }
+                    },
+                    backgroundPercentColors:{
+                        type: "array",
+                        value:[undefined, undefined],
+                        minItems:2,
+                        maxItems:2,
+                        items:[
+                            {
+                                type: "string",
+                                view:{
+                                    label: "Value",
+                                    description: "Percent value [0 - 1]"
+                                }
+                            },
+                            {
+                                type:"string",
+                                view:{
+                                    label: "Color",
+                                    type: "colorpicker"
+                                }
+                            }
+                        ]
+                    },
+                    percentColors:{
+                        type:"array",
+                        value: [undefined, undefined],
+                        minItems:2,
+                        maxItems:2,
+                        items:[
+                            {
+                                type: "string",
+                                view:{
+                                    label: "Value",
+                                    description: "Percent value [0 - 1]"
+                                }
+                            },
+                            {
+                                type: "string",
+                                view: {
+                                    label: "Color",
+                                    type: "colorpicker"
+                                }
+                            }
+                        ]
+                    },
+                    lineWidth:{
+                        type:"number",
+                        view:{
+                            description:"0.44 [0 - 0.7]"
+                        }
+                    },
+                    angle:{
+                        type:"number",
+                        view:{
+                            description:"126° [0° - 180°]",
+                        }
                     }
                 }
             }

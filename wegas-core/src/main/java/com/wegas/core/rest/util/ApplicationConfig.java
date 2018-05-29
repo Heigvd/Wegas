@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -26,6 +26,7 @@ public class ApplicationConfig extends ResourceConfig {
         // register REST controllers from those packages :
         packages("com.wegas.core.rest",
             "com.wegas.core.security.rest",
+            "com.wegas.core.i18n.rest",
             "com.wegas.mcq.rest",
             "com.wegas.messaging.rest",
             "com.wegas.proggame.rest",

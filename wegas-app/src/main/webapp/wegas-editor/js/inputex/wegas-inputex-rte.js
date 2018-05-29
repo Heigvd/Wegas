@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -92,7 +92,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     autoresize_min_height: 35,
                     autoresize_max_height: 500,
                     content_css: [
-                        Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
+                        Wegas.app.get("base") + "wegas-editor/css/wegas-tinymce-editor.css"
                     ],
                     style_formats: [
                         { // Style formats

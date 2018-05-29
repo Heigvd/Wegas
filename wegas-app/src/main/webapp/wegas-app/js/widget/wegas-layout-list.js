@@ -2,19 +2,19 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-layout-list', function(Y) {
+YUI.add('wegas-layout-list', function (Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
         CONTENTBOX = 'contentBox',
-        List;
+        List, FlexList;
 
     /**
      * @name Y.Wegas.List
@@ -30,14 +30,14 @@ YUI.add('wegas-layout-list', function(Y) {
         // *** Private fields *** //
         // -
 
-        // ** Lifecycle Methods ** /
+        // ** Lifecycle Methods ** /w
         /**
          * @function
          * @private
          * @description set class of the contentbox (vertical or horizontal)
          * add class with "clear:both" style after the contentbox.
          */
-        syncUI: function() {
+        syncUI: function () {
             var cb = this.get(CONTENTBOX);
 
             if (this.get('direction') === 'vertical') {
@@ -49,50 +49,53 @@ YUI.add('wegas-layout-list', function(Y) {
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
         },
-        getEditorLabel: function() {
+        getEditorLabel: function () {
             return Y.Wegas.Helper.stripHtml(this.get("name"));
         }
     }, {
-        /** @lends Y.Wegas.List */
-        EDITORNAME: "Folder",
-        CSS_PREFIX: "wegas-list",
-        /**
-         * @field
-         * @static
-         * @description
-         * <p><strong>Attributes</strong></p>
-         * <ul>
-         *    <li>defaultChildType: default value for children. Transient.</li>
-         *    <li>children: list of widget. Transient.</li>
-         *    <li>direction: string-helper to add class and set style of the
-         *     list (vertical or horizontal). Vertical by default</li>
-         * </ul>
-         */
-        ATTRS: {
-            direction: {
-                value: 'vertical',
-                type: "string",
-                choices: [{
-                        value: 'vertical'
-                    }, {
-                        value: 'horizontal'
-                    }]
-            },
-            name: {
-                value: "folder",
-                type: "string"
+            /** @lends Y.Wegas.List */
+            EDITORNAME: "Folder",
+            CSS_PREFIX: "wegas-list",
+            /**
+             * @field
+             * @static
+             * @description
+             * <p><strong>Attributes</strong></p>
+             * <ul>
+             *    <li>defaultChildType: default value for children. Transient.</li>
+             *    <li>children: list of widget. Transient.</li>
+             *    <li>direction: string-helper to add class and set style of the
+             *     list (vertical or horizontal). Vertical by default</li>
+             * </ul>
+             */
+            ATTRS: {
+                direction: {
+                    value: 'vertical',
+                    type: "string",
+                    view: {
+                        type: 'select',
+                        choices: ['vertical', 'horizontal']
+                    }
+                },
+                name: {
+                    value: "folder",
+                    type: "string"
+                }
+
+                /**
+                 * Prevent widgetchild selection to be propagated through the hierarchy
+                 */
+                //selected: {
+                //    value: 2,
+                //    readonly: true
+                //}
             }
 
-            /**
-             * Prevent widgetchild selection to be propagated through the hierarchy
-             */
-            //selected: {
-            //    value: 2,
-            //    readonly: true
-            //}
-        }
-
-    });
+        });
     Y.Wegas.List = List;
+
+
+    FlexList = Y.Base.create("wegas-flexlist", Y.Wegas.List, [], {});
+    Y.Wegas.FlexList = FlexList;
 
 });

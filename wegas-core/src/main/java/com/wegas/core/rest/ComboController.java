@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -12,7 +12,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasForbiddenException;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import com.wegas.core.security.util.BlacklistFilter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -37,7 +36,6 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

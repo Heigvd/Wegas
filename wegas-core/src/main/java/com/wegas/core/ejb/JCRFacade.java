@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -148,7 +148,7 @@ public class JCRFacade {
                 //TODO : check allowed mime-types
                 try {
                     detachedFile.setBase64Data(file, mediaType);
-                    logger.info(name + "(" + mediaType + ") uploaded");
+                    logger.info("{} ({}) uploaded", name, mediaType);
                     return detachedFile;
                 } catch (IOException ex) {
                     logger.error("Error reading uploaded file :", ex);

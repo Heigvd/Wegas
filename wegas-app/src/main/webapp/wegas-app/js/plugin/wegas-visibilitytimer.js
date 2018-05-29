@@ -2,23 +2,26 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-YUI.add("wegas-visibilitytimer", function(Y) {
+YUI.add("wegas-visibilitytimer", function (Y) {
     "use strict";
     var HIDDENNODECSSCLASS = "timed-hidden-node",
-        VisibilityPlugin;
+        VisibilityPlugin,
+        testNumArray = function (v) {
+            return /^ *(\d+( *,+ *)*)* *$/.test(v) ? '' : 'Time should be numbers, optionally separated by ","';
+        };
 
-    VisibilityPlugin = function() {
+    VisibilityPlugin = function () {
         VisibilityPlugin.superclass.constructor.apply(this, arguments);
     };
     Y.extend(VisibilityPlugin, Y.Plugin.Base, {
-        initializer: function() {
+        initializer: function () {
             this.timers = [];
             this.initialVisible = null;
             if (this.get("host") instanceof Y.Widget) {
@@ -27,13 +30,13 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 this.initialVisible = this.get("host").hasClass(HIDDENNODECSSCLASS);
             }
             this.set("time", this.get("time"));
-            this.restartEvent = Y.on("visibility-timer:restart", function() {
+            this.restartEvent = Y.on("visibility-timer:restart", function () {
                 this.reset();
                 this.start();
             }, this);
             this.start();
         },
-        reset: function() {
+        reset: function () {
             var t, host = this.get("host");
             for (t in this.timers) {
                 this.timers[t].cancel();
@@ -44,47 +47,47 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 host.toggleClass(HIDDENNODECSSCLASS, !this.initialVisible);
             }
         },
-        start: function() {
+        start: function () {
             Y.log("Abstract function, needs to be implemented", "warn");
         },
-        destructor: function() {
+        destructor: function () {
             this.reset();
             this.restartEvent.detach();
         }
     }, {
-        ATTRS: {
-            time: {
-                value: "0",
-                type: "string",
-                _inputex: {
-                    label: "Timer ms"
+            ATTRS: {
+                time: {
+                    value: "0",
+                    type: "string",
+                    view: {
+                        label: "Timer ms"
+                    },
+                    setter: function (v) {
+                        this._set("arrayTime", v.trim().split(/[ ,]+/));
+                        return v;
+                    }
                 },
-                setter: function(v) {
-                    this._set("arrayTime", v.split(/[ ,]+/));
-                    return v;
-                }
-            },
-            arrayTime: {
-                readOnly: true,
-                type: "array",
-                "transient": true,
+                arrayTime: {
+                    readOnly: true,
+                    type: "array",
+                    "transient": true,
 
-                _inputex: {
-                    _type: "hidden"
+                    view: {
+                        type: "hidden"
+                    }
                 }
             }
-        }
-    });
+        });
 
     /**
      *
      */
-    Y.Plugin.ShowAfter = Y.Base.create("wegas-showafter", VisibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    Y.Plugin.ShowAfter = Y.Base.create("ShowAfter", VisibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /**
          * @lends Y.Plugin.ShowAfter#
          */
 
-        start: function() {
+        start: function () {
             var host = this.get("host"), time;
             this.reset();
             if (host instanceof Y.Widget) {
@@ -99,27 +102,27 @@ YUI.add("wegas-visibilitytimer", function(Y) {
         }
 
     }, {
-        /**
-         * @lends Y.Plugin.ShowAfter#
-         */
-        NAME: "ShowAfter",
-        NS: "showafter",
-        ATTRS: {
-            time: {
-                _inputex: {
-                    label: "Show after (ms)",
-                    description: "Multiple times may be separated by ','",
-                    regexp: /^([0-9]+(,|, | , | ,)?)*[^, ]$/
+            /**
+             * @lends Y.Plugin.ShowAfter#
+             */
+            NAME: "ShowAfter",
+            NS: "showafter",
+            ATTRS: {
+                time: {
+                    errored: testNumArray,
+                    view: {
+                        label: "Show after (ms)",
+                        description: "Multiple times may be separated by ','"
+                    }
                 }
             }
-        }
-    });
-    Y.Plugin.HideAfter = Y.Base.create("wegas-hideafter", VisibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+        });
+    Y.Plugin.HideAfter = Y.Base.create("HideAfter", VisibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /**
          * @lends Y.Plugin.HideAfter#
          */
 
-        start: function() {
+        start: function () {
             var host = this.get("host"), time;
             this.reset();
             if (host instanceof Y.Widget) {
@@ -133,19 +136,20 @@ YUI.add("wegas-visibilitytimer", function(Y) {
             }
         }
     }, {
-        /**
-         * @lends Y.Plugin.HideAfter#
-         */
-        NAME: "HideAfter",
-        NS: "hideafter",
-        ATTRS: {
-            time: {
-                _inputex: {
-                    label: "Hide after (ms)",
-                    description: "Multiple times may be separated by ','",
-                    regexp: /^([0-9]+(,|, | , | ,)?)*[^, ]$/
+            /**
+             * @lends Y.Plugin.HideAfter#
+             */
+            NAME: "HideAfter",
+            NS: "hideafter",
+            ATTRS: {
+                time: {
+                    errored: testNumArray,
+                    view: {
+                        label: "Hide after (ms)",
+                        description: "Multiple times may be separated by ','",
+
+                    }
                 }
             }
-        }
-    });
+        });
 });

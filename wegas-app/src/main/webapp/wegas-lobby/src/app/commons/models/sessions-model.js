@@ -91,6 +91,37 @@ angular.module('wegas.models.sessions', [])
                     }
                 }
             },
+            updateGameLanguages = function(sessionInfos, sessionBeforeChange) {
+                var deferred = $q.defer(),
+                    newLanguages = sessionInfos.languages,
+                    oldLanguages = sessionBeforeChange.gameModel.languages,
+                    n = Math.min(newLanguages.length, oldLanguages.length),
+                    i, toSave = [];
+
+                for (i = 0; i < n; i++) {
+                    if (newLanguages[i].active !== oldLanguages[i].active) {
+                        toSave.push(newLanguages[i]);
+                    }
+                }
+                if (toSave.length > 0) {
+                    $http.put(ServiceURL + "rest/GameModel/I18n/Langs", toSave).success(function(data) {
+                        var i, j;
+                        for (i = 0; i < data.length; i++) {
+                            for (j = 0; j < sessionBeforeChange.gameModel.languages.length; j++) {
+                                if (data[i].id === sessionBeforeChange.gameModel.languages[j].id) {
+                                    sessionBeforeChange.gameModel.languages[j].active = data[i].active;
+                                }
+                            }
+                        }
+                        deferred.resolve(sessionBeforeChange);
+                    }).error(function(WegasException) {
+                        deferred.reject(WegasException);
+                    });
+                } else {
+                    deferred.resolve(sessionBeforeChange);
+                }
+                return deferred.promise;
+            },
             updateGameSession = function(sessionInfos, sessionBeforeChange) {
                 var deferred = $q.defer(),
                     k, gameToSave = {},
@@ -126,7 +157,7 @@ angular.module('wegas.models.sessions', [])
                 var deferred = $q.defer(),
                     gameModelSetted = false,
                     scenarioBeforeChange = sessionBeforeChange.gameModel,
-                    properties = ["scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID"];
+                    properties = ["scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID", "guestAllowed"];
                 if (scenarioBeforeChange.properties.freeForAll !== sessionInfos.individual) {
                     sessionBeforeChange.properties.freeForAll = sessionInfos.individual;
                     scenarioBeforeChange.properties.freeForAll = sessionInfos.individual;
@@ -261,7 +292,7 @@ angular.module('wegas.models.sessions', [])
             if (!token.match(/^([a-zA-Z0-9_-]|\.(?!\.))*$/)) {
                 token = "";
             }
-            $http.get(ServiceURL + "rest/GameModel/Game/FindByToken/" + token, {
+            $http.get(ServiceURL + "rest/Editor/GameModel/Game/FindByToken/" + token, {
                 ignoreLoadingBar: true
             }).success(function(data) {
                 if (data) {
@@ -371,12 +402,12 @@ angular.module('wegas.models.sessions', [])
         /* Call the backend for new session values */
         model.refreshSession = function(status, sessionToRefresh) {
             var deferred = $q.defer(),
-                url = "rest/GameModel/Game/" + sessionToRefresh.id + "?view=Editor",
+                url = "rest/GameModel/Game/" + sessionToRefresh.id + "?view=Editor", // Editor view to include teams
                 cachedSession = null;
             $http
                 .get(ServiceURL + url)
                 .success(function(sessionRefreshed) {
-                    if (sessionRefreshed) {
+                    if (sessionRefreshed && sessionRefreshed.teams) {
                         sessionRefreshed.teams.forEach(function(team) {
                             if (team["@class"] === "DebugTeam") {
                                 sessionRefreshed.teams = _.without(sessionRefreshed.teams, team);
@@ -432,7 +463,8 @@ angular.module('wegas.models.sessions', [])
         model.updateSession = function(session, infosToSet) {
             var deferred = $q.defer();
             if (session && infosToSet) {
-                updateGameSession(infosToSet, session).then(function(sessionSetted) {
+                updateGameLanguages(infosToSet, session).then(function(session) {
+                    updateGameSession(infosToSet, session).then(function(sessionSetted) {
                         updateGameModelSession(infosToSet, sessionSetted).then(function(sessionSetted2) {
                             if (sessionSetted2) {
                                 $translate('COMMONS-SESSIONS-UPDATE-FLASH-SUCCESS').then(function(message) {
@@ -444,6 +476,10 @@ angular.module('wegas.models.sessions', [])
                                 });
                             }
                         });
+                    }, function(WegasException) {
+                        var message = WegasException.messageId ? $translate.instant(WegasException.messageId) : WegasException.message;
+                        deferred.resolve(Responses.danger(message, false));
+                    });
                 }, function(WegasException) {
                     var message = WegasException.messageId ? $translate.instant(WegasException.messageId) : WegasException.message;
                     deferred.resolve(Responses.danger(message, false));

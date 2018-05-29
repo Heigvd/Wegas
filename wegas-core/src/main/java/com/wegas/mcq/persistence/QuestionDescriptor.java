@@ -2,85 +2,94 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import static java.lang.Boolean.FALSE;
+import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@Table(name = "MCQQuestionDescriptor")
-
 @NamedQueries({
     @NamedQuery(name = "QuestionDescriptor.findDistinctChildrenLabels", query = "SELECT DISTINCT(cd.label) FROM ChoiceDescriptor cd WHERE cd.question.id = :containerId")
 })
-
+@Table(
+        indexes = {
+            @Index(columnList = "description_id")
+        }
+)
 public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
-    private String description;
-    /**
-     *
-     */
-    private boolean allowMultipleReplies = false;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent description;
+
     /**
      * Set this to true when the choice is to be selected with an HTML
      * radio/checkbox
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean cbx = FALSE;
     /**
      * Determines if choices are presented horizontally in a tabular fashion
      */
+    @Column(columnDefinition = "boolean default false")
     private Boolean tabular = FALSE;
+    /**
+     * Total number of replies allowed. No default value.
+     */
+    private Integer maxReplies = null;
+    /**
+     * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
+     */
+    private Integer minReplies = null;
     /**
      *
      */
     @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}/*, orphanRemoval = true*/)
     //@BatchFetch(BatchFetchType.IN)
-    @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
-    @OrderColumn
+    @OrderColumn(name = "qd_items_order")
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
      */
     @ElementCollection
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
     private List<String> pictures = new ArrayList<>();
 
@@ -93,8 +102,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (a instanceof QuestionDescriptor) {
             super.merge(a);
             QuestionDescriptor other = (QuestionDescriptor) a;
-            this.setDescription(other.getDescription());
-            this.setAllowMultipleReplies(other.getAllowMultipleReplies());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
+            this.setMinReplies(other.getMinReplies());
+            this.setMaxReplies(other.getMaxReplies());
             this.setCbx(other.getCbx());
             this.setTabular(other.getTabular());
             this.setPictures(other.getPictures());
@@ -102,7 +112,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
-// *** Sugar for scripts *** //
+// ~~~ Sugar for scripts ~~~
 
     /**
      *
@@ -116,6 +126,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param p
+     *
      * @return the player instance active status
      */
     public boolean isActive(Player p) {
@@ -142,29 +153,29 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**
-     * @return the multipleReplies
-     */
-    public boolean getAllowMultipleReplies() {
-        return allowMultipleReplies;
-    }
-
-    /**
+     * Backwardcompat for deserialisation
+     *
      * @param allowMultipleReplies
      */
     public void setAllowMultipleReplies(boolean allowMultipleReplies) {
-        this.allowMultipleReplies = allowMultipleReplies;
+        if (!allowMultipleReplies) {
+            this.maxReplies = 1;
+        }
     }
 
     /**
@@ -196,6 +207,34 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
+     * @return the total maximum number of replies allowed
+     */
+    public Integer getMaxReplies() {
+        return maxReplies;
+    }
+
+    /**
+     * @param maxReplies the maximum number of replies allowed
+     */
+    public void setMaxReplies(Integer maxReplies) {
+        this.maxReplies = maxReplies;
+    }
+
+    /**
+     * @return the minimum number of replies required
+     */
+    public Integer getMinReplies() {
+        return minReplies;
+    }
+
+    /**
+     * @param minReplies the minimum number of replies required
+     */
+    public void setMinReplies(Integer minReplies) {
+        this.minReplies = minReplies;
+    }
+
+    /**
      * @return the pictures
      */
     public List<String> getPictures() {
@@ -220,6 +259,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      *
      * @param p
+     *
      * @return true if the player has already answers this question
      */
     public boolean isReplied(Player p) {
@@ -227,7 +267,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.getCbx()) {
             return instance.getValidated();
         } else {
-            return !instance.getReplies().isEmpty();
+            return !instance.getReplies(p).isEmpty();
         }
     }
 
@@ -235,6 +275,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * {@link #isReplied ...}
      *
      * @param p
+     *
      * @return true if the player has not yet answers this question
      */
     public boolean isNotReplied(Player p) {
@@ -245,6 +286,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @return the variableDescriptors
      */
     @Override
+    @JsonView(Views.ExportI.class)
     public List<ChoiceDescriptor> getItems() {
         return items;
     }
@@ -262,51 +304,16 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
 
     /**
      *
-     * @param index
-     * @return the iest choiceDescriptor
-     * @throws IndexOutOfBoundsException
-     */
-    @Override
-    public ChoiceDescriptor item(int index) {
-        return this.getItems().get(index);
-    }
-
-    /**
-     *
      * @param item
      */
     @Override
-    public void addItem(ChoiceDescriptor item) {
-        if (this.getGameModel() != null) {
-            this.getGameModel().addToVariableDescriptors(item);
-        }
-        this.getItems().add(item);
+    public void setChildParent(ChoiceDescriptor item) {
         item.setQuestion(this);
-    }
-
-    @Override
-    public void addItem(int index, ChoiceDescriptor item) {
-        if (this.getGameModel() != null) {
-            this.getGameModel().addToVariableDescriptors(item);
-        }
-        this.getItems().add(index, item);
-        item.setQuestion(this);
-    }
-
-    @Override
-    public int size() {
-        return this.getItems().size();
-    }
-
-    @Override
-    public boolean remove(ChoiceDescriptor item) {
-        this.getGameModel().removeFromVariableDescriptors(item);
-        return this.getItems().remove(item);
     }
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getDescription(), criterias)
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
                 || super.containsAll(criterias);
     }
 
@@ -316,7 +323,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.getCbx()) {
             return instance.getActive() && !instance.getValidated() ? 1 : 0;
         } else {
-            return instance.getActive() && instance.getReplies().isEmpty() ? 1 : 0;
+            return instance.getActive() && instance.getReplies(player).isEmpty() ? 1 : 0;
         }
     }
 }

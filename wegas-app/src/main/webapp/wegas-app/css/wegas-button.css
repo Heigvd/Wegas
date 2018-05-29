@@ -2,13 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
 /* YUI3 Button Widget styles redefinition */
 .yui3-button {
-    vertical-align: top;
     padding: 0.2em 0.6em .1em;
     min-height: 26px;
     margin: 0;
@@ -25,10 +24,8 @@
 .yui3-button[disabled], .yui3-button-disabled, .yui3-button-disabled:hover, .yui3-button-disabled:active {
     box-shadow: none;
 }
-.yui3-button > * {
-    vertical-align: top;
-}
 .yui3-button .wegas-icon {
+    vertical-align: top;
     margin: -2px 2px 0 0;
 }
 .yui3-skin-sam .yui3-button-hidden, .yui3-skin-sam .yui3-togglebutton-hidden {
@@ -78,6 +75,7 @@
 .yui3-skin-sam .wegas-icon-cut {
     background-position: 0px -42px;
 }
+.yui3-skin-sam .wegas-icon-duplicate,
 .yui3-skin-sam .wegas-icon-copy {
     background-position: 0px -68px;
 }

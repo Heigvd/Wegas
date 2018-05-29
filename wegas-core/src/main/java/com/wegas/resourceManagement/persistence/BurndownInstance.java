@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -11,22 +11,19 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Entity
 
-/*@Table(indexes = {
- @Index(columnList = "variableinstance_id")
- })*/
 public class BurndownInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -51,6 +48,11 @@ public class BurndownInstance extends VariableInstance {
      */
     public void setIterations(List<Iteration> iterations) {
         this.iterations = iterations;
+        if (this.iterations != null) {
+            for (Iteration iteration : iterations) {
+                iteration.setBurndownInstance(this);
+            }
+        }
     }
 
     /**
@@ -68,9 +70,14 @@ public class BurndownInstance extends VariableInstance {
         if (a instanceof BurndownInstance) {
             BurndownInstance other = (BurndownInstance) a;
             super.merge(a);
-            this.setIterations(ListUtils.mergeReplace(this.getIterations(), other.getIterations()));
+            this.setIterations(ListUtils.mergeLists(this.getIterations(), other.getIterations()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        beans.getIterationFacade().reviveBurndownInstance(this);
     }
 }

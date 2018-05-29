@@ -2,39 +2,38 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.Basic;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
-import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.resourceManagement.ejb.IterationFacade;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.OneToMany;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +43,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Entity
+@Table(
+        indexes = {
+            @Index(columnList = "description_id")
+        }
+)
 public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements Propertable {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskDescriptor.class);
@@ -52,10 +56,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
-    private String description;
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent description;
+
     /**
      *
      */
@@ -73,9 +77,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     @ManyToMany
     @JoinTable(
             joinColumns = {
-                @JoinColumn(name = "taskdescriptor_variabledescriptor_id")},
+                @JoinColumn(name = "taskdescriptor_id")},
             inverseJoinColumns = {
-                @JoinColumn(name = "predecessors_variabledescriptor_id")})      // prevent change in the db
+                @JoinColumn(name = "predecessor_id")})// prevent change in the db
     @JsonIgnore
     private List<TaskDescriptor> predecessors = new ArrayList<>();
     /*
@@ -88,21 +92,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      */
     @Transient
-    private List<String> predecessorNames/* = new ArrayList<>()*/;
-
-    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @JsonIgnore
-    private List<Activity> activities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @JsonIgnore
-    private List<Assignment> assignments = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "tasks")
-    @JsonView(Views.ExtendedI.class)
-    private List<Iteration> iterations;
+    private List<String> predecessorNames/*
+             * = new ArrayList<>()
+             */;
 
     @JsonIgnore
     @Override
@@ -120,7 +112,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         if (a instanceof TaskDescriptor) {
             super.merge(a);
             TaskDescriptor other = (TaskDescriptor) a;
-            this.setDescription(other.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
             this.setIndex(other.getIndex());
             this.setPredecessorNames(other.getImportedPredecessorNames());
             // this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
@@ -133,15 +125,18 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
     /**
@@ -213,24 +208,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     public void removeDependency(final TaskDescriptor taskDescriptor) {
         this.dependencies.remove(taskDescriptor);
-    }
-
-    /**
-     *
-     * @return get all iterations this task is part of
-     */
-    @JsonIgnore
-    public List<Iteration> getIterations() {
-        return iterations;
-    }
-
-    /**
-     *
-     * @param iterations
-     */
-    @JsonIgnore
-    public void setIterations(List<Iteration> iterations) {
-        this.iterations = iterations;
     }
 
     //Methods for impacts
@@ -433,67 +410,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         this.predecessorNames = exportedPredecessors;
     }
 
-    /**
-     * @return the activities
-     */
-    public List<Activity> getActivities() {
-        return activities;
-    }
-
-    /**
-     * @param activities
-     */
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
-    }
-
-    /**
-     *
-     * @param activity
-     */
-    public void addActivity(Activity activity) {
-        this.activities.add(activity);
-        activity.setTaskDescriptor(this);
-    }
-
-    /**
-     *
-     * @param activity
-     */
-    public void removeActivity(Activity activity) {
-        this.activities.remove(activity);
-    }
-
-    /**
-     * @return the assignments
-     */
-    public List<Assignment> getAssignments() {
-        return assignments;
-    }
-
-    /**
-     * @param assignments
-     */
-    public void setAssignments(List<Assignment> assignments) {
-        this.assignments = assignments;
-    }
-
-    /**
-     *
-     * @param assignment
-     */
-    public void addAssignment(Assignment assignment) {
-        assignments.add(assignment);
-        assignment.setTaskDescriptor(this);
-    }
-
-    public void removeAssignment(Assignment assignment) {
-        assignments.remove(assignment);
-    }
-
     @Override
     public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getDescription(), criterias)
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
                 || super.containsAll(criterias);
     }
 
@@ -518,14 +437,36 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         }
         this.setPredecessors(new ArrayList<>());
 
-        for (Iteration iteration : this.getIterations()) {
-            iteration = iteF.find(iteration.getId());
-            if (iteration != null) {
-                iteration.removeTask(this);
-            }
-        }
-        this.setIterations(new ArrayList<>());
-
         super.updateCacheOnDelete(beans);
+    }
+
+    @Override
+    public void revive(Beanjection beans) {
+        super.revive(beans);
+        beans.getResourceFacade().reviveTaskDescriptor(this);
+    }
+
+
+    /*
+     * BACKWARD COMPAT
+     */
+    /**
+     * @param iterations
+     */
+    public void setIterations(List<Iteration> iterations) {
+        /*
+         * if (this.getDefaultInstance().getIterations() == null ||
+         * this.getDefaultInstance().getIterations().isEmpty()) {
+         * this.getDefaultInstance().setIterations(iterations);
+         * }
+         */
+    }
+
+    public void setActivities(List<Activity> iterations) {
+
+    }
+
+    public void setAssignments(List<Assignment> iterations) {
+
     }
 }

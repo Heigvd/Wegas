@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -13,15 +13,18 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.VariableProperty;
+import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
@@ -33,8 +36,8 @@ import javax.persistence.Transient;
 
 /*@Table(indexes = {
 
-    @Index(columnList = "plannification.taskinstance_variableinstance_id"),
-    @Index(columnList = "properties.taskinstance_variableinstance_id")
+    @Index(columnList = "plannification.taskinstance_id"),
+    @Index(columnList = "properties.taskinstance_id")
 })*/
 public class TaskInstance extends VariableInstance implements Propertable {
 
@@ -53,6 +56,20 @@ public class TaskInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     private List<Integer> plannification = new ArrayList<>();
+
+    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonIgnore
+    private List<Activity> activities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonIgnore
+    private List<Assignment> assignments = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "tasks")
+    //@JsonView(Views.ExtendedI.class)
+    @JsonIgnore
+    private List<Iteration> iterations;
+
     /**
      *
      */
@@ -63,7 +80,6 @@ public class TaskInstance extends VariableInstance implements Propertable {
      *
      */
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    //@JoinColumn(referencedColumnName = "variableinstance_id")
     private List<WRequirement> requirements = new ArrayList<>();
 
     /**
@@ -96,7 +112,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
     @JsonProperty
     public void setDuration(double duration) {
         if (duration < 0.0) {
-            throw new WegasOutOfBoundException(0.0, null, duration, "duration");
+            throw new WegasOutOfBoundException(0.0, null, duration, "duration", "duration");
         } else {
             this.duration = duration;
         }
@@ -120,6 +136,82 @@ public class TaskInstance extends VariableInstance implements Propertable {
      */
     public void setPlannification(List<Integer> plannification) {
         this.plannification = plannification;
+    }
+
+    /**
+     * @return the activities
+     */
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    /**
+     * @param activities
+     */
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
+    }
+
+    /**
+     *
+     * @param activity
+     */
+    public void addActivity(Activity activity) {
+        this.activities.add(activity);
+        activity.setTaskInstance(this);
+    }
+
+    /**
+     *
+     * @param activity
+     */
+    public void removeActivity(Activity activity) {
+        this.activities.remove(activity);
+    }
+
+    /**
+     * @return the assignments
+     */
+    public List<Assignment> getAssignments() {
+        return assignments;
+    }
+
+    /**
+     * @param assignments
+     */
+    public void setAssignments(List<Assignment> assignments) {
+        this.assignments = assignments;
+    }
+
+    /**
+     *
+     * @param assignment
+     */
+    public void addAssignment(Assignment assignment) {
+        assignments.add(assignment);
+        assignment.setTaskInstance(this);
+    }
+
+    public void removeAssignment(Assignment assignment) {
+        assignments.remove(assignment);
+    }
+
+    /**
+     *
+     * @return get all iterations this task is part of
+     */
+    @JsonIgnore
+    public List<Iteration> getIterations() {
+        return iterations;
+    }
+
+    /**
+     *
+     * @param iterations
+     */
+    @JsonIgnore
+    public void setIterations(List<Iteration> iterations) {
+        this.iterations = iterations;
     }
 
     /**
@@ -204,7 +296,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
             this.setActive(other.getActive());
             //this.setDuration(other.getDuration());
             this.setProperties(other.getProperties());
-            ListUtils.ListKeyToMap<Object, WRequirement> converter;
+            ListUtils.KeyExtractorI<Object, WRequirement> converter;
             converter = new WRequirementToNameConverter();
 
             this.setRequirements(ListUtils.mergeLists(this.getRequirements(), other.getRequirements(), converter));
@@ -232,11 +324,26 @@ public class TaskInstance extends VariableInstance implements Propertable {
         }
     }
 
-    private static class WRequirementToNameConverter implements ListUtils.ListKeyToMap<Object, WRequirement> {
+    private static class WRequirementToNameConverter implements ListUtils.KeyExtractorI<Object, WRequirement> {
 
         @Override
         public String getKey(WRequirement item) {
             return item.getName();
         }
+    }
+
+    @Override
+    public void updateCacheOnDelete(Beanjection beans) {
+        IterationFacade iteF = beans.getIterationFacade();
+
+        for (Iteration iteration : this.getIterations()) {
+            iteration = iteF.find(iteration.getId());
+            if (iteration != null) {
+                iteration.removeTask(this);
+            }
+        }
+        this.setIterations(new ArrayList<>());
+
+        super.updateCacheOnDelete(beans);
     }
 }

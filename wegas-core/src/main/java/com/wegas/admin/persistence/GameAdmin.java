@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.admin.persistence;
@@ -10,20 +10,22 @@ package com.wegas.admin.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-
-import javax.persistence.*;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.*;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -32,12 +34,19 @@ import java.util.List;
 @NamedQueries({
     @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId"),
     @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC"),
-    @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status != com.wegas.admin.persistence.GameAdmin.Status.TODO AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
+    @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 })
+@Table(
+        indexes = {
+            @Index(columnList = "game_id")
+        }
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameAdmin extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
+    private static ObjectWriter ow = null;
 
     @Id
     @GeneratedValue
@@ -47,12 +56,12 @@ public class GameAdmin extends AbstractEntity {
     private String comments;
 
     @OneToOne
-    @JoinColumn(nullable = true)
     private Game game;
 
     private String creator;
 
     @Temporal(value = TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime;
 
     @Enumerated(value = EnumType.STRING)
@@ -65,6 +74,8 @@ public class GameAdmin extends AbstractEntity {
 
     @Lob
     private String prevPlayers;
+
+    private Long prevGameId;
 
     @Lob
     private String prevTeams;
@@ -124,7 +135,7 @@ public class GameAdmin extends AbstractEntity {
         if (this.getGame() != null) {
             return this.getGame().getId();
         }
-        return null;
+        return this.prevGameId;
     }
 
     public Date getCreatedTime() {
@@ -154,6 +165,7 @@ public class GameAdmin extends AbstractEntity {
             this.prevTeamCount = this.getTeamCount();
             this.prevPlayers = this.getPlayers().toString();
             this.prevTeams = this.getTeams().toString();
+            this.prevGameId = this.getGame().getId();
         }
     }
 
@@ -197,7 +209,12 @@ public class GameAdmin extends AbstractEntity {
     }
 
     // Small optimization for getTeams():
-    private static ObjectWriter ow = new ObjectMapper().writer();
+    private static ObjectWriter getObjectWriter() {
+        if (GameAdmin.ow == null) {
+            GameAdmin.ow = JacksonMapperProvider.getMapper().writer();
+        }
+        return GameAdmin.ow;
+    }
 
     public List<String> getTeams() {
         if (this.getGame() != null) {
@@ -206,7 +223,7 @@ public class GameAdmin extends AbstractEntity {
                 if (t.getClass() == Team.class) { // filter debugTeam
                     GameAdminTeam gaTeam = new GameAdminTeam(t);
                     try {
-                        teams.add(ow.writeValueAsString(gaTeam));
+                        teams.add(getObjectWriter().writeValueAsString(gaTeam));
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();
                     }
@@ -282,6 +299,16 @@ public class GameAdmin extends AbstractEntity {
         return prevName;
     }
 
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        return WegasMembership.TRAINER;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasMembership.ADMIN;
+    }
+
     //
 //    @JsonIgnore
 //    public void setPrevPlayers(String prevPlayers) {
@@ -293,17 +320,23 @@ public class GameAdmin extends AbstractEntity {
         return prevTeamCount;
     }
 
-    public enum Status {
+    /**
+     * GameAdmin status
+     * {
+     *
+     * @
+     */
+    public static enum Status {
         /**
-         * Initial status
+         * Initial status, not yet processed
          */
         TODO,
         /**
-         *
+         * Processed means processed but not charged (test games, etc)
          */
         PROCESSED,
         /**
-         *
+         * Real world games which have been charged
          */
         CHARGED
     }

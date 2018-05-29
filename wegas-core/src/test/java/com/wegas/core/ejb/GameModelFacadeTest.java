@@ -2,24 +2,27 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.*;
-import junit.framework.Assert;
+import com.wegas.test.TestHelper;
+import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
+import java.util.function.Function;
+import javax.naming.NamingException;
+import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
-import java.util.function.Function;
-
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class GameModelFacadeTest extends AbstractEJBTest {
+@ArquillianSuiteDeployment
+public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelFacadeTest.class);
     private int nbFail = 0;
@@ -33,9 +36,9 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         GameModel gameModel = new GameModel();
         gameModel.setName(name);
-        gameModel.getClientScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
-        gameModel.getScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
-        gameModel.getCssLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
+        gameModel.getClientScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        gameModel.getScriptLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
+        gameModel.getCssLibraryList().add(new GameModelContent(SCRIPTNAME, SCRIPTCONTENT, ""));
         gameModel.getProperties().setPagesUri(SCRIPTCONTENT);
 
         final int size = gameModelFacade.findAll().size();
@@ -44,10 +47,10 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
         gameModel = gameModelFacade.find(gameModel.getId());
         Assert.assertEquals(name, gameModel.getName());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScriptLibrary().get(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScript(SCRIPTNAME).getContent());
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getProperties().getPagesUri());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getCssLibrary().get(SCRIPTNAME).getContent());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getScriptLibrary().get(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getCss(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getScript(SCRIPTNAME).getContent());
 
         gameModelFacade.remove(gameModel.getId());
         Assert.assertEquals(size, gameModelFacade.findAll().size());
@@ -61,35 +64,32 @@ public class GameModelFacadeTest extends AbstractEJBTest {
         final String NAME = "test-game";
         final String TOKEN = "token-for-testGame";
 
-        GameFacade gf = lookupBy(GameFacade.class);
-        TeamFacade tf = lookupBy(TeamFacade.class);
-        PlayerFacade pf = lookupBy(PlayerFacade.class);
-
         // Create a game model
         GameModel gameModel = new GameModel(GAMENAME);
         final int size = gameModelFacade.findAll().size();
         gameModelFacade.create(gameModel);
         Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
 
-        // Edit this gam
-        GameModel gm2 = gameModelFacade.update(gameModel.getId(), new GameModel(GAMENAME2));
+        GameModel gameModel1 = new GameModel(GAMENAME2);
+        gameModel1.getProperties().setGuestAllowed(true);
+        // Change Name and guestAllowed properties
+        GameModel gm2 = gameModelFacade.update(gameModel.getId(), gameModel1);
         Assert.assertEquals(GAMENAME2, gm2.getName());
 
         // Create a game, a team and a player
         Game g = new Game(NAME, TOKEN);
-        gf.create(gameModel.getId(), g);
+        gameFacade.create(gameModel.getId(), g);
 
-        Game g2 = gf.findByToken(TOKEN);
+        Game g2 = gameFacade.findByToken(TOKEN);
         Assert.assertEquals(NAME, g2.getName());
 
         Team t = new Team();
         t.setName("test-team");
-        tf.create(g.getId(), t);
+        teamFacade.create(g.getId(), t);
         Assert.assertNotNull(t.getId());
 
-        Player p = new Player();
+        Player p = gameFacade.joinTeam(t.getId(), "John A. Player", null);
 
-        pf.create(t.getId(), p);
         Assert.assertNotNull(p.getId());
 
         gameModelFacade.remove(gameModel.getId());
@@ -105,21 +105,19 @@ public class GameModelFacadeTest extends AbstractEJBTest {
             nbFail++;
         };
 
-        GameFacade gf = lookupBy(GameFacade.class);
-        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
-
         final int size = gameModelFacade.findAll().size();
 
         GameModel gameModel = new GameModel("TESTGM");
+        gameModel.getProperties().setGuestAllowed(true);
         gameModelFacade.create(gameModel);
 
         Game g = new Game("TESTGAME", "xxx");
-        gf.create(gameModel.getId(), g);
+        gameFacade.create(gameModel.getId(), g);
         Team t1 = new Team();
         Team t2 = new Team();
         t1.setName("test-team");
         t2.setName("test-team");
-        final Function<Team, Runnable> runCreateTeam = (Team team) -> () -> teamFacade.create(g.getId(), team);
+        final Function<Team, Runnable> runCreateTeam = (Team t) -> () -> teamFacade.create(g.getId(), t);
 
         final Thread thread1 = TestHelper.start(runCreateTeam.apply(t1), handler);
         final Thread thread2 = TestHelper.start(runCreateTeam.apply(t2), handler);
@@ -135,16 +133,13 @@ public class GameModelFacadeTest extends AbstractEJBTest {
 
     @Test
     public void createMultipleTeam_seq() throws NamingException, InterruptedException {
-        GameFacade gf = lookupBy(GameFacade.class);
-        final TeamFacade teamFacade = lookupBy(TeamFacade.class);
-
         final int size = gameModelFacade.findAll().size();
 
         GameModel gameModel = new GameModel("TESTGM");
         gameModelFacade.create(gameModel);
 
         Game g = new Game("TESTGAME", "xxx");
-        gf.create(gameModel.getId(), g);
+        gameFacade.create(gameModel.getId(), g);
         Team t1 = new Team();
         Team t2 = new Team();
         t1.setName("test-team");

@@ -2,7 +2,7 @@
 * Wegas
 * http://wegas.albasim.ch
 *
-* Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+* Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
 * Licensed under the MIT License
 */
 
@@ -71,7 +71,7 @@
 .wegas-review-widget .toReview.me,
 .wegas-review-widget .feedback.me,
 .wegas-review-widget .feedbackEv.me{
-    background-color: #eaf4fa;
+    background-color: #f3f9fc;
     margin-left: 20%;
     margin-right: 0%;
 }
@@ -107,14 +107,81 @@
     width: auto;
 }
 
+.small-range-grade .wegas-review-grade-instance-input-container{
+    display: none;
+}
+
+.wegas-review-widget .wegas-review-grade-instance-slider {
+    padding-top: 15px;
+}
+
+.yui3-skin-sam .wegas-review-widget .yui3-slider-x .yui3-slider-rail,
+.yui3-skin-sam .wegas-review-widget .yui3-slider-x .yui3-slider-rail-cap-left,
+.yui3-skin-sam .wegas-review-widget .yui3-slider-x .yui3-slider-rail-cap-right {
+    background-image: url(../../lib/yui3/build/slider-base/assets/skins/sam/rail-x-lines.png);
+}
+
+.yui3-skin-sam .wegas-review-widget  .yui3-slider-x .yui3-slider-rail-cap-left:after,
+.yui3-skin-sam .wegas-review-widget  .yui3-slider-x .yui3-slider-rail-cap-right:after {
+    content: attr(data-value);
+    position:absolute;
+    top: -10px;
+    font-family: monospace;
+    font-size: 7pt;
+    text-align: center;
+    width:20px;
+}
+
+.yui3-skin-sam .small-range-grade .yui3-slider-x .yui3-slider-rail:after {
+    content: attr(data-value);
+    font-family: monospace;
+    font-size: 7pt;
+    position: absolute;
+    left: 160px;
+    top: 2px;
+    padding: 1px;
+    border-bottom: 1px solid #aaa;
+}
+
+.yui3-skin-sam .wegas-review-widget  .yui3-slider-x .yui3-slider-rail-cap-right:after {
+    right: 0px;
+}
+
 
 /*
  * Orchestrator
  */
+.wegas-review-orchestrator {
+    width:100%;
+    height:100%;
+}
 
+.wegas-review-orchestrator-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
 .wegas-review-orchestrator-content > div{
     margin-left:20px;
+}
+.wegas-review-orchestrator-content .summary {
+    display: flex;
+    flex-direction: column;
+    height:100%;
+}
+
+.wegas-review-orchestrator .summary .top-header{
+    /*height: 200px;*/
+    border-bottom: 1px solid #cccaca;
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.wegas-review-orchestrator .summary .content{
+    overflow-y: auto;
 }
 
 .wegas-review-orchestrator,
@@ -123,7 +190,7 @@
     color: #212121;
 }
 
-.wegas-review-orchestrator .summary > div {
+.wegas-review-orchestrator .summary > .content > div {
     clear: both;
     margin-top:10px;
     margin-bottom:10px;
@@ -141,37 +208,50 @@
 }
 
 .wegas-review-orchestrator .header{
-    position:relative;
+    display: flex;
+    flex-direction: row;
 }
 
 .wegas-review-orchestrator .header h2 {
-    left: 0;
-    display: inline-block;
+    flex-grow: 1;
 }
 
 .wegas-review-orchestrator .header .refresh {
-    right :0;
-    position: absolute;
+    /*right :0;*/
+    /*position: absolute;*/
     cursor: pointer;
 }
 
+
+.wegas-review-orchestrator .header .refresh .yui3-button:hover {
+    color: #656565;
+}
+
+.wegas-review-orchestrator .header .refresh .yui3-button {
+    color: #8c8c8c;
+    background-color: #fff0;
+    background-image: none;
+}
+
 .wegas-review-orchestrator .control-panel {
-    height: 135px;
+    display: flex;
+    padding-bottom: 10px;
+    overflow-x: auto;
 }
 
 .wegas-review-orchestrator .control-panel > * {
-    float: left;
-    display: block;
     position: relative;
 }
 
 .wegas-review-orchestrator .properties .include-evicted {
     margin:10px;
     cursor: default;
+    color: #888;
 }
 
 .wegas-review-orchestrator .properties .include-evicted.enabled {
     cursor: pointer;
+    color: #212121;
 }
 
 .wegas-review-orchestrator .properties .include-evicted .checkbox {
@@ -208,10 +288,21 @@
     text-align: center;
 }
 
+.wegas-review-orchestrator .control-panel .state.past {
+    /*background-color: hsl(16, 83%, 58%);*/
+    /*color: #FFFDFD;*/
+}
+
 .wegas-review-orchestrator .control-panel .state.current {
     background-color: hsl(16, 83%, 58%);
     color: #FFFDFD;
 }
+
+.wegas-review-orchestrator .control-panel .state.future {
+    background-color: #e3e3e3;
+    color: #212121;
+}
+
 .wegas-review-orchestrator .control-panel .state h7{
     display:block;
     line-height: 1.5em;
@@ -221,24 +312,24 @@
 
 .wegas-review-orchestrator .control-panel .state {
     background-color: #bbb;
-    width: 197px;
+    min-width: 190px;
+    height: 130px;
     border-radius: 5px;
     text-align: center;
     border: 1px solid #999;
     padding: 5px 10px 10px;
-    height: 100%;
-    color: #999;
+    color: #808080;
 }
 
 .wegas-review-orchestrator .control-panel .transition {
-    height: calc(100% + 17px);
-    position: relative;
+    /*height: calc(100% + 17px);*/
+    flex-grow: 0;
 }
 
 .wegas-review-orchestrator .control-panel .transition span{
     color: #DDDDDD;
-    padding: 50px 2px 0;
-    position: relative;
+    padding: 0px 2px;
+    margin-top: 45px;
 }
 
 .wegas-review-orchestrator .control-panel .transition span.active{
@@ -265,8 +356,6 @@
 }
 .wegas-review-orchestrator .summary table th div {
     text-overflow: ellipsis;
-    /* position: relative; */
-    /* display: block; */
 }
 
 .wegas-review-orchestrator .summary table td {
@@ -313,6 +402,10 @@
     text-align:center;
 }
 
+/*.wegas-review-orchestrator .charts .ct-labels *:nth-child(2n) span.ct-horizontal {
+    margin-top: 12px;
+}*/
+
 .wegas-review-orchestrator .charts .comments {
     clear: both;
 }
@@ -336,8 +429,8 @@
 }
 
 .wegas-review-orchestrator .ct-label.ct-horizontal {
-    transform-origin: 0% 50%;
-    transform: translateY(50px) rotate(-45deg);
+    /*transform-origin: 0% 50%;*/
+    /*transform: translateY(50px) rotate(-45deg);*/
     font-size: 0.7em;
 }
 
@@ -354,6 +447,9 @@
     /* position: absolute; */
     font-size: 8pt;
     min-width: 12em;
+    max-width: 600px;
+    max-height: 350px;
+    overflow-y: auto;
     /* padding: 5px; */
 }
 
@@ -480,5 +576,5 @@
 .wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-line,
 .wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-point,
 .wegas-app-default .wegas-review-orchestrator .ct-series-a .ct-slice-donut {
-    stroke: #ed6a3b;
+    stroke: #446d71;
 }

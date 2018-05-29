@@ -2,20 +2,18 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.jparealm;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
-import com.wegas.core.security.persistence.Role;
-import com.wegas.core.security.persistence.User;
 import javax.ejb.EJBException;
-import javax.naming.NamingException;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -42,69 +40,50 @@ public class JpaRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
+        AccountFacade accountFacade = AccountFacade.lookup();
         try {
-            AccountFacade accountFacade = accountFacade();
+            JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
+            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
+            info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
+            return info;
+
+        } catch (WegasNoResultException e) {                                         // Could not find correponding mail,
             try {
-                JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
+                JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
                 SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
                 info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
                 return info;
 
-            } catch (WegasNoResultException e) {                                         // Could not find correponding mail,
-                try {
-                    JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
-                    SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
-                    info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
-                    return info;
-
-                } catch (WegasNoResultException ex) {
-                    logger.error("Unable to find token", ex);
-                    return null;
-                }
+            } catch (WegasNoResultException ex) {
+                logger.error("Unable to find token", ex);
+                return null;
             }
-        } catch (NamingException ex) {
-            logger.error("Unable to find AccountFacade EJB", ex);
-            return null;
         }
     }
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         try {
-//            if (principals.fromRealm(this.getName()).size() > 0) {
-//                Long accountId = (Long) principals.fromRealm(getName()).iterator().next();
-//                AbstractAccount account = accountFacade().find(accountId);
-//            }
-
-            AbstractAccount account = accountFacade().find((Long) principals.getPrimaryPrincipal());
-            User user = account.getUser();
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-            for (Role role : user.getRoles()) {
-                info.addRole(role.getName());
 
-                for (Permission p : role.getPermissions()) {
-                    addPermissions(info, p);
-                }
+            RequestManager rManager = RequestFacade.lookup().getRequestManager();
+
+            for (String roleName : rManager.getEffectiveRoles()) {
+                info.addRole(roleName);
             }
 
-            for (Permission p : user.getPermissions()) {
-                addPermissions(info, p);
+            /**
+             * Load permissions from DB
+             */
+            for (String p : rManager.getEffectiveDBPermissions()) {
+                info.addStringPermission(p);
             }
+
             return info;
         } catch (EJBException e) {
-            return null;
-        } catch (NamingException ex) {
-            logger.error("Unable to find AocountFacade EJB", ex);
+            Helper.printWegasStackTrace(e);
             return null;
         }
-    }
-
-    /**
-     *
-     * @return @throws NamingException
-     */
-    public AccountFacade accountFacade() throws NamingException {
-        return Helper.lookupBy(AccountFacade.class);
     }
 
     /**
@@ -114,8 +93,8 @@ public class JpaRealm extends AuthorizingRealm {
      */
     public static void addPermissions(SimpleAuthorizationInfo info, Permission p) {
         info.addStringPermission(p.getValue());
-        if (p.getInducedPermission() != null && !p.getInducedPermission().isEmpty()) {
+        /*if (p.getInducedPermission() != null && !p.getInducedPermission().isEmpty()) {
             info.addStringPermission(p.getInducedPermission());
-        }
+        }*/
     }
 }

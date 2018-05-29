@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -79,12 +79,11 @@ YUI.add("wegas-pageloader", function(Y) {
             }, this));
 
             //Wegas.Facade.Page.after("response", this.syncUI, this);
-            //this.handlers.push(Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
-            //    if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
-            //        this.currentPageId = null; // @hack force update
-            //        this.syncUI();
-            //    }
-            //}, this));
+            this.handlers.push(Wegas.Facade.Page.cache.after("forcePageUpdate", function(e) {
+                if (e.pageId && ("" + e.pageId === "" + this.get("pageId"))) {
+                    this.reload();
+                }
+            }, this));
         },
         /**
          * @function
@@ -185,7 +184,7 @@ YUI.add("wegas-pageloader", function(Y) {
                 type: "string",
                 value: "maindisplayarea",
                 //value: "PageLoader" + Y.Lang.now(), //generate a default pageLoaderId
-                _inputex: {
+                view: {
                     label: "Page display id"
                 }
             },
@@ -194,10 +193,9 @@ YUI.add("wegas-pageloader", function(Y) {
              */
             defaultPageId: {
                 type: "string",
-                _inputex: {
+                view: {
                     label: "Default page",
-                    _type: "pageselect",
-                    required: false
+                    type: "pageselect"
                 }
             },
             /**
@@ -272,21 +270,21 @@ YUI.add("wegas-pageloader", function(Y) {
             variable: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
-                _inputex: {
-                    _type: "hidden"
+                view: {
+                    type: "hidden"
                 }
             },
             /**
              *
              */
             page: {
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                optional: true,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Variable",
                     classFilter: ["NumberDescriptor", "TextDescriptor"],
-                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    className: "wegas-advanced-feature"
                 }
             },
             /**

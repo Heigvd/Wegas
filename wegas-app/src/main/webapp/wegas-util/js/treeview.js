@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -65,7 +65,7 @@ YUI.add("treeview", function(Y) {
          */
         bindUI: function() {
             //this.after("*:addChild", function(e) {
-            /* Selection is not updated if a child with selected attribute is added, force it. 
+            /* Selection is not updated if a child with selected attribute is added, force it.
             if (e.target.get(SELECTION)){
                 e.target._set(SELECTION, e.target.get(SELECTION));
             }*/
@@ -739,7 +739,9 @@ YUI.add("treeview", function(Y) {
             },
             selected: {
                 setter: function(v) {
-                    this.get(BOUNDING_BOX).toggleClass(SELECTED, v);
+                    if(!this.get("destroyed")) {
+                        this.get(BOUNDING_BOX).toggleClass(SELECTED, v);
+                    }
                     return v;
                 }
             },

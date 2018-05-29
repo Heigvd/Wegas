@@ -2,21 +2,20 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.admin;
 
 import com.wegas.admin.persistence.GameAdmin;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
@@ -34,10 +33,10 @@ public class AdminRestController {
     @Path("Game")
     @GET
     public Collection<GameAdmin> get(@QueryParam("type") String type) {
-        String[] types = type.split(",");
         if (type == null) {
             return adminFacade.findAll();
         } else {
+            String[] types = type.split(",");
             List<GameAdmin.Status> statuses = new ArrayList<>();
             for (int i = 0; i < types.length; i++) {
                 try {
@@ -74,6 +73,27 @@ public class AdminRestController {
     public Response rebuild() {
         adminFacade.rebuild();
         return Response.ok().build();
+    }
+
+    /**
+     * Return of the list of all the GameAdmin linked to a game which will be
+     * destroyed at next {@link AdminFacade#deleteGames()} schedule
+     *
+     * @return list of adminGame
+     */
+    @GET
+    @Path("todelete")
+    public List<GameAdmin> getToDelete() {
+        return adminFacade.getGameToDelete();
+    }
+
+    /**
+     * Manually trigger {@link AdminFacade#deleteGames()}
+     */
+    @DELETE
+    @Path("deleteAll")
+    public void delete() {
+        adminFacade.deleteGames();
     }
 
     @DELETE

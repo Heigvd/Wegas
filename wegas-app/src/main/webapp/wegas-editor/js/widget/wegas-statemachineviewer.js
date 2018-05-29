@@ -2,9 +2,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -268,12 +270,12 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                                     }
                                 }
                                 if (!t) {
-                                    child.disconnect();
+                                    child.disconnect(true);
                                 }
                             });
 
                         } else {
-                            this.deleteSelf();
+                            this.deleteSelf(true);
                             //this.destroyAll();
                             //this.remove();
                         }
@@ -382,6 +384,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                                 if (this._saveWaiting) {
                                     this.save();
                                 }
+                                this._rebuild();
                                 queue.call(e);
                                 this.highlightUnusedStates();
                                 this.hideOverlay();
@@ -534,7 +537,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 impact = Y.inputEx.WysiwygScript.formatScript(entity.get("onEnterEvent"));
 
             if (entity instanceof Wegas.persistence.DialogueState) {
-                label = entity.get("text");
+                label = I18n.t(entity.get("text"));
             } else if (entity.get("label")) {
                 label = "<div style='text-align: center;'>" + entity.get("label") + "</div>";
             } else {
@@ -560,40 +563,45 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 .set("title", impact ? "<b>Impact</b><br />" + impact : "").plug(Y.Plugin.Tooltip);
         },
         showForm: function(state) {
-            var form;
-            state = state || this.get(ENTITY);
-            Plugin.EditEntityAction.hideRightTabs();
-            this.editionHighlight();
+            Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                var form;
+                state = state || this.get(ENTITY);
+                Plugin.EditEntityAction.destroyEditionTab();
+                this.editionHighlight();
 
-            form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
-            form.toolbar.add(new Y.Wegas.Button({
-                label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
-                on: {
-                    click: Y.bind(function() {
-                        var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
-                            "transitions"), newNode;
-                        state.editorPosition = new Wegas.persistence.Coordinate(state.editorPosition);
-                        state.editorPosition.set("x", state.editorPosition.get("x") + 10);
-                        state.editorPosition.set("y", state.editorPosition.get("y") + 10);
-                        newNode = editor.onNewState(this.get(ENTITY).get("@class"), state);
-                        newNode.get(BOUNDING_BOX).simulate(CLICK);
-                    }, this)
-                }
-            }));
-            form.toolbar.add(new Y.Wegas.Button({
-                label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                on: {
-                    click: Y.bind(this.deleteSelf, this)
-                }
-            }));
-            if (this.get(PARENT).get(ENTITY).getInitialStateId() !== this.get(SID)) {
+                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
                 form.toolbar.add(new Y.Wegas.Button({
-                    label: '<span class="wegas-icon state-initial"></span>Initial State',
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                     on: {
-                        click: Y.bind(this.setAsInitial, this)
+                        click: Y.bind(function() {
+                            var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
+                                "transitions"), newNode;
+                            state.editorPosition = new Wegas.persistence.Coordinate(state.editorPosition);
+                            state.editorPosition.set("x", state.editorPosition.get("x") + 10);
+                            state.editorPosition.set("y", state.editorPosition.get("y") + 10);
+                            newNode = editor.onNewState(this.get(ENTITY).get("@class"), state);
+                            newNode.get(BOUNDING_BOX).simulate(CLICK);
+                        }, this)
                     }
                 }));
-            }
+                form.toolbar.add(new Y.Wegas.Button({
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                    on: {
+                        click: Y.bind(this.deleteSelf, this)
+                    }
+                }));
+                if (this.get(PARENT).get(ENTITY).getInitialStateId() !== this.get(SID)) {
+                    form.toolbar.add(new Y.Wegas.Button({
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-flag-checkered', 'Make this the initial state'), // '<span class="wegas-icon state-initial"></span>Initial State',
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                        on: {
+                            click: Y.bind(this.setAsInitial, this)
+                        }
+                    }));
+                }
+            }, this));
         },
         bindUI: function() {
             var stateMachine = this.get(PARENT),
@@ -747,11 +755,14 @@ YUI.add("wegas-statemachineviewer", function(Y) {
          * User action delete Node.
          * @returns {undefined}
          */
-        deleteSelf: function() {
+        deleteSelf: function(noSave) {
             var fsmViewer = this.get(PARENT);
             if (this.get(SID) === fsmViewer.get(ENTITY).getInitialStateId()) {
                 fsmViewer.showMessage("info", "Unable to delete initial state");
                 return;
+            }
+            if (this.get("boundingBox").hasClass("wegas-editing")) { //Currently editing
+                Plugin.EditEntityAction.destroyEditionTab();
             }
             Y.Array.each(this.transitionsTarget.slice(0), function(t) {
                 t.disconnect();
@@ -767,7 +778,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             // (id !== null) { fsmViewer.get(ENTITY).setInitialStateId(id);
             // fsmViewer.get(BOUNDING_BOX).all(".initial-state").removeClass("initial-state");
             // fsmViewer.nodes[id].syncUI(); } }
-            fsmViewer.save();
+            if (!noSave) {
+                fsmViewer.save();
+            }
         }
     }, {
         ATTRS: {
@@ -791,33 +804,35 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             this.connection = cfg.connection;
         },
         showForm: function(transition) {
-            var form;
-            Plugin.EditEntityAction.hideRightTabs();
-            this.editionHighlight();
+            Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                var form;
+                Plugin.EditEntityAction.destroyEditionTab();
+                this.editionHighlight();
 
-            transition = transition || this.get(ENTITY);
+                transition = transition || this.get(ENTITY);
 
-            form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
-            form.toolbar.add(new Y.Wegas.Button({
-                label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
-                on: {
-                    click: Y.bind(function() {
-                        var entity = this.get(ENTITY).toObject("id"), tr;
-                        tr = this.get(PARENT).addTransition(this.getTargetState(),
-                            new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
-                            );
-                        Y.one(tr.connection.getLabelOverlay().getElement()).simulate(CLICK);
-                    }, this)
-                }
-            }));
-            form.toolbar.add(new Y.Wegas.Button({
-                label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                on: {
-                    click: Y.bind(this.disconnect, this)
-                }
-            }));
-
-
+                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
+                form.toolbar.add(new Y.Wegas.Button({
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                    on: {
+                        click: Y.bind(function() {
+                            var entity = this.get(ENTITY).toObject("id"), tr;
+                            tr = this.get(PARENT).addTransition(this.getTargetState(),
+                                new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
+                                );
+                            Y.one(tr.connection.getLabelOverlay().getElement()).simulate(CLICK);
+                        }, this)
+                    }
+                }));
+                form.toolbar.add(new Y.Wegas.Button({
+                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                    on: {
+                        click: Y.bind(this.disconnect, this)
+                    }
+                }));
+            }, this));
         },
         renderUI: function() {
             var connection, parentTransitions,
@@ -866,13 +881,13 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         syncUI: function() {
             this.updateLabel();
         },
-        disconnect: function() {
+        disconnect: function(noSave) {
             var target = this.getTargetState(),
                 index = Y.Array.indexOf(target.transitionsTarget, this),
                 con = this.connection,
                 transitions;
             if (Y.one(con.getLabelOverlay().getElement()).hasClass("wegas-editing")) { //Currently editing
-                Plugin.EditEntityAction.hideRightTabs();
+                Plugin.EditEntityAction.destroyEditionTab();
             }
             this.connection = null;
             jp.detach(con, {
@@ -886,7 +901,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             if (index > -1) {
                 transitions.splice(index, 1);
             }
-            this.get(PARENT).get(PARENT).save();
+            if (!noSave) {
+                this.get(PARENT).get(PARENT).save();
+            }
 
             this.destroy();
         },
@@ -915,7 +932,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 label;
 
             if (entity instanceof Wegas.persistence.DialogueTransition) {
-                label = entity.get("actionText");
+                label = I18n.t(entity.get("actionText"));
                 if (condition) {
                     if (label) {
                         label = "<div class=\"transition-label-title\">Text: </div><div class=\"transition-label-content\" >" + label + "</div>";

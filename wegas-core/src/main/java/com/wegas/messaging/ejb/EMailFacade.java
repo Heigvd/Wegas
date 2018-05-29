@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.messaging.ejb;
@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.Properties;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
 import javax.mail.*;
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
@@ -102,7 +101,7 @@ public class EMailFacade {
      * @param body
      */
     public void send(Player p, String from, String subject, String body) throws MessagingException {
-        this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain", false);
+        this.send(p.getUser().getName(), from, null, subject, body, RecipientType.TO, "text/plain; charset=utf-8", false);
     }
 
     /**
@@ -111,19 +110,6 @@ public class EMailFacade {
      */
     public void send(Player p, Message msg) throws MessagingException {
 
-        this.send(p, "noreply@" + Helper.getWegasProperty("mail.default_domain"), msg.getSubject(), msg.getBody());
-    }
-
-    /**
-     *
-     * @param messageEvent
-     */
-    public void listener(@Observes MessageEvent messageEvent) {
-        // @fixme remove this hardcoded condition w/ some db values or at least a line in the prop file
-//        if (messageEvent.getType().equals("important")) {
-//            this.send("fx at red-agent.com", "admin@wegas.com",
-//                    messageEvent.getMessage().getSubject(),
-//                    messageEvent.getMessage().getBody());
-//        }
+        this.send(p, "noreply@" + Helper.getWegasProperty("mail.default_domain"), msg.getSubject().translateOrEmpty(p), msg.getBody().translateOrEmpty(p));
     }
 }

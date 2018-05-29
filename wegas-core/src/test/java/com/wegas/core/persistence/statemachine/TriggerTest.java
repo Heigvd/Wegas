@@ -2,21 +2,20 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.statemachine;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import java.util.Objects;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Objects;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Testing Triggers, class TriggerInstance and class TriggerDescriptor
@@ -55,11 +54,11 @@ public class TriggerTest {
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
         assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(this.triggerDescriptor.getPostTriggerEvent()));
         //testing onLoad method
-        this.triggerDescriptor.setTriggerEvent(null);
-        this.triggerDescriptor.setPostTriggerEvent(null);
-        assertTrue(this.triggerDescriptor.getPostTriggerEvent() == null);
-        assertTrue(this.triggerDescriptor.getTriggerEvent() == null);
-        assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent() == null);
+        this.triggerDescriptor.setTriggerEvent(new Script());
+        this.triggerDescriptor.setPostTriggerEvent(new Script());
+        assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getPostTriggerEvent().getContent()));
+        assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getTriggerEvent().getContent()));
+        assertTrue(Helper.isNullOrEmpty(triggerDescriptor.getStates().get(2L).getOnEnterEvent().getContent()));
     }
 
     /**
@@ -74,10 +73,10 @@ public class TriggerTest {
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
         assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(scriptEntity));
         //testing onLoad method
-        this.triggerDescriptor.setTriggerEvent(null);
-        this.triggerDescriptor.setPostTriggerEvent(null);
-        assertTrue(this.triggerDescriptor.getPostTriggerEvent() == null);
-        assertTrue(this.triggerDescriptor.getTriggerEvent() == null);
+        this.triggerDescriptor.setTriggerEvent(new Script());
+        this.triggerDescriptor.setPostTriggerEvent(new Script());
+        assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getPostTriggerEvent().getContent()));
+        assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getTriggerEvent().getContent()));
     }
 
     @Test

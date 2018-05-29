@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /*
@@ -96,6 +96,24 @@
 
 .header .value {
 
+}
+
+table {
+    margin-right:auto
+}
+
+th {
+    text-align: left;
+}
+
+td,
+th {
+    padding : 0 10px;
+}
+
+th.wegas-pdf-variable-title {
+    padding-top:35px;
+    font-size: 1.5em;
 }
 
 div.wegas-pdf-text-container span.wegas-pdf-code{
@@ -212,9 +230,17 @@ div.wegas-pdf-text-container div{
     /* border : 1px solid #353B41; */    
 }
 
+.wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title,
 .wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title {
     font-size: 1.1em;
     padding-left: 9px;
+}
+
+.wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property-key {
+    display: none;
+}
+.wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property-value {
+    padding-left: 24px;
 }
 
 .wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property {

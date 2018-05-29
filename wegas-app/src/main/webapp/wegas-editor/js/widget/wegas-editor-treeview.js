@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -106,7 +106,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
         getNodes: function() {
             var ds = this.get(DATASOURCE),
                 selector = this.get("dataSelector"),
-                entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll();
+                entities = (selector) ? ds.cache.findAll(selector.key, selector.val) : ds.cache.findAll();
 
             return this.genTreeViewElements(entities);
         },
@@ -349,6 +349,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
                         case "New":
                         case "Add":
                         case "Copy":
+                        case "Duplicate":
                         case "View":
                         case "Open in editor":
                         case "Open":
@@ -372,7 +373,19 @@ YUI.add("wegas-editor-treeview", function(Y) {
     Plugin.EditorTVDefaultMenuClick = Y.Base.create("admin-menu", Plugin.EditorTVToolbarMenu, [], {
         onTreeViewSelection: function(e) {
             var menuItems = this.getMenuItems(e.target.get("data"));
+            var entity = Plugin.EditEntityAction ? Plugin.EditEntityAction.currentEntity : undefined;
 
+            function cancelNewSelection(e) {
+                e.stopImmediatePropagation();
+                if (entity) {
+                    setTimeout(function() {
+                        Y.fire("edit-entity:edit", {entity: entity});
+                    }, 0);
+                }
+            }
+
+            //if (Plugin.EditEntityAction) {
+            //Plugin.EditEntityAction.allowDiscardingEdits( Y.bind(function() {
             if (menuItems && menuItems.length) {
                 var button = Wegas.Widget.create(menuItems[0]);
                 button.fire("click");
@@ -380,6 +393,13 @@ YUI.add("wegas-editor-treeview", function(Y) {
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
             }
+            //}, this),
+            //Y.bind(function() {
+            //cancelNewSelection(e);
+            //}, this));
+            //} else {
+            //cancelNewSelection(e);
+            //}
         }
     }, {
         NS: "defaultmenuclick"

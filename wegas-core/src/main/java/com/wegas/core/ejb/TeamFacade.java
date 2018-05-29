@@ -2,32 +2,30 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
-import com.wegas.core.event.internal.ResetEvent;
+import com.wegas.core.async.PopulatorScheduler;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.naming.NamingException;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -38,23 +36,14 @@ public class TeamFacade extends BaseFacade<Team> {
 
     private static final Logger logger = LoggerFactory.getLogger(TeamFacade.class);
 
+    @Inject
+    private PopulatorScheduler populatorScheduler;
+
     /**
      *
      */
     @EJB
     private GameFacade gameFacade;
-
-    /**
-     *
-     */
-    @EJB
-    private PlayerFacade playerFacade;
-
-    /**
-     *
-     */
-    @EJB
-    private UserFacade userFacade;
 
     @EJB
     private AccountFacade accountFacade;
@@ -63,13 +52,17 @@ public class TeamFacade extends BaseFacade<Team> {
      *
      */
     @Inject
-    private Event<ResetEvent> resetEvent;
+    private GameModelFacade gameModelFacade;
+
+    @Inject
+    private StateMachineFacade stateMachineFacade;
 
     /**
      * Get all account linked to team's players Account email addresses will be
      * altered (by hiding some parts) so they can be publicly displayed
      *
      * @param teamId
+     *
      * @return List of abstractAccount which are players of the team
      */
     public List<AbstractAccount> getDetachedAccounts(Long teamId) {
@@ -85,33 +78,71 @@ public class TeamFacade extends BaseFacade<Team> {
         return accounts;
     }
 
-    /**
-     * @param gameId
-     * @param t
-     */
-    public void create(Long gameId, Team t) {
-        Game g = gameFacade.find(gameId);
+    public String findUniqueNameForTeam(Game g, String baseName) {
+        boolean found = false;
+        String uniqueName = baseName;
+        TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findByGameIdAndName", Team.class);
+        query.setParameter("gameId", g.getId());
+        long suffix = 1;
 
-        // @Hack If user is on a game account, use it as team name
-        if (userFacade.getCurrentUser().getMainAccount() instanceof GameAccount) {
-            //&& t.getName() == null ) {
-            t.setName(((GameAccount) userFacade.getCurrentUser().getMainAccount()).getEmail());
-        }
-        g.addTeam(t);
-        g = gameFacade.find(gameId);
-        gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
-        getEntityManager().persist(t);
-        g.getGameModel().propagateDefaultInstance(t, true);
+        do {
+            query.setParameter("name", uniqueName);
+            try {
+                query.getSingleResult();
+                // if a team with the name already exists:
+                suffix++;
+                uniqueName = baseName + " (" + suffix + ")";
+            } catch (NoResultException ex) {
+                // no team with such name exists
+                found = true;
+            }
+        } while (!found);
+
+        return uniqueName;
     }
 
+    /**
+     * Real world case : real user is joining a game
+     *
+     * @param gameId
+     * @param t
+     *
+     * @return
+     */
+    public Team create(Long gameId, Team t) {
+        /**
+         * Be sure the new team exists in database before populate it
+         */
+        Long teamId = gameFacade.createAndCommit(gameId, t);
+        this.find(teamId);
+        /**
+         * the new thread must be able to retrieve the team to populate from database
+         */
+        populatorScheduler.scheduleCreation();
+        this.detach(t);
+        t = this.find(t.getId());
+        return t;
+    }
+
+    /**
+     * Internal use(eg. to create debug team)
+     *
+     * @param entity
+     */
     @Override
     public void create(Team entity) {
         Game game = entity.getGame();
         game = gameFacade.find(game.getId());
         game.addTeam(entity);
+        entity.setStatus(Status.LIVE);
 
         getEntityManager().persist(entity);
-        game.getGameModel().propagateDefaultInstance(entity, true);
+        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
+    }
+
+    public List<Team> findTeamsToPopulate() {
+        TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findToPopulate", Team.class);
+        return query.getResultList();
     }
 
     /**
@@ -131,7 +162,9 @@ public class TeamFacade extends BaseFacade<Team> {
 
     /**
      * @param team
-     * @return
+     *
+     * @return all instances which belons to the team
+     *
      * @deprecated use JPA team.privateInstances
      */
     public List<VariableInstance> getAssociatedInstances(Team team) {
@@ -154,14 +187,8 @@ public class TeamFacade extends BaseFacade<Team> {
      * @param team the team to reset
      */
     public void reset(final Team team) {
-        // Need to flush so prepersit events will be thrown (for example Game will add default teams)
-        // F*cking flush
-        //getEntityManager().flush();
-        team.getGame().getGameModel().propagateDefaultInstance(team, false);
-        // F*cking flush
-        //getEntityManager().flush(); // DA FU    ()
-        // Send an reset event (for the state machine and other)
-        resetEvent.fire(new ResetEvent(team));
+        gameModelFacade.propagateAndReviveDefaultInstances(team.getGame().getGameModel(), team, false); // reset the team and all its players
+        stateMachineFacade.runStateMachines(team);
     }
 
     /**
@@ -171,17 +198,5 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     public void reset(Long teamId) {
         this.reset(this.find(teamId));
-    }
-
-    /**
-     * @return
-     */
-    public static TeamFacade lookup() {
-        try {
-            return Helper.lookupBy(TeamFacade.class);
-        } catch (NamingException ex) {
-            logger.error("Error retrieving team facade", ex);
-            return null;
-        }
     }
 }

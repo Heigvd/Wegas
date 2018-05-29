@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
@@ -21,16 +21,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 
-////import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
-
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class FileDescriptor extends AbstractContentDescriptor {
 
-    //@XmlTransient
     @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
 
@@ -85,9 +80,8 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @param from
      * @param len
-     * @return
+     * @return file parital content as Base64 within an inputStream
      */
-    //@XmlTransient
     @JsonIgnore
     public InputStream getBase64Data(long from, int len) {
         try {
@@ -101,9 +95,8 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * @return
+     * @return file content as Base64 within an inputStream
      */
-    //@XmlTransient
     @JsonIgnore
     public InputStream getBase64Data() {
         try {
@@ -162,7 +155,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * @return
+     * @return last modified date
      */
     @JsonProperty("dataLastModified")
     public Calendar getDataLastModified() {
@@ -170,7 +163,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * @return
+     * @return file content as bytes
      */
     @JsonProperty("bytes")
     @Override
@@ -195,7 +188,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @return @throws IOException
      */
-    //@XmlTransient
     @JsonIgnore
     protected byte[] getBytesData() throws IOException {
         try {

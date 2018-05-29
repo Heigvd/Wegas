@@ -2,27 +2,18 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
 
-import java.util.Objects;
-
 /**
+ *
+ * Entity name is kind of human-readable unique identifier
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public abstract class NamedEntity extends AbstractEntity {
-
-    /**
-     *
-     * @param n
-     */
-    @Override
-    public void merge(AbstractEntity n) {
-        this.setName(((NamedEntity) n).getName());
-    }
+public interface NamedEntity {
 
     /**
      * Get the entity internal name
@@ -36,34 +27,4 @@ public abstract class NamedEntity extends AbstractEntity {
      * @param name
      */
     public abstract void setName(String name);
-
-    /**
-     *
-     * @return class simple name, id and name
-     */
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + getName() + ")";
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 37 * hash + Objects.hashCode(this.getName());
-        hash = 37 * hash + Objects.hashCode(this.getId());
-        return hash;
-    }
-
-    /**
-     * @param entity entity to compare to
-     * @return true if entity equals this
-     */
-    @Override
-    public boolean equals(Object entity) {
-        if (entity instanceof NamedEntity) {
-            return this.getName().equals(((NamedEntity) entity).getName()) && super.equals(entity);
-        } else {
-            return false;
-        }
-    }
 }

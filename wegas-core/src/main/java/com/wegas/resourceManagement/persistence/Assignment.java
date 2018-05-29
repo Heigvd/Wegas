@@ -2,42 +2,38 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.rest.util.Views;
-import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.rest.util.Views;
+import javax.persistence.*;
 
 /**
  *
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id"),
-    @Index(columnList = "taskdescriptor_id")
+    @Index(columnList = "resourceinstance_id"),
+    @Index(columnList = "taskinstance_id")
 })
 @NamedQueries({
     @NamedQuery(
-            name = "Assignment.findByResourceInstanceIdAndTaskDescriptorId",
-            query = "SELECT a FROM Assignment a where a.resourceInstance.id = :resourceInstanceId AND a.taskDescriptor.id = :taskDescriptorId"
+            name = "Assignment.findByResourceInstanceIdAndTaskInstanceId",
+            query = "SELECT a FROM Assignment a where a.resourceInstance.id = :resourceInstanceId AND a.taskInstance.id = :taskInstanceId"
     )
 })
 @Entity
-public class Assignment extends AbstractAssignement /*implements Broadcastable */ {
+public class Assignment extends AbstractAssignement {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
@@ -47,13 +43,13 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "taskdescriptor_id", nullable = false)
-    private TaskDescriptor taskDescriptor;
+    private TaskInstance taskInstance;
+
     /**
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "variableinstance_id", nullable = false)
+    @JoinColumn(nullable = false)
     @JsonBackReference
     @JsonIgnore
     private ResourceInstance resourceInstance;
@@ -62,30 +58,7 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
      *
      */
     public Assignment() {
-    }
-
-    /**
-     *
-     * @param taskDescriptor
-     */
-    public Assignment(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Assignment) {
-            Assignment other = (Assignment) a;
-            // TODO TGSS: Avoid setting/updating relations within merge method !
-            this.setResourceInstance(other.getResourceInstance());
-            this.setTaskDescriptor(other.getTaskDescriptor());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + (a != null ? a.getClass().getSimpleName() : "NULL") + ") is not possible");
-        }
+        super();
     }
 
     @Override
@@ -94,11 +67,11 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
     }
 
     /**
-     * @return the MCQDescriptor
+     * @return the ResourceInstance
      */
-    //@XmlTransient
     @JsonIgnore
     @JsonBackReference
+    @Override
     public ResourceInstance getResourceInstance() {
         return resourceInstance;
     }
@@ -112,37 +85,29 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
     }
 
     /**
-     *
-     * @return id of the task descriptor this assignment is linked to
-     */
-    public Long getTaskDescriptorId() {
-        return this.getTaskDescriptor().getId();
-    }
-
-    /**
      * @return the taskInstance
      */
-    //@XmlTransient
     @JsonIgnore
-    public TaskDescriptor getTaskDescriptor() {
-        return taskDescriptor;
+    @Override
+    public TaskInstance getTaskInstance() {
+        return taskInstance;
     }
 
     /**
-     * @param taskDescriptor
+     * @param taskInstance
      */
     @JsonProperty
-    public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
+    public void setTaskInstance(TaskInstance taskInstance) {
+        this.taskInstance = taskInstance;
     }
 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
-        TaskDescriptor theTask = this.getTaskDescriptor();
+        TaskInstance theTask = this.getTaskInstance();
         ResourceInstance theResource = this.getResourceInstance();
 
         if (theTask != null) {
-            theTask = ((TaskDescriptor) beans.getVariableDescriptorFacade().find(theTask.getId()));
+            theTask = ((TaskInstance) beans.getVariableInstanceFacade().find(theTask.getId()));
             if (theTask != null) {
                 theTask.getAssignments().remove(this);
             }
@@ -154,4 +119,5 @@ public class Assignment extends AbstractAssignement /*implements Broadcastable *
             }
         }
     }
+
 }

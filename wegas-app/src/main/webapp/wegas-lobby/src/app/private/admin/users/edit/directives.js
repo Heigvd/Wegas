@@ -8,7 +8,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
             templateUrl: 'app/private/admin/users/edit/directives.tmpl/index.html',
             controller: "AdminUsersEditIndexController as adminUsersEditIndexCtrl"
         };
-    }).controller("AdminUsersEditIndexController", function AdminUsersEditIndexController(UsersModel, $stateParams, $state, $scope){
+    }).controller("AdminUsersEditIndexController", function AdminUsersEditIndexController(UsersModel, $stateParams, $state, $scope, $rootScope){
         "use strict";
         var ctrl = this;
         ctrl.user = { isNonLocal: false };
@@ -26,7 +26,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
         };
 
         ctrl.addPermission = function() {
-            var newPermission = {'id':null, "@class":"Permission","value":"", "inducedPermission":""};
+            var newPermission = {'id':null, "@class":"Permission","value":""};
             ctrl.user.account.permissions.push(newPermission);
         };
 
@@ -36,6 +36,9 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
                     response.flash();
                 }
                 if (!response || !response.isErroneous()) {
+                    // Brutal way of reloading the updated user from the server, until UsersModel offers finer mechanisms:
+                    UsersModel.clearCache();
+                    $rootScope.$emit("changeUsers", true);
                     $scope.close();
                 }
             });

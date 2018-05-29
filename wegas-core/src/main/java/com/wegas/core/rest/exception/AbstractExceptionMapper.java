@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.exception;
@@ -10,7 +10,6 @@ package com.wegas.core.rest.exception;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasUniqueConstraintException;
-import java.util.Set;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
 import javax.persistence.OptimisticLockException;
@@ -20,7 +19,6 @@ import javax.transaction.TransactionRolledbackException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
@@ -42,11 +40,11 @@ public abstract class AbstractExceptionMapper {
      * @return HTTP BadRequest
      */
     public static Response processException(Throwable exception) {
-        logger.warn("ProcessException: " + exception);
+        logger.trace("ProcessException: {}", exception);
 
         if (exception instanceof OptimisticLockException) {
             OptimisticLockException ex = (OptimisticLockException) exception;
-            logger.error("Try to update outated: " + ex.getEntity());
+            logger.error("Try to update outated: {}",  ex.getEntity());
 
             return Response.status(Response.Status.CONFLICT).entity(new WegasConflictException(exception)).build();
         } else if (exception instanceof RollbackException

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
@@ -80,19 +80,19 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      *
      * @param p
      *
-     * @return
+     * @return numner of property in the payer instance
      */
     public int size(Player p) {
         return this.getInstance(p).getProperties().size();
     }
 
     /**
-     * Metods for use in script
+     * Returns the value of the 'key' propery in the player instance
      *
      * @param p
      * @param key
      *
-     * @return
+     * @return the value of the property in the player instance
      */
     public String getProperty(Player p, String key) {
         return this.getInstance(p).getProperties().get(key);
@@ -122,7 +122,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      * @param p
      * @param key
      *
-     * @return
+     * @return the value of the property in the player instance
      */
     public String getInstanceProperty(Player p, String key) {
         return this.getInstance(p).getProperty(key);

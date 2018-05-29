@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence.evaluation;
@@ -11,19 +11,26 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.*;
 
 /**
  *
  * An evaluation descriptor is the abstract parent of different kind of
  * evaluation description.
- *
+ * <p>
  * Such en evaluation is either one that compose a feedback (ie the review of a
  * variable) or one that compose a feedback evaluation (ie the evaluation of a
  * review of a variable)
@@ -33,13 +40,23 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(uniqueConstraints = {})
+@Table(
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"container_id", "name"}),
+            @UniqueConstraint(columnNames = {"container_id", "label"}),},
+        indexes = {
+            @Index(columnList = "container_id"),
+            @Index(columnList = "label_id"),
+            @Index(columnList = "description_id")
+        }
+)
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(value = TextEvaluationDescriptor.class),
     @JsonSubTypes.Type(value = CategorizedEvaluationDescriptor.class),
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
-public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends NamedEntity {
+public abstract class EvaluationDescriptor<T extends EvaluationInstance>
+        extends AbstractEntity implements LabelledEntity, Searchable {
 
     @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
@@ -54,18 +71,31 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     private Long id;
 
     /**
-     * Evaluation name as displayed to players
+     * to sort evaluation descriptor and instance
+     */
+    private Integer index;
+
+    /**
+     * Evaluation internal identifier
      */
     private String name;
 
     /**
-     * Textual descriptor to be displayed to players
+     * Evaluation label as displayed to players
      */
-    @Lob
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent label;
 
     /**
-     * the parent
+     * Textual descriptor to be displayed to players
+     */
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    private TranslatableContent description;
+
+    /**
+     * the parent,
      */
     @ManyToOne
     @JsonBackReference
@@ -86,38 +116,38 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.name = name;
     }
 
+    public int getIndex() {
+        return index != null ? index : 0;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
         if (a instanceof EvaluationDescriptor) {
             EvaluationDescriptor o = (EvaluationDescriptor) a;
-            this.setDescription(o.getDescription());
+            this.setName(o.getName());
+            this.setLabel(TranslatableContent.merger(this.getLabel(), o.getLabel()));
+            this.setDescription(TranslatableContent.merger(this.getDescription(), o.getDescription()));
+            this.setIndex(o.getIndex());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o instanceof EvaluationDescriptor) {
-            EvaluationDescriptor ed = (EvaluationDescriptor) o;
-
-            if (ed.getId() == null || this.getId() == null) {
-                return false;
-            } else {
-                return this.getId().equals(ed.getId());
-            }
-        } else {
-            return false;
-        }
+    public TranslatableContent getLabel() {
+        return label;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.id);
-        hash = 53 * hash + Objects.hashCode(this.name);
-        return hash;
+    public void setLabel(TranslatableContent label) {
+        this.label = label;
+        if (this.label != null && this.getContainer() != null) {
+            this.label.setParentDescriptor(this.getContainer().getParent());
+        }
     }
 
     /**
@@ -140,18 +170,15 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.name = name;
     }
 
-    /**
-     * @return the description
-     */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null && this.getContainer() != null) {
+            this.description.setParentDescriptor(this.getContainer().getParent());
+        }
     }
 
     /**
@@ -212,5 +239,26 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
 
     public void removeInstance(EvaluationInstance instance) {
         this.evaluationInstances.remove(instance);
+    }
+
+    private WithPermission getEffectiveContainer() {
+        return this.getContainer();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getEffectiveContainer().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getEffectiveContainer().getRequieredReadPermission();
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        return  Helper.insensitiveContainsAll(getName(), criterias)
+                || Helper.insensitiveContainsAll(getLabel(), criterias)
+                || Helper.insensitiveContainsAll(getDescription(), criterias);
     }
 }

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -19,16 +19,12 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.Column;
 
-////import javax.xml.bind.annotation.XmlRootElement;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-//@XmlRootElement
-//@XmlType(name = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;
@@ -42,6 +38,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      *
      */
     @JsonView(Views.EditorI.class)
+    @Column(columnDefinition = "boolean default false")
     private Boolean disableSelf = true;
     /**
      *
@@ -63,7 +60,9 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
-     * @return
+     * is the trigger designed to trigger only once ?
+     *
+     * @return true if the trigger is designed to be trigged only once
      */
     public Boolean isOneShot() {
         return oneShot;
@@ -88,7 +87,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
-     * @return
+     * @return the script to execute when trigger triggers
      */
     public Script getPostTriggerEvent() {
         try {
@@ -117,7 +116,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      * Trigger condition
      *
-     * @return
+     * @return condition for trigger to triggers
      */
     public Script getTriggerEvent() {
         try {
@@ -131,11 +130,11 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     /**
      * Override to make this function transient
      *
-     * @return
+     * @return underlysing statemachine states
+     *
      * @see StateMachineDescriptor#getStates
      */
     @Override
-    //@XmlTransient
     @JsonIgnore
     public Map<Long, State> getStates() {
         return super.getStates();
@@ -156,20 +155,20 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         if (a instanceof TriggerDescriptor) {
             TriggerDescriptor entity = (TriggerDescriptor) a;
 
-            entity.buildStateMachine();
             this.setOneShot(entity.oneShot);
             this.setDisableSelf(entity.disableSelf);
             this.setPostTriggerEvent(entity.postTriggerEvent);
             this.setTriggerEvent(entity.triggerEvent);
 
             // HACK Restore Version Number
-            Long initialStateVersion = this.getStates().get(1L).getVersion();
-            Long finalStateVersion = this.getStates().get(2L).getVersion();
-
+            //Long initialStateVersion = this.getStates().get(1L).getVersion();
+            //Long finalStateVersion = this.getStates().get(2L).getVersion();
+            entity.setStates(this.getStates());
             super.merge(entity);
 
-            this.getStates().get(1L).setVersion(initialStateVersion);
-            this.getStates().get(2L).setVersion(finalStateVersion);
+            entity.buildStateMachine();
+            //this.getStates().get(1L).setVersion(initialStateVersion);
+            //this.getStates().get(2L).setVersion(finalStateVersion);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
@@ -227,13 +226,19 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         }
 
         // Condition
-        this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
+        if (this.triggerEvent != null) {
+            this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
+        }
 
         // Impact
-        this.getStates().get(2L).setOnEnterEvent(this.postTriggerEvent);
+        if (this.postTriggerEvent != null) {
+            this.getStates().get(2L).setOnEnterEvent(this.postTriggerEvent);
+        }
 
         // Reset transition
-        this.getStates().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
+        if (this.oneShot != null) {
+            this.getStates().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
+        }
     }
 
     @Override

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -10,7 +10,7 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  * @author Gérald Eberle
  */
-/*global Chartist*/
+/*global Chartist, I18n*/
 YUI.add("wegas-statistics", function(Y) {
     "use strict";
     var Data,
@@ -30,21 +30,21 @@ YUI.add("wegas-statistics", function(Y) {
             low: 0,
             high: 100
         },
-        Promise = Y.Promise,// remove me to use native promise
+        Promise = Y.Promise, // remove me to use native promise
         getPath = function(entity) {
-            var title = entity.getEditorLabel(), parent = entity.parentDescriptor;
-            while (parent) {
+            var title = entity.getEditorLabel(), parent = entity.getParent();
+            while (parent instanceof Y.Wegas.persistence.VariableDescriptor) {
                 title = parent.getEditorLabel() + " \u21E8 " + title;
-                parent = parent.parentDescriptor;
+                parent = parent.getParent();
             }
             return title;
         }, getLogID = function(gm) {
-            if (gm.get("properties.logID")) {
-                return gm.get("properties.logID");
-            } else {
-                throw new Error("No logID defined");
-            }
-        },
+        if (gm.get("properties.logID")) {
+            return gm.get("properties.logID");
+        } else {
+            throw new Error("No logID defined");
+        }
+    },
         inlineSvgStyle = function(node) {
             var tw = document.createTreeWalker(node, 1), n, img = new Image();
             while ((n = tw.nextNode())) {
@@ -55,7 +55,7 @@ YUI.add("wegas-statistics", function(Y) {
             return new Promise(function(resolve, reject) {
                 var img = new Image();
                 img.src = "data:image/svg+xml;base64," +
-                          btoa(window.unescape(encodeURIComponent((new XMLSerializer()).serializeToString(node))));
+                    btoa(window.unescape(encodeURIComponent((new XMLSerializer()).serializeToString(node))));
                 img.onload = function() {
                     var can = document.createElement("canvas"), ctx = can.getContext("2d"), target = new Image();
                     can.width = img.width;
@@ -70,13 +70,13 @@ YUI.add("wegas-statistics", function(Y) {
         },
         Stats = Y.Base.create("wegas-statistics", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
             CONTENT_TEMPLATE: "<div><div class='stats-question' style='display: inline-block'>" +
-                              "<select><option value='null' disabled>-Question-</option></select><button class='gen-button'>Generate all</button>" +
-                              "<i class='loading fa fa-spinner fa-pulse fa-lg' style='display: none'></i>" +
-                              "<div>Answer count: <span class='question-answer-count'></span></div>" +
-                              "<div class='chart'></div><div class='tmpNode'></div></div>" +
-                              "<div class='stats-number' style='display: none;vertical-align: top'>" +
-                              "<select><option value='null' disabled>-Number-</option></select>" +
-                              "<canvas class='chart' style='width:600px;height:400px'></canvas></div></div>",
+                "<select><option value='null' disabled>-Question-</option></select><button class='gen-button'>Generate all</button>" +
+                "<i class='loading fa fa-spinner fa-pulse fa-lg' style='display: none'></i>" +
+                "<div>Answer count: <span class='question-answer-count'></span></div>" +
+                "<div class='chart'></div><div class='tmpNode'></div></div>" +
+                "<div class='stats-number' style='display: none;vertical-align: top'>" +
+                "<select><option value='null' disabled>-Number-</option></select>" +
+                "<canvas class='chart' style='width:600px;height:400px'></canvas></div></div>",
             initializer: function() {
                 this.handlers = [];
                 this._gmPromise = Data.getCurrentGameModel();
@@ -104,6 +104,13 @@ YUI.add("wegas-statistics", function(Y) {
                         series: []
                     },
                     CHART_BAR_OPT);
+
+                // Todo: should use kind of gameModel.flatten(filter: QuestionDescriptor) to keep treeview order
+                questions.sort(function(a, b) {
+                    var aPath = getPath(a),
+                        bPath = getPath(b);
+                    return (aPath < bPath ? -1 : 1);
+                });
                 Y.Array.each(questions, function(i) {
                     selectQNode.appendChild("<option value='" + i.get("name") + "'>" + getPath(i) + "</option>");
                 });
@@ -167,14 +174,14 @@ YUI.add("wegas-statistics", function(Y) {
                             total = result[1];
                             return svgToPng(tmpChart.container.firstChild);
                         }).catch(function() {
-                            //Image creation failed, return svg instead
-                            return tmpChart.container.firstChild;
-                        }).then(function(newNode) {
-                            var n = Y.Node.create("<div style ='display:inline-block;width:610px;padding:10px;margin:1px;border:1px solid #888888'> <div>" +
-                                                  getPath(question) + " (Count: " + total + ")</div></div>");
-                            n.append(Y.one(newNode.cloneNode(true)).setStyle("overflow", "visible"));
-                            Y.one(wHand.document.body).append(n);
-                        });
+                        //Image creation failed, return svg instead
+                        return tmpChart.container.firstChild;
+                    }).then(function(newNode) {
+                        var n = Y.Node.create("<div style ='display:inline-block;width:610px;padding:10px;margin:1px;border:1px solid #888888'> <div>" +
+                            getPath(question) + " (Count: " + total + ")</div></div>");
+                        n.append(Y.one(newNode.cloneNode(true)).setStyle("overflow", "visible"));
+                        Y.one(wHand.document.body).append(n);
+                    });
                 };
 
                 promiseChain = Promise.resolve();
@@ -206,8 +213,10 @@ YUI.add("wegas-statistics", function(Y) {
             },
             destructor: function() {
                 this._gmPromise = null;
-                this._questionButton.destroy();
-                this.chart.destroy();
+                this._questionButton && this._questionButton.destroy();
+                if (this.chart && this.chart.destroy) {
+                    this.chart.destroy();
+                }
                 Y.Array.each(this.handlers, function(element) {
                     element.detach();
                 });
@@ -253,15 +262,15 @@ YUI.add("wegas-statistics", function(Y) {
         genQuestionData = function(questionName, questionData) {
             var question = Y.Wegas.Facade.Variable.cache.find("name", questionName),
                 choices = {}, data = {
-                    labels: [],
-                    series: [{
+                labels: [],
+                series: [{
                         data: []
                     }]
-                }, res = data.series[0].data, labels = data.labels, count = 0;
+            }, res = data.series[0].data, labels = data.labels, count = 0;
             Y.Array.each(question.get("items"), function(i) {
                 choices[(i.get("name"))] = {};
                 Y.Array.each(i.get("results"), function(r) {
-                    choices[(i.get("name"))][r.get("label")] = 0;
+                    choices[(i.get("name"))][I18n.t(r.get("label"))] = 0;
                 });
 
             });
@@ -271,8 +280,8 @@ YUI.add("wegas-statistics", function(Y) {
             });
             Y.Object.each(choices, function(v, k) {
                 Y.Object.each(v, function(val, key) {
-                    labels.push(Y.Wegas.Facade.Variable.cache.find("name", k).get("label") +
-                                (key ? " (" + key + ")" : ""));
+                    labels.push(I18n.t(Y.Wegas.Facade.Variable.cache.find("name", k).get("label")) +
+                        (key ? " (" + key + ")" : ""));
                     res.push(val / (count ? count : 1) * 100);
                 });
             });

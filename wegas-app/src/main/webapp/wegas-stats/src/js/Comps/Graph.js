@@ -1,7 +1,8 @@
-import React, { PropTypes } from 'react';
-import { computeData, computeDiffs } from './dataCompute';
+import * as React from 'react';
+import PropTypes from 'prop-types';
 import Chartist from 'chartist';
 import 'chartist/dist/chartist.min.css';
+import { computeData, computeDiffs } from './dataCompute';
 import '../../css/chartist.css';
 
 const CHART_BAR_OPT = {
@@ -9,7 +10,7 @@ const CHART_BAR_OPT = {
     height: 400,
     axisY: {
         labelInterpolationFnc: function label(value) {
-            return value ? `${value}%` : '<b>0%</b>';
+            return `${value}%`;
         },
         scaleMinSpace: 20,
         onlyInteger: true,
@@ -42,7 +43,10 @@ function inlineSvgStyle(node) {
     const tw = document.createTreeWalker(node, 1);
     let currentNode = tw.nextNode();
     while (currentNode) {
-        currentNode.setAttribute('style', getComputedStyle(currentNode).cssText);
+        currentNode.setAttribute(
+            'style',
+            getComputedStyle(currentNode).cssText
+        );
         currentNode = tw.nextNode();
     }
     return node;
@@ -76,23 +80,34 @@ class Graph extends React.Component {
     }
 
     componentDidMount() {
-        this.chart = new Chartist.Bar(this.refs.graph, {
-            labels: [],
-            series: [],
-        }, CHART_BAR_OPT);
-        this.diffChart = new Chartist.Bar(this.refs.diffs, {
-            labels: [],
-            series: [],
-        }, DIFF_BAR_OPT);
+        this.chart = new Chartist.Bar(
+            this.refs.graph,
+            {
+                labels: [],
+                series: [],
+            },
+            CHART_BAR_OPT
+        );
+        this.diffChart = new Chartist.Bar(
+            this.refs.diffs,
+            {
+                labels: [],
+                series: [],
+            },
+            DIFF_BAR_OPT
+        );
     }
     componentDidUpdate() {
         if (!this.props.question) {
             return;
         }
-        computeData(this.props).then(data => {
-            this.chart.update(data);
-            return data;
-        }).then(computeDiffs).then(data => this.diffChart.update(data));
+        computeData(this.props)
+            .then(data => {
+                this.chart.update(data);
+                return data;
+            })
+            .then(computeDiffs)
+            .then(data => this.diffChart.update(data));
     }
     componentWillUnmount() {
         this.chart.detach();
@@ -102,79 +117,108 @@ class Graph extends React.Component {
     genAll() {
         const windowHandler = window.open();
         const { groups, snapshot, logId } = this.props;
-        const tmpChart = new Chartist.Bar(this.refs.tmpChart, {
-            labels: [],
-            series: [],
-        }, CHART_BAR_OPT);
-        const tmpDiff = new Chartist.Bar(this.refs.tmpDiff, {
-            labels: [],
-            series: [],
-        }, DIFF_BAR_OPT);
+        const tmpChart = new Chartist.Bar(
+            this.refs.tmpChart,
+            {
+                labels: [],
+                series: [],
+            },
+            CHART_BAR_OPT
+        );
+        const tmpDiff = new Chartist.Bar(
+            this.refs.tmpDiff,
+            {
+                labels: [],
+                series: [],
+            },
+            DIFF_BAR_OPT
+        );
         let promiseChain = Promise.resolve();
-        JSON.search(snapshot, '//*[@class="QuestionDescriptor"]/name').forEach(question => {
-            promiseChain = promiseChain.then(() => {
-                if (windowHandler.closed) {
-                    throw new Error('Window has been closed, halting');
-                }
-                return computeData({
-                    groups,
-                    snapshot,
-                    logId,
-                    question,
-                }).then(data => {
-                    tmpChart.update(data);
-                    return data;
-                }).then(computeDiffs).then(data => tmpDiff.update(data)).then(() => {
-                    return Promise.all([
-                        inlineSvgStyle(tmpChart.container.firstChild),
-                        inlineSvgStyle(tmpDiff.container.firstChild),
-                    ]);
-                }).then(([chart, diff]) => {
-                    const container = document.createElement('div');
-                    const label = JSON.search(snapshot,
-                            `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`)
-                            .reduce((pre, cur) => `${pre}${cur.label} → `, '') +
-                        JSON.search(snapshot,
-                            `//*[@class='QuestionDescriptor'][name="${question}"]/label`)[0];
-                    container.setAttribute('style', 'white-space:nowrap');
-                    container.innerHTML = `<div>${label}</div>`;
-                    container.appendChild(chart);
-                    container.appendChild(diff);
-                    windowHandler.document.body.appendChild(container);
-                    return;
-                }).catch(err => console.error(err));
+        JSON.search(snapshot, '//*[@class="QuestionDescriptor"]/name').forEach(
+            question => {
+                promiseChain = promiseChain.then(() => {
+                    if (windowHandler.closed) {
+                        throw new Error('Window has been closed, halting');
+                    }
+                    return computeData({
+                        groups,
+                        snapshot,
+                        logId,
+                        question,
+                    })
+                        .then(data => {
+                            tmpChart.update(data);
+                            return data;
+                        })
+                        .then(computeDiffs)
+                        .then(data => tmpDiff.update(data))
+                        .then(() => {
+                            return Promise.all([
+                                inlineSvgStyle(tmpChart.container.firstChild),
+                                inlineSvgStyle(tmpDiff.container.firstChild),
+                            ]);
+                        })
+                        .then(([chart, diff]) => {
+                            const container = document.createElement('div');
+                            const label =
+                                JSON.search(
+                                    snapshot,
+                                    `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`
+                                ).reduce(
+                                    (pre, cur) =>
+                                        `${pre}${
+                                            cur.label.translations.def
+                                        } → `,
+                                    ''
+                                ) +
+                                JSON.search(
+                                    snapshot,
+                                    `//*[@class='QuestionDescriptor'][name="${question}"]/label`
+                                )[0].translations.def;
+                            container.setAttribute(
+                                'style',
+                                'white-space:nowrap'
+                            );
+                            container.innerHTML = `<div>${label}</div>`;
+                            container.appendChild(chart);
+                            container.appendChild(diff);
+                            windowHandler.document.body.appendChild(container);
+                            return;
+                        })
+                        .catch(err => console.error(err));
+                });
+            }
+        );
+        promiseChain
+            .catch(err => {
+                console.error(err);
+            })
+            .then(() => {
+                tmpChart.detach();
+                tmpDiff.detach();
             });
-        });
-        promiseChain.catch(err => {
-            console.error(err);
-        }).then(() => {
-            tmpChart.detach();
-            tmpDiff.detach();
-        });
         return promiseChain;
     }
 
     render() {
         const legends = this.props.groups.map((val, index) => (
-        <span className={ `color ct-series-${String.fromCharCode(97 + index)}` }
-              key={ index }
-              style={ legendStyle }>{ `Group ${(index + 1)}` }</span>
+            <span
+                className={`color ct-series-${String.fromCharCode(97 + index)}`}
+                key={index}
+                style={legendStyle}
+            >{`Group ${index + 1}`}</span>
         ));
         return (
             <div ref="box">
-              <span className="legend">{ legends }</span>
-              <div style={ noWrap }>
-                <div ref="graph"
-                     style={ inlineStyle } />
-                <div ref="diffs"
-                     style={ inlineStyle } />
-              </div>
-              <div ref="tmpChart"
-                   style={ noDisplay } />
-              <div ref="tmpDiff"
-                   style={ noDisplay } />
+                <span className="legend">{legends}</span>
+                <div style={noWrap}>
+                    <div ref="graph" style={inlineStyle} />
+                    <div ref="diffs" style={inlineStyle} />
+                </div>
+                <div ref="tmpChart" style={noDisplay} />
+                <div ref="tmpDiff" style={noDisplay} />
             </div>
-            );
+        );
     }
 }
 Graph.propTypes = {

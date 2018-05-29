@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+
+    <head>
+        <title>[Wegas] Waiting...</title>
+        <style>
+
+            body {
+                font-family : Lato, Helvetica, Arial, sans-serif;
+            }
+
+            .centered{
+                position:absolute;
+                text-align:center;
+                top:50%; 
+                left: calc(50% - 75px);
+            }
+
+            #title {
+                margin-top: -66px;
+                margin-left: -20px;
+                font-size: 20pt;
+                color: #d6d6d6;
+            }
+
+            #processing {
+                font-size:24px;
+                margin-top: -28px;
+                /*margin-left: 20px;*/
+                color: #737373;
+            }
+
+            #progressbar{
+                margin-top: -28px;
+            }
+
+            #progressbar_full {
+                height:15px;
+                width:150px;
+                font-size: 10px;
+                border:1px solid #c3c3c3;
+                text-align: center;
+            }
+
+            #progressbar_progress {
+                background-color:#7cddee;
+                height: 100%;
+            }
+
+            #progressbar_counter {
+                height: 100%;
+                width: 100%;
+                margin-top :-12px;
+            }
+        </style>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+
+        <script>
+
+
+            init = function() {
+                var Wegas, base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
+                    pusher, userChannel, presence, cfg = (localStorage["wegas-config"] ? JSON.parse(localStorage["wegas-config"]) : {}),
+                    httpRequest,
+                    onConnected,
+                    email = "#{waitController.currentUserEmail}";
+
+                window.Wegas = Wegas = {
+                    initialPosition: #{waitController.currentPlayer.queueSize},
+                    currentPosition: #{waitController.currentPlayer.queueSize},
+                    since: (new Date()).getTime(),
+                    playerId: #{waitController.currentPlayer.id},
+                    teamId: #{waitController.currentPlayer.team.id},
+                    progressBar: document.getElementById("progressbar"),
+                    spinner: document.getElementById("processing"),
+                    title: document.getElementById("title"),
+                    // <ui:insert name="setlang"><![CDATA[
+                    lang: (cfg && cfg.users && cfg.users[email] && cfg.users[email].language ? cfg.users[email].language : "en"),
+                    //]]></ui:insert>
+
+                    showSpinner: function() {
+                        Wegas.progressBar.style.display = "none";
+                        Wegas.spinner.style.display = "block";
+                    },
+
+                    showProgressbar: function() {
+                        Wegas.progressBar.style.display = "block";
+                        Wegas.spinner.style.display = "none";
+                    },
+
+                    reload: function() {
+                        location.reload();
+                    }
+                };
+
+                switch (Wegas.lang) {
+                    case "en":
+                        Wegas.title.innerText = "Please wait";
+                        break;
+                    case "fr":
+                        Wegas.title.innerText = "Merci de patienter";
+                        break;
+                }
+
+                // <ui:insert name="aScript"><![CDATA[
+                if (Wegas.currentPosition <= 2) {
+                    Wegas.showSpinner();
+                } else {
+                    Wegas.showProgressbar();
+                }
+                //]]></ui:insert>
+
+                Wegas.pusher = pusher = new Pusher("#{waitController.getWegasProperty('pusher.key')}", {
+                    authEndpoint: base + "/rest/Pusher/auth",
+                    encrypted: true,
+                    cluster: "#{waitController.getWegasProperty('pusher.cluster')}"
+                });
+
+                pusher.connection.bind('error', function(err) {
+                    console.error(JSON.stringify(err));
+                    setTimeout(function() {
+                        Wegas.reload();
+                    }, 2000);
+                });
+
+
+                /**
+                 * check if the player been processed during page init
+                 */
+                onConnected = function() {
+                    httpRequest = new XMLHttpRequest();
+                    httpRequest.onreadystatechange = function() {
+                        var player;
+                        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                            if (httpRequest.status === 200) {
+                                player = JSON.parse(httpRequest.responseText);
+
+                                console.log("Player status: " + player.status);
+
+                                if (player.status === "LIVE" || player.status === "FAILED") {
+                                    window.location.reload();
+                                }
+                            }
+                        }
+                    };
+                    httpRequest.open("GET", base + "/rest/GameModel/Game/Team/" + Wegas.teamId + "/Player/" + Wegas.playerId);
+                    httpRequest.setRequestHeader('Content-Type', 'application/json');
+                    httpRequest.send();
+                };
+
+                presence = pusher.subscribe('global-channel');
+                userChannel = pusher.subscribe('private-User-' + #{requestController.currentUser.id});
+                presence.bind('pusher:subscription_succeeded', onConnected, this);
+                userChannel.bind('pusher:subscription_succeeded', onConnected, this);
+
+                presence.bind('populateQueue-dec', function(size) {
+                    var lastUpdate, alreadyWaited, timeToWait;
+                    Wegas.currentPosition--;
+                    console.log("DEC");
+
+                    // <ui:insert name="aScript"><![CDATA[
+                    if (Wegas.currentPosition <= 2) {
+                        Wegas.showSpinner();
+                    } else {
+                        lastUpdate = (new Date()).getTime();
+                        alreadyWaited = 100 - (100 * Wegas.currentPosition / Wegas.initialPosition);
+
+                        timeToWait = (Wegas.currentPosition * (lastUpdate - Wegas.since) / (Wegas.initialPosition - Wegas.currentPosition)) / 1000;
+                        timeToWait = Math.floor(timeToWait);
+
+                        document.getElementById("progressbar_progress").style.width = alreadyWaited + "%";
+                        document.getElementById("progressbar_progress").style["background-color"] = "hsl(131, " + alreadyWaited.toFixed() + "%, 50%)";
+                        switch (Wegas.lang) {
+                            case "en":
+                                document.getElementById("time").innerText = "Still " + timeToWait + "s to go";
+                                break;
+                            case "fr":
+                                document.getElementById("time").innerText = "Encore " + timeToWait + "s";
+                                break;
+                        }
+                    }
+                    //]]></ui:insert>
+                });
+                userChannel.bind('team-update', function(strTeam) {
+                    var team = JSON.parse(strTeam), i, player;
+                    for (i in team.players) {
+                        player = team.players[i];
+                        if (player.id === Wegas.playerId) {
+                            if (player.status === 'LIVE') {
+                                Wegas.reload();
+                            } else if (player.status === 'PROCESSING') {
+                                Wegas.showSpinner();
+                            }
+                        }
+                    }
+                });
+            };
+        </script>
+    </head>
+    <body onload="init()">
+        <div id="title" class="centered"></div>
+
+        <div id="processing" style="display: none;" class="centered">
+            <i class="fa fa-spinner fa-pulse fa-lg"></i> Processing
+        </div>
+
+        <div id="progressbar" class="centered">
+            <div id="progressbar_full">
+                <div id="progressbar_progress" style="width: 0%;"></div>
+                <div id="progressbar_counter">
+                    <span id="time"></span>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

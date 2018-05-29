@@ -1,96 +1,102 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-<ui:composition template="wegas-app/jsf/editor-default.xhtml">
+    <ui:composition template="wegas-app/jsf/editor-default.xhtml">
 
-    <ui:define
+        <ui:define name="app-init">
+            <c:set var="extraBodyClass" value="wegas-hostmode"/>
+        </ui:define>
+
+        <ui:define
             name="title">#{editorGameController.currentGame.name} - #{editorGameController.currentGameModel.name}</ui:define>
 
-    <ui:define name="editorHeader">
-        <ui:fragment rendered="#{requestController.debugMode()}">
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host.css"/>
-        </ui:fragment>
-        <ui:fragment rendered="#{!requestController.debugMode()}">
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host-min.css"/>
-        </ui:fragment>
+        <ui:define name="editorHeader">
+            <ui:fragment rendered="#{requestController.debugMode()}">
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host.css"/>
+            </ui:fragment>
+            <ui:fragment rendered="#{!requestController.debugMode()}">
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host-min.css"/>
+            </ui:fragment>
 
-    </ui:define>
+        </ui:define>
 
-    <ui:define name="pageUri">wegas-app/db/wegas-host-layout.json</ui:define>
+        <ui:define name="pageUri">wegas-app/db/wegas-host-layout.json</ui:define>
 
-    <ui:define name="pusherMode">GAME</ui:define>
+        <ui:define name="pusherMode">GAME</ui:define>
 
-    <script>//<ui:define name="editorFooter"><![CDATA[
-    Y.namespace("Wegas.Config").Dashboard = {
-        remoteScript: "",
-        columns: []
-    };
-    Y.namespace("Wegas.Config").CustomImpacts = [];
-    Y.Wegas.app.once("render", function() {
-        Y.one("body").addClass("wegas-hostmode");
+        <script>//<ui:define name="editorFooter"><![CDATA[
+            Y.namespace("Wegas.Config").Dashboard = {
+                remoteScript: "",
+                columns: []
+            };
+            Y.namespace("Wegas.Config").CustomImpacts = [];
+            Y.Wegas.app.once("render", function() {
+                // Handle switch from host to edit mode
+                Y.use("wegas-button", function() {
+                    var editButton = new Y.Wegas.Button({
+                        label: "Edit scenario",
+                        cssClass: "host-switchmode",
+                        "plugins": [{
+                                "fn": "Tooltip",
+                                "cfg": {
+                                    "content": "<p>Edit scenario for this session</p>"
+                                }
+                            }]
 
-        // Handle switch from host to edit mode
-        Y.use("wegas-button", function() {
-            var editButton = new Y.Wegas.Button({
-                label: "Edit scenario",
-                cssClass: "host-switchmode",
-                "plugins": [{
-                    "fn": "Tooltip",
-                    "cfg": {
-                        "content": "<p>Edit scenario for this session</p>"
-                    }
-                }]
+                    }).render(".wegas-layout-hd");
 
-            }).render(".wegas-layout-hd");
-
-            editButton.on("click", function() {
-                window.open(window.location.toString().replace("host.", "edit."),'_blank');
-            }, this);
-        });
+                    editButton.on("click", function() {
+                        window.open(window.location.toString().replace("host.", "edit."), '_blank');
+                    }, this);
+                });
 
 
-    });
-
-    Y.Wegas.app.on("render", function() {
-        Y.use("button", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
-            var playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team"),
-                    FFA = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll");
-
-            if (!playersTree) {
-                return;
-            } // Edit mode
-
-            if (!FFA) {
-                playersTree.treeView.plug(Y.Plugin.TeamSelection);
-            }
-
-            // Switch current player on treeview click
-            playersTree.on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
-                var entity = e.target.get("data.entity"),
-                        player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
-
-                if (!player) {
-                    this.showMessage("info", "This team is empty", 4000);
-                    return;
-                }
-
-                if (e.currentTarget.treeView.treeviewselect) {          //Check if click is with multi-select plugin
-                    return;
-                }
-                Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
             });
-        });
-    });
 
-    Y.Wegas.app.after("render", function() {
-        var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
-        Y.one(".wegas-title").setContent("<div>" + g.get("name") + "</div>"
-                                         + "<div class='subtitle'>" + g.get("gameModelName") + "</div>");// Update the title
-    });
+            Y.Wegas.app.on("render", function() {
+                Y.use("button", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
+                    var playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team"),
+                        FFA = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll");
 
-    //]]></ui:define></script>
+                    if (!playersTree) {
+                        return;
+                    } // Edit mode
 
-</ui:composition>
+                    if (!FFA) {
+                        playersTree.treeView.plug(Y.Plugin.TeamSelection);
+                    }
+
+                    // Switch current player on treeview click
+                    playersTree.on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
+                        var entity = e.target.get("data.entity"),
+                            player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
+
+                        if (!player) {
+                            this.showMessage("info", "This team is empty", 4000);
+                            return;
+                        }
+
+                        if (e.currentTarget.treeView.treeviewselect) {          //Check if click is with multi-select plugin
+                            return;
+                        }
+                        Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
+                    });
+                });
+            });
+
+            Y.Wegas.app.after("render", function() {
+                var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
+
+                Y.one(".wegas-title").setContent("<div>" 
+                    + (g.get("@class") === "DebugGame" ? "This is a scenario, you little hacker !" : g.get("name"))
+                    + "</div>"
+                    + "<div class='subtitle'>" + g.get("gameModelName") + "</div>");// Update the title
+            });
+
+            //]]></ui:define></script>
+
+    </ui:composition>
 </html>

@@ -2,13 +2,14 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IAtomicLong;
 import com.hazelcast.core.ILock;
@@ -26,32 +27,41 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.PusherChannelExistenceWebhook;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
-import com.wegas.core.security.util.SecurityHelper;
-import org.apache.shiro.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.cache.Cache;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import fish.payara.micro.cdi.Inbound;
+import fish.payara.micro.cdi.Outbound;
+import io.prometheus.client.Gauge;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
+import javax.cache.Cache;
+import javax.cache.processor.EntryProcessor;
+import javax.cache.processor.EntryProcessorException;
+import javax.cache.processor.MutableEntry;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.ejb.Asynchronous;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Yannick Lagger (lagger.yannick.com)
@@ -60,13 +70,15 @@ import java.util.zip.GZIPOutputStream;
 @LocalBean
 public class WebsocketFacade {
 
+    private static final Gauge onlineUsersGauge = Gauge.build().name("online_users").help("Number of onlineusers").register();
+
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
 
     private final Pusher pusher;
-    private final Boolean maintainLocalListUpToDate;
+    private Boolean maintainLocalListUpToDate;
 
     public final static String GLOBAL_CHANNEL = "global-channel";
-    public final static String ADMIN_CHANNEL = "private-Admin";
+    public final static String ADMIN_CHANNEL = "private-Role-Administrator";
 
     public static final Pattern USER_CHANNEL_PATTERN = Pattern.compile(Helper.USER_CHANNEL_PREFIX + "(\\d+)");
     public static final Pattern PRIVATE_CHANNEL_PATTERN = Pattern.compile("private-(User|Player|Team|Game|GameModel)-(\\d+)");
@@ -77,6 +89,13 @@ public class WebsocketFacade {
     @Inject
     private HazelcastInstance hazelcastInstance;
 
+    private static final String COMMANDS_EVENT = "WF_UPDATE_OU_METRIC";
+    private static final String UPDATE_OU_METRIC_CMD = "WF_UPDATE_OU_METRIC";
+
+    @Inject
+    @Outbound(eventName = COMMANDS_EVENT, loopBack = true)
+    private Event<String> commands;
+
     private static final String UPTODATE_KEY = "onlineUsersUpTpDate";
     private static final String LOCKNAME = "WebsocketFacade.onlineUsersLock";
 
@@ -86,20 +105,20 @@ public class WebsocketFacade {
         OUTDATED
     }
 
-    @EJB
-    GameFacade gameFacade;
-
-    @EJB
-    TeamFacade teamFacade;
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      * Initialize Pusher Connection
@@ -121,7 +140,7 @@ public class WebsocketFacade {
     }
 
     /**
-     * Get all channels based on entites
+     * Get all channels based on entities
      *
      * @param entities
      *
@@ -133,25 +152,23 @@ public class WebsocketFacade {
 
         for (AbstractEntity entity : entities) {
             if (entity instanceof GameModel) {
-                if (SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + entity.getId())) {
+                if (requestManager.hasGameModelReadRight((GameModel) entity)) {
                     channel = ((GameModel) entity).getChannel();
                 }
             } else if (entity instanceof Game) {
-                if (SecurityHelper.isPermitted((Game) entity, "View")) {
+                if (requestManager.hasGameReadRight((Game) entity)) {
                     channel = ((Game) entity).getChannel();
                 }
             } else if (entity instanceof Team) {
                 Team team = (Team) entity;
                 User user = userFacade.getCurrentUser();
-                if (SecurityHelper.isPermitted(team.getGame(), "Edit") // Trainer and scenarist 
-                        || playerFacade.checkExistingPlayerInTeam(team.getId(), user.getId()) != null) { // or member of team
+
+                if (requestManager.hasTeamRight(team)) {
                     channel = ((Team) entity).getChannel();
                 }
             } else if (entity instanceof Player) {
                 Player player = (Player) entity;
-                User user = userFacade.getCurrentUser();
-                if (SecurityHelper.isPermitted(player.getGame(), "Edit") // Trainer and scenarist 
-                        || player.getUser() == user) { // is the player
+                if (requestManager.hasPlayerRight(player)) {
                     channel = ((Player) entity).getChannel();
                 }
             }
@@ -165,7 +182,7 @@ public class WebsocketFacade {
 
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send lock " + token + " to " + channel);
+            logger.info("send lock  \"{}\" to \"{}\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}", null);
         }
@@ -173,7 +190,7 @@ public class WebsocketFacade {
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
-            logger.error("send unlock " + token + " to " + channel);
+            logger.info("send unlock  \"{}\" to \"{}\"", token, channel);
             pusher.trigger(channel, "LockEvent",
                     "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
         }
@@ -222,7 +239,7 @@ public class WebsocketFacade {
         try {
             return Helper.getWegasProperty(property);
         } catch (MissingResourceException ex) {
-            logger.warn("Pusher init failed: missing " + property + " property");
+            logger.warn("Pusher init failed: missing {} property", property);
             return null;
         }
     }
@@ -249,12 +266,10 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
-     * @param outdatedEntities
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities) {
-        this.onRequestCommit(dispatchedEntities, destroyedEntities, outdatedEntities, null);
+            final Map<String, List<AbstractEntity>> destroyedEntities) {
+        this.onRequestCommit(dispatchedEntities, destroyedEntities, null);
     }
 
     /**
@@ -262,13 +277,11 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
-     * @param outdatedEntities
      * @param socketId           Client's socket id. Prevent that specific
      *                           client to receive this particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
             final Map<String, List<AbstractEntity>> destroyedEntities,
-            final Map<String, List<AbstractEntity>> outdatedEntities,
             final String socketId) {
         if (this.pusher == null) {
             return;
@@ -276,7 +289,6 @@ public class WebsocketFacade {
 
         propagate(destroyedEntities, socketId, EntityDestroyedEvent.class);
         propagate(dispatchedEntities, socketId, EntityUpdatedEvent.class);
-        propagate(outdatedEntities, socketId, OutdatedEntitiesEvent.class);
     }
 
     /**
@@ -293,10 +305,10 @@ public class WebsocketFacade {
                 ClientEvent event;
 
                 if (eventClass == EntityDestroyedEvent.class) {
-                    List<AbstractEntity> refreshed = new ArrayList<>();
+                    List<DestroyedEntity> refreshed = new ArrayList<>();
                     /*
-                     * Not possible to find an already destroyed entity, so, in 
-                     * this case (and since those informations are sufficient), 
+                     * Not possible to find an already destroyed entity, so, in
+                     * this case (and since those informations are sufficient),
                      * only id and class name are propagated
                      */
                     for (AbstractEntity ae : toPropagate) {
@@ -337,8 +349,8 @@ public class WebsocketFacade {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ba.length; i++) {
             // @hack convert to uint array
-            /* 
-             * Sending a byte[] through pusher result takes lot of place cause 
+            /*
+             * Sending a byte[] through pusher result takes lot of place cause
              * json is like "data: [31, 8, -127, ...]", full text
              */
             sb.append(Character.toString((char) Byte.toUnsignedInt(ba[i])));
@@ -384,7 +396,7 @@ public class WebsocketFacade {
             ObjectMapper mapper = JacksonMapperProvider.getMapper();
             String writeValueAsString = mapper.writeValueAsString(gzip);
             logger.error(writeValueAsString);
-            logger.error("LENGTH SHOULD BE: " + writeValueAsString.length());
+            logger.error("LENGTH SHOULD BE: {}", writeValueAsString.length());
 
             return writeValueAsString.length();
         } catch (JsonProcessingException ex) {
@@ -427,6 +439,50 @@ public class WebsocketFacade {
         }
     }
 
+    public void pageIndexUpdate(Long gameModelId, String socketId) {
+        if (pusher != null) {
+            GameModel gameModel = gameModelFacade.find(gameModelId);
+            pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+        }
+    }
+
+    public void pageUpdate(Long gameModelId, String pageId, String socketId) {
+        if (pusher != null) {
+            GameModel gameModel = gameModelFacade.find(gameModelId);
+            pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
+        }
+    }
+
+    public final String toJson(Object o) throws IOException {
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        //ObjectWriter writerWithView = mapper.writerWithView(Views.class);
+        ObjectWriter writer = mapper.writer();
+        return writer.writeValueAsString(o);
+    }
+
+    public void populateQueueDec() throws IOException {
+        if (pusher != null) {
+            pusher.trigger(GLOBAL_CHANNEL, "populateQueue-dec", 1);
+        }
+    }
+
+    public void propagateNewPlayer(Player newPlayer) {
+        if (pusher != null) {
+            User user = newPlayer.getUser();
+            if (user != null) {
+                try {
+                    for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
+                        this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
+                    }
+
+                    pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
+                } catch (IOException ex) {
+                    logger.error("Error while propagating player");
+                }
+            }
+        }
+    }
+
     private void fallback(ClientEvent clientEvent, String audience, final String socketId) {
         if (clientEvent instanceof EntityUpdatedEvent) {
             this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
@@ -454,8 +510,7 @@ public class WebsocketFacade {
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
         }
         if (channel.startsWith("private")) {
-            boolean hasPermission = userFacade.hasPermission(channel);
-            if (hasPermission) {
+            if (requestManager.hasChannelPermission(channel)) {
                 return pusher.authenticate(socketId, channel);
             }
         }
@@ -492,6 +547,7 @@ public class WebsocketFacade {
     public void pusherChannelExistenceWebhook(PusherChannelExistenceWebhook hook) {
         ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
         onlineUsersLock.lock();
+        this.maintainLocalListUpToDate = true;
         try {
             IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
             if (onlineUsersUpToDate.get() == 0) {
@@ -506,6 +562,7 @@ public class WebsocketFacade {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
+                    updateOnlineUserMetric();
                 }
             }
 
@@ -515,32 +572,86 @@ public class WebsocketFacade {
         }
     }
 
+    @Asynchronous
+    public void touchOnlineUser(Long userId) {
+        if (userId != null) {
+            // do not use lambda since
+            onlineUsers.invoke(userId, new OnlineUserToucher());
+        }
+    }
+
     /**
      * Return online users
      *
      * @return list a users who are online
      */
     public Collection<OnlineUser> getOnlineUsers() {
-        ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
-        onlineUsersLock.lock();
-        try {
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-            if (onlineUsersUpToDate.get() == 0) {
-                initOnlineUsers();
+        if (pusher != null) {
+            ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+            onlineUsersLock.lock();
+            try {
+                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                if (onlineUsersUpToDate.get() == 0) {
+                    initOnlineUsers();
+                }
+                return this.getLocalOnlineUsers();
+            } finally {
+                onlineUsersLock.unlock();
             }
-            return this.getLocalOnlineUsers();
-        } finally {
-            onlineUsersLock.unlock();
+        } else {
+            return new ArrayList<>();
         }
     }
 
     public Collection<OnlineUser> getLocalOnlineUsers() {
         Collection<OnlineUser> ou = new ArrayList<>();
-        Iterator<Cache.Entry<Long, OnlineUser>> iterator = onlineUsers.iterator();
-        while (iterator.hasNext()) {
-            ou.add(iterator.next().getValue());
+        if (pusher != null) {
+            Iterator<Cache.Entry<Long, OnlineUser>> iterator = onlineUsers.iterator();
+            while (iterator.hasNext()) {
+                ou.add(iterator.next().getValue());
+            }
         }
         return ou;
+    }
+
+    /**
+     * @param user
+     * @param compareRoles
+     *
+     * @return true if user is member of at least on of the listed roles
+     */
+    private static boolean hasAnyRoles(User user, String... compareRoles) {
+        Collection<Role> roles = user.getRoles();
+        Iterator<Role> rIt = roles.iterator();
+        while (rIt.hasNext()) {
+            Role role = rIt.next();
+            for (String r : compareRoles) {
+                if (role.getName().toUpperCase().equals(r.toUpperCase())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 0 means Admin, 1 Scenarist or Trainer, 2 Player and 3, Guest;
+     *
+     * @return king of role ranking... quite ugly...
+     */
+    private int getHighestRole(User user) {
+        if (hasAnyRoles(user, "Administrator")) {
+            return 0;
+        } else if (hasAnyRoles(user, "Scenarist", "Trainer")) {
+            return 1;
+        } else {
+            // Registeered Player or guest ?
+            if (user.getMainAccount() instanceof GuestJpaAccount) {
+                return 3;
+            } else {
+                return 2;
+            }
+        }
     }
 
     /**
@@ -550,7 +661,12 @@ public class WebsocketFacade {
      */
     private void registerUser(User user) {
         if (user != null && !onlineUsers.containsKey(user.getId())) {
-            onlineUsers.put(user.getId(), new OnlineUser(user));
+            onlineUsers.put(user.getId(), new OnlineUser(user, getHighestRole(user)));
+
+            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+            if (onlineUsersUpToDate.get() == 1) {
+                updateOnlineUserMetric();
+            }
         }
     }
 
@@ -558,27 +674,31 @@ public class WebsocketFacade {
      * Build initial onlineUser list from pusher channels list
      */
     private void initOnlineUsers() {
-        try {
-            this.clearOnlineUsers();
+        if (pusher != null) {
+            try {
+                this.clearOnlineUsers();
 
-            Result get = pusher.get("/channels");
-            String message = get.getMessage();
+                Result get = pusher.get("/channels");
+                String message = get.getMessage();
 
-            ObjectMapper mapper = JacksonMapperProvider.getMapper();
-            HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
-            HashMap<String, Object> channels = readValue.get("channels");
+                ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
+                HashMap<String, Object> channels = readValue.get("channels");
 
-            for (String channel : channels.keySet()) {
-                this.registerUser(this.getUserFromChannel(channel));
+                for (String channel : channels.keySet()) {
+                    this.registerUser(this.getUserFromChannel(channel));
+                }
+
+                if (maintainLocalListUpToDate) {
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    onlineUsersUpToDate.set(1);
+                }
+
+                updateOnlineUserMetric();
+
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            if (maintainLocalListUpToDate) {
-                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-                onlineUsersUpToDate.set(1);
-            }
-
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -586,42 +706,46 @@ public class WebsocketFacade {
      * Build initial onlineUser list from pusher channels list
      */
     public void syncOnlineUsers() {
-        try {
-            Result get = pusher.get("/channels");
-            String message = get.getMessage();
+        if (pusher != null) {
+            try {
+                Result get = pusher.get("/channels");
+                String message = get.getMessage();
 
-            ObjectMapper mapper = JacksonMapperProvider.getMapper();
-            HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
-            HashMap<String, Object> channels = readValue.get("channels");
+                ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                HashMap<String, HashMap<String, Object>> readValue = mapper.readValue(message, HashMap.class);
+                HashMap<String, Object> channels = readValue.get("channels");
 
-            /*
-             * Assert all online users are in the local list
-             */
-            for (String channel : channels.keySet()) {
-                this.registerUser(this.getUserFromChannel(channel));
-            }
+                /*
+                 * Assert all online users are in the local list
+                 */
+                for (String channel : channels.keySet()) {
+                    this.registerUser(this.getUserFromChannel(channel));
+                }
 
-            /*
-             * Detect no longer online user still in the local list
-             * and remove them
-             */
-            Iterator<Cache.Entry<Long, OnlineUser>> it = onlineUsers.iterator();
-            while (it.hasNext()) {
-                Cache.Entry<Long, OnlineUser> next = it.next();
-                if (next.getKey() != null) {
-                    if (!channels.containsKey(getChannelFromUserId(next.getKey()))){
-                        it.remove();
+                /*
+                 * Detect no longer online user still in the local list
+                 * and remove them
+                 */
+                Iterator<Cache.Entry<Long, OnlineUser>> it = onlineUsers.iterator();
+                while (it.hasNext()) {
+                    Cache.Entry<Long, OnlineUser> next = it.next();
+                    if (next.getKey() != null) {
+                        if (!channels.containsKey(getChannelFromUserId(next.getKey()))) {
+                            it.remove();
+                        }
                     }
                 }
-            }
 
-            if (maintainLocalListUpToDate) {
-                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-                onlineUsersUpToDate.set(1);
-            }
+                updateOnlineUserMetric();
 
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+                if (maintainLocalListUpToDate) {
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    onlineUsersUpToDate.set(1);
+                }
+
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -633,7 +757,7 @@ public class WebsocketFacade {
         try {
             ObjectMapper mapper = JacksonMapperProvider.getMapper();
             String users = mapper.writeValueAsString(getLocalOnlineUsers());
-            pusher.trigger("private-Admin", "online-users", users);
+            pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", users);
         } catch (JsonProcessingException ex) {
             java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -680,4 +804,35 @@ public class WebsocketFacade {
         }
     }
 
+    public void updateOnlineUserMetric() {
+        commands.fire(UPDATE_OU_METRIC_CMD);
+    }
+
+    public void onOnlineUserMetric(@Inbound(eventName = COMMANDS_EVENT) @Observes String command) {
+        if (UPDATE_OU_METRIC_CMD.equals(command)) {
+            onlineUsersGauge.set(this.getLocalOnlineUsers().size());
+        }
+    }
+
+    /**
+     * Atomic EntryProcessor to update a OnlineUer lastActivity time.
+     * <p>
+     * One SHALL NOT convert this to a lamba expression (unless the lamba is serializable)
+     */
+    public static class OnlineUserToucher implements EntryProcessor<Long, OnlineUser, Object>, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public Object process(MutableEntry<Long, OnlineUser> entry, Object... arguments) throws EntryProcessorException {
+            if (entry != null) {
+                OnlineUser value = entry.getValue();
+                if (value != null) {
+                    value.touch();
+                    entry.setValue(value);
+                }
+            }
+            return null;
+        }
+    }
 }

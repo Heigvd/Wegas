@@ -2,20 +2,17 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.scope;
 
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,66 +22,33 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-//@XmlType(name = "TeamScope")
 public class TeamScope extends AbstractScope<Team> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(TeamScope.class.getName());
 
-    /*
-     * FIXME Here we should use Team reference and add a key deserializer
-     * module. @JoinTable(joinColumns = @JoinColumn(name = "teamscope_id",
-     * referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name =
-     * "variableinstance_id", referencedColumnName = "variableinstance_id"))
-     
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "teamScope")
-    @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
-    @MapKeyJoinColumn(name = "teamvariableinstances_key", referencedColumnName = "id")
-    //@XmlTransient
-    @JsonIgnore
-    private Map<Team, VariableInstance> teamVariableInstances = new HashMap<>();
-     */
     /**
+     * Return a instance which is accessible by the player
      *
-     * @return
-     */
-    @Override
-    public Map<Team, VariableInstance> getVariableInstances() {
-        return this.getVariableInstanceFacade().getAllTeamInstances(this);
-    }
-
-    /*public void setVariableInstances(Map<Team, VariableInstance> teamVariableInstances) {
-        this.teamVariableInstances = teamVariableInstances;
-    }*/
-    /**
+     * @param player the player who request the instance
      *
-     * @param player
-     * @return
+     * @return the instance which belongs to the player's team
      */
     @Override
     public VariableInstance getVariableInstance(Player player) {
         return this.getVariableInstance(player.getTeam());
     }
 
-    private VariableInstance getVariableInstance(Team t) {
-        return this.getVariableInstanceFacade().getTeamInstance(this, t);
-    }
-
+    /**
+     * Get the team's instance
+     *
+     * @param t instance owner
+     *
+     * @return the team's instance
+     */
     @Override
-    public Map<Team, VariableInstance> getPrivateInstances() {
-        Map<Team, VariableInstance> ret = new HashMap<>();
-        Player cPlayer = RequestFacade.lookup().getPlayer();
-
-        if (cPlayer != null) {
-            if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
-                for (Team t : cPlayer.getGame().getTeams()) {
-                    ret.put(t, this.getVariableInstance(t));
-                }
-            } else {
-                ret.put(cPlayer.getTeam(), this.getVariableInstance(cPlayer));
-            }
-        }
-        return ret;
+    public VariableInstance getVariableInstance(Team t) {
+        return this.getVariableInstanceFacade().getTeamInstance(this, t);
     }
 
     /**
@@ -98,14 +62,6 @@ public class TeamScope extends AbstractScope<Team> {
         //v.setTeamScopeKey(key.getId());
         v.setTeam(key);
         v.setTeamScope(this);
-    }
-
-    /**
-     *
-     */
-    //@PrePersist
-    public void prePersist() {
-        //this.propagateDefaultInstance(null);
     }
 
     @Override
@@ -127,7 +83,7 @@ public class TeamScope extends AbstractScope<Team> {
     }
 
     @Override
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         //logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
         if (context instanceof Player) {
             // No need to propagate since the team already exists
@@ -138,13 +94,5 @@ public class TeamScope extends AbstractScope<Team> {
         } else {
             propagate(getVariableDescriptor().getGameModel(), create);
         }
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
     }
 }

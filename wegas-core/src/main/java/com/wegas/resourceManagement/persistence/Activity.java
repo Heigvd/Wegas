@@ -2,24 +2,20 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.rest.util.Views;
-import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.core.rest.util.Views;
+import javax.persistence.*;
 
 /**
  *
@@ -28,11 +24,18 @@ import com.wegas.resourceManagement.ejb.ResourceFacade;
 @Entity
 
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id")
+    @Index(columnList = "resourceinstance_id"),
+    @Index(columnList = "taskinstance_id"),
+    @Index(columnList = "requirement_id")
 })
-public class Activity extends AbstractAssignement /*implements Broadcastable */ {
+public class Activity extends AbstractAssignement {
 
     private static final long serialVersionUID = 1L;
+
+    @Transient
+    @JsonIgnore
+    private String deserialisedRequirementName;
+
     /**
      *
      */
@@ -60,32 +63,22 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
-    private String description;
+    @ManyToOne(optional = false)
+    private TaskInstance taskInstance;
+
     /**
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "taskdescriptor_id", nullable = false)
-    //@XmlTransient
-    @JsonIgnore
-    private TaskDescriptor taskDescriptor;
-    /**
-     *
-     */
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "variableinstance_id", nullable = false)
+    @JoinColumn(nullable = false)
     @JsonBackReference
     @JsonIgnore
     private ResourceInstance resourceInstance;
+
     /**
      *
      */
     @ManyToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "wrequirement_id", nullable = true)
-    //@XmlTransient
     @JsonIgnore
     private WRequirement requirement;
 
@@ -93,19 +86,12 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
      *
      */
     public Activity() {
+        super();
         this.time = 0.0D;
         this.completion = 0.0D;
-        this.description = "";
         this.requirement = null;
     }
 
-    /**
-     *
-     * @param taskDescriptor public Activity(TaskDescriptor taskDescriptor) {
-     *                       this.taskDescriptor = taskDescriptor; this.time =
-     *                       0D; this.completion = 0.0D; this.description = "";
-     *                       this.requirement = null; }
-     */
     /**
      *
      * @param a
@@ -114,39 +100,29 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     public void merge(AbstractEntity a) {
         if (a instanceof Activity) {
             Activity other = (Activity) a;
-            this.setRequirement(other.getRequirement());
-            this.setResourceInstance(other.getResourceInstance());
+            super.merge(other);
+
             this.setTime(other.getTime());
             this.setStartTime(other.getStartTime());
             this.setCompletion(other.getCompletion());
-            this.setTaskDescriptor(other.getTaskDescriptor());
-            this.setDescription(other.getDescription());
+
+            this.setRequirementName(other.getRequirementName());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
 
-    /*@PostPersist
-     @PostUpdate
-     @PostRemove
-     private void onUpdate() {
-     this.getResourceInstance().onInstanceUpdate();
-    @Override
-    public Map<String, List<AbstractEntity>> getEntities() {
-        return this.getResourceInstance().getEntities();
-    }
-     }*/
     @Override
     public Long getId() {
         return this.id;
     }
 
     /**
-     * @return the MCQDescriptor
+     * @return the ResourceInstance
      */
-    //@XmlTransient
     @JsonBackReference
     @JsonIgnore
+    @Override
     public ResourceInstance getResourceInstance() {
         return resourceInstance;
     }
@@ -191,28 +167,20 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     }
 
     /**
-     *
-     * @return id of the task descriptor this activity is linked to
+     * @return the taskInstance
      */
-    public Long getTaskDescriptorId() {
-        return this.getTaskDescriptor().getId();
-    }
-
-    /**
-     * @return the taskDescriptor
-     */
-    //@XmlTransient
     @JsonIgnore
-    public TaskDescriptor getTaskDescriptor() {
-        return taskDescriptor;
+    @Override
+    public TaskInstance getTaskInstance() {
+        return taskInstance;
     }
 
     /**
-     * @param taskDescriptor the taskDescriptor to set
+     * @param taskInstance
      */
     @JsonProperty
-    public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
+    public void setTaskInstance(TaskInstance taskInstance) {
+        this.taskInstance = taskInstance;
     }
 
     /**
@@ -230,20 +198,6 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     }
 
     /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
      * @return the requirement
      */
     public WRequirement getRequirement() {
@@ -251,35 +205,61 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
     }
 
     /**
+     * Unique req name
+     *
+     * @return unique id for the requirement
+     */
+    public String getRequirementName() {
+        if (requirement != null) {
+            return requirement.getName();
+        } else {
+            return deserialisedRequirementName;
+        }
+    }
+
+    /**
+     * Set requirement name
+     *
+     * @param name
+     */
+    public void setRequirementName(String name) {
+        this.deserialisedRequirementName = name;
+    }
+
+    /**
      * @param requirement the requirement to set
      */
     public void setRequirement(WRequirement requirement) {
         this.requirement = requirement;
+        if (requirement != null) {
+            this.deserialisedRequirementName = null;
+        }
     }
 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
-        TaskDescriptor theTask = this.getTaskDescriptor();
+        TaskInstance theTask = this.getTaskInstance();
         ResourceInstance theResource = this.getResourceInstance();
         WRequirement theReq = this.getRequirement();
 
         if (theTask != null) {
-            theTask = ((TaskDescriptor) beans.getVariableDescriptorFacade().find(theTask.getId()));
+            theTask = ((TaskInstance) beans.getVariableInstanceFacade().find(theTask.getId()));
             if (theTask != null) {
-                theTask.getAssignments().remove(this);
+                theTask.getActivities().remove(this);
             }
         }
         if (theResource != null) {
             theResource = ((ResourceInstance) beans.getVariableInstanceFacade().find(theResource.getId()));
             if (theResource != null) {
-                theResource.getAssignments().remove(this);
+                theResource.getActivities().remove(this);
             }
         }
+
         if (theReq != null) {
-            TaskInstance taskInstance = theReq.getTaskInstance();
-            if (taskInstance != null) {
-                taskInstance = ((TaskInstance) beans.getVariableInstanceFacade().find(taskInstance.getId()));
-                if (taskInstance != null) {
+            TaskInstance ti = theReq.getTaskInstance();
+            if (ti != null) {
+                ti = ((TaskInstance) beans.getVariableInstanceFacade().find(ti.getId()));
+                if (ti != null) {
 
                     theReq = beans.getResourceFacade().findRequirement(theReq.getId());
 
@@ -290,5 +270,7 @@ public class Activity extends AbstractAssignement /*implements Broadcastable */ 
                 }
             }
         }
+
+        super.updateCacheOnDelete(beans);
     }
 }

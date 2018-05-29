@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf;
@@ -10,9 +10,17 @@ package com.wegas.app.pdf;
 import com.lowagie.text.DocumentException;
 import com.wegas.app.pdf.helper.StringInputStream;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.security.ejb.RoleFacade;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -22,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.servlet.DispatcherType;
@@ -39,15 +48,6 @@ import javax.ws.rs.POST;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.security.ejb.RoleFacade;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Role;
-import com.wegas.core.security.persistence.User;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,23 +149,12 @@ public class PdfRenderer implements Filter {
                 String content;
 
                 if (req.getMethod().equalsIgnoreCase("POST")) {
-                    // To prevent abuse, check that the user is logged in and has at least trainer credentials:
+                    // To prevent abuse, check that the user is logged in
                     User user = userFacade.getCurrentUser();
-                    boolean isTrainer = false;
-                    for (Role r : user.getRoles()) {
-                        String role = r.getName();
-                        if (role.equals("Trainer") || role.equals("PMG-trainer") || role.equals("Scenarist")) {
-                            isTrainer = true;
-                            break;
-                        }
-                    }
-                    if (!isTrainer) {
-                        throw new UnauthorizedException("User is not a trainer");
-                    }
 
                     // In a POST'ed filter method, all parameters must be in the post data.
                     String body = req.getParameter("body");
-                    content = createHtmlDoc("Wegas - " + title, "<h2>" + title + "</h2><hr />" + body);
+                    content = createHtmlDoc("Wegas - " + title, body);
                 } else {
                     if (renderType == null) {
                         return; // Hack to exit when content was initially POST'ed
@@ -189,7 +178,11 @@ public class PdfRenderer implements Filter {
                     InputStream iStream = new StringInputStream(content);
                     tidy.parse(iStream, os);
 
-                    String toString = os.toString();
+                    /**
+                     * Since injecting correct url within print.xhtml.h:doctype.system leads to nothing good, let's hack
+                     */
+                    String urlDTD = req.getRequestURL().toString().replace(req.getServletPath(), "/wegas-app/DTD/xhtml1-transitional.dtd");
+                    String toString = os.toString().replaceFirst("__DTD_URL__", urlDTD);
 
                     StringReader contentReader = new StringReader(toString);
 
@@ -243,7 +236,7 @@ public class PdfRenderer implements Filter {
                     // no specific type ? -> normal processing
 
                     log("PdfRenderer:Normal output", null);
-                    chain.doFilter(request, response);
+                    resp.getOutputStream().write(content.getBytes(StandardCharsets.UTF_8));
                 }
             } else {
                 throw new ServletException("Not an HTTP request");
@@ -271,7 +264,10 @@ public class PdfRenderer implements Filter {
                 + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://wegas.albasim.ch/wegas-app/DTD/xhtml1-transitional.dtd\"> "
                 + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
                 + title
-                + "</title></head><body style=\"font-family:Helvetica, Arial; font-size:12px\">"
+                + "</title>"
+                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print.css\" media=\"all\" />"
+                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print-page.css\" media=\"print\" />"
+                + "</head><body style=\"font-family:Helvetica, Arial; font-size:12px\">"
                 + body
                 + "</body></html>";
     }
@@ -279,7 +275,7 @@ public class PdfRenderer implements Filter {
     /**
      * Return the filter configuration object for this filter.
      *
-     * @return
+     * @return the filterConfig
      */
     public FilterConfig getFilterConfig() {
         return (this.filterConfig);
@@ -304,7 +300,7 @@ public class PdfRenderer implements Filter {
     /**
      * Return a String representation of this object.
      *
-     * @return
+     * @return String representation of this object, including the filter
      */
     @Override
     public String toString() {
@@ -405,7 +401,7 @@ public class PdfRenderer implements Filter {
          *
          * @param cookies
          *
-         * @return
+         * @return cookies as one string
          */
         private static String joinCookies(Cookie[] cookies) {
             final String token = "; ";

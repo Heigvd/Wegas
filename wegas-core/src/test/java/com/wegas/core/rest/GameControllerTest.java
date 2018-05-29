@@ -1,40 +1,45 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.AbstractEJBTest;
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import junit.framework.Assert;
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import javax.ejb.EJB;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class GameControllerTest extends AbstractEJBTest {
+public class GameControllerTest extends AbstractArquillianTest {
+
+    @EJB
+    private GameController gameController;
+
+    @EJB
+    private PlayerController playerController;
 
     @Test
     public void joinIndividually() throws Exception {
-        final GameController gameController = lookupBy(GameController.class);
-        final GameFacade gameFacade = lookupBy(GameFacade.class);
-        final VariableDescriptorFacade variableDescriptorFacade = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade variableInstanceFacade = lookupBy(VariableInstanceFacade.class);
-        final PlayerController playerController = lookupBy(PlayerController.class);
-
-        gameModel.getProperties().setFreeForAll(true);
-        gameModelFacade.update(gameModel.getId(), gameModel);
+        scenario.getProperties().setFreeForAll(true);
+        gameModelFacade.update(scenario.getId(), scenario);
 
         TriggerDescriptor trigg = new TriggerDescriptor();
         final TriggerInstance triggerInstance = new TriggerInstance();
         trigg.setName("trigg");
         trigg.setDefaultInstance(triggerInstance);
-        variableDescriptorFacade.create(gameModel.getId(), trigg);
+        variableDescriptorFacade.create(scenario.getId(), trigg);
 
-        gameController.joinIndividually(game.getId());
+        gameController.joinIndividually(null, game.getId());
 
         final Game g = gameFacade.find(game.getId());
         final Player p = g.getTeams().get(g.getTeams().size() - 1).getPlayers().get(0);

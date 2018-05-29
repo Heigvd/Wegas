@@ -2,28 +2,27 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core;
 
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.primitive.EnumItem;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.Result;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,8 +30,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.text.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -87,29 +96,18 @@ public class Helper {
     }
 
     /**
-     * @param <T>
-     * @param context
-     * @param type
+     * To be used to make a JNDI lookup when there is no CDI context
      *
-     * @return looked-up EJB instance
+     * @param <T>      resource type
+     * @param jndiName resource name
+     * @param type     resource type
      *
-     * @throws NamingException
-     */
-    public static <T> T lookupBy(Context context, Class<T> type) throws NamingException {
-        return lookupBy(context, type, type);
-    }
-
-    /**
-     * @param <T>
-     * @param type
-     * @param service
-     *
-     * @return looked-up EJB instance
+     * @return instance of the given type matching jndiName
      *
      * @throws NamingException
      */
-    public static <T> T lookupBy(Class<T> type, Class<?> service) throws NamingException {
-        return lookupBy(new InitialContext(), type, service);
+    public static <T> T jndiLookup(String jndiName, Class<T> type) throws NamingException {
+        return (T) new InitialContext().lookup(jndiName);
     }
 
     /**
@@ -121,7 +119,7 @@ public class Helper {
      * @throws NamingException
      */
     public static <T> T lookupBy(Class<T> type) throws NamingException {
-        return lookupBy(type, type);
+        return lookupBy(new InitialContext(), type, type);
     }
 
     /*
@@ -140,16 +138,29 @@ public class Helper {
     /**
      * Copy and sort the given list
      *
-     * @param <T>
-     * @param list
-     * @param c
+     * @param <T>  list item type
+     * @param list the list to copy and sort
+     * @param c    a comparator to sort the list
      *
-     * @return
+     * @return a unmodifiable copy of the list, sorted according to the comparator
      */
-    public static <T extends Object> List<T> copyAndSort(List<T> list, Comparator<? super T> c) {
+    public static <T extends Object> List<T> copyAndSortModifiable(List<T> list, Comparator<? super T> c) {
         List<T> copy = new ArrayList<>(list);
         Collections.sort(copy, c);
-        return Collections.unmodifiableList(copy);
+        return copy;
+    }
+
+    /**
+     * Copy and sort the given list
+     *
+     * @param <T>  list item type
+     * @param list the list to copy and sort
+     * @param c    a comparator to sort the list
+     *
+     * @return a unmodifiable copy of the list, sorted according to the comparator
+     */
+    public static <T extends Object> List<T> copyAndSort(List<T> list, Comparator<? super T> c) {
+        return Collections.unmodifiableList(Helper.copyAndSortModifiable(list, c));
     }
 
     /**
@@ -179,27 +190,30 @@ public class Helper {
      * @return name to use in place on initial one
      */
     private static String findUniqueName(final String name, List<String> usedNames, String pattern, String preSuff, String postSuff) {
+        if (usedNames != null) {
+            Pattern p = Pattern.compile(pattern);
+            Matcher matcher = p.matcher(name);
 
-        Pattern p = Pattern.compile(pattern);
-        Matcher matcher = p.matcher(name);
+            int suff;
+            final String baseName;
+            if (matcher.matches()) {
+                baseName = matcher.group(1);
+                suff = Integer.parseInt(matcher.group(2)) + 1;
+            } else {
+                baseName = name;
+                suff = 2;
+            }
 
-        int suff;
-        final String baseName;
-        if (matcher.matches()) {
-            baseName = matcher.group(1);
-            suff = Integer.parseInt(matcher.group(2)) + 1;
+            String newName = name;
+            while (usedNames.contains(newName)) {
+                newName = baseName + preSuff + suff + postSuff;
+                suff++;
+            }
+
+            return newName;
         } else {
-            baseName = name;
-            suff = 2;
+            return name;
         }
-
-        String newName = name;
-        while (usedNames.contains(newName)) {
-            newName = baseName + preSuff + suff + postSuff;
-            suff++;
-        }
-
-        return newName;
     }
 
     /**
@@ -276,8 +290,9 @@ public class Helper {
      *
      * @param entity     entity to label
      * @param usedLabels labels already in use
+     * @param gameModel
      */
-    public static void setUniqueLabel(final LabelledEntity entity, List<String> usedLabels) {
+    public static void setUniqueLabel(final LabelledEntity entity, List<TranslatableContent> usedLabels, GameModel gameModel) {
         setUniqueLabel(entity, usedLabels, DEFAULT_VARIABLE_LABEL);
     }
 
@@ -288,34 +303,79 @@ public class Helper {
      * @param usedLabels   labels already in use
      * @param defaultLabel label to set if entity one is unset
      */
-    public static void setUniqueLabel(final LabelledEntity entity, List<String> usedLabels, String defaultLabel) {
-        if (isNullOrEmpty(entity.getLabel())) {
-            entity.setLabel(defaultLabel);
+    public static void setUniqueLabel(final LabelledEntity entity,
+            List<TranslatableContent> usedLabels, String defaultLabel) {
+
+        // make sure the label exists
+        TranslatableContent theLabel = entity.getLabel();
+        if (theLabel == null) {
+            theLabel = new TranslatableContent();
+            entity.setLabel(theLabel);
         }
-        String newLabel = findUniqueLabel(entity.getLabel(), usedLabels);
-        entity.setLabel(newLabel);
-        usedLabels.add(newLabel);
+
+        Map<String, List<String>> mapUsedlabels = new HashMap<>();
+
+        for (TranslatableContent label : usedLabels) {
+            for (Entry<String, String> translation : label.getTranslations().entrySet()) {
+                if (!mapUsedlabels.containsKey(translation.getKey())) {
+                    mapUsedlabels.put(translation.getKey(), new ArrayList<>());
+                }
+                mapUsedlabels.get(translation.getKey()).add(translation.getValue());
+            }
+        }
+
+        Map<String, String> translations = theLabel.getTranslations();
+        for (String refName : translations.keySet()) {
+            String currentLabel = translations.get(refName);
+            if (!Helper.isNullOrEmpty(currentLabel)) {
+                theLabel.updateTranslation(refName, findUniqueLabel(currentLabel, mapUsedlabels.get(refName)));
+            }
+        }
+
+        if (!usedLabels.contains(entity.getLabel())) {
+            usedLabels.add(entity.getLabel());
+        }
     }
 
     /**
      * ChoiceDescriptor's result renaming helper
      *
-     * @param r          result to rename / relabel
+     * @param le         result to rename / relabel
      * @param usedNames  result sibling's names
      * @param usedLabels result sibling's label
+     * @param base       base to build new names and labels on
+     * @param gameModel
      */
-    public static void setNameAndLabelForResult(Result r,
-            List<String> usedNames, List<String> usedLabels) {
-        boolean hasLabel = !isNullOrEmpty(r.getLabel());
-        boolean hasName = !isNullOrEmpty(r.getName());
-        if (hasLabel && !hasName) {
-            r.setName(r.getLabel());
+    public static void setNameAndLabelForLabelledEntity(LabelledEntity le,
+            List<String> usedNames, List<TranslatableContent> usedLabels,
+            String base, GameModel gameModel) {
+
+        String baseName = le.getName();
+        String baseLabel = baseName;
+
+        if (le.getLabel() != null) {
+            // fetch the most preferred label
+            Translation favoriteLabel;
+            favoriteLabel = le.getLabel().translate(gameModel);
+            if (favoriteLabel != null) {
+                baseLabel = favoriteLabel.getTranslation();
+            }
         }
-        if (hasName && !hasLabel) {
-            r.setLabel(r.getName());
+
+        // Init basename
+        if (Helper.isNullOrEmpty(baseName)) {
+            if (baseLabel == null) {
+                baseName = base;
+                baseLabel = "New " + base;
+            } else if (baseLabel.isEmpty()) {
+                baseName = base;
+            } else {
+                baseName = baseLabel;
+            }
         }
-        setUniqueNameForEntity(r, usedNames, "result", false);
-        setUniqueLabel(r, usedLabels, "New Result");
+
+        setUniqueNameForEntity(le, usedNames, baseName, false);
+        setUniqueLabel(le, usedLabels, baseLabel);
     }
 
     /**
@@ -323,22 +383,67 @@ public class Helper {
      *
      * @param vd
      * @param usedNames
+     * @param gameModel
      */
-    public static void setUniqueName(final VariableDescriptor vd, List<String> usedNames) {
+    public static void setUniqueName(final VariableDescriptor vd, List<String> usedNames, GameModel gameModel) {
         setUniqueNameForEntity(vd, usedNames);
         if (vd instanceof DescriptorListI) {
             // Recursively find unique names for children
             for (Object child : ((DescriptorListI) vd).getItems()) {
-                setUniqueName((VariableDescriptor) child, usedNames);
+                setUniqueName((VariableDescriptor) child, usedNames, gameModel);
             }
         } else if (vd instanceof ChoiceDescriptor) {
             ChoiceDescriptor cd = (ChoiceDescriptor) vd;
             List<String> names = new ArrayList<>();
-            List<String> labels = new ArrayList<>();
+            List<TranslatableContent> labels = new ArrayList<>();
             for (Result r : cd.getResults()) {
-                setNameAndLabelForResult(r, names, labels);
+                setNameAndLabelForLabelledEntity(r, names, labels, "result", gameModel);
+            }
+        } else if (vd instanceof PeerReviewDescriptor) {
+            PeerReviewDescriptor prd = (PeerReviewDescriptor) vd;
+            Helper.setNameAndLabelForLabelledEntityList(prd.getFeedback().getEvaluations(), "input", gameModel);
+            Helper.setNameAndLabelForLabelledEntityList(prd.getFbComments().getEvaluations(), "input", gameModel);
+        } else if (vd instanceof StringDescriptor) {
+            StringDescriptor sd = (StringDescriptor) vd;
+            if (sd.getAllowedValues() != null) {
+                List<String> names = new ArrayList<>();
+                List<TranslatableContent> labels = new ArrayList<>();
+
+                for (EnumItem item : sd.getAllowedValues()) {
+                    setNameAndLabelForLabelledEntity(item, names, labels, "item", gameModel);
+                }
             }
         }
+    }
+
+    public static void setNameAndLabelForLabelledEntityList(List<? extends LabelledEntity> items, String defaultName, GameModel gameModel) {
+
+        List<TranslatableContent> labels = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<LabelledEntity> newItems = new ArrayList<>();
+
+        for (LabelledEntity item : items) {
+            if (item.getId() != null) {
+                // Store name and label existing result
+                labels.add(item.getLabel());
+                names.add(item.getName());
+            } else {
+                newItems.add(item);
+            }
+        }
+
+        // set names and labels unique
+        for (LabelledEntity item : newItems) {
+            Helper.setNameAndLabelForLabelledEntity(item, names, labels, defaultName, gameModel);
+
+            if (item instanceof CategorizedEvaluationDescriptor) {
+                Helper.setNamesAndLabelForEvaluationCategories((CategorizedEvaluationDescriptor) item, gameModel);
+            }
+        }
+    }
+
+    public static void setNamesAndLabelForEvaluationCategories(CategorizedEvaluationDescriptor ced, GameModel gameModel) {
+        Helper.setNameAndLabelForLabelledEntityList(ced.getCategories(), "category", gameModel);
     }
 
     /**
@@ -657,6 +762,19 @@ public class Helper {
     }
 
     /**
+     * @param trContent
+     * @param criterias needles
+     *
+     * @return true if trContent is not null and matches all criterias
+     */
+    public static Boolean insensitiveContainsAll(TranslatableContent trContent, List<String> criterias) {
+        if (trContent != null) {
+            return trContent.containsAll(criterias);
+        }
+        return false;
+    }
+
+    /**
      * Checked conversion from long to int
      *
      * @param value value to convert
@@ -712,17 +830,6 @@ public class Helper {
     }
 
     /**
-     * Generation Pusher token for a target
-     *
-     * @param target
-     *
-     * @return channel name
-     */
-    public static String getAudienceToken(BroadcastTarget target) {
-        return target.getChannel();
-    }
-
-    /**
      * Generate random lowercase letters (a-z) of given length
      *
      * @param length number of letters to return (max 50)
@@ -740,6 +847,32 @@ public class Helper {
             sb.append(genRandomLetters(length - 1));
         }
         return sb.toString();
+    }
+
+    public static void printWegasStackTrace(Throwable t) {
+        StringBuilder sb = new StringBuilder(t.getClass().getName());
+        sb.append(" - ").append(t.getMessage());
+        for (StackTraceElement elem : t.getStackTrace()) {
+            if (elem.getClassName().startsWith("com.wegas")
+                    || elem.getClassName().startsWith("jdk.nashorn")) {
+                sb.append("\n\tat ");
+                sb.append(elem);
+            }
+        }
+        logger.error(sb.toString());
+    }
+
+    /**
+     * Check if email is valid. (Only a string test)
+     *
+     * @param email
+     *
+     * @throws javax.mail.internet.AddressException
+     */
+    public static void assertEmailPattern(String email) throws AddressException {
+        InternetAddress emailAddr = new InternetAddress(email);
+        emailAddr.validate();
+
     }
 
     /**
@@ -770,12 +903,31 @@ public class Helper {
 
     public static void printClusterState(Cluster cluster) {
         if (cluster != null) {
-            logger.error("Cluster up: " + cluster.getClusterState());
+            logger.error("Cluster up: {}", cluster.getClusterState());
             for (Member member : cluster.getMembers()) {
-                logger.error(" * " + member + (member == cluster.getLocalMember() ? " <-- it's me !" : ""));
+                logger.error(" * {}{}", member, (member == cluster.getLocalMember() ? "<-- it's me !" : ""));
             }
         } else {
             logger.error("No cluster (null)");
         }
+    }
+
+    /**
+     * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
+     * Depending on local config, it may be necessary to check additional headers.
+     *
+     * @param request
+     *
+     * @return the IP address
+     */
+    public static String getRequestingIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-FORWARDED-FOR");
+        if (ip == null) {
+            ip = request.getHeader("X-Real-IP");
+            if (ip == null) {
+                ip = request.getRemoteAddr();
+            }
+        }
+        return ip;
     }
 }

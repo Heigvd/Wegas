@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -70,12 +70,23 @@ YUI.add('wegas-cssloader', function(Y) {
         NS: "CSSLoader",
         NAME: "CSSLoader",
         sheets: {},
-        updateStyleSheet: function(id, content) {
+        deleteStyleSheet: function(id){
+            var sheetNode = Y.one("head style#css-library-" + id);
+            if (sheetNode){
+                sheetNode.remove();
+            }
             if (CSSLoader.sheets[id]) {
                 CSSLoader.sheets[id].disable();
             }
+        },
+        updateStyleSheet: function(id, content) {
+            this.deleteStyleSheet(id);
+
             //CSSLoader.sheets[id] = new Y.StyleSheet(content);
-            CSSLoader.sheets[id] = new Y.StyleSheet(content.replace(/\.\.\//g, ""));
+            var effectiveContent = content.replace(/\.\.\//g, "");
+            if (effectiveContent) {
+                CSSLoader.sheets[id] = new Y.StyleSheet(effectiveContent, id);
+            }
         }
     });
     Y.Plugin.CSSLoader = CSSLoader;

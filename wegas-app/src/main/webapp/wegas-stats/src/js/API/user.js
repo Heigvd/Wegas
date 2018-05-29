@@ -1,30 +1,41 @@
-import Axios from 'axios';
+import jsonFetch, {prefix} from './wegasFetch';
 
 const BASE = '/rest/User/';
 
 export function getCurrentUser() {
-    return Axios.get(`${BASE}Current`)
-        .then(res => ({
+    return jsonFetch(`${BASE}Current`)
+        .then(data => ({
             isLoggedIn: true,
-            user: res.data,
+            user: data,
         }))
-        .catch(() => ({
-            isloggedIn: false,
-        }));
+        .catch(e => {
+            console.log(e);
+            return {
+                isloggedIn: false,
+            };
+        });
 }
 
-export function login(user = 'root@root.com', password = '1234', remember = true) {
-    return Axios.post(`${BASE}Authenticate`, {
-        '@class': 'AuthenticationInformation',
-        login: user,
-        password,
-        remember,
-    }).then(res => ({
+export function login(
+    user = 'root@root.com',
+    password = '1234',
+    remember = true
+) {
+    return jsonFetch(`${BASE}Authenticate`, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            '@class': 'AuthenticationInformation',
+            login: user,
+            password,
+            remember,
+        }),
+    }).then(data => ({
         isLoggedIn: true,
-        user: res.data,
+        user: data,
     }));
 }
 
 export function logout() {
-    return Axios.get(`${BASE}Logout`);
+    return fetch(prefix(`${BASE}Logout`), { credentials: 'same-origin' });
 }

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -21,7 +21,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
             var cb = this.get(CONTENTBOX),
                 game = this.get("game"),
                 freeForAll = game.get("properties.freeForAll"),
-                cfg, options = [{label: "-select-", value: "-1"}], spacer = "";
+                options = [{label: "-select-", value: "-1"}], spacer = "";
 
             if (!freeForAll) {
                 spacer = "&nbsp;&nbsp;";
@@ -43,7 +43,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                 }, this);
             }, this);
 
-            cfg = {
+            this.cfg = {
                 type: "group",
                 parentEl: cb,
                 fields: [{
@@ -54,14 +54,16 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                     }]
             };
 
-            inputEx.use(cfg, Y.bind(function() {
-                this._form = new inputEx(cfg);
+            inputEx.use(this.cfg, Y.bind(function() {
+                this._form = new inputEx(this.cfg);
             }, this));
 
             cb.append('<div><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
         },
         syncUI: function() {
-            this.get("contentBox").one("select").all("option[value='-1']").setAttribute("disabled", true);
+            inputEx.use(this.cfg, Y.bind(function() {
+                this.get("contentBox").one("select").all("option[value='-1']").setAttribute("disabled", true);
+            }, this));
         },
         setStatus: function(status) {
             this.get("contentBox").one(".status").set("text", status);
@@ -104,7 +106,9 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                             this.setStatus("OK");
                             Y.later(1000, this, function() {
                                 this.hideOverlay();
-                                window.open(Wegas.app.get("base") + "edit.html?gameModelId=" + e.response.entities[0].get("id"));
+                                if (this.get("openPopup")) {
+                                    window.open(Wegas.app.get("base") + "edit.html?gameModelId=" + e.response.entities[0].get("id"));
+                                }
                                 this.fire("gamemodel:created");
                             });
                         }, this),
@@ -133,6 +137,10 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
             mode: {
                 type: "string",
                 value: "Create"
+            },
+            openPopup: {
+                type: "boolean",
+                value: "true"
             }
         }
     });
@@ -156,11 +164,12 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                             this.close();
                         }
                     }];
-                this.set("title", "Create A New Scenario Based On A Player");
+                this.set("title", this.get("title"));
                 this.set("icon", game.get("properties.freeForAll") ? "user" : "group");
                 this.add(new Y.Wegas.GmExtractor({
                     "game": game,
-                    "mode": this.get("mode")
+                    "mode": this.get("mode"),
+                    "openPopup": this.get("openPopup")
                 }));
                 this.set("actions", actions);
             }
@@ -170,6 +179,14 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
             mode: {
                 type: "string",
                 value: "Create"
+            },
+            title: {
+                type: "string",
+                value: "Create A New Scenario Based On A Player"
+            },
+            openPopup: {
+                type: "boolean",
+                value: true
             }
         }
     });
@@ -199,7 +216,9 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
                         this.close();
                     }
                 },
-                "mode": "Update"
+                "mode": "Update",
+                "title": "Reset default instances. DO NOT USE THIS FUNCTIONNALITIES UNLESS YOU FULLY UNDERSTAND WHAT YOU ARE DOING !!!",
+                "openPopup": false
             }).render();
         }
     }, {

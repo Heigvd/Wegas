@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -14,22 +14,24 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import org.apache.shiro.SecurityUtils;
-import org.codehaus.jettison.json.JSONException;
-import org.slf4j.LoggerFactory;
-
+import com.wegas.core.persistence.game.GameModel;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Map.Entry;
-import javax.inject.Inject;
+import org.codehaus.jettison.json.JSONException;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -48,18 +50,30 @@ public class PageController {
     @Inject
     private HazelcastInstance hzInstance;
 
+    @Inject
+    private RequestManager requestManager;
+
+    @Inject
+    private GameModelFacade gameModelFacade;
+
+    @Inject
+    private WebsocketFacade websocketFacade;
+
     /**
      * Retrieves all GameModel's page.
      *
      * @param gameModelId The GameModel's ID
+     *
      * @return A JSON map <String, JSONOnject> representing pageId:Content
+     *
      * @throws RepositoryException
      */
     @GET
     public Response getPages(@PathParam("gameModelId") Long gameModelId)
             throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (Pages pages = new Pages(gameModelId)) {
             return Response.ok(pages.getPagesContent(), MediaType.APPLICATION_JSON).header("Page", "*").build();
@@ -71,7 +85,9 @@ public class PageController {
      *
      * @param gameModelId The GameModel's ID
      * @param pageId      The specific page's ID
+     *
      * @return A JSONObject, the page Content
+     *
      * @throws RepositoryException
      */
     @GET
@@ -79,6 +95,10 @@ public class PageController {
     public Response getPage(@PathParam("gameModelId") final Long gameModelId,
             @PathParam("pageId") String pageId)
             throws RepositoryException {
+
+        // find gameModel to ensure currentUser has readRight
+        GameModel gm = gameModelFacade.find(gameModelId);
+
         try (final Pages pages = new Pages(gameModelId)) {
             Page page;
             if (pageId.equals("default")) {
@@ -87,15 +107,13 @@ public class PageController {
                 page = pages.getPage(pageId);
             }
 
-            SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
-
             if (page == null) {                                                     //try admin repo
                 page = this.getAdminPage(pageId);
                 if (page == null) {
                     return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
                 }
             }
-            return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
+            return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", page.getId()).build();
         }
     }
@@ -104,7 +122,9 @@ public class PageController {
      * Retrieve gameModel's page index
      *
      * @param gameModelId
+     *
      * @return A List of page index
+     *
      * @throws RepositoryException
      */
     @GET
@@ -112,7 +132,8 @@ public class PageController {
     public Response getIndex(@PathParam("gameModelId") Long gameModelId)
             throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
+        // find gameModel to ensure currentUser has readRight
+        GameModel gm = gameModelFacade.find(gameModelId);
 
         try (final Pages pages = new Pages(gameModelId)) {
             return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
@@ -127,7 +148,9 @@ public class PageController {
      * @param gameModelId The GameModel's ID
      * @param pageId      The specific page to replace
      * @param content     A JSONObject
+     *
      * @return The stored page
+     *
      * @throws RepositoryException
      * @throws IOException
      */
@@ -138,12 +161,14 @@ public class PageController {
             @PathParam("pageId") String pageId,
             JsonNode content) throws RepositoryException, IOException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             Page page = new Page(pageId, content);
             pages.store(page);
-            return Response.ok(pages.getPage(pageId).getContent(), MediaType.APPLICATION_JSON)
+            websocketFacade.pageUpdate(gameModelId, pageId, requestManager.getSocketId());
+            return Response.ok(pages.getPage(pageId).getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", pageId).build();
         }
     }
@@ -152,7 +177,9 @@ public class PageController {
      * @param gameModelId
      * @param pageId
      * @param page
-     * @return
+     *
+     * @return strange http response with information set indo http headers...
+     *
      * @throws RepositoryException
      */
     @PUT
@@ -161,11 +188,13 @@ public class PageController {
             @PathParam("pageId") String pageId,
             Page page) throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             page.setId(pageId);
             pages.setMeta(page);
+            websocketFacade.pageUpdate(gameModelId, pageId, requestManager.getSocketId());
             return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
                     .header("Page", "index").build();
         }
@@ -177,10 +206,12 @@ public class PageController {
             @PathParam("pageId") String pageId,
             @PathParam("pos") int pos) throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             pages.move(pageId, pos);
+            websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
             return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
                     .header("Page", "index").build();
         }
@@ -191,7 +222,9 @@ public class PageController {
      *
      * @param gameModelId The GameModel's ID
      * @param content     A JSONObject
+     *
      * @return The stored page
+     *
      * @throws RepositoryException
      * @throws IOException
      */
@@ -202,34 +235,41 @@ public class PageController {
     }
 
     /**
-     * Create a page from JsonNode with the specified name
+     * Create a page from JsonNode with the specified optional id. Updates the index
      *
      * @param gameModelId
      * @param content
-     * @param name
-     * @return
+     * @param id
+     *
+     * @return some http response with data into HTTP headers
+     *
      * @throws javax.jcr.RepositoryException
      * @throws java.io.IOException
      */
-    private Response createPage(Long gameModelId, JsonNode content, String name)
+    private Response createPage(Long gameModelId, JsonNode content, String id)
             throws RepositoryException, IOException {
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
+
         final ILock gameModelLock = hzInstance.getLock("page-" + gameModelId);
         gameModelLock.lock();
         try (final Pages pages = new Pages(gameModelId)) {
-            if (name == null || name.equals("")) {
+            if (Helper.isNullOrEmpty(id)) {
                 Integer pageId = 1;
                 while (pages.pageExist(pageId.toString())) {
                     pageId++;
                 }
-                name = pageId.toString();
+                id = pageId.toString();
             }
-            ((ObjectNode) content).put("@index", pages.size());
-            Page page = new Page(name, content);
+            Page page = new Page(id, content);
+            page.setIndex((int) pages.size()); // May loose some values if we had that many pages...
             pages.store(page);
-            return Response.ok(pages.getPage(name).getContent(), MediaType.APPLICATION_JSON)
-                    .header("Page", name).build();
+
+            return Response.ok(pages.getPage(id).getContentWithMeta(), MediaType.APPLICATION_JSON)
+                    .header("Page", id).build();
         } finally {
+            websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
             gameModelLock.unlock();
         }
     }
@@ -237,7 +277,9 @@ public class PageController {
     /**
      * @param gameModelId
      * @param pageId
-     * @return
+     *
+     * @return strange http response which contains strange stuff {@link #createPage(java.lang.Long, com.fasterxml.jackson.databind.JsonNode) }
+     *
      * @throws RepositoryException
      * @throws IOException
      */
@@ -246,18 +288,20 @@ public class PageController {
     public Response duplicate(@PathParam("gameModelId") Long gameModelId,
             @PathParam("pageId") String pageId) throws RepositoryException, IOException {
         try (final Pages pages = new Pages(gameModelId)) {
-            Page page = pages.getPage(pageId);
-            String pageName = null;
-            if (page == null) {
-                page = this.getAdminPage(pageId);                                   //check admin pages
-                if (page == null) {
+            Page oldPage = pages.getPage(pageId);
+            if (oldPage == null) {
+                oldPage = this.getAdminPage(pageId);                                   //check admin pages
+                if (oldPage == null) {
                     throw WegasErrorMessage.error("Attempt to duplicate an inexistant page");
                 }
-                pageName = page.getId();
-            } else if (!Helper.isNullOrEmpty(page.getName())) {
-                ((ObjectNode) page.getContent()).put("@name", page.getName() + "-copy");
+                return this.createPage(gameModelId, oldPage.getContent().deepCopy(), oldPage.getId()); // Override admin page
             }
-            return this.createPage(gameModelId, page.getContent(), pageName);
+            final ObjectNode newContent = oldPage.getContent().deepCopy();
+            if (!Helper.isNullOrEmpty(oldPage.getName())) {
+                newContent.put("@name", oldPage.getName() + "-copy");
+            }
+
+            return this.createPage(gameModelId, newContent, null);
         }
     }
 
@@ -268,7 +312,9 @@ public class PageController {
      *
      * @param gameModelId The GameMoldel's ID
      * @param pageMap
+     *
      * @return The merge result
+     *
      * @throws RepositoryException
      * @throws JSONException
      */
@@ -276,32 +322,38 @@ public class PageController {
     public Response addPages(@PathParam("gameModelId") Long gameModelId, Map<String, JsonNode> pageMap)
             throws RepositoryException, JSONException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             for (Entry<String, JsonNode> p : pageMap.entrySet()) {
                 pages.store(new Page(p.getKey(), p.getValue()));
             }
-            return getPages(gameModelId);
         }
+        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
+        return getPages(gameModelId);
     }
 
     /**
      * Delete all GameModel's pages
      *
      * @param gameModelId The GameModel's ID
-     * @return
+     *
+     * @return HTTP 200 ok with "Page: *" header
+     *
      * @throws RepositoryException
      */
     @DELETE
     public Response delete(@PathParam("gameModelId") Long gameModelId) throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             pages.delete();
-            return Response.ok().header("Page", "*").build();
         }
+        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
+        return Response.ok().header("Page", "*").build();
     }
 
     /**
@@ -309,7 +361,9 @@ public class PageController {
      *
      * @param gameModelId The GameModel's ID
      * @param pageId      The page's ID
-     * @return
+     *
+     * @return {@link #getIndex(java.lang.Long) } without the deleted page
+     *
      * @throws RepositoryException
      */
     @DELETE
@@ -318,12 +372,14 @@ public class PageController {
             @PathParam("pageId") String pageId)
             throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             pages.deletePage(pageId);
-            return this.getIndex(gameModelId);
         }
+        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
+        return this.getIndex(gameModelId);
     }
 
     /**
@@ -332,7 +388,9 @@ public class PageController {
      * @param gameModelId The GameModel's ID
      * @param pageId      The page's ID
      * @param patch       The patch based on Myer's diff algorithm
+     *
      * @return The new patched page
+     *
      * @throws RepositoryException
      * @throws JSONException
      * @throws IOException
@@ -344,7 +402,8 @@ public class PageController {
             @PathParam("pageId") String pageId,
             String patch) throws RepositoryException, JSONException, IOException, JsonPatchException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
 
         try (final Pages pages = new Pages(gameModelId)) {
             final Page page = pages.getPage(pageId);
@@ -354,7 +413,10 @@ public class PageController {
             JsonNode patches = (new ObjectMapper()).readTree(patch);
             page.patch(patches);
             pages.store(page);
-            return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
+
+            websocketFacade.pageUpdate(gameModelId, pageId, requestManager.getSocketId());
+
+            return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", pageId).build();
         }
     }

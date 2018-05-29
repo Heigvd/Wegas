@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -21,20 +21,36 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
 
             if (host.toolbar) {
                 this.swapNode = Y.Node.create("<span class='wegas-fullscreen'></span>");
-                Y.one("body").append(this.swapNode);
+                Y.one(this.get("selector")).append(this.swapNode);
 
                 var fullScreenButton = host.toolbar.add({
                     type: "ToggleButton",
-                    label: "<span class='wegas-icon wegas-icon-fullscreen'></span>Fullscreen"
+                    label: "<span class='fa fa-arrows-alt'></span> Fullscreen"
                 }).item(0);
 
-                fullScreenButton.after("pressedChange", function(event) {
-                    host.get("boundingBox").swap(this.swapNode);
+                fullScreenButton.after('pressedChange', function(event) {
+                    Y.one("body").toggleClass("fullscreened", event.newVal);
                     if (event.newVal) {
-                        Y.all("body > .wegas-editview").hide();
-                    } else {
-                        Y.all("body > .wegas-editview").show();
+                        this.swapNode.siblings().each(function(n) {
+                            n.hide();
+                        });
                     }
+                    host.get('boundingBox')
+                        .swap(this.swapNode);
+                    if (!event.newVal) {
+                        this.swapNode.siblings().each(function(n) {
+                            n.show();
+                        });
+                    }
+                }, this);
+
+                /** Refresh **/
+                this.refreshButton = host.toolbar.add({
+                    label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
+                    cssClass: "wegas-advanced-feature"
+                }).item(0);
+                this.refreshButton.after("click", function(e) {
+                    this.get("host").reload();
                 }, this);
             }
         },
@@ -44,7 +60,14 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
             }
         }
     }, {
-        NS: "preview"
+        NS: "preview",
+
+        ATTRS: {
+            selector: {
+                type: "string",
+                value: "body"
+            },
+        }
     });
     Y.Plugin.BlockAction = Y.Base.create("wegas-blockaction", Y.Plugin.Base, [], {
         initializer: function() {

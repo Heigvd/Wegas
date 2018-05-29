@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core;
@@ -12,11 +12,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.event.client.ExceptionEvent;
-import com.wegas.core.event.client.WarningEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -24,7 +24,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
-import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -45,8 +44,8 @@ import com.wegas.core.rest.util.ManagedResponse;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -71,15 +70,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 public class SerializationTest {
+
+    private static Logger logger = LoggerFactory.getLogger(SerializationTest.class);
 
     ObjectMapper mapper;
 
@@ -114,6 +117,8 @@ public class SerializationTest {
         s1.setEditorPosition(coord1);
         s1.setLabel("label");
         smD.addState(1L, s1);
+
+        logger.error("Coordinate: {}", coord1);
 
         State s2 = new State();
         Coordinate coord2 = new Coordinate();
@@ -205,26 +210,21 @@ public class SerializationTest {
 
         FacebookAccount fbAccount = new FacebookAccount();
         GuestJpaAccount guAccount = new GuestJpaAccount();
-        GameAccount gaAccount = new GameAccount(game);
         JpaAccount jpaAccount = new JpaAccount();
 
         User fbUser = new User(fbAccount);
         User guUser = new User(guAccount);
-        User gaUser = new User(gaAccount);
         User jpaUser = new User(jpaAccount);
 
         Player fbPlayer = new Player("Facebook Player");
         Player guPlayer = new Player("Guest Player");
-        Player gaPlayer = new Player("Game Player");
         Player jpaPlayer = new Player("JPA Player");
 
         team1.addPlayer(fbPlayer);
         team1.addPlayer(guPlayer);
-        team1.addPlayer(gaPlayer);
         team1.addPlayer(jpaPlayer);
 
         fbUser.getPlayers().add(fbPlayer);
-        gaUser.getPlayers().add(gaPlayer);
         guUser.getPlayers().add(guPlayer);
         jpaUser.getPlayers().add(jpaPlayer);
 
@@ -237,7 +237,6 @@ public class SerializationTest {
         assertPropertyEquals(mapper.writeValueAsString(team1), "@class", "Team");
 
         assertPropertyEquals(mapper.writeValueAsString(fbAccount), "@class", "FacebookAccount");
-        assertPropertyEquals(mapper.writeValueAsString(gaAccount), "@class", "GameAccount");
         assertPropertyEquals(mapper.writeValueAsString(guAccount), "@class", "GuestJpaAccount");
         assertPropertyEquals(mapper.writeValueAsString(jpaAccount), "@class", "JpaAccount");
 
@@ -274,8 +273,9 @@ public class SerializationTest {
         singleResult.addResult(result21);
 
         Reply reply = new Reply();
-        questionI.addReply(reply);
-        reply.setQuestionInstance(questionI);
+        choiceI.addReply(reply);
+        reply.setChoiceInstance(choiceI);
+        //result11.addReply(reply);
         reply.setResult(result11);
 
         assertPropertyEquals(mapper.writeValueAsString(questionD), "@class", "QuestionDescriptor");
@@ -323,7 +323,7 @@ public class SerializationTest {
 
         TaskDescriptor taskD = new TaskDescriptor();
         TaskDescriptor taskD2 = new TaskDescriptor();
-        taskD.setDescription("DESC");
+        taskD.setDescription(TranslatableContent.build("def", "DESC"));
         taskD.addPredecessor(taskD2);
         taskD.setName("taskD");
         taskD.setProperty("descriptorProperty", propertyValue);
@@ -348,7 +348,7 @@ public class SerializationTest {
 
         ResourceDescriptor resourceD = new ResourceDescriptor();
         resourceD.setName("resourceD");
-        resourceD.setDescription("DESC");
+        resourceD.setDescription(TranslatableContent.build("def", "DESC"));
         ResourceInstance resourceI = new ResourceInstance();
         resourceD.setDefaultInstance(resourceI);
         resourceI.setProperty("Level", "8");
@@ -357,9 +357,10 @@ public class SerializationTest {
         assertPropertyEquals(mapper.writeValueAsString(resourceI), "@class", "ResourceInstance");
 
         Activity activity = new Activity();
-        taskD.addActivity(activity);
+        taskI.addActivity(activity);
 
-        Assignment assignment = new Assignment(taskD);
+        Assignment assignment = new Assignment();
+        assignment.setTaskInstance(taskI);
         assignment.setResourceInstance(resourceI);
 
         Occupation occupation = new Occupation(2.0);
@@ -378,7 +379,9 @@ public class SerializationTest {
 
     @Test
     public void testExceptionMapper() throws JsonProcessingException {
-        NumberDescriptor nd = new NumberDescriptor("x");
+        NumberDescriptor nd = new NumberDescriptor();
+        nd.setName("x");
+        nd.setLabel(TranslatableContent.build("def", "x"));
         NumberInstance ns = new NumberInstance(0);
 
         nd.setDefaultInstance(ns);
@@ -389,7 +392,7 @@ public class SerializationTest {
 
         nd.getDefaultInstance().setValue(-10);
 
-        String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd.getLabel()));
+        String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd.getName(), nd.getLabel().translateOrEmpty(nd.getGameModel())));
         System.out.println("WOOB: " + json);
         assertPropertyEquals(json, "@class", "WegasOutOfBoundException");
 
@@ -409,15 +412,18 @@ public class SerializationTest {
         ndPayload.setDefaultInstance(niPayload);
 
         CustomEvent custom = new CustomEvent("Dummy CustomEvent", payload);
-        WarningEvent warn = new WarningEvent("Warning Dummy Event", payload);
 
         List<WegasRuntimeException> exceptions = new ArrayList<>();
-        exceptions.add(new WegasOutOfBoundException(0.0, 10.0, 15.0, ndPayload.getLabel()));
+        exceptions.add(new WegasOutOfBoundException(0.0, 10.0, 15.0, "ndPayload.getLabel()", "ndPayload.getLabel()"));
         exceptions.add(WegasErrorMessage.error("Error Message"));
         exceptions.add(new WegasScriptException("var a = truc;", 123, "OUPS"));
 
         List<AbstractEntity> instances = new ArrayList<>();
-        instances.add(new NumberInstance(1));
+        NumberDescriptor numberDescriptor = new NumberDescriptor("y");
+        NumberInstance numberInstance = new NumberInstance(0.0);
+        numberDescriptor.setDefaultInstance(numberInstance);
+        numberInstance.setDefaultDescriptor(numberDescriptor);
+        instances.add(numberInstance);
 
         EntityUpdatedEvent update = new EntityUpdatedEvent(instances);
 
@@ -425,7 +431,6 @@ public class SerializationTest {
 
         ManagedResponse managedResponse = new ManagedResponse();
         managedResponse.getEvents().add(custom);
-        managedResponse.getEvents().add(warn);
         managedResponse.getEvents().add(ex);
         managedResponse.getEvents().add(update);
 
@@ -434,4 +439,20 @@ public class SerializationTest {
         System.out.println("JSON: " + json);
 
     }
+
+    @Test
+    public void testJpaAccount() throws JsonProcessingException, IOException {
+        JpaAccount ja = new JpaAccount();
+        ja.setFirstname("Alan");
+        ja.setLastname("Smithee");
+        ja.setEmail("alan@local");
+        ja.setUsername("alan@local");
+
+        String strJa = mapper.writeValueAsString(ja);
+
+        mapper.readValue(strJa, AbstractAccount.class);
+
+        // 
+    }
+
 }

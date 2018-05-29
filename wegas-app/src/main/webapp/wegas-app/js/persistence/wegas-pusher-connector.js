@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -34,7 +34,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
          */
         initializer: function(cfg) {
             this.channel_prefix = {
-                "Admin": "private-Admin",
+                "Admin": "private-Role-Administrator",
                 "Global": "global-channel",
                 "User": "private-User-",
                 "Player": "private-Player-",

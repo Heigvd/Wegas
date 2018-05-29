@@ -2,20 +2,21 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -38,6 +39,8 @@ import org.slf4j.LoggerFactory;
 public class RequestController implements Serializable {
 
     Logger logger = LoggerFactory.getLogger(RequestController.class);
+
+    private static String[] availableLocales = {"en", "fr", "fr-CH"};
 
     /**
      *
@@ -63,26 +66,6 @@ public class RequestController implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         if (this.lang != null) { // If a language parameter is provided, it overrides the Accept-Language header
             context.getViewRoot().setLocale(new Locale(this.lang));
-        }
-        try {
-            /*
-             GameAccount, be a good boy, please go to your game page.
-             */
-            if (this.getCurrentUser().getMainAccount() instanceof GameAccount) {
-                try {
-                    HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-                    String query = (request.getServletPath() != null) ? request.getServletPath() : "";
-                    query += (request.getQueryString() != null) ? "?" + request.getQueryString() : "";
-                    String goTo = "/game.html?token=" + ((GameAccount) this.getCurrentUser().getMainAccount()).getToken();
-                    if (query == null ? goTo != null : !query.equals(goTo)) {
-                        context.getExternalContext().redirect(request.getContextPath() + goTo);
-                    }
-                } catch (IOException ex) {
-                    //page not found.
-                }
-
-            }
-        } catch (WegasNotFoundException ex) {// no user
         }
     }
 
@@ -120,6 +103,22 @@ public class RequestController implements Serializable {
             return context.getApplication().getDefaultLocale();
         }
         return Locale.getDefault();
+    }
+
+    public Locale getPreferredLocale() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context.getExternalContext().getRequestLocale() != null) {
+            Iterator<Locale> locales = context.getExternalContext().getRequestLocales();
+            while (locales.hasNext()) {
+                Locale next = locales.next();
+                for (String aLocale : availableLocales) {
+                    if (next.toLanguageTag().equals(aLocale)) {
+                        return next;
+                    }
+                }
+            }
+        }
+        return new Locale("en");
     }
 
     /**
@@ -198,6 +197,10 @@ public class RequestController implements Serializable {
      */
     public void setDebug(String debug) {
         this.debug = debug;
+    }
+
+    public boolean useYUICDN(){
+        return Boolean.valueOf(Helper.getWegasProperty("useYUICDN", "false"));
     }
 
     public Boolean debugMode() {

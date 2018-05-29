@@ -2,16 +2,16 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
-import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.security.persistence.User;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -19,7 +19,6 @@ import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -54,13 +53,16 @@ public class RequestFacade {
      *
      */
     @EJB
-    StateMachineFacade stateMachineRunner;
+    private StateMachineFacade stateMachineFacade;
+
+    @Inject
+    private GameModelFacade gameModelFacade;
+
     /**
      *
+     * @Inject
+     * private Event<PlayerAction> playerActionEvent;
      */
-    @Inject
-    private Event<PlayerAction> playerActionEvent;
-
     /**
      * @return the variableInstanceManager
      */
@@ -68,9 +70,18 @@ public class RequestFacade {
         return requestManager;
     }
 
+    public void clearEntities() {
+        this.requestManager.clearEntities();
+    }
+
+    public User getCurrentUser() {
+        return requestManager.getCurrentUser();
+    }
+
     /**
      *
      * @param view
+     *
      * @deprecated
      */
     public void setView(Class view) {
@@ -80,6 +91,7 @@ public class RequestFacade {
     /**
      *
      * @return current request view
+     *
      * @deprecated
      */
     public Class getView() {
@@ -91,9 +103,13 @@ public class RequestFacade {
      * @param playerId
      */
     public void setPlayer(Long playerId) {
-        Player p = playerFacade.find(playerId);
-        //playerFacade.getEntityManager().detach(p);
-        this.requestManager.setPlayer(p);
+        if (playerId != null) {
+            Player p = playerFacade.find(playerId);
+            //playerFacade.getEntityManager().detach(p);
+            this.requestManager.setPlayer(p);
+        } else {
+            requestManager.setPlayer(null);
+        }
     }
 
     /**
@@ -117,23 +133,11 @@ public class RequestFacade {
         }
     }
 
-//    public void reset() {
-//        this.getUpdatedInstances().clear();
-//    }
-    public void firePlayerAction(Player player, boolean clear) {
-        playerActionEvent.fire(new PlayerAction(player, clear));
-    }
-
-    public ScriptEventFacade getScriptEventFacade() {
-        return scriptEvent;
-    }
-
     /**
      *
      * @param player
-     * @param clear
      */
-    public void commit(Player player, boolean clear) {
+    public void commit(Player player) {
         /*
          * Flush is required to triggered EntityListener's lifecycles events which populate
          * requestManager touched (deleted, updated and so on) entities
@@ -143,41 +147,7 @@ public class RequestFacade {
         requestManager.getEntityManager().flush();
 
         if (requestManager.getJustUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
-
-            // TODO
-            this.firePlayerAction(player, clear);
-            /*   if (this.getPlayer() != null) {
-             // RequestManager.PlayerAction action = new RequestManager.PlayerAction();
-             //action.setPlayer(this.getPlayer());
-             //playerActionEvent.fire(action);
-
-             playerActionEvent.fire(new PlayerAction(player));
-             //stateMachineRunner.playerUpdated(this.requestManager.getPlayer());
-
-             } else {
-             //stateMachineRunner.playerUpdated(null);
-             playerActionEvent.fire(new PlayerAction(player));
-             //PlayerAction action = new PlayerAction();
-             //playerActionEvent.fire(action);
-
-             // for (VariableInstance instance : this.getUpdatedInstances()) {
-             // System.out.println(variableInstanceFacade.findAPlayer(instance) + ", ");
-             //
-             // Player p = variableInstanceFacade.findAPlayer(instance);
-             // List<Player> players = variableInstanceFacade.findAllPlayer(instance);
-             //
-             // System.out.println("This player has an update: " + p.getName());
-             //
-             // //PlayerAction action = new PlayerAction();
-             // //action.setPlayer(variableInstanceFacade.findAPlayer(instance));
-             // //playerActionEvent.fire(action);
-             // }
-             // PlayerAction action = new PlayerAction();
-             // playerActionEvent.fire(action);
-             }
-             */
-
-            // TODO Test whether this flush is required when a state machine triggered such an other one
+            stateMachineFacade.runStateMachines(player);
             em.flush();
         }
     }
@@ -185,8 +155,8 @@ public class RequestFacade {
     /**
      *
      */
-    public void commit(boolean clear) {
-        this.commit(this.getPlayer(), clear);
+    public void commit() {
+        this.commit(this.getPlayer());
     }
 
     /**
@@ -206,7 +176,8 @@ public class RequestFacade {
     /**
      *
      * @param name
-     * @return
+     *
+     * @return the bundle which match the name
      */
     public ResourceBundle getBundle(String name) {
         return this.requestManager.getBundle(name);
@@ -218,16 +189,6 @@ public class RequestFacade {
      */
     public Map<String, List<AbstractEntity>> getUpdatedEntities() {
         return requestManager.getAllUpdatedEntities();
-    }
-
-    /**
-     * An outdated entity in an entity we know clients do not have the last
-     * version and we can not figure out how to send them the updated one
-     *
-     * @return all entities marked as outdated during the transaction
-     */
-    public Map<String, List<AbstractEntity>> getOutdatedEntities() {
-        return requestManager.getOutdatedEntities();
     }
 
     /*

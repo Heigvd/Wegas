@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -18,7 +18,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.security.util.SecurityHelper;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -27,6 +26,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collection;
+import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -62,35 +64,24 @@ public class PlayerController {
 
     /**
      * @param playerId
+     *
      * @return the player matching given id
      */
     @GET
     @Path("{playerId : [1-9][0-9]*}")
     public Player get(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
-        SecurityHelper.checkPermission(p.getGame(), "View");
         return playerFacade.find(playerId);
     }
 
     /**
-     * Returns ALL players in the server ....
-     *
-     * @param gameId
-     * @return all players
-     */
-    @GET
-    public Collection<Player> index(@PathParam("gameId") Long gameId) {
-        // @fixme, @todo : seems the security permission is stupid...
-        SecurityHelper.checkPermission(gameFacade.find(gameId), "View");
-        return playerFacade.findAll();
-    }
-
-    /**
      * @param teamId
+     *
      * @return HTTP 201 with the team or 4xx if something went wrong
      */
     @POST
-    public Response create(@PathParam("teamId") Long teamId) {
+    public Response create(@Context HttpServletRequest request,
+            @PathParam("teamId") Long teamId) {
         User currentUser;
         try {
             currentUser = userFacade.getCurrentUser();
@@ -103,11 +94,12 @@ public class PlayerController {
                     && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN
                     && !teamToJoin.getGame().getProperties().getFreeForAll()) {
                 if (requestManager.tryLock("join-" + teamToJoin.getGameId() + "-" + currentUser.getId())) {
-                    Player existingPlayer = playerFacade.checkExistingPlayer(teamToJoin.getGameId(), currentUser.getId());
 
-                    if (existingPlayer == null) {
-                        playerFacade.create(teamToJoin, currentUser);
-
+                    if (!playerFacade.isInGame(teamToJoin.getGameId(), currentUser.getId())) {
+                        gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId(), Collections.list(request.getLocales()));
+                        // reload up to date team
+                        teamFacade.detach(teamToJoin);
+                        teamToJoin = teamFacade.find(teamToJoin.getId());
                         return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
                     }
                 }
@@ -125,34 +117,25 @@ public class PlayerController {
      *
      * @param playerId id of player to update
      * @param entity
+     *
      * @return up to date player
      */
     @PUT
     @Path("{playerId: [1-9][0-9]*}")
     public Player update(@PathParam("playerId") Long playerId, Player entity) {
-        SecurityHelper.checkPermission(playerFacade.find(playerId).getGame(), "Edit");
         return playerFacade.update(playerId, entity);
     }
 
     /**
      * @param playerId
+     *
      * @return just deleted player
      */
     @DELETE
     @Path("{playerId: [1-9][0-9]*}")
     public Player delete(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
-        if (!userFacade.getCurrentUser().equals(p.getUser())) {
-            SecurityHelper.checkPermission(p.getGame(), "Edit");
-        }
-        Team team = teamFacade.find(p.getTeamId());
-        if (!(team instanceof DebugTeam)) {
-            if (team.getPlayers().size() == 1) {
-                teamFacade.remove(team);
-            } else {
-                playerFacade.remove(playerId);
-            }
-        }
+        playerFacade.remove(p);
         return p;
     }
 
@@ -160,6 +143,7 @@ public class PlayerController {
      * Resets all the variables of a given player
      *
      * @param playerId playerId
+     *
      * @return HTTP 200 OK
      */
     @GET
@@ -167,9 +151,6 @@ public class PlayerController {
     public Response reset(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
 
-        if (!userFacade.getCurrentUser().equals(p.getUser())) {
-            SecurityHelper.checkPermission(p.getGame(), "Edit");
-        }
         playerFacade.reset(p);
         return Response.ok().build();
     }

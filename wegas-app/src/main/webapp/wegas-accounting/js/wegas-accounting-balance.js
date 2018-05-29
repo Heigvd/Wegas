@@ -2,12 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
 
-/*global YUI*/
+/*global YUI, I18n*/
 
 YUI.add("wegas-accounting-balance", function(Y) {
     "use strict";
@@ -38,20 +38,16 @@ YUI.add("wegas-accounting-balance", function(Y) {
             + "</div>",
         initializer: function() {
         },
-        isValidField: function(value) {
-            return /^[+-]?\d+$/.test(value);
-        },
         bindUI: function() {
             this.updateHandler =
                 Wegas.Facade.Variable.after("update", this.syncUI, this);
 
             this.changeHandler = Y.one(".wegas-balance").delegate("change", function(e) {
                 var val = Y.Lang.trim(e.target.get("value"));
-                val = (val === "") ? "0" : val;
-                e.target.removeClass("invalid");
-                if (this.isValidField(val)) {
-                    val = parseInt(val, 10);
-                    e.target.set("value", val);
+                val = (val === "") ? 0 : I18n.parseNumber(val);
+                if (Y.Lang.isNumber(val)) {
+                    e.target.removeClass("invalid");
+                    e.target.set("value", I18n.formatNumber(val));
                     this.request(e.target.get("name"), val);
                 } else {
                     e.target.addClass("invalid");
@@ -117,10 +113,10 @@ YUI.add("wegas-accounting-balance", function(Y) {
             if (localEditionEnabled) {
                 html += "<input class='wegas-balance-input wegas-balance-amount' "
                     + " name='" + category.name + "' "
-                    + " value='" + category.amount + "'></input>";
+                    + " value='" + I18n.formatNumber(category.amount) + "'></input>";
             } else {
 
-                html += "<div class=\"wegas-balance-amount\"><span>" + category.amount + "</span></div>";
+                html += "<div class=\"wegas-balance-amount\"><span data-name='" + category.name + "'>" + category.amount + "</span></div>";
             }
 
             if (category.children.length > 0) {
@@ -136,8 +132,13 @@ YUI.add("wegas-accounting-balance", function(Y) {
         syncCategory: function(container, category) {
             var i, input = container.one("input[name='" + category.name + "']");
             if (input) {
-                if (Math.abs(input.get("value") - category.amount) > 0.0001) {
-                    input.setValue(category.amount);
+                if (Math.abs(I18n.parseNumber(input.get("value")) - category.amount) > 0.0001) {
+                    input.set("value", I18n.formatNumber(category.amount));
+                }
+            }else{
+                var span = container.one(".wegas-balance-amount [data-name='" + category.name  + "'");
+                if (span){
+                    span.setContent(I18n.formatNumber(category.amount));
                 }
             }
 
@@ -155,7 +156,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
             for (i = 0; i < category.children.length; i += 1) {
                 this.syncCategory(contentDiv, category.children[i]);
             }
-            sumDiv.setContent("<div class=\"wegas-balance-amount\"><span>" + category.amount + "</span></div>");
+            sumDiv.setContent("<div class=\"wegas-balance-amount\"><span>" + I18n.formatNumber(category.amount) + "</span></div>");
         },
         renderColumn: function(category, aKlass, editionEnabled) {
             var i;
@@ -205,7 +206,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
                         if (level <= this.get("cDepth")) {
                             children.push({
                                 "amount": item.getValue(),
-                                "label": item.get("label"),
+                                "label": I18n.t(item.get("label")),
                                 "name": item.get("name"),
                                 "editable": true,
                                 "children": []
@@ -217,7 +218,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
 
             return {
                 "amount": sum,
-                "label": directory.get("label"),
+                "label": I18n.t(directory.get("label")),
                 "name": directory.get("name"),
                 "children": children
             };
@@ -230,7 +231,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
                     method: "POST",
                     data: {
                         "@class": "Script",
-                        content: "Variable.findByName(gameModel, '" + name + "').getInstance(self).setValue(" + value + ");"
+                        content: "Variable.find(gameModel, '" + name + "').getInstance(self).setValue(" + value + ");"
                     }
                 }
             });
@@ -238,9 +239,11 @@ YUI.add("wegas-accounting-balance", function(Y) {
     }, {
         ATTRS: {
             variable: {
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
+                required: true,
+                view: {
+                    type: "variableselect",
                     label: "balance sheet",
                     classFilter: ["ListDescriptor"]
                 }
@@ -248,15 +251,16 @@ YUI.add("wegas-accounting-balance", function(Y) {
             cDepth: {
                 type: "number",
                 value: 2,
-                _inputex: {
+                required: true,
+                view: {
                     label: "Depth"
                 }
             },
             userEditable: {
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                optional: true,
-                _inputex: {
-                    _type: "variableselect",
+                view: {
+                    type: "variableselect",
                     label: "Editable",
                     classFilter: ["BooleanDescriptor"]
                 }

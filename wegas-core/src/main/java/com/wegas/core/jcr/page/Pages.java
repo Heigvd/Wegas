@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.page;
@@ -21,12 +21,10 @@ import java.util.*;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-//@XmlRootElement
 public class Pages implements AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
 
-    //@XmlTransient
     @JsonIgnore
     private final PageConnector connector;
 
@@ -79,7 +77,7 @@ public class Pages implements AutoCloseable {
             Node n = (Node) it.next();
             Page p = new Page(n);
             //pageMap.put(p.getId().toString(),  p.getContent());
-            ret.put(p.getId(), p.getContent());
+            ret.put(p.getId(), p.getContentWithMeta());
         }
         //this.connector.close();
 
@@ -92,7 +90,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param id
-     * @return
+     * @return the page
      * @throws RepositoryException
      */
     public Page getPage(String id) throws RepositoryException {
@@ -120,7 +118,7 @@ public class Pages implements AutoCloseable {
      * @throws RepositoryException
      */
     public void setMeta(Page page) throws RepositoryException {
-        Node n = this.connector.addChild(page.getId());
+        Node n = this.connector.getChild(page.getId());
         if (page.getName() != null) {
             n.setProperty(Page.NAME_KEY, page.getName());
         }

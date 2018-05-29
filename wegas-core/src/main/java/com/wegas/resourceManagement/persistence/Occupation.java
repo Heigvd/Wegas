@@ -1,19 +1,21 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.rest.util.Views;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
+import javax.persistence.*;
 
 /**
  *
@@ -22,11 +24,11 @@ import com.wegas.core.exception.client.WegasIncompatibleType;
 @Entity
 
 @Table(indexes = {
-    @Index(columnList = "variableinstance_id")
+    @Index(columnList = "resourceinstance_id")
 })
-public class Occupation extends AbstractAssignement /* implements Broadcastable */ {
+public class Occupation extends AbstractEntity {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5183770682755470296L;
     /**
      *
      */
@@ -47,22 +49,15 @@ public class Occupation extends AbstractAssignement /* implements Broadcastable 
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @JsonView(Views.ExtendedI.class)
     private String description = "";
-    /**
-     *
-     *
-     * @ManyToOne(optional = true)
-     * @JoinColumn(name = "taskdescriptor_id", nullable = true)
-     * @JsonIgnore private TaskDescriptor taskDescriptor;
-     */
 
     /**
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "variableinstance_id", nullable = false)
+    @JoinColumn(nullable = false)
     @JsonBackReference
     @JsonIgnore
     private ResourceInstance resourceInstance;
@@ -111,7 +106,6 @@ public class Occupation extends AbstractAssignement /* implements Broadcastable 
         return this.getResourceInstance().getEntities();
     }
      */
-
     @Override
     public Long getId() {
         return this.id;
@@ -149,25 +143,6 @@ public class Occupation extends AbstractAssignement /* implements Broadcastable 
     }
 
     /**
-     *
-     * @return
-     *
-     * @JsonIgnore public Long getTaskDescriptorId() { if (this.taskDescriptor
-     * != null) { return this.taskDescriptor.getId(); } else { return null; } }
-     */
-    /**
-     * @return the taskInstance
-     *
-     * @JsonIgnore public TaskDescriptor getTaskDescriptor() { return
-     * taskDescriptor; }
-     */
-    /**
-     * @param taskDescriptor
-     *
-     * public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
-     * this.taskDescriptor = taskDescriptor; }
-     */
-    /**
      * @return the editable
      */
     public boolean getEditable() {
@@ -193,5 +168,15 @@ public class Occupation extends AbstractAssignement /* implements Broadcastable 
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getResourceInstance().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getResourceInstance().getRequieredReadPermission();
     }
 }

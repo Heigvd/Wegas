@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -11,35 +11,42 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.Views;
 import java.util.Iterator;
-import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Index;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
+@Table(
+        indexes = {
+            @Index(columnList = "description_id")
+        }
+)
 public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
-    private String description;
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent description;
     /**
      *
      */
@@ -62,7 +69,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
         if (a instanceof ResourceDescriptor) {
             super.merge(a);
             ResourceDescriptor other = (ResourceDescriptor) a;
-            this.setDescription(other.getDescription());
+            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
             this.setProperties(other.getProperties());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
@@ -72,18 +79,23 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
     /**
      * @return the description
      */
-    public String getDescription() {
+    public TranslatableContent getDescription() {
         return description;
     }
 
     /**
      * @param description the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(TranslatableContent description) {
         this.description = description;
+        if (this.description != null) {
+            this.description.setParentDescriptor(this);
+        }
     }
 
-    // **** Sugar for editor *** //
+    /**
+     * ** Sugar for editor **
+     */
     /**
      *
      * @param p
@@ -351,5 +363,11 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      */
     public void desactivate(Player p) {
         this.setActive(p, false);
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        return Helper.insensitiveContainsAll(getDescription(), criterias)
+                || super.containsAll(criterias);
     }
 }

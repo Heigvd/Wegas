@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
 */
 /**
@@ -342,7 +342,7 @@ div.inputEx-description {
 }
 
 .inputEx-WysiwygScript .wegas-method-sendmessage .inputEx-ListField-addButton + span::after {
-    content: "Attachements";
+    content: "Attachments";
 }
 
 .inputEx-WysiwygScript option:disabled,
@@ -580,5 +580,4 @@ div.inputEx-RadioField-choice input[type="radio"] {
 
 .wegas-sendmail-content .inputEx-Field input {
     font-size: 13px;
-    font-family: inherit;
 }

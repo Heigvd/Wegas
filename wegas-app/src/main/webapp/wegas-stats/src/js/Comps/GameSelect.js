@@ -1,8 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import ReactSelect from 'react-select';
 
 class GameSelect extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -11,15 +10,19 @@ class GameSelect extends React.Component {
         };
     }
     componentWillReceiveProps(props) {
-        this.setState({
-            options: props.games.map(val => ({
-                value: val.id,
-                label: val.name ? `${val.name} (${val.gmName})` : val.id
-            }))
-        });
+        if (props.games !== this.props.games) {
+            this.setState({
+                options: props.games.map(val => ({
+                    value: val.id,
+                    label: val.name
+                        ? `${val.name} (${val.gmName}) by ${val.creator} (P: ${val.playersCount})`
+                        : val.id,
+                })),
+            });
+        }
     }
     onChange(group, value) {
-        const val = value ? value.split(',') : [];
+        const val = value.map(v => v.value);
         const { groups } = this.state;
         groups[group] = val;
         this.setState({
@@ -41,13 +44,17 @@ class GameSelect extends React.Component {
             minWidth: '15em',
         };
         for (let groupId = 0; groupId < groupsCount; groupId++) {
-            ret.push(<span key={ groupId }
-                           style={ style }><span>{ `Group ${groupId + 1}` }</span>
-                     <ReactSelect multi
-                                  onChange={ this.onChange.bind(this, groupId) }
-                                  options={ opt }
-                                  value={ this.state.groups[groupId] && this.state.groups[groupId].join(',') } />
-                     </span>);
+            ret.push(
+                <span key={groupId} style={style}>
+                    <span>{`Group ${groupId + 1}`}</span>
+                    <ReactSelect
+                        multi
+                        onChange={this.onChange.bind(this, groupId)}
+                        options={opt}
+                        value={this.state.groups[groupId]}
+                    />
+                </span>
+            );
         }
         return ret;
     }
@@ -55,15 +62,13 @@ class GameSelect extends React.Component {
     render() {
         return (
             <div>
-              { this.genGroups(this.state.options) }
+                {this.genGroups(this.state.options)}
             </div>
-            );
+        );
     }
 }
 GameSelect.defaultProps = {
-    games: [
-        1, 2, 3, 4, 5, 6, 7,
-    ],
+    games: [1, 2, 3, 4, 5, 6, 7],
     onRefSelect: () => undefined,
     groupsCount: 4,
 };

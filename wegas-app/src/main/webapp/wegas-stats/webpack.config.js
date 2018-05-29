@@ -1,48 +1,55 @@
 const path = require('path');
-const npmPackage = /node_modules/;
-const buildPath = path.resolve(__dirname, 'build');
+
+const PROD = process.env.NODE_ENV === 'production';
+
 module.exports = {
+    devtool: PROD ? 'source-map' : 'inline-source-map',
     entry: {
-        app: [
-            './src/index.js'
-        ],
-        vendor: [
-            'react', 'react-dom', 'react-router', 'history',
-            'axios', 'redux', 'react-redux',
-            'updeep', 'chartist', 'tcomb-form', 'style-loader'
-        ]
+        app: ['./src/index.js'],
     },
     output: {
-        path: buildPath,
+        path: path.join(__dirname, 'build'),
         filename: '[name].bundle-min.js',
-        publicPath: '/dev/'
-    },
-    externals: {
+        // chunkFilename: '[name].js',
+        // publicPath: 'wegas-react-form/dist/',
     },
     module: {
-        loaders: [
+        rules: [
+            {
+                test: /\.jsx?$/,
+                loaders: ['babel-loader'],
+                include: [path.join(__dirname, 'src')],
+            },
             {
                 test: /\.css$/,
-                loader: 'style!css?-singleton'
-            }, {
-                test: /\.less$/,
-                loader: 'style!css!less'
-            }, {
-                test: /\.js$/,
-                loaders: [
-                    'react-hot', 'babel-loader'
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: false,
+                            importLoaders: 0,
+                        },
+                    },
                 ],
-                exclude: [npmPackage]
-            }, {
-                test: /\.json$/,
-                loader: 'json'
-            }, {
-                test: /\.(woff2|woff|eot|ttf)/,
-                loader: 'file'
-            }, {
-                test: /\.(jpe?g|gif|png|svg)/,
-                loader: 'file'
-            }
-        ]
-    }
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 1,
+                        },
+                    },
+                    'less-loader',
+                ],
+            },
+        ],
+    },
+    devServer: {
+        reload: false,
+        inline: true,
+    },
 };

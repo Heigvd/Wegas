@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -97,13 +97,13 @@ YUI.add('wegas-pageeditor', function(Y) {
                 });
 
                 /** Refresh **/
-                this.refreshButton = host.toolbar.add({
-                    label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
-                    cssClass: "wegas-advanced-feature"
-                }).item(0);
-                this.refreshButton.after("click", function(e) {
-                    this.get("host").reload();
-                }, this);
+//                this.refreshButton = host.toolbar.add({
+//                    label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
+//                    cssClass: "wegas-advanced-feature"
+//                }).item(0);
+//                this.refreshButton.after("click", function(e) {
+//                    this.get("host").reload();
+//                }, this);
 
                 this.layoutButton = host.toolbar.add({// Layout
                     type: "ToggleButton",
@@ -379,11 +379,22 @@ YUI.add('wegas-pageeditor', function(Y) {
             }
             this.jsonView && this.jsonView.destroy();
         },
-        _syncWidgetEdition: function() {
-            var widget = Y.Plugin.EditEntityAction.currentEntity === this.overlayWidget ? Y.Plugin.EditEntityAction.currentEntity : null;
+        _syncWidgetEdition: function(realWidget) {
+            var widget = realWidget ?
+                (Y.Plugin.EditEntityAction.currentEntity === realWidget ? realWidget : null) :
+                (Y.Plugin.EditEntityAction.currentEntity === this.overlayWidget ? Y.Plugin.EditEntityAction.currentEntity : null);
             if (widget) {
+                /*
+                // This does not work anymore with Form 2.0:
                 Y.Plugin.EditEntityAction.form.set("values", widget.toObject());
                 Y.Plugin.EditEntityAction.form.syncUI();
+                */
+                // Simulate a renewed click on the same widget to regenerate the form:
+                if (this.overlayMask.menu.getMenu().size() > 0) {
+                    Y.later(10, this, function() {
+                        this.overlayMask.menu.getMenu().item(0).fire("click");
+                    });
+                }
             }
         }
     }, {

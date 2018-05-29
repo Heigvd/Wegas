@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.rest;
@@ -38,15 +38,15 @@ public class ResourceController {
      * Assign a resource to a task
      *
      * @param resourceInstanceId
-     * @param taskDescriptorId
+     * @param taskInstanceId
      */
     @POST
-    @Path("Assign/{resourceId : [1-9][0-9]*}/{taskDescriptorId : [1-9][0-9]*}")
+    @Path("Assign/{resourceId : [1-9][0-9]*}/{taskInstanceId : [1-9][0-9]*}")
     public void addAssignment(
             @PathParam("resourceId") Long resourceInstanceId,
-            @PathParam("taskDescriptorId") Long taskDescriptorId
+            @PathParam("taskInstanceId") Long taskInstanceId
     ) {
-        resourceFacade.assign(resourceInstanceId, taskDescriptorId);
+        resourceFacade.assign(resourceInstanceId, taskInstanceId);
     }
 
     /**

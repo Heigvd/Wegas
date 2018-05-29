@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -32,16 +32,25 @@
     border: none;
     font-size: 13px;
     text-align:center;
-    margin-right: .5em;
+    /* margin-right: .5em; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background: lightgray;
+    background: #A7CEF6;
     color: black;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab:hover .yui3-tab-label,
+.yui3-skin-sam .yui3-tab-label:hover,
+.yui3-skin-sam .yui3-tab-label:focus {
+    background: #86BDF6;
 }
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab {
-    width: 100%; 
-    max-width: 120px; 
+    width: 100%;
+    max-width: 120px;
 }
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-label {
     width: 98%;
@@ -61,7 +70,15 @@
     border-bottom: none;
 }
 
-/* Tab's Removeable plugin */
+/* This should only apply to the editor's tabs, not to inboxes and questions: */
+.yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label,
+.yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label:focus,
+.yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label:hover {
+    background: #6AACF1;
+    padding: 10px 0;
+    color: white;
+}
+
 .yui3-skin-sam .yui3-tabview-removeable .yui3-tab-label,
 .yui3-skin-sam .yui3-tabview-removeable .yui3-tab-label:focus,
 .yui3-skin-sam .yui3-tabview-removeable .yui3-tab-label:hover,
@@ -69,27 +86,28 @@
     padding-right: 2em;  /*make room for close link */
 }
 
-.yui3-skin-sam .wegas-tabview-resizetabs > ul  .yui3-tabview-removeable .yui3-tab-label,
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label:focus,
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label:hover,
 .yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label {
     padding-right: 0px;
 }
-.yui3-tab-remove {
-    font:bold 85% Verdana;
-    position: absolute;
-    right: .8em;
-    top: 10px;
-    padding: 1px 3px 3px 3px;
-    border:1px solid transparent;
-    line-height: 1em;
-    color: black;
-    right: 1em;
-    top: 11px;
+
+.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-label,
+.yui3-skin-sam .wegas-layout-column .wegas-tabview-resizetabs > ul .yui3-tabview-removeable .yui3-tab-label {
+    color: white;
 }
+
+.yui3-tab-remove {
+    font-size: 11px;
+    position: absolute;
+    right: 3px;
+    top: 6px;
+    padding: 5px;
+    color: #FFF;
+}
+
 .yui3-tab-remove:hover {
-    text-decoration: none;
-    border-color: black;
+    color: red !important;
 }
 
 /* Icons are not displayed in tab labels */
@@ -146,18 +164,18 @@
 
 /** Close  all tabs */
 .yui3-skin-sam .wegas-removeTabview {
-    float:right;
-    margin-top: 0.9em;
-}
-.yui3-skin-sam .wegas-removeTabview  a {
-    font: bold 85% Verdana;
-    padding: 1px 4px 3px 5px;
-    border: 1px solid transparent;
+    position: absolute;
+    z-index: 24; /* Must be above editing panes */
+    right: 0;
+    top: 40px;
+    background: #6AACF1;
+    color: white;
     cursor: pointer;
+    padding: 3px 2px 3px 4px;
+    font-size: 12px;
 }
-.yui3-skin-sam .wegas-removeTabview  a:hover {
-    border: 1px solid black;
-    text-decoration: none;
+.yui3-skin-sam .wegas-removeTabview:hover {
+    color: red;
 }
 
 /** Close all tabs */

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -25,9 +25,9 @@ YUI.add('wegas-panel', function(Y) {
             },
             bindUI: function() {
                 this.windowHandler = Y.after("windowresize", Y.bind(function() {
-                    /* 
+                    /*
                     @HACK
-                    Hide - sync - show 
+                    Hide - sync - show
                     Avoid Widget modal to stack it again. As it will destroy it only once.
                      */
                     this.hide();
@@ -123,20 +123,20 @@ YUI.add('wegas-panel', function(Y) {
                     "transient": true
                 }
             },
-            confirm: function(msg, okCb, cancelCb) {
+            confirm: function(msg, okCb, cancelCb, okLabel, cancelLabel) {
                 var panel = new Wegas.Panel({
                     content: "<div class='icon icon-info'>" + msg + "</div>",
                     modal: true,
                     width: 400,
                     buttons: {
                         footer: [{
-                            label: 'OK',
+                            label: okLabel || 'OK',
                             action: function() {
                                 panel.exit();
                                 okCb && okCb();
                             }
                         }, {
-                            label: 'Cancel',
+                            label: cancelLabel || 'Cancel',
                             action: function() {
                                 panel.exit();
                                 cancelCb && cancelCb();
@@ -153,7 +153,7 @@ YUI.add('wegas-panel', function(Y) {
                     cb();
                 }
             },
-            prompt: function(msg, okCb, cancelCb) {
+            prompt: function(msg, okCb, cancelCb, okLabel, cancelLabel) {
                 var panel = new Wegas.Panel({
                     headerContent: "<span class='fa fa-question fa-2x'></span><span style='margin-left:10px'>" +
                         Y.Escape.html(msg) + "</span>",
@@ -162,14 +162,14 @@ YUI.add('wegas-panel', function(Y) {
                     width: 400,
                     buttons: {
                         footer: [{
-                            label: 'OK',
+                            label: okLabel || 'OK',
                             action: function() {
                                 var v = this.get("bodyContent").filter(".prompt-value").item(0).get("value");
                                 panel.exit();
                                 okCb && okCb(v);
                             }
                         }, {
-                            label: 'Cancel',
+                            label: cancelLabel || 'Cancel',
                             action: function() {
                                 panel.exit();
                                 cancelCb && cancelCb();

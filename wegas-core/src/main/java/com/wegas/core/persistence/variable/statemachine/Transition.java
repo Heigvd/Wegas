@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -17,25 +17,25 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import javax.persistence.*;
 
-//import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Access(AccessType.FIELD)
-//@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
 @Table(
         indexes = {
-            @Index(columnList = "state_id")
+            @Index(columnList = "state_id"),
+            @Index(columnList = "actiontext_id")
         }
 )
 public class Transition extends AbstractEntity implements Searchable, Scripted {
@@ -51,6 +51,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     private Long id;
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {
@@ -74,7 +75,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = {})
-    @JoinColumn(name = "state_id", referencedColumnName = "state_id")
     private State state;
 
     /**
@@ -146,7 +146,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return index of state the transition is pointing to
      */
     public Long getNextStateId() {
         return nextStateId;
@@ -160,7 +160,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return script to execute on transition
      */
     public Script getPreStateImpact() {
         return preStateImpact;
@@ -182,7 +182,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return script to execute to know if the transition is walkable
      */
     public Script getTriggerCondition() {
         return triggerCondition;
@@ -212,5 +212,15 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     @Override
     public String toString() {
         return "Transition{" + "triggerCondition=" + triggerCondition + ", nextStateId=" + nextStateId + '}';
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getState().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getState().getRequieredReadPermission();
     }
 }

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence.evaluation;
@@ -10,13 +10,14 @@ package com.wegas.reviewing.persistence.evaluation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
-import java.util.Date;
+import java.util.Collection;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -35,13 +36,17 @@ import javax.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(value = TextEvaluationInstance.class)
-    ,
-    @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class)
-    ,
+    @JsonSubTypes.Type(value = TextEvaluationInstance.class),
+    @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
     @JsonSubTypes.Type(value = GradeInstance.class)
 })
-public abstract class EvaluationInstance extends AbstractEntity implements DatedEntity {
+@Table(
+        indexes = {
+            @Index(columnList = "evaluationdescriptor_id"),
+            @Index(columnList = "commentsreview_id"),
+            @Index(columnList = "feedbackreview_id")
+        })
+public abstract class EvaluationInstance extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -66,14 +71,14 @@ public abstract class EvaluationInstance extends AbstractEntity implements Dated
     @JsonIgnore
     private Review commentsReview;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdTime = new Date();
-
     /**
      * Corresponding evaluation descriptor
      */
     @ManyToOne
     private EvaluationDescriptor evaluationDescriptor;
+
+    @Transient
+    private String descriptorName;
 
     /**
      * Simple constructor
@@ -108,12 +113,32 @@ public abstract class EvaluationInstance extends AbstractEntity implements Dated
         this.evaluationDescriptor = ed;
     }
 
+    /**
+     * @return the descriptorName
+     */
+    @JsonIgnore
+    public String getDescriptorName() {
+        if (!Helper.isNullOrEmpty(descriptorName)) {
+            return descriptorName;
+        } else if (this.getDescriptor() != null) {
+            return getDescriptor().getName();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param descriptorName
+     */
+    public void setDescriptorName(String descriptorName) {
+        this.descriptorName = descriptorName;
+    }
+
     @Override
     public void merge(AbstractEntity a) {
-        //if (a instanceof EvaluationInstance) {
-        //EvaluationInstance o = (EvaluationInstance) a;
-        // Nothing to merge
-        //}
+        if (a instanceof EvaluationInstance) {
+            this.setDescriptorName(((EvaluationInstance) a).getDescriptorName());
+        }
     }
 
     @Override
@@ -144,18 +169,17 @@ public abstract class EvaluationInstance extends AbstractEntity implements Dated
     }
 
     /**
-     * @return the createdTime
+     * @Override
+     * @return index
      */
-    @Override
-    public Date getCreatedTime() {
-        return createdTime != null ? new Date(createdTime.getTime()) : null;
+    public int getIndex() {
+        return this.getDescriptor() != null ? this.getDescriptor().getIndex() : 0;
     }
 
     /**
-     * @param createdTime the createdTime to set
+     * @param index the index number to set
      */
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
+    public void setIndex(int index) {
     }
 
     /**
@@ -248,6 +272,22 @@ public abstract class EvaluationInstance extends AbstractEntity implements Dated
                 theReview.getComments().remove(this);
             }
         }
+
         super.updateCacheOnDelete(beans);
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getEffectiveReview().getRequieredUpdatePermission();
+    }
+
+    /*
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        return this.getEffectiveReview().getRequieredDeletePermission();
+    }*/
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getEffectiveReview().getRequieredReadPermission();
     }
 }

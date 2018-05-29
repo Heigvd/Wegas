@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -46,7 +46,7 @@ code {
 
 /*html, .editor-preview > .wegas-pageloader-content > .wegas-widget > div*/
 
-html, .editor-preview {
+.wegas-playmode, .editor-preview {
     background: url(../../wegas-proggame/images/proggame-background.jpg) top left no-repeat;
 }
 
@@ -371,7 +371,10 @@ html, .editor-preview {
 
 /* Level: TabView styles */
 
-.wegas-proggame-level .yui3-tabview, .wegas-proggame-level .yui3-tabview a {
+.wegas-proggame-level .yui3-treenode-content-label,
+.wegas-proggame-level .yui3-treeleaf-content-label,
+.wegas-proggame-level .yui3-tabview, 
+.wegas-proggame-level .yui3-tabview a {
     color: white;
 }
 
@@ -443,6 +446,10 @@ html, .editor-preview {
     top: 99px;
     left: 46px;
     width: 180px;
+}
+
+.proggame-api {
+    margin-top: 15px;
 }
 
 .proggame-api .selected>div>.yui3-treeleaf-content-header, .proggame-api .selected>.yui3-treenode-content-header {
@@ -853,7 +860,7 @@ html, .editor-preview {
 
 .wegas-proggame-level .wegas-proggame-level-content .yui3-resize-handle-t {
     width: 100%;
-    background-color: transparent;
+    background-color: transparent !important;
     cursor: ns-resize;
 }
 

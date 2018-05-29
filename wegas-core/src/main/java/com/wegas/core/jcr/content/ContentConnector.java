@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
@@ -92,7 +92,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
-     * @return
+     * @return the node  at absolutePath
      * @throws RepositoryException
      */
     protected Node getNode(String absolutePath) throws RepositoryException {
@@ -106,7 +106,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
-     * @return
+     * @return truc if there is a node at absolutePath
      * @throws RepositoryException
      */
     protected boolean nodeExist(String absolutePath) throws RepositoryException {
@@ -124,7 +124,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param path
-     * @return
+     * @return childre iterator
      * @throws PathNotFoundException
      * @throws RepositoryException
      */
@@ -164,7 +164,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
-     * @return
+     * @return child at absolutePath content
      * @throws RepositoryException
      */
     protected InputStream getData(String absolutePath) throws RepositoryException {
@@ -173,7 +173,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
-     * @return
+     * @return child at absolutePath content, as bytes
      * @throws RepositoryException
      * @throws IOException
      */
@@ -185,7 +185,7 @@ public class ContentConnector implements AutoCloseable {
      * @param absolutePath
      * @param mimeType
      * @param data
-     * @return
+     * @return set child data
      * @throws RepositoryException
      */
     protected Node setData(String absolutePath, String mimeType, InputStream data) throws RepositoryException {
@@ -199,7 +199,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
-     * @return
+     * @return get child mimetype
      * @throws RepositoryException
      */
     protected String getMimeType(String absolutePath) throws RepositoryException {
@@ -222,7 +222,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
-     * @return
+     * @return child 'note'
      * @throws RepositoryException
      */
     protected String getNote(String absolutePath) throws RepositoryException {
@@ -245,7 +245,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
-     * @return
+     * @return child descriptor
      * @throws RepositoryException
      */
     protected String getDescription(String absolutePath) throws RepositoryException {
@@ -269,7 +269,7 @@ public class ContentConnector implements AutoCloseable {
 
     /**
      * @param absolutePath
-     * @return
+     * @return chuld lastModified date
      * @throws RepositoryException
      */
     protected Calendar getLastModified(String absolutePath) throws RepositoryException {
@@ -280,7 +280,7 @@ public class ContentConnector implements AutoCloseable {
      * Return content Bytes size
      *
      * @param absolutePath
-     * @return
+     * @return child content size, in byte
      * @throws RepositoryException
      */
     protected Long getBytesSize(String absolutePath) throws RepositoryException {

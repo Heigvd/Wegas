@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.messaging.rest;
@@ -11,8 +11,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
@@ -21,7 +19,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  * @deprecated ???
@@ -62,7 +59,6 @@ public class InboxDescriptorController {
     public List<Message> findAll(@PathParam("instanceId") Long instanceId) {
 
         InboxInstance inbox = (InboxInstance) variableInstanceFacade.find(instanceId);
-        checkPermissions(inbox);
 
         return inbox.getMessages();
     }
@@ -78,7 +74,6 @@ public class InboxDescriptorController {
     public Message find(@PathParam("messageId") Long messageId) {
 
         Message m = messageFacade.find(messageId);
-        checkPermissions(m);
 
         return m;
     }
@@ -96,7 +91,6 @@ public class InboxDescriptorController {
             Message message) {
 
         Message update = messageFacade.update(messageId, message);
-        checkPermissions(update);
 
         return update.getInboxInstance();
     }
@@ -112,11 +106,10 @@ public class InboxDescriptorController {
     public InboxInstance readMessage(@PathParam("messageId") Long messageId) {
 
         Message update = messageFacade.find(messageId);
-        checkPermissions(update);
 
         update.setUnread(false);
         if (!Helper.isNullOrEmpty(update.getToken())) {
-            requestFacade.commit(true);
+            requestFacade.commit();
         }
         return update.getInboxInstance();
     }
@@ -132,7 +125,6 @@ public class InboxDescriptorController {
     public InboxInstance readAllMessages(@PathParam("inboxInstanceId") Long id) {
 
         InboxInstance inbox = (InboxInstance) variableInstanceFacade.find(id);
-        checkPermissions(inbox);
         boolean commit = false;
 
         for (Message message : inbox.getMessages()) {
@@ -140,7 +132,7 @@ public class InboxDescriptorController {
             commit = commit || !Helper.isNullOrEmpty(message.getToken());
         }
         if (commit) {
-            requestFacade.commit(true);
+            requestFacade.commit();
         }
         return inbox;
     }
@@ -156,37 +148,8 @@ public class InboxDescriptorController {
     public InboxInstance deleteMessage(@PathParam("messageId") Long messageId) {
 
         Message m = messageFacade.find(messageId);
-        checkPermissions(m);
 
         messageFacade.remove(m);
         return m.getInboxInstance();
-    }
-
-    /**
-     * Assert current user has the permission to access the instance
-     *
-     * @param instance
-     * @throws UnauthorizedException if currentUser do not have access to the
-     *                               inbox
-     */
-    private void checkPermissions(VariableInstance instance) {
-        if (!SecurityHelper.isPermitted(variableInstanceFacade.findGame(instance), "Edit")) {
-            try {
-                playerFacade.findCurrentPlayer(variableInstanceFacade.findGame(instance)).getId();
-                //System.out.println(playerId + " playerid readMessage");
-
-            } catch (Exception e) {
-                throw new UnauthorizedException();
-            }
-        }
-    }
-
-    /**
-     * Assert currentUser has the permission to read the message
-     *
-     * @param m
-     */
-    private void checkPermissions(Message m) {
-        checkPermissions(m.getInboxInstance());
     }
 }

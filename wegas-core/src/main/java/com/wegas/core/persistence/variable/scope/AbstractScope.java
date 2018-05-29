@@ -2,51 +2,48 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.scope;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
-
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import javax.persistence.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import com.wegas.core.persistence.AcceptInjection;
-import com.wegas.core.persistence.variable.Beanjection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-////import javax.xml.bind.annotation.XmlTransient;
 /**
  * @param <T> scope context
+ *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Entity                                                                         // Database serialization
+@Entity // Database serialization
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
-    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
+    @JsonSubTypes.Type(name = "GameScope", value = GameModelScope.class), // force GameScope to be deserialized as GameModelScope
     @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
 @Table(indexes = {
-    @Index(columnList = "variableinstance_variableinstance_id")
+    @Index(columnList = "variabledescriptor_id")
 })
-abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEntity implements AcceptInjection {
+abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEntity implements AcceptInjection {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractScope.class);
 
@@ -54,16 +51,16 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
 
     /**
      * HACK
-     *
+     * <p>
      * Links from VariableDescriptor to Instances has been cut to avoid using
      * time-consuming HashMap. Thereby, a new way to getInstances(player) is
      * required. It's done by using specific named-queries through
      * VariableInstanceFacade.
-     *
+     * <p>
      * Injecting VariableInstanceFacade here don't bring business logic within
      * data because the very only functionality that is being used here aims to
      * replace JPA OneToMany relationship management
-     *
+     * <p>
      */
     @JsonIgnore
     @Transient
@@ -101,62 +98,78 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
 
     /**
      * @param player
-     * @return
+     *
+     * @return the variable instance which the player can write
      */
     abstract public VariableInstance getVariableInstance(Player player);
 
     /**
-     * @return
+     * return the first variableInstance which is accessible by the team.
+     * <p>
+     * here stands the behaviour for playeScoped instance,
+     * see overridden methods for other scope behaviour
+     *
+     * @param team
+     *
+     * @return a variableInstance a player of the team can write
      */
-    @JsonIgnore
-    abstract public Map<T, VariableInstance> getVariableInstances();
-
-    private Map<Long, VariableInstance> mapInstances(Map<T, VariableInstance> instances) {
-        Map<Long, VariableInstance> mappedInstances = new HashMap<>();
-        for (Entry<T, VariableInstance> entry : instances.entrySet()) {
-            // GameModelScope Hack (null key means id=0...)
-            mappedInstances.put((entry.getKey() != null ? entry.getKey().getId() : 0L), entry.getValue());
+    public VariableInstance getVariableInstance(Team team) {
+        for (Player p : team.getPlayers()) {
+            return this.getVariableInstance(p);
         }
-        return mappedInstances;
+        return null;
     }
 
     /**
-     * @return
+     * return the first variableInstance which is accessible by the game
+     * <p>
+     * here stands the behaviour for playeScoped instance,
+     * see overridden methods for other scope behaviour
+     *
+     * @param game
+     *
+     * @return a variableInstance a player in the game can write
      */
-    @JsonProperty("variableInstances")
-    @JsonView(Views.InstanceI.class)
-    public Map<Long, VariableInstance> getVariableInstancesByKeyId() {
-        return mapInstances(this.getVariableInstances());
+    public VariableInstance getVariableInstance(Game game) {
+        for (Team t : game.getTeams()) {
+            return this.getVariableInstance(t);
+        }
+        return null;
     }
 
     /**
-     * @return The variable instance associated to the current player, which is
-     *         stored in the RequestManager.
+     * return the first variableInstance which is accessible by the gameModel
+     * <p>
+     * here stands the behaviour for playeScoped instance,
+     * see overridden methods for other scope behaviour
+     *
+     * @param gm
+     *
+     * @return a variableInstance a player in the gameModel can write
      */
-    @JsonIgnore
+    public VariableInstance getVariableInstance(GameModel gm) {
+        for (Game g : gm.getGames()) {
+            return this.getVariableInstance(g);
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return {@link #getVariableInstance(Player)} with the current player
+     * @deprecated
+     */
     @Deprecated
-    abstract public Map<T, VariableInstance> getPrivateInstances();
-
-    @JsonIgnore
-    @JsonProperty("privateInstances")
-    @Deprecated
-    public Map<Long, VariableInstance> getPrivateInstancesByKeyId() {
-        return mapInstances(this.getPrivateInstances());
-    }
-
-    /**
-     * @return
-     */
-    //@XmlTransient
     @JsonIgnore
     public VariableInstance getInstance() {
-        return this.getVariableInstance(RequestFacade.lookup().getPlayer());
+        return this.getVariableInstance(this.lookupPlayer());
     }
 
     /**
      * Propagate instances for the given player
      *
-     * @param p instance owner
+     * @param p      instance owner
+     * @param create create new instance or update existing one ?
      */
     protected void propagate(Player p, boolean create) {
     }
@@ -164,29 +177,38 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     /**
      * Propagate instances for the given team
      *
-     * @param t the team
+     * @param t      the team
+     * @param create create new instance or update existing one ?
      */
     protected void propagate(Team t, boolean create) {
         for (Player p : t.getPlayers()) {
-            propagate(p, create);
+            if (!p.isWaiting()) {
+                propagate(p, create);
+            } else {
+                logger.error("SKIP PLAYER: {} -> {}", p, p.getStatus());
+            }
         }
     }
 
     /**
      * Propagate instances for the given Game
      *
-     * @param g the game
+     * @param g      the game
+     * @param create create new instance or update existing one ?
      */
     protected void propagate(Game g, boolean create) {
         for (Team t : g.getTeams()) {
-            propagate(t, create);
+            if (!t.isWaiting()) {
+                propagate(t, create);
+            }
         }
     }
 
     /**
      * Propagate instances for the given GameModel
      *
-     * @param gm the gameModel
+     * @param gm     the gameModel
+     * @param create create new instance or update existing one ?
      */
     protected void propagate(GameModel gm, boolean create) {
         for (Game g : gm.getGames()) {
@@ -201,14 +223,13 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
      *                instances to (null means propagate to everybody)
      * @param create
      */
-    abstract public void propagateDefaultInstance(AbstractEntity context, boolean create);
+    abstract public void propagateDefaultInstance(InstanceOwner context, boolean create);
 
     /**
-     * @return
+     * @return the variable descriptor
      */
     // @fixme here we cannot use the back-reference on an abstract reference
     //@JsonBackReference
-    //@XmlTransient
     @JsonIgnore
     public VariableDescriptor getVariableDescriptor() {
         return this.variableDescriptor;
@@ -223,10 +244,9 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
     }
 
     /**
-     * @return
+     * @return the scope id
      */
     @Override
-    //@XmlTransient
     @JsonIgnore
     public Long getId() {
         return this.id;
@@ -251,15 +271,50 @@ abstract public class AbstractScope<T extends AbstractEntity> extends AbstractEn
         this.beans = beanjection;
     }
 
+    /**
+     * Since the @ManyToMany HashMap from scope to instances is not effiient,
+     * it has been cut and replace by JPA queries. Those queries stands within
+     * VariableInstanceFacade so we need something to fetch it...
+     * It's not so nice...
+     *
+     * @return VariableInstanceFacade instance
+     */
     protected VariableInstanceFacade getVariableInstanceFacade() {
+        // beans should have been injected by EntityListener
         if (this.beans != null && this.beans.getVariableInstanceFacade() != null) {
             return this.beans.getVariableInstanceFacade();
         } else if (this.variableInstanceFacade == null) {
+            // but it may not... so here is a lookup fallback
             logger.error("LOOKUP OCCURS : " + this);
-            new Exception().printStackTrace();
+            Helper.printWegasStackTrace(new Exception());
             this.variableInstanceFacade = VariableInstanceFacade.lookup();
         }
 
         return this.variableInstanceFacade;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getVariableDescriptor().getGameModel().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getVariableDescriptor().getGameModel().getRequieredReadPermission();
+    }
+
+    /**
+     * Missing player arguments ? get it from requestFacade (but please avoid it)
+     *
+     * @return the current player
+     */
+    protected Player lookupPlayer() {
+        logger.error("LOOKUP OCCURS: {}", this);
+        Helper.printWegasStackTrace(new Exception());
+        return RequestFacade.lookup().getPlayer();
+    }
+
+    @Override
+    public void merge(AbstractEntity other) {
     }
 }

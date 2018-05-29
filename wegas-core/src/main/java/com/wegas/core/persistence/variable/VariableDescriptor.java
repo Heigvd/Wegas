@@ -2,23 +2,28 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -27,25 +32,27 @@ import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.WegasPermission;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
+import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
-import org.eclipse.persistence.annotations.CacheIndex;
-import org.eclipse.persistence.annotations.JoinFetch;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.wegas.core.persistence.AcceptInjection;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
+import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
@@ -54,87 +61,74 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @param <T>
+ *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
-// @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
-// @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
+    @UniqueConstraint(columnNames = {"gamemodel_id", "name"}) // Name has to be unique for the whole game model
+// @UniqueConstraint(columnNames = {"parentlist_id", "name"}) // Name has to be unique within a list
+// @UniqueConstraint(columnNames = {"root_id", "name"})       // Names have to be unique at the base of a game model (root elements)
 }, indexes = {
-    @Index(columnList = "defaultinstance_variableinstance_id")
-    ,
-    @Index(columnList = "items_variabledescriptor_id")
-    ,
-    @Index(columnList = "rootgamemodel_id")
-    ,
-    @Index(columnList = "dtype")
+    @Index(columnList = "defaultinstance_id"),
+    @Index(columnList = "parentlist_id"),
+    @Index(columnList = "parentwh_id"),
+    @Index(columnList = "root_id"),
+    @Index(columnList = "gamemodel_id"),
+    @Index(columnList = "dtype"),
+    @Index(columnList = "scope_id"),
+    @Index(columnList = "label_id")
 })
 @NamedQueries({
     @NamedQuery(
             name = "VariableDescriptor.findByRootGameModelId",
             query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
-    )
-    ,
+    ),
     @NamedQuery(
             name = "VariableDescriptor.findByGameModelIdAndName",
             query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
             hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject)
-                ,
+                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
     )
 })
 @CacheIndexes(value = {
-    @CacheIndex(columnNames = {"GAMEMODEL_GAMEMODELID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
+    @CacheIndex(columnNames = {"GAMEMODEL_ID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class)
-    ,
-    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class)
-    ,
+    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
+    @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
+    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
+    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
+    @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
+    @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
+    @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
+    @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
+    @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
+    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "WhQuestionDescriptor", value = WhQuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
+    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
-@MappedSuperclass
-abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity, Broadcastable, AcceptInjection {
+//@MappedSuperclass
+abstract public class VariableDescriptor<T extends VariableInstance> extends AbstractEntity implements Searchable, LabelledEntity, Broadcastable, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
+    protected static final Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
 
     /**
      * HACK
-     *
+     * <p>
      * Injecting VariableDescriptorFacade here don't bring business logic within
      * data because the very only functionality that is being used here aims to
      * replace some slow JPA mechanisms
-     *
+     * <p>
      */
     @JsonIgnore
     @Transient
@@ -142,14 +136,14 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     @JsonIgnore
     @Transient
-    private Beanjection beans;
+    protected Beanjection beans;
 
     /**
      *
      */
     @Lob
     @JsonView(value = Views.EditorI.class)
-    @Column(name = "Descriptor_comments")
+    @Column(name = "comments")
     private String comments;
 
     /**
@@ -165,7 +159,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     //@JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "gamemodel_gamemodelid")
     @CacheIndex
     private GameModel gameModel;
 
@@ -173,56 +166,52 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      */
     @Id
-    @Column(name = "variabledescriptor_id")
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "items_variabledescriptor_id")
     @JsonIgnore
     private ListDescriptor parentList;
 
     @ManyToOne
-    @JoinColumn(name = "rootgamemodel_id")
     @JsonIgnore
-    private GameModel rootGameModel;
+    private WhQuestionDescriptor parentWh;
+
+    @ManyToOne
+    @JsonIgnore
+    private GameModel root;
 
     /**
-     *
-     */
-    //@JsonView(Views.EditorI.class)
-    private String label;
-
-    /*
-     * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
-     * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
-     * updatable = true)
-     */
-    //@BatchFetch(BatchFetchType.JOIN)
-    //@JsonManagedReference
-    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
-    @JoinFetch
-    //@JsonView(value = Views.WithScopeI.class)
-    private AbstractScope scope;
-
-    /**
-     * Title displayed in the for the player, should be removed from variable
-     * descriptor and placed in the required entities (MCQQuestionDrescriptor,
-     * TriggerDescriptor, aso)
-     */
-    @Column(name = "editorLabel")
-    private String title;
-
-    /**
-     *
+     * variable name: used as identifier
      */
     @NotNull
     @Basic(optional = false)
-    //@CacheIndex
     protected String name;
 
+    /**
+     * a token to prefix the label with. For editors only
+     */
+    private String editorTag;
+
+    @Transient
+    @JsonIgnore
+    protected String title;
+
+    /**
+     * Variable descriptor human readable name
+     * Player visible
+     */
+    @JsonDeserialize(using = TranslationDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private TranslatableContent label;
+
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
+    @JoinFetch
+    private AbstractScope scope;
+
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {
@@ -236,16 +225,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    //@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    //@JoinTable(joinColumns = {
-    //    @JoinColumn(referencedColumnName = "variabledescriptor_id")},
-    //        inverseJoinColumns = {
-    //    @JoinColumn(referencedColumnName = "tag_id")})
-    //@XmlTransient
-    //private List<Tag> tags;
-    /**
-     *
-     */
     public VariableDescriptor() {
     }
 
@@ -254,15 +233,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public VariableDescriptor(String name) {
         this.name = name;
-    }
-
-    /**
-     * @param name
-     * @param defaultInstance
-     */
-    public VariableDescriptor(String name, T defaultInstance) {
-        this.name = name;
-        this.defaultInstance = defaultInstance;
     }
 
     /**
@@ -319,14 +289,16 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     @JsonIgnore
-    public GameModel getRootGameModel() {
-        return rootGameModel;
+    public GameModel getRoot() {
+        return root;
     }
 
-    public void setRootGameModel(GameModel rootGameModel) {
-        this.rootGameModel = rootGameModel;
-        if (this.rootGameModel != null) {
+    public void setRoot(GameModel rootGameModel) {
+        this.root = rootGameModel;
+        logger.trace("set {} root to {}", this, this.root);
+        if (this.root != null) {
             this.setParentList(null);
+            this.setParentWh(null);
         }
     }
 
@@ -336,8 +308,23 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     public void setParentList(ListDescriptor parentList) {
         this.parentList = parentList;
+        logger.trace("set {} parentList to {}", this, this.parentList);
         if (this.parentList != null) {
-            this.setRootGameModel(null);
+            this.setRoot(null);
+            this.setParentWh(null);
+        }
+    }
+
+    public WhQuestionDescriptor getParentWh() {
+        return parentWh;
+    }
+
+    public void setParentWh(WhQuestionDescriptor parentWh) {
+        this.parentWh = parentWh;
+        logger.trace("set {} parentWh to {}", this, this.parentWh);
+        if (this.parentWh != null) {
+            this.setRoot(null);
+            this.setParentList(null);
         }
     }
 
@@ -345,11 +332,26 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (parentList != null) {
             return parentList;
-        } else if (rootGameModel != null) {
-            return rootGameModel;
+        } else if (parentWh != null) {
+            return parentWh;
+        } else if (root != null) {
+            return root;
         } else {
             throw new WegasNotFoundException("ORPHAN DESCRIPTOR");
         }
+    }
+
+    @JsonView(Views.IndexI.class)
+    public String getParentDescriptorType() {
+        if (this.getRoot() != null) {
+            return "GameModel";
+        } else {
+            return "VariableDescriptor";
+        }
+    }
+
+    public void setParentDescriptorType(String type) {
+        // nothing to do
     }
 
     @JsonView(Views.IndexI.class)
@@ -381,10 +383,50 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return id;
     }
 
+    @Deprecated
+    public T findInstance(VariableInstance variableInstance) {
+        return this.findInstance(variableInstance, null);
+    }
+
+    /**
+     * Retrieve an instance the owner has also write permission on given variableInstance
+     *
+     * @param variableInstance an instance of another descriptor
+     * @param user             player owner to prioritise
+     *
+     * @return instance of this
+     *
+     */
+    @JsonIgnore
+    public T findInstance(VariableInstance variableInstance, User user) {
+
+        // if the given VariableInstance is a default instance, return the descripto default instance
+        if (variableInstance.isDefaultInstance()) {
+            return this.getDefaultInstance();
+        }
+
+        InstanceOwner owner = variableInstance.getOwner();
+        List<Player> players = owner.getLivePlayers();
+
+        if (players == null || players.isEmpty()) {
+            return null;
+        } else {
+            if (user != null) {
+                for (Player p : players) {
+                    if (user.equals(p.getUser())) {
+                        return (T) scope.getVariableInstance(p);
+                    }
+                }
+            }
+        }
+        return (T) scope.getVariableInstance(players.get(0));
+    }
+
     /**
      * Fetch variable instance for the given player
      *
      * @param player
+     *
      * @return variableInstance belonging to the player
      */
     public T getInstance(Player player) {
@@ -395,7 +437,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @return get instance belonging to the current player
      */
     @JsonIgnore
+    @Deprecated
     public T getInstance() {
+        logger.error("VariableDescriptor#getInstance() is deprecated!");
         return (T) this.getScope().getInstance();
     }
 
@@ -403,6 +447,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @param defaultInstance indicate whether one wants the default instance r
      *                        the one belonging to player
      * @param player          the player
+     *
      * @return either the default instance of the one belonging to player
      */
     @JsonIgnore
@@ -414,11 +459,35 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
     }
 
+    @JsonIgnore
+    public String getEditorLabel() {
+        if (this.getEditorTag() == null && this.getLabel() == null) {
+            return this.getName();
+        }
+        if (this.getEditorTag() == null) {
+            return this.getLabel().translateOrEmpty(this.getGameModel());
+        }
+        return this.getEditorTag() + " - " + this.getLabel();
+    }
+
+    /**
+     * get the editor label prefix.
+     *
+     * @return
+     */
+    public String getEditorTag() {
+        return this.editorTag;
+    }
+
+    public void setEditorTag(String editorTag) {
+        this.editorTag = editorTag;
+    }
+
     /**
      * @return the label
      */
     @Override
-    public String getLabel() {
+    public TranslatableContent getLabel() {
         return label;
     }
 
@@ -426,8 +495,33 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @param label the label to set
      */
     @Override
-    public void setLabel(String label) {
+    public void setLabel(TranslatableContent label) {
         this.label = label;
+        if (this.label != null) {
+            this.label.setParentDescriptor(this);
+        }
+    }
+
+    /**
+     * Backward compat
+     *
+     * @return
+     */
+    @JsonIgnore
+    @Deprecated
+    public String getTitle() {
+        return this.getLabel().translateOrEmpty(this.getGameModel());
+    }
+
+    /**
+     * Backwardcompat
+     *
+     * @param title
+     */
+    @Deprecated
+    @JsonProperty
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**
@@ -457,6 +551,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param scope the scope to set
+     *
      * @fixme here we cannot use managed references since this.class is
      * abstract.
      */
@@ -469,32 +564,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @return title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * @param title
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
      * @param a
      */
     @Override
     public void merge(AbstractEntity a) {
         if (a instanceof VariableDescriptor) {
             try {
-                super.merge(a);
                 VariableDescriptor other = (VariableDescriptor) a;
                 this.setVersion(other.getVersion());
                 this.setName(other.getName());
-                this.setLabel(other.getLabel());
-                this.setTitle(other.getTitle());
+                this.setEditorTag(other.getEditorTag());
+                this.setLabel(TranslatableContent.merger(this.getLabel(), other.getLabel()));
                 this.setComments(other.getComments());
                 this.getDefaultInstance().merge(other.getDefaultInstance());
                 if (other.getScope() != null) {
@@ -528,12 +608,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *                context. It may be an instance of GameModel, Game, Team,
      *                or Player
      */
-    public void propagateDefaultInstance(AbstractEntity context, boolean create) {
+    public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         int sFlag = 0;
         if (scope instanceof GameModelScope) { // gms
             sFlag = 4;
-        } else if (scope instanceof GameScope) { // gs
-            sFlag = 3;
         } else if (scope instanceof TeamScope) { // ts
             sFlag = 2;
         } else if (scope instanceof PlayerScope) { // ps
@@ -549,13 +627,20 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         }
     }
 
+    public void createInstances(InstanceOwner instanceOwner) {
+        if ((scope instanceof GameModelScope && instanceOwner instanceof GameModel)
+                || (scope instanceof TeamScope && instanceOwner instanceof Team)
+                || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
+            scope.propagateDefaultInstance(instanceOwner, true);
+        }
+    }
+
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        //logger.error("CHANNEL TOKEN: " + Helper.getAudienceToken(this.getGameModel()));
-        map.put(Helper.getAudienceToken(this.getGameModel()), entities);
+        map.put(this.getGameModel().getChannel(), entities);
         return map;
     }
 
@@ -564,13 +649,14 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * all the given criterias
      *
      * @param criterias
+     *
      * @return return true if there is a match
      */
     @Override
     public Boolean containsAll(final List<String> criterias) {
         Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
+                || Helper.insensitiveContainsAll(this.getEditorTag(), criterias)
                 || Helper.insensitiveContainsAll(this.getLabel(), criterias)
-                || Helper.insensitiveContainsAll(this.getTitle(), criterias)
                 || Helper.insensitiveContainsAll(this.getComments(), criterias);
         if (!found && (this.getDefaultInstance() instanceof Searchable)) {
             return ((Searchable) this.getDefaultInstance()).containsAll(criterias);
@@ -591,15 +677,46 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.beans = beanjection;
     }
 
-    private VariableDescriptorFacade getVariableDescriptorFacade() {
+    private VariableDescriptorFacade getVariableDescriptorFacade() { // SEE UPDATE SCOPE IN MERGE
         if (this.beans != null && this.beans.getVariableDescriptorFacade() != null) {
             return this.beans.getVariableDescriptorFacade();
         } else if (this.variableDescriptorFacade == null) {
             logger.error("LOOKUP OCCURS : " + this);
-            new Exception().printStackTrace();
+            Helper.printWegasStackTrace(new Exception());
             this.variableDescriptorFacade = VariableDescriptorFacade.lookup();
         }
 
         return this.variableDescriptorFacade;
+    }
+
+    public void revive(Beanjection beans) {
+        if (this.title != null) {
+            if (title.isEmpty()) {
+                // title is defined but empty -> not prefix, don't change label
+                // eg:  label="[r5b] Meet someone'; title=""; prefix = ""; label="[r5b] Meet someone"
+                this.setEditorTag("");
+            } else {
+                String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
+                if (importedLabel == null) {
+                    importedLabel = "";
+                }
+                // eg:  label="[r5b] Meet someone'; title="Meet someone"; prefix = "[r5b]"; label="Meet someone"
+                // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
+                // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
+                this.setEditorTag(importedLabel.replace(title, "").trim());
+                this.setLabel(TranslatableContent.build("def", title));
+            }
+            this.title = null;
+        }
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getGameModel().getRequieredReadPermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getGameModel().getRequieredUpdatePermission();
     }
 }

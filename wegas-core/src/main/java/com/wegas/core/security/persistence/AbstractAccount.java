@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -11,15 +11,13 @@ import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
-
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
-//////import javax.xml.bind.annotation.XmlTransient;
+import javax.persistence.*;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -45,8 +43,7 @@ import java.util.*;
     @JsonSubTypes.Type(name = "AaiAccount", value = AaiAccount.class),
     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
     @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
-    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class),
-    @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
+    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
 @Table(indexes = {
@@ -97,6 +94,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     @JsonIgnore
     private Date createdTime = new Date();
 
@@ -104,23 +102,15 @@ public abstract class AbstractAccount extends AbstractEntity {
      * When the terms of use have been agreed to by the user (usually at signup, except for guests and long time users)
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date agreedTime = null;
 
     /**
      *
      */
-    //@ElementCollection(fetch = FetchType.EAGER)
-    // Backward Compatibility
     @JsonView(Views.ExtendedI.class)
     @Transient
-    private List<Permission> permissions = new ArrayList<>();
-
-    /**
-     *
-     */
-    @JsonView(Views.ExtendedI.class)
-    @Transient
-    private Set<Role> roles = new HashSet<>();
+    private Collection<Role> roles = new ArrayList<>();
 
     /**
      * @return the id
@@ -145,13 +135,9 @@ public abstract class AbstractAccount extends AbstractEntity {
             this.setLastname(a.getLastname());
             this.setUsername(a.getUsername());
             this.setEmail(a.getEmail());
-            if (a.getAgreedTime()!=null) {
+            if (a.getAgreedTime() != null) {
                 // Never reset this attribute:
                 this.setAgreedTime(a.getAgreedTime());
-            }
-            if (a.getDeserializedPermissions() != null && !a.getDeserializedPermissions().isEmpty()) {
-                // Pass through setter to update user
-                this.getUser().setPermissions(ListUtils.mergeLists(this.getUser().getPermissions(), a.getDeserializedPermissions()));
             }
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
@@ -161,7 +147,6 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      * @return the user
      */
-    //@XmlTransient
     @JsonIgnore
     public User getUser() {
         return user;
@@ -170,7 +155,6 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      * @param user the user to set
      */
-    //@XmlTransient
     @JsonIgnore
     public void setUser(User user) {
         this.user = user;
@@ -207,6 +191,9 @@ public abstract class AbstractAccount extends AbstractEntity {
         }
     }
 
+    public void setName(String name) {
+    }
+
     /**
      * @return the first name
      */
@@ -238,19 +225,23 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      * @return the roles
      */
-    public Set<Role> getRoles() {
-        return user.getRoles();
+    public Collection<Role> getRoles() {
+        if (this.user != null) {
+            return user.getRoles();
+        } else {
+            return null;
+        }
     }
 
     @JsonIgnore
-    public Set<Role> getDeserialisedRoles() {
+    public Collection<Role> getDeserialisedRoles() {
         return roles;
     }
 
     /**
      * @param roles the roles to set
      */
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
 
@@ -258,19 +249,18 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @return the permissions
      */
     public List<Permission> getPermissions() {
-        return this.user.getPermissions();
-    }
-
-    @JsonIgnore
-    public List<Permission> getDeserializedPermissions() {
-        return this.permissions;
+        if (this.user != null) {
+            return this.getUser().getPermissions();
+        } else {
+            return null;
+        }
     }
 
     /**
-     * @param permissions the permissions to set
+     *
+     * @param permissions
      */
     public void setPermissions(List<Permission> permissions) {
-        this.permissions = permissions;
     }
 
     /**
@@ -285,6 +275,21 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        return null;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getUser().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getUser().getRequieredReadPermission();
     }
 
     /**
@@ -309,6 +314,10 @@ public abstract class AbstractAccount extends AbstractEntity {
         } else {
             return Helper.md5Hex("default");
         }
+    }
+
+    public void setHash(String hash){
+        /* Jackson useless sugar */
     }
 
     public Date getAgreedTime() {

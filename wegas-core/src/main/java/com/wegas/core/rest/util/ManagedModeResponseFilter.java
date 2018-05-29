@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -14,21 +14,22 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.security.ejb.UserFacade;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import javax.inject.Inject;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.ext.Provider;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -41,16 +42,13 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
     /**
      *
      */
-    @EJB
+    @Inject
     private WebsocketFacade websocketFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
-
-    @EJB
-    private UserFacade userFacade;
 
     /**
      * This method encapsulates a Jersey response's entities in a ServerResponse
@@ -70,20 +68,25 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         requestManager.setStatus(response.getStatusInfo());
 
         if (response.getStatusInfo().getStatusCode() >= 400) {
-            logger.warn("Problem : " + response.getEntity());
+            logger.warn("Problem : {}", response.getEntity());
         }
 
-        if (managedMode != null && !managedMode.toLowerCase().equals("false")) {
+        boolean rollbacked = false;
 
+        Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getAllUpdatedEntities();
+        Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
+
+        boolean isManaged= managedMode != null && !managedMode.toLowerCase().equals("false");
+
+        if (isManaged){
             ManagedResponse serverResponse = new ManagedResponse();
             /* 
              * returnd entities are not to propagate through websockets
              * unless they're registered within requestManager's updatedEntities
              */
             List updatedEntities;
-            List deletedEntities = new ArrayList<>();
+            List deletedEntities = new LinkedList<>();
 
-            boolean rollbacked = false;
 
             /*
              * if response entity is kind of exception.
@@ -95,7 +98,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             if (response.getEntity() instanceof Exception || requestManager.getExceptionCounter() > 0 || response.getStatusInfo().getStatusCode() >= 400) {
 
                 // No Entities but register exception as event
-                updatedEntities = new ArrayList<>();
+                updatedEntities = new LinkedList<>();
                 WegasRuntimeException wrex;
 
                 if (response.getEntity() instanceof WegasRuntimeException) {
@@ -108,7 +111,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 requestManager.addException(wrex);
 
                 // Set response http status code to 400
-                if(response.getStatusInfo().getStatusCode()< 400) {
+                if (response.getStatusInfo().getStatusCode() < 400) {
                     response.setStatus(HttpStatus.SC_BAD_REQUEST);
                 }
                 rollbacked = true;
@@ -120,20 +123,20 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                 List entities;
 
-                if (response.getEntity() instanceof List) {
-                    entities = new ArrayList<>();
-                    for (Object o : (List) response.getEntity()) {
+                if (response.getEntity() instanceof Collection) {
+                    entities = new LinkedList<>();
+                    for (Object o : (Collection) response.getEntity()) {
                         entities.add(o);
                     }
                     //entities = (List<Object>) response.getEntity();
                 } else if (response.getEntity() instanceof ScriptObjectMirror
                         && ((ScriptObjectMirror) response.getEntity()).isArray()) {
-                    entities = new ArrayList(((ScriptObjectMirror) response.getEntity()).values());
+                    entities = new LinkedList(((ScriptObjectMirror) response.getEntity()).values());
                 } else if (response.getEntity() != null) {
-                    entities = new ArrayList<>();
+                    entities = new LinkedList<>();
                     entities.add(response.getEntity());
                 } else {
-                    entities = new ArrayList<>();
+                    entities = new LinkedList<>();
                 }
 
                 updatedEntities = entities;
@@ -141,18 +144,14 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getAllUpdatedEntities();
-            Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
-            Map<String, List<AbstractEntity>> outdatedEntitiesMap = requestManager.getOutdatedEntities();
-
-            if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty() && outdatedEntitiesMap.isEmpty())) {
+            if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 /*
                  * Include all detected updated entites within updatedEntites 
                  * (the ones which will be returned to the client)
                  */
                 for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
-                    if (userFacade.hasPermission(audience)) {
+                    if (requestManager.hasChannelPermission(audience)) {
                         for (AbstractEntity ae : entry.getValue()) {
                             if (!updatedEntities.contains(ae)) {
                                 updatedEntities.add(ae);
@@ -165,7 +164,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                  */
                 for (Entry<String, List<AbstractEntity>> entry : destroyedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
-                    if (userFacade.hasPermission(audience)) {
+                    if (requestManager.hasChannelPermission(audience)) {
                         for (AbstractEntity ae : entry.getValue()) {
                             if (!deletedEntities.contains(ae)) {
                                 deletedEntities.add(ae);
@@ -181,10 +180,17 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                         }
                     }
                 }
+            }
 
+
+            if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 requestManager.markPropagationStartTime();
-                websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap, outdatedEntitiesMap,
-                        (managedMode.matches("^[\\d\\.]+$") ? managedMode : null));
+                String socketId = requestManager.getSocketId();
+                if (!isManaged || socketId == null || !socketId.matches("^[\\d\\.]+$")){
+                    socketId = null;
+                }
+                websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,
+                        socketId);
                 requestManager.markPropagationEndTime();
             }
 
@@ -196,6 +202,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             serverResponse.setDeletedEntities(deletedEntities);
 
             response.setEntity(serverResponse);
+
+            // Be sure it is json, a void method won't add this.
+            response.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
         }
         //requestFacade.flushClear();

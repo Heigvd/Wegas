@@ -2,13 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.log.neo4j;
 
 import com.wegas.core.Helper;
-import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Player;
@@ -17,14 +16,13 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.Reply;
-import org.apache.commons.lang3.StringEscapeUtils;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * This class contains all the methods used to add, modify or delete graphs
@@ -50,11 +48,11 @@ public class Neo4jPlayerReply {
         this.addPlayerReply(event.player, event.reply, (ChoiceDescriptor) event.choice.getDescriptor(), (QuestionDescriptor) event.question.getDescriptor());
     }
 
-    public void onNumberUpdate(@Observes NumberListener.NumberUpdate update) throws NoPlayerException {
+    public void onNumberUpdate(@Observes NumberListener.NumberUpdate update) {
         this.addNumberUpdate(update.player, update.number);
     }
 
-    private void addNumberUpdate(final Player player, final NumberInstance numberInstance) throws NoPlayerException {
+    private void addNumberUpdate(final Player player, final NumberInstance numberInstance) {
         if (player == null || player.getTeam() instanceof DebugTeam || player.getTeam() instanceof DebugTeam
                 || Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())
                 || !Neo4jUtils.checkDatabaseExists()) {
@@ -89,6 +87,7 @@ public class Neo4jPlayerReply {
      * Constructs a key from several fields of the player's object.
      *
      * @param player the player data
+     *
      * @return the formed key
      */
     private static Map<String, Object> nodeKey(Player player, TYPE type) {
@@ -107,6 +106,7 @@ public class Neo4jPlayerReply {
      * @param reply              the player's answer data
      * @param choiceDescriptor   the selected choice description
      * @param questionDescriptor the selected question description
+     *
      * @return a node object
      */
     private static Map<String, Object> createJsonNode(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
@@ -120,7 +120,7 @@ public class Neo4jPlayerReply {
         object.put("choice", choiceDescriptor.getName());
         object.put("question", questionDescriptor.getName());
         object.put("result", reply.getResult().getName());
-        object.put("times", reply.getQuestionInstance().getReplies().size());
+        object.put("times", questionDescriptor.getInstance(player).getReplies(player).size());
         if (reply.getResult().getImpact() != null) {
             object.put("impact", StringEscapeUtils.escapeEcmaScript(reply.getResult().getImpact().getContent()));
         } else {
@@ -136,6 +136,7 @@ public class Neo4jPlayerReply {
      * @param player the player data
      * @param name   the variable name
      * @param value  the actual variable value
+     *
      * @return a node object
      */
     private static Map<String, Object> createJsonNode(Player player, String name, double value) {

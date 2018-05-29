@@ -2,9 +2,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
@@ -13,33 +15,38 @@ YUI.add('wegas-reviewing-entities', function(Y) {
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", ENUM = "enum",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
+        NULLSTRING = ["null", STRING],
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
+        SELFARG,
         IDATTRDEF;
-
     VERSION_ATTR_DEF = {
-        type: "number",
-        optional: true,
-        _inputex: {
-            _type: HIDDEN
+        type: NUMBER,
+        view: {
+            type: HIDDEN
         }
     };
-
-
     IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
+        type: NUMBER,
+        optional: true, // The id is optional for entities that have not been persisted
+        view: {
+            type: HIDDEN
         }
     };
-
+    SELFARG = {
+        type: 'identifier',
+        value: 'self',
+        view: {type: HIDDEN}
+    };
     /**
      * PeerReviewescriptor mapper
      */
     persistence.PeerReviewDescriptor = Y.Base.create("PeerReviewDescriptor", persistence.VariableDescriptor, [], {
         helloWorld: function() {
             return "hello, world!\n";
+        },
+        getIconCss: function() {
+            return 'fa fa-users fa-1';
         }
     }, {
         ATTRS: {
@@ -50,102 +57,150 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             maxNumberOfReview: {
                 type: NUMBER,
                 value: 3,
-                _inputex: {
-                    label: "Number of review"
+                view: {
+                    label: "Number of reviews",
+                    description: "Maximum reviews per user. Preferably greater than one."
                 }
             },
             toReview: {
                 type: STRING,
+                value: "",
                 "transient": true,
+                view: {type: HIDDEN},
                 getter: function() {
                     return Wegas.Facade.Variable.cache.find("name", this.get("toReviewName"));
                 }
             },
             toReviewName: {
                 type: STRING,
-                _inputex: {
+                required: true,
+                index: -1,
+                view: {
                     label: "To Review",
-                    index: -1,
-                    _type: "flatvariableselect",
-                    required: true,
+                    type: "flatvariableselect",
                     classFilter: ["TextDescriptor", "NumberDescriptor"]
                 }
             },
-            description: {
-                type: STRING,
-                format: HTML,
-                optional: true,
-                _inputex: {
-                    opts: {
-                        height: '50px'
-                    }
-                }
-            },
+            description: Y.Wegas.Helper.getTranslationAttr({
+                type: HTML,
+                label: "Description"
+            }),
             feedback: {
-                type: "EvaluationDescriptorContainer",
+                type: OBJECT,
                 value: {
                     "@class": "EvaluationDescriptorContainer"
                 },
-                _inputex: {
-                    _type: HIDDEN,
-                    index: 1
-                }
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "EvaluationDescriptorContainer"
+                    }
+                },
+                index: 1,
+                view: {type: HIDDEN}
             },
             fbComments: {
-                type: "EvaluationDescriptorContainer",
+                type: OBJECT,
                 value: {
                     "@class": "EvaluationDescriptorContainer"
                 },
-                _inputex: {
-                    _type: HIDDEN,
-                    index: 1
-                }
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        value: "EvaluationDescriptorContainer"
+                    }
+                },
+                index: 1,
+                view: {type: HIDDEN}
             },
             includeEvicted: {
                 type: BOOLEAN,
                 value: false,
-                _inputex: {
-                    label: "Despatch to evicted",
-                    description: "Despatch reviews to users who didn't submit anything",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                    index: 2
+                index: 2,
+                view: {
+                    //label: "Dispatch to evicted",
+                    label: "Also dispatch to peers who did not submit anything",
                 }
             },
             defaultInstance: {
+                type: OBJECT,
+                required: true,
                 properties: {
                     "@class": {
                         type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: "PeerReviewInstance"
+                        value: "PeerReviewInstance",
+                        view: {
+                            type: HIDDEN
                         }
                     },
                     id: IDATTRDEF,
-                    version: VERSION_ATTR_DEF
+                    version: VERSION_ATTR_DEF,
+                    descriptorId: IDATTRDEF,
+                    reviewState: {
+                        type: STRING,
+                        value: "NOT_STARTED",
+                        view: {type: HIDDEN}
+                    },
+                    reviewed: {
+                        type: ARRAY,
+                        value: [],
+                        view: {type: HIDDEN}
+                    },
+                    toReview: {
+                        type: ARRAY,
+                        value: [],
+                        view: {type: HIDDEN}
+                    },
                 },
-                _inputex: {
-                    index: 3
-                }
+                index: 3
             }
         },
         EDITMENU: [{
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
             }, {
                 type: "DeleteEntityButton"
+            }, {
+                type: BUTTON,
+                label: 'Search for usages',
+                plugins: [
+                    {
+                        fn: 'SearchEntityAction'
+                    }
+                ]
             }],
         /**
          * WYSIWYG editor
          */
         METHODS: {
+            setState: {
+                label: "state",
+                "arguments": [
+                    {
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        scriptType: STRING,
+                        type: "select",
+                        choices: [{
+                                label: "",
+                                value: ""
+                            }, {
+                                value: "NOT_STARTED",
+                                label: "restart"
+                            }
+                        ]
+                    }]
+            },
             getState: {
                 label: "state",
                 returns: STRING,
+                arguments: [SELFARG],
                 choices: [{
                         value: "NOT_STARTED",
                         label: "editing"
@@ -168,11 +223,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                         value: "EVICTED",
                         label: "evicted"
                     }
-                ],
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                ]
             }
         }
     });
@@ -198,8 +249,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     return v;
                 },
                 value: [],
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             "reviewed": {
@@ -211,8 +262,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     return v;
                 },
                 value: [],
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             }
         }
@@ -231,28 +282,28 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             "feedback": {
                 type: ARRAY,
+                value: [],
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        return a.get("createdTime") - b.get("createdTime");
+                        return a.get("index") - b.get("index");
                     });
                     return v;
                 },
-                value: [],
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             "comments": {
                 type: ARRAY,
+                value: [],
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        return a.get("createdTime") - b.get("createdTime");
+                        return a.get("index") - b.get("index");
                     });
                     return v;
                 },
-                value: [],
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             },
             createdTime: {
@@ -270,9 +321,15 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             evaluations: {
                 type: ARRAY,
                 value: [],
-                _inputex: {
-                    _type: HIDDEN,
-                    index: 1
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        return a.get("index") - b.get("index");
+                    });
+                    return v;
+                },
+                index: 1,
+                view: {
+                    type: HIDDEN
                 }
             }
         },
@@ -320,31 +377,36 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * EvaluationDescriptor
      */
     persistence.EvaluationDescriptor = Y.Base.create("EvaluationDescriptor", persistence.Entity, [], {
+        getEditorLabel: function() {
+            return I18n.t(this.get("label"));
+        }
     }, {
         ATTRS: {
             "@class": {
                 value: "EvaluationDescriptor"
             },
             name: {
-                type: STRING
-            },
-            description: {
                 type: STRING,
-                format: HTML,
-                optional: true,
-                _inputex: {
-                    opts: {
-                        height: '50px'
-                    }
+                view: {
+                    className: 'wegas-advanced-feature',
+                    label: 'Script alias',
+                    description: "Internal name"
                 }
-            }/*,
-             container: {
-             type: "EvaluationDescriptorContainer",
-             optional: true,
-             _inputex: {
-             _type: HIDDEN
-             }
-             }*/
+            },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                index: -1,
+                description: "Displayed to players",
+                type: STRING
+            }),
+            index: {
+                type: NUMBER,
+                view: {label: "Index"}
+            },
+            description: Y.Wegas.Helper.getTranslationAttr({
+                label: "Description",
+                type: HTML
+            })
         },
         EDITMENU: [{
                 type: BUTTON,
@@ -357,7 +419,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Copy",
+                label: "Duplicate",
                 plugins: [{
                         fn: "EditEntityArrayFieldAction",
                         cfg: {
@@ -382,6 +444,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * TextEvaluationDescriptor
      */
     persistence.TextEvaluationDescriptor = Y.Base.create("TextEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+        getIconCss: function() {
+            return 'fa fa-paragraph';
+        }
     }, {
         ATTRS: {
             "@class": {
@@ -398,24 +463,52 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         },
         getMinValue: function() {
             return this.get("minValue");
+        },
+        getIconCss: function() {
+            return 'fa wegas-icon-numberdescriptor';
         }
     }, {
+        EDITORNAME: 'Number',
         ATTRS: {
             "@class": {
                 value: "GradeDescriptor"
             },
             minValue: {
-                type: NUMBER,
+                type: ['null', NUMBER],
                 optional: true,
-                _inputex: {
-                    label: "Minimum"
+                errored: function(val, formVal) {
+                    var errors = [],
+                        max = typeof formVal.maxValue === 'number' ? formVal.maxValue : Infinity,
+                        min = typeof val === 'number' ? val : -Infinity;
+                    if (min > max) {
+                        errors.push('Minimum is greater than maximum');
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Minimum',
+                    placeholder: "-∞",
+                    layout: 'shortInline'
                 }
             },
             maxValue: {
-                type: NUMBER,
+                type: ['null', NUMBER],
                 optional: true,
-                _inputex: {
-                    label: "Maximum"
+                errored: function(val, formVal) {
+                    var errors = [],
+                        max = typeof val === 'number' ? val : Infinity,
+                        min = typeof formVal.minValue === 'number'
+                        ? formVal.minValue
+                        : -Infinity;
+                    if (max < min) {
+                        errors.push('Maximum is less than minimum');
+                    }
+                    return errors.join(', ');
+                },
+                view: {
+                    label: 'Maximum',
+                    placeholder: "∞",
+                    layout: 'shortInline'
                 }
             }
         }
@@ -423,7 +516,20 @@ YUI.add('wegas-reviewing-entities', function(Y) {
     /**
      * CategorizedEvaluationDescriptor
      */
-    persistence.CategorizedEvaluationDescriptor = Y.Base.create("CategorizedEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+    persistence.CategorizedEvaluationDescriptor = Y.Base.create("CategorizedEvaluationDescriptor",
+        persistence.EvaluationDescriptor, [], {
+        getLabelForName: function(name) {
+            var cats = this.get("categories"),
+                i;
+            for (i in cats) {
+                if (cats[i].get("name") === name) {
+                    return I18n.t(cats[i].get("label"));
+                }
+            }
+        },
+        getIconCss: function() {
+            return "fa fa-list-ul";
+        }
     }, {
         ATTRS: {
             "@class": {
@@ -431,12 +537,34 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             categories: {
                 type: ARRAY,
-                _inputex: {
-                    label: "Categories",
-                    elementType: {
-                        required: true,
-                        type: STRING
+                items: {
+                    type: "object",
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            value: "EnumItem",
+                            view: {type: HIDDEN}
+                        },
+                        id: IDATTRDEF,
+                        name: {
+                            type: STRING,
+                            view: {
+                                className: 'wegas-advanced-feature',
+                                label: 'Script alias',
+                                //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                                description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+                            }
+                        },
+                        label: Y.Wegas.Helper.getTranslationAttr({
+                            label: "Label",
+                            index: -1,
+                            description: "Displayed to players",
+                            type: STRING
+                        })
                     }
+                },
+                view: {
+                    label: 'Categories'
                 }
             }
         }
@@ -453,8 +581,8 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             descriptor: {
                 type: "EvaluationDescriptor"
             },
-            createdTime: {
-                "transient": true
+            index: {
+                type: NUMBER
             }
         }
     });
@@ -482,7 +610,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 value: "TextEvaluationInstance"
             },
             value: {
-                type: "string"
+                type: STRING
             }
         }
     });
@@ -496,7 +624,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 value: "CategorizesEvaluationInstance"
             },
             value: {
-                type: "string"
+                type: STRING
             }
         }
     });

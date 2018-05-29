@@ -2,19 +2,23 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-button", function(Y) {
-    "use strict";
-
+YUI.add('wegas-button', function(Y) {
+    'use strict';
     var CONTENTBOX = 'contentBox',
         BOUNDINGBOX = 'boundingBox',
-        Wegas = Y.Wegas, Button, ToggleButton, MarkAsUnread;
+        Wegas = Y.Wegas,
+        Button,
+        ToggleButton,
+        MarkAsUnread;
 
     /**
      * @name Y.Wegas.Button
@@ -25,7 +29,8 @@ YUI.add("wegas-button", function(Y) {
      * @description Custom Button implementation. Adds Y.WidgetChild and
      * Y.Wegas.Widget extensions to the original Y.Button
      */
-    Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+    Button = Y.Base.create('button', Y.Button,
+        [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.Button# */
         // *** Private fields *** //
 
@@ -39,27 +44,28 @@ YUI.add("wegas-button", function(Y) {
         initializer: function() {
             Button.superclass.initializer.apply(this, arguments);
 
-            this.publish("click", {
+            this.publish('click', {
                 emitFacade: true,
                 bubbles: true,
-                defaultFn: function() {                                         // Force event activation by default
+                defaultFn: function() {
+                    // Force event activation by default
                 }
             });
             //this.constructor.CSS_PREFIX = "yui3-button";                      // Revert changes done by Y.Wegas.Widget so styling will work
-            this._cssPrefix = "yui3-button";
+            this._cssPrefix = 'yui3-button';
 
-            if (this.get("cssClass")) {
-                this.get(CONTENTBOX).addClass(this.get("cssClass"));
+            if (this.get('cssClass')) {
+                this.get(CONTENTBOX).addClass(this.get('cssClass'));
             }
 
-            if (this.get("tooltip")) {
+            if (this.get('tooltip')) {
                 this.plug(Y.Plugin.Tooltip, {
-                    content: Y.Template.Micro.compile(this.get("tooltip"))()
+                    content: Y.Template.Micro.compile(this.get('tooltip'))()
                 });
             }
         },
         getEditorLabel: function() {
-            return Wegas.Helper.stripHtml(this.get("label"));
+            return Wegas.Helper.stripHtml(this.get('label'));
         },
         /**
          * @function
@@ -69,7 +75,7 @@ YUI.add("wegas-button", function(Y) {
          */
         renderUI: function() {
             Button.superclass.renderUI.apply(this, arguments);
-            this.get(BOUNDINGBOX).addClass("wegas-button");
+            this.get(BOUNDINGBOX).addClass('wegas-button');
         },
         _getLabel: function(value) {
             return value;
@@ -78,7 +84,7 @@ YUI.add("wegas-button", function(Y) {
         /**
          * @lends Y.Wegas.Button
          */
-        EDITORNAME: "Button",
+        EDITORNAME: 'Button',
         /**
          * @field
          * @static
@@ -95,22 +101,27 @@ YUI.add("wegas-button", function(Y) {
          */
         ATTRS: {
             label: {
-                type: "string",
-                optional: true
+                type: 'string',
+                view: {label: 'Label'}
             },
             labelHTML: {
-                "transient": true
+                transient: true
             },
-            data: {},
+            data: {
+                view: {
+                    type: 'hidden'
+                }
+            },
             tooltip: {
-                type: "string",
+                type: 'string',
                 optional: true,
-                "transient": true
+                transient: true
             },
             disabled: {
-                type: "boolean",
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                type: 'boolean',
+                view: {
+                    label: 'disabled',
+                    className: 'wegas-advanced-feature'
                 }
             },
             cssClass: {
@@ -123,7 +134,15 @@ YUI.add("wegas-button", function(Y) {
     /* @fixme @hack So we can display html tag inside a button */
     Y.Button.prototype._setLabel = function(label, name, opts) {
         if (!opts || opts.src !== 'internal') {
-            this.set('labelHTML', Y.Template.Micro.compile(label || "")(), {src: 'internal'});
+            var text;
+            if (label instanceof Y.Wegas.persistence.TranslatableContent) {
+                text = I18n.t(label);
+            } else {
+                text = label;
+            }
+            this.set('labelHTML', Y.Template.Micro.compile(text || '')(), {
+                src: 'internal'
+            });
         }
         return label;
     };
@@ -135,7 +154,8 @@ YUI.add("wegas-button", function(Y) {
      * @extends Y.Plugin.Base
      * @borrows Y.Wegas.Plugin, Y.Wegas.Editable
      */
-    var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    var UnreadCount = Y.Base.create('UnreadCount', Y.Plugin.Base,
+        [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.UnreadCount# */
 
         // *** Private fields *** //
@@ -149,40 +169,45 @@ YUI.add("wegas-button", function(Y) {
             var k;
             this.handlers = {};
             this._counters = {
-                "InboxDescriptor": function(descriptor, instance, resolve) {
-                    resolve(instance.get("unreadCount"));
+                InboxDescriptor: function(descriptor, instance, resolve) {
+                    resolve(instance.get('unreadCount'));
                 },
-                "DialogueDescriptor": function(descriptor, instance, resolve) {
+                DialogueDescriptor: function(descriptor, instance, resolve) {
                     var state = descriptor.getCurrentState();
-                    if (!instance.get("enabled")) {
+                    if (!instance.get('enabled')) {
                         return false;
                     }
                     state.getAvailableActions(function(availableActions) {
                         resolve(availableActions.length > 0 ? 1 : 0);
                     });
                 },
-                "QuestionDescriptor": function(descriptor, instance, resolve) {
-                    if (descriptor.get("cbx")) {
-                        resolve(instance.get("active") && !instance.get("validated") ? 1 : 0); // only count if it is active
+                QuestionDescriptor: function(descriptor, instance, resolve) {
+                    if (descriptor.get('cbx')) {
+                        resolve(instance.get('active') && !instance.get('validated') ? 1 : 0); // only count if it is active
                     } else {
-                        if (instance.get("replies")) {
-                            resolve(instance.get("replies").length === 0 && instance.get("active") ? 1 : 0); // only count if it is active
+                        if (instance.get('replies')) {
+                            resolve(instance.get('replies').length === 0 && instance.get('active') ? 1 : 0); // only count if it is active
                         } else {
                             resolve(0);
                         }
                     }
                 },
-                "PeerReviewDescriptor": function(descriptor, instance, resolve) {
-                    var i, j, k, types = ["toReview", "reviewed"],
-                        reviews, review,
+                WhQuestionDescriptor: function(descriptor, instance, resolve) {
+                    resolve((instance.get('active') && !instance.get("validated") ? 1 : 0));
+                },
+                PeerReviewDescriptor: function(descriptor, instance, resolve) {
+                    var i, j, k,
+                        types = ['toReview', 'reviewed'],
+                        reviews,
+                        review,
                         counter = 0;
 
                     for (i = 0; i < 2; i++) {
                         reviews = instance.get(types[i]);
                         for (j = 0; j < reviews.length; j++) {
                             review = reviews[j];
-                            if ((i === 0 && review.get("reviewState") === "DISPATCHED") ||
-                                (i === 1 && review.get("reviewState") === "NOTIFIED")) {
+                            if ((i === 0 && review.get('reviewState') === 'DISPATCHED') ||
+                                (i === 1 && review.get('reviewState') === 'NOTIFIED')) {
                                 counter++;
                             }
                         }
@@ -190,10 +215,10 @@ YUI.add("wegas-button", function(Y) {
                     resolve(counter);
                 }
             };
-            for (k in this.get("userCounters")) {
-                var theFunction = this.get("userCounters")[k];
+            for (k in this.get('userCounters')) {
+                var theFunction = this.get('userCounters')[k];
                 if (!theFunction instanceof Function) {
-                    theFunction = eval("(" + theFunction + ")");
+                    theFunction = eval('(' + theFunction + ')');
                 }
                 this._counters[k] = theFunction;
             }
@@ -207,8 +232,12 @@ YUI.add("wegas-button", function(Y) {
          * When plugin's host is render, do sync.
          */
         bindUI: function() {
-            this.handlers.update = Wegas.Facade.Variable.after("update", this.syncUI, this);
-            this.afterHostEvent("render", this.syncUI, this);
+            this.handlers.update = Wegas.Facade.Variable.after(
+                'update',
+                this.syncUI,
+                this
+                );
+            this.afterHostEvent('render', this.syncUI, this);
         },
         /**
          * @function
@@ -221,19 +250,25 @@ YUI.add("wegas-button", function(Y) {
         },
         setCounterValue: function(unreadCount) {
             var bb = this.get('host').get(BOUNDINGBOX),
-                target = bb.one(".wegas-unreadcount");
+                target = bb.one('.wegas-unreadcount');
 
-            if (!target) {                                                      // If the counter span has not been rendered, do it
+            if (!target) {
+                // If the counter span has not been rendered, do it
                 bb.append('<span class="wegas-unreadcount"></span>');
-                target = bb.one(".wegas-unreadcount");
+                target = bb.one('.wegas-unreadcount');
             }
 
-            if (unreadCount > 0) {                                              // Update the content
-                target.setContent("<span class='value'>" + (this.get("displayValue") ? unreadCount : "") + "</span>");
+            if (unreadCount > 0) {
+                // Update the content
+                target.setContent(
+                    "<span class='value'>" +
+                    (this.get('displayValue') ? unreadCount : '') +
+                    '</span>'
+                    );
             } else {
-                target.setContent("");
+                target.setContent('');
             }
-            bb.toggleClass("wegas-unreadcount", unreadCount > 0);
+            bb.toggleClass('wegas-unreadcount', unreadCount > 0);
         },
         /**
          * @function
@@ -253,8 +288,15 @@ YUI.add("wegas-button", function(Y) {
          * @description Count the number of unread reply in given variable.
          */
         updateCounter: function() {
-            var i, instance, /*messages,*/ items, count = 0, klass,
-                list = this.get('variable.evaluated'), descriptor, context = this, promises = [];
+            var i,
+                instance,
+                /*messages,*/ items,
+                count = 0,
+                klass,
+                list = this.get('variable.evaluated'),
+                descriptor,
+                context = this,
+                promises = [];
 
             if (!list) {
                 return 0;
@@ -266,26 +308,29 @@ YUI.add("wegas-button", function(Y) {
 
             descriptor = list.pop();
             while (descriptor) {
-                klass = descriptor.get("@class");
-                if (klass === "ListDescriptor") {
+                klass = descriptor.get('@class');
+                if (klass === 'ListDescriptor') {
                     items = descriptor.flatten();
                     for (i = 0; i < items.length; i = i + 1) {
                         list.push(items[i]);
                     }
                 } else {
                     if (this._counters[klass]) {
-                        promises.push(new Y.Promise(function(resolve, reject) {
-                            var fcn;
-                            if (context._counters[klass] instanceof  Function) {
-                                fcn = context._counters[klass]
-                            } else {
-                                fcn = eval("(" + context._counters[klass] + ")");
-                            }
+                        promises.push(
+                            new Y.Promise(function(resolve, reject) {
+                                var fcn;
+                                if (context._counters[klass] instanceof Function) {
+                                    fcn = context._counters[klass];
+                                } else {
+                                    fcn = eval('(' + context._counters[klass] + ')');
+                                }
 
-                            fcn.call(context, descriptor, descriptor.getInstance(), function(count) {
-                                resolve(count);
-                            });
-                        }));
+                                fcn.call(context, descriptor, descriptor.getInstance(),
+                                    function(count) {
+                                        resolve(count);
+                                    }
+                                );
+                            }));
                     }
                 }
 
@@ -301,8 +346,8 @@ YUI.add("wegas-button", function(Y) {
             });
         }
     }, {
-        NS: "UnreadCount",
-        NAME: "UnreadCount",
+        NS: 'UnreadCount',
+        NAME: 'UnreadCount',
         /**
          * @lends Y.Plugin.UnreadCount
          */
@@ -322,51 +367,52 @@ YUI.add("wegas-button", function(Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
+                type: 'object',
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
-                    label: "Unread count",
-                    classFilter: ["ListDescriptor", "InboxDescriptor"]
+                view: {
+                    type: 'variableselect',
+                    label: 'Unread count',
+                    classFilter: ['ListDescriptor', 'InboxDescriptor']
                 }
             },
             displayValue: {
-                type: "boolean",
+                type: 'boolean',
                 optional: true,
-                value: true
+                value: true,
+                view: {
+                    label: "Display value"
+                }
             },
             userCounters: {
-                type: "object",
+                type: 'object',
                 value: {},
                 optional: true,
-                _inputex: {
-                    type: "hidden"
+                view: {
+                    type: 'hidden'
                 }
             }
         }
     });
     Y.Plugin.UnreadCount = UnreadCount;
 
-    MarkAsUnread = Y.Base.create("wegas-mark-as-unread", Y.Plugin.UnreadCount, [], {
+    MarkAsUnread = Y.Base.create('wegas-mark-as-unread', Y.Plugin.UnreadCount, [], {
         setCounterValue: function(unreadCount) {
             if (unreadCount > 0) {
-                if (this.get("host") instanceof Y.Node) {
-                    this.get("host").addClass("unread");
-                } else if (this.get("host") instanceof Y.Widget) {
-                    this.get("host").get("boundingBox").addClass("unread");
+                if (this.get('host') instanceof Y.Node) {
+                    this.get('host').addClass('unread');
+                } else if (this.get('host') instanceof Y.Widget) {
+                    this.get('host').get('boundingBox').addClass('unread');
                 } else {
-                    Y.log("unread error...");
+                    Y.log('unread error...');
                 }
             }
         }
     }, {
-        NS: "MarkAsUnread",
-        NAME: "MarkAsUnread",
-        ATTRS: {
-        }
+        NS: 'MarkAsUnread',
+        NAME: 'MarkAsUnread',
+        ATTRS: {}
     });
     Y.Plugin.MarkAsUnread = MarkAsUnread;
-
-
 
     /**
      * @name Y.Wegas.OpenPageButton
@@ -375,7 +421,7 @@ YUI.add("wegas-button", function(Y) {
      * @constructor
      * @description Shortcut to create a Button with an OpenPageAction plugin
      */
-    Wegas.OpenPageButton = Y.Base.create("button", Wegas.Button, [], {
+    Wegas.OpenPageButton = Y.Base.create('button', Wegas.Button, [], {
         /** @lends Y.Wegas.OpenPageButton# */
         /**
          * @function
@@ -389,5 +435,6 @@ YUI.add("wegas-button", function(Y) {
         }
     });
 
-    Wegas.ToggleButton = Y.Base.create("button", Y.ToggleButton, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {}, {});
+    Wegas.ToggleButton = Y.Base.create('button', Y.ToggleButton, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {}, {}
+    );
 });

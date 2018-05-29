@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -14,19 +14,22 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.*;
+import com.wegas.core.security.util.WegasPermission;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import javax.persistence.*;
 
-//import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
@@ -34,26 +37,25 @@ import java.util.List;
 @Table(
         name = "fsm_state",
         indexes = {
-            @Index(columnList = "statemachine_id")
+            @Index(columnList = "statemachine_id"),
+            @Index(columnList = "text_id") // stands in superclass since index is not generated if defined in DialogueState ...
         }
 )
-//@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
-
 //@OptimisticLocking(cascade = true)
-public class State extends AbstractEntity implements Searchable, Scripted {
+public class State extends AbstractEntity implements Searchable, Scripted, Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
     @ManyToOne
-    @JoinColumn(name = "statemachine_id")
     @JsonIgnore
     private StateMachineDescriptor stateMachine;
 
     @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 
     public Long getVersion() {
@@ -74,7 +76,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      *
      */
     @Id
-    @Column(name = "state_id")
+    @Column(name = "id")
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
@@ -94,8 +96,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     /**
      *
      */
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "state_id", referencedColumnName = "state_id")
+    @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transition> transitions = new ArrayList<>();
 
     /**
@@ -104,6 +105,11 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     public State() {
     }
 
+    /**
+     * Get the stateMachineDescriptor which defines this state
+     *
+     * @return this state's parent
+     */
     public StateMachineDescriptor getStateMachine() {
         return stateMachine;
     }
@@ -137,7 +143,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return state position in the stateMachine editor extent
      */
     public Coordinate getEditorPosition() {
         return editorPosition;
@@ -156,7 +162,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * @return state name
      */
     public String getLabel() {
         return label;
@@ -170,7 +176,9 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     }
 
     /**
-     * @return
+     * get the script which to execute when this state become the current state
+     *
+     * @return the script which to execute when this state become the current state
      */
     public Script getOnEnterEvent() {
         return onEnterEvent;
@@ -198,17 +206,12 @@ public class State extends AbstractEntity implements Searchable, Scripted {
      */
     @JsonIgnore
     public List<Transition> getSortedTransitions() {
-        Collections.sort(this.transitions, new Comparator<Transition>() {
-            @Override
-            public int compare(Transition t1, Transition t2) {
-                return t1.getIndex() - t2.getIndex();
-            }
-        });
+        Collections.sort(this.transitions, new ComparatorImpl());
         return this.transitions;
     }
 
     /**
-     * @return
+     * @return list of transition going out of the state
      */
     public List<Transition> getTransitions() {
         return transitions;
@@ -239,7 +242,7 @@ public class State extends AbstractEntity implements Searchable, Scripted {
             this.setVersion(newState.getVersion());
             this.setOnEnterEvent(newState.getOnEnterEvent());
             this.setEditorPosition(newState.getEditorPosition());
-            this.setTransitions(ListUtils.mergeReplace(this.getTransitions(), newState.getTransitions()));
+            this.setTransitions(ListUtils.mergeLists(this.getTransitions(), newState.getTransitions()));
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
@@ -248,5 +251,36 @@ public class State extends AbstractEntity implements Searchable, Scripted {
     @Override
     public String toString() {
         return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
+    }
+
+    @Override
+    public Map<String, List<AbstractEntity>> getEntities() {
+        return this.getStateMachine().getEntities();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getStateMachine().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getStateMachine().getRequieredReadPermission();
+    }
+
+    /**
+     * Compare transition by index
+     */
+    private static class ComparatorImpl implements Comparator<Transition>, Serializable {
+
+        private static final long serialVersionUID = -6452488638539643500L;
+
+        public ComparatorImpl() {
+        }
+
+        @Override
+        public int compare(Transition t1, Transition t2) {
+            return t1.getIndex() - t2.getIndex();
+        }
     }
 }

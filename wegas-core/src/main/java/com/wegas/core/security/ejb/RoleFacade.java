@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.ejb;
@@ -11,8 +11,7 @@ import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import java.util.List;
-import java.util.Set;
+import java.util.Collection;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
@@ -45,7 +44,7 @@ public class RoleFacade extends BaseFacade<Role> {
     @Override
     public void remove(Role role) {
         // Strike out all members from the role to avoid pkey violation
-        Set<User> users = role.getUsers();
+        Collection<User> users = role.getUsers();
 
         for (User u : users) {
             u.removeRole(role);

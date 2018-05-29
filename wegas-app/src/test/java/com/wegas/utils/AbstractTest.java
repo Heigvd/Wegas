@@ -2,14 +2,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.utils;
 
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.utils.TestHelper;
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
@@ -19,7 +16,9 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.rest.ScriptController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.io.IOException;
+import javax.ejb.EJB;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +27,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public abstract class AbstractTest {
+public abstract class AbstractTest extends AbstractArquillianTestMinimal {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractTest.class);
 
-    private GameModel gm;
+    @EJB
+    protected ScriptController scriptController;
+
+    private GameModel gameModel;
     private Player player;
 
     protected final void checkNumber(String name, double expectedValue) throws WegasNoResultException {
@@ -40,8 +42,7 @@ public abstract class AbstractTest {
     }
 
     protected final void checkNumber(String name, double expectedValue, String errorMessage) throws WegasNoResultException {
-        final VariableDescriptorFacade vdf = getVariableDescriptorFacade();
-        Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) vdf.find(gm, name)).getValue(player), 0.0);
+        Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) variableDescriptorFacade.find(gameModel, name)).getValue(player), 0.0);
     }
 
     protected final void createGameModelFromFile(String gameModelPath) throws IOException {
@@ -55,15 +56,17 @@ public abstract class AbstractTest {
             if (injectScript == null) {
                 throw WegasErrorMessage.error("Injected Script doesn't exists [" + injectScriptPath + "]");
             }
-            gameModel.getScriptLibrary().put(injectScriptPath, new GameModelContent("JavaScript", injectScript));
+            GameModelContent gameModelContent = new GameModelContent(injectScriptPath, injectScript, "JavaScript");
+            gameModelContent.setScriptlibrary_GameModel(gameModel);
+            gameModel.getScriptLibraryList().add(gameModelContent);
         }
 
         System.out.println("Create game model : " + gameModel.getName());
-        this.getGameModelFacade().createWithDebugGame(gameModel);
-        junit.framework.Assert.assertNotNull(gameModel.getId()); //persisted
+        gameModelFacade.createWithDebugGame(gameModel);
+        Assert.assertNotNull(gameModel.getId()); //persisted
 
-        this.gm = gameModel;
-        player = gm.getPlayers().get(0);
+        this.gameModel = gameModel;
+        player = this.gameModel.getPlayers().get(0);
     }
 
     protected final void createGameModelWithConcatenatedScript(GameModel gameModel, String... injectScriptsPath) throws IOException {
@@ -78,14 +81,17 @@ public abstract class AbstractTest {
 
             scriptContent.append(injectScript);
         }
-        gameModel.getScriptLibrary().put("ConcatenatedScript", new GameModelContent("JavaScript", scriptContent.toString()));
+        GameModelContent gameModelContent = new GameModelContent("ConcatenatedScripts", scriptContent.toString(), "JavaScript");
+        gameModelContent.setScriptlibrary_GameModel(gameModel);
+        gameModel.getScriptLibraryList().add(gameModelContent);
 
-        System.out.println("Create game model : " + gameModel.getName());
-        this.getGameModelFacade().createWithDebugGame(gameModel);
-        junit.framework.Assert.assertNotNull(gameModel.getId()); //persisted
+        logger.info("Create game model : " + gameModel.getName());
 
-        this.gm = gameModel;
-        player = gm.getPlayers().get(0);
+        gameModelFacade.createWithDebugGame(gameModel);
+        Assert.assertNotNull(gameModel.getId()); //persisted
+
+        this.gameModel = gameModel;
+        player = this.gameModel.getPlayers().get(0);
     }
 
     protected final void createGameModelFromFileWithScript(String path, String... injectScriptsPath) throws IOException {
@@ -107,6 +113,7 @@ public abstract class AbstractTest {
      *
      * @param path
      * @param injectScriptsPath
+     *
      * @throws IOException
      */
     protected final void createGameModelFromFileWithConcatenatedScript(String path, String... injectScriptsPath) throws IOException {
@@ -116,7 +123,7 @@ public abstract class AbstractTest {
     }
 
     protected void cleanData() {
-        this.gm = null;
+        this.gameModel = null;
         this.player = null;
     }
 
@@ -126,24 +133,18 @@ public abstract class AbstractTest {
 
     protected Object evalScript(String script) {
         try {
-            return getScriptController().run(gm.getId(), this.player.getId(), null, new Script(script));
+            return scriptController.run(gameModel.getId(), this.player.getId(), null, new Script(script));
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-    protected abstract ScriptController getScriptController();
-
-    protected abstract VariableDescriptorFacade getVariableDescriptorFacade();
-
     protected GameModel getGameModel() {
-        return gm;
+        return gameModel;
     }
 
     protected Player getPlayer() {
         return player;
     }
-
-    protected abstract GameModelFacade getGameModelFacade();
 }

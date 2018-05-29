@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -31,7 +31,7 @@ public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
      *
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @JsonView(Views.ExtendedI.class)
     private String description;
 

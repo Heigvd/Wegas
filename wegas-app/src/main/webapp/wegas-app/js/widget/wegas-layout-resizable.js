@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -30,11 +30,17 @@ YUI.add('wegas-layout-resizable', function(Y) {
                               '<div class="wegas-layout-hd"></div>' +
                               '<div class="wegas-layout-bd"><div>' +
                               '<div class="wegas-layout-left"></div>' +
-                              '<div class="wegas-layout-center"></div>' +
-                              '<div class="wegas-layout-right"></div>' +
+                              '<div class="wegas-layout-center wegas-layout-column"></div>' +
+                              '<div class="wegas-layout-right wegas-layout-column"></div>' +
                               '</div></div>' +
                               '<div class="wegas-layout-ft"></div>' +
                               '</div>',
+            HANDLEBAR_WIDTH: 4,
+            LEFT_COL_WIDTH: "300px",
+            CENTER_COL_MIN_WIDTH: 30,
+            CENTER_COL_WIDTH: "420px",
+            WEGAS_EDITOR_LOCALSTORAGE_ID: "wegas-editor",
+
             /** @lends Y.Wegas.ResizableLayout# */
 
             // *** Private fields *** //
@@ -47,8 +53,24 @@ YUI.add('wegas-layout-resizable', function(Y) {
             initializer: function() {
                 this.oldWidth = {};
                 this.handlers = [];
-                this.anims = {};
                 this.widgets = [];
+                if (this.get("left") === undefined && this.get("right") === undefined) {  // We are not opening the editor:
+                    this.set("left", { width: 0 });
+                    this.set("right", { width: 0 });
+                    var center = this.get("center");
+                    center.width = '100%';
+                    this.set("center", center);
+                } else {
+                    var cfg = localStorage.getItem(this.WEGAS_EDITOR_LOCALSTORAGE_ID) || {};
+                    if (typeof cfg === "string") {
+                        try {
+                            cfg = JSON.parse(cfg);
+                        } catch (e) {
+                            cfg = {};
+                        }
+                    }
+                    this.editorCfg = cfg;
+                }
             },
             /**
              * @function
@@ -82,6 +104,10 @@ YUI.add('wegas-layout-resizable', function(Y) {
              * @description call functions "syncCenterNode" and "_syncUIStdMod";
              */
             syncUI: function() {
+                if (!this.initialLeft) {
+                    this.initialLeft = this.initializeInitLeft();
+                }
+                this.lastEditorAdjustments();
                 this.syncCenterNode();
             },
             /**
@@ -105,6 +131,38 @@ YUI.add('wegas-layout-resizable', function(Y) {
             },
             // ** Private Methods ** //
             /**
+             * Perform last adjustments before the editor is ready:
+             */
+            lastEditorAdjustments: function() {
+                var TabView = Y.Wegas.TabView,
+                    editorLabel = TabView.getEditorTabLabel(),
+                    editorTab = TabView.getEditorTab();
+                // Is it too early ?
+                if (!editorTab) {
+                    return;
+                }
+                var editorTabSelector = editorTab.get("tabSelector"),
+                    preferredEditorTabView = TabView.getDefaultEditorTabView();
+                // Make sure the Attributes tab is on the correct side (and the Preview on the other side):
+                if (editorTabSelector !== preferredEditorTabView) {
+                    editorTab = TabView.moveToTabView(editorLabel, preferredEditorTabView);
+                    TabView.moveTabsAwayFrom(preferredEditorTabView, editorTab);
+                }
+                // For the initial view, hide the + menu of the Attributes tabView
+                TabView.showPlusMenu(TabView.getOppositeTabView(preferredEditorTabView));
+                editorTab.set("selected", 2);
+                TabView.getTab(TabView.getPreviewTabLabel()).set("selected", 2);
+            },
+            // Return as an object a safe set of "left" attributes for the three columns
+            initializeInitLeft: function() {
+                var cfg = {
+                        left : '0px',
+                        center : this.getPosition('left').getComputedStyle('width'),
+                        right : this.getPosition('right').getComputedStyle('left')
+                    };
+                return cfg;
+            },
+            /**
              * @function
              * @private
              * @param position
@@ -114,7 +172,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
              */
             getPosition: function(position) {
                 var cb = this.get("contentBox");
-                switch (position) {
+                switch (this.getShortPositionName(position)) {
                     case "top" :
                         return cb.one(".wegas-layout-hd");
                     case "bottom" :
@@ -128,84 +186,91 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 }
             },
 
+            // Translates '#centerTabView' into 'center' etc.
+            getShortPositionName: function(position) {
+                if (position.indexOf('center') >= 0) {
+                    return 'center';
+                } else if (position.indexOf('right') >= 0) {
+                    return 'right';
+                } else if(position.indexOf('left') >= 0) {
+                    return 'left';
+                } else if(position.indexOf('top') >= 0) {
+                    return 'top';
+                }
+            },
+
             /**
              * @function
              * @private
              * @param position
-             * @description do a slide (tween) animation to hide the panel
              */
             hidePosition: function(position) {
                 var node = this.getPosition(position);
                 //if (!!this.get(position + ".animate")) {                          // False by default
-                this.oldWidth[position] = node.getComputedStyle("width");
-                node.setStyle("left", "initial");                                   // Reset left value
+                var currWidth = node.getComputedStyle("width");
+                if (currWidth !== '0px') {
+                    this.oldWidth[position] = node.getComputedStyle("width");
+                }
+                node.setStyle("left", this.initialLeft[position]);                                   // Reset left value
 
                 node.setStyle("width", "0");
                 this.syncCenterNode();
-
-                //} else {
-                //  this.getAnim(position).setAttrs({// and change anim width because the element may have been resized
-                //    reverse: true,
-                //    to: {
-                //        width: node.getStyle("width")
-                //    }
-                //  }).run();
-                //}
             },
             /**
              * @function
              * @private
              * @param position
-             * @description do a slide (tween) animation to show the panel
              */
             showPosition: function(position) {
+                position = this.getShortPositionName(position);
                 var target = this.getPosition(position);
-
-                //if (!!this.get(position + ".animate")) {                          // False by default
-                //if (parseInt(target.getStyle("width"), 10) < cfg.width) {         // Only display if hidde
                 if (parseInt(target.getStyle("width"), 10) < 70) {                  // If is hidden
-                    target.setStyle("left", "initial");                             // Reset left value since it may
-                                                                                    // have been changed during resize
-                    target.setStyle("width",
-                        this.oldWidth[position] || ((this.get(position + ".width") || 430) + "px"));
+                    target.setStyle("left", this.initialLeft[position]);            // Reset left value
+                    var width = parseInt(this.oldWidth[position]) || this.get(position + ".width") || 430;
+                        target.setStyle("width", width + "px");
+                    if (position === 'center') {
+                        var rightNode = this.getPosition('right'),
+                            rightWidth = parseInt(rightNode.getComputedStyle('width'));
+                        rightNode.setStyle('width', rightWidth - width + 'px');
+                        rightNode.setStyle('left', 'auto');
+                    }
                     this.syncCenterNode();
                 }
-                //} else {
-                //this.getAnim(position).set("reverse", false).run();
-                //}
-            },
-            getAnim: function(position) {
-                if (!this.anims[position]) {
-                    var anim = new Y.Anim({
-                        node: this.getPosition(position),
-                        from: {
-                            width: 0
-                        },
-                        to: {
-                            width: this.get(position + ".width") || 400
-                        },
-                        easing: 'easeOut',
-                        duration: 0.6
-                    });
-                    anim.on('tween', this.syncCenterNode, this);
-                    anim.on('end', this.syncCenterNode, this);
-                    this.anims[position] = anim;
-                }
-                return this.anims[position];
             },
             /**
              * @function
              * @private
              * @param position
-             * @description
+             * @description Renders the given column/panel. NB: the order "left", "center", "right" is compulsory !
              */
             renderPosition: function(position) {
                 var i, cWidget,
                     target = this.getPosition(position),
                     cfg = this.get(position);
 
-                if (cfg) {                                                          // If there is a provided configuration
-                    target.setStyle("width", cfg.width);
+                if (cfg && cfg.children) {                                                          // If there is a provided configuration
+                    var windowWidth = window.innerWidth || document.documentElement.clientWidth;
+                    if (this.editorCfg) {                                           // Or settings stored in the browser's localStorage ?
+                        if (position === "left" && this.editorCfg.leftWidth) {
+                            cfg.width = this.editorCfg.leftWidth;
+                            if (parseInt(cfg.width) >= windowWidth) {
+                                cfg.width = this.LEFT_COL_WIDTH;
+                            }
+                        } else if  (position === "center" && this.editorCfg.centerWidth) {
+                            cfg.width = this.editorCfg.centerWidth;
+                            if (parseInt(cfg.width) + parseInt(this.get("left").width) >= windowWidth) {
+                                cfg.width = this.CENTER_COL_WIDTH;
+                            }
+                        } else if (position === "right") {
+                            var leftWidth = parseInt(this.get("left").width),
+                                centerWidth = parseInt(this.get("center").width),
+                                otherColumns = leftWidth + centerWidth;
+                            cfg.width = "calc(100% - " + otherColumns + "px)";
+                        }
+                    }
+                    if (position !== "top") {
+                        target.setStyle("width", cfg.width);
+                    }
                     if (position === "left") {
                         this.resizeLeft = new Y.Resize({
                             node: target,
@@ -227,7 +292,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                         target.setStyles({
                             right: "0px",
                             left: "auto",
-                            width: cfg.width || (Y.DOM.winWidth() - this.get("center.width")) + "px"
+                            width: cfg.width || (windowWidth - parseInt(this.get("left.width")) - parseInt(this.get("center.width"))) + "px"
                         });
                     }
 
@@ -246,17 +311,69 @@ YUI.add('wegas-layout-resizable', function(Y) {
              * @private
              * @description refresh the style of the center node
              */
-            syncCenterNode: function() {
-                var rightNode = this.getPosition("right"), left = this.getPosition("left").getComputedStyle("width"), right = rightNode.getComputedStyle("width");
+            syncCenterNode: function(e) {
+                var leftNode = this.getPosition("left"),
+                    centerNode = this.getPosition("center"),
+                    rightNode = this.getPosition("right"),
+                    centerWidthStyle = centerNode.getStyle('width'),
+                    rightWidthStyle = rightNode.getStyle('width'),
+                    leftWidth = leftNode.getComputedStyle("width"),
+                    rightWidth = rightNode.getComputedStyle("width"),
+                    centerWidth = centerNode.getComputedStyle("width");
+                // If center width style is set to zero, it shall remain hidden:
+                if (centerWidthStyle !== '0px') {
+                    centerNode.setStyles({
+                        left: leftWidth,
+                        right: rightWidth,
+                        width: 'auto'
+                    });
+                    rightNode.setStyles({
+                        left: 'auto',
+                        width: rightWidth
+                    });
+                    if(parseInt(centerWidth) < this.CENTER_COL_MIN_WIDTH){
 
-                this.getPosition("center").setStyles({
-                    left: left,
-                    right: right
-                });
-                rightNode.setStyles({//                                             // Reset left position that may have been set by resize plugin
-                    left: "auto"
-                });
+                        if (e && e.currentTarget.handle === 'l') {  // Left handle of right column has been moved
+                            var windowWidth = parseInt(window.innerWidth || document.documentElement.clientWidth);
+                            leftNode.setStyles({
+                                width: parseInt(windowWidth - parseInt(rightWidth) + this.HANDLEBAR_WIDTH - this.CENTER_COL_MIN_WIDTH)
+                            });
+                        } else {                                    // Right handle of left column has been moved
+                            rightNode.setStyles({
+                                left: parseInt(leftWidth) - this.HANDLEBAR_WIDTH + this.CENTER_COL_MIN_WIDTH,
+                                width: 'auto'
+                            });
+                        }
+                    }
+                } else {
+                    if (e && e.currentTarget.handle === 'l') {  // Left handle of right column has been moved
+                        var windowWidth = parseInt(window.innerWidth || document.documentElement.clientWidth);
+                        leftNode.setStyles({
+                            width: parseInt(windowWidth - parseInt(rightWidth) + this.HANDLEBAR_WIDTH)
+                        });
+                    } else {                                    // Right handle of left column has been moved
+                        rightNode.setStyles({
+                            left: parseInt(leftWidth) - this.HANDLEBAR_WIDTH,
+                            width: 'auto'
+                        });
+                    }
+                }
+                // if (rightWidth === '0px' || rightWidthStyle === '0px') {  }
+                this.savePosition(leftWidth, centerNode.getComputedStyle("width"), rightWidth);
                 Y.Wegas.app.fire("layout:resize");
+            },
+            // Save column config to localStorage:
+            savePosition: function(leftWidth, centerWidth, rightWidth) {
+                if (parseInt(centerWidth) !== 0 && parseInt(rightWidth) !== 0) {
+                    this.editorCfg.leftWidth = leftWidth;
+                    this.editorCfg.centerWidth = centerWidth;
+                    localStorage.setItem(this.WEGAS_EDITOR_LOCALSTORAGE_ID, JSON.stringify(this.editorCfg));
+                }
+            },
+            isHidden: function(position) {
+                position = this.getShortPositionName(position);
+                var node = this.getPosition(position);
+                return node.getStyle("width") === '0px' || node.getComputedStyle("width") === '0px';
             }
         },
         {
@@ -283,19 +400,19 @@ YUI.add('wegas-layout-resizable', function(Y) {
             ATTRS: {
                 left: {},
                 /**
-                 * Configuration and childrens of the left section.
+                 * Configuration and children of the left section.
                  */
                 right: {},
                 /**
-                 * Configuration and childrens of the right section.
+                 * Configuration and children of the right section.
                  */
                 top: {},
                 /**
-                 * Configuration and childrens of the top section.
+                 * Configuration and children of the top section.
                  */
                 bottom: {},
                 /**
-                 * Configuration and childrens of the bottom section.
+                 * Configuration and children of the bottom section.
                  */
                 center: {},
                 /**
@@ -359,8 +476,9 @@ YUI.add('wegas-layout-resizable', function(Y) {
             }
             this._destruct();
             this.showPosition("center");
-            this.getPosition("right").setStyles({
-                "width": this.oldRight
+            this.getPosition('right').setStyles({
+                width: this.oldRight,
+                left: 'auto'
             });
             delete this.oldRight;
             this.getPosition("center").setStyle("width", "auto");

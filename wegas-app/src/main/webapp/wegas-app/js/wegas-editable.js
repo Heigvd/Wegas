@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -17,8 +17,11 @@ YUI.add('wegas-editable', function(Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format",
-        "choices", "items", "enum", "default", "transient");
+    Y.Base._ATTR_CFG.push("type", "properties", "view", 
+    /* should vanish once */ "_inputex", "required", "format", "errored",
+        "choices", "items", "enum", "pattern", "maxLength", "minLength", "index",
+        "default", "transient", "visible", "additionalProperties", "additionalItems",
+        "minItems", "maxItems", "minimum", "maximum", "uniqueItems", "patternProperties");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
     /**
@@ -39,18 +42,17 @@ YUI.add('wegas-editable', function(Y) {
          * @returns {Object}
          */
         toJSON: function() {
-            var k, ret = this.getAttrs(),
+            var k,
+                object = {},
                 attrCfgs = this.getAttrCfgs();
 
-            for (k in ret) {
-                if (attrCfgs[k] && attrCfgs[k]["transient"]) {                  // Remove any transient attribute
-                    delete ret[k];
+            for (k in attrCfgs) {
+                // do not even read transient attrs 
+                if (attrCfgs.hasOwnProperty(k) && !attrCfgs[k]["transient"]) {
+                    object[k] = this.get(k);
                 }
-                //if(this.constructor.ATTRS[k] && this.constructor.ATTRS[k].value === ret[k]){ /* DEFAULT VALUE REMOVAL */
-                //    delete ret[k];
-                //}
             }
-            return ret;                                                         // Return a copy of this's fields.
+            return object;
         },
         /**
          * Create a new JSON Object from this entity, filtered out by mask
@@ -83,7 +85,7 @@ YUI.add('wegas-editable', function(Y) {
             return this.toObject(["id", "variableInstances"]);
         },
         /**
-         * Returns the form configuration associated to this object, to be used a an inputex object.
+         * Returns the form configuration associated to this object, to be used a Form schema.
          * @param {Array} fieldsToIgnore (optional), don't create these inputs.
          */
         getFormCfg: function(fieldsToIgnore) {
@@ -96,27 +98,20 @@ YUI.add('wegas-editable', function(Y) {
                 attrCfgs = this.getAttrCfgs();
 
                 for (i in attrCfgs) {
-                    attrCfgs[i]["default"] = attrCfgs[i].value;                 // Use the value as default (useful form json object serialization)
+                    // if ("value" in attrCfgs[i]) {
+                    //     attrCfgs[i]["defaultValue"] = attrCfgs[i].value; // Use the value as default (useful form json object serialization)
+                    // }
 
                     if (attrCfgs[i]["transient"] || Y.Array.indexOf(fieldsToIgnore, i) > -1) {
                         delete attrCfgs[i];
                     }
                 }
-
-                schemaMap = {
-                    Entity: {
+                return {
+                    type: 'object',
                         properties: attrCfgs
                     }
-                };
-
-                builder = new Y.inputEx.JsonSchema.Builder({
-                    schemaIdentifierMap: schemaMap,
-                    defaultOptions: {
-                        showMsg: true
-                    }
-                });
-                form = builder.schemaToInputEx(schemaMap.Entity);
             }
+
             return form || [];
         },
         /**
@@ -167,7 +162,8 @@ YUI.add('wegas-editable', function(Y) {
          * @returns {Array}
          */
         getStatic: function(key, withExtensions) {
-            var c = this.constructor, ret = [], i;
+            var c = this.constructor,
+                ret = [], i;
 
             while (c) {
                 if (c[key]) {                                                   // Add to attributes
@@ -247,7 +243,7 @@ YUI.add('wegas-editable', function(Y) {
                             Editable.mixMenuCfg(elts[i].plugins[j].cfg.children, data); // push data in children arg
                         }
                         if (elts[i].plugins[j].cfg.wchildren) {
-                            Editable.mixMenuCfg(elts[i].plugins[j].cfg.wchildren, data);// push data in wchildren
+                            Editable.mixMenuCfg(elts[i].plugins[j].cfg.wchildren, data); // push data in wchildren
                         }
                     }
                 }
@@ -271,7 +267,7 @@ YUI.add('wegas-editable', function(Y) {
             Y.use(modules, cb);
         },
         /**
-         * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
+         * Return recursively the modules from their 'type' property using (modulesByType from loader.js)
          * @function
          * @static
          * @private
@@ -279,7 +275,8 @@ YUI.add('wegas-editable', function(Y) {
          * @returns {Array}
          */
         getRawModulesFromDefinition: function(cfg) {
-            var i, props, type = cfg.type || cfg["@class"],
+            var i, props,
+                type = cfg.type || cfg["@class"],
                 module = YUI_config.Wegas.modulesByType[type],
                 modules = [];
 

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -99,8 +99,9 @@ YUI.add("wegas-image", function(Y) {
                         val);
                     return val;
                 },
-                _inputex: {
-                    _type: "wegasimageurl"
+                view: {
+                    label: "URL",
+                    type: "wegasimageurl"
                 }
             },
             complete: {

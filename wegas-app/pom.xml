@@ -15,7 +15,9 @@
     <name>wegas-app</name>
 
     <properties>
+        <skip.yarn>${skipYarn}</skip.yarn>
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
+        <netbeans.hint.license>license</netbeans.hint.license>
     </properties>
 
     <profiles>
@@ -98,6 +100,22 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- WEGAS-CORE TEST DEP-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wegas-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+            <type>test-jar</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+
+
         <!-- log4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -173,20 +191,51 @@
             <type>jar</type>
         </dependency>
 
+        <!-- Postgresql Driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>fish.payara.arquillian</groupId>
+            <artifactId>arquillian-payara-server-4-embedded</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-persistence-dbunit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eu.ingwar.tools</groupId>
+            <artifactId>arquillian-suite-extension</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
         <!-- TEST -->
         <dependency>
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-embedded-all</artifactId>
         </dependency>
 
-        <!-- Postgresql Driver -->
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -198,21 +247,6 @@
             <scope>test</scope>
         </dependency>-->
         <dependency>
-            <groupId>net.sourceforge.jwebunit</groupId>
-            <artifactId>jwebunit-htmlunit-plugin</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-io</groupId>
-                    <artifactId>commons-io</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>net.sf.jtidy</groupId>
             <artifactId>jtidy</artifactId>
         </dependency>
@@ -220,6 +254,16 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
     </dependencies>
 
@@ -332,17 +376,21 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
+                <configuration>
+                    <skip>${skip.yarn}</skip>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>npm install</id>
+                        <id>yarn install</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>npm</executable>
+                            <executable>yarn</executable>
                             <arguments>
                                 <argument>install</argument>
+                                <argument>--frozen-lockfile</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -353,7 +401,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>npm</executable>
+                            <executable>yarn</executable>
                             <arguments>
                                 <argument>run</argument>
                                 <argument>build</argument>
@@ -373,32 +421,6 @@
                         <phase>site</phase>
                     </execution>
                 </executions>
-                <configuration>
-                    <reportPlugins>
-                        <plugin>
-                            <groupId>nl.windgazer</groupId>
-                            <artifactId>jsdoctk-plugin</artifactId>
-                            <version>2.3.2</version>
-                            <configuration>
-                                <template>jsdoc</template>
-                                <!-- Alternatives are not pre-installed for version 2.x-->
-                                <directory>${project.build.directory}/site/jsdoc</directory>
-                                <recurse>5</recurse>
-                                <ext>js</ext>
-                                <allfunctions>true</allfunctions>
-                                <Allfunctions>false</Allfunctions>
-                                <privateOption>false</privateOption>
-                                <!-- If you're using the maven default setup this alternative is sometimes required
-                                to make the plugin work: ${basedir}/src/main/webapp/ -->
-                                <srcDir>${basedir}/src/main/webapp</srcDir>
-                                <exclude><!-- Since jsdoctk 2.3.2 -->
-                                    <!--Multiple param entries allowed-->
-                                    <param>lib</param>
-                                </exclude>
-                            </configuration>
-                        </plugin>
-                    </reportPlugins>
-                </configuration>
             </plugin>
 
             <!-- Dependencies -->
@@ -408,6 +430,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <systemProperties>
+                        <arquillian.launch>glassfish-embedded</arquillian.launch>
+                    </systemProperties>
                     <excludes>
                         <exclude>**/integration/**</exclude>
                     </excludes>
@@ -424,6 +449,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.17</version>
                 <configuration>
+                    <argLine>-Xms800m -Xmx800m</argLine>
                     <excludes>
                         <exclude>**/unit/**</exclude>
                     </excludes>
@@ -441,99 +467,10 @@
                 </executions>
             </plugin>
 
-            <!--<plugin>
-                <groupId>org.glassfish.embedded</groupId>
-                <artifactId>maven-embedded-glassfish-plugin</artifactId>
-                <version>4.0</version>
-                <configuration>
-                    <goalPrefix>embedded-glassfish</goalPrefix>
-                    <app>targer/Wegas.war</app>
-                    <autoDelete>true</autoDelete>
-                    <port>5454</port>
-                    <configFile>src/test/glassfish/domains/domain1/config/domain.xml</configFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>start-glassfish</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                     <execution>
-                        <id>glassfish-deploy</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                     <execution>
-                        <id>glassfish-undeploy</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>undeploy</goal>
-                        </goals>
-                    </execution>
-                     <execution>
-                        <id>stop-glassfish</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
-            
-            <!-- Copy classes to test classes directory, for ejbcontainer to use -->
-            <!--<plugin>-->
-            <!--<artifactId>maven-resources-plugin</artifactId>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>copy-webapp-to-embedded</id>-->
-            <!--<phase>process-test-classes</phase>-->
-            <!--<goals>-->
-            <!--<goal>copy-resources</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-            <!--<outputDirectory>target/embed-war</outputDirectory>-->
-            <!--<overwrite>true</overwrite>-->
-            <!--<resources>-->
-            <!--<resource>-->
-            <!--<directory>target/${project.build.finalName}</directory>-->
-            <!--<includes>-->
-            <!--<include>**/*.js</include>-->
-            <!--</includes>-->
-            <!--</resource>-->
-            <!--<resource>-->
-            <!--&lt;!&ndash; <directory>src/test/resources</directory>&ndash;&gt;-->
-            <!--<directory>src/main/webapp</directory>-->
-            <!--</resource>-->
-            <!--</resources>-->
-            <!--</configuration>-->
-            <!--</execution>-->
-            <!--<execution>-->
-            <!--<id>copy-wegas-resources-to-embedded</id>-->
-            <!--<phase>process-test-classes</phase>-->
-            <!--<goals>-->
-            <!--<goal>copy-resources</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-            <!--<outputDirectory>target/embed-war</outputDirectory>-->
-            <!--<overwrite>false</overwrite>-->
-            <!--<resources>-->
-            <!--<resource>-->
-            <!--&lt;!&ndash; <directory>src/test/resources</directory>&ndash;&gt;-->
-            <!--<directory>../wegas-resources/target/Wegas-resources</directory>-->
-            <!--</resource>-->
-            <!--</resources>-->
-            <!--</configuration>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -541,4 +478,31 @@
             </plugin>
         </plugins>
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>nl.windgazer</groupId>
+                <artifactId>jsdoctk-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <template>jsdoc</template>
+                    <!-- Alternatives are not pre-installed for version 2.x-->
+                    <directory>${project.build.directory}/site/jsdoc</directory>
+                    <recurse>5</recurse>
+                    <ext>js</ext>
+                    <allfunctions>true</allfunctions>
+                    <Allfunctions>false</Allfunctions>
+                    <privateOption>false</privateOption>
+                    <!-- If you're using the maven default setup this alternative is sometimes required
+                    to make the plugin work: ${basedir}/src/main/webapp/ -->
+                    <srcDir>${basedir}/src/main/webapp</srcDir>
+                    <exclude><!-- Since jsdoctk 2.3.2 -->
+                        <!--Multiple param entries allowed-->
+                        <param>lib</param>
+                    </exclude>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </reporting>
 </project>

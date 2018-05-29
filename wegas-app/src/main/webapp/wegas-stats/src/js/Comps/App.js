@@ -1,7 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
 import Login from './LoginForm';
 import Overlay from './Overlay';
+import RequestIndicator from './RequestIndicator';
 
 class App extends React.Component {
     render() {
@@ -10,22 +11,19 @@ class App extends React.Component {
         };
         return (
             <div>
-              <Overlay/>
-              <h2 className="header"
-                  style={ style }>Wegas Stats</h2>
-              <div>
+                <Overlay />
+                <h2 className="header" style={style}>
+                    Wegas Stats
+                </h2>
                 <button>
-                  <Link to="/"> Restart
-                  </Link>
+                    <Link to="/"> Restart</Link>
                 </button>
-              </div>
-              <div className="body">
-                <Login>
-                  { this.props.children }
-                </Login>
-              </div>
+                <RequestIndicator />
+                <div className="body">
+                    <Login>{this.props.children}</Login>
+                </div>
             </div>
-            );
+        );
     }
 }
 export default App;

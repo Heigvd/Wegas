@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf.helper;
@@ -37,11 +37,12 @@ public class ImpactPrinter {
 
     /**
      * split the script into instructions
-     *
+     * <p>
      * ;, { and }
      *
      * @param script
-     * @return
+     *
+     * @return instructions list
      */
     private List<String> parse() {
         List<String> instructions;
@@ -83,6 +84,7 @@ public class ImpactPrinter {
      *
      * @param context
      * @param writer
+     *
      * @throws IOException
      */
     public void print(FacesContext context, ResponseWriter writer) throws IOException {
@@ -107,6 +109,7 @@ public class ImpactPrinter {
      * @param context
      * @param writer
      * @param instruction
+     *
      * @throws IOException
      */
     private void printInstruction(FacesContext context, ResponseWriter writer, String instruction) throws IOException {
@@ -126,73 +129,71 @@ public class ImpactPrinter {
             Matcher matcher = pattern.matcher(str);
 
             if (matcher.matches()) {
-                if (matcher.matches()) {
-                    //String group = matcher.group(0);
-                    String variableAlias = matcher.group(1);
-                    String shortcut = matcher.group(2);
-                    String operator = matcher.group(3);
-                    String value = matcher.group(4);
+                //String group = matcher.group(0);
+                String variableAlias = matcher.group(1);
+                String shortcut = matcher.group(2);
+                String operator = matcher.group(3);
+                String value = matcher.group(4);
 
-                    /*
+                /*
                      * Detect specific operation
-                     */
-                    if ("sendMessage".equals(operator)) { // e-mail like message
-                        String[] args;
-                        args = value.split("(?s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
-                        switch (args.length) {
-                            case 3:
-                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
-                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], null, null);
-                                break;
-                            case 4:
-                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
-                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], null, null);
-                                break;
-                            default:
-                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
-                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], args[4], null);
-                                break;
-                        }
-                    } else if ("sendMessageWithToken".equals(operator)) { // dated e-mail like message
-                        String[] args;
-                        args = value.split("(?s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
-                        UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], args[4], null);
-                        //                                      TO           FROM     SUBJECT  DATE    BODY
-                    } else if ("sendDatedMessage".equals(operator)) { // dated e-mail like message
-                        String[] args;
-                        args = value.split("(?"
-                                + "s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
-                        switch (args.length) {
-                            case 5:
-                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
-                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], null, null);
-                                break;
-                            default:
-                                //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHEMENTS
-                                UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], null, null);
-                        }
-                    } else {
-                        String var = variableAlias;
-                        String op;
-                        switch (operator) {
-                            case "add":
-                                op = "+";
-                                var = variableAlias + " = " + variableAlias;
-                                break;
-                            case "sub":
-                                op = "-";
-                                var = variableAlias + " = " + variableAlias;
-                                break;
-                            case "set":
-                                op = "=";
-                                break;
-                            default:
-                                op = operator;
-                                break;
-                        }
-                        String print = var + " " + op + " " + value;
-                        UIHelper.printTextAreaText(context, writer, print, UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA + " " + UIHelper.CSS_CLASS_SOURCE_CODE, true);
+                 */
+                if ("sendMessage".equals(operator)) { // e-mail like message
+                    String[] args;
+                    args = value.split("(?s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
+                    switch (args.length) {
+                        case 3:
+                            //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHMENTS
+                            UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], null, null);
+                            break;
+                        case 4:
+                            //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHMENTS
+                            UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], null, null);
+                            break;
+                        default:
+                            //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHMENTS
+                            UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], args[4], null);
+                            break;
                     }
+                } else if ("sendMessageWithToken".equals(operator)) { // dated e-mail like message
+                    String[] args;
+                    args = value.split("(?s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
+                    UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], args[4], null);
+                    //                                      TO           FROM     SUBJECT  DATE    BODY
+                } else if ("sendDatedMessage".equals(operator)) { // dated e-mail like message
+                    String[] args;
+                    args = value.split("(?"
+                            + "s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
+                    switch (args.length) {
+                        case 5:
+                            //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHMENTS
+                            UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], null, null);
+                            break;
+                        default:
+                            //                                     TO             FROM     SUBJECT  DATE  BODY,    TOKEN, ATTACHMENTS
+                            UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], null, null);
+                    }
+                } else {
+                    String var = variableAlias;
+                    String op;
+                    switch (operator) {
+                        case "add":
+                            op = "+";
+                            var = variableAlias + " = " + variableAlias;
+                            break;
+                        case "sub":
+                            op = "-";
+                            var = variableAlias + " = " + variableAlias;
+                            break;
+                        case "set":
+                            op = "=";
+                            break;
+                        default:
+                            op = operator;
+                            break;
+                    }
+                    String print = var + " " + op + " " + value;
+                    UIHelper.printTextAreaText(context, writer, print, UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA + " " + UIHelper.CSS_CLASS_SOURCE_CODE, true);
                 }
             } else {
                 UIHelper.printTextAreaText(context, writer, instruction, UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA + " " + UIHelper.CSS_CLASS_SOURCE_CODE, true);

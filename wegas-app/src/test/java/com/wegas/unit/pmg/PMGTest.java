@@ -2,17 +2,18 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.unit.pmg;
 
+import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.junit.Test;
 
 /**
- *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
+@ArquillianSuiteDeployment
 public class PMGTest extends PMGameAbstractTest {
 
     @Test
@@ -21,6 +22,16 @@ public class PMGTest extends PMGameAbstractTest {
     }
 
     /*
+    @Test
+    public void testAuto() {
+        this.evalScript("PMGTest.testAuto()");
+    }
+
+    @Test
+    public void testTracking() {
+        this.evalScript("PMGTest.testTrackingMessages()");
+    }
+
     @Test
     public void testNormalAssign() {
         this.evalScript("PMGTest.testNormalAssignment()");
@@ -145,7 +156,7 @@ public class PMGTest extends PMGameAbstractTest {
     public void testUnworkwesReq() {
         this.evalScript("PMGTest.testUnworkedReq()");
     }
-*/
+// */
 
     @Override
     protected String getGameModelPath() {

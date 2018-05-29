@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.exception;
@@ -26,11 +26,12 @@ public class EJBExceptionMapper extends AbstractExceptionMapper
 
     /**
      *
-     * @param exception
-     * @return
+     * @param exception exception to process
+     * @return a HTTP response which wrap the exception
      */
     @Override
     public Response toResponse(EJBException exception) {
+        logger.error("EJB EXCEPTION MAPPER");
         return processException(exception.getCause());
     }
 }

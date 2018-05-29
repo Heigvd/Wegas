@@ -50,7 +50,7 @@ public class FacebookUserFilter implements Filter {
                                                            "params have not been set. Check that they're there " +
                                                            "in your servlet context descriptor.");
                 } else {
-                        logger.info("Using facebook API key: " + api_key);
+                        logger.info("Using facebook API key: {}", api_key);
                 }
         }
         
@@ -91,9 +91,7 @@ public class FacebookUserFilter implements Filter {
                             facebookUserID = userClient.users_getLoggedInUser();
                         } catch(FacebookException ex) {
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while fetching user's facebook ID");
-                            logger.error("Error while getting cached (supplied by request params) value " +
-                                             "of the user's facebook ID or while fetching it from the Facebook service " +
-                                             "if the cached value was not present for some reason. Cached value = {}", userClient.getCacheUserId());
+                            logger.error("Error while getting cached (supplied by request params) value of the user's facebook ID or while fetching it from the Facebook service if the cached value was not present for some reason. Cached value = {}", userClient.getCacheUserId());
                             return;
                         }
                         

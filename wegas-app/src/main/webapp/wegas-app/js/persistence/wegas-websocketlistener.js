@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -21,6 +21,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     this._hdl.push(dataSource.on("OutdatedEntitiesEvent", this.forceEntityUpdate, this));
                     this._hdl.push(dataSource.on("EntityDestroyedEvent", this.onEntityDeletion, this));
                     this._hdl.push(dataSource.on("CustomEvent", this.onCustomEvent, this));
+                    this._hdl.push(dataSource.on("PageUpdate", this.onPageUpdate, this));
+                    this._hdl.push(dataSource.on("PageIndexUpdate", this.onPageIndexUpdate, this));
                     this._hdl.push(dataSource.on("LockEvent", this.onLockEvent, this));
                     this._hdl.push(dataSource.on("LifeCycleEvent", this.onLifeCycleEvent, this));
                 }
@@ -54,11 +56,17 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 }
             }
         },
+        onPageUpdate: function(pageId) {
+            Y.Wegas.Facade.Page.cache.forceUpdate(pageId);
+        },
+        onPageIndexUpdate: function(pageId) {
+            Y.Wegas.Facade.Page.cache.forceIndexUpdate();
+        },
         onLifeCycleEvent: function(data) {
             var payload = Y.JSON.parse(data),
                 node = this._getNode();
-            /*(Y.Widget.getByNode("#centerTabView") &&
-             Y.Widget.getByNode("#centerTabView").get("selection")) ||
+            /*(Wegas.TabView.getPreviewTabView() &&
+             Wegas.TabView.getPreviewTabView().get("selection")) ||
              ;*/
 
             if (payload.status === "DOWN") {
@@ -66,7 +74,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
             } else if (payload.status === "READY") {
                 node.hideOverlay("maintenance");
             } else if (payload.status === "OUTDATED") {
-                node.showMessage("error", "Some of your data are outdated, please refresh the page");
+                //node.showMessage("error", "Some of your data are outdated, please refresh the page");
+                Y.Wegas.Alerts.showNotification("Some of your data are outdated, please <a href=\"#\" onClick=\"window.location.reload()\">reload</a> the page", {});
             } else {
                 node.showMessage("warn", "Unexcpected Error: Please refresh the page");
                 node.showOverlay("error");
@@ -75,23 +84,25 @@ YUI.add('wegas-websocketlistener', function(Y) {
         onEntityDeletion: function(data) {
             this._before();
             Y.later(0, this, function() {
-                var datasource, entities, entity, i;
+                var datasource, entities, entity, i, collector = {};
                 entities = Y.JSON.parse(data).deletedEntities;
                 for (i = 0; i < entities.length; i += 1) {
                     datasource = this.getDatasourceFromClassName(entities[i]["@class"]);
                     entity = datasource.cache.find("id", entities[i].id);
                     if (entity) {
-                        // due to the parent-child descriptors organisation, such a 
-                        // destroyed descriptor may have already been deleted from 
+                        // due to the parent-child descriptors organisation, such a
+                        // destroyed descriptor may have already been deleted from
                         // the cache while updating its parent...
                         // -> Avoid deleting notfound entities
-                        datasource.cache.updateCache("DELETE", entity, false);
+                        datasource.cache.updateCache("DELETE", entity, collector);
                     } else {
                         // Send the corresponding delete "event"
                         entity = Y.Wegas.Editable.revive(entities[i]);
                         datasource.fire("delete", {"entity": entity});
                     }
                 }
+
+                Y.Wegas.Facade.Variable.sendEventsFromCollector(collector);
                 this._after();
             });
         },
@@ -151,6 +162,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
             Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");
             this._before(token);
             Y.later(0, this, function() {
+                var collector = {}, ds;
                 for (i = 0; i < event.updatedEntities.length; i += 1) {
                     // TODO FETCH CORRECT CACHE
                     entity = Y.Wegas.Editable.revive(event.updatedEntities[i]);
@@ -174,12 +186,13 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     dsId = allDs[i];
                     if (remappedEntities.hasOwnProperty(dsId)) {
                         Y.log("Update [" + dsId + "] : " + JSON.stringify(remappedEntities[dsId].entities));
-                        remappedEntities[dsId].datasource.cache.fire("EntityUpdatedEvent", {
-                            "@class": "EntityUpdatedEvent",
-                            updatedEntities: remappedEntities[dsId].entities
-                        });
+                        remappedEntities[dsId].datasource.cache.updateEntities(remappedEntities[dsId].entities, collector);
                     }
                 }
+
+
+                Y.Wegas.Facade.Variable.sendEventsFromCollector(collector);
+
                 this._after(token);
             });
         },
@@ -187,7 +200,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
             if (entity instanceof Y.Wegas.persistence.VariableInstance) {
                 return Y.Wegas.Facade.Instance;
             } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor ||
-                entity instanceof Y.Wegas.persistence.RootDescriptors) {
+                entity instanceof Y.Wegas.persistence.GameModel) {
                 return Y.Wegas.Facade.Variable;
             } else if (entity instanceof Y.Wegas.persistence.Game) {
                 return Y.Wegas.Facade.Game;

@@ -2,14 +2,17 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
 
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
+import com.wegas.core.security.rest.UserController;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 
@@ -23,12 +26,19 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class DynamicFilters implements DynamicFeature {
 
-    private static final CacheResponseFilter noCacheResponseFilter = new CacheResponseFilter(CacheResponseFilter.NO_CACHE);
+    private static final CacheResponseFilter noCacheNoStoreResponseFilter = new CacheResponseFilter(CacheResponseFilter.NO_CACHE_NO_STORE);
+
     private static final String private_cache = "private, ";
+
+    @Context
+    HttpServletRequest httpRequestProxy;
 
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
 
+        /**
+         * Cache Max Age Filter
+         */
         /*Test method level*/
         CacheMaxAge cma = resourceInfo.getResourceMethod().getAnnotation(CacheMaxAge.class);
         //NoCache nc = resourceInfo.getResourceMethod().getAnnotation(NoCache.class);
@@ -44,7 +54,7 @@ public class DynamicFilters implements DynamicFeature {
                 context.register(new CacheResponseFilter(genCacheString(cma)));
                 //} else if (nc != null) {
             } else {
-                context.register(noCacheResponseFilter);
+                context.register(noCacheNoStoreResponseFilter);
             }
         }
 
@@ -59,13 +69,22 @@ public class DynamicFilters implements DynamicFeature {
         }
 
 
+        /*
+         * Detect guest login
+         */
+        if (resourceInfo.getResourceClass().equals(UserController.class)
+                && resourceInfo.getResourceMethod().getName().equals("guestLogin")) {
+            context.register(new GuestTracker(httpRequestProxy));
+        }
+
     }
 
     /**
      * Compute cache-control string based on annotations.
      *
      * @param cma
-     * @return
+     *
+     * @return the cache-control string
      */
     private static String genCacheString(CacheMaxAge cma) {
         return (cma.private_cache() ? private_cache : "") + "max-age: " + cma.unit().toSeconds(cma.time());

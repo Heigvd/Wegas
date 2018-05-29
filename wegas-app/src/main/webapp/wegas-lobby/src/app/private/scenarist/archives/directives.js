@@ -9,13 +9,14 @@ angular.module('private.scenarist.archives.directives', [])
             controller: "ScenaristArchivesIndexController as scenaristArchivesIndexCtrl"
         };
     })
-    .controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, $translate, ScenariosModel, Flash, $filter) {
+    .controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, $translate, ScenariosModel, Flash, $filter, Auth, UsersModel) {
         "use strict";
         var ctrl = this;
         ctrl.rawArchives = [];
         ctrl.archives = [];
         ctrl.search = "";
         ctrl.loading = true;
+        ctrl.username = '';
 
 
         /*
@@ -125,6 +126,19 @@ angular.module('private.scenarist.archives.directives', [])
             }
         });
 
+        // Find out what the current user's "friendly" username is.
+        Auth.getAuthenticatedUser().then(function(user) {
+            if (user !== false) {
+                UsersModel.getFullUser(user.id).then(function (response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        ctrl.username = response.data.name;
+                    }
+                })
+            }
+        });
+
         ctrl.updateScenarios();
     })
     .directive('scenaristScenariosArchivesList', function() {
@@ -136,7 +150,8 @@ angular.module('private.scenarist.archives.directives', [])
                 unarchive: "=",
                 delete: "=",
                 search: "=",
-                loading: "="
+                loading: "=",
+                username: "="
             }
         };
     });

@@ -2,18 +2,20 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.persistence.game.GameModel;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
-    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
+        query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
 public class ListDescriptor extends VariableDescriptor<VariableInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -31,11 +33,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     /**
      *
      */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     //@BatchFetch(BatchFetchType.IN)
-    @JoinColumn(referencedColumnName = "variabledescriptor_id", name = "items_variabledescriptor_id")
-    //@OrderBy("id")
-    @OrderColumn
+    @OneToMany(mappedBy = "parentList", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OrderColumn(name = "ld_items_order")
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
@@ -59,15 +59,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     public ListDescriptor(String name) {
         super(name);
-    }
-
-    /**
-     *
-     * @param name
-     * @param defaultInstance
-     */
-    public ListDescriptor(String name, VariableInstance defaultInstance) {
-        super(name, defaultInstance);
     }
 
     /*  @Override
@@ -99,6 +90,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      * @return the variableDescriptors
      */
     @Override
+    @JsonView(Views.ExportI.class)
     public List<VariableDescriptor> getItems() {
         return this.items;
     }
@@ -114,33 +106,12 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         }
     }
 
-    /**
-     *
-     * @param item
-     */
     @Override
-    public void addItem(VariableDescriptor item) {
-        if (isAuthorized(item)) {
-            if (this.getGameModel() != null) {
-                this.getGameModel().addToVariableDescriptors(item);
-            }
-            this.getItems().add(item);
-            item.setParentList(this);
+    public void setChildParent(VariableDescriptor child) {
+        if (isAuthorized(child)) {
+            child.setParentList(this);
         } else {
-            throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
-        }
-    }
-
-    @Override
-    public void addItem(int index, VariableDescriptor item) {
-        if (isAuthorized(item)) {
-            if (this.getGameModel() != null) {
-                this.getGameModel().addToVariableDescriptors(item);
-            }
-            this.getItems().add(index, item);
-            item.setParentList(this);
-        } else {
-            throw WegasErrorMessage.error(item.getClass().getSimpleName() + " not allowed in this folder");
+            throw WegasErrorMessage.error(child.getClass().getSimpleName() + " not allowed in this folder");
         }
     }
 
@@ -157,26 +128,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      * @param child
      */
     private boolean isAuthorized(VariableDescriptor child) {
-        return this.isAuthorized(child.getClass().getSimpleName());
-    }
-
-    /**
-     *
-     * @param index
-     * @return
-     */
-    @Override
-    public VariableDescriptor item(int index) {
-        return this.getItems().get(index);
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public int size() {
-        return this.getItems().size();
+        return this.isAuthorized(child.getJSONClassName());
     }
 
     /**
@@ -215,17 +167,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
             }
         }
         return acc;
-    }
-
-    /**
-     *
-     * @param item
-     * @return
-     */
-    @Override
-    public boolean remove(VariableDescriptor item) {
-        this.getGameModel().removeFromVariableDescriptors(item);
-        return this.getItems().remove(item);
     }
 
     @Override

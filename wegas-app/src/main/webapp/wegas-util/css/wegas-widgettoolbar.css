@@ -2,19 +2,41 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
+/* Toolbar styles */
+.wegas-hastoolbar {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-flow: column;
+}
+
+/* .editor-preview .layout .wegas-hastoolbar {
+    position: inherit;
+} */
+
+.wegas-hastoolbar > .wegas-toolbar-sibling {
+    flex: 1 1 auto;
+    overflow: auto;
+    width: 100%;
+    position: relative;
+}
+.wegas-hastoolbar > .wegas-toolbar {
+    flex: 0 1 auto;
+    width: 100%;
+    position: relative;
+}
 /** Toolbar styles **/
 .wegas-toolbar {
-    vertical-align: top;
     width: 100%;
-    background:white;
-    z-index: 23;
+    /* background:white; */
+    /* z-index: 23; */
     /*box-shadow: 1px 2px 4px #6D6D6D;*/
     /*min-height: 25px;*/
     /*padding: 5px 0 1px;*/
@@ -25,14 +47,13 @@
     padding-left:6px;
 }*/
 .wegas-toolbar-header{
-    vertical-align: top;
     border: none;
     min-height: 17.1px;
+    /* background-color: #F2F9FF; Too much discrepancies between tab height */
     position: relative;
-    overflow: hidden;
-    padding: 0.5em;
+    overflow: auto;
+    padding: 0.5em 0.5em 0.5em 0.5em;
     word-wrap: normal;
-    white-space: nowrap;
 }
 .wegas-toolbar-panel {
     overflow: hidden;
@@ -63,27 +84,7 @@
     max-height: 200px;
     overflow-y: auto;
 }
-.wegas-toolbar-header > .inputEx-fieldWrapper,
-.wegas-toolbar > .inputEx-fieldWrapper,
-.wegas-toolbar-header > .yui3-button,
-.wegas-toolbar > .yui3-button {
-    margin-right: 0.2em;
-    float: left;
-}
-.wegas-editmode .wegas-layout-left .wegas-toolbar-header > .yui3-button,
-.wegas-lobby .wegas-layout-center .wegas-toolbar-header > .yui3-button {
-    float: none;
-}
-.wegas-toolbar > .yui3-button.wegas-editor-closeposition {
-    margin-right: 0.2em;
-    float: right;
-}
-.wegas-toolbar .yui3-button:last-child {
-    margin-right: 0;
-}
-.wegas-toolbar .wegas-selectbutton {
-    display:inline-block;
-}
+/* Script Library tweaks*/
 .wegas-toolbar .inputEx-fieldWrapper {
     margin:0;
     padding-left: 3px;
@@ -98,9 +99,12 @@
 .wegas-toolbar div.inputEx-label {
     padding: 4px 1px 0 0;
 }
-.yui3-skin-sam .wegas-inbox .wegas-toolbar,
-.yui3-skin-sam .wegas-userpreferences .wegas-toolbar{
-    background-color:rgba(255, 255, 255, 0.4);
+
+.wegas-form-title {
+    display: inline-block;
+    border-bottom: 2px solid #D3ECF6;
+    font-size: 18px;
+    margin: 1px 12px 0 6px;
 }
 
 /** Status message */
@@ -109,8 +113,7 @@
     margin-top: 7px;
     text-shadow: 1px 1px 0px #DDD;
     font-size: 11px;
-    margin-right: .5em;
-    display: inline-block;
+    margin-right: 20px;
     vertical-align: top;
     float: right;
 }

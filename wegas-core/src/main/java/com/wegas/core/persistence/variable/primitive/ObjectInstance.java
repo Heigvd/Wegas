@@ -2,15 +2,15 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.persistence.VariableProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import javax.persistence.Entity;
 @Access(AccessType.FIELD)
 
 /*@Table(indexes = {
- @Index(columnList = "properties.objectinstance_variableinstance_id")
+ @Index(columnList = "properties.objectinstance_id")
  })*/
 public class ObjectInstance extends VariableInstance implements Propertable {
 

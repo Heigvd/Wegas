@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -13,19 +13,19 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.BroadcastTarget;
 import com.wegas.core.persistence.Broadcastable;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.User;
-
+import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasMembership;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -38,16 +38,18 @@ import javax.validation.constraints.Pattern;
             //    @UniqueConstraint(columnNames = {"name"}),
             @UniqueConstraint(columnNames = {"token"})},
         indexes = {
-            @Index(columnList = "gamemodelid")
+            @Index(columnList = "gamemodel_id"),
+            @Index(columnList = "createdby_id")
         }
 )
 @NamedQueries({
     @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+    @NamedQuery(name = "Game.findIdById", query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId"),
     @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
     @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Game extends NamedEntity implements Broadcastable, BroadcastTarget, DatedEntity {
+public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -55,7 +57,6 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
      *
      */
     @Id
-    @Column(name = "game_id")
     @GeneratedValue
     private Long id;
 
@@ -71,6 +72,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
      */
     @NotNull
     @Basic(optional = false)
+
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     private String token;
 
@@ -78,64 +80,48 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
 
     /**
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
     private Date updatedTime = new Date();
 
     /**
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    //@XmlTransient
     @JsonIgnore
     private User createdBy;
 
     /**
      *
      */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    //@XmlTransient
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<GameAccount> gameAccounts;
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("game-team")
-    private List<Team> teams = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
-    private List<VariableInstance> privateInstances = new ArrayList<>();
+    private GameTeams gameTeams;
 
     /**
      *
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "gamemodelid", nullable = false)
+    @JoinColumn(nullable = false)
     private GameModel gameModel;
 
     /**
      *
-     * @Column(name = "gamemodelid", nullable = false, insertable = false,
-     * updatable = false) private Long gameModelId;
-     */
-    /**
-     *
      */
     @Enumerated
-    private GameAccess access = GameAccess.CLOSE;
+    private GameAccess access = GameAccess.OPEN;
 
     /**
      *
      */
     @Enumerated(value = EnumType.STRING)
-    @Column(length = 24)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
 
     /**
@@ -166,11 +152,9 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
     @PrePersist
     public void prePersist() {
         this.setCreatedTime(new Date());
-        /*
-        if (this.getTeams().isEmpty()) {
-            this.addTeam(new DebugTeam());
+        if (gameTeams == null) {
+            this.setGameTeams(new GameTeams());
         }
-         */
         this.preUpdate();
     }
 
@@ -185,18 +169,31 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
     @Override
     public void merge(AbstractEntity a) {
         Game other = (Game) a;
-        super.merge(a);
+        this.setName(other.getName());
         this.setAccess(other.getAccess());
         this.setToken(other.getToken());
+    }
+
+    public GameTeams getGameTeams() {
+        if (gameTeams == null) {
+            this.setGameTeams(new GameTeams());
+        }
+        return gameTeams;
+    }
+
+    public void setGameTeams(GameTeams gameTeams) {
+        this.gameTeams = gameTeams;
+        this.gameTeams.setGame(this);
     }
 
     /**
      * @return the teams
      */
     @JsonManagedReference("game-team")
-    @JsonView(Views.IndexI.class)
+    // Exclude this property from the Lobby view and force a fetch in Editor view:
+    @JsonView(Views.EditorI.class)
     public List<Team> getTeams() {
-        return this.teams;
+        return this.getGameTeams().getTeams();
     }
 
     /**
@@ -204,7 +201,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
      */
     @JsonManagedReference("game-team")
     public void setTeams(List<Team> teams) {
-        this.teams = teams;
+        this.getGameTeams().setTeams(teams);
     }
 
     @JsonIgnore
@@ -221,6 +218,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
      * @return all players from all teams
      */
     @JsonIgnore
+    @Override
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>();
         for (Team t : this.getTeams()) {
@@ -230,11 +228,23 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
     }
 
     /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getAnyLivePlayer() {
+        for (Team t : this.getTeams()) {
+            return t.getAnyLivePlayer();
+        }
+        return null;
+    }
+
+    /**
      * @param t
      */
-    //@XmlTransient
     @JsonIgnore
     public void addTeam(Team t) {
+
         this.getTeams().add(t);
         t.setGame(this);
         //t.setGameId(this.getId());
@@ -243,7 +253,7 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
     /**
      * @return the gameModel
      */
-    @JsonView(Views.LobbyI.class)
+    @JsonView({Views.LobbyI.class, Views.EditorI.class})
     public GameModel getGameModel() {
         return gameModel;
     }
@@ -404,21 +414,18 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
         // So jersey don't yell
     }
 
-    /**
-     * Retrieve all variableInstances that belongs to this game only (ie.
-     * gameScoped)
-     *
-     * @return all game gameScoped instances
-     */
+    @Override
     public List<VariableInstance> getPrivateInstances() {
-        return privateInstances;
+        return new ArrayList<>();
     }
 
-    /**
-     * @param privateInstances
-     */
-    public void setPrivateInstances(List<VariableInstance> privateInstances) {
-        this.privateInstances = privateInstances;
+    @Override
+    public List<VariableInstance> getAllInstances() {
+        List<VariableInstance> instances = new ArrayList<>();
+        for (Team t : getTeams()) {
+            instances.addAll(t.getAllInstances());
+        }
+        return instances;
     }
 
     /**
@@ -491,5 +498,36 @@ public class Game extends NamedEntity implements Broadcastable, BroadcastTarget,
         entities.add(this);
         map.put(audience, entities);
         return map;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        // Only trainer can create games
+        return WegasMembership.TRAINER;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        return WegasMembership.ADMIN;
+    }
+
+    @Override
+    public WegasPermission getAssociatedReadPermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAME);
+    }
+
+    @Override
+    public WegasPermission getAssociatedWritePermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME);
     }
 }

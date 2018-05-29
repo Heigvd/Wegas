@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.page;
@@ -45,7 +45,7 @@ public class PageConnector implements AutoCloseable{
         return WFSConfig.PAGES_ROOT.apply(this.gameModelId);
     }
     /**
-     * @return
+     * @return childre NodeIterator
      * @throws RepositoryException
      */
     protected NodeIterator listChildren() throws RepositoryException {
@@ -75,7 +75,7 @@ public class PageConnector implements AutoCloseable{
     /**
      *
      * @param path
-     * @return
+     * @return child matching the path
      * @throws RepositoryException
      */
     protected Node getChild(String path) throws RepositoryException {
@@ -91,7 +91,7 @@ public class PageConnector implements AutoCloseable{
     /**
      *
      * @param name
-     * @return
+     * @return the child
      * @throws RepositoryException
      */
     protected Node addChild(String name) throws RepositoryException {

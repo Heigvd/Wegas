@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -11,84 +11,103 @@ import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.persistence.variable.primitive.TextDescriptor;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.security.persistence.User;
+import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.util.ArrayList;
 import java.util.List;
-import javax.naming.NamingException;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-public class PlayerFacadeTest extends AbstractEJBTest {
+public class PlayerFacadeTest extends AbstractArquillianTest {
 
-    private static GameFacade gameFacade;
-    private static TeamFacade teamFacade;
-    private static UserFacade userFacade;
-    private static PlayerFacade playerFacade;
-
-    @BeforeClass
-    public static void init() throws NamingException {
-        gameFacade = lookupBy(GameFacade.class);
-        teamFacade = lookupBy(TeamFacade.class);
-        playerFacade = lookupBy(PlayerFacade.class);
-        userFacade = lookupBy(UserFacade.class);
-    }
+    private static final Logger logger = LoggerFactory.getLogger(PlayerFacadeTest.class);
 
     /**
      * Test registeredGames
      */
     @Test
     public void testRemovePlayer() throws Exception {
-        User currentUser = userFacade.getCurrentUser();
-
-        Assert.assertEquals(1, currentUser.getPlayers().size());
-
+        this.createSecondTeam();
+        /**
+         * Create a game as trainer
+         */
+        login(trainer);
         final Game g = new Game("game");
+        g.setAccess(Game.GameAccess.OPEN);
         g.setGameModel(gameModel);
-        gameFacade.create(g);
+        gameFacade.publishAndCreate(gameModel.getId(), g);
+
+        /**
+         * Login as user
+         */
+        login(user);
+        Assert.assertEquals(1, userFacade.getCurrentUser().getPlayers().size()); // user plays to game as player !
+        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam 
+
         Team t = new Team("team");
         t.setGame(g);
         teamFacade.create(t);
-        final Player p1 = new Player("player");
-        p1.setTeam(t);
-        p1.setUser(currentUser);
-        playerFacade.create(p1);
-        final Player p2 = new Player("player1");
-        p2.setTeam(t);
-        playerFacade.create(p2);
+
+        Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().size()); // debugTeam and team
+
+        Player p1 = gameFacade.joinTeam(t.getId(), user.getId(), null);
+
+        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1
+
+        login(user21);
+        Player p2 = gameFacade.joinTeam(t.getId(), user21.getId(), null);
 
         Game ng = gameFacade.find(g.getId());
-        currentUser = userFacade.find(currentUser.getId());
+
+        User currentUser = userFacade.find(user21.getId());
         Assert.assertEquals(2, ng.getTeams().size());
-        Assert.assertEquals(2, ng.getTeams().get(1).getPlayers().size());
+
+        Team theTeam = null;
+        for (Team tIt : ng.getTeams()) {
+            if (!(tIt instanceof DebugTeam)) {
+                theTeam = tIt;
+                break;
+            }
+        }
+        Assert.assertNotNull(theTeam);
+        Assert.assertEquals(2, theTeam.getPlayers().size());
+
         Assert.assertEquals(2, currentUser.getPlayers().size());
-        
+
+        login(user);
         playerFacade.remove(p1.getId());
 
         ng = gameFacade.find(g.getId());
         Assert.assertEquals(2, ng.getTeams().size());
-        Assert.assertEquals(1, ng.getTeams().get(1).getPlayers().size());
+        theTeam = null;
+        for (Team tIt : ng.getTeams()) {
+            if (!(tIt instanceof DebugTeam)) {
+                theTeam = tIt;
+                break;
+            }
+        }
+        Assert.assertNotNull(theTeam);
 
-        teamFacade.remove(t.getId());
+        Assert.assertEquals(1, theTeam.getPlayers().size());
 
-        ng = gameFacade.find(g.getId());
-        currentUser = userFacade.find(currentUser.getId());
-        Assert.assertEquals(1, ng.getTeams().size());
+        login(user21);
+        playerFacade.remove(p2.getId()); //removing the last player in team leads to team deletion
 
-        Assert.assertEquals(1, currentUser.getPlayers().size());
+        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam
 
+        Assert.assertEquals(1, userFacade.getCurrentUser().getPlayers().size());
+
+        login(admin);
         gameFacade.remove(g.getId());                                           // Clean up
-    }
-
-    @Test
-    public void getInstances() {
-        List<VariableInstance> instances = playerFacade.getInstances(player.getId());
     }
 
     private Team createTeam(Game g, String name) {
@@ -98,11 +117,13 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         return t;
     }
 
-    private Player createPlayer(Team t) {
-        User u = new User();
-        userFacade.create(u);
+    private WegasUser createPlayer(Team t, int i, int j) {
+        WegasUser u = this.signup("massive_player_" + i + "_" + j + "@local");
+        login(u);
+        gameFacade.joinTeam(t.getId(), u.getUsername(), null);
+        u.setUser(userFacade.find(u.getId()));
 
-        return gameFacade.joinTeam(t.getId(), u.getId());
+        return u;
     }
 
     /**
@@ -110,16 +131,30 @@ public class PlayerFacadeTest extends AbstractEJBTest {
      */
     @Test
     public void testMassiveJoin() throws Exception {
-        int nbTeam = 100;
+        int nbTeam = 50;
         int nbPlayer = 10;
-        Game g = new Game("game");
-        g.setGameModel(gameModel);
-        gameFacade.create(g);
 
+        TextDescriptor pScoped = new TextDescriptor();
+        pScoped.setName("pScoped");
+        pScoped.setScope(new PlayerScope());
+        pScoped.setDefaultInstance(new TextInstance());
+
+        variableDescriptorFacade.create(gameModel.getId(), pScoped);
+
+
+
+        login(trainer);
+        Game g = new Game("game");
+        g.setAccess(Game.GameAccess.OPEN);
+        g.setGameModel(gameModel);
+        gameFacade.publishAndCreate(gameModel.getId(), g);
+        List<WegasUser> users = new ArrayList<>();
+
+        //populatorScheduler.setAsync(true);
         for (int i = 0; i < nbTeam; i++) {
             Team t = createTeam(g, "T" + i);
             for (int j = 0; j < nbPlayer; j++) {
-                createPlayer(t);
+                users.add(createPlayer(t, i, j));
             }
         }
 
@@ -130,13 +165,19 @@ public class PlayerFacadeTest extends AbstractEJBTest {
             t = teamFacade.find(t.getId());
             if (t instanceof DebugTeam == false) {
                 Assert.assertEquals(nbPlayer, t.getPlayers().size());
-                for (Player p : t.getPlayers()) {
-                    Assert.assertEquals(1, p.getUser().getPermissions().size());
-                    Permission perm = p.getUser().getPermissions().get(0);
-                    Assert.assertEquals("Game:View:g" + g.getId(), perm.getValue());
-                    Assert.assertEquals("GameModel:View:gm" + g.getGameModel().getId(), perm.getInducedPermission());
-                }
             }
+        }
+
+        for (WegasUser wu : users) {
+            login(wu);
+            Player p = wu.getUser().getPlayers().get(0);
+            Assert.assertTrue(requestManager.hasPlayerRight(p));
+            Assert.assertTrue(requestManager.hasTeamRight(p.getTeam()));
+            Assert.assertTrue(requestManager.hasGameReadRight(p.getGame()));
+            Assert.assertTrue(requestManager.hasGameModelReadRight(p.getGameModel()));
+
+            Assert.assertFalse(requestManager.hasGameWriteRight(p.getGame()));
+            Assert.assertFalse(requestManager.hasGameModelWriteRight(p.getGameModel()));
         }
 
     }

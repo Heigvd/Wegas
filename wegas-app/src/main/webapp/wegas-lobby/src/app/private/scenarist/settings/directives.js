@@ -32,7 +32,8 @@ angular.module('private.scenarist.settings.directives', [
             clientScriptUri: false,
             cssUri: false,
             pagesUri: false,
-            logID: false
+            logID: false,
+            guestAllowed: false
         };
         ctrl.infos = {
             name: "",
@@ -47,7 +48,8 @@ angular.module('private.scenarist.settings.directives', [
             clientScriptUri: "",
             cssUri: "",
             pagesUri: "",
-            logID: ""
+            logID: "",
+            guestAllowed : false
         };
         ctrl.tabs = initTabs();
 
@@ -73,6 +75,7 @@ angular.module('private.scenarist.settings.directives', [
                     ctrl.infos.cssUri = ctrl.scenario.properties.cssUri;
                     ctrl.infos.pagesUri = ctrl.scenario.properties.pagesUri;
                     ctrl.infos.logID = ctrl.scenario.properties.logID;
+                    ctrl.infos.guestAllowed = ctrl.scenario.properties.guestAllowed;
                 }
             });
         };
@@ -119,13 +122,16 @@ angular.module('private.scenarist.settings.directives', [
                     case "logID":
                         ctrl.hasChanges.logID = (ctrl.scenario.properties.logID !== changes);
                         break;
+                    case "guestAllowed":
+                        ctrl.hasChanges.guestAllowed = (ctrl.scenario.properties.guestAllowed !== changes);
+                        break;
 
                 }
                 ctrl.hasChanges.all = ctrl.hasChanges.color || ctrl.hasChanges.icon ||
                     ctrl.hasChanges.name || ctrl.hasChanges.comments ||
                     ctrl.hasChanges.individual || ctrl.hasChanges.scriptUri ||
                     ctrl.hasChanges.clientScriptUri || ctrl.hasChanges.cssUri ||
-                    ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID;
+                    ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID || ctrl.hasChanges.guestAllowed;
             }
         };
 
@@ -161,7 +167,7 @@ angular.module('private.scenarist.settings.directives', [
             $scope.close();
         };
 
-        var properties = ["name", "comments", "individual", "scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID"];
+        var properties = ["name", "comments", "individual", "scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID", "guestAllowed"];
 
         _.each(properties, function(el, index) {
             $scope.$watch(function() {
@@ -183,7 +189,7 @@ angular.module('private.scenarist.settings.directives', [
             templateUrl: 'app/private/scenarist/settings/directives.tmpl/infos-form.html'
         };
     })
-    .directive('scenaristCustomizeAdvanced', function() {
+.directive('scenaristCustomizeAdvanced', function() {
         "use strict";
         return {
             scope: {

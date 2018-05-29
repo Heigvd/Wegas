@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -14,9 +14,8 @@ import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.User;
+import io.prometheus.client.Counter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -53,6 +52,9 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     @EJB
     RequestFacade requestFacade;
 
+    private static final Counter requests = Counter.build()
+            .name("requests_total").help("Total requests.").register();
+
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
     /**
@@ -62,23 +64,16 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext cr) throws IOException {
-        //RequestFacade rmf = RequestFacade.lookup();
         RequestManager requestManager = requestFacade.getRequestManager();
 
-        requestManager.setSocketId(cr.getHeaderString("managed-mode"));
+        requestManager.setSocketId(cr.getHeaderString("socketId"));
 
+        requests.inc();
         requestManager.setRequestId(idGenerator.getUniqueIdentifier());
         requestManager.setMethod(cr.getMethod());
         requestManager.setPath(cr.getUriInfo().getPath());
 
         //String userAgent = cr.getHeaderString("user-agent");
-        User currentUser = null;
-        try {
-            currentUser = userFacade.getCurrentUser();
-        } catch (WegasNotFoundException e) {
-        }
-        requestManager.setCurrentUser(currentUser);
-
         Class<?> view;
 
         // Handle language parameter
@@ -112,8 +107,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
                 break;
         }
 
-        logger.info("Start Request [" + requestManager.getRequestId()
-                + "] " + cr.getMethod() + " " + cr.getUriInfo().getPath());
+        logger.info("Start Request [{}] {} {}", requestManager.getRequestId(), cr.getMethod(), cr.getUriInfo().getPath());
 
         try {
             cr.setRequestUri(new URI(newUri));
@@ -134,6 +128,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     /**
      *
      * @param str
+     *
      * @return Views.Class matching str or public
      */
     public Class stringToView(String str) {
@@ -169,7 +164,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
         @Override
         public ObjectWriter modify(EndpointConfigBase<?> ecb, MultivaluedMap<String, Object> mm, Object o, ObjectWriter writer, JsonGenerator jg) throws IOException {
-            //Class view = RequestFacade.lookup().getView();
             return writer.withView(view);
         }
     }

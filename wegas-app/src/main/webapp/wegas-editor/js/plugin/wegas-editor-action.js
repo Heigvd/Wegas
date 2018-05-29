@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -29,7 +29,27 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         execute: function() {
             var editGame = Y.one("body.wegas-editmode-game");
+            var btn = this.get("host"),
+                childNodes,
+                icon,
+                hideOverlay = Y.bind(this.hideOverlay, this),
+                cb = function() {
+                    if (icon) {
+                        icon.removeClass('fa-spin');
+                    }
+                    hideOverlay();
+                };
 
+            // Make the button spin around for a while as a visual feedback:
+            if (btn && (childNodes = btn
+                    .get('contentBox')
+                    .get('childNodes'))) {
+                // The icon is a child element of the button:
+                icon = childNodes.get('items')[0];
+                if (icon) {
+                    icon.addClass('fa-spin');
+                }
+            }
 
             // Ask confirmation when editing the scenario of a real game
             if (!editGame || confirm("This action will reset all players in the game you're editing the scenario for. Do you really want to continue?")) {
@@ -37,9 +57,9 @@ YUI.add('wegas-editor-action', function(Y) {
                 Wegas.Facade.Variable.sendRequest({
                     request: '/Reset/',
                     on: {
-                        success: Y.bind(this.hideOverlay, this),
-                        failure: Y.bind(this.hideOverlay, this)
-                    }
+                        success: cb,
+                        failure: cb,
+                    },
                 });
             }
         }
@@ -61,21 +81,51 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            if (this.get("emptyTab")) {
-                Y.Widget.getByNode("#rightTabView").destroyAll();
-            }
-
             var label = this.get("label") || this.get("host").get("label"),
-                tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"),
-                    this.get("tabCfg"), this.get("wchildren"));                 // Forward plugin data to the target widget
+                isEditor = (label === Wegas.TabView.getEditorTabLabel()),
+                targetTabView = !isEditor ? Wegas.TabView.getNonEditorTabViewId() : this.get("tabSelector"),
+                previouslySelectedTabId;
 
-            tab.set("selected", this.get("selected"));
-
-            if (this.get("emptyTab") || this.get("tabSelector") !== "#rightTabView") {// @hack
-                tab.set("selected", 2);
+            if (!this.get("id")) {
+                this.set("id", label);
             }
 
-            tab.plug(Plugin.Removeable);
+            if (isEditor) {
+                var previouslySelectedTab = Wegas.TabView.getSelected(targetTabView);
+                if (previouslySelectedTab) {
+                    previouslySelectedTabId = previouslySelectedTab.get("id") || previouslySelectedTab.get("label");
+                }
+            }
+
+            var newTab;
+            if (isEditor && Wegas.TabView.getEditorTab()) {
+                newTab = Wegas.TabView.moveToTabView(label, targetTabView, {});
+            } else {
+                newTab = Wegas.TabView.findTabAndLoadWidget(label, targetTabView,
+                    this.get("tabCfg"), this.get("wchildren"));                 // Forward plugin data to the target widget
+            }
+
+            if (newTab.hasPlugin("hideable")) {
+                newTab.hideable.expand();
+            } else {
+                newTab.plug(Plugin.Removeable);
+            }
+
+            if (isEditor) {
+                if (!newTab.hasPlugin("editentity")) {
+                    newTab.plug(Plugin.EditEntityAction);
+                }
+                // The editor is being moved to the opposite tabView and shall be alone there.
+                Wegas.TabView.moveTabsAwayFrom(targetTabView, newTab);
+                if (previouslySelectedTabId) {
+                    Wegas.TabView.setSelected(Wegas.TabView.getTab(previouslySelectedTabId));
+                }
+                Y.one(targetTabView + " .wegas-plus-tab").hide();
+                Y.one(Wegas.TabView.getOppositeTabView(targetTabView) + " .wegas-plus-tab").show();
+                Wegas.TabView.setDefaultEditorTabView(targetTabView);
+            }
+
+            newTab.set("selected", 2);
         }
     }, {
         /** @lends Y.Plugin.OpenTabAction */
@@ -93,9 +143,6 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         ATTRS: {
             label: {},
-            emptyTab: {
-                value: false
-            },
             tabSelector: {
                 value: '#centerTabView'
             },
@@ -397,7 +444,7 @@ YUI.add('wegas-editor-action', function(Y) {
     Wegas.Linkwidget = Linkwidget;
 
     /**
-     * Class for display the player link in menu's
+     * DEPRECATED Class for display the player link in menu's
      *
      * @name Y.Wegas.Linkwidget
      * @extends Y.Widget
@@ -406,8 +453,8 @@ YUI.add('wegas-editor-action', function(Y) {
      * @constructor
      * @param Object Will be used to fill attributes field
      */
+    /*
     var JoinOrResumeButton = Y.Base.create("button", Wegas.Button, [], {
-        /** @lends Y.Wegas.Linkwidget# */
         renderUI: function() {
             JoinOrResumeButton.superclass.renderUI.apply(this);
 
@@ -450,21 +497,12 @@ YUI.add('wegas-editor-action', function(Y) {
             });
         }
     }, {
-        /** @lends Y.Wegas.Linkwidget */
-        /**
-         * <p><strong>Attributes</strong></p>
-         * <ul>
-         *    <li>entity: the gamemodel or team entity, which the link will point to.</li>
-         * </ul>
-         *
-         * @field
-         * @static
-         */
         ATTRS: {
             entity: {}
         }
     });
     Wegas.JoinOrResumeButton = JoinOrResumeButton;
+    */
 
     /**
      *  @name Y.Plugin.LeaveGameAction
@@ -504,7 +542,7 @@ YUI.add('wegas-editor-action', function(Y) {
                                 //.showMessage("successPopup", "Game left", 2000)  // Popup
                                 .showMessage("success", "Game left");            // toolbar
 
-                            Y.Plugin.EditEntityAction.hideRightTabs();              // Empty right tab on join
+                            Y.Plugin.EditEntityAction.destroyEditionTab();              // Empty right tab on join
                         }, this)
                     }
                 });
@@ -539,7 +577,7 @@ YUI.add('wegas-editor-action', function(Y) {
             };
         },
         _removeStateMachinePanel: function(entity) {
-            var tab = Wegas.TabView.findTab("State machine");
+            var tab = Wegas.TabView.getTab("State machine");
             if (tab && tab.item(0).get("entity").get("id") === entity.get("id")) {
                 tab.remove().destroy();
             }
@@ -570,7 +608,7 @@ YUI.add('wegas-editor-action', function(Y) {
                 }
             }
             if (removeTab) {
-                Y.Plugin.EditEntityAction.hideRightTabs();
+                Y.Plugin.EditEntityAction.destroyEditionTab();
             }
         },
         onDescriptorDelete: function(e) {

@@ -2,23 +2,20 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.jparealm;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.persistence.AbstractAccount;
+import javax.persistence.*;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.util.SimpleByteSource;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-
-import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Simple class that represents any User domain entity in any application.
@@ -26,9 +23,6 @@ import java.util.Date;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
-})
 @NamedQueries({
     @NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount"),
     @NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount AND LOWER(a.email) LIKE LOWER(:email)"),

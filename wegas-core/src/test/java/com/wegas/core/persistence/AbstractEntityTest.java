@@ -2,25 +2,17 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
 
-import com.wegas.core.ejb.TestHelper;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import javax.persistence.PersistenceContext;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import org.junit.Before;
 
 /**
  * CRUD testunit for Entities (Integration test)<br/> Setup embedded-glassfish
@@ -29,35 +21,15 @@ import static junit.framework.Assert.assertNull;
  */
 public abstract class AbstractEntityTest<T extends AbstractEntity> {
 
+    @PersistenceContext(unitName = "wegasPU")
     private static EntityManager em;
 
-    private static EntityManagerFactory emf;
-
     protected static EntityTransaction tx;
-
-    private static EJBContainer ejbContainer;
-
-    private static Context ctx;
 
     private Class<T> entityClass;
 
     public AbstractEntityTest(Class<T> entityClass) {
         this.entityClass = entityClass;
-    }
-
-    @BeforeClass
-    public static void initContext() throws Exception {
-        System.out.println("[WeGAS Entity Test] Set up context...");
-        ejbContainer = TestHelper.getEJBContainer();
-        ctx = ejbContainer.getContext();
-        emf = Persistence.createEntityManagerFactory("wegasPU");
-        em = emf.createEntityManager();
-    }
-
-    @AfterClass
-    public static void closeContext() throws Exception {
-        System.out.println("[WeGAS Entity Test] ...Clean context");
-        TestHelper.closeContainer();
     }
 
     @Before

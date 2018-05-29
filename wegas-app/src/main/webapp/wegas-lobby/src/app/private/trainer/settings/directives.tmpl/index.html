@@ -9,13 +9,16 @@
 	</a>
 </div>
 <!-- Modal tabs -->
-<div class="modal__nav modal__nav--2tab">
+<div class="modal__nav modal__nav--3tab">
     <a 	class="modal__nav__tab modal__nav__tab--left"
         ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.infos}"
         ng-click="settingsIndexCtrl.activeTab('infos')">{{'PRIVATE-MODALE-TABS-INFOS' | translate}}</a>
-    <a  class="modal__nav__tab modal__nav__tab--right"
+    <a  class="modal__nav__tab modal__nav__tab--middle"
         ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.advanced}"
         ng-click="settingsIndexCtrl.activeTab('advanced')">{{'PRIVATE-MODALE-TABS-ADVANCED' | translate}}</a>
+   	<a 	class="modal__nav__tab modal__nav__tab--right"
+   		ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.languages}"
+   		ng-click="settingsIndexCtrl.activeTab('languages')">{{'PRIVATE-MODALE-TABS-LANGUAGES' | translate}}</a>
 </div>
 <div 	ng-if="settingsIndexCtrl.tabs.infos"
         class="modal__content"
@@ -28,6 +31,12 @@
         class="modal__content"
         active-infos="settingsIndexCtrl.infos"
         trainer-sessions-customize-advanced>
+</div>
+<!-- Languages -->
+<div    ng-if="settingsIndexCtrl.tabs.languages"
+        class="modal__content"
+        active-infos="settingsIndexCtrl.infos"
+        trainer-sessions-customize-languages>
 </div>
 <div class="modal__tools">
 	<p ng-if="settingsIndexCtrl.hasChanges.all" class="modal__tools__message"><i class="fa fa-warning"></i> {{'PRIVATE-MODALE-SETTINGS-NOT-SAVED-WARNING' | translate}}</p>

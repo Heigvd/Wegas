@@ -31,7 +31,9 @@ angular.module('private.trainer.settings.directives', [
             clientScriptUri: false,
             cssUri: false,
             pagesUri: false,
-            logID: false
+            logID: false,
+            guestAllowed: false,
+            languages: false
         };
         ctrl.infos = {
             baseUrl: $location.protocol() + "://" + location.host + location.pathname,
@@ -49,7 +51,9 @@ angular.module('private.trainer.settings.directives', [
             clientScriptUri: "",
             cssUri: "",
             pagesUri: "",
-            logID: ""
+            logID: "",
+            guestAllowed: false,
+            languages: []
         };
         ctrl.tabs = initTabs();
 
@@ -79,6 +83,11 @@ angular.module('private.trainer.settings.directives', [
                     ctrl.infos.cssUri = ctrl.session.gameModel.properties.cssUri;
                     ctrl.infos.pagesUri = ctrl.session.gameModel.properties.pagesUri;
                     ctrl.infos.logID = ctrl.session.gameModel.properties.logID;
+                    ctrl.infos.guestAllowed = ctrl.session.gameModel.properties.guestAllowed;
+                    ctrl.infos.languages = [];
+                    for (var i = 0; i < ctrl.session.gameModel.languages.length; i++) {
+                        ctrl.infos.languages.push(JSON.parse(JSON.stringify(ctrl.session.gameModel.languages[i])));
+                    }
                 }
             });
         };
@@ -113,11 +122,14 @@ angular.module('private.trainer.settings.directives', [
                     case "logID":
                         ctrl.hasChanges.logID = (ctrl.session.gameModel.properties.logID !== changes);
                         break;
+                    case "guestAllowed":
+                        ctrl.hasChanges.guestAllowed = (ctrl.session.gameModel.properties.guestAllowed !== changes);
+                        break;
                 }
                 ctrl.hasChanges.all = ctrl.hasChanges.name ||
                     ctrl.hasChanges.token || ctrl.hasChanges.comments || ctrl.hasChanges.individual ||
                     ctrl.hasChanges.scriptUri || ctrl.hasChanges.clientScriptUri || ctrl.hasChanges.cssUri ||
-                    ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID;
+                    ctrl.hasChanges.pagesUri || ctrl.hasChanges.logID || ctrl.hasChanges.guestAllowed;
             }
         };
 
@@ -141,7 +153,7 @@ angular.module('private.trainer.settings.directives', [
             $scope.close();
         };
 
-        var properties = ["name", "comments", "individual", "scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID"];
+        var properties = ["name", "comments", "individual", "scriptUri", "clientScriptUri", "cssUri", "pagesUri", "logID", "guestAllowed"];
 
         _.each(properties, function(el, index) {
             $scope.$watch(function() {
@@ -169,6 +181,24 @@ angular.module('private.trainer.settings.directives', [
             }
         };
     })
+    .directive('trainerSessionsCustomizeLanguages', function(Auth) {
+        "use strict";
+        return {
+            scope: {
+                activeInfos: "="
+            },
+            templateUrl: 'app/private/trainer/settings/directives.tmpl/languages.html',
+            link: function(scope, elem, attrs) {
+                Auth.getAuthenticatedUser().then(function(user) {
+                    scope.user = user;
+                });
+                $(".link--selector").on("click", function(e) {
+                    e.stopPropagation();
+                    $(".tool--selectable").trigger("click");
+                });
+            }
+        }
+    })
     .directive('trainerSessionsCustomizeAdvanced', function(Auth) {
         "use strict";
         return {
@@ -176,8 +206,8 @@ angular.module('private.trainer.settings.directives', [
                 activeInfos: "="
             },
             templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-advanced.html',
-            link: function (scope, elem, attrs) {
-                Auth.getAuthenticatedUser().then(function (user) {
+            link: function(scope, elem, attrs) {
+                Auth.getAuthenticatedUser().then(function(user) {
                     scope.user = user;
                 });
                 $(".link--selector").on("click", function(e) {

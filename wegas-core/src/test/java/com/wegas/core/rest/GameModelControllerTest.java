@@ -2,25 +2,10 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
-
-import com.wegas.core.ejb.GameModelFacade;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import static org.junit.Assert.*;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -116,7 +101,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //    public void testIndex() throws Exception {
 //        System.out.println("index");
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        Collection expResult = null;
 //        Collection result = instance.index();
 //        assertEquals(expResult, result);
@@ -133,7 +117,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        System.out.println("get");
 //        Long entityId = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        AbstractEntity expResult = null;
 //        AbstractEntity result = instance.get(entityId);
 //        assertEquals(expResult, result);
@@ -150,7 +133,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        System.out.println("create");
 //        AbstractEntity entity = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        AbstractEntity expResult = null;
 //        AbstractEntity result = instance.create(entity);
 //        assertEquals(expResult, result);
@@ -168,7 +150,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        Long entityId = null;
 //        AbstractEntity entity = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        AbstractEntity expResult = null;
 //        AbstractEntity result = instance.update(entityId, entity);
 //        assertEquals(expResult, result);
@@ -185,7 +166,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        System.out.println("delete");
 //        Long entityId = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        AbstractEntity expResult = null;
 //        AbstractEntity result = instance.delete(entityId);
 //        assertEquals(expResult, result);
@@ -202,7 +182,6 @@ public class GameModelControllerTest /*extends JerseyTest*/ {
 //        System.out.println("getWidgets");
 //        Long gameModelId = null;
 //        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-//        GameModelController instance = (GameModelController)container.getContext().lookup("java:global/classes/GameModelController");
 //        List expResult = null;
 //        List result = instance.getWidgets(gameModelId);
 //        assertEquals(expResult, result);

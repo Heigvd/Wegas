@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -34,11 +34,8 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
     //ObjectMapper mapper;
 
     /**
-     *
-     * @param aClass
-     * @return
+     * {@inheritDoc}
      */
-    //@Override
     @Override
     public ObjectMapper getContext(Class<?> aClass) {
         return JacksonMapperProvider.getMapper();
@@ -46,7 +43,7 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
 
     /**
      *
-     * @return
+     * @return an ObjectMapper
      */
     public static ObjectMapper getMapper() {
         ObjectMapper mapper = new ObjectMapper();
