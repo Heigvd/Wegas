@@ -116,7 +116,7 @@ public final class WegasEntityPatch extends WegasPatch {
         super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, protectionLevel);
 
         if (from == null && to == null) {// both entity are null
-            logger.error("BOTH ARE NULL");
+            logger.trace("BOTH ARE NULL");
         }
         if (from != null && to != null && !from.getClass().equals(to.getClass())) {
             throw WegasErrorMessage.error("imcompatible entities");
