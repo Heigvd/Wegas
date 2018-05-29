@@ -60,7 +60,10 @@ class ContextContainer extends React.Component<
       context: { onDropResult: nextProps.onDropResult || noop },
     };
   }
-  state = { context: { onDropResult: noop }, oldProps: this.props };
+  state = {
+    context: { onDropResult: this.props.onDropResult || noop },
+    oldProps: this.props,
+  };
   render() {
     const { parent } = this.props;
     let index = 0;
@@ -105,7 +108,7 @@ interface NodeProps {
 const childrenContainer = css({
   marginLeft: '2em',
   ':empty:after': {
-    content: 'empty',
+    content: '"empty"',
     opacity: 0.5,
     fontStyle: 'italic',
   },
@@ -188,7 +191,7 @@ class TreeNode extends React.Component<
                 )}
               {separator(
                 <div>
-                  <span {...toggle} onClick={this.toggleExpand}>
+                  <span className={toggle} onClick={this.toggleExpand}>
                     {isNode && (
                       <FontAwesome
                         icon={expanded ? 'caret-down' : 'caret-right'}

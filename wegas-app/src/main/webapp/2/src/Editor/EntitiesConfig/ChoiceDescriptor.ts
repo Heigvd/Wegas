@@ -9,7 +9,7 @@ export const config: ConfigurationSchema<IChoiceDescriptor> = {
   description: {
     type: ['null', 'string'],
     view: {
-      type: 'html',
+      type: 'i18nhtml',
       label: 'Description',
     },
   },

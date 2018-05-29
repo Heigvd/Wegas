@@ -106,7 +106,7 @@ export default class Html extends React.Component<HtmlProps, HtmlState> {
                 ))}
               </div>
               <Editor
-                className={String(inputStyle)}
+                className={inputStyle}
                 value={this.state.value}
                 onChange={this.onChange}
                 plugins={plugins}

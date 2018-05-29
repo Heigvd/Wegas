@@ -17,7 +17,7 @@ interface INumberInstance extends IVariableInstance {
 }
 interface ITextInstance extends IVariableInstance {
   '@class': 'TextInstance';
-  value: string | null;
+  trValue: string | null;
 }
 interface IStringInstance extends IVariableInstance {
   '@class': 'StringInstance';

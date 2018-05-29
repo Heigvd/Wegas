@@ -24,7 +24,7 @@ interface IGameModelLanguage extends IWegasEntity {
 }
 interface ITranslatableContent extends IWegasEntity {
   '@class': 'TranslatableContent';
-  translations: { [ref: string]: string };
+  translations: { [refName: string]: string };
 }
 interface IGameModelProperties {
   freeForAll: boolean;

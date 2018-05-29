@@ -80,6 +80,7 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
     index: -12,
     minLength: 1,
     view: {
+      type: 'i18nstring',
       label: 'Label',
     },
   },

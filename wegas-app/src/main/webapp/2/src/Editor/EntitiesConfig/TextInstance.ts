@@ -9,10 +9,10 @@ export const config: ConfigurationSchema<ITextInstance> = {
       type: 'hidden',
     },
   },
-  value: {
-    type: 'string',
+  trValue: {
+    type: 'object',
     view: {
-      type: 'html',
+      type: 'i18nhtml',
       label: 'Value',
     },
   },

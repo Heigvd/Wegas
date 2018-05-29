@@ -12,6 +12,7 @@ import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
 import { getEntityActions } from '../../editionConfig';
 import { StoreDispatch } from '../../../data/store';
+import { TranslatableContent } from '../../../data/i18n';
 // import { Tree } from '../Views/Tree';
 
 interface TreeProps {
@@ -130,7 +131,9 @@ const CTree = connect(
           {...nodeProps()}
           header={
             <span onClick={onSelectCreator(variable)}>
-              {`${variable['@class']}: ${variable.label}`}
+              {`${variable['@class']}: ${TranslatableContent.toString(
+                variable.label,
+              )}`}
             </span>
           }
           id={variable}

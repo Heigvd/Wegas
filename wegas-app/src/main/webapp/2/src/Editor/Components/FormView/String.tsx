@@ -26,7 +26,7 @@ export const inputStyle = css({
   '::placeholder': {
     fontStyle: 'italic',
   },
-  '[readonly]': {
+  '&[readonly]': {
     backgroundColor: 'lightgrey',
   },
 });

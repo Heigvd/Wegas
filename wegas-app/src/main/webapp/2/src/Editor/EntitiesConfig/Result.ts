@@ -43,7 +43,7 @@ export const config: ConfigurationSchema<IResult> = {
   answer: {
     type: 'string',
     view: {
-      type: 'html',
+      type: 'i18nhtml',
       label: 'Feedback',
       borderTop: true,
     },
@@ -82,7 +82,7 @@ export const config: ConfigurationSchema<IResult> = {
       return false;
     },
     view: {
-      type: 'html',
+      type: 'i18nhtml',
       label: 'Feedback when ignored',
       borderTop: true,
     },

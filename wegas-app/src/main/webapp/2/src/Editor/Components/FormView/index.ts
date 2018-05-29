@@ -9,18 +9,21 @@ import Select from './Select';
 import ArrayWidget from './Array';
 import Html from './Html';
 import { Script } from './Script';
+import translatable from './translatable';
 
 const DEFINED_VIEWS = {
   hidden,
   uneditable,
   object: ObjectView,
   string: StringInput,
+  i18nstring: translatable(StringInput),
   number: StringInput,
   boolean: BooleanView,
   textarea: Textarea,
   array: ArrayWidget,
   select: Select,
   html: Html,
+  i18nhtml: translatable(Html),
   script: Script,
 };
 setDefaultWidgets(DEFINED_VIEWS);

@@ -8,10 +8,10 @@ export const config: ConfigurationSchema<IQuestionDescriptor> = {
     properties: questionInstanceConfig,
   },
   description: {
-    type: ['null', 'string'],
+    type: 'object',
     index: 5,
     view: {
-      type: 'html',
+      type: 'i18nhtml',
       label: 'Description',
     },
   },
