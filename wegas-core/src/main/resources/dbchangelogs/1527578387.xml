@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-    <changeSet author="maxence" id="1504688739111-1">
+    <changeSet author="maxence" id="1527578387-1">
         <addColumn tableName="abstractaccount">
             <column name="refid" type="varchar(255)"/>
         </addColumn>
@@ -85,9 +85,21 @@
         <addColumn tableName="wrequirement">
             <column name="refid" type="varchar(255)"/>
         </addColumn>
+        <addColumn tableName="enumitem">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="attachment">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="translatablecontent">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="gamemodellanguage">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
     </changeSet>
 
-    <changeSet author="maxence" id="1504688739111-2">
+    <changeSet author="maxence" id="1527578387-2">
         <addColumn tableName="gamemodel">
             <column defaultValue="SCENARIO" name="type" type="varchar(24)"/>
         </addColumn>
@@ -95,7 +107,7 @@
         <sql>UPDATE gamemodel SET type = 'SCENARIO' WHERE status IS NULL;</sql>
     </changeSet>
 
-    <changeSet author="maxence (generated)" id="1504688739111-3">
+    <changeSet author="maxence (generated)" id="1527578387-3">
         <addColumn tableName="gamemodelcontent">
             <column defaultValue="PRIVATE" name="visibility" type="varchar(24)"/>
         </addColumn>
@@ -106,7 +118,7 @@
         <sql>UPDATE variabledescriptor SET visibility = 'PRIVATE';</sql>
     </changeSet>
 
-    <changeSet author="maxence" id="1504688739111-4">
+    <changeSet author="maxence" id="1527578387-4">
         <sql splitStatements="false">
             <![CDATA[
             Create or replace function random_string(length integer) returns text as
@@ -155,6 +167,10 @@
         <sql>UPDATE variableinstance SET refid = 'variableinstance:' || id || random_string(6);</sql>
         <sql>UPDATE workload SET refid = 'workload:' || id || random_string(6);</sql>
         <sql>UPDATE wrequirement SET refid = 'wrequirement:' || id || random_string(6);</sql>
+        <sql>UPDATE enumitem SET refid = 'enumitem:' || id || random_string(6);</sql>
+        <sql>UPDATE attachment SET refid = 'attachment:' || id || random_string(6);</sql>
+        <sql>UPDATE translatablecontent SET refid = 'translatablecontent:' || id || random_string(6);</sql>
+        <sql>UPDATE gamemodellanguage SET refid = 'gamemodellanguage:' || id || random_string(6);</sql>
 
         <sql>drop function random_string ( integer);</sql>
     </changeSet>
