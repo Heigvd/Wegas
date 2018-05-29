@@ -188,12 +188,6 @@ YUI.add('wegas-entity', function(Y) {
                         className: "wegas-advanced-feature",
                         label: "RefId"
                     }
-                },
-                label: {
-                    transient: true,
-                    getter: function(val) {
-                        return val || this.get(NAME);
-                    }
                 }
             },
             /**
