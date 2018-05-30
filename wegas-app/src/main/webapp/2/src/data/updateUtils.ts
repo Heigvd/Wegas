@@ -26,7 +26,7 @@ export function deepUpdate(
  * @param object
  * @param path
  */
-export function deepRemove(object: any = {}, path: string[]): any {
+export function deepRemove(object: any, path: string[]): any {
   if (path.length === 0) {
     return undefined;
   }
@@ -42,6 +42,9 @@ export function deepRemove(object: any = {}, path: string[]): any {
     return produce(object, draft => set(draft, parentPath, updatedArray));
   }
   return produce(object, draft => {
+    if (parentPath.length === 0) {
+      return omit(draft, [path[path.length - 1]]);
+    }
     const o = get(draft, parentPath);
     const n = omit(o, [path[path.length - 1]]);
     set(draft, parentPath, n);
