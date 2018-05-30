@@ -50,7 +50,7 @@ public class ArtosTestFSM extends PMGameAbstractTest {
         User u = new User();
         userFacade.create(u);
 
-        return gameFacade.joinTeam(t.getId(), u.getId());
+        return gameFacade.joinTeam(t.getId(), u.getId(), null);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class ArtosTestFSM extends PMGameAbstractTest {
         String script = "Variable.find(gameModel, 'periodLimit').setValue(self, 1);Variable.find(gameModel, 'phaseLimit').setValue(self, 4);";
 
         scriptFacade.eval(testPlayer, new Script("JavaScript", script), null);
-        requestFacade.commit(true);
+        requestFacade.commit();
 
         
 
