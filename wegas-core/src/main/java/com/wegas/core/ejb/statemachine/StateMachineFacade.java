@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class StateMachineFacade extends WegasAbstractFacade implements  StateMachineFacadeI {
+public class StateMachineFacade extends WegasAbstractFacade implements StateMachineFacadeI {
 //public class StateMachineFacade extends BaseFacade<StateMachineDescriptor> implements  StateMachineFacadeI {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
@@ -121,7 +121,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
             players = context.getPlayers();
         }
 
-        this.runForPlayers(players.get(0));
+        this.runForPlayers(players);
         /*
         Force resources release
         //getEntityManager().flush();
@@ -136,7 +136,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
 
         for (String audience : audiences) {
             String[] token = audience.split("-");
-            Long id = Long.parseLong(token[1]);
+            Long id = Long.parseLong(token[2]);
             switch (token[0]) {
                 case "GameModel":
                     for (Player p : gameModelFacade.find(id).getPlayers()) {
@@ -173,7 +173,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
 
     private void populateWithPlayerInstance(Player p, List<StateMachineDescriptor> descriptors, Map<StateMachineInstance, Player> instances) {
         for (StateMachineDescriptor smd : descriptors) {
-            StateMachineInstance instance = smd.getInstance(p);
+            StateMachineInstance instance = (StateMachineInstance) variableDescriptorFacade.getInstance(smd, p);
             if (instance.getEnabled() && instance.getCurrentState() != null) {
                 instances.putIfAbsent(instance, p);
             }
@@ -195,27 +195,29 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
         return audiences;
     }
 
-    private Map<StateMachineInstance, Player> getStateMachineInstances(List<StateMachineDescriptor> descriptors, Player preferredPlayer) {
+    private Map<StateMachineInstance, Player> getStateMachineInstances(List<StateMachineDescriptor> descriptors, List<Player> players) {
         /**
          * Using a linked hash map give a predictable iteration order, to be
          * sure preferred player instances will be processed first.
-         *
+         * <p>
          * This behaviour is required to ensure correct event handling (events
          * are store within player context, therby they're loosed when switching
          * to a new player)
-         *
+         * <p>
          */
         Map<StateMachineInstance, Player> instances = new LinkedHashMap<>();
 
         List<Player> playerFromAudiences = getPlayerFromAudiences(getAudiences());
 
-        if (preferredPlayer != null) {
-            populateWithPlayerInstance(preferredPlayer, descriptors, instances);
+        if (players != null) {
+            for (Player player : players) {
+                populateWithPlayerInstance(player, descriptors, instances);
+            }
         }
 
-        for (Player p : playerFromAudiences) {
-            if (!p.equals(preferredPlayer)) {
-                populateWithPlayerInstance(p, descriptors, instances);
+        for (Player player : playerFromAudiences) {
+            if (players == null || !players.contains(player)){
+                populateWithPlayerInstance(player, descriptors, instances);
             }
         }
 
@@ -241,21 +243,23 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
         return stateMachineDescriptors;
     }
 
-    private void runForPlayers(Player preferredPlayer) throws WegasScriptException {
-        List<StateMachineDescriptor> statemachines = this.getAllStateMachines(preferredPlayer.getGameModel());
+    private void runForPlayers(List<Player> preferredPlayers) throws WegasScriptException {
+        if (preferredPlayers != null && !preferredPlayers.isEmpty()) {
+            GameModel gameModel = preferredPlayers.get(0).getGameModel();
+            List<StateMachineDescriptor> statemachines = this.getAllStateMachines(gameModel);
 
-        Map<StateMachineInstance, Player> instances;
+            Map<StateMachineInstance, Player> instances;
 
-        int step = 0;
+            int step = 0;
 
-        do {
-            instances = getStateMachineInstances(statemachines, preferredPlayer);
-            this.run(instances);
-            this.flush();
-            step++;
-            logger.info("#steps[" + step + "] - Player triggered transition(s):{}");
-        } while (!requestManager.getJustUpdatedEntities().isEmpty());
-
+            do {
+                instances = getStateMachineInstances(statemachines, preferredPlayers);
+                this.run(instances);
+                this.flush();
+                step++;
+                logger.info("#steps[" + step + "] - Player triggered transition(s):{}");
+            } while (!requestManager.getJustUpdatedEntities().isEmpty());
+        }
     }
 
     private static final class SelectedTransition {
@@ -311,8 +315,8 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
                          * a DialogueTransition with a text means that
                          * transition can only be triggered by hand by a player
                          */
-                    continue;
-                } else if (this.isNotDefined(transition.getTriggerCondition())) {
+                        continue;
+                    } else if (this.isNotDefined(transition.getTriggerCondition())) {
                         // Empty condition is always valid :no need to eval
                         validTransition = true;
                     } else {
@@ -478,22 +482,22 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
     /**
      *
      * @param event
+     *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
-    public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) throws ScriptException {
-        logger.error("Received DescriptorRevivedEvent event");
-        if (event.getEntity() instanceof StateMachineDescriptor) {
-            StateMachineDescriptor fsmD = (StateMachineDescriptor) event.getEntity();
-
-            Player player = fsmD.getGameModel().getGames().get(0).getTeams().get(0).getPlayers().get(0);
-
-            for (State state : fsmD.getStates().values()) {
-                for (Transition transition : state.getTransitions()) {
-                    Script triggerCondition = transition.getTriggerCondition();
-                    scriptCheck.validate(triggerCondition, player, fsmD);
-                }
-            }
-        }
-    }
+     *                                                                  public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) throws ScriptException {
+     *                                                                  logger.error("Received DescriptorRevivedEvent event");
+     *                                                                  if (event.getEntity() instanceof StateMachineDescriptor) {
+     *                                                                  StateMachineDescriptor fsmD = (StateMachineDescriptor) event.getEntity();
+     *
+     * Player player = fsmD.getGameModel().getGames().get(0).getTeams().get(0).getPlayers().get(0);
+     *
+     * for (State state : fsmD.getStates().values()) {
+     * for (Transition transition : state.getTransitions()) {
+     * Script triggerCondition = transition.getTriggerCondition();
+     * scriptCheck.validate(triggerCondition, player, fsmD);
+     * }
+     * }
+     * }
+     * }
      */
-
 }

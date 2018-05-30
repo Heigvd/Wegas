@@ -69,24 +69,20 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
     @Test
     public void testGlobalVar() throws NamingException, WegasScriptException {
-        final ScriptFacade sf = lookupBy(ScriptFacade.class);
-        final VariableDescriptorFacade vdf = VariableDescriptorFacade.lookup();
-        final RequestFacade rf = RequestFacade.lookup();
-
         final NumberDescriptor numberDescriptor = new NumberDescriptor("gv");
         numberDescriptor.setDefaultInstance(new NumberInstance(1));
-        vdf.create(gameModel.getId(), numberDescriptor);
+        variableDescriptorFacade.create(gameModel.getId(), numberDescriptor);
 
         String script = "gv = {value : 'hello, world!'}; print (gv.value);";
 
-        sf.eval(player, new Script("JavaScript", script), null);
+        scriptFacade.eval(player, new Script("JavaScript", script), null);
 
-        sf.eval(player, new Script("JavaScript", "print('1g: ' + gv.value);"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "print('1g: ' + gv.value);"), null);
 
-        sf.eval(player21, new Script("JavaScript", "print('2: ' + gv.value);"), null);
+        scriptFacade.eval(player21, new Script("JavaScript", "print('2: ' + gv.value);"), null);
 
         //rf.getRequestManager().setCurrentScriptContext(null);
-        sf.eval(player2, new Script("JavaScript", "print('3: ' + gv.value);"), null);
+        scriptFacade.eval(player22, new Script("JavaScript", "print('3: ' + gv.value);"), null);
     }
 
     @Test

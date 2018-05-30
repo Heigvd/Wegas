@@ -133,6 +133,10 @@ public class RequestFacade {
         }
     }
 
+    public ScriptEventFacade getScriptEventFacade() {
+        return scriptEvent;
+    }
+
     /**
      *
      * @param player

@@ -258,8 +258,6 @@ public class RequestManager implements RequestManagerI {
 
     private final Map<String, List<AbstractEntity>> justUpdatedEntities = new HashMap<>();
 
-    private final Map<String, List<AbstractEntity>> outdatedEntities = new HashMap<>();
-
     /**
      * List of entities which have been deleted during the request
      */
