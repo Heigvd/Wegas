@@ -19,12 +19,14 @@ type Choices = (string | Choice)[];
 interface ISelectProps extends WidgetProps.BaseProps {
   view: {
     choices: Choices;
-  } & CommonView & LabeledView;
+  } & CommonView &
+    LabeledView;
 }
 interface IAsyncSelectProps extends WidgetProps.BaseProps {
   view: {
     choices: (() => Promise<Choices>) | Choices;
-  } & CommonView & LabeledView;
+  } & CommonView &
+    LabeledView;
 }
 const selectStyle = css({
   padding: '2px 4px',

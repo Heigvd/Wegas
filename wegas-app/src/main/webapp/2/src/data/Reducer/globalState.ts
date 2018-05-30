@@ -151,9 +151,7 @@ export function editComponent(page: string, path: string[]) {
  * @param {IWegasEntity} value
  * @returns {ThunkResult}
  */
-export function saveEditor(
-  value: IWegasEntity,
-): ThunkResult {
+export function saveEditor(value: IWegasEntity): ThunkResult {
   return function save(dispatch, getState) {
     const editMode = getState().global.editing;
     if (editMode == null) {

@@ -35,10 +35,7 @@ export function get(id?: string): ThunkResult {
   };
 }
 
-export function patch(
-  id: string,
-  page: Page,
-): ThunkResult {
+export function patch(id: string, page: Page): ThunkResult {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const oldPage = Page.select(id);

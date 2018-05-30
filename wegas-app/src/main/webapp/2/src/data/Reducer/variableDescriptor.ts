@@ -79,7 +79,7 @@ export function moveDescriptor(
 export function createDescriptor(
   variableDescriptor: IVariableDescriptor,
   parent?: IParentDescriptor,
-): ThunkResult{
+): ThunkResult {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return VariableDescriptorAPI.post(
@@ -99,7 +99,7 @@ export function createDescriptor(
 export function deleteDescriptor(
   variableDescriptor: IVariableDescriptor,
   path: string[] = [],
-): ThunkResult{
+): ThunkResult {
   return function(dispatch, getState) {
     if (path.length > 0) {
       let vs = deepRemove(variableDescriptor, path);

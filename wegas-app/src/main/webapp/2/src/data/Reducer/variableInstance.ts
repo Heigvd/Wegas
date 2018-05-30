@@ -9,7 +9,10 @@ export interface VariableInstanceState {
 }
 
 const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
-  function variableInstances(state: VariableInstanceState, action: StateActions) {
+  function variableInstances(
+    state: VariableInstanceState,
+    action: StateActions,
+  ) {
     switch (action.type) {
       case ActionType.MANAGED_MODE:
         const updateList = action.payload.updatedEntities.variableInstances;
