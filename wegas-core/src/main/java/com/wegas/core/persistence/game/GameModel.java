@@ -101,6 +101,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private String name;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelLanguage> languages = new ArrayList<>();
 
     /**
@@ -997,7 +998,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     public List<GameModelLanguage> getLanguages() {
-        return Helper.copyAndSort(this.languages, new EntityComparators.OrderComparator<>());
+        return Helper.copyAndSortModifiable(this.languages, new EntityComparators.OrderComparator<>());
     }
 
     public void setLanguages(List<GameModelLanguage> languages) {

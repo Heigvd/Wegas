@@ -14,7 +14,6 @@ import java.util.*;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-import org.codehaus.jettison.json.JSONException;
 import org.slf4j.LoggerFactory;
 import com.wegas.core.jcr.jta.JTARepositoryConnector;
 

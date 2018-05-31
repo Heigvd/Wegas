@@ -55,6 +55,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
      * arbitrary code
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
+    @WegasEntityProperty
     private String refName;
 
     /**
