@@ -347,7 +347,7 @@ angular.module('private.modeler.directives', [
                 var loadScenarios = function() {
                     // Reload list from cache each time the window is opened:
                     scope.loadingScenarios = true;
-                    ScenariosModel.getModels("LIVE").then(function(response) {
+                    ScenariosModel.getScenarios("LIVE").then(function(response) {
                         if (!response.isErroneous()) {
                             scope.loadingScenarios = false;
                             var expression = {canDuplicate: true},
