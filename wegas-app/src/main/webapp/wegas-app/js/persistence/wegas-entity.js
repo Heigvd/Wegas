@@ -74,6 +74,17 @@ YUI.add('wegas-entity', function(Y) {
                     type: HIDDEN
                 }
             },
+            refId: {
+                type: STRING,
+                optional: true, // The refId is optional for entites that have not been persisted
+                writeOnce: "initOnly",
+                index: -1,
+                view: {
+                    type: "uneditable",
+                    className: "wegas-advanced-feature",
+                    label: "RefId"
+                }
+            },
             translations: {
                 type: "object",
                 value: {},

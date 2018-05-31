@@ -1455,6 +1455,9 @@ YUI.add('wegas-datasource', function(Y) {
             this.publish("forcePageUpdate");
             this.publish("forceIndexUpdate");
         },
+        arePagesHardcoded: function(){
+            return !!Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.pagesUri");
+        },
         isEditable: function() {
             if (this.editable === undefined) {
                 var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
@@ -1713,7 +1716,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         getPage: function(pageId, callback) {
             var page = null;
-            if (pageId === "default" && !this.isEditable()) {
+            if (pageId === "default" && this.arePagesHardcoded()) {
                 pageId = 1;
             }
             if (this.getCache(pageId)) {
