@@ -22,9 +22,9 @@
       "json",
       "node"
     ],
-    "transformIgnorePatterns": [
-      ".*/node_modules/(?!lodash-es/.*)"
-    ],
+    "moduleNameMapper": {
+      "lodash-es": "lodash"
+    },
     "watchPathIgnorePatterns": [
       "<rootDir>/dist/"
     ],
@@ -96,7 +96,7 @@
     "style-loader": "^0.21.0",
     "ts-jest": "^22.4.6",
     "ts-loader": "^4.3.0",
-    "typescript": "2.8.3",
+    "typescript": "2.8.4",
     "webpack": "^4.10.1",
     "webpack-cli": "^2.1.4",
     "webpack-dev-server": "^3.1.4"
