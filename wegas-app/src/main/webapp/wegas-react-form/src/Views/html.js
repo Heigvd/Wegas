@@ -194,7 +194,7 @@ class HTMLView extends React.Component {
             // eslint-disable-next-line
             oldProps: props,
             sent: props.value,
-            content: props.value,
+            content: toTinyMCE(props.value) || '',
         };
         this.onChangeHandler = debounce(this.onChangeHandler.bind(this), 200);
     }

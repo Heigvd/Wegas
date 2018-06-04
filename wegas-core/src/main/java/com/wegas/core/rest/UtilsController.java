@@ -15,9 +15,11 @@ import com.hazelcast.core.Member;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
+import com.wegas.core.ejb.ConcurrentHelper;
 import com.wegas.core.ejb.HelperBean;
 import fish.payara.micro.cdi.Outbound;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -53,6 +55,9 @@ public class UtilsController {
 
     @Inject
     private PopulatorScheduler populatorScheduler;
+
+    @Inject
+    private ConcurrentHelper concurrentHelper;
 
     @DELETE
     @Path("EmCache")
@@ -334,4 +339,82 @@ public class UtilsController {
         return sb.toString();
     }
 
+    @GET
+    @Path("Locks")
+    @RequiresRoles("Administrator")
+    @Produces(MediaType.TEXT_HTML)
+    public String listLockedTokens() {
+        List<ConcurrentHelper.RefCounterLock> allLockedTokens = concurrentHelper.getAllLockedTokens();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<style>");
+        sb.append("ul, li {\n"
+                + "      padding-left: 5px;\n"
+                + "  }\n"
+                + "\n"
+                + "li .level.direct {\n"
+                + "    text-decoration: underline;"
+                + "}"
+                + "li .level.current {\n"
+                + "    font-weight: bold;"
+                + "}"
+                + "li .level {\n"
+                + "    margin-left : 10px;\n"
+                + "    cursor: pointer;"
+                + "}\n"
+                + "\n"
+                + ".levels {\n"
+                + "    left: 300px;\n"
+                + "    position: absolute;\n"
+                + "}");
+        sb.append("</style>");
+
+        sb.append("<h1>Locks</h1>");
+        sb.append("<h3>LocalLocks: effectiveToken</h3>");
+        sb.append(concurrentHelper.getMyLocks());
+        sb.append("<h3>Locks</h3>");
+        sb.append("<ul>");
+
+        for (ConcurrentHelper.RefCounterLock lock : allLockedTokens) {
+            String effAudicence;
+            sb.append("<li class='lock' data-audience='");
+            if (!Helper.isNullOrEmpty(lock.getAudience())) {
+                sb.append(lock.getAudience());
+                effAudicence = lock.getAudience();
+            } else{
+                effAudicence = "internal";
+            }
+            sb.append("' data-token='");
+            sb.append(lock.getToken());
+            sb.append("'>");
+            sb.append(effAudicence).append("::").append(lock.getToken()).append(" ").append(lock.getCounter()).append("x");
+            sb.append("</li>");
+        }
+
+        sb.append("</ul>");
+
+        sb.append("<script>");
+        sb.append("document.body.onclick= function(e){\n"
+                + "   e=window.event? event.srcElement: e.target;\n"
+                + "   if(e.className && e.className.indexOf('lock')!=-1){\n"
+                + "		var audience = e.getAttribute(\"data-audience\");\n"
+                + " 		var token = e.getAttribute(\"data-token\");\n"
+                + "        fetch(\"ReleaseLock/\" + token + \"/\" + audience, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
+                + "   }\n"
+                + "\n"
+                + "}");
+        sb.append("</script>");
+
+        return sb.toString();
+    }
+
+
+    @GET
+    @Path("ReleaseLock/{token: .*}/{audience: .*}")
+    @RequiresRoles("Administrator")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String releaseLock(@PathParam("token") String token, @PathParam("audience") String audience) {
+        concurrentHelper.unlock(token, audience, true);
+        return "ok";
+    }
 }

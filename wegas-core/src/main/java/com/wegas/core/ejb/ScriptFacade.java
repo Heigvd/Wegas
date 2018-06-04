@@ -361,10 +361,13 @@ public class ScriptFacade extends WegasAbstractFacade {
             ctx.setAttribute(ScriptEngine.FILENAME, script.getContent(), ScriptContext.ENGINE_SCOPE);
             return engine.eval(script.getContent(), ctx);
         } catch (ScriptException ex) {
+            logger.error("ScriptException: {}", ex);
             throw new WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage(), ex);
         } catch (WegasRuntimeException ex) { // throw our exception as-is
+            logger.error("ScriptException: {}", ex);
             throw ex;
         } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
+            logger.error("ScriptException: {}", ex);
             throw new WegasScriptException(script.getContent(), ex.getMessage(), ex);
         }
     }
