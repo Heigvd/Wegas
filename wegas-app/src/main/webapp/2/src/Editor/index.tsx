@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { Provider } from 'react-redux';
-import Layout from './Components/Layout';
-import { store } from '../data/store';
-
-import '../css/global.css';
 import { LangHandler } from '../Components/LangContext';
+import '../css/global.css';
 import { GameModel } from '../data/selectors';
+import Layout from './Components/Layout';
+import { StoreProvider } from '../data/store';
 
 function mount() {
   render(
-    <Provider store={store}>
+    <StoreProvider>
       <LangHandler
         lang="def"
         availableLang={GameModel.selectCurrent().languages.map(l => ({
@@ -21,7 +19,7 @@ function mount() {
       >
         <Layout />
       </LangHandler>
-    </Provider>,
+    </StoreProvider>,
     document.getElementById('root'),
   );
 }

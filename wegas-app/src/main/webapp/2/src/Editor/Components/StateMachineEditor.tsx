@@ -2,10 +2,10 @@ import { css } from 'emotion';
 import produce from 'immer';
 import { Connection, Defaults, jsPlumb, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { IconButton } from '../../Components/Button/IconButton';
-import { State as DataStore } from '../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../data/selectors';
+import { StoreConsumer } from '../../data/store';
+import { entityIs } from '../../data/entities';
 
 const endpointStyle = css({
   color: 'transparent',
@@ -236,14 +236,24 @@ class StateMachineEditor extends React.Component<
     );
   }
 }
-
-export default connect((state: DataStore) => {
-  return {
-    stateMachine: state.global.stateMachineEditor
-      ? VariableDescriptor.select(state.global.stateMachineEditor.id)
-      : undefined,
-  };
-})(StateMachineEditor);
+export default function ConnectedStateMachineEditor() {
+  return (
+    <StoreConsumer<IVariableDescriptor | undefined>
+      selector={s =>
+        s.global.stateMachineEditor
+          ? VariableDescriptor.select(s.global.stateMachineEditor.id)
+          : undefined
+      }
+    >
+      {({ state }) => {
+        if (entityIs<IFSMDescriptor>(state, 'FSMDescriptor')) {
+          return <StateMachineEditor stateMachine={state} />;
+        }
+        return null;
+      }}
+    </StoreConsumer>
+  );
+}
 
 const stateStyle = css({
   width: '10em',

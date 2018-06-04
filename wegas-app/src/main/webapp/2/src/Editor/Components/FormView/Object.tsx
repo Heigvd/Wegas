@@ -1,6 +1,5 @@
 import * as React from 'react';
-import * as classNames from 'classnames';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonViewContainer, CommonView } from './commonView';
 
@@ -23,7 +22,7 @@ function ObjectView(
   return (
     <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
       <fieldset
-        className={classNames(reset, {
+        className={cx(reset, {
           [borderTopStyle]: props.view.label !== undefined,
         })}
       >

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { State } from '../data/Reducer/reducers';
 import { css } from 'emotion';
 import { Actions } from '../data/index';
+import { StoreConsumer } from '../data/store';
 
 /**
  * Test Widget to be removed
@@ -62,45 +62,46 @@ const mask = css({
 });
 function editable<T>(Comp: React.ComponentType<T>, name?: string) {
   type EditProps = {
-    __editMode: boolean;
     __path: string[];
-    dispatch: (a: any) => void;
   } & T;
   class EditableComponent extends React.Component<EditProps> {
     static displayName = name || Comp.displayName;
-    constructor(props: EditProps) {
-      super(props);
-      this.edit = this.edit.bind(this);
-    }
-    private edit(e: React.MouseEvent<HTMLDivElement>) {
-      e.stopPropagation();
-      this.props.dispatch(
-        Actions.EditorActions.editComponent('1', this.props.__path),
-      );
-    }
     componentDidCatch(e: any) {
       console.warn(e);
     }
     render() {
       const cleanedProps = Object.assign({}, this.props, {
-        __editMode: undefined,
         __path: undefined,
-        dispatch: undefined,
       });
-      if (this.props.__editMode) {
-        return (
-          <span className={maskRoot} onClick={this.edit}>
-            <span className={mask} />
-            <Comp {...cleanedProps} />
-          </span>
-        );
-      }
-      return <Comp {...cleanedProps} />;
+      return (
+        <StoreConsumer selector={(s: State) => s.global.pageEdit}>
+          {({ state, dispatch }) => {
+            if (state) {
+              return (
+                <span
+                  className={maskRoot}
+                  onClick={event => {
+                    event.stopPropagation();
+                    dispatch(
+                      Actions.EditorActions.editComponent(
+                        '1',
+                        this.props.__path,
+                      ),
+                    );
+                  }}
+                >
+                  <span className={mask} />
+                  <Comp {...cleanedProps} />
+                </span>
+              );
+            }
+            return <Comp {...cleanedProps} />;
+          }}
+        </StoreConsumer>
+      );
     }
   }
-  return connect((state: State) => {
-    return { __editMode: state.global.pageEdit };
-  })(EditableComponent);
+  return EditableComponent;
 }
 
 function deserialize(
@@ -160,10 +161,14 @@ class PageLoader extends React.Component<
     return <div>{tree}</div>;
   }
 }
-export default connect((state: State, props: { id?: string }) => {
-  return {
-    page: props.id ? state.pages[props.id] : undefined,
-  } as {
-    page?: Page;
-  };
-})(PageLoader);
+export default function ConnectedPageLoader({ id }: { id?: string }) {
+  return (
+    <StoreConsumer<Readonly<Page> | undefined>
+      selector={s => (id ? s.pages[id] : undefined)}
+    >
+      {({ state }) => {
+        return <PageLoader page={state} />;
+      }}
+    </StoreConsumer>
+  );
+}

@@ -1,22 +1,21 @@
 import * as React from 'react';
 import PageLoader from '../../../Components/PageLoader';
-import { connect } from 'react-redux';
 import { State } from '../../../data/Reducer/reducers';
 import SrcEditor from '../SrcEditor';
 import { Page } from '../../../data/selectors';
 import PageEditorHeader from './PageEditorHeader';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
-import { StoreDispatch } from '../../../data/store';
+import { StoreDispatch, StoreConsumer } from '../../../data/store';
 
 interface PageDisplayProps {
   srcMode: boolean;
-  defaultPageId: string;
+  defaultPageId?: string;
   dispatch: StoreDispatch;
 }
 class PageDisplay extends React.Component<
   PageDisplayProps,
-  { currentPageId: string; oldProps: PageDisplayProps }
+  { currentPageId?: string; oldProps: PageDisplayProps }
 > {
   static getDerivedStateFromProps(
     nextProps: PageDisplayProps,
@@ -44,7 +43,7 @@ class PageDisplay extends React.Component<
               <Toolbar.Header>
                 <button
                   onClick={() => {
-                    if (this.editor) {
+                    if (this.editor && this.state.currentPageId != null) {
                       const p = JSON.parse(this.editor.getValue()!);
                       this.props.dispatch(
                         Actions.PageActions.patch(this.state.currentPageId, p),
@@ -76,10 +75,15 @@ class PageDisplay extends React.Component<
     );
   }
 }
-export default connect(
-  (state: State) => ({
-    srcMode: state.global.pageSrc,
-    defaultPageId: Page.selectDefaultId(),
-  }),
-  dispatch => ({ dispatch }),
-)(PageDisplay);
+export default function ConnectedPageDisplay() {
+  return (
+    <StoreConsumer
+      selector={(s: State) => ({
+        srcMode: s.global.pageSrc,
+        defaultPageId: Page.selectDefaultId(),
+      })}
+    >
+      {({ state, dispatch }) => <PageDisplay {...state} dispatch={dispatch} />}
+    </StoreConsumer>
+  );
+}

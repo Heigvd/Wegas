@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
-import * as className from 'classnames';
+import { css, cx } from 'emotion';
 
 const containerStyle = css({
   position: 'relative',
@@ -44,7 +43,7 @@ export function CommonViewContainer({
   const layout = view.layout ? String(LAYOUTS[view.layout]) : '';
   return (
     <div
-      className={className(containerStyle, layout, {
+      className={cx(containerStyle, layout, {
         [`${borderTop}`]: view.borderTop,
       })}
     >

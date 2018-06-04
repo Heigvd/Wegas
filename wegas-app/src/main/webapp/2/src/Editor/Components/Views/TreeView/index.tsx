@@ -6,8 +6,7 @@ import {
   DragElementWrapper,
   DragSourceOptions,
 } from 'react-dnd';
-import * as classNames from 'classnames';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import {
   DropZone,
   TREEVIEW_ITEM_TYPE,
@@ -178,7 +177,7 @@ class TreeNode extends React.Component<
     return connectDragSource(
       <div
         ref={n => (this.root = n)}
-        className={classNames({
+        className={cx({
           [isDraggingStyle]: isDragging,
         })}
       >

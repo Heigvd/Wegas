@@ -32,5 +32,8 @@ export function entityIs<T extends IWegasEntity>(
   variable: any,
   cls: T['@class'],
 ): variable is T {
-  return variable['@class'] === cls;
+  if ('object' === typeof variable) {
+    return variable['@class'] === cls;
+  }
+  return false;
 }

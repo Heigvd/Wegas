@@ -5,6 +5,7 @@ import reducers, { State } from './Reducer/reducers';
 import { Actions } from './index';
 import WebSocketListener from '../API/websocket';
 import { StateActions } from './actions';
+import { createReduxContext } from './connectStore';
 
 // Used by redux dev tool extension
 const composeEnhancers: typeof compose =
@@ -15,13 +16,6 @@ export const store = createStore(
     applyMiddleware(thunk as ThunkMiddleware<State, StateActions>),
   ),
 );
-export type ThunkResult<R = void> = ThunkAction<
-  R,
-  State,
-  undefined,
-  StateActions
->;
-export type StoreDispatch = typeof store.dispatch;
 function storeInit() {
   // store.dispatch(update([CurrentGM]));
   store.dispatch(Actions.VariableDescriptorActions.getAll());
@@ -34,3 +28,13 @@ new WebSocketListener(
   PusherApp.authEndpoint,
   PusherApp.cluster,
 );
+
+export const { StoreConsumer, StoreProvider } = createReduxContext(store);
+export type ThunkResult<R = void> = ThunkAction<
+  R,
+  State,
+  undefined,
+  StateActions
+>;
+
+export type StoreDispatch = typeof store.dispatch;

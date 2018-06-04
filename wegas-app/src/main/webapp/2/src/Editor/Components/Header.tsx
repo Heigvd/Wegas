@@ -1,21 +1,26 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { GameModel, Global } from '../../data/selectors';
 import { css } from 'emotion';
+import { StoreConsumer } from '../../data/store';
 
 const inline = css({
   display: 'inline-block',
 });
 const float = css({ float: 'right' });
-function Header({ gameModel, user }: { gameModel: IGameModel; user: IUser }) {
+export default function Header() {
   return (
-    <div>
-      <h2 className={inline}>{gameModel.name}</h2>
-      <span className={float}>{user.name}</span>
-    </div>
+    <StoreConsumer
+      selector={() => ({
+        gameModel: GameModel.selectCurrent(),
+        user: Global.selectCurrentUser(),
+      })}
+    >
+      {({ state: { gameModel, user } }) => (
+        <div>
+          <h2 className={inline}>{gameModel.name}</h2>
+          <span className={float}>{user.name}</span>
+        </div>
+      )}
+    </StoreConsumer>
   );
 }
-export default connect(() => ({
-  gameModel: GameModel.selectCurrent(),
-  user: Global.selectCurrentUser(),
-}))(Header);
