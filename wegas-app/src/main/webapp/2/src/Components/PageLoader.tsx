@@ -10,10 +10,10 @@ import { StoreConsumer } from '../data/store';
  */
 function Print(props: any) {
   return (
-    <span>
+    <div>
       <span>Print:</span> {props.message}
       <span>{props.children}</span>
-    </span>
+    </div>
   );
 }
 
@@ -49,16 +49,18 @@ const AVAILABLE: { [key: string]: React.ComponentType } = {
 // }
 const maskRoot = css({
   position: 'relative',
+  display: 'inline-block',
+  boxShadow: '0 0 1px 1px ',
 });
 const mask = css({
   position: 'absolute',
+  display: 'inline-block',
   zIndex: 1,
   top: 0,
   left: 0,
   width: '100%',
   height: '100%',
   cursor: 'pointer',
-  boxShadow: '0 0 1px 1px ',
 });
 function editable<T>(Comp: React.ComponentType<T>, name?: string) {
   type EditProps = {
@@ -78,7 +80,7 @@ function editable<T>(Comp: React.ComponentType<T>, name?: string) {
           {({ state, dispatch }) => {
             if (state) {
               return (
-                <span
+                <div
                   className={maskRoot}
                   onClick={event => {
                     event.stopPropagation();
@@ -90,9 +92,9 @@ function editable<T>(Comp: React.ComponentType<T>, name?: string) {
                     );
                   }}
                 >
-                  <span className={mask} />
+                  <div className={mask} />
                   <Comp {...cleanedProps} />
-                </span>
+                </div>
               );
             }
             return <Comp {...cleanedProps} />;
