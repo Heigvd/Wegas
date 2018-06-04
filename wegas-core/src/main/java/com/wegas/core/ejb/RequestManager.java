@@ -838,7 +838,7 @@ public class RequestManager implements RequestManagerI {
     public void unlock(String token, InstanceOwner target) {
         String audience = getAudienceToLock(target);
         logger.debug("UNLOCK \"{}\" for \"{}\"", token, audience);
-        concurrentHelper.unlock(token, audience);
+        concurrentHelper.unlock(token, audience, false);
         if (lockedToken.containsKey(token)) {
             List<String> audiences = lockedToken.get(token);
 
@@ -997,8 +997,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Lifecycle callback. Telease all locks after the request and log the
-     * request sumary
+     * Lifecycle callback. Release all locks after the request and log the
+     * request summary
      */
     @PreDestroy
     public void preDestroy() {
@@ -1007,7 +1007,7 @@ public class RequestManager implements RequestManagerI {
             logger.debug("PreDestroy Unlock: key: {}", entry.getKey());
             for (String audience : entry.getValue()) {
                 logger.debug("->ConcurrentHelper unlockFull for {}", audience);
-                concurrentHelper.unlockFull(entry.getKey(), audience);
+                concurrentHelper.unlockFull(entry.getKey(), audience, false);
             }
         }
 
