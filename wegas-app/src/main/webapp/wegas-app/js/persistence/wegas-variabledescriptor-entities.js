@@ -1274,11 +1274,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     },
                                     {
                                         type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-paragraph"></span> Static Content',
-                                        targetClass: 'StaticTextDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
                                         label: '<span class="fa fa-paragraph"></span> Text',
                                         targetClass: 'TextDescriptor'
                                     },
