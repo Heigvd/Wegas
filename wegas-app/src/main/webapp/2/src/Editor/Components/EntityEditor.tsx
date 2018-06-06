@@ -9,21 +9,22 @@ import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
 import { IForm } from './Form';
 import { StoreConsumer } from '../../data/store';
-interface EditorProps {
-  entity?: IVariableDescriptor;
-  update: (variable: IWegasEntity) => void;
-  del: (variable: IVariableDescriptor, path?: string[]) => void;
+
+interface EditorProps<T> {
+  entity?: T;
+  update: (variable: T) => void;
+  del: (variable: T, path?: string[]) => void;
   path?: string[];
-  config?: Schema;
+  getConfig(entity: T): Promise<ConfigurationSchema<T>>;
 }
 
-export async function Editor({
+export async function Editor<T>({
   entity,
   update,
   del,
-  config,
+  getConfig,
   path,
-}: EditorProps) {
+}: EditorProps<T>) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);
@@ -42,11 +43,8 @@ export async function Editor({
 
   const [Form, schema] = await Promise.all<
     IForm,
-    Schema | ConfigurationSchema<IVariableDescriptor<IVariableInstance>>
-  >([
-    import('./Form').then(m => m.Form),
-    config != null ? Promise.resolve(config) : getEditionConfig(pathEntity),
-  ]);
+    Schema | ConfigurationSchema<T>
+  >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
   return (
     <Form
       entity={pathEntity}
@@ -57,13 +55,13 @@ export async function Editor({
     />
   );
 }
-const AsyncForm = asyncSFC(
+const AsyncVariableForm = asyncSFC<EditorProps<IVariableDescriptor>>(
   Editor,
   () => <div>load...</div>,
   ({ err }) => <span>{err.message}</span>,
 );
 
-export default function ConnectedAsyncForm(props: {
+export default function VariableForm(props: {
   entity?: Readonly<IVariableDescriptor>;
   path?: string[];
   config?: Schema;
@@ -91,10 +89,14 @@ export default function ConnectedAsyncForm(props: {
         if (state.type === 'Variable') {
           entity = VariableDescriptor.select(state.id);
         }
+        const getConfig = (entity: IVariableDescriptor) => {
+          return state.config != null ? Promise.resolve(state.config) : getEditionConfig(entity);
+        };
         return (
-          <AsyncForm
+          <AsyncVariableForm
             {...props}
             {...state}
+            getConfig={getConfig}
             update={update}
             del={del}
             entity={entity}

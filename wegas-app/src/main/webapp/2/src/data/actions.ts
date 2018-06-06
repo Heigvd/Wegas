@@ -1,7 +1,7 @@
 import { normalizeDatas, NormalizedData } from './normalize/index';
 import { ManagedMode } from '../API/rest';
-import { Schema } from 'jsoninput';
 import * as ActionType from './actionTypes';
+import { ConfigurationSchema } from '../Editor/editionConfig';
 
 export { ActionType };
 function createAction<T extends string, P>(type: T, payload: P) {
@@ -13,9 +13,9 @@ function createAction<T extends string, P>(type: T, payload: P) {
 export const ActionCreator = {
   ENTITY_UPDATE: (data: NormalizedData) =>
     createAction(ActionType.ENTITY_UPDATE, data),
-  VARIABLE_EDIT: (data: { id: number; config?: Schema; path?: string[] }) =>
+  VARIABLE_EDIT: (data: { id: number; config?: ConfigurationSchema<IVariableDescriptor>; path?: string[] }) =>
     createAction(ActionType.VARIABLE_EDIT, data),
-  FSM_EDIT: (data: { id: number; config?: Schema; path?: string[] }) =>
+  FSM_EDIT: (data: { id: number; config?: ConfigurationSchema<IVariableDescriptor>; path?: string[] }) =>
     createAction(ActionType.FSM_EDIT, data),
   VARIABLE_CREATE: (data: { '@class': string; parentId?: number }) =>
     createAction(ActionType.VARIABLE_CREATE, data),

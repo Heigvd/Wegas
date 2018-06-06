@@ -3,35 +3,35 @@ import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
 import './FormView';
 
-interface EditorProps {
-  entity?: IVariableDescriptor;
-  update: (variable: IWegasEntity) => void;
-  del: (variable: IVariableDescriptor, path?: string[]) => void;
+interface EditorProps<T> {
+  entity?: T;
+  update: (variable: T) => void;
+  del: (variable: T, path?: string[]) => void;
   path?: string[];
   config?: Schema;
 }
 
-interface FormProps extends EditorProps {
+interface FormProps<T> extends EditorProps<T> {
   schema: Schema;
 }
 
 export type IForm = typeof Form;
 
-export class Form extends React.Component<
-  FormProps,
-  { val: any; oldProps: FormProps }
+export class Form<T> extends React.Component<
+  FormProps<T>,
+  { val: any; oldProps: FormProps<T> }
 > {
   form?: JSONForm;
   static getDerivedStateFromProps(
-    nextProps: FormProps,
-    state: { oldProps: FormProps },
+    nextProps: FormProps<any>,
+    state: { oldProps: FormProps<any> },
   ) {
     if (state.oldProps === nextProps) {
       return null;
     }
     return { val: nextProps.entity, oldProps: nextProps };
   }
-  constructor(props: FormProps) {
+  constructor(props: FormProps<T>) {
     super(props);
     this.state = { oldProps: props, val: props.entity };
   }

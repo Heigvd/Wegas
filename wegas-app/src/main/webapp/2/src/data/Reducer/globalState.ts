@@ -1,19 +1,20 @@
 // import { Reducer } from 'redux';
 import u from 'immer';
-import { Schema } from 'jsoninput';
 import { Actions as ACTIONS } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
 import { VariableDescriptor } from '../selectors';
 import { ThunkResult } from '../store';
+import { ConfigurationSchema } from '../../Editor/editionConfig';
 
 type Edition =
-  | { type: 'Variable'; id: number; config?: Schema; path?: string[] }
+  | { type: 'Variable'; id: number; config?: ConfigurationSchema<IVariableDescriptor>; path?: string[] }
   | {
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
+      config?: ConfigurationSchema<IVariableDescriptor>;
     }
-  | { type: 'Component'; page: string; path: string[] };
+  | { type: 'Component'; page: string; path: string[]; config?: ConfigurationSchema<IVariableDescriptor> };
 export interface GlobalState {
   currentGameModelId: number;
   currentUser: Readonly<IUser>;
@@ -101,7 +102,7 @@ export default global;
 export function editVariable(
   entity: IVariableDescriptor,
   path: string[] = [],
-  config?: Schema,
+  config?: ConfigurationSchema<IVariableDescriptor>,
 ) {
   return ActionCreator.VARIABLE_EDIT({
     id: entity.id!,
@@ -118,7 +119,7 @@ export function editVariable(
 export function editStateMachine(
   entity: IFSMDescriptor,
   path: string[] = [],
-  config?: Schema,
+  config?: ConfigurationSchema<IVariableDescriptor>,
 ) {
   return ActionCreator.FSM_EDIT({
     id: entity.id!,
