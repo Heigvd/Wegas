@@ -44,7 +44,7 @@
     "@types/prop-types": "^15.5.2",
     "@types/react": "^16.3.16",
     "@types/react-color": "^2.13.4",
-    "@types/react-dom": "^16.0.5",
+    "@types/react-dom": "^16.0.6",
     "@types/react-sortable-hoc": "^0.6.3",
     "@types/react-widgets": "^4.1.2",
     "babel-eslint": "^8.2.3",
@@ -78,7 +78,7 @@
     "tslint-react": "^3.6.0",
     "typescript": "^2.9.1",
     "url-loader": "^1.0.1",
-    "webpack": "^4.10.1",
-    "webpack-cli": "^3.0.1"
+    "webpack": "^4.11.1",
+    "webpack-cli": "^3.0.2"
   }
 }
