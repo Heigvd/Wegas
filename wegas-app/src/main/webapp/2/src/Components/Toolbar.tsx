@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 
 const flex = css({
   display: 'inline-flex',
@@ -7,18 +7,37 @@ const flex = css({
   height: '100%',
   width: '100%',
 });
+const vertical = css(flex, {
+  flexDirection: 'row',
+});
 const toolbar = css({
-  flex: 'none',
+  display: 'flex',
+  [`.${vertical} > &`]: {
+    flexDirection: 'column',
+  },
 });
 const content = css({
   flex: '1 1 auto',
-  overflowY: 'auto',
+  overflow: 'auto',
   height: 0,
+  [`.${vertical} > &`]: {
+    height: 'auto',
+    width: 0,
+  },
 });
 
 export const Toolbar = Object.assign(
-  (props: { children: React.ReactElement<{}>[] }) => {
-    return <div className={flex}>{props.children}</div>;
+  (props: { vertical?: boolean; children: React.ReactElement<{}>[] }) => {
+    return (
+      <div
+        className={cx({
+          [flex]: !props.vertical,
+          [vertical]: Boolean(props.vertical),
+        })}
+      >
+        {props.children}
+      </div>
+    );
   },
   {
     Header(props: { children?: React.ReactNode[] | React.ReactNode }) {
