@@ -44,7 +44,7 @@ export function CommonViewContainer({
   return (
     <div
       className={cx(containerStyle, layout, {
-        [`${borderTop}`]: view.borderTop,
+        [`${borderTop}`]: Boolean(view.borderTop),
       })}
     >
       {children}

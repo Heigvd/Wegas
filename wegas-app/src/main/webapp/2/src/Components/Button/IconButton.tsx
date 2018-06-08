@@ -32,7 +32,6 @@ const shapeStyle = css({
     opacity: 1,
     outline: 'none',
   },
-  ':active': activeStyle,
 });
 
 const disabledStyle = css({
@@ -61,8 +60,8 @@ export function IconButton(props: Props) {
       aria-pressed={pressed}
       onClick={event => !disabled && onClick(event)}
       className={cx(shapeStyle, {
-        [disabledStyle]: disabled,
-        [activeStyle]: pressed,
+        [disabledStyle]: Boolean(disabled),
+        [activeStyle]: Boolean(pressed),
       })}
     >
       {prefixedLabel && label}
