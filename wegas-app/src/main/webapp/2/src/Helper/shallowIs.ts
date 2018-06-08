@@ -6,6 +6,8 @@
 export function shallowIs(a: any, b: any) {
   if (Object.is(a, b)) return true;
   if ('object' === typeof a && 'object' === typeof b) {
+    if (a === null) return false;
+    if (b === null) return false;
     const isArrayA = Array.isArray(a);
     const isArrayB = Array.isArray(b);
     if (isArrayA !== isArrayB) return false;
