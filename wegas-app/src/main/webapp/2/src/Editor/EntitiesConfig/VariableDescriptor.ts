@@ -76,6 +76,7 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
   ...wegasEntityConfig,
   label: {
     type: 'object',
+    value: { '@class': 'TranslatableContent', translations: {} },
     required: true,
     index: -12,
     minLength: 1,

@@ -17,7 +17,7 @@ export async function getAvailableChildren<T extends IWegasEntity>(
   return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
     entity['@class']).then(res => res.children);
 }
-interface EActions<T extends IWegasEntity> {
+export interface EActions<T extends IWegasEntity> {
   edit: (variable: T, path?: string[]) => StateActions;
 }
 // default Actions

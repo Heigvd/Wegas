@@ -12,10 +12,10 @@ import { StoreConsumer } from '../../data/store';
 
 interface EditorProps<T> {
   entity?: T;
-  update: (variable: T) => void;
-  del: (variable: T, path?: string[]) => void;
+  update?: (variable: T) => void;
+  del?: (variable: T, path?: string[]) => void;
   path?: string[];
-  getConfig(entity: T): Promise<ConfigurationSchema<T>>;
+  getConfig(entity: T): Promise<ConfigurationSchema<IWegasEntity>>;
 }
 
 export async function Editor<T>({
@@ -34,22 +34,21 @@ export async function Editor<T>({
     return null;
   }
   function updatePath(variable: {}) {
-    return update(deepUpdate(entity, path, variable));
+    return update != null && update(deepUpdate(entity, path, variable));
   }
   function deletePath() {
-    if (entity) return del(entity, path);
-    return Promise.resolve();
+    if (entity) return del != null && del(entity, path);
   }
 
   const [Form, schema] = await Promise.all<
     IForm,
-    Schema | ConfigurationSchema<T>
+    Schema | ConfigurationSchema<IWegasEntity>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
   return (
     <Form
       entity={pathEntity}
-      update={updatePath}
-      del={deletePath}
+      update={update != null ? updatePath : update}
+      del={del != null ? deletePath : del}
       path={path}
       schema={{ type: 'object', properties: schema }}
     />
@@ -67,30 +66,54 @@ export default function VariableForm(props: {
   config?: Schema;
 }) {
   return (
-    <StoreConsumer<State['global']['editing']> selector={s => s.global.editing}>
+    <StoreConsumer
+      selector={(s: State) => {
+        const editing = s.global.editing;
+        if (editing == null) {
+          return null;
+        }
+        if (editing.type === 'VariableCreate') {
+          return {
+            ...editing,
+            entity: {
+              '@class': editing['@class'],
+            } as IVariableDescriptor,
+          };
+        }
+        if (editing.type === 'Variable') {
+          return {
+            ...editing,
+            entity: VariableDescriptor.select(editing.id),
+          };
+        }
+        return null;
+      }}
+    >
       {({ state, dispatch }) => {
-        function update(entity: IWegasEntity) {
-          dispatch(Actions.EditorActions.saveEditor(entity));
-        }
-        function del(entity: IVariableDescriptor, path?: string[]) {
-          dispatch(
-            Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
-          );
-        }
         if (state == null) {
           return null;
         }
-        let entity: IVariableDescriptor | undefined;
-        if (state.type === 'VariableCreate') {
-          entity = {
-            '@class': state['@class'],
-          } as IVariableDescriptor;
-        }
-        if (state.type === 'Variable') {
-          entity = VariableDescriptor.select(state.id);
-        }
+        const update =
+          'save' in state.actions
+            ? state.actions.save
+            : (entity: IWegasEntity) => {
+                dispatch(Actions.EditorActions.saveEditor(entity));
+              };
+        const del =
+          'delete' in state.actions
+            ? state.actions.delete
+            : (entity: IVariableDescriptor, path?: string[]) => {
+                dispatch(
+                  Actions.VariableDescriptorActions.deleteDescriptor(
+                    entity,
+                    path,
+                  ),
+                );
+              };
         const getConfig = (entity: IVariableDescriptor) => {
-          return state.config != null ? Promise.resolve(state.config) : getEditionConfig(entity);
+          return state.config != null
+            ? Promise.resolve(state.config)
+            : getEditionConfig(entity);
         };
         return (
           <AsyncVariableForm
@@ -99,7 +122,7 @@ export default function VariableForm(props: {
             getConfig={getConfig}
             update={update}
             del={del}
-            entity={entity}
+            entity={state.entity}
           />
         );
       }}

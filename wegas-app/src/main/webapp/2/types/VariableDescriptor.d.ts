@@ -90,6 +90,7 @@ declare namespace IFSMDescriptor {
     preStateImpact?: IScript | null;
     stateId?: number;
     stateMachineId?: number;
+    index?: number;
   }
   export interface Coordinate {
     '@class': 'Coordinate';

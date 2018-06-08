@@ -6,15 +6,32 @@ import { VariableDescriptor } from '../selectors';
 import { ThunkResult } from '../store';
 import { ConfigurationSchema } from '../../Editor/editionConfig';
 
+type EditorAction = {
+  save?: <T extends IWegasEntity>(entity: T) => void;
+  delete?: <T extends IWegasEntity>(entity: T, path?: string[]) => void;
+};
 type Edition =
-  | { type: 'Variable'; id: number; config?: ConfigurationSchema<IVariableDescriptor>; path?: string[] }
+  | {
+      type: 'Variable';
+      id: number;
+      config?: ConfigurationSchema<IWegasEntity>;
+      path?: string[];
+      actions: EditorAction;
+    }
   | {
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
-      config?: ConfigurationSchema<IVariableDescriptor>;
+      config?: ConfigurationSchema<IWegasEntity>;
+      actions: EditorAction;
     }
-  | { type: 'Component'; page: string; path: string[]; config?: ConfigurationSchema<IVariableDescriptor> };
+  | {
+      type: 'Component';
+      page: string;
+      path: string[];
+      config?: ConfigurationSchema<IWegasEntity>;
+      actions: EditorAction;
+    };
 export interface GlobalState {
   currentGameModelId: number;
   currentUser: Readonly<IUser>;
@@ -45,6 +62,7 @@ const global = u<GlobalState>(
           id: action.payload.id,
           config: action.payload.config,
           path: action.payload.path,
+          actions: action.payload.actions,
         };
         return;
       case ActionType.FSM_EDIT:
@@ -54,6 +72,7 @@ const global = u<GlobalState>(
           id: action.payload.id,
           config: action.payload.config,
           path: action.payload.path,
+          actions: {},
         };
         return;
       case ActionType.VARIABLE_CREATE:
@@ -61,6 +80,7 @@ const global = u<GlobalState>(
           type: 'VariableCreate',
           '@class': action.payload['@class'],
           parentId: action.payload.parentId,
+          actions: {},
         };
         return;
       case ActionType.PAGE_EDIT:
@@ -68,6 +88,7 @@ const global = u<GlobalState>(
           type: 'Component',
           page: action.payload.page,
           path: action.payload.path,
+          actions: {},
         };
         return;
       case ActionType.PAGE_SRC_MODE:
@@ -98,16 +119,19 @@ export default global;
  * @param entity
  * @param path
  * @param config
+ * @param actions
  */
 export function editVariable(
   entity: IVariableDescriptor,
   path: string[] = [],
   config?: ConfigurationSchema<IVariableDescriptor>,
+  actions: EditorAction = {},
 ) {
   return ActionCreator.VARIABLE_EDIT({
     id: entity.id!,
     config,
     path,
+    actions,
   });
 }
 /**

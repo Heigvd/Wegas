@@ -4,13 +4,39 @@ import { Connection, Defaults, jsPlumb, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
 import { IconButton } from '../../Components/Button/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
-import { StoreConsumer } from '../../data/store';
+import { StoreConsumer, StoreDispatch } from '../../data/store';
 import { entityIs } from '../../data/entities';
+import { Actions } from '../../data';
+import { Toolbar } from '../../Components/Toolbar';
+import { FontAwesome } from './Views/FontAwesome';
 
-const endpointStyle = css({
-  color: 'transparent',
-  ':hover': {
-    color: 'tomato',
+const editorStyle = css({
+  position: 'relative',
+  '& .jtk-connector': {
+    zIndex: 1,
+    '&.jtk-hover': {
+      zIndex: 9,
+    },
+  },
+  '& .jtk-endpoint': {
+    color: 'transparent',
+    zIndex: 2,
+    ':hover': {
+      color: 'tomato',
+    },
+  },
+  '& .jtk-overlay': {
+    zIndex: 3,
+    padding: 5,
+    border: '1px solid',
+    backgroundColor: 'white',
+    '&.jtk-hover': {
+      zIndex: 10,
+    },
+    ':empty': {
+      padding: 0,
+      border: 0,
+    },
   },
 });
 const JS_PLUMB_OPTIONS: Defaults = {
@@ -22,7 +48,6 @@ const JS_PLUMB_OPTIONS: Defaults = {
     'Dot',
     {
       radius: 7,
-      cssClass: endpointStyle,
     },
   ],
   // @ts-ignore
@@ -40,11 +65,8 @@ const JS_PLUMB_OPTIONS: Defaults = {
     ],
   ],
   PaintStyle: {
-    strokeWidth: 3,
-
-    // outlineColor: 'white',
+    strokeWidth: 4,
     stroke: 'darkgray',
-    // outlineWidth: 4,
   },
   HoverPaintStyle: {
     stroke: '#03283A',
@@ -53,12 +75,13 @@ const JS_PLUMB_OPTIONS: Defaults = {
 
 interface StateMachineEditorProps {
   stateMachine: IFSMDescriptor;
+  dispatch: StoreDispatch;
 }
 class StateMachineEditor extends React.Component<
   StateMachineEditorProps,
   {
     plumb?: jsPlumbInstance;
-    stateMachine?: IFSMDescriptor;
+    stateMachine: IFSMDescriptor;
     oldProps: StateMachineEditorProps;
   }
 > {
@@ -81,17 +104,15 @@ class StateMachineEditor extends React.Component<
   }
   removeTransition = ({
     from,
-    transiton,
+    transitonIndex,
   }: {
     from: string;
-    transiton: IFSMDescriptor.Transition;
+    transitonIndex: number;
   }) => {
     this.setState(
       produce<{ stateMachine: IFSMDescriptor; oldProps: any }>(state => {
         const { states } = state.stateMachine!;
-        states[from].transitions = states[from].transitions.filter(
-          t => t.id !== transiton.id,
-        );
+        states[from].transitions.splice(transitonIndex, 1);
       }),
     );
   };
@@ -109,6 +130,37 @@ class StateMachineEditor extends React.Component<
       }),
     );
   };
+  moveTransition = (
+    info: {
+      originalSourceId: string;
+      originalTargetId: string;
+      newSourceId: string;
+      newTargetId: string;
+    },
+    transition: IFSMDescriptor.Transition,
+  ) => {
+    this.setState(
+      produce<{ stateMachine: IFSMDescriptor }>(state => {
+        const { states } = state.stateMachine;
+        if (info.originalSourceId === info.newSourceId) {
+          const tr = states[info.originalSourceId].transitions.find(
+            t => t.id === transition.id,
+          );
+          if (tr != null) {
+            tr.nextStateId = Number(info.newTargetId);
+          }
+        } else {
+          states[info.originalSourceId].transitions = states[
+            info.originalSourceId
+          ].transitions.filter(t => t.id !== transition.id);
+          states[info.newSourceId].transitions.push({
+            ...transition,
+            stateId: undefined, // remove ref.
+          });
+        }
+      }),
+    );
+  };
   deleteState = (id: string) => {
     this.setState(
       produce<{ stateMachine: IFSMDescriptor; oldProps: any }>(state => {
@@ -123,19 +175,70 @@ class StateMachineEditor extends React.Component<
       }),
     );
   };
-  createState = (state: IFSMDescriptor.State): Promise<number> => {
-    return new Promise(resolve =>
-      this.setState(
-        produce<{ stateMachine: IFSMDescriptor; oldProps: any }>(store => {
-          const nextId =
-            Object.keys(store.stateMachine.states).reduce(
-              (p, c) => Math.max(Number(c), p),
-              0,
-            ) + 1;
-          store.stateMachine.states[nextId] = state;
-          resolve(nextId);
-          return;
-        }),
+  moveState = (id: string, pos: [number, number]) => {
+    this.setState(
+      produce<{ stateMachine: IFSMDescriptor }>(state => {
+        state.stateMachine.states[id].editorPosition.x = pos[0];
+        state.stateMachine.states[id].editorPosition.y = pos[1];
+      }),
+    );
+  };
+  createState = (state: IFSMDescriptor.State, transitionSource?: number) => {
+    this.setState(
+      produce<{ stateMachine: IFSMDescriptor; oldProps: any }>(store => {
+        const nextId =
+          Object.keys(store.stateMachine.states).reduce(
+            (p, c) => Math.max(Number(c), p),
+            0,
+          ) + 1;
+        store.stateMachine.states[nextId] = state;
+        if (transitionSource != undefined) {
+          store.stateMachine.states[transitionSource].transitions.push({
+            '@class': 'Transition',
+            nextStateId: nextId,
+            triggerCondition: null,
+            preStateImpact: null,
+            version: 0,
+          });
+        }
+        return;
+      }),
+    );
+  };
+  editState = (id: string) => {
+    this.props.dispatch(
+      Actions.EditorActions.editVariable(
+        this.props.stateMachine,
+        ['states', id],
+        undefined,
+        {
+          delete:
+            Number(id) !==
+            this.props.stateMachine.defaultInstance.currentStateId
+              ? (_entity, path) => {
+                  this.deleteState(path![1]);
+                }
+              : undefined,
+        },
+      ),
+    );
+  };
+  editTransition = (path: [string, number]) => {
+    this.props.dispatch(
+      Actions.EditorActions.editVariable(
+        this.props.stateMachine,
+        ['states', path[0], 'transitions', String(path[1])],
+        undefined,
+        {
+          delete: (_entity, path) => {
+            if (path != null) {
+              this.removeTransition({
+                from: path[0],
+                transitonIndex: Number(path[1]),
+              });
+            }
+          },
+        },
       ),
     );
   };
@@ -161,33 +264,37 @@ class StateMachineEditor extends React.Component<
       if (ev !== undefined) {
         this.removeTransition({
           from: info.sourceId,
-          transiton: (info.connection as any).getParameter('transition'),
+          transitonIndex: (info.connection as any).getParameter(
+            'transitionIndex',
+          ),
         });
       }
     });
     plumb.bind('connectionMoved', (info, ev) => {
       if (ev !== undefined) {
-        this.removeTransition({
-          from: info.originalSourceId,
-          transiton: (info.connection as any).getParameter('transition'),
-        });
+        const transition: IFSMDescriptor.Transition = (info.connection as any).getParameter(
+          'transition',
+        );
+        this.moveTransition(info, transition);
       }
     });
     plumb.bind('connectionAborted', async connection => {
       const left = (connection.target as HTMLElement).style.left;
       const top = (connection.target as HTMLElement).style.top;
       const src = connection.sourceId;
-      const newStateId = await this.createState({
-        '@class': 'State',
-        editorPosition: {
-          '@class': 'Coordinate',
-          x: parseInt(left || '0', 10),
-          y: parseInt(top || '0', 0),
+      this.createState(
+        {
+          '@class': 'State',
+          editorPosition: {
+            '@class': 'Coordinate',
+            x: parseInt(left || '0', 10),
+            y: parseInt(top || '0', 10),
+          },
+          version: 0,
+          transitions: [],
         },
-        version: 0,
-        transitions: [],
-      });
-      this.createTransition({ from: Number(src), to: newStateId });
+        Number(src),
+      );
     });
   }
   componentWillUnmount() {
@@ -195,12 +302,24 @@ class StateMachineEditor extends React.Component<
       this.state.plumb.unbind();
     }
   }
-  componentDidUpdate() {
+  componentDidUpdate(
+    _prevProps: StateMachineEditorProps,
+    { stateMachine: oldStateMachine }: { stateMachine: IFSMDescriptor },
+  ) {
     requestAnimationFrame(() => {
       if (this.state.plumb != null) {
         this.state.plumb.setSuspendDrawing(false, true);
       }
     });
+    const { stateMachine } = this.state;
+    if (
+      oldStateMachine !== stateMachine &&
+      this.props.stateMachine !== stateMachine
+    ) {
+      this.props.dispatch(
+        Actions.VariableDescriptorActions.updateDescriptor(stateMachine),
+      );
+    }
   }
   render() {
     const { plumb, stateMachine } = this.state;
@@ -215,12 +334,13 @@ class StateMachineEditor extends React.Component<
         ref={n => {
           this.container = n;
         }}
-        style={{ position: 'relative' }}
+        className={editorStyle}
       >
         {plumb != null &&
           Object.keys(stateMachine.states).map(k => {
             return (
               <State
+                editState={this.editState}
                 state={stateMachine.states[k]}
                 id={k}
                 initialState={
@@ -229,6 +349,8 @@ class StateMachineEditor extends React.Component<
                 key={k}
                 plumb={plumb}
                 deleteState={this.deleteState}
+                moveState={this.moveState}
+                editTransition={this.editTransition}
               />
             );
           })}
@@ -245,9 +367,11 @@ export default function ConnectedStateMachineEditor() {
           : undefined
       }
     >
-      {({ state }) => {
+      {({ state, dispatch }) => {
         if (entityIs<IFSMDescriptor>(state, 'FSMDescriptor')) {
-          return <StateMachineEditor stateMachine={state} />;
+          return (
+            <StateMachineEditor stateMachine={state} dispatch={dispatch} />
+          );
         }
         return null;
       }}
@@ -261,23 +385,31 @@ const stateStyle = css({
   border: '1px solid',
 });
 const sourceStyle = css({
-  width: '10px',
-  height: '10px',
-  borderRadius: '50%',
-  backgroundColor: 'hotpink',
+  display: 'inline-block',
+  cursor: 'move',
 });
 class State extends React.Component<{
   state: IFSMDescriptor.State;
   id: string;
   initialState: boolean;
   plumb: jsPlumbInstance;
+  editState: (id: string) => void;
   deleteState: (id: string) => void;
+  moveState: (id: string, pos: [number, number]) => void;
+
+  editTransition: (
+    path: [string, number],
+    transition: IFSMDescriptor.Transition,
+  ) => void;
 }> {
   container: Element | null = null;
   componentDidMount() {
     const { plumb } = this.props;
-    (window as any).p = plumb;
-    plumb.draggable(this.container!);
+    plumb.draggable(this.container!, {
+      stop: params => {
+        this.props.moveState(this.props.id, params.pos);
+      },
+    });
     plumb.makeSource(this.container!, { filter: `.${sourceStyle}` });
     plumb.makeTarget(this.container!, {});
   }
@@ -295,6 +427,7 @@ class State extends React.Component<{
       delete plumb.getManagedElements()[this.props.id];
     }
   }
+  onClick = () => this.props.editState(this.props.id);
   render() {
     const { state, initialState } = this.props;
     return (
@@ -310,24 +443,29 @@ class State extends React.Component<{
           top: state.editorPosition.y,
         }}
       >
-        <div style={{ position: 'relative' }}>
-          {state.label}
-          {state.transitions.map(t => (
-            <Transition
-              key={`${this.props.id}-${t.nextStateId}-${t.id}`}
-              plumb={this.props.plumb}
-              transition={t}
-              parent={this.props.id}
-            />
-          ))}
-          {!initialState && (
-            <IconButton
-              icon="trash"
-              onClick={() => this.props.deleteState(this.props.id)}
-            />
-          )}
-          <div className={String(sourceStyle)} />
-        </div>
+        <Toolbar vertical>
+          <Toolbar.Content>{state.label}</Toolbar.Content>
+          <Toolbar.Header>
+            {!initialState && (
+              <IconButton
+                icon="trash"
+                onClick={() => this.props.deleteState(this.props.id)}
+              />
+            )}
+            <IconButton icon="edit" onClick={this.onClick} />
+            <FontAwesome icon="project-diagram" className={sourceStyle} />
+          </Toolbar.Header>
+        </Toolbar>
+        {state.transitions.map((t, i) => (
+          <Transition
+            key={`${this.props.id}-${t.nextStateId}-${t.id}`}
+            plumb={this.props.plumb}
+            transition={t}
+            position={i}
+            parent={this.props.id}
+            editTransition={this.props.editTransition}
+          />
+        ))}
       </div>
     );
   }
@@ -337,6 +475,11 @@ class Transition extends React.Component<{
   transition: IFSMDescriptor.Transition;
   plumb: jsPlumbInstance;
   parent: string;
+  position: number;
+  editTransition: (
+    path: [string, number],
+    transition: IFSMDescriptor.Transition,
+  ) => void;
 }> {
   connection: Connection | null = null;
   componentDidMount() {
@@ -348,10 +491,32 @@ class Transition extends React.Component<{
       ...(src === tgt ? ({ connector: ['StateMachine'] } as any) : undefined),
     });
     this.connection.setParameter('transition', this.props.transition);
+    this.connection.setParameter('transitionIndex', this.props.position);
+    (this.connection as any).bind('click', (connection: any) => {
+      this.props.editTransition(
+        [this.props.parent, this.props.position],
+        connection.getParameter('transition'),
+      );
+    });
+    this.updateLabel();
   }
+  componentDidUpdate() {
+    this.updateLabel();
+  }
+  updateLabel = () => {
+    const { triggerCondition } = this.props.transition;
+    const label = triggerCondition ? triggerCondition.content : '';
+    try {
+      this.connection!.setLabel(label);
+    } catch {}
+  };
   componentWillUnmount() {
     if (this.connection != null) {
-      // this.props.plumb.deleteConnection(this.connection);
+      try {
+        this.props.plumb.deleteConnection(this.connection);
+      } catch {
+        // Mostly because jsplumb already deleted it.
+      }
     }
   }
   render() {

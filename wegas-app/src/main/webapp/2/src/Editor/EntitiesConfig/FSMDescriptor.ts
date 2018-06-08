@@ -1,4 +1,4 @@
-import { ConfigurationSchema, EntityActions } from '../editionConfig';
+import { ConfigurationSchema, EActions } from '../editionConfig';
 import { config as VariableDescriptorConfig } from './VariableDescriptor';
 import { config as FSMInstanceConfig } from './FSMInstance';
 import { Actions } from '../../data';
@@ -31,6 +31,6 @@ export const config: ConfigurationSchema<IFSMDescriptor> = {
     properties: FSMInstanceConfig,
   },
 };
-export const actions: EntityActions = {
+export const actions: EActions<IFSMDescriptor> = {
   edit: Actions.EditorActions.editStateMachine,
 };

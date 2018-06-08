@@ -5,8 +5,8 @@ import './FormView';
 
 interface EditorProps<T> {
   entity?: T;
-  update: (variable: T) => void;
-  del: (variable: T, path?: string[]) => void;
+  update?: (variable: T) => void;
+  del?: (variable: T, path?: string[]) => void;
   path?: string[];
   config?: Schema;
 }
@@ -39,24 +39,26 @@ export class Form<T> extends React.Component<
     return (
       <Toolbar>
         <Toolbar.Header>
-          <button
-            disabled={this.state.val === this.props.entity}
-            onClick={() => {
-              if (this.state.val !== this.props.entity && this.form) {
-                const validation = this.form.validate();
-                if (validation.length) {
-                  console.log(
-                    this.state.val,
-                    JSON.stringify(validation, null, 2),
-                  );
-                } else {
-                  this.props.update(this.state.val);
+          {this.props.update && (
+            <button
+              disabled={this.state.val === this.props.entity}
+              onClick={() => {
+                if (this.state.val !== this.props.entity && this.form) {
+                  const validation = this.form.validate();
+                  if (validation.length) {
+                    console.log(
+                      this.state.val,
+                      JSON.stringify(validation, null, 2),
+                    );
+                  } else {
+                    this.props.update!(this.state.val);
+                  }
                 }
-              }
-            }}
-          >
-            Save
-          </button>
+              }}
+            >
+              Save
+            </button>
+          )}
           <button
             onClick={() => {
               this.setState({ val: this.props.entity });
@@ -64,13 +66,15 @@ export class Form<T> extends React.Component<
           >
             reset
           </button>
-          <button
-            onClick={() => {
-              this.props.del(this.state.val, this.props.path);
-            }}
-          >
-            delete
-          </button>
+          {this.props.del && (
+            <button
+              onClick={() => {
+                this.props.del!(this.state.val, this.props.path);
+              }}
+            >
+              delete
+            </button>
+          )}
         </Toolbar.Header>
         <Toolbar.Content>
           <JSONForm
