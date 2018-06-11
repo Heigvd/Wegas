@@ -4,6 +4,7 @@ import { editor } from 'monaco-editor';
 
 interface EditorProps {
   value?: string;
+  minimap?: boolean;
   language?: 'javascript' | 'css' | 'json';
   onChange?: (value: string) => void;
   onBlur?: (value: string) => void;
@@ -21,6 +22,7 @@ class SrcEditor extends React.Component<EditorProps> {
 
   static defaultProps = {
     language: 'javascript',
+    minimap: false,
     onBlur: () => {},
     onChange: () => {},
   };
@@ -29,7 +31,7 @@ class SrcEditor extends React.Component<EditorProps> {
   }
   shouldComponentUpdate(nextProps: EditorProps) {
     return (
-     nextProps.value !== this.lastValue ||
+      nextProps.value !== this.lastValue ||
       this.props.language !== nextProps.language
     );
   }
@@ -57,6 +59,7 @@ class SrcEditor extends React.Component<EditorProps> {
           theme: 'vs-dark',
           language: this.props.language,
           value: this.props.value,
+          minimap: { enabled: this.props.minimap },
         });
         this.editor.onDidBlurEditor(() => {
           this.lastValue = this.editor!.getValue();
