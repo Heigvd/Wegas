@@ -1,6 +1,6 @@
 import generate from '@babel/generator';
 import { Statement, program } from '@babel/types';
-import { parse } from 'babylon';
+import { parse } from '@babel/parser';
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
 import SrcEditor from '../../SrcEditor';
