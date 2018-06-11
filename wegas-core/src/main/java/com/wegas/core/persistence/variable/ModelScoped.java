@@ -46,6 +46,9 @@ public interface ModelScoped {
         PRIVATE
     }
 
+    /**
+     * protection against scenario writes
+     */
     public static enum ProtectionLevel {
         /**
          * Fetch from parent

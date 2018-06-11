@@ -297,7 +297,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = createCbxQuestion(scenario.getId(), "question", 1, 1);
 
         ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", new Result("result"));
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", TranslatableContent.build("def", "label")));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", TranslatableContent.build("en", "label")));
         ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", new Result("result"));
 
         login(user);
@@ -347,7 +347,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = createCbxQuestion(scenario.getId(), "question", 2, 3);
 
         ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", new Result("result"));
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", TranslatableContent.build("def", "label")));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", TranslatableContent.build("en", "label")));
         ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", new Result("result"));
         ChoiceDescriptor choice4 = createChoice(question, "choice4", null, "result", new Result("result"));
 

@@ -588,6 +588,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                     type: HIDDEN
                                 }
                             },
+                            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                             version: {
                                 type: NUMBER,
                                 optional: true,
@@ -1063,6 +1064,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     descriptorId: IDATTRDEF,
                     validated: {
                         value: false,
@@ -1080,17 +1082,17 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: 3
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            },
-            {
-                type: BUTTON,
-                label: "Add",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [
-                                {
+        EDITMENU: {
+            addBtn: {
+                index: 1,
+                cfg: {
+                    type: BUTTON,
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
+                    plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                children: [
+{
                                     type: BUTTON,
                                     label: '<span class="wegas-icon-numberdescriptor"></span> Number',
                                     plugins: [{
@@ -1118,26 +1120,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                             }
                                         }]
                                 }
-                            ]
+                                ]
+                            }
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: 'Search for usages',
-                plugins: [
-                    {
-                        fn: 'SearchEntityAction'
-                    }
-                ]
-            }],
+                    ]
+                }
+            }
+        },
         /**
          * Defines methods available in wysiwyge script editor
          */

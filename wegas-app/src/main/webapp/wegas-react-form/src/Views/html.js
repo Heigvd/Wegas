@@ -7,15 +7,16 @@ import commonView from '../HOC/commonView';
 import labeled from '../HOC/labeled';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
+import FormStyles from './form-styles';
 
-const { Wegas } = getY();
+const {Wegas} = getY();
 const tinymceStyle = css({
     '& .mce-tinymce': {
         boxShadow: 'none',
         boxSizing: 'border-box',
     },
     // Fix horizontal resize...
-    '& .mce-container > iframe': { width: '100% !important' },
+    '& .mce-container > iframe': {width: '100% !important'},
 });
 function onFileBrowserClick(fieldName, url, type, win) {
     const filePanel = new Wegas.FileSelect();
@@ -27,7 +28,7 @@ function onFileBrowserClick(fieldName, url, type, win) {
         const window = filePanel.win;
         const targetInput = window.document.getElementById(
             filePanel.field_name
-        );
+            );
         targetInput.value = Wegas.Facade.File.getPath() + path; // update the input field
 
         if (typeof window.ImageDialog !== 'undefined') {
@@ -41,7 +42,7 @@ function onFileBrowserClick(fieldName, url, type, win) {
                 // ... and preview if necessary
                 window.ImageDialog.showPreviewImage(
                     Wegas.Facade.File.getPath() + path
-                );
+                    );
             }
         }
         if (window.Media) {
@@ -61,9 +62,9 @@ const TINY_CONFIG = {
     plugins: [
         'autolink link image lists code media table',
         'paste advlist textcolor dynamic_toolbar',
-        // textcolor wordcount autosave contextmenu
-        // advlist charmap print preview hr anchor pagebreak spellchecker
-        // directionality
+            // textcolor wordcount autosave contextmenu
+            // advlist charmap print preview hr anchor pagebreak spellchecker
+            // directionality
     ],
     toolbar1: 'bold italic bullist | link image media code addToolbarButton',
     toolbar2: `forecolor backcolor underline
@@ -139,7 +140,7 @@ function toTinyMCE(content) {
             new RegExp('data-file="([^"]*)"', 'gi'),
             `src="${Wegas.Facade.File.getPath()}$1"
              href="${Wegas.Facade.File.getPath()}$1"`
-        ); // @hack Place both href and src so it
+            ); // @hack Place both href and src so it
         // will work for both <a> and <img>
         // elements
     }
@@ -163,16 +164,16 @@ function toInjectorStyle(content) {
             new RegExp(
                 '((src|href)="[^"]*/rest/File/GameModelId/[^"]*/read([^"]*)")',
                 'gi'
-            ),
+                ),
             'data-file="$3"'
-        ) // Replace absolute path with injector style path (old version)
+            ) // Replace absolute path with injector style path (old version)
         .replace(
             new RegExp(
                 '((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")',
                 'gi'
-            ),
+                ),
             'data-file="$3"'
-        ); // Replace absolute path with injector style path
+            ); // Replace absolute path with injector style path
 }
 class HTMLView extends React.Component {
     static getDerivedStateFromProps(nextProps, state) {
@@ -186,7 +187,7 @@ class HTMLView extends React.Component {
                 content: toTinyMCE(nextProps.value) || '',
             };
         }
-        return { oldProps: nextProps };
+        return {oldProps: nextProps};
     }
     constructor(props) {
         super(props);
@@ -205,27 +206,34 @@ class HTMLView extends React.Component {
         const oldContent = this.state.sent;
         const newContent = toInjectorStyle(content);
         if (oldContent !== newContent) {
-            this.setState({ content, sent: newContent }, () => {
+            this.setState({content, sent: newContent}, () => {
                 this.props.onChange(newContent);
             });
         }
     }
 
     render() {
-        return (
-            <div {...tinymceStyle}>
-                <Editor
-                    value={this.state.content}
-                    init={TINY_CONFIG}
-                    onEditorChange={this.onChangeHandler}
-                />
-            </div>
-        );
+        if (this.props.view.readOnly) {
+            return <div  className={FormStyles.disabled.toString()}
+                  dangerouslySetInnerHTML={{
+                        __html: this.state.content
+                  }} />;
+            } else {
+                return (
+                    <div {...tinymceStyle}>
+                        <Editor
+                            value={this.state.content}
+                            init={TINY_CONFIG}
+                            onEditorChange={this.onChangeHandler}
+                            />
+                    </div>
+                    );
+            }
+        }
     }
-}
-HTMLView.propTypes = {
-    onChange: PropTypes.func.isRequired,
-    value: PropTypes.string,
-};
+    HTMLView.propTypes = {
+        onChange: PropTypes.func.isRequired,
+        value: PropTypes.string,
+    };
 
-export default commonView(labeled(HTMLView));
+    export default commonView(labeled(HTMLView));

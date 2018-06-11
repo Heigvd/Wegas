@@ -22,6 +22,7 @@ import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -501,7 +502,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     @Override
-    public void revive(Beanjection beans) {
+    public void revive(GameModel gameModel, Beanjection beans) {
         if (this.title != null) {
             String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
             if (importedLabel == null) {
@@ -513,7 +514,10 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
             // title = "Meet someone", label="" => prefix = "", label="Meet someone"
             this.setEditorTag(importedLabel.replace(title, "").trim());
 
-            this.setLabel(TranslatableContent.build("def", title));
+            List<GameModelLanguage> languages = gameModel.getLanguages();
+            if (languages != null && !languages.isEmpty()) {
+                this.setLabel(TranslatableContent.build(languages.get(0).getCode(), title));
+            }
             this.title = null;
         }
         for (Result r : results) {
@@ -527,6 +531,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 r.getIgnorationAnswer().setParentDescriptor(this);
             }
         }
-        super.revive(beans);
+        super.revive(gameModel, beans);
     }
 }

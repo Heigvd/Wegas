@@ -21,6 +21,7 @@ interface ISelectProps {
     onChange: (value: string) => void;
     view: {
         choices: (string | Choice)[];
+        readOnly: boolean;
     };
 }
 interface IAsyncSelectProps {
@@ -82,6 +83,7 @@ function SelectView(props: ISelectProps) {
             className={`${selectStyle}`}
             value={value}
             onChange={onChange}
+            disabled={props.view.readOnly}
         >
             {menuItems}
         </select>

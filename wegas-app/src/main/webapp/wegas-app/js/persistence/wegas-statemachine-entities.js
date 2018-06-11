@@ -228,6 +228,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         EDITMENU: {
             editBtn: {
                 index: -1,
+                maxVisibility: "INTERNAL",
                 cfg: {
                     type: "EditEntityButton",
                     plugins: [{
@@ -493,6 +494,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         EDITMENU: {
             editBtn: {
                 index: -1,
+                maxVisibility: "INTERNAL",
                 cfg: {
                     type: "EditEntityButton"
                 }
@@ -576,6 +578,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         EDITMENU: {
             editBtn: {
                 index: -1,
+                maxVisibility: "INTERNAL",
                 cfg: {
                     type: "EditEntityButton",
                     plugins: [{

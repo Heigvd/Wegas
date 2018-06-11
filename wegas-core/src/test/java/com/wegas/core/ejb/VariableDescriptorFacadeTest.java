@@ -101,11 +101,11 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
         // Test the descriptor
         StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);
         stringDescriptor.setDefaultInstance(new StringInstance());
-        stringDescriptor.getDefaultInstance().setTrValue(TranslatableContent.build("def", VALUE1));
+        stringDescriptor.getDefaultInstance().setTrValue(TranslatableContent.build("en", VALUE1));
 
         StringDescriptor stringDescriptor2 = new StringDescriptor(VARIABLENAME2);
         stringDescriptor2.setDefaultInstance(new StringInstance());
-        stringDescriptor2.getDefaultInstance().setTrValue(TranslatableContent.build("def", VALUE2));
+        stringDescriptor2.getDefaultInstance().setTrValue(TranslatableContent.build("en", VALUE2));
         this.testVariableDescriptor(stringDescriptor, stringDescriptor2);
 
         // Check its value
@@ -114,7 +114,7 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
 
         // Edit the variable instance
         StringInstance newStringInstance = new StringInstance();
-        newStringInstance.setTrValue(TranslatableContent.build("def", VALUE3));
+        newStringInstance.setTrValue(TranslatableContent.build("en", VALUE3));
         newStringInstance.setVersion(instance.getVersion());
 
         variableInstanceFacade.update(stringDescriptor.getId(), player.getId(), newStringInstance);
@@ -289,7 +289,7 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
         // 1st case: move from root to root
         StringDescriptor vd1 = new StringDescriptor(VARIABLENAME);
         vd1.setDefaultInstance(new StringInstance());
-        vd1.getDefaultInstance().setTrValue(TranslatableContent.build("def", VALUE1));
+        vd1.getDefaultInstance().setTrValue(TranslatableContent.build("en", VALUE1));
         variableDescriptorFacade.create(scenario.getId(), vd1);
 
         gm = gameModelFacade.find(scenario.getId());
@@ -299,7 +299,7 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
         //gm = gameModelFacade.find(scenario.getId());
         StringDescriptor vd2 = new StringDescriptor(VARIABLENAME2);
         vd2.setDefaultInstance(new StringInstance());
-        vd2.getDefaultInstance().setTrValue(TranslatableContent.build("def", VALUE1));
+        vd2.getDefaultInstance().setTrValue(TranslatableContent.build("en", VALUE1));
         variableDescriptorFacade.create(scenario.getId(), vd2);
         gm = gameModelFacade.find(scenario.getId());
         Assert.assertEquals(2, gm.getChildVariableDescriptors().size());
@@ -319,7 +319,7 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
 
         StringDescriptor sub1 = new StringDescriptor(SUBNAME1);
         sub1.setDefaultInstance(new StringInstance());
-        sub1.getDefaultInstance().setTrValue(TranslatableContent.build("def", VALUE1));
+        sub1.getDefaultInstance().setTrValue(TranslatableContent.build("en", VALUE1));
         variableDescriptorFacade.createChild(vd3.getId(), sub1);
         gm = gameModelFacade.find(scenario.getId());
         // The last one in not at root level:
@@ -379,7 +379,7 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
 
         StringDescriptor vd1 = new StringDescriptor(VARIABLENAME1);
         vd1.setDefaultInstance(new StringInstance());
-        vd1.getDefaultInstance().setTrValue(TranslatableContent.build("def", VALUE1));
+        vd1.getDefaultInstance().setTrValue(TranslatableContent.build("en", VALUE1));
         variableDescriptorFacade.createChild(list1.getId(), vd1);
         gm = gameModelFacade.find(scenario.getId());
         Assert.assertEquals(2, gm.getVariableDescriptors().size());
@@ -387,7 +387,7 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
 
         StringDescriptor vd2 = new StringDescriptor(VARIABLENAME2);
         vd2.setDefaultInstance(new StringInstance());
-        vd2.getDefaultInstance().setTrValue(TranslatableContent.build("def", VALUE1));
+        vd2.getDefaultInstance().setTrValue(TranslatableContent.build("en", VALUE1));
         variableDescriptorFacade.createChild(list1.getId(), vd2);
         List<VariableDescriptor> childrenDescriptors = variableDescriptorFacade.findByGameModelId(scenario.getId());
         Assert.assertEquals(VARIABLENAME1, ((ListDescriptor) childrenDescriptors.get(0)).item(0).getName());// Check if item was successfully added
@@ -402,7 +402,7 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
         // 2nd case: from root to descriptor
         StringDescriptor vd3 = new StringDescriptor(VARIABLENAME3);
         vd3.setDefaultInstance(new StringInstance());
-        vd3.getDefaultInstance().setTrValue(TranslatableContent.build("def", VALUE1));
+        vd3.getDefaultInstance().setTrValue(TranslatableContent.build("en", VALUE1));
         variableDescriptorFacade.create(scenario.getId(), vd3);
 
         variableDescriptorFacade.move(vd3.getId(), list1.getId(), 0);                                // Move first item to index 0

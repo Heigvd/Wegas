@@ -35,7 +35,7 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"gamemodel_id", "refname"})
+            @UniqueConstraint(columnNames = {"gamemodel_id", "code"})
         },
         indexes = {
             @Index(columnList = "gamemodel_id")
@@ -51,12 +51,6 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
-    /**
-     * arbitrary code
-     */
-    @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
-    @WegasEntityProperty
-    private String refName;
 
     /**
      * short name like en, en_uk, or fr_ch
@@ -130,14 +124,6 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
 
     public void setLang(String language) {
         this.lang = language;
-    }
-
-    public String getRefName() {
-        return refName;
-    }
-
-    public void setRefName(String refName) {
-        this.refName = refName;
     }
 
     public GameModel getGameModel() {

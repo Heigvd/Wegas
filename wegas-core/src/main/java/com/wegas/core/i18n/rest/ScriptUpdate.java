@@ -20,7 +20,7 @@ public class ScriptUpdate {
     private Long parentId;
     private String fieldName;
     private Integer index; // optional
-    private String refName; //optional
+    private String code; //optional
     private String value;
 
     public String getParentClass() {
@@ -63,12 +63,12 @@ public class ScriptUpdate {
         this.value = value;
     }
 
-    public String getRefName() {
-        return refName;
+    public String getCode() {
+        return code;
     }
 
-    public void setRefName(String refName) {
-        this.refName = refName;
+    public void setCode(String code) {
+        this.code = code;
     }
 
 }

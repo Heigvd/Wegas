@@ -4,8 +4,8 @@ import { Schema } from 'jsoninput';
 import { infoStyle } from './commonView';
 
 interface TranslatableProps {
-    value: { [refName: string]: string };
-    onChange: (value: { [refName: string]: string }) => void;
+    value: { [code: string]: string };
+    onChange: (value: { [code: string]: string }) => void;
     view: Schema['view'] & { label?: string };
 }
 
@@ -32,7 +32,7 @@ export default function translatable<P extends EndProps>(
                 {({ lang, availableLang }) => {
                     // Updade label
                     const curCode = (
-                        availableLang.find(l => l.refName === lang) || {
+                        availableLang.find(l => l.code === lang) || {
                             code: '',
                         }
                     ).code;

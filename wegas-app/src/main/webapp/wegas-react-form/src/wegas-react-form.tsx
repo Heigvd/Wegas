@@ -98,13 +98,12 @@ YUI.add('wegas-react-form', Y => {
                     };
                     render(
                         <LangHandler
-                            lang={Y.Wegas.I18n._currentRefName}
+                            lang={Y.Wegas.I18n._currentCode}
                             availableLang={Y.Wegas.Facade.GameModel.cache
                         .getCurrentGameModel()
                         .get('languages')
                         .map((l: any) => {
                             return {
-                                refName: l.get('refName'),
                                 code: l.get('code'),
                                 label: l.get('lang'),
                             };

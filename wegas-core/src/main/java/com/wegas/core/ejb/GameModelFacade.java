@@ -138,7 +138,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public void create(final GameModel entity) {
 
         if (entity.getRawLanguages().isEmpty()) {
-            i18nFacade.createLanguage(entity, "def", "default");
+            i18nFacade.createLanguage(entity, "en", "English");
         }
 
         // So What?

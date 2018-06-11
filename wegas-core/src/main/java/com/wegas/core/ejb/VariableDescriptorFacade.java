@@ -203,7 +203,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
          */
         this.getEntityManager().flush();
 
-        this.reviveDescriptor(entity);
+        this.reviveDescriptor(gameModel, entity);
         variableInstanceFacade.reviveInstance(entity.getDefaultInstance());
 
         // @TODO find a smarter way to decide to propagate or not to propatate...
@@ -224,8 +224,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
     }
 
-    public void reviveDescriptor(VariableDescriptor vd) {
-        vd.revive(getBeans());
+    public void reviveDescriptor(GameModel gm, VariableDescriptor vd) {
+        vd.revive(gm, getBeans());
     }
 
     /**

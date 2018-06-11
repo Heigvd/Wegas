@@ -251,10 +251,12 @@ font {
 
 /** Hide all advanced feature while in std mode */
 .wegas-forbidden-feature,
+body:not(.wegas-internalmode) .wegas-internal-feature,
 .wegas-stdmode .wegas-advanced-feature {
     display: none !important;
 }
 
+.wegas-internal-feature,
 .wegas-advanced-feature {
     font-style: italic;
 }

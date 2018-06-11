@@ -43,12 +43,13 @@ public interface Enumeration {
      * Add a item to the enumeration
      *
      * @param name name and default label of the new item
+     * @param langCode
      */
-    default public void addEnumItem(String name) {
+    default public void addEnumItem(String name, String langCode) {
         if (this.findItem(name) == null) {
             EnumItem item = new EnumItem();
             item.setName(name);
-            item.setLabel(TranslatableContent.build("def", name));
+            item.setLabel(TranslatableContent.build(langCode, name));
             item.setOrder(this.getEnumItems().size());
             this.registerItem(item);
 

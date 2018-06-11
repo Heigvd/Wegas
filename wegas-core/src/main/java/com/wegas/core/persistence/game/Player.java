@@ -73,7 +73,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
     @WegasEntityProperty
-    private String refName;
+    private String lang;
 
     @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
@@ -204,12 +204,12 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         this.user = user;
     }
 
-    public String getRefName() {
-        return refName;
+    public String getLang() {
+        return lang;
     }
 
-    public void setRefName(String refName) {
-        this.refName = refName;
+    public void setLang(String langCode) {
+        this.lang = langCode;
     }
 
     /**

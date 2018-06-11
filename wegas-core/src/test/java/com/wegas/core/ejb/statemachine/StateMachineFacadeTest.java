@@ -190,13 +190,13 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         DialogueState ds1 = new DialogueState();
         DialogueState ds2 = new DialogueState();
-        ds1.setText(TranslatableContent.build("def", "Hello"));
-        ds2.setText(TranslatableContent.build("def", "World"));
+        ds1.setText(TranslatableContent.build("en", "Hello"));
+        ds2.setText(TranslatableContent.build("en", "World"));
         dial.setStates(toMap(toList(1L, 2L), toList(ds1, ds2)));
 
         DialogueTransition s1ToS2 = new DialogueTransition();
         s1ToS2.setNextStateId(2L);
-        s1ToS2.setActionText(TranslatableContent.build("def", ", "));
+        s1ToS2.setActionText(TranslatableContent.build("en", ", "));
         ds1.setTransitions(toList(s1ToS2));
         variableDescriptorFacade.create(scenario.getId(), dial);
         gameModelFacade.reset(scenario.getId());

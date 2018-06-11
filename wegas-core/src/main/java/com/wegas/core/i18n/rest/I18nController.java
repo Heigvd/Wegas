@@ -84,17 +84,17 @@ public class I18nController {
     }
 
     @GET
-    @Path("Tr/{refName : [^\\/]*}/{trId: [1-9][0-9]*}")
-    public String getTranslation(@PathParam("refName") String refName, @PathParam("trId") Long trId) {
-        logger.trace("UPDATE #{} / {}", trId, refName);
-        return i18nfacade.getTranslatedString(trId, refName);
+    @Path("Tr/{code : [^\\/]*}/{trId: [1-9][0-9]*}")
+    public String getTranslation(@PathParam("code") String code, @PathParam("trId") Long trId) {
+        logger.trace("UPDATE #{} / {}", trId, code);
+        return i18nfacade.getTranslatedString(trId, code);
     }
 
     @PUT
-    @Path("Tr/{refName : [^\\/]*}/{trId: [1-9][0-9]*}")
-    public TranslatableContent updateTranslation(@PathParam("refName") String refName, @PathParam("trId") Long trId, String newValue) {
-        logger.trace("UPDATE #{} / {}", trId, refName);
-        return i18nfacade.updateTranslation(trId, refName, newValue);
+    @Path("Tr/{code : [^\\/]*}/{trId: [1-9][0-9]*}")
+    public TranslatableContent updateTranslation(@PathParam("code") String code, @PathParam("trId") Long trId, String newValue) {
+        logger.trace("UPDATE #{} / {}", trId, code);
+        return i18nfacade.updateTranslation(trId, code, newValue);
     }
 
     @PUT

@@ -374,12 +374,12 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 markup.push("<span class='field-name'>", label, "</span>");
                                 markup.push("<span class='translation-language'> [", languages[l].get("code"), "]</span>");
                                 markup.push("</div>"); // /translation title
-                                markup.push("<", domNode, " class='wegas-translation favorite-lang wegas-translation-inscript wegas-translation-", type, "' lang='", languages[l].get("refName"),
+                                markup.push("<", domNode, " class='wegas-translation favorite-lang wegas-translation-inscript wegas-translation-", type, "' lang='", languages[l].get("code"),
                                     "' data-index='", tr.index,
                                     "' data-parentClass='", tr.parentClass,
                                     "' data-parentId='", tr.parentId,
                                     "' data-fieldName='", tr.key,
-                                    "' data-refName='", languages[l].get("refName"),
+                                    "' lang='", languages[l].get("code"),
                                     "'>",
                                     "<span class='tools'>",
                                     "<span class='inline-editor-validate fa fa-check'></span>" +
@@ -396,7 +396,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     markup.push(" fa fa-folder-o");
                                 }
                                 markup.push("'>",
-                                    tr.value.translations[languages[l].get("refName")],
+                                    tr.value.translations[languages[l].get("code")],
                                     "</", domNode, ">", "</", domNode, ">");
                                 markup.push("</div>");
                             }
@@ -411,7 +411,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 markup.push("<span class='translation-language'> [", languages[l].get("code"), "]</span>");
                                 markup.push("</div>"); // /translation title
                                 markup.push(I18n.t(tr.value, {
-                                    lang: languages[l].get("refName"),
+                                    lang: languages[l].get("code"),
                                     inlineEditor: tr.type && tr.type.replace("I18n", "")
                                 }));
                                 markup.push("</div>"); // /translation
@@ -586,25 +586,25 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             //hostCB.delegate("blur", this.onBlurString, ".wegas-translation-blur.favorite-lang", this);
         },
         _getCfgFromEvent: function(e) {
-            var node, trId, refName;
+            var node, trId, code;
             if (e.target && e.target.ancestor) {
                 node = e.currentTarget.ancestor(".wegas-translation");
             } else {
                 node = Y.one("#" + e.target.id).ancestor(".wegas-translation");
             }
 
-            refName = node.getData("refname");
+            code = node.getAttribute("lang");
             if (node.hasClass("wegas-translation-inscript")) {
                 var cfg = {
                     type: "inscript",
                     node: node,
-                    refName: refName,
+                    code: code,
                     parentClass: node.getData('parentClass'),
                     parentId: node.getData('parentId'),
                     index: node.getData('index'),
                     fieldName: node.getData('fieldName')
                 };
-                cfg.key = cfg.parentClass + "-" + cfg.parentId + "-" + cfg.fieldName + "#" + cfg.index + ":" + refName;
+                cfg.key = cfg.parentClass + "-" + cfg.parentId + "-" + cfg.fieldName + "#" + cfg.index + ":" + code;
                 return cfg;
             } else {
                 trId = node.getData("trid");
@@ -612,8 +612,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     type: 'std',
                     node: node,
                     trId: trId,
-                    refName: refName,
-                    key: refName + "-" + trId
+                    code: code,
+                    key: code + "-" + trId
                 };
             }
         },
@@ -660,7 +660,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         parentClass: cfg.parentClass,
                         parentId: cfg.parentId,
                         fieldName: cfg.fieldName,
-                        refName: cfg.refName,
+                        code: cfg.code,
                         index: cfg.index,
                         value: translation
                     }
@@ -682,7 +682,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         saveTranslation: function(cfg, translation) {
             Y.Wegas.Facade.GameModel.sendRequest({
-                request: '/' + Y.Wegas.Facade.GameModel.get('currentGameModelId') + "/I18n/Tr/" + cfg.refName + "/" + cfg.trId,
+                request: '/' + Y.Wegas.Facade.GameModel.get('currentGameModelId') + "/I18n/Tr/" + cfg.code + "/" + cfg.trId,
                 cfg: {
                     method: "PUT",
                     data: translation
@@ -695,7 +695,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         success: function(cfg, response) {
             Y.log("SUCCESS");
-            this.contents[cfg.key] = response.response.entity.get("translations")[cfg.refName];
+            this.contents[cfg.key] = response.response.entity.get("translations")[cfg.code];
             cfg.node.removeClass("unsaved");
             this.removeEditor();
         },

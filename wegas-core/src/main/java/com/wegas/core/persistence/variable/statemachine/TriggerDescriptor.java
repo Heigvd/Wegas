@@ -100,15 +100,19 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return the script to execute when trigger triggers
      */
     public Script getPostTriggerEvent() {
-        if (this.getStates() != null && this.getStates().size() > 0) {
-            if (this.getStates().size() == 2) {
-                this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
-            } else {
-                // Backward !!!
-                this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
-            }
+        if (this.postTriggerEvent != null) {
+            return this.postTriggerEvent;
         } else {
-            this.postTriggerEvent = null;
+            if (this.getStates() != null && this.getStates().size() > 0) {
+                if (this.getStates().size() == 2) {
+                    this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
+                } else {
+                    // Backward !!!
+                    this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
+                }
+            } else {
+                this.postTriggerEvent = null;
+            }
         }
         return postTriggerEvent;
     }
@@ -129,12 +133,16 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return condition for trigger to triggers
      */
     public Script getTriggerEvent() {
-        if (this.getStates() != null && this.getStates().size() > 0
-                && this.getStates().get(1L).getTransitions() != null
-                && this.getStates().get(1L).getTransitions().size() > 0) {
-            this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
+        if (this.triggerEvent != null) {
+            return this.triggerEvent;
         } else {
-            this.triggerEvent = null;
+            if (this.getStates() != null && this.getStates().size() > 0
+                    && this.getStates().get(1L).getTransitions() != null
+                    && this.getStates().get(1L).getTransitions().size() > 0) {
+                this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
+            } else {
+                this.triggerEvent = null;
+            }
         }
         return triggerEvent;
     }
@@ -216,11 +224,13 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         // Condition
         if (this.triggerEvent != null) {
             this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
+            this.triggerEvent = null;
         }
 
         // Impact
         if (this.postTriggerEvent != null) {
             this.getStates().get(2L).setOnEnterEvent(this.postTriggerEvent);
+            this.postTriggerEvent = null;
         }
 
         // Reset transition

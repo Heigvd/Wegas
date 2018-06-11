@@ -41,11 +41,11 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         login(scenarist);
         TextDescriptor text = new TextDescriptor();
         text.setName("testText");
-        text.setLabel(TranslatableContent.build("def", "testLabel"));
+        text.setLabel(TranslatableContent.build("en", "testLabel"));
         text.setTitle("testTitle");
         text.setComments("testComments");
         TextInstance textInstance = new TextInstance();
-        textInstance.setTrValue(TranslatableContent.build("def", "instance value"));
+        textInstance.setTrValue(TranslatableContent.build("en", "instance value"));
         text.setDefaultInstance(textInstance);
         variableDescriptorFacade.create(gameModel.getId(), text);
         Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testTex").contains(text.getId()));
@@ -89,7 +89,7 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
 
         ChoiceDescriptor choice = new ChoiceDescriptor();
         choice.setDefaultInstance(new ChoiceInstance());
-        choice.setDescription(TranslatableContent.build("def", "Find me"));
+        choice.setDescription(TranslatableContent.build("en", "Find me"));
         Result r = new Result("Reply 1");
         choice.addResult(r);
         Result r2 = new Result("Reply 2");

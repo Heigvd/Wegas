@@ -167,7 +167,12 @@ public class JCRFacade {
             if (!dir.isProtected() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
                 FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
 
-                if (!detachedFile.exist() || override) {                                        //Node should not exist
+                if (!detachedFile.exist()) {
+                    // new file
+                    detachedFile.setVisibility(gameModel.isModel() ? ModelScoped.Visibility.INHERITED : ModelScoped.Visibility.PRIVATE);
+                }
+
+                if (!detachedFile.exist() || override) { //Node should not exist
                     detachedFile.setNote(note == null ? "" : note);
                     detachedFile.setDescription(description);
                     //TODO : check allowed mime-types

@@ -1028,21 +1028,21 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * get list of language refName, sorted according to player preferences if such a player is provided;
+     * get list of language code, sorted according to player preferences if such a player is provided;
      *
      * @param player may be null
      *
      * @return list
      */
-    public List<String> getPreferredLanguagesRefName(Player player) {
+    public List<String> getPreferredLanguagesCodes(Player player) {
         List<GameModelLanguage> sortedLanguages = getLanguages();
         ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
 
         for (GameModelLanguage gml : sortedLanguages) {
-            if (player != null && gml.getRefName().equals(player.getRefName())) {
-                langs.add(0, gml.getRefName());
+            if (player != null && gml.getCode().equals(player.getLang())) {
+                langs.add(0, gml.getLang());
             } else {
-                langs.add(gml.getRefName());
+                langs.add(gml.getCode());
             }
         }
 
@@ -1053,41 +1053,19 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * get list of language code, the given one first
      *
      *
-     * @param preferredRefName preferred refName, may be null or empty
+     * @param preferredCode preferred code, may be null or empty
      *
      * @return list
      */
-    public List<String> getPreferredLanguagesCode(String preferredRefName) {
+    public List<String> getPreferredLanguagesCode(String preferredCode) {
         List<GameModelLanguage> sortedLanguages = getLanguages();
         ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
 
         for (GameModelLanguage gml : sortedLanguages) {
-            if (gml.getRefName().equals(preferredRefName)) {
+            if (gml.getCode().equals(preferredCode)) {
                 langs.add(0, gml.getCode());
             } else {
                 langs.add(gml.getCode());
-            }
-        }
-
-        return langs;
-    }
-
-    /**
-     * get list of language refName, the given one first
-     *
-     *
-     * @param preferredRefName preferred refName, may be null or empty
-     *
-     * @return list
-     */
-    public List<String> getPreferredLanguagesRefName(String preferredRefName) {
-        List<GameModelLanguage> sortedLanguages = getLanguages();
-        ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
-        for (GameModelLanguage gml : sortedLanguages) {
-            if (gml.getRefName().equals(preferredRefName)) {
-                langs.add(0, gml.getRefName());
-            } else {
-                langs.add(gml.getRefName());
             }
         }
 

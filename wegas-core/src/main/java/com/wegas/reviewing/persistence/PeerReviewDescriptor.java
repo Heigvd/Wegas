@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -336,8 +337,8 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     }
 
     @Override
-    public void revive(Beanjection beans) {
-        super.revive(beans);
+    public void revive(GameModel gameModel, Beanjection beans) {
+        super.revive(gameModel, beans);
         beans.getReviewingFacade().revivePeerReviewDescriptor(this);
     }
 

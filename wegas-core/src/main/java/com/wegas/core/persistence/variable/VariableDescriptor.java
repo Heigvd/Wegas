@@ -29,6 +29,7 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.*;
@@ -826,7 +827,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         return this.getGameModel() != null && this.getGameModel().isProtected();
     }
 
-    public void revive(Beanjection beans) {
+    public void revive(GameModel gameModel, Beanjection beans) {
         if (this.title != null) {
             if (title.isEmpty()) {
                 // title is defined but empty -> not prefix, don't change label
@@ -841,7 +842,10 @@ abstract public class VariableDescriptor<T extends VariableInstance>
                 // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
                 // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
                 this.setEditorTag(importedLabel.replace(title, "").trim());
-                this.setLabel(TranslatableContent.build("def", title));
+                List<GameModelLanguage> languages = gameModel.getLanguages();
+                if (languages != null && !languages.isEmpty()) {
+                    this.setLabel(TranslatableContent.build(languages.get(0).getCode(), title));
+                }
             }
             this.title = null;
         }

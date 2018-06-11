@@ -17,6 +17,7 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
@@ -434,8 +435,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     }
 
     @Override
-    public void revive(Beanjection beans) {
-        super.revive(beans);
+    public void revive(GameModel gameModel, Beanjection beans) {
+        super.revive(gameModel, beans);
         beans.getResourceFacade().reviveTaskDescriptor(this);
     }
 

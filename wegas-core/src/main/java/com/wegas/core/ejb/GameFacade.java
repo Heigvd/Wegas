@@ -203,7 +203,12 @@ public class GameFacade extends BaseFacade<Game> {
             debugTeam.setGame(game);
             Player testPlayer = debugTeam.getPlayers().get(0);
             testPlayer.setStatus(Status.LIVE);
-            testPlayer.setRefName("def");
+
+            List<GameModelLanguage> languages = game.getGameModel().getLanguages();
+            if (languages !=null && !languages.isEmpty()){
+                testPlayer.setLang(languages.get(0).getCode());
+            }
+
             teamFacade.create(debugTeam);
             //Player get = debugTeam.getPlayers().get(0);
             //requestFacade.commit(get, false);

@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -81,7 +83,7 @@ YUI.add('wegas-entity', function(Y) {
                 index: -1,
                 view: {
                     type: "uneditable",
-                    className: "wegas-advanced-feature",
+                    className: "wegas-internal-feature",
                     label: "RefId"
                 }
             },
@@ -113,12 +115,12 @@ YUI.add('wegas-entity', function(Y) {
                 preProcessAST: function(argDesc, value, tools) {
                     if (value) {
                         if (value.type === 'Literal') {
-                            return tools.valueToAST({
+                            var o = {
                                 "@class": "TranslatableContent",
-                                "translations": {
-                                    "def": value.value
-                                }
-                            }, argDesc);
+                                "translations": {}
+                            };
+                            o.translations[I18n.getCode()] = value.value;
+                            return tools.valueToAST(o, argDesc);
                         }
                     }
                     return value;
@@ -126,12 +128,12 @@ YUI.add('wegas-entity', function(Y) {
                 getter: function(value) {
                     if (typeof value === "string") {
                         //  backward compatibility: raw String to default translation
-                        return {
+                        var o = {
                             "@class": "TranslatableContent",
-                            "translations": {
-                                "def": value
-                            }
+                            "translations": {}
                         };
+                        o.translations[I18n.getCode()] = value;
+                        return o;
                     }
                     return value;
                 },
@@ -196,7 +198,7 @@ YUI.add('wegas-entity', function(Y) {
                     index: -1,
                     view: {
                         type: "uneditable",
-                        className: "wegas-advanced-feature",
+                        className: "wegas-internal-feature",
                         label: "RefId"
                     }
                 }
@@ -225,13 +227,14 @@ YUI.add('wegas-entity', function(Y) {
                     index: -1,
                     view: {
                         type: "uneditable",
-                        className: "wegas-advanced-feature",
+                        className: "wegas-internal-feature",
                         label: "RefId"
                     }
                 },
                 VISIBILITY: {
                     type: STRING,
                     valueFn: function() {
+                        // default visibility is inherited if the object belongs to a model, private otherwise
                         return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
                     },
                     view: {
@@ -249,11 +252,11 @@ YUI.add('wegas-entity', function(Y) {
                                 value: "PRIVATE",
                                 label: "Private"
                             }],
-                        maxWritableVisibility: "NONE",
                         label: "Visibility",
                         className: "wegas-entity--visibility-attribute"
-                    }
-                },
+                    },
+                    maxWritableVisibility: "NONE"
+                }
             }
         });
     persistence.Entity = Entity;
@@ -382,14 +385,7 @@ YUI.add('wegas-entity', function(Y) {
                     type: HIDDEN
                 }
             },
-            refName: {
-                type: "string",
-                view: {
-                    type: 'uneditable',
-                    label: "refName",
-                    description: "Internal identifier"
-                }
-            },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             code: {
                 type: "string",
                 view: {
@@ -413,14 +409,15 @@ YUI.add('wegas-entity', function(Y) {
     persistence.TranslatableContent = Base.create("TranslatableContent", persistence.Entity, [], {}, {
         EDITORNAME: "TranslatableContent",
         ATTRS: {
-            id: IDATTRDEF,
-            '@class': {
-                type: "string",
-                value: 'TranslatableContent',
-                view: {
-                    type: HIDDEN
-                }
-            },
+            /*id: IDATTRDEF,
+             '@class': {
+             type: "string",
+             value: 'TranslatableContent',
+             view: {
+             type: HIDDEN
+             }
+             },*/
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             translations: {
                 type: "object",
                 additionalProperties: {
@@ -456,10 +453,10 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             basedOnId: {
-                type: NUMBER,
+                type: ["null", NUMBER],
                 view: {
                     type: 'uneditable',
-                    className: 'wegas-advanced-feature',
+                    className: 'wegas-internal-feature',
                     label: 'model id'
                 }
             },
@@ -580,7 +577,13 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             type: {
-                type: STRING
+                type: ["null", STRING],
+                view: {
+                    type: 'string',
+                    readOnly: true,
+                    className: 'wegas-internal-feature',
+                    label: 'Type'
+                }
             },
             canView: {
                 transient: true
@@ -807,7 +810,7 @@ YUI.add('wegas-entity', function(Y) {
                 status: {
                     "transient": true
                 },
-                refName: {
+                lang: {
                     type: "string"
                 }
             }

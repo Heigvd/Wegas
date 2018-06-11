@@ -213,6 +213,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     value: "Occupation",
                                     view: {type: HIDDEN}
                                 },
+                                refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                                 id: IDATTRDEF,
                                 editable: {
                                     type: BOOLEAN,
@@ -611,6 +612,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     view: {type: HIDDEN}
                                 },
                                 id: IDATTRDEF,
+                                refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                                 name: {type: STRING, view: {type: HIDDEN}},
                                 work: {
                                     type: STRING,
@@ -878,6 +880,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 optional: true,
                 type: NUMBER
             },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             name: {
                 optional: true,
                 type: STRING
@@ -910,6 +913,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "Activity"
             },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             taskDescriptorName: {
                 type: STRING
             },
@@ -935,6 +939,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "Occupation"
             },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             time: {
                 type: NUMBER
             },
@@ -951,6 +956,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "TaskInstance"
             },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             taskDescriptorName: {
                 type: STRING
             }

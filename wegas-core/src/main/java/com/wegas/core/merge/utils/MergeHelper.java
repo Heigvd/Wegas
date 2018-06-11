@@ -8,13 +8,20 @@
 package com.wegas.core.merge.utils;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.i18n.ejb.I18nFacade;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.Translation;
+import com.wegas.core.i18n.rest.ScriptUpdate;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.ModelScoped;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +37,7 @@ public class MergeHelper {
 
         public void visit(Mergeable target, Mergeable reference);
 
+        public void visitProperty(Object target, Object reference);
     }
 
     /**
@@ -110,6 +118,17 @@ public class MergeHelper {
                                     }
                                 }
                                 break;
+                            case PROPERTY:
+                                Object targetProperty = readMethod.invoke(target);
+                                Object referenceProperty = null;
+
+                                if (reference != null) {
+                                    referenceProperty = readMethod.invoke(reference);
+                                }
+
+                                visitor.visitProperty(targetProperty, referenceProperty);
+
+                                break;
                         }
                     }
                 } catch (Exception ex) {
@@ -133,6 +152,10 @@ public class MergeHelper {
             if (target instanceof ModelScoped) {
                 ((ModelScoped) target).setVisibility(this.visibility);
             }
+        }
+
+        @Override
+        public void visitProperty(Object target, Object reference) {
         }
     }
 
@@ -162,6 +185,10 @@ public class MergeHelper {
                 }
             }
         }
+
+        @Override
+        public void visitProperty(Object target, Object reference) {
+        }
     }
 
     /**
@@ -171,5 +198,102 @@ public class MergeHelper {
      */
     public static void resetRefIds(AbstractEntity target, AbstractEntity reference) {
         MergeHelper.visitMergeable(target, reference, Boolean.FALSE, new RefidResetter());
+    }
+
+    private static class LanguageUpgrader implements MergeableVisitor {
+
+        private String oldCode;
+        private String newCode;
+        private I18nFacade i18nFacade;
+
+        public LanguageUpgrader(String oldCode, String newCode, I18nFacade i18nFacade) {
+            this.oldCode = oldCode;
+            this.newCode = newCode;
+            this.i18nFacade = i18nFacade;
+        }
+
+        @Override
+        public void visit(Mergeable target, Mergeable reference) {
+            if (target instanceof TranslatableContent) {
+                TranslatableContent tr = (TranslatableContent) target;
+                Translation translation = tr.getTranslation(oldCode);
+                if (translation != null) {
+                    translation.setLang(newCode);
+                }
+            }
+        }
+
+        @Override
+        public void visitProperty(Object target, Object reference) {
+
+            if (target instanceof Script) {
+                try {
+                    Script script = (Script) target;
+                    String newScript = i18nFacade.updateScriptRefName(script.getContent(), oldCode, newCode);
+                    script.setContent(newScript);
+                } catch (ScriptException ex) {
+                    logger.error("SCRIPTERROR");
+                }
+            }
+        }
+    }
+
+    /**
+     * Update each occurence of the language code in the given gameModel.
+     * each TranslatableContent property and each TranslatableContnent in any script will be updated.
+     *
+     * @param gameModel
+     * @param oldCode
+     * @param newCode
+     * @param i18nFacade
+     */
+    public static void updateTranslationCode(GameModel gameModel, String oldCode, String newCode, I18nFacade i18nFacade) {
+        MergeHelper.visitMergeable(gameModel, null, Boolean.TRUE, new LanguageUpgrader(oldCode, newCode, i18nFacade));
+    }
+
+    private static class TranslationsImporter implements MergeableVisitor {
+
+        private final String languageCode;
+        private final I18nFacade i18nFacade;
+
+        public TranslationsImporter(String languageCode, I18nFacade i18nFacade) {
+            this.languageCode = languageCode;
+            this.i18nFacade = i18nFacade;
+        }
+
+        @Override
+        public void visit(Mergeable target, Mergeable reference) {
+            if (target instanceof TranslatableContent) {
+                TranslatableContent trTarget = (TranslatableContent) target;
+
+                if (trTarget.getTranslation(languageCode) != null) {
+                    logger.error("Translation {} exists in {}", languageCode, target);
+                }
+
+                if (reference instanceof TranslatableContent) {
+                    TranslatableContent trRef = (TranslatableContent) reference;
+                    Translation tr = trRef.getTranslation(languageCode);
+                    if (tr != null) {
+                        String translation = tr.getTranslation();
+                        trTarget.updateTranslation(languageCode, translation);
+                    } else {
+                        logger.error("No {} Translation in Reference {}", languageCode, trRef);
+                    }
+                } else {
+                    logger.error("No TranslationContent in Reference");
+                }
+            }
+        }
+
+        @Override
+        public void visitProperty(Object target, Object reference) {
+            if (target instanceof Script && reference instanceof Script) {
+                i18nFacade.importTranslations((Script) target, (Script) reference, languageCode);
+            }
+        }
+    }
+
+    public static void importTranslations(GameModel target, GameModel source, String languageCode, I18nFacade i18nFacade) {
+        MergeHelper.visitMergeable(target, source, Boolean.TRUE, new TranslationsImporter(languageCode, i18nFacade));
     }
 }

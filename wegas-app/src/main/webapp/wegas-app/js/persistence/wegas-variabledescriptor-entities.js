@@ -46,7 +46,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         index: -19,
         view: {
             type: 'uneditable',
-            className: 'wegas-advanced-feature',
+            className: 'wegas-internal-feature',
             label: 'Version',
             layout: 'shortInline'
                 //_type: HIDDEN
@@ -299,7 +299,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 name: {
                     type: STRING,
                     index: -7,
-                    maxWriteableVisibility: PRIVATE,
+                    maxWritableVisibility: PRIVATE,
                     view: {
                         className: 'wegas-advanced-feature',
                         label: 'Script alias',
@@ -386,7 +386,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     validator: function(o) {
                         return o instanceof persistence.VariableInstance;
                     },
-                    maxWriteableVisibility: PROTECTED
+                    maxWritableVisibility: PROTECTED
                 }
             },
             EDITMENU: {
@@ -452,6 +452,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 usagesBtn: {
                     index: 40,
+                    maxVisibility: "INTERNAL",
                     cfg: {
                         type: BUTTON,
                         label: 'Search for usages',
@@ -640,6 +641,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             label: Y.Wegas.Helper.getTranslationAttr({
                 label: "Label",
                 index: -1,
@@ -712,6 +714,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                 view: {type: HIDDEN}
                             },
                             id: IDATTRDEF,
+                            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                             name: {
                                 type: STRING,
                                 view: {
@@ -731,7 +734,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     },
                     view: {
                         label: 'Allowed Values',
-                        sortable: true
+                        sortable: true,
+                        highlight: true
                     }
                 }
             },
@@ -802,7 +806,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             translations: {
                             }
                         };
-                        newTr.translations[I18n._currentRefName || "def"] = newVal;
+                        newTr.translations[I18n.getCode()] = newVal; // do not use one from the gameMdoel !!!
                         this.set("trValue", newTr);
                     }
                 },
@@ -904,7 +908,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             translations: {
                             }
                         };
-                        newTr.translations[I18n._currentRefName || "def"] = newVal;
+                        newTr.translations[I18n.getCode()] = newVal; // do not use one from the gameMdoel !!!
                         this.set("trValue", newTr);
                     }
                 },
@@ -1266,118 +1270,118 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     index: 1,
                     cfg: {
 
-                    type: BUTTON,
+                        type: BUTTON,
                         label: "Add",
                         plugins: [{
                                 fn: "WidgetMenu",
-                            cfg: {
-                                children: [
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-folder"> </span>  Folder',
-                                        cssClass: 'border-bottom',
-                                        targetClass: 'ListDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="wegas-icon-numberdescriptor"></span> Number',
-                                        targetClass: 'NumberDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-paragraph"></span> Text',
-                                        targetClass: 'TextDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-font"></span> String',
-                                        targetClass: 'StringDescriptor'
-                                            //cssClass: "wegas-advanced-feature"
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-database"></span> Object',
-                                        targetClass: 'ObjectDescriptor',
-                                        cssClass: 'wegas-advanced-feature'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-toggle-on"></span> Boolean',
-                                        targetClass: 'BooleanDescriptor',
-                                        cssClass: 'border-bottom'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-question-circle"></span> Question',
-                                        targetClass: 'QuestionDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-pencil-square"></span> Open question',
-                                        targetClass: 'WhQuestionDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-cogs"></span> Trigger',
-                                        targetClass: 'TriggerDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-sitemap fa-rotate-270"></span> State machine',
-                                        targetClass: 'FSMDescriptor' /*,
-                                         cfg: {
-                                         states: {
-                                         1: {
-                                         "@class": "State"
-                                         }
-                                         }
-                                         }*/
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-envelope"></span> Inbox',
-                                        targetClass: 'InboxDescriptor'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-comments-o"></span> Dialog',
-                                        targetClass: 'DialogueDescriptor' /*,
-                                         cfg: {
-                                         states: {
-                                         1: {
-                                         "@class": "DialogueState"
-                                         }
-                                         }
-                                         }*/
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-user"></span> Resource',
-                                        targetClass: 'ResourceDescriptor',
-                                        cssClass: 'wegas-advanced-feature'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-list"></span> Task',
-                                        targetClass: 'TaskDescriptor',
-                                        cssClass: 'wegas-advanced-feature'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-users"></span> Peer Review',
-                                        targetClass: 'PeerReviewDescriptor',
-                                        cssClass: 'wegas-advanced-feature'
-                                    },
-                                    {
-                                        type: 'AddEntityChildButton',
-                                        label: '<span class="fa fa-area-chart"></span> Burndown',
-                                        targetClass: 'BurndownDescriptor',
-                                        cssClass: 'wegas-advanced-feature'
-                                    }
-                                ]
+                                cfg: {
+                                    children: [
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-folder"> </span>  Folder',
+                                            cssClass: 'border-bottom',
+                                            targetClass: 'ListDescriptor'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="wegas-icon-numberdescriptor"></span> Number',
+                                            targetClass: 'NumberDescriptor'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-paragraph"></span> Text',
+                                            targetClass: 'TextDescriptor'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-font"></span> String',
+                                            targetClass: 'StringDescriptor'
+                                                //cssClass: "wegas-advanced-feature"
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-database"></span> Object',
+                                            targetClass: 'ObjectDescriptor',
+                                            cssClass: 'wegas-advanced-feature'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-toggle-on"></span> Boolean',
+                                            targetClass: 'BooleanDescriptor',
+                                            cssClass: 'border-bottom'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-question-circle"></span> Question',
+                                            targetClass: 'QuestionDescriptor'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-pencil-square"></span> Open question',
+                                            targetClass: 'WhQuestionDescriptor'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-cogs"></span> Trigger',
+                                            targetClass: 'TriggerDescriptor'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-sitemap fa-rotate-270"></span> State machine',
+                                            targetClass: 'FSMDescriptor' /*,
+                                             cfg: {
+                                             states: {
+                                             1: {
+                                             "@class": "State"
+                                             }
+                                             }
+                                             }*/
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-envelope"></span> Inbox',
+                                            targetClass: 'InboxDescriptor'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-comments-o"></span> Dialog',
+                                            targetClass: 'DialogueDescriptor' /*,
+                                             cfg: {
+                                             states: {
+                                             1: {
+                                             "@class": "DialogueState"
+                                             }
+                                             }
+                                             }*/
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-user"></span> Resource',
+                                            targetClass: 'ResourceDescriptor',
+                                            cssClass: 'wegas-advanced-feature'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-list"></span> Task',
+                                            targetClass: 'TaskDescriptor',
+                                            cssClass: 'wegas-advanced-feature'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-users"></span> Peer Review',
+                                            targetClass: 'PeerReviewDescriptor',
+                                            cssClass: 'wegas-advanced-feature'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-area-chart"></span> Burndown',
+                                            targetClass: 'BurndownDescriptor',
+                                            cssClass: 'wegas-advanced-feature'
+                                        }
+                                    ]
+                                }
                             }
-                        }
-                    ]
+                        ]
                     }
                 },
                 sortBtn: {
@@ -1551,16 +1555,17 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     for (var i in value.elements) {
                                         var item = value.elements[i];
                                         if (item && item.type === 'Literal') {
-                                            value.elements[i] = tools.valueToAST(
+                                            var o =
                                                 {
                                                     "@class": "Attachment",
                                                     "file": {
                                                         "@class": "TranslatableContent",
                                                         "translations": {
-                                                            "def": item.value
                                                         }
                                                     }
-                                                }, argDesc.items);
+                                                };
+                                            o.file.translations[I18n.getCode()] = item.value;
+                                            value.elements[i] = tools.valueToAST(o, argDesc.items);
                                         }
                                     }
                                 }
@@ -1652,6 +1657,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 '@class': {
                     value: 'Attachment'
                 },
+                refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                 file: Y.Wegas.Helper.getTranslationAttr({
                     label: "File",
                     type: "wegasurl"

@@ -16,6 +16,7 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.i18n.rest.ScriptUpdate;
+import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModel;
@@ -27,16 +28,24 @@ import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.mcq.persistence.Result;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.script.CompiledScript;
+import javax.script.ScriptContext;
 import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
 import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,27 +100,15 @@ public class I18nFacade extends WegasAbstractFacade {
     public GameModelLanguage updateLanguage(GameModelLanguage language) {
         Long id = language.getId();
         GameModelLanguage lang = this.findGameModelLanguage(id);
+        String oldCode = lang.getCode();
         lang.merge(language);
-        return lang;
-    }
+        String newCode = lang.getCode();
 
-    /**
-     * Find a language of the gameModel which match refName
-     *
-     * @param gameModel the gameModel to search language in
-     * @param refName   language unique name to find
-     *
-     * @return the language with matching refName or null
-     */
-    public GameModelLanguage findLangByRef(GameModel gameModel, String refName) {
-        if (refName != null) {
-            for (GameModelLanguage gmLang : gameModel.getLanguages()) {
-                if (refName.equals(gmLang.getRefName())) {
-                    return gmLang;
-                }
-            }
+        if (!oldCode.equals(newCode)) {
+            MergeHelper.updateTranslationCode(lang.getGameModel(), oldCode, newCode, this);
         }
-        return null;
+
+        return lang;
     }
 
     /**
@@ -120,7 +117,7 @@ public class I18nFacade extends WegasAbstractFacade {
      * @param gameModel the gameModel to search language in
      * @param code      language code to find
      *
-     * @return the language with matching refName or null
+     * @return the language with matching code or null
      */
     public GameModelLanguage findLanguageByCode(GameModel gameModel, String code) {
         if (code != null) {
@@ -139,7 +136,7 @@ public class I18nFacade extends WegasAbstractFacade {
      * @param gameModel the gameModel to search language in
      * @param lang      language display name to find
      *
-     * @return the language with matching refName or null
+     * @return the language with matching lang or null
      */
     public GameModelLanguage findLanguageByName(GameModel gameModel, String lang) {
         if (lang != null) {
@@ -171,16 +168,15 @@ public class I18nFacade extends WegasAbstractFacade {
             GameModelLanguage newLang = new GameModelLanguage();
             newLang.setGameModel(gameModel);
             newLang.setIndexOrder(rawLanguages.size()); // last position
-            newLang.setCode(code);
             newLang.setLang(name);
 
-            String refName = code;
             int suffix = 0;
-            // make refName unique
-            while (findLangByRef(gameModel, refName) != null) {
-                refName = code + (++suffix);
+            String realCode = code;
+            // make code unique
+            while (findLanguageByCode(gameModel, code) != null) {
+                realCode = code + (++suffix);
             }
-            newLang.setRefName(refName);
+            newLang.setCode(realCode);
 
             rawLanguages.add(newLang);
 
@@ -190,20 +186,22 @@ public class I18nFacade extends WegasAbstractFacade {
         }
     }
 
-    public GameModel deleteLanguage(Long gameModelId, String refName) {
-        logger.trace("Delete language {} for gameModel #{}", refName, gameModelId);
-        return deleteLanguage(gameModelFacade.find(gameModelId), refName);
+    public GameModel deleteLanguage(Long gameModelId, String code) {
+        logger.trace("Delete language {} for gameModel #{}", code, gameModelId);
+        return deleteLanguage(gameModelFacade.find(gameModelId), code);
     }
 
-    public GameModel deleteLanguage(GameModel gameModel, String refName) {
-        logger.trace("Delete language {} for gameModel #{}", refName, gameModel);
+    public GameModel deleteLanguage(GameModel gameModel, String code) {
+        logger.trace("Delete language {} for gameModel #{}", code, gameModel);
         List<GameModelLanguage> rawLanguages = gameModel.getRawLanguages();
-        GameModelLanguage lang = this.findLangByRef(gameModel, refName);
+        GameModelLanguage lang = this.findLanguageByCode(gameModel, code);
         if (lang != null) {
             if (rawLanguages.size() > 1) {
                 rawLanguages.remove(lang);
+                throw WegasErrorMessage.error("NOT YET IMPLEMENTED");
                 // please visit the gameModel to clean all lang translations !!!
                 // -> EntityVisitor from Modeler branches
+
             } else {
                 throw WegasErrorMessage.error("Removing the last language is forbidden");
             }
@@ -232,61 +230,61 @@ public class I18nFacade extends WegasAbstractFacade {
     /**
      * Get a translation
      *
-     * @param trId    content id
-     * @param refName language ref name
+     * @param trId content id
+     * @param code language code
      *
      * @return the translation
      *
      * @throws WegasNotFoundException if such a translation does not exists
      */
-    private Translation getTranslation(Long trId, String refName) {
-        if (refName != null) {
+    private Translation getTranslation(Long trId, String code) {
+        if (code != null) {
             TranslatableContent i18nContent = this.findTranslatableContent(trId);
             for (Translation tr : i18nContent.getRawTranslations()) {
-                if (refName.equals(tr.getLang())) {
+                if (code.equals(tr.getLang())) {
                     return tr;
                 }
             }
         }
-        throw new WegasNotFoundException("There is no translation for language " + refName);
+        throw new WegasNotFoundException("There is no translation for language " + code);
     }
 
     /**
      * Get a translation
      *
-     * @param refName language ref name
+     * @param code language code
      *
      * @return the translation
      *
      * @throws WegasNotFoundException if such a translation does not exists
      */
-    private Translation getTranslation(TranslatableContent trContent, String refName) {
-        Translation translation = trContent.getTranslation(refName);
+    private Translation getTranslation(TranslatableContent trContent, String code) {
+        Translation translation = trContent.getTranslation(code);
         if (translation != null) {
             return translation;
         } else {
-            throw new WegasNotFoundException("There is no translation for language " + refName);
+            throw new WegasNotFoundException("There is no translation for language " + code);
         }
     }
 
     /**
      * Get a translation
      *
-     * @param trId    content id
-     * @param refName language ref name
+     * @param trId content id
+     * @param code language ref name
      *
      * @return the translation
      *
      * @throws WegasNotFoundException if such a translation does not exists
      */
-    public String getTranslatedString(Long trId, String refName) {
-        return this.getTranslation(trId, refName).getTranslation();
+    public String getTranslatedString(Long trId, String code) {
+        return this.getTranslation(trId, code).getTranslation();
     }
 
-    public TranslatableContent updateTranslation(Long trId, String refName, String newValue) {
+    public TranslatableContent updateTranslation(Long trId, String code, String newValue) {
         TranslatableContent content = this.findTranslatableContent(trId);
 
-        content.updateTranslation(refName, newValue);
+        content.updateTranslation(code, newValue);
 
         return content;
     }
@@ -296,152 +294,217 @@ public class I18nFacade extends WegasAbstractFacade {
      *
      * @param impact
      * @param index
-     * @param refName
+     * @param code
      * @param newValue
      *
      * @return
      *
      * @throws ScriptException
      */
-    private Object fishTranslationLocation(String impact, Integer index, String refName, String newValue) throws ScriptException {
+    private Object fishTranslationLocation(String impact, Integer index, String code, String newValue) throws ScriptException {
         // JAVA 9 will expose Nashorn parser in java !!!
-        String fisherman = "load(\"nashorn:parser.js\");\n"
-                + "\n"
-                + "    var count = 0, ast, loc;\n"
-                + "    ast = parse(impact, \"impact\", true);\n"
-                + "\n"
-                + "    function fish(node, args) {\n"
-                + "        var key, child, keys, i, j, result;\n"
-                + "        if (node.type === 'ObjectExpression') {\n"
-                + "            var i, p, properties = {}, content;\n"
-                + "            if (node.properties) {\n"
-                + "                for (i in node.properties) {\n"
-                + "                    p = node.properties[i];\n"
-                + "                    properties[p.key.value] = p.value;\n"
-                + "                }\n"
-                + "                if (properties[\"@class\"] && properties[\"@class\"].value === \"TranslatableContent\") {\n"
-                + "                    if (index === count) {\n"
-                + "                        for (i in properties[\"translations\"].properties) {\n"
-                + "                            p = properties[\"translations\"].properties[i];\n"
-                + "                            if (p.key.value === refName) {\n"
-                + "                                p.value.loc.status = 'found';\n"
-                + "                                return p.value.loc;\n"
-                + "                            }\n"
-                + "                        }\n"
-                + "                        properties[\"translations\"].loc.status = 'missingRefName'\n"
-                + "                        return  properties[\"translations\"].loc;\n"
-                + "                    } else {\n"
-                + "                        count++;\n"
-                + "                    }\n"
-                + "                }\n"
-                + "            }\n"
-                + "        }\n"
-                + "\n"
-                + "        keys = Object.keys(node).sort();\n"
-                + "        for (i in keys) {\n"
-                + "            key = keys[i];\n"
-                + "            if (node.hasOwnProperty(key)) {\n"
-                + "                child = node[key];\n"
-                + "                if (Array.isArray(child)) {\n"
-                + "                    // process all items in arry\n"
-                + "                    for (j = 0; j < child.length; j++) {\n"
-                + "                        result = fish(child[j]);\n"
-                + "                        if (result) {\n"
-                + "                            return result;\n"
-                + "                        }\n"
-                + "                    }\n"
-                + "                } else if (child instanceof Object && typeof child.type === \"string\") {\n"
-                + "                    // the child is an object which contains a type property\n"
-                + "                    result = fish(child);\n"
-                + "                    if (result) {\n"
-                + "                        return result;\n"
-                + "                    }\n"
-                + "                }\n"
-                + "            }\n"
-                + "        }\n"
-                + "    }\n"
-                + "\n"
-                //+ "    print(JSON.stringify(ast));\n"
-                + "    loc = fish(ast) || {\n"
-                + "        status: 'misingTranslationContent'\n"
-                + "    };\n"
-                + "    loc.newValue = JSON.stringify(newValue);\n"
-                + "    loc;";
-
         Map<String, Object> args = new HashMap<>();
         args.put("impact", impact);
         args.put("index", index);
-        args.put("refName", refName);
+        args.put("code", code);
         args.put("newValue", newValue);
 
-        return scriptFacade.nakedEval(fisherman, args);
+        ScriptContext ctx = new SimpleScriptContext();
+
+        scriptFacade.nakedEval(getI18nJsHelper(), null, ctx);
+        return scriptFacade.nakedEval("I18nHelper.getTranslationLocation()", args, ctx);
     }
 
-    public String updateScriptWithNewTranslation(String impact, int index, String refName, String newValue) throws ScriptException {
-        JSObject location = (JSObject) fishTranslationLocation(impact, index, refName, newValue);
+    private Object fishTranslationsByCode(String impact, String code) throws ScriptException {
+        // JAVA 9 will expose Nashorn parser in java !!!
+        Map<String, Object> args = new HashMap<>();
+        args.put("impact", impact);
+        args.put("code", code);
 
-        if (location != null) {
+        ScriptContext ctx = new SimpleScriptContext();
 
-            String status = (String) location.getMember("status");
+        scriptFacade.nakedEval(getI18nJsHelper(), null, ctx);
+        return scriptFacade.nakedEval("I18nHelper.getTranslations()", args, ctx);
+    }
 
-            if (location.hasMember("start") && location.hasMember("end")) {
-                JSObject start = (JSObject) location.getMember("start");
-                JSObject end = (JSObject) location.getMember("end");
+    private CompiledScript getI18nJsHelper() throws ScriptException {
+        InputStream resourceAsStream = this.getClass().getResourceAsStream("/helpers/i18nHelper.js");
+        InputStreamReader isr = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8);
+        return scriptFacade.compile(isr);
+    }
 
-                Integer startIndex = null;
-                Integer endIndex = null;
+    private Integer[] getIndexes(String script, JSObject result, String key) {
 
-                Integer startLine = (Integer) start.getMember("line");
-                Integer startColumn = (Integer) start.getMember("column");
+        JSObject location = (JSObject) result.getMember(key);
 
-                Integer endLine = (Integer) end.getMember("line");
-                Integer endColumn = (Integer) end.getMember("column");
+        if (location.hasMember("start") && location.hasMember("end")) {
+            JSObject start = (JSObject) location.getMember("start");
+            JSObject end = (JSObject) location.getMember("end");
 
-                String newNewValue = (String) location.getMember("newValue");
+            Integer startLine = (Integer) start.getMember("line");
+            Integer startColumn = (Integer) start.getMember("column");
 
-                int line = 1;
-                int col = 1;
+            Integer endLine = (Integer) end.getMember("line");
+            Integer endColumn = (Integer) end.getMember("column");
 
-                // convert column/line nunbers to absolute indexes
-                for (int i = 0; i < impact.length(); i++) {
-                    if (startLine == line) {
-                        startIndex = i + startColumn;
-                    }
+            Integer[] indexes = new Integer[2];
+            int line = 1;
+            int col = 1;
 
-                    if (endLine == line) {
-                        endIndex = i + endColumn;
-                    }
-
-                    if (startIndex != null && endIndex != null) {
-                        break;
-                    }
-
-                    if (impact.charAt(i) == '\n') {
-                        line++;
-                        col = 0;
-                    }
-                    col++;
+            // convert column/line nunbers to absolute indexes
+            for (int i = 0; i < script.length(); i++) {
+                if (startLine == line) {
+                    indexes[0] = i + startColumn;
                 }
 
-                System.out.println("Indexes: " + startIndex + " : " + endIndex);
+                if (endLine == line) {
+                    indexes[1] = i + endColumn;
+                }
 
-                switch (status) {
-                    case "found":
+                if (indexes[0] != null && indexes[1] != null) {
+                    return indexes;
+                }
+
+                if (script.charAt(i) == '\n') {
+                    line++;
+                    col = 0;
+                }
+                col++;
+            }
+        }
+        return null;
+    }
+
+    private static final class LangChange {
+
+        private final int startIndex;
+        private final int endIndex;
+
+        private final String newValue;
+
+        public LangChange(int startIndex, int endIndex, String newValue) {
+            this.startIndex = startIndex;
+            this.endIndex = endIndex;
+            this.newValue = newValue;
+        }
+    }
+
+    public String updateScriptRefName(String impact, String oldCode, String newCode) throws ScriptException {
+        JSObject result = (JSObject) fishTranslationsByCode(impact, oldCode);
+
+        if (result != null) {
+            List<LangChange> langCodes = new ArrayList<>();
+            for (String key : result.keySet()) {
+
+                // TODO: store all indexes; sort them from end to start, replace all oldCode by new one, return new content
+                JSObject translation = (JSObject) result.getMember(key);
+                String status = (String) translation.getMember("status");
+                if ("found".equals(status)) {
+                    Integer[] indexes = getIndexes(impact, translation, "keyLoc");
+                    if (indexes != null) {
+                        langCodes.add(new LangChange(indexes[0], indexes[1], "\"" + newCode + "\""));
+                    }
+                }
+            }
+
+            if (!langCodes.isEmpty()) {
+                StringBuilder sb = new StringBuilder(impact);
+
+                Collections.sort(langCodes, new Comparator<LangChange>() {
+                    @Override
+                    public int compare(LangChange o1, LangChange o2) {
+                        return o1.startIndex < o2.startIndex ? 1 : -1;
+                    }
+                });
+
+                for (LangChange change : langCodes) {
+                    // update lang code
+                    sb.replace(change.startIndex - 1, change.endIndex + 1, change.newValue);
+                }
+                return sb.toString();
+            }
+        }
+
+        return impact;
+    }
+
+    public void importTranslations(Script target, Script reference, String languageCode) {
+        try {
+            JSObject inTarget = (JSObject) fishTranslationsByCode(target.getContent(), languageCode);
+            JSObject inRef = (JSObject) fishTranslationsByCode(reference.getContent(), languageCode);
+            if (inTarget != null && inRef != null) {
+                if (inTarget.keySet().size() == inRef.keySet().size()) {
+                    int index = 0;
+                    String script = target.getContent();
+                    for (String key : inTarget.keySet()) {
+                        JSObject trTarget = (JSObject) inTarget.getMember(key);
+                        JSObject trRef = (JSObject) inRef.getMember(key);
+
+                        if (trRef.getMember("status").equals("found")) {
+
+                            if (trTarget.getMember("status").equals("found")) {
+                                logger.error("Target already contains a translation");
+                            } else {
+                                String translation = (String) trRef.getMember("value");
+                                script = this.updateScriptWithNewTranslation(script, index, languageCode, translation);
+                            }
+                        } else {
+                            logger.error("Missing translation in ref");
+                        }
+                        index++;
+                    }
+                    target.setContent(script);
+                } else {
+                    logger.error("Number of translation does not match");
+                }
+            }
+
+        } catch (ScriptException ex) {
+            logger.error("Ouille ouille ouille: {}", ex);
+        }
+
+    }
+
+    public String updateScriptWithNewTranslation(String impact, int index, String code, String newValue) throws ScriptException {
+        JSObject result = (JSObject) fishTranslationLocation(impact, index, code, newValue);
+
+        if (result != null) {
+
+            String status = (String) result.getMember("status");
+
+            String newNewValue = (String) result.getMember("newValue");
+
+            Integer[] indexes;
+
+            switch (status) {
+                case "found":
+                    // the translation already exists
+                    indexes = getIndexes(impact, result, "valueLoc");
+
+                    if (indexes != null) {
+                        Integer startIndex = indexes[0];
+                        Integer endIndex = indexes[1];
                         // update existing translation
                         if (startIndex != null && endIndex != null) {
                             StringBuilder sb = new StringBuilder(impact);
                             sb.replace(startIndex - 1, endIndex + 1, newNewValue);
                             return sb.toString();
                         }
-                        break;
-                    case "missingRefName":
+                    }
+                    break;
+                case "missingCode":
+                    indexes = getIndexes(impact, result, "loc");
+                    if (indexes != null) {
+                        Integer startIndex = indexes[0];
+                        Integer endIndex = indexes[1];
                         StringBuilder sb = new StringBuilder(impact);
-                        // insert new refName property right after opening bracket
-                        sb.replace(startIndex + 1, startIndex + 1, "\"" + refName + "\": " + newNewValue + ", ");
+                        // insert new code property right after opening bracket
+                        sb.replace(startIndex + 1, startIndex + 1, "\"" + code + "\": " + newNewValue + ", ");
                         return sb.toString();
-                    default:
-                        break;
-                }
+                    }
+                default:
+                    break;
+
             }
         }
         return null;
@@ -515,7 +578,7 @@ public class I18nFacade extends WegasAbstractFacade {
                 Script theScript = (Script) getter.invoke(theParent);
                 String source = theScript.getContent();
 
-                String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getRefName(), scriptUpdate.getValue());
+                String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue());
                 theScript.setContent(updatedSource);
 
                 Method setter = property.getWriteMethod();

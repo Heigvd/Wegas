@@ -14,6 +14,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
@@ -666,10 +667,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
         GameModel gameModel = whValidate.whDescriptor.getGameModel();
         for (GameModelLanguage language : gameModel.getRawLanguages()) {
-            String refName = language.getRefName();
+            String code = language.getCode();
 
-            String title = whValidate.whDescriptor.getLabel().translateOrEmpty(gameModel, refName);
-            String description = whValidate.whDescriptor.getDescription().translateOrEmpty(gameModel, refName);
+            String title = whValidate.whDescriptor.getLabel().translateOrEmpty(gameModel, code);
+            String description = whValidate.whDescriptor.getDescription().translateOrEmpty(gameModel, code);
 
             StringBuilder bd = new StringBuilder();
             bd.append("<div class=\"whquestion-history\">");
@@ -681,7 +682,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 if (item instanceof PrimitiveDescriptorI) {
                     bd.append("<div class=\"whview-history-answer\">");
                     bd.append("<div class=\"whview-history-answer-title\">").
-                            append(item.getLabel().translateOrEmpty(gameModel, refName)).
+                            append(item.getLabel().translateOrEmpty(gameModel, code)).
                             append("</div>");
 
                     if (item instanceof StringDescriptor && !((StringDescriptor) item).getAllowedValues().isEmpty()) {
@@ -706,8 +707,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             }
             bd.append("</div>");
 
-            subject.updateTranslation(refName, title);
-            body.updateTranslation(refName, bd.toString());
+            subject.updateTranslation(code, title);
+            body.updateTranslation(code, bd.toString());
         }
 
         history.setFrom(from);
@@ -737,9 +738,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         return value;
     }
 
-    private void appendChoice(StringBuilder sb, ChoiceInstance ci, GameModel gameModel, String refName, String labelPrefix) {
+    private void appendChoice(StringBuilder sb, ChoiceInstance ci, GameModel gameModel, String code, String labelPrefix) {
         ChoiceDescriptor cd = (ChoiceDescriptor) ci.getDescriptor();
-        String title = cd.getLabel().translateOrEmpty(gameModel, refName);
+        String title = cd.getLabel().translateOrEmpty(gameModel, code);
         if (!Helper.isNullOrEmpty(title)) {
             sb.append("<div class=\"choice-label\">");
             if (labelPrefix != null) {
@@ -748,7 +749,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             sb.append(title).append("</div>");
         }
 
-        String description = cd.getDescription().translateOrEmpty(gameModel, refName);
+        String description = cd.getDescription().translateOrEmpty(gameModel, code);
         if (!Helper.isNullOrEmpty(description)) {
             sb.append("<div class=\"choice-description\">").append(description).append("</div>");
         }
@@ -793,14 +794,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         GameModel gameModel = replyValidate.player.getGameModel();
 
         for (GameModelLanguage language : gameModel.getRawLanguages()) {
-            String refName = language.getRefName();
+            String code = language.getCode();
 
             StringBuilder bd = new StringBuilder();
             bd.append("<div class=\"question-history\">");
-            String qTitle = qd.getLabel().translateOrEmpty(gameModel, refName);
+            String qTitle = qd.getLabel().translateOrEmpty(gameModel, code);
 
             if (showQuestion) {
-                String description = qd.getDescription().translateOrEmpty(gameModel, refName);
+                String description = qd.getDescription().translateOrEmpty(gameModel, code);
 
                 bd.append("<div class=\"question-label\">").append(qTitle).append("</div>");
                 bd.append("<div class=\"question-description\">").append(description).append("</div>");
@@ -808,22 +809,22 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
             if (!isCbx) {
                 if (ci != null) {
-                    this.appendChoice(bd, ci, gameModel, refName, null);
+                    this.appendChoice(bd, ci, gameModel, code, null);
                 }
 
                 if (showReplies) {
                     List<Reply> replies = qi.getReplies();
                     String title;
                     if (replies.size() > 1) {
-                        title = (String) translate.call(i18n, "question.results", null, refName);
+                        title = (String) translate.call(i18n, "question.results", null, code);
                     } else {
-                        title = (String) translate.call(i18n, "question.result", null, refName);
+                        title = (String) translate.call(i18n, "question.result", null, code);
                     }
                     bd.append("<div class=\"replies-label\">").append(title).append("</div>");
                     bd.append("<div class=\"replies\">");
                     for (Reply reply : replies) {
                         bd.append("<div class=\"replyDiv\">");
-                        bd.append(reply.getAnswer().translateOrEmpty(gameModel, refName));
+                        bd.append(reply.getAnswer().translateOrEmpty(gameModel, code));
                         bd.append("</div>");
                     }
                     bd.append("</div>");
@@ -832,9 +833,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 List<Reply> replies = qi.getReplies();
                 String title;
                 if (replies.size() > 1) {
-                    title = (String) translate.call(i18n, "question.results", null, refName);
+                    title = (String) translate.call(i18n, "question.results", null, code);
                 } else {
-                    title = (String) translate.call(i18n, "question.result", null, refName);
+                    title = (String) translate.call(i18n, "question.result", null, code);
                 }
                 bd.append("<div class=\"replies-label\">").append(title).append("</div>");
                 bd.append("<div class=\"cbx-replies\">");
@@ -842,12 +843,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 for (Reply reply : replies) {
                     Boolean ignored = reply.getIgnored();
                     bd.append("<div class=\"replyDiv ").append(ignored ? "ignored" : "selected").append(" \">");
-                    this.appendChoice(bd, reply.getChoiceInstance(), gameModel, refName,
+                    this.appendChoice(bd, reply.getChoiceInstance(), gameModel, code,
                             "<input type='checkbox' disabled " + (ignored ? "" : "checked") + " />");
                     TranslatableContent trAnswer = ignored ? reply.getIgnorationAnswer() : reply.getAnswer();
                     if (trAnswer != null) {
                         bd.append("<div class='reply-answer'>");
-                        String answer = trAnswer.translateOrEmpty(gameModel, refName);
+                        String answer = trAnswer.translateOrEmpty(gameModel, code);
                         bd.append(answer);
                         bd.append("</div>");
                     }
@@ -858,8 +859,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
             bd.append("</div>"); // end question-history
 
-            subject.updateTranslation(refName, qTitle);
-            body.updateTranslation(refName, bd.toString());
+            subject.updateTranslation(code, qTitle);
+            body.updateTranslation(code, bd.toString());
 
         }
 

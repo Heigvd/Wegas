@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.DescriptorFactory;
@@ -24,6 +25,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
 import com.wegas.core.persistence.game.GameModelContent;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -67,6 +69,9 @@ public class ModelFacade {
 
     @Inject
     private WebsocketFacade websocketFacade;
+
+    @Inject
+    private I18nFacade i18nFacade;
 
     /**
      * return a new list of managed scenarios
@@ -136,6 +141,48 @@ public class ModelFacade {
                 GameModel srcModel = scenarios.remove(0);
                 model = (GameModel) srcModel.duplicate();
                 model.setName(modelName);
+
+                // equiv to the original scenarios list but the first is now the model itself
+                List<GameModel> allGameModels = new ArrayList<>(scenarios);
+                allGameModels.add(0, model); // add model in first position
+
+                /*
+                 * Detect language to embed in the model
+                 * * * * * * * * * * * * * * * * * * * * *
+                 *  Select all different languages from scenarios and embed them in the model
+                 *
+                 *  Map each language with scenarios it appears in (->translationSources)
+                 *
+                 *  Then, for each variable descriptors to embed in the model, fetch translation in the correct
+                 */
+                Map<String, List<GameModel>> translationSources = new HashMap<>();
+
+                // go through all languages from all scenarios
+                for (GameModel gameModel : allGameModels) {
+                    for (GameModelLanguage gml : gameModel.getLanguages()) {
+                        translationSources.putIfAbsent(gml.getCode(), new ArrayList<>());
+                        List<GameModel> gmRef = translationSources.get(gml.getCode());
+                        gmRef.add(gameModel);
+                    }
+                }
+
+                // make sure the model contains all languages
+                for (String languageCode : translationSources.keySet()) {
+
+                    if (model.getLanguageByCode(languageCode) ==null) {
+                        GameModelLanguage lang = translationSources.get(languageCode).get(0).getLanguageByCode(languageCode);
+                        logger.info("Create missing language in model : {}", lang);
+                        i18nFacade.createLanguage(model, lang.getCode(), lang.getLang());
+                        model.getLanguageByCode(languageCode).setRefId(lang.getRefId());
+                    }
+
+                    // make sure all language sharing the same code share the same refId
+                    String refId = model.getLanguageByCode(languageCode).getRefId();
+
+                    for (GameModel gameModel :translationSources.get(languageCode)){
+                        gameModel.getLanguageByCode(languageCode).setRefId(refId);
+                    }
+                }
 
                 /**
                  * Filter gameModelContents
@@ -227,7 +274,7 @@ public class ModelFacade {
                     } else {
                         logger.debug("Descriptor {} does NOT exists in all scenarios", vd);
                         if (vd instanceof DescriptorListI) {
-                            //vd does not exists is all scenarios but may contains a child which is
+                            //vd does not exists in all scenarios but may contains a child which is
                             exclusionCandidates.add(vd);
                         } else {
                             // exclude descriptor from model
@@ -263,6 +310,17 @@ public class ModelFacade {
                         }
                     }
                 } while (restart);
+
+                //
+                for (Entry<String, List<GameModel>> entry : translationSources.entrySet()){
+                    String languageCode = entry.getKey();
+                    List<GameModel> gms = entry.getValue();
+
+                    if (!gms.isEmpty() && !gms.contains(model)){
+                        // this language was not in the model: import translations
+                        MergeHelper.importTranslations(model, gms.get(0), languageCode, i18nFacade);
+                    }
+                }
 
                 /*
                  * Persist GameModel
@@ -526,7 +584,7 @@ public class ModelFacade {
                 try {
                     Pages p = (Pages) t;
                     websocketFacade.pageIndexUpdate(scenario.getId(), requestManager.getSocketId());
-                    for (String pageId : p.getPagesContent().keySet()){
+                    for (String pageId : p.getPagesContent().keySet()) {
                         websocketFacade.pageUpdate(scenario.getId(), pageId, requestManager.getSocketId());
                     }
                 } catch (RepositoryException ex) {

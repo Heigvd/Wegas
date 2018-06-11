@@ -15,11 +15,12 @@ YUI.add('wegas-editable', function(Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push("type", "properties", "view", 
-    /* should vanish once */ "_inputex", "required", "format", "errored",
+    Y.Base._ATTR_CFG.push("type", "properties", "view",
+        /* should vanish once */ "_inputex", "required", "format", "errored",
         "choices", "items", "enum", "pattern", "maxLength", "minLength", "index",
         "default", "transient", "visible", "additionalProperties", "additionalItems",
-        "minItems", "maxItems", "minimum", "maximum", "uniqueItems", "patternProperties");
+        "minItems", "maxItems", "minimum", "maximum", "uniqueItems", "patternProperties",
+        "maxWritableVisibility");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
     /**
      * @name Y.Wegas.Editable
@@ -105,7 +106,7 @@ YUI.add('wegas-editable', function(Y) {
 
                 schemaMap = {
                     type: 'object',
-                        properties: attrCfgs
+                    properties: attrCfgs
                 };
                 if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
@@ -179,7 +180,7 @@ YUI.add('wegas-editable', function(Y) {
                 type: undefined
             };
 
-            if (cfg.properties) {
+            if (cfg.type === "object" || cfg.properties) {
                 // Object
                 for (key in cfg.properties) {
                     if (cfg.properties.hasOwnProperty(key)) {
@@ -187,19 +188,25 @@ YUI.add('wegas-editable', function(Y) {
                         this._overrideFormConfig(cfg.properties[key], entity && (entity.get ? entity.get(key) : entity[key]), mode, visibility, maxWritableVisibility);
                     }
                 }
+                if (mode === "READONLY") {
+                    cfg.view.readOnly = true;
+                    if (cfg.additionalProperties && cfg.additionalProperties.view) {
+                        cfg.additionalProperties.view.readOnly = true;
+                    }
+                }
             } else if (cfg.type === "array" && cfg.items) {
                 this._overrideFormConfig(cfg.items, entity && entity.length > 0 && entity[0], mode, visibility, maxWritableVisibility);
+                if (mode === "READONLY") {
+                    cfg.view.readOnly = true;
+                }
             } else {
-                /*
-                 * FORM2 -> only keep readonly 
-                 */
                 if (!cfg.view.type || (
                     cfg.view.type !== "hidden" &&
                     cfg.view.type !== "uneditable")) {
                     if (mode === "READONLY") {
                         Y.log(" ->  READONLY");
-                        cfg.view.type = "uneditable";
-                        cfg.view.readonly = true;
+                        //cfg.view.type = "uneditable";
+                        cfg.view.readOnly = true;
                     }
                 }
             }
@@ -260,7 +267,7 @@ YUI.add('wegas-editable', function(Y) {
 
             menu = [];
             for (key in aggMenu) {
-                if (aggMenu.hasOwnProperty(key) && aggMenu[key] ) {
+                if (aggMenu.hasOwnProperty(key) && aggMenu[key]) {
                     menu.push(aggMenu[key]);
                 }
             }

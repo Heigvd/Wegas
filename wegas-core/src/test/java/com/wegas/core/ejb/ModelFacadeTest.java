@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
@@ -18,14 +19,12 @@ import com.wegas.core.jcr.jta.JCRConnectorProviderTx;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.jcr.tools.RepositoryVisitor;
 import com.wegas.core.merge.patch.WegasPatch;
-import com.wegas.core.merge.utils.MergeHelper;
-import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.GameModelProperties;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
@@ -41,7 +40,11 @@ import com.wegas.core.persistence.variable.primitive.ObjectInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.core.security.persistence.User;
+import com.wegas.messaging.persistence.InboxDescriptor;
+import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -86,11 +89,14 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     @Inject
     private PageFacade pageFacade;
 
+    @Inject
+    private I18nFacade i18nFacade;
+
     static {
         reflections = new Reflections("com.wegas");
     }
 
-    //@BeforeClass
+    @BeforeClass
     public static void setLoggerLevels() {
         Helper.setLoggerLevel(logger, Level.INFO);
         mfLevel = Helper.setLoggerLevel(ModelFacade.class, Level.DEBUG);
@@ -110,7 +116,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     private ObjectDescriptor createObjectDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, String... values) {
         ObjectDescriptor desc = new ObjectDescriptor();
         desc.setName(name);
-        desc.setLabel(TranslatableContent.build("def", label));
+        desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
         desc.setVisibility(visibility);
         desc.setScope(new TeamScope());
 
@@ -124,13 +130,17 @@ public class ModelFacadeTest extends AbstractArquillianTest {
             i++;
         }
 
-        if (parent == null) {
+        createDescriptor(gameModel, desc, parent);
+
+        return desc;
+    }
+
+    private void createDescriptor(GameModel gameModel, VariableDescriptor desc, DescriptorListI parent) {
+        if (parent == null || parent instanceof GameModel) {
             variableDescriptorFacade.create(gameModel.getId(), desc);
         } else {
             variableDescriptorFacade.createChild(parent.getId(), desc);
         }
-
-        return desc;
     }
 
     private NumberDescriptor createNumberDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, Double min, Double max, Double defaultValue, Double... history) {
@@ -140,7 +150,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
             hist.add(h);
         }
         desc.setName(name);
-        desc.setLabel(TranslatableContent.build("def", label));
+        desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
         desc.setVisibility(visibility);
         desc.setScope(new TeamScope());
         desc.setMinValue(min);
@@ -149,11 +159,26 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         desc.getDefaultInstance().setValue(defaultValue);
         desc.getDefaultInstance().setHistory(hist);
 
-        if (parent == null) {
-            variableDescriptorFacade.create(gameModel.getId(), desc);
-        } else {
-            variableDescriptorFacade.createChild(parent.getId(), desc);
-        }
+        createDescriptor(gameModel, desc, parent);
+
+        return desc;
+    }
+
+    private TriggerDescriptor createTriggerDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, String condition, String impact) {
+        TriggerDescriptor desc = new TriggerDescriptor();
+        desc.setName(name);
+        desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
+        desc.setVisibility(visibility);
+        desc.setScope(new TeamScope());
+
+        desc.setOneShot(Boolean.FALSE);
+        desc.setDisableSelf(Boolean.FALSE);
+        desc.setPostTriggerEvent(new Script("Javascript", impact));
+        desc.setTriggerEvent(new Script("Javascript", condition));
+
+        desc.setDefaultInstance(new TriggerInstance());
+
+        createDescriptor(gameModel, desc, parent);
 
         return desc;
     }
@@ -162,24 +187,32 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         StringDescriptor desc = new StringDescriptor();
         desc.setDefaultInstance(new StringInstance());
         desc.setName(name);
-        desc.setLabel(TranslatableContent.build("def", label));
+        String code = gameModel.getLanguages().get(0).getCode();
+        desc.setLabel(TranslatableContent.build(code, label));
 
         List<EnumItem> items = new ArrayList<>();
         for (String aV : allowedValues) {
             EnumItem enumItem = new EnumItem();
             enumItem.setName(aV);
-            enumItem.setLabel(TranslatableContent.build("def", aV));
+            enumItem.setLabel(TranslatableContent.build(code, aV));
             items.add(enumItem);
         }
         desc.setAllowedValues(items);
 
         desc.getDefaultInstance().setValue(value);
 
-        if (parent == null) {
-            variableDescriptorFacade.create(gameModel.getId(), desc);
-        } else {
-            variableDescriptorFacade.createChild(parent.getId(), desc);
-        }
+        createDescriptor(gameModel, desc, parent);
+
+        return desc;
+    }
+
+    private InboxDescriptor createInbox(GameModel gameModel, DescriptorListI parent, String name, String label) {
+        InboxDescriptor desc = new InboxDescriptor();
+        desc.setDefaultInstance(new InboxInstance());
+        desc.setName(name);
+        desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
+
+        createDescriptor(gameModel, desc, parent);
 
         return desc;
     }
@@ -188,13 +221,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         ListDescriptor desc = new ListDescriptor();
         desc.setDefaultInstance(new ListInstance());
         desc.setName(name);
-        desc.setLabel(TranslatableContent.build("def", label));
+        desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
 
-        if (parent == null) {
-            variableDescriptorFacade.create(gameModel.getId(), desc);
-        } else {
-            variableDescriptorFacade.createChild(parent.getId(), desc);
-        }
+        createDescriptor(gameModel, desc, parent);
 
         return desc;
     }
@@ -672,7 +701,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         allowedValues.remove(1);
         EnumItem enumItem = new EnumItem();
         enumItem.setName("v11");
-        enumItem.setLabel(TranslatableContent.build("def", "v11"));
+        enumItem.setLabel(TranslatableContent.build("en", "v11"));
         allowedValues.add(enumItem);
         s1.setAllowedValues(allowedValues);
 
@@ -905,7 +934,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("Create Model");
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
         VariableDescriptor xModel = getDescriptor(model, "x");
-        xModel.setLabel(TranslatableContent.build("def", "New Label for x"));
+        xModel.setLabel(TranslatableContent.build("en", "New Label for x"));
         variableDescriptorFacade.update(xModel.getId(), xModel);
         modelFacade.propagateModel(model.getId());
 
@@ -1205,15 +1234,15 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         NumberDescriptor yModel = (NumberDescriptor) variableDescriptorFacade.find(model, "y");
         NumberDescriptor zModel = (NumberDescriptor) variableDescriptorFacade.find(model, "z");
 
-        xModel.setLabel(TranslatableContent.build("def", "my X"));
+        xModel.setLabel(TranslatableContent.build("en", "my X"));
         xModel.getDefaultInstance().setValue(11.0);
         variableDescriptorFacade.update(xModel.getId(), xModel);
 
-        yModel.setLabel(TranslatableContent.build("def", "my Y"));
+        yModel.setLabel(TranslatableContent.build("en", "my Y"));
         yModel.getDefaultInstance().setValue(12.0);
         variableDescriptorFacade.update(yModel.getId(), yModel);
 
-        zModel.setLabel(TranslatableContent.build("def", "my Z"));
+        zModel.setLabel(TranslatableContent.build("en", "my Z"));
         zModel.getDefaultInstance().setValue(13.0);
         zModel.getDefaultInstance().getHistory().add(13.0);
         variableDescriptorFacade.update(zModel.getId(), zModel);
@@ -1338,7 +1367,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
          */
         NumberDescriptor y1 = (NumberDescriptor) getDescriptor(model, "y");
 
-        y1.setLabel(TranslatableContent.build("def", "my Y"));
+        y1.setLabel(TranslatableContent.build("en", "my Y"));
         y1.getDefaultInstance().setValue(22.0);
         variableDescriptorFacade.update(y1.getId(), y1);
         variableDescriptorFacade.move(getDescriptor(model, "y").getId(), 0);
@@ -1611,6 +1640,40 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertArrayEquals(update,
                 jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
+    }
+
+    @Test
+    public void testModelise_Languages() throws RepositoryException, IOException, IOException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        i18nFacade.createLanguage(gameModel1, "en", "English");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        i18nFacade.createLanguage(gameModel2, "fr", "French");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        createInbox(gameModel1, null, "inbox", "My Inbox");
+        createInbox(gameModel2, null, "inbox", "Ma boite aux lettres");
+
+        createTriggerDescriptor(gameModel1, null, "trigger", "aTrigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"John\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Today\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Hello\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"<p>Hi there</p>\"}}, \"\", []);");
+
+        createTriggerDescriptor(gameModel2, null, "trigger", "un Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Jean\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Aujourd'hui\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Pour dire bonjour\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"<p>Bonjour chez vous!</p>\"}}, \"\", []);");
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+        modelFacade.propagateModel(model.getId());
+
+        logger.info("Model created");
     }
 
     private Team createTeam(Game g, String name) {

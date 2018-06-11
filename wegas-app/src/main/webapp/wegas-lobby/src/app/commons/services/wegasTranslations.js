@@ -1765,6 +1765,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Perform an action:",
                             'fr': "Effectuer une action:"
                         },
+                        'ADMIN-INDEX-LOCKS-BTN': {
+                            'en': "Locks",
+                            'fr': "Verrous"
+                        },
                         'ADMIN-INDEX-LOGGERS-BTN': {
                             'en': "Loggers",
                             'fr': "Loggers"

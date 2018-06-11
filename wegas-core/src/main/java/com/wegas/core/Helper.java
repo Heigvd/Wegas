@@ -326,10 +326,10 @@ public class Helper {
         }
 
         Map<String, String> translations = theLabel.getTranslations();
-        for (String refName : translations.keySet()) {
-            String currentLabel = translations.get(refName);
+        for (String code : translations.keySet()) {
+            String currentLabel = translations.get(code);
             if (!Helper.isNullOrEmpty(currentLabel)) {
-                theLabel.updateTranslation(refName, findUniqueLabel(currentLabel, mapUsedlabels.get(refName)));
+                theLabel.updateTranslation(code, findUniqueLabel(currentLabel, mapUsedlabels.get(code)));
             }
         }
 

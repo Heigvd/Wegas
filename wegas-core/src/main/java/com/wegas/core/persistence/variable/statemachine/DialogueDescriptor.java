@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.Beanjection;
 import javax.persistence.Entity;
 
@@ -22,8 +23,8 @@ public class DialogueDescriptor extends StateMachineDescriptor {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void revive(Beanjection beans) {
-        super.revive(beans);
+    public void revive(GameModel gameModel, Beanjection beans) {
+        super.revive(gameModel, beans);
         for (State s : this.getStates().values()) {
             if (s instanceof DialogueState) {
                 DialogueState ds = (DialogueState) s;

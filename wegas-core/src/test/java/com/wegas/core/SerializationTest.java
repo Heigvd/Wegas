@@ -67,6 +67,7 @@ import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -323,7 +324,7 @@ public class SerializationTest {
 
         TaskDescriptor taskD = new TaskDescriptor();
         TaskDescriptor taskD2 = new TaskDescriptor();
-        taskD.setDescription(TranslatableContent.build("def", "DESC"));
+        taskD.setDescription(TranslatableContent.build("en", "DESC"));
         taskD.addPredecessor(taskD2);
         taskD.setName("taskD");
         taskD.setProperty("descriptorProperty", propertyValue);
@@ -348,7 +349,7 @@ public class SerializationTest {
 
         ResourceDescriptor resourceD = new ResourceDescriptor();
         resourceD.setName("resourceD");
-        resourceD.setDescription(TranslatableContent.build("def", "DESC"));
+        resourceD.setDescription(TranslatableContent.build("en", "DESC"));
         ResourceInstance resourceI = new ResourceInstance();
         resourceD.setDefaultInstance(resourceI);
         resourceI.setProperty("Level", "8");
@@ -381,7 +382,7 @@ public class SerializationTest {
     public void testExceptionMapper() throws JsonProcessingException {
         NumberDescriptor nd = new NumberDescriptor();
         nd.setName("x");
-        nd.setLabel(TranslatableContent.build("def", "x"));
+        nd.setLabel(TranslatableContent.build("en", "x"));
         NumberInstance ns = new NumberInstance(0);
 
         nd.setDefaultInstance(ns);

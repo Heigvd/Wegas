@@ -50,13 +50,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
@@ -86,13 +86,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
@@ -114,13 +114,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testAssignment() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
@@ -143,25 +143,25 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testMergeAssignmentsOrder() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task1 = new TaskDescriptor();
-        task1.setLabel(TranslatableContent.build("def", "My task"));
+        task1.setLabel(TranslatableContent.build("en", "My task"));
         task1.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task1);
 
         // Create a task1
         TaskDescriptor task2 = new TaskDescriptor();
-        task2.setLabel(TranslatableContent.build("def", "My second task"));
+        task2.setLabel(TranslatableContent.build("en", "My second task"));
         task2.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task2);
 
         // Create a task3
         TaskDescriptor task3 = new TaskDescriptor();
-        task3.setLabel(TranslatableContent.build("def", "My third task"));
+        task3.setLabel(TranslatableContent.build("en", "My third task"));
         task3.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task3);
 
@@ -207,13 +207,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testRemoveAssignment() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
@@ -239,13 +239,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testMergeAssignment_Add() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
@@ -307,24 +307,24 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a resource
         ResourceDescriptor paulD = new ResourceDescriptor();
-        paulD.setLabel(TranslatableContent.build("def", "Paul"));
+        paulD.setLabel(TranslatableContent.build("en", "Paul"));
         paulD.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), paulD);
 
         // Create a resource
         ResourceDescriptor rogerD = new ResourceDescriptor();
-        rogerD.setLabel(TranslatableContent.build("def", "Roger"));
+        rogerD.setLabel(TranslatableContent.build("en", "Roger"));
         rogerD.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), rogerD);
 
         // Create tasks
         TaskDescriptor task1 = new TaskDescriptor();
-        task1.setLabel(TranslatableContent.build("def", "My task"));
+        task1.setLabel(TranslatableContent.build("en", "My task"));
         task1.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task1);
 
         TaskDescriptor task2 = new TaskDescriptor();
-        task2.setLabel(TranslatableContent.build("def", "My second task"));
+        task2.setLabel(TranslatableContent.build("en", "My second task"));
         task2.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task2);
 
@@ -450,12 +450,12 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create tasks
         TaskDescriptor task1 = new TaskDescriptor();
-        task1.setLabel(TranslatableContent.build("def", "My task"));
+        task1.setLabel(TranslatableContent.build("en", "My task"));
         task1.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task1);
 
         TaskDescriptor task2 = new TaskDescriptor();
-        task2.setLabel(TranslatableContent.build("def", "My second task"));
+        task2.setLabel(TranslatableContent.build("en", "My second task"));
         task2.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task2);
 
@@ -631,14 +631,14 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testRemoveAssignmentFromScript() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setName("paul");
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "task"));
+        task.setLabel(TranslatableContent.build("en", "task"));
         task.setName("task");
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
@@ -671,13 +671,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a resource
         ResourceDescriptor resD = new ResourceDescriptor();
-        resD.setLabel(TranslatableContent.build("def", "Paul"));
+        resD.setLabel(TranslatableContent.build("en", "Paul"));
         resD.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), resD);
 
         // Create a task1
         TaskDescriptor taskD = new TaskDescriptor();
-        taskD.setLabel(TranslatableContent.build("def", "My task"));
+        taskD.setLabel(TranslatableContent.build("en", "My task"));
         taskD.setDefaultInstance(new TaskInstance());
         WRequirement req = new WRequirement();
         req.setWork("carpenter");
@@ -751,13 +751,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testCreateActivity() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
@@ -781,7 +781,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
@@ -803,7 +803,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testAddOccupation() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
@@ -828,7 +828,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
@@ -858,7 +858,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testAddReservation() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
@@ -882,23 +882,23 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testMoveAssignment() {
         // Create a resource
         ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel(TranslatableContent.build("def", "Paul"));
+        res.setLabel(TranslatableContent.build("en", "Paul"));
         res.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Create a task1
         TaskDescriptor task1 = new TaskDescriptor();
-        task1.setLabel(TranslatableContent.build("def", "My task"));
+        task1.setLabel(TranslatableContent.build("en", "My task"));
         task1.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task1);
 
         TaskDescriptor task2 = new TaskDescriptor();
-        task2.setLabel(TranslatableContent.build("def", "My task"));
+        task2.setLabel(TranslatableContent.build("en", "My task"));
         task2.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task2);
 
         TaskDescriptor task3 = new TaskDescriptor();
-        task3.setLabel(TranslatableContent.build("def", "My task"));
+        task3.setLabel(TranslatableContent.build("en", "My task"));
         task3.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task3);
 
@@ -928,7 +928,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testAddRequirements() {
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         TaskInstance taskInstance = new TaskInstance();
         task.setDefaultInstance(taskInstance);
 
@@ -954,13 +954,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testDuplicateTaskDescriptor() throws Exception {
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
         // Create a second task
         TaskDescriptor task2 = new TaskDescriptor();
-        task2.setLabel(TranslatableContent.build("def", "My task2"));
+        task2.setLabel(TranslatableContent.build("en", "My task2"));
         TaskInstance taskInstance = new TaskInstance();
         ArrayList<WRequirement> requirements = new ArrayList<>();
         requirements.add(new WRequirement("engineer"));
@@ -985,13 +985,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
         // Create a second task
         TaskDescriptor task2 = new TaskDescriptor();
-        task2.setLabel(TranslatableContent.build("def", "My task2"));
+        task2.setLabel(TranslatableContent.build("en", "My task2"));
         task2.setDefaultInstance(new TaskInstance());
         task2.addPredecessor(task);
         variableDescriptorFacade.create(scenario.getId(), task2);
@@ -1002,7 +1002,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a task
         TaskDescriptor task3 = new TaskDescriptor();
-        task3.setLabel(TranslatableContent.build("def", "task3"));
+        task3.setLabel(TranslatableContent.build("en", "task3"));
         task3.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task3);
 
@@ -1024,13 +1024,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
-        task.setLabel(TranslatableContent.build("def", "My task"));
+        task.setLabel(TranslatableContent.build("en", "My task"));
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
 
         // Create a second task
         TaskDescriptor task2 = new TaskDescriptor();
-        task2.setLabel(TranslatableContent.build("def", "My task2"));
+        task2.setLabel(TranslatableContent.build("en", "My task2"));
         task2.setDefaultInstance(new TaskInstance());
         task2.addPredecessor(task);
         variableDescriptorFacade.create(scenario.getId(), task2);
@@ -1041,7 +1041,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Create a third task
         TaskDescriptor task3 = new TaskDescriptor();
-        task3.setLabel(TranslatableContent.build("def", "task3"));
+        task3.setLabel(TranslatableContent.build("en", "task3"));
         task3.setDefaultInstance(new TaskInstance());
         task3.addPredecessor(task2);
         variableDescriptorFacade.create(scenario.getId(), task3);
@@ -1062,19 +1062,19 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
     public void testAssignemntCascadedDeletion() {
         // Create a resource
         ResourceDescriptor paul = new ResourceDescriptor();
-        paul.setLabel(TranslatableContent.build("def", "Paul"));
+        paul.setLabel(TranslatableContent.build("en", "Paul"));
         paul.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), paul);
 
         // Create a resource
         ResourceDescriptor roger = new ResourceDescriptor();
-        roger.setLabel(TranslatableContent.build("def", "Roger"));
+        roger.setLabel(TranslatableContent.build("en", "Roger"));
         roger.setDefaultInstance(new ResourceInstance());
         variableDescriptorFacade.create(scenario.getId(), roger);
 
         // Create a task
         TaskDescriptor task1 = new TaskDescriptor();
-        task1.setLabel(TranslatableContent.build("def", "My task"));
+        task1.setLabel(TranslatableContent.build("en", "My task"));
         task1.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task1);
         gameModelFacade.reset(scenario.getId());

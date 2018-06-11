@@ -161,15 +161,15 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     /**
      * Get a translation
      *
-     * @param refName language ref name
+     * @param code language code
      *
      * @return the translation or null if there is no such translation
      *
      */
-    public Translation getTranslation(String refName) {
-        if (refName != null) {
+    public Translation getTranslation(String code) {
+        if (code != null) {
             for (Translation tr : this.translations) {
-                if (refName.equals(tr.getLang())) {
+                if (code.equals(tr.getLang())) {
                     return tr;
                 }
             }
@@ -180,15 +180,15 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     /**
      * Update or set a translation
      *
-     * @param refName     language ref name
+     * @param code        language code
      * @param translation the new translation
      */
-    public void updateTranslation(String refName, String translation) {
-        Translation tr = this.getTranslation(refName);
+    public void updateTranslation(String code, String translation) {
+        Translation tr = this.getTranslation(code);
         if (tr != null) {
             tr.setTranslation(translation);
         } else {
-            this.getRawTranslations().add(new Translation(refName, translation));
+            this.getRawTranslations().add(new Translation(code, translation));
         }
     }
 
@@ -201,7 +201,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
      */
     public Translation translate(Player player) {
         GameModel gameModel = player.getGameModel();
-        return this.translate(gameModel.getPreferredLanguagesRefName(player));
+        return this.translate(gameModel.getPreferredLanguagesCodes(player));
     }
 
     public String translateOrEmpty(Player self) {
@@ -213,12 +213,12 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         }
     }
 
-    private Translation translate(GameModel gameModel, String refName) {
-        return this.translate(gameModel.getPreferredLanguagesRefName(refName));
+    private Translation translate(GameModel gameModel, String code) {
+        return this.translate(gameModel.getPreferredLanguagesCode(code));
     }
 
-    public String translateOrEmpty(GameModel gameModel, String refName) {
-        Translation tr = this.translate(gameModel, refName);
+    public String translateOrEmpty(GameModel gameModel, String code) {
+        Translation tr = this.translate(gameModel, code);
         if (tr != null) {
             return tr.getTranslation();
         } else {
@@ -252,7 +252,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
      * returns the first translation which is not empty. If all translation are empty
      * returns, the first non null, returns null o otherwise
      *
-     * @param languages languages sorted by preference
+     * @param languages languages codes sorted by preference
      *
      * @return
      */
@@ -260,8 +260,8 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         Map<String, Translation> trMap = ListUtils.mapEntries(translations, new Translation.Mapper());
         Translation emptyOne = null;
 
-        for (String langRef : languages) {
-            Translation tr = trMap.get(langRef);
+        for (String code : languages) {
+            Translation tr = trMap.get(code);
             if (tr != null) {
                 String str = tr.getTranslation();
                 if (str != null) {
@@ -281,7 +281,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     public Translation translate(GameModel gameModel) {
         if (gameModel != null) {
             Player player = gameModel.findTestPlayer();
-            return this.translate(gameModel.getPreferredLanguagesRefName(player));
+            return this.translate(gameModel.getPreferredLanguagesCodes(player));
         } else {
             return getAnyTranslation();
         }
@@ -345,7 +345,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     @Override
     public boolean isProtected() {
         Mergeable parent = getParent();
-        if (parent !=null){
+        if (parent != null) {
             return parent.isProtected();
         }
         return false;
@@ -389,8 +389,8 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
             if (theClass != null && theClass.equals("TranslatableContent")) {
                 ScriptObjectMirror trs = (ScriptObjectMirror) jsTr.getMember("translations");
                 String[] langs = trs.getOwnKeys(true);
-                for (String refName : langs) {
-                    trContent.updateTranslation(refName, (String) trs.getMember(refName));
+                for (String code : langs) {
+                    trContent.updateTranslation(code, (String) trs.getMember(code));
                 }
             }
             return trContent;

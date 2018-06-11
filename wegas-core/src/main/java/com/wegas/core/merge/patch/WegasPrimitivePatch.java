@@ -97,45 +97,55 @@ public final class WegasPrimitivePatch extends WegasPatch {
                     PatchMode myMode = this.updateOrOverride(visibility, null);
                     logger.trace("MyMode: {}", myMode);
 
+                    //if (isProtected(targetEntity, bypassVisibility) && isProtected(, bypassVisibility) && tr ue){
+                        // && visibility stands in protected world ?
+                    //}
+
+                    logger.trace("visibility: {}; cascade: {}", visibility, protectionLevel);
+
                     if (!initOnly || oldTargetValue == null) { // do no overwrite non-null value if initOnly is set
                         if (myMode.equals(PatchMode.OVERRIDE) || (Objects.equals(oldTargetValue, fromValue))) { // do not override user-change but in protected mode
-                            if (!myMode.equals(PatchMode.OVERRIDE) || !isProtected(targetEntity, bypassVisibility)) { // prevent protected changes
-                                if (!ignoreNull || toValue != null) {
+                            if (true ) {
+                                if (!myMode.equals(PatchMode.OVERRIDE) || !isProtected(targetEntity, bypassVisibility)) { // prevent protected changes // do not override protected value
+                                    if (!ignoreNull || toValue != null) {
 
-                                    logger.debug("Apply {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
-                                    List<WegasCallback> callbacks = this.getCallbacks(callback);
+                                        logger.debug("Apply {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
+                                        List<WegasCallback> callbacks = this.getCallbacks(callback);
 
-                                    for (WegasCallback cb : callbacks) {
-                                        cb.preUpdate(targetEntity, toValue, identifier);
-                                    }
+                                        for (WegasCallback cb : callbacks) {
+                                            cb.preUpdate(targetEntity, toValue, identifier);
+                                        }
 
-                                    if (isField) {
-                                        if (!parentMode.equals(PatchMode.DELETE)) { // skip delete mode
-                                            logger.debug(" SET to {}", toValue);
-                                            setter.invoke(targetEntity, toValue);
+                                        if (isField) {
+                                            if (!parentMode.equals(PatchMode.DELETE)) { // skip delete mode
+                                                logger.debug(" SET to {}", toValue);
+                                                setter.invoke(targetEntity, toValue);
+                                            } else {
+                                                logger.debug("SKIP MODIFICATION {} : DELETE", this);
+                                            }
                                         } else {
-                                            logger.debug("SKIP MODIFICATION {} : DELETE", this);
+                                            for (WegasCallback cb : callbacks) {
+                                                Object key = null;
+
+                                                if (oldTargetValue != null) {
+                                                    key = cb.remove(oldTargetValue, null, identifier);
+                                                } else {
+                                                    key = identifier;
+                                                }
+                                                if (toValue != null) {
+                                                    cb.add(toValue, null, key);
+                                                }
+                                            }
+                                        }
+
+                                        for (WegasCallback cb : callbacks) {
+                                            cb.postUpdate(targetEntity, toValue, identifier);
                                         }
                                     } else {
-                                        for (WegasCallback cb : callbacks) {
-                                            Object key = null;
-
-                                            if (oldTargetValue != null) {
-                                                key = cb.remove(oldTargetValue, null, identifier);
-                                            } else {
-                                                key = identifier;
-                                            }
-                                            if (toValue != null) {
-                                                cb.add(toValue, null, key);
-                                            }
-                                        }
-                                    }
-
-                                    for (WegasCallback cb : callbacks) {
-                                        cb.postUpdate(targetEntity, toValue, identifier);
+                                        logger.debug("REJECT IGNORE NULL {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
                                     }
                                 } else {
-                                    logger.debug("REJECT IGNORE NULL {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
+                                    logger.debug("PROHIBITED CHANGE {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
                                 }
                             } else {
                                 logger.debug("PROHIBITED CHANGE {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
