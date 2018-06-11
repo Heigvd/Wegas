@@ -67,6 +67,8 @@ const JS_PLUMB_OPTIONS: Defaults = {
   PaintStyle: {
     strokeWidth: 4,
     stroke: 'darkgray',
+    outlineStroke: 'white',
+    outlineWidth: 2,
   },
   HoverPaintStyle: {
     stroke: '#03283A',
@@ -262,12 +264,16 @@ class StateMachineEditor extends React.Component<
     });
     plumb.bind('connectionDetached', (info, ev) => {
       if (ev !== undefined) {
-        this.removeTransition({
-          from: info.sourceId,
-          transitonIndex: (info.connection as any).getParameter(
-            'transitionIndex',
-          ),
-        });
+        const trIndex = (info.connection as any).getParameter(
+          'transitionIndex',
+        );
+        // let jsPlumb remove transition the update data
+        requestAnimationFrame(() =>
+          this.removeTransition({
+            from: info.sourceId,
+            transitonIndex: trIndex,
+          }),
+        );
       }
     });
     plumb.bind('connectionMoved', (info, ev) => {
@@ -383,10 +389,16 @@ const stateStyle = css({
   width: '10em',
   height: '5em',
   border: '1px solid',
+  zIndex: 2,
+  backgroundColor: 'rgba(255, 255, 255, 0.8)',
 });
 const sourceStyle = css({
   display: 'inline-block',
   cursor: 'move',
+  alignSelf: 'center',
+  '& svg': {
+    pointerEvents: 'none',
+  },
 });
 class State extends React.Component<{
   state: IFSMDescriptor.State;
@@ -446,14 +458,16 @@ class State extends React.Component<{
         <Toolbar vertical>
           <Toolbar.Content>{state.label}</Toolbar.Content>
           <Toolbar.Header>
+            <IconButton icon="edit" onClick={this.onClick} />
+            <div className={sourceStyle}>
+              <FontAwesome icon="project-diagram" />
+            </div>
             {!initialState && (
               <IconButton
                 icon="trash"
                 onClick={() => this.props.deleteState(this.props.id)}
               />
             )}
-            <IconButton icon="edit" onClick={this.onClick} />
-            <FontAwesome icon="project-diagram" className={sourceStyle} />
           </Toolbar.Header>
         </Toolbar>
         {state.transitions.map((t, i) => (
@@ -490,23 +504,23 @@ class Transition extends React.Component<{
       target: tgt,
       ...(src === tgt ? ({ connector: ['StateMachine'] } as any) : undefined),
     });
-    this.connection.setParameter('transition', this.props.transition);
-    this.connection.setParameter('transitionIndex', this.props.position);
     (this.connection as any).bind('click', (connection: any) => {
       this.props.editTransition(
         [this.props.parent, this.props.position],
         connection.getParameter('transition'),
       );
     });
-    this.updateLabel();
+    this.updateData();
   }
   componentDidUpdate() {
-    this.updateLabel();
+    this.updateData();
   }
-  updateLabel = () => {
+  updateData = () => {
     const { triggerCondition } = this.props.transition;
     const label = triggerCondition ? triggerCondition.content : '';
     try {
+      this.connection!.setParameter('transition', this.props.transition);
+      this.connection!.setParameter('transitionIndex', this.props.position);
       this.connection!.setLabel(label);
     } catch {}
   };
