@@ -27,6 +27,12 @@ class SrcEditor extends React.Component<EditorProps> {
   constructor(props: EditorProps) {
     super(props);
   }
+  shouldComponentUpdate(nextProps: EditorProps) {
+    return (
+     nextProps.value !== this.lastValue ||
+      this.props.language !== nextProps.language
+    );
+  }
   componentDidUpdate(prevProps: EditorProps) {
     if (this.lastValue !== this.props.value) {
       this.lastValue = this.props.value;
@@ -52,9 +58,10 @@ class SrcEditor extends React.Component<EditorProps> {
           language: this.props.language,
           value: this.props.value,
         });
-        this.editor.onDidBlurEditor(() =>
-          this.props.onBlur!(this.editor!.getValue()),
-        );
+        this.editor.onDidBlurEditor(() => {
+          this.lastValue = this.editor!.getValue();
+          this.props.onBlur!(this.lastValue);
+        });
         this.editor.onDidChangeModelContent(() => {
           if (!this.outsideChange) {
             this.lastValue = this.editor!.getValue();
@@ -70,7 +77,7 @@ class SrcEditor extends React.Component<EditorProps> {
     }
     return this.props.value;
   }
-  componentWillMount() {
+  componentWillUnmount() {
     if (this.editor != null) {
       this.editor.dispose();
     }
