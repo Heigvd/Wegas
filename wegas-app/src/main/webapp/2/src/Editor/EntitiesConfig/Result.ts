@@ -22,9 +22,10 @@ export const config: ConfigurationSchema<IResult> = {
     index: -1,
   },
   label: {
-    type: 'string',
+    type: 'object',
     index: -1,
     view: {
+      type:"i18nstring",
       label: 'Name',
     },
   },
@@ -41,7 +42,7 @@ export const config: ConfigurationSchema<IResult> = {
     },
   },
   answer: {
-    type: 'string',
+    type: 'object',
     view: {
       type: 'i18nhtml',
       label: 'Feedback',
