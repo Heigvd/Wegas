@@ -532,6 +532,25 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }, this);
             return data;
         },
+        getEditorLabel: function() {
+            var trLabel = this.getLabel(),
+                index = this.get("index");
+            if (index){
+                index += ". ";
+            } else {
+                index = "";
+            }
+
+            if (!this.get("editorTag") && !trLabel) {
+                return this.get("name");
+            } else if (!this.get("editorTag")) {
+                return index + trLabel;
+            } else if (!trLabel) {
+                return this.get("editorTag");
+            } else {
+                return this.get("editorTag") + " - " + index + trLabel;
+            }
+        },
         getIconCss: function() {
             return "fa fa-list";
         }
