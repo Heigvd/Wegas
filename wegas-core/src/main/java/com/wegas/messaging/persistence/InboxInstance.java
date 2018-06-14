@@ -14,7 +14,9 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import org.slf4j.LoggerFactory;
 
@@ -182,7 +184,15 @@ public class InboxInstance extends VariableInstance implements Searchable {
      * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachments) {
-        return this.sendMessage(new Message(from, subject, body, date, token, attachments));
+        VariableDescriptor desc = this.findDescriptor();
+        String lang = "en";
+        if (desc != null && desc.getGameModel() != null){
+            List<GameModelLanguage> languages = desc.getGameModel().getRawLanguages();
+            if (languages != null && !languages.isEmpty()){
+                lang = languages.get(0).getCode();
+            }
+        }
+        return this.sendMessage(new Message(from, subject, body, date, token, attachments, lang));
     }
 
     /**

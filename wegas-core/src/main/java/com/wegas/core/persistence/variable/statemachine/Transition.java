@@ -88,7 +88,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
                 = @Column(name = "onTransition_content")),
-        @AttributeOverride(name = "lang", column
+        @AttributeOverride(name = "language", column
                 = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorI.class)
@@ -165,10 +165,17 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
         this.nextStateId = nextStateId;
     }
 
+
+    private void touchPreStateImpact(){
+        if (this.preStateImpact !=null){
+            this.preStateImpact.setParent(this, "impact");
+        }
+    }
     /**
      * @return script to execute on transition
      */
     public Script getPreStateImpact() {
+        this.touchPreStateImpact();
         return preStateImpact;
     }
 
@@ -177,6 +184,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     public void setPreStateImpact(Script preStateImpact) {
         this.preStateImpact = preStateImpact;
+        this.touchPreStateImpact();
     }
 
     @Override
@@ -187,10 +195,17 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
         return ret;
     }
 
+    private void touchTriggerCondition(){
+        if (this.triggerCondition !=null){
+            this.triggerCondition.setParent(this, "condition");
+        }
+    }
+
     /**
      * @return script to execute to know if the transition is walkable
      */
     public Script getTriggerCondition() {
+        this.touchTriggerCondition();
         return triggerCondition;
     }
 
@@ -199,6 +214,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     public void setTriggerCondition(Script triggerCondition) {
         this.triggerCondition = triggerCondition;
+        this.touchTriggerCondition();
     }
 
 

@@ -11,12 +11,13 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
-import com.wegas.core.i18n.rest.ScriptUpdate;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +36,18 @@ public class MergeHelper {
 
     public interface MergeableVisitor {
 
-        public void visit(Mergeable target, Mergeable reference);
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field);
+    }
 
-        public void visitProperty(Object target, Object reference);
+    private static boolean isProtected(ProtectionLevel level, Visibility visibility) {
+        //             all, protected, internal
+        // internal    t        t         t
+        // protected   t        t         f
+        // inherited   t        f         f
+        // private     t        f         f
+
+        return (level == ProtectionLevel.ALL || visibility == Visibility.INTERNAL
+                || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED));
     }
 
     /**
@@ -45,19 +55,27 @@ public class MergeHelper {
      *
      * @param target
      * @param reference
-     * @param forceRecursion do not follow includeByDefault=false properted unless forceRecursion is true
+     * @param protectionLevel
+     * @param forceRecursion  do not follow includeByDefault=false properted unless forceRecursion is true
      * @param visitor
+     * @param level
+     * @param f
      */
     public static void visitMergeable(Mergeable target, Mergeable reference,
-            Boolean forceRecursion, MergeableVisitor visitor) {
+            ProtectionLevel protectionLevel,
+            Boolean forceRecursion, MergeableVisitor visitor, int level, WegasFieldProperties f) {
 
         if (target != null) {
-            visitor.visit(target, reference);
+            visitor.visit(target, reference, protectionLevel, level, f);
 
             WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
 
             for (WegasFieldProperties field : entityIterator.getFields()) {
                 try {
+                    ProtectionLevel fieldProtectionLevel = field.getAnnotation().protectionLevel();
+                    if (fieldProtectionLevel.equals(ProtectionLevel.CASCADED)) {
+                        fieldProtectionLevel = protectionLevel;
+                    }
                     if (field.getAnnotation().includeByDefault() || forceRecursion) {
                         Method readMethod = field.getPropertyDescriptor().getReadMethod();
                         switch (field.getType()) {
@@ -69,7 +87,7 @@ public class MergeHelper {
                                     referenceChild = (Mergeable) readMethod.invoke(reference);
                                 }
 
-                                MergeHelper.visitMergeable(targetChild, referenceChild, forceRecursion, visitor);
+                                MergeHelper.visitMergeable(targetChild, referenceChild, fieldProtectionLevel, forceRecursion, visitor, level + 1, field);
                                 break;
                             case CHILDREN:
                                 Object children = readMethod.invoke(target);
@@ -91,7 +109,7 @@ public class MergeHelper {
                                                 if (refList != null && i < refList.size()) {
                                                     refGet = (Mergeable) refList.get(i);
                                                 }
-                                                MergeHelper.visitMergeable((Mergeable) get, refGet, forceRecursion, visitor);
+                                                MergeHelper.visitMergeable((Mergeable) get, refGet, fieldProtectionLevel, forceRecursion, visitor, level + 1, field);
                                             } else {
                                                 // children are not mergeable: skip all
                                                 break;
@@ -110,7 +128,7 @@ public class MergeHelper {
                                             if (refMap != null) {
                                                 ref = (Mergeable) refMap.get(entry.getKey());
                                             }
-                                            MergeHelper.visitMergeable((Mergeable) child, ref, forceRecursion, visitor);
+                                            MergeHelper.visitMergeable((Mergeable) child, ref, fieldProtectionLevel, forceRecursion, visitor, level + 1, field);
                                         } else {
                                             // children are not mergeable: skip all
                                             break;
@@ -126,8 +144,6 @@ public class MergeHelper {
                                     referenceProperty = readMethod.invoke(reference);
                                 }
 
-                                visitor.visitProperty(targetProperty, referenceProperty);
-
                                 break;
                         }
                     }
@@ -141,21 +157,17 @@ public class MergeHelper {
 
     private static class VisibilityResetter implements MergeableVisitor {
 
-        private final ModelScoped.Visibility visibility;
+        private final Visibility visibility;
 
-        public VisibilityResetter(ModelScoped.Visibility visibility) {
+        public VisibilityResetter(Visibility visibility) {
             this.visibility = visibility;
         }
 
         @Override
-        public void visit(Mergeable target, Mergeable reference) {
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field) {
             if (target instanceof ModelScoped) {
                 ((ModelScoped) target).setVisibility(this.visibility);
             }
-        }
-
-        @Override
-        public void visitProperty(Object target, Object reference) {
         }
     }
 
@@ -165,14 +177,14 @@ public class MergeHelper {
      * @param target
      * @param visibility
      */
-    public static void resetVisibility(Mergeable target, ModelScoped.Visibility visibility) {
-        MergeHelper.visitMergeable(target, null, Boolean.TRUE, new VisibilityResetter(visibility));
+    public static void resetVisibility(Mergeable target, Visibility visibility) {
+        MergeHelper.visitMergeable(target, null, ProtectionLevel.PROTECTED, Boolean.TRUE, new VisibilityResetter(visibility), 0, null);
     }
 
     private static class RefidResetter implements MergeableVisitor {
 
         @Override
-        public void visit(Mergeable target, Mergeable reference) {
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field) {
 
             if (target instanceof AbstractEntity) {
                 AbstractEntity entity = (AbstractEntity) target;
@@ -185,10 +197,6 @@ public class MergeHelper {
                 }
             }
         }
-
-        @Override
-        public void visitProperty(Object target, Object reference) {
-        }
     }
 
     /**
@@ -197,7 +205,7 @@ public class MergeHelper {
      * @param reference
      */
     public static void resetRefIds(AbstractEntity target, AbstractEntity reference) {
-        MergeHelper.visitMergeable(target, reference, Boolean.FALSE, new RefidResetter());
+        MergeHelper.visitMergeable(target, reference, ProtectionLevel.PROTECTED, Boolean.FALSE, new RefidResetter(), 0, null);
     }
 
     private static class LanguageUpgrader implements MergeableVisitor {
@@ -213,7 +221,7 @@ public class MergeHelper {
         }
 
         @Override
-        public void visit(Mergeable target, Mergeable reference) {
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field) {
             if (target instanceof TranslatableContent) {
                 TranslatableContent tr = (TranslatableContent) target;
                 Translation translation = tr.getTranslation(oldCode);
@@ -221,10 +229,6 @@ public class MergeHelper {
                     translation.setLang(newCode);
                 }
             }
-        }
-
-        @Override
-        public void visitProperty(Object target, Object reference) {
 
             if (target instanceof Script) {
                 try {
@@ -248,7 +252,7 @@ public class MergeHelper {
      * @param i18nFacade
      */
     public static void updateTranslationCode(GameModel gameModel, String oldCode, String newCode, I18nFacade i18nFacade) {
-        MergeHelper.visitMergeable(gameModel, null, Boolean.TRUE, new LanguageUpgrader(oldCode, newCode, i18nFacade));
+        MergeHelper.visitMergeable(gameModel, null, ProtectionLevel.PROTECTED, Boolean.TRUE, new LanguageUpgrader(oldCode, newCode, i18nFacade), 0, null);
     }
 
     private static class TranslationsImporter implements MergeableVisitor {
@@ -262,12 +266,16 @@ public class MergeHelper {
         }
 
         @Override
-        public void visit(Mergeable target, Mergeable reference) {
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field) {
             if (target instanceof TranslatableContent) {
                 TranslatableContent trTarget = (TranslatableContent) target;
 
                 if (trTarget.getTranslation(languageCode) != null) {
-                    logger.error("Translation {} exists in {}", languageCode, target);
+                    Visibility visibility = target.getInheritedVisibility();
+                    if (!isProtected(protectionLevel, visibility)) {
+                        // targret is not prodected, keep target translation
+                        return;
+                    }
                 }
 
                 if (reference instanceof TranslatableContent) {
@@ -283,10 +291,7 @@ public class MergeHelper {
                     logger.error("No TranslationContent in Reference");
                 }
             }
-        }
 
-        @Override
-        public void visitProperty(Object target, Object reference) {
             if (target instanceof Script && reference instanceof Script) {
                 i18nFacade.importTranslations((Script) target, (Script) reference, languageCode);
             }
@@ -294,6 +299,7 @@ public class MergeHelper {
     }
 
     public static void importTranslations(GameModel target, GameModel source, String languageCode, I18nFacade i18nFacade) {
-        MergeHelper.visitMergeable(target, source, Boolean.TRUE, new TranslationsImporter(languageCode, i18nFacade));
+        MergeHelper.visitMergeable(target, source, ProtectionLevel.PROTECTED, Boolean.TRUE, new TranslationsImporter(languageCode, i18nFacade), 0, null);
     }
+
 }

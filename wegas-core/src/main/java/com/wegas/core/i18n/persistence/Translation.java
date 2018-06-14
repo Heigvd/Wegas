@@ -75,6 +75,11 @@ public class Translation implements Serializable {
         this.translation = translation;
     }
 
+    @Override
+    public String toString() {
+        return "Translation [" + lang + "] " + translation;
+    }
+
     public static class Extractor implements ListUtils.EntryExtractor<String, String, Translation> {
 
         @Override

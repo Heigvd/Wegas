@@ -17,11 +17,15 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.i18n.rest.ScriptUpdate;
 import com.wegas.core.merge.utils.MergeHelper;
+import com.wegas.core.merge.utils.MergeHelper.MergeableVisitor;
+import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
@@ -39,6 +43,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -47,6 +52,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,8 +146,9 @@ public class I18nFacade extends WegasAbstractFacade {
      */
     public GameModelLanguage findLanguageByName(GameModel gameModel, String lang) {
         if (lang != null) {
+            String lowerLang = lang.toLowerCase();
             for (GameModelLanguage gmLang : gameModel.getLanguages()) {
-                if (lang.equals(gmLang.getLang())) {
+                if (lowerLang.equals(gmLang.getLang().toLowerCase())) {
                     return gmLang;
                 }
             }
@@ -465,6 +472,23 @@ public class I18nFacade extends WegasAbstractFacade {
 
     }
 
+    public List<TranslatableContent> getInScriptTranslations(String script) throws ScriptException {
+        List<TranslatableContent> list = new ArrayList<>();
+
+        Map<String, Object> args = new HashMap<>();
+        args.put("impact", script);
+
+        ScriptContext ctx = new SimpleScriptContext();
+
+        scriptFacade.nakedEval(getI18nJsHelper(), null, ctx);
+        ScriptObjectMirror nakedEval = (ScriptObjectMirror) scriptFacade.nakedEval("I18nHelper.getTranslatableContents()", args, ctx);
+
+        for (String key : nakedEval.keySet()){
+            list.add((TranslatableContent) nakedEval.getMember(key));
+        }
+        return list;
+    }
+
     public String updateScriptWithNewTranslation(String impact, int index, String code, String newValue) throws ScriptException {
         JSObject result = (JSObject) fishTranslationLocation(impact, index, code, newValue);
 
@@ -621,6 +645,88 @@ public class I18nFacade extends WegasAbstractFacade {
             }
         }
         return ret;
+    }
+
+    private static class TranslationsPrinter implements MergeableVisitor {
+
+        private I18nFacade i18nFacade;
+
+        private String[] languages;
+
+        private StringBuilder sb = new StringBuilder();
+
+        public TranslationsPrinter(String[] languages, I18nFacade i18nFacade) {
+            this.languages = languages;
+            this.i18nFacade = i18nFacade;
+        }
+
+        private void print(String msg, int level) {
+            for (int i = 0; i < level; i++) {
+                sb.append("    ");
+            }
+            sb.append(msg);
+            sb.append(System.lineSeparator());
+        }
+
+        private void process(TranslatableContent trc, int level) {
+
+            StringBuilder line = new StringBuilder();
+            for (String code : languages) {
+                line.append("[").append(code).append("] ");
+                String tr;
+                if (trc.getTranslation(code) != null) {
+                    tr = trc.getTranslation(code).getTranslation();
+                } else {
+                    tr = "<N/A>";
+                }
+
+                line.append(tr);
+                if (tr.length() < 30) {
+                    for (int i = 0; i < 30 - tr.length(); i++) {
+                        line.append(" ");
+                    }
+                }
+                line.append("    ");
+            }
+            print(line.toString(), level + 1);
+
+        }
+
+        @Override
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field) {
+            if (field != null) {
+                print(field.getField().getName(), level);
+            }
+            if (target instanceof TranslatableContent) {
+                TranslatableContent trTarget = (TranslatableContent) target;
+                process(trTarget, level);
+            } else if (target instanceof Script) {
+                try {
+                    List<TranslatableContent> inscript = i18nFacade.getInScriptTranslations(((Script) target).getContent());
+                    for (TranslatableContent trc : inscript){
+                        process(trc, level);
+                    }
+                    // hum ...
+                } catch (ScriptException ex) {
+                    logger.error("FAILS {}", ex);
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return sb.toString();
+        }
+    }
+
+    public void printTranslations(Long gmId, String... languages) {
+        this.printTranslations(gameModelFacade.find(gmId), languages);
+    }
+
+    public void printTranslations(GameModel target, String... languages) {
+        TranslationsPrinter prettyPrinter = new TranslationsPrinter(languages, this);
+        MergeHelper.visitMergeable(target, null, ProtectionLevel.PROTECTED, Boolean.TRUE, prettyPrinter, 0, null);
+        logger.error("Translation for {}{}{}", target, System.lineSeparator(), prettyPrinter);
     }
 
 }

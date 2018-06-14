@@ -1040,7 +1040,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
         for (GameModelLanguage gml : sortedLanguages) {
             if (player != null && gml.getCode().equals(player.getLang())) {
-                langs.add(0, gml.getLang());
+                langs.add(0, gml.getCode());
             } else {
                 langs.add(gml.getCode());
             }

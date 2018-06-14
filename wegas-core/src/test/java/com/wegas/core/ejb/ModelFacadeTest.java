@@ -19,6 +19,7 @@ import com.wegas.core.jcr.jta.JCRConnectorProviderTx;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.jcr.tools.RepositoryVisitor;
 import com.wegas.core.merge.patch.WegasPatch;
+import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
@@ -96,7 +97,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         reflections = new Reflections("com.wegas");
     }
 
-    @BeforeClass
+    //@BeforeClass
     public static void setLoggerLevels() {
         Helper.setLoggerLevel(logger, Level.INFO);
         mfLevel = Helper.setLoggerLevel(ModelFacade.class, Level.DEBUG);
@@ -199,7 +200,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         }
         desc.setAllowedValues(items);
 
-        desc.getDefaultInstance().setValue(value);
+        desc.getDefaultInstance().setTrValue(TranslatableContent.build(code, value));
 
         createDescriptor(gameModel, desc, parent);
 
@@ -261,6 +262,14 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         for (String key : aT.keySet()) {
             Assert.assertEquals(aT.get(key), bT.get(key));
+        }
+    }
+
+    private void assertTranslation(TranslatableContent a, TranslatableContent b, String language, boolean equals) {
+        if (equals) {
+            Assert.assertEquals(a.getTranslation(language), b.getTranslation(language));
+        } else {
+            Assert.assertNotEquals(a.getTranslation(language).getTranslation(), b.getTranslation(language).getTranslation());
         }
     }
 
@@ -1642,8 +1651,29 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
     }
 
+    private void assertLabelEquals(GameModel gm1, GameModel gm2, String variable) {
+        this.assertTranslatableEquals(getDescriptor(gm1, variable).getLabel(), getDescriptor(gm2, variable).getLabel());
+    }
+
+    private void assertStringValueEquals(GameModel gm1, GameModel gm2, String variable) {
+        this.assertTranslatableEquals(
+                ((StringInstance) getDescriptor(gm1, variable).getDefaultInstance()).getTrValue(),
+                ((StringInstance) getDescriptor(gm2, variable).getDefaultInstance()).getTrValue());
+    }
+
+    private void testLabel(GameModel gm1, GameModel gm2, String variable, String lang, boolean equals) {
+        this.assertTranslation(getDescriptor(gm1, variable).getLabel(),
+                getDescriptor(gm2, variable).getLabel(),
+                lang, equals);
+    }
+
+    private void testStringValue(GameModel gm1, GameModel gm2, String variable, String lang, boolean equals) {
+        this.assertTranslation(((StringInstance) getDescriptor(gm1, variable).getDefaultInstance()).getTrValue(),
+                ((StringInstance) getDescriptor(gm2, variable).getDefaultInstance()).getTrValue(), lang, equals);
+    }
+
     @Test
-    public void testModelise_Languages() throws RepositoryException, IOException, IOException {
+    public void testModelise_Languages() throws RepositoryException, IOException, IOException, WegasNoResultException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
         i18nFacade.createLanguage(gameModel1, "en", "English");
@@ -1654,26 +1684,213 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         i18nFacade.createLanguage(gameModel2, "fr", "French");
         gameModelFacade.createWithDebugGame(gameModel2);
 
+        GameModel gameModel3 = new GameModel();
+        gameModel3.setName("gamemodel #3");
+        i18nFacade.createLanguage(gameModel3, "en", "English");
+        gameModelFacade.createWithDebugGame(gameModel3);
+
         createInbox(gameModel1, null, "inbox", "My Inbox");
         createInbox(gameModel2, null, "inbox", "Ma boite aux lettres");
+        createInbox(gameModel3, null, "inbox", "My mailbox");
 
         createTriggerDescriptor(gameModel1, null, "trigger", "aTrigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"John\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Today\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Hello\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"<p>Hi there</p>\"}}, \"\", []);");
-
         createTriggerDescriptor(gameModel2, null, "trigger", "un Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Jean\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Aujourd'hui\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Pour dire bonjour\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"<p>Bonjour chez vous!</p>\"}}, \"\", []);");
+        createTriggerDescriptor(gameModel3, null, "trigger", "aTrigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"John\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Today\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Good Marning\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"<p>Hi there</p>\"}}, \"\", []);");
+
+        createString(gameModel1, null, "strModel", "internal string", "internal value");
+        createString(gameModel2, null, "strModel", "chaîne de caractère interne", "valeur interne");
+        createString(gameModel3, null, "strModel", "my internal string", "my value");
+
+        createString(gameModel1, null, "strProtected", "protected string", "protected value");
+        createString(gameModel2, null, "strProtected", "chaîne de caractère protected", "valeur protegée");
+        createString(gameModel3, null, "strProtected", "my protected string", "my protected value");
+
+        createString(gameModel1, null, "strInherited", "inherited string", "inherited value");
+        createString(gameModel2, null, "strInherited", "chaîne de caractère héritée", "valeur héritée");
+        createString(gameModel3, null, "strInherited", "my inherited string", "my inherited value");
+
+        createTriggerDescriptor(gameModel1, null, "setStrModel", "strModel Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strModel\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"new internal string value\"}});");
+        createTriggerDescriptor(gameModel2, null, "setStrModel", "strModel Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strModel\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"nouvelle valeur de chaîne de caractère interne \"}});");
+        createTriggerDescriptor(gameModel3, null, "setStrModel", "strModel Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strModel\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"my new internal string value\"}});");
+
+        createTriggerDescriptor(gameModel1, null, "setStrProtected", "strProtected Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strProtected\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"new protected string value\"}});");
+        createTriggerDescriptor(gameModel2, null, "setStrProtected", "strProtected Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strProtected\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"nouvelle valeur de chaîne de caractère protegée\"}});");
+        createTriggerDescriptor(gameModel3, null, "setStrProtected", "strProtected Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strProtected\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"my new protected string value\"}});");
+
+        createTriggerDescriptor(gameModel1, null, "setStrInherited", "strInherited Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strInherited\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"new inherited string value\"}});");
+        createTriggerDescriptor(gameModel2, null, "setStrInherited", "strInherited Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strInherited\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"nouvelle valeur de chaîne de caractère héritée\"}});");
+        createTriggerDescriptor(gameModel3, null, "setStrInherited", "strInherited Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strInherited\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"my new inherited string value\"}});");
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
+        gameModel3 = gameModelFacade.find(gameModel3.getId());
 
         List<GameModel> scenarios = new ArrayList<>();
 
         scenarios.add(gameModel1);
         scenarios.add(gameModel2);
+        scenarios.add(gameModel3);
+
+        i18nFacade.printTranslations(gameModel1.getId(), "en", "fr");
+        i18nFacade.printTranslations(gameModel2.getId(), "en", "fr");
+        i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
 
         logger.info("Create Model");
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+
+        Assert.assertNotNull("French is missing in model", model.getLanguageByCode("fr"));
+        Assert.assertNotNull("English is missing in model", model.getLanguageByCode("en"));
+
+        setDescriptorVisibility(model, "strModel", ModelScoped.Visibility.INTERNAL);
+        setDescriptorVisibility(model, "strProtected", ModelScoped.Visibility.PROTECTED);
+        setDescriptorVisibility(model, "strInherited", ModelScoped.Visibility.INHERITED);
+
+        setDescriptorVisibility(model, "setStrModel", ModelScoped.Visibility.INTERNAL);
+        setDescriptorVisibility(model, "setStrProtected", ModelScoped.Visibility.PROTECTED);
+        setDescriptorVisibility(model, "setStrInherited", ModelScoped.Visibility.INHERITED);
+
         modelFacade.propagateModel(model.getId());
 
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+        gameModel3 = gameModelFacade.find(gameModel3.getId());
+
+        i18nFacade.printTranslations(model, "en", "fr");
+
+        i18nFacade.printTranslations(gameModel1.getId(), "en", "fr");
+        i18nFacade.printTranslations(gameModel2.getId(), "en", "fr");
+        i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
+
+        Assert.assertNotNull("French is missing in gameModel1", gameModel1.getLanguageByCode("fr"));
+        Assert.assertNotNull("English is missing in gameModel1", gameModel1.getLanguageByCode("en"));
+
+        Assert.assertNotNull("French is missing in gameModel2", gameModel2.getLanguageByCode("fr"));
+        Assert.assertNotNull("English is missing in gameModel2", gameModel2.getLanguageByCode("en"));
+
+        Assert.assertNotNull("French is missing in gameModel3", gameModel3.getLanguageByCode("fr"));
+        Assert.assertNotNull("English is missing in gameModel3", gameModel3.getLanguageByCode("en"));
+
+        // assert internal translations have been overriden by model ones
+        this.assertLabelEquals(model, gameModel1, "strModel");
+        this.assertLabelEquals(model, gameModel2, "strModel");
+        this.assertLabelEquals(model, gameModel3, "strModel");
+
+        this.assertStringValueEquals(model, gameModel1, "strModel");
+        this.assertStringValueEquals(model, gameModel2, "strModel");
+        this.assertStringValueEquals(model, gameModel3, "strModel");
+
+        // assert protected translations
+        this.assertLabelEquals(model, gameModel1, "strProtected");
+        this.assertLabelEquals(model, gameModel2, "strProtected");
+        this.assertLabelEquals(model, gameModel3, "strProtected");
+
+        this.assertStringValueEquals(model, gameModel1, "strProtected");
+        this.assertStringValueEquals(model, gameModel2, "strProtected");
+
+        // gm3 should have its own english value
+        testStringValue(model, gameModel3, "strProtected", "fr", true);
+        testStringValue(model, gameModel3, "strProtected", "en", false);
+
+        // assert inherited
+        this.assertLabelEquals(model, gameModel1, "strInherited");
+        this.assertLabelEquals(model, gameModel2, "strInherited");
+        // gm3 should have its own english label
+        testLabel(model, gameModel3, "strInherited", "fr", true);
+        testLabel(model, gameModel3, "strInherited", "en", false);
+
+        this.assertStringValueEquals(model, gameModel1, "strInherited");
+        this.assertStringValueEquals(model, gameModel2, "strInherited");
+
+        // gm3 should have its english value
+        testStringValue(model, gameModel3, "strInherited", "fr", true);
+        testStringValue(model, gameModel3, "strInherited", "en", false);
+
+        // create german
+        i18nFacade.createLanguage(model.getId(), "de", "Deutsch");
+
+        model =gameModelFacade.find(model.getId());
+
+        Assert.assertNotNull("German is missing in model", model.getLanguageByCode("de"));
+
+        // update some english and german translations
+        VariableDescriptor descriptor = getDescriptor(model, "strModel");
+        descriptor.getLabel().updateTranslation("de", "modelung");
+        descriptor.getLabel().updateTranslation("en", "the Model string");
+        variableDescriptorFacade.update(descriptor.getId(), descriptor);
+
+        descriptor = getDescriptor(model, "strProtected");
+        descriptor.getLabel().updateTranslation("de", "protecterung");
+        descriptor.getLabel().updateTranslation("en", "the protected string");
+        variableDescriptorFacade.update(descriptor.getId(), descriptor);
+
+        descriptor = getDescriptor(model, "strInherited");
+        descriptor.getLabel().updateTranslation("de", "inheriterung");
+        descriptor.getLabel().updateTranslation("en", "the inherited string");
+        variableDescriptorFacade.update(descriptor.getId(), descriptor);
+
+        modelFacade.propagateModel(model.getId());
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+        gameModel3 = gameModelFacade.find(gameModel3.getId());
+
+        i18nFacade.printTranslations(model.getId(), "en", "fr", "de");
+
+        i18nFacade.printTranslations(gameModel1.getId(), "en", "fr", "de");
+        i18nFacade.printTranslations(gameModel2.getId(), "en", "fr", "de");
+        i18nFacade.printTranslations(gameModel3.getId(), "en", "fr", "de");
+
+        Assert.assertNotNull("German is missing in model", model.getLanguageByCode("de"));
+        Assert.assertNotNull("German is missing in gameModel1", gameModel1.getLanguageByCode("de"));
+        Assert.assertNotNull("German is missing in gameModel3", gameModel3.getLanguageByCode("de"));
+        Assert.assertNotNull("German is missing in gameModel3", gameModel3.getLanguageByCode("de"));
+
+
+        // assert internal translations have been overriden by model ones
+        this.assertLabelEquals(model, gameModel1, "strModel");
+        this.assertLabelEquals(model, gameModel2, "strModel");
+        this.assertLabelEquals(model, gameModel3, "strModel");
+
+        this.assertStringValueEquals(model, gameModel1, "strModel");
+        this.assertStringValueEquals(model, gameModel2, "strModel");
+        this.assertStringValueEquals(model, gameModel3, "strModel");
+
+        // assert protected translations
+        this.assertLabelEquals(model, gameModel1, "strProtected");
+        this.assertLabelEquals(model, gameModel2, "strProtected");
+        this.assertLabelEquals(model, gameModel3, "strProtected");
+
+        this.assertStringValueEquals(model, gameModel1, "strProtected");
+        this.assertStringValueEquals(model, gameModel2, "strProtected");
+
+        // gm3 should have its own english value
+        testStringValue(model, gameModel3, "strProtected", "fr", true);
+        testStringValue(model, gameModel3, "strProtected", "en", false);
+        testStringValue(model, gameModel3, "strProtected", "de", true);
+
+        // assert inherited
+        this.assertLabelEquals(model, gameModel1, "strInherited");
+        this.assertLabelEquals(model, gameModel2, "strInherited");
+        // gm3 should have its own english label
+        testLabel(model, gameModel3, "strInherited", "fr", true);
+        testLabel(model, gameModel3, "strInherited", "en", false);
+        testLabel(model, gameModel3, "strInherited", "de", true);
+
+        this.assertStringValueEquals(model, gameModel1, "strInherited");
+        this.assertStringValueEquals(model, gameModel2, "strInherited");
+
+        // gm3 should have its english value
+        testStringValue(model, gameModel3, "strInherited", "fr", true);
+        testStringValue(model, gameModel3, "strInherited", "en", false);
+        testStringValue(model, gameModel3, "strInherited", "de", true);
+
         logger.info("Model created");
+    }
+
+    private void setDescriptorVisibility(GameModel gameModel, String variableName, ModelScoped.Visibility visibility) throws WegasNoResultException {
+        VariableDescriptor descriptor = variableDescriptorFacade.find(gameModel, variableName);
+        descriptor.setVisibility(visibility);
+        variableDescriptorFacade.update(descriptor.getId(), descriptor);
     }
 
     private Team createTeam(Game g, String name) {

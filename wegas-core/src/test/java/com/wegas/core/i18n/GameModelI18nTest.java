@@ -25,10 +25,14 @@ public class GameModelI18nTest extends AbstractArquillianTest {
 
     @Test
     public void testI18n() {
-        GameModelLanguage defaultLanguage = i18nFacade.findLanguageByName(gameModel, "default");
+        GameModelLanguage defaultLanguage = i18nFacade.findLanguageByName(gameModel, "english");
 
         Assert.assertNotNull("No default language", defaultLanguage);
 
-        i18nFacade.createLanguage(gameModel, "en", "english");
+        i18nFacade.createLanguage(gameModel, "fr", "French");
+
+        GameModelLanguage fr = i18nFacade.findLanguageByName(gameModel, "FRENCH");
+
+        Assert.assertNotNull("No French", fr);
     }
 }

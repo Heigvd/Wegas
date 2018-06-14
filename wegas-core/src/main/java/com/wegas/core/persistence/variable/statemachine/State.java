@@ -186,13 +186,21 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
      * @return the script which to execute when this state become the current state
      */
     public Script getOnEnterEvent() {
+        this.touchOnEnterEvent();
         return onEnterEvent;
+    }
+
+    private void touchOnEnterEvent(){
+        if (this.onEnterEvent !=null){
+            this.onEnterEvent.setParent(this, "impact");
+        }
     }
 
     /**
      * @param onEnterEvent
      */
     public void setOnEnterEvent(Script onEnterEvent) {
+        this.touchOnEnterEvent();
         this.onEnterEvent = onEnterEvent;
     }
 

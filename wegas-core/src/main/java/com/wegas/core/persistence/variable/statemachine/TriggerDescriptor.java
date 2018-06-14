@@ -100,9 +100,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return the script to execute when trigger triggers
      */
     public Script getPostTriggerEvent() {
-        if (this.postTriggerEvent != null) {
-            return this.postTriggerEvent;
-        } else {
+        if (this.postTriggerEvent == null) {
             if (this.getStates() != null && this.getStates().size() > 0) {
                 if (this.getStates().size() == 2) {
                     this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
@@ -114,7 +112,21 @@ public class TriggerDescriptor extends StateMachineDescriptor {
                 this.postTriggerEvent = null;
             }
         }
+        this.touchPostTriggerEvent();
         return postTriggerEvent;
+    }
+
+
+    private void touchTriggerEvent(){
+        if (this.triggerEvent != null){
+            this.triggerEvent.setParent(this, "condition");
+        }
+    }
+
+    private void touchPostTriggerEvent(){
+        if (this.postTriggerEvent != null){
+            this.postTriggerEvent.setParent(this, "impact");
+        }
     }
 
     /**
@@ -124,6 +136,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     public void setPostTriggerEvent(Script postTriggerEvent) {
         this.postTriggerEvent = postTriggerEvent;
+        touchPostTriggerEvent();
         //this.buildStateMachine();
     }
 
@@ -133,9 +146,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return condition for trigger to triggers
      */
     public Script getTriggerEvent() {
-        if (this.triggerEvent != null) {
-            return this.triggerEvent;
-        } else {
+        if (this.triggerEvent == null) {
             if (this.getStates() != null && this.getStates().size() > 0
                     && this.getStates().get(1L).getTransitions() != null
                     && this.getStates().get(1L).getTransitions().size() > 0) {
@@ -144,6 +155,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
                 this.triggerEvent = null;
             }
         }
+        this.touchTriggerEvent();
         return triggerEvent;
     }
 
@@ -167,6 +179,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     public void setTriggerEvent(Script triggerEvent) {
         this.triggerEvent = triggerEvent;
+        this.touchTriggerEvent();
         //this.buildStateMachine();
     }
 

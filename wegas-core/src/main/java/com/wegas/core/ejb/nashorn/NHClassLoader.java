@@ -43,7 +43,7 @@ public class NHClassLoader extends ClassLoader {
             logger.trace("LOAD {}", loadClass);
             return loadClass;
         } catch (ClassNotFoundException ex) {
-            logger.error("LOAD ERROR {}", name);
+            logger.trace("LOAD ERROR {}", name);
             throw ex;
         }
     }

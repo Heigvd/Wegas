@@ -14,7 +14,9 @@ import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +101,16 @@ public class TextInstance extends VariableInstance implements Searchable {
      */
     @JsonProperty
     public void setValue(String value) {
-        this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build("def", value)));
+        VariableDescriptor desc = this.findDescriptor();
+        String lang = "en";
+        if (desc != null && desc.getGameModel() != null) {
+            List<GameModelLanguage> languages = desc.getGameModel().getRawLanguages();
+            if (languages != null && !languages.isEmpty()) {
+                lang = languages.get(0).getCode();
+            }
+        }
+
+        this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build(lang, value)));
     }
 
     @Override

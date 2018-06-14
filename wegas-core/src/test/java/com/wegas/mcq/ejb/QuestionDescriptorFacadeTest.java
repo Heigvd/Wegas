@@ -91,10 +91,11 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         QuestionDescriptor question = createQuestion(scenario.getId(), "question", null);
 
-        ChoiceDescriptor choice = createChoice(question, "choice", null, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);"))
-        );
+        Result r = new Result("result");
+
+        r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);"));
+
+        ChoiceDescriptor choice = createChoice(question, "choice", null, "result",r);
 
         questionDescriptorFacade.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
         assertEquals(10.0, ((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0.1);
@@ -146,16 +147,14 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = createQuestion(scenario.getId(), "question",
                 null);
 
+        Result r1 = new Result("result");
+        r1.setImpact(new Script("Variable.find(gameModel, \"x\").add(self, 1);"));
         // but each choice is only selectable once
-        ChoiceDescriptor choice1 = createChoice(question, "choice1", 1, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
-        );
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", 1, "result",r1);
 
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", 1, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
-        );
+        Result r2 = new Result("result");
+        r2.setImpact(new Script("Variable.find(gameModel, \"x\").add(self, 1);"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", 1, "result", r2);
 
         assertQuestion(question.getId(), player, false);
         assertChoice(choice1.getId(), player, false, false);
@@ -204,15 +203,14 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = createQuestion(scenario.getId(), "question", 2);
 
         // but choices are unlimited
-        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
-        );
 
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
-        );
+        Result r1 = new Result("result");
+        r1.setImpact(new Script("Variable.find(gameModel, \"x\").add(self, 1);"));
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result",r1);
+
+        Result r2 = new Result("result");
+        r1.setImpact(new Script("Variable.find(gameModel, \"x\").add(self, 1);"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", r2);
 
         assertQuestion(question.getId(), player, false);
         assertChoice(choice1.getId(), player, false, false);
@@ -269,11 +267,13 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         QuestionDescriptor question = createCbxQuestion(scenario.getId(), "cbxQuestion", null, null);
 
-        ChoiceDescriptor choice1 = createChoice(question, "testChoice1", null, "result1",
-                new Result("result1", new Script("Variable.find(gameModel, \"mynumber1\").setValue(self, 10);")));
+        Result r1 = new Result("result1");
+        r1.setImpact(new Script("Variable.find(gameModel, \"mynumber1\").setValue(self, 10);"));
+        ChoiceDescriptor choice1 = createChoice(question, "testChoice1", null, "result1", r1);
 
-        ChoiceDescriptor choice2 = createChoice(question, "testChoice2", null, "result1",
-                new Result("result1", null, new Script("Variable.find(gameModel, \"mynumber2\").setValue(self, 50);")));
+        Result r2 = new Result("result1");
+        r2.setIgnorationImpact(new Script("Variable.find(gameModel, \"mynumber2\").setValue(self, 50);"));
+        ChoiceDescriptor choice2 = createChoice(question, "testChoice2", null, "result1", r2);
 
         login(user);
         questionDescriptorFacade.selectChoice(choice1.getId(), player.getId());
@@ -403,8 +403,9 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         QuestionDescriptor question = createQuestion(scenario.getId(), "question", null);
 
-        ChoiceDescriptor choice = createChoice(question, "testChoice", null, "result",
-                new Result("result", new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);")));
+        Result r =new Result("result");
+        r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);"));
+        ChoiceDescriptor choice = createChoice(question, "testChoice", null, "result", r);
 
         this.wipeEmCache();
 

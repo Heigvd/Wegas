@@ -128,49 +128,48 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     public Message() {
     }
 
-    /**
+    /*
      *
      * @param from
      * @param subject
      * @param body
-     */
     public Message(String from, String subject, String body) {
         this(from, subject, body, null, null, null);
-    }
+    }*/
 
-    /**
+    /*
      *
      * @param from
      * @param subject
      * @param body
      * @param attachments
-     */
+     *
     public Message(String from, String subject, String body, List<String> attachments) {
         this(from, subject, body, null, null, attachments);
-    }
+    }*/
 
-    /**
+    /*
      *
      * @param from
      * @param subject
      * @param body
      * @param date
-     */
+     *
     public Message(String from, String subject, String body, String date) {
         this(from, subject, body, date, null, null);
-    }
+    }*/
 
-    /**
+    /*
      *
      * @param from
      * @param subject
      * @param body
      * @param date
      * @param attachments
-     */
+     *
     public Message(String from, String subject, String body, String date, List<String> attachments) {
         this(from, subject, body, date, null, attachments);
-    }
+    }*/
 
     /**
      *
@@ -180,17 +179,18 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
      * @param date
      * @param token
      * @param attachments
+     * @param lang
      */
-    public Message(String from, String subject, String body, String date, String token, List<String> attachments) {
-        this.from = TranslatableContent.build("def", from);
-        this.subject = TranslatableContent.build("def", subject);
-        this.date = TranslatableContent.build("def", date);
-        this.body = TranslatableContent.build("def", body);
+    public Message(String from, String subject, String body, String date, String token, List<String> attachments, String lang) {
+        this.from = TranslatableContent.build(lang, from);
+        this.subject = TranslatableContent.build(lang, subject);
+        this.date = TranslatableContent.build(lang, date);
+        this.body = TranslatableContent.build(lang, body);
         this.token = token;
         if (attachments != null) {
             for (String strA : attachments) {
                 Attachment a = new Attachment();
-                a.setFile(TranslatableContent.build("def", strA));
+                a.setFile(TranslatableContent.build(lang, strA));
                 this.attachments.add(a);
             }
         }

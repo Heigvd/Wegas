@@ -301,8 +301,8 @@ public class SerializationTest {
         InboxInstance inboxI = new InboxInstance();
         inboxI.setDefaultDescriptor(inboxD);
         inboxD.setDefaultInstance(inboxI);
-        Message msg1 = new Message("FROM", "SUBJECT", "CONTENT");
-        Message msg2 = new Message("FROM", "SUBJECT", "CONTENT");
+        Message msg1 = new Message("FROM", "SUBJECT", "CONTENT", "DATE", null, null, "en");
+        Message msg2 = new Message("FROM", "SUBJECT", "CONTENT", "DATE", null, null, "en");
         msg1.setInboxInstance(inboxI);
         msg2.setInboxInstance(inboxI);
         inboxI.addMessage(msg1);

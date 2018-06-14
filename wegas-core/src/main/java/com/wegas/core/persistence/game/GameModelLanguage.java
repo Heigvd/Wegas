@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
@@ -23,6 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 /**
@@ -59,6 +61,10 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     @WegasEntityProperty
     private String code;
 
+    @JsonIgnore
+    @Transient
+    private String refName;
+
     /**
      * Language name to display
      */
@@ -85,7 +91,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
 
     @Override
     public ModelScoped.Visibility getInheritedVisibility() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.gameModel.getInheritedVisibility();
     }
 
     @Override
@@ -115,7 +121,23 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     }
 
     public void setCode(String code) {
-        this.code = code;
+        if (this.refName != null) {
+            this.code = refName;
+            this.refName = null;
+        } else {
+            this.code = code;
+        }
+    }
+
+    @JsonIgnore
+    public String getRefName() {
+        return refName;
+    }
+
+    @JsonProperty
+    public void setRefName(String refName) {
+        this.refName = refName;
+        this.code = refName;
     }
 
     public String getLang() {

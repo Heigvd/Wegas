@@ -126,7 +126,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
                 = @Column(name = "ignoration_content")),
-        @AttributeOverride(name = "lang", column
+        @AttributeOverride(name = "language", column
                 = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorI.class)
@@ -139,22 +139,6 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     @JsonBackReference
     private ChoiceDescriptor choiceDescriptor;
 
-    /**
-     * This link is here so the reference is updated on remove.
-     */
-    /*
-      @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
-      @JsonIgnore
-      private CurrentResult currentResult;
-     */
-    /**
-     * This field is here so deletion will be propagated to replies.
-     */
-    /*
-    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Replies replies;
-     */
     /**
      *
      */
@@ -177,22 +161,6 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     public Result(String name, TranslatableContent label) {
         this.name = name;
         this.label = label;
-    }
-
-    public Result(String name, Script impact) {
-        this(name, impact, null);
-    }
-
-    /**
-     *
-     * @param name
-     * @param impact
-     * @param ignorationImpact
-     */
-    public Result(String name, Script impact, Script ignorationImpact) {
-        this(name);
-        this.impact = impact;
-        this.ignorationImpact = ignorationImpact;
     }
 
     @Override
@@ -268,6 +236,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @return the impact
      */
     public Script getImpact() {
+        this.touchImpact();
         return impact;
     }
 
@@ -276,6 +245,13 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     public void setImpact(Script impact) {
         this.impact = impact;
+        this.touchImpact();
+    }
+
+    private void touchImpact(){
+        if (this.impact != null) {
+            this.impact.setParent(this, "impact");
+        }
     }
 
     /**
@@ -299,6 +275,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @return the impact
      */
     public Script getIgnorationImpact() {
+        this.touchIgnorationImpact();
         return ignorationImpact;
     }
 
@@ -307,6 +284,13 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     public void setIgnorationImpact(Script impact) {
         this.ignorationImpact = impact;
+        this.touchIgnorationImpact();
+    }
+
+    private void touchIgnorationImpact(){
+        if (this.ignorationImpact!=null){
+            this.ignorationImpact.setParent(this, "ign");
+        }
     }
 
     /**

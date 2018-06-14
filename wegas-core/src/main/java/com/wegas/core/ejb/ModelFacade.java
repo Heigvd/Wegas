@@ -147,7 +147,7 @@ public class ModelFacade {
                 allGameModels.add(0, model); // add model in first position
 
                 /*
-                 * Detect language to embed in the model
+                 * Detect languages to embed in the model
                  * * * * * * * * * * * * * * * * * * * * *
                  *  Select all different languages from scenarios and embed them in the model
                  *
@@ -169,7 +169,7 @@ public class ModelFacade {
                 // make sure the model contains all languages
                 for (String languageCode : translationSources.keySet()) {
 
-                    if (model.getLanguageByCode(languageCode) ==null) {
+                    if (model.getLanguageByCode(languageCode) == null) {
                         GameModelLanguage lang = translationSources.get(languageCode).get(0).getLanguageByCode(languageCode);
                         logger.info("Create missing language in model : {}", lang);
                         i18nFacade.createLanguage(model, lang.getCode(), lang.getLang());
@@ -179,8 +179,8 @@ public class ModelFacade {
                     // make sure all language sharing the same code share the same refId
                     String refId = model.getLanguageByCode(languageCode).getRefId();
 
-                    for (GameModel gameModel :translationSources.get(languageCode)){
-                        gameModel.getLanguageByCode(languageCode).setRefId(refId);
+                    for (GameModel gameModel : translationSources.get(languageCode)) {
+                        gameModel.getLanguageByCode(languageCode).forceRefId(refId);
                     }
                 }
 
@@ -312,11 +312,11 @@ public class ModelFacade {
                 } while (restart);
 
                 //
-                for (Entry<String, List<GameModel>> entry : translationSources.entrySet()){
+                for (Entry<String, List<GameModel>> entry : translationSources.entrySet()) {
                     String languageCode = entry.getKey();
                     List<GameModel> gms = entry.getValue();
 
-                    if (!gms.isEmpty() && !gms.contains(model)){
+                    if (!gms.isEmpty() && !gms.contains(model)) {
                         // this language was not in the model: import translations
                         MergeHelper.importTranslations(model, gms.get(0), languageCode, i18nFacade);
                     }
@@ -563,6 +563,34 @@ public class ModelFacade {
                     variableDescriptorFacade.reviveItems(scenario, scenario, false);
                     gameModelFacade.reset(scenario);
                     this.registerPagesPropagates(scenario);
+                }
+
+                List<GameModel> allGameModels = new ArrayList<>();
+                allGameModels.add(model);
+                allGameModels.addAll(scenarios);
+
+                Map<String, List<GameModel>> translationSources = new HashMap<>();
+
+                // go through all languages from all scenarios
+                for (GameModel gameModel : allGameModels) {
+                    for (GameModelLanguage gml : gameModel.getLanguages()) {
+                        translationSources.putIfAbsent(gml.getCode(), new ArrayList<>());
+                        List<GameModel> gmRef = translationSources.get(gml.getCode());
+                        gmRef.add(gameModel);
+                    }
+                }
+
+                for (Entry<String, List<GameModel>> entry : translationSources.entrySet()) {
+                    String languageCode = entry.getKey();
+                    List<GameModel> gms = entry.getValue();
+
+                    if (gms.contains(model)) {
+                        for (GameModel scen : gms) {
+                            if (scen.getType().equals(GmType.SCENARIO)) {
+                                MergeHelper.importTranslations(scen, model, languageCode, i18nFacade);
+                            }
+                        }
+                    }
                 }
 
                 this.syncRepository(model);

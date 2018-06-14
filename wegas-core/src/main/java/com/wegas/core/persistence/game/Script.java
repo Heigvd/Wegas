@@ -10,12 +10,17 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.Searchable;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Transient;
 
 /**
  *
@@ -23,19 +28,33 @@ import java.util.List;
  */
 @Embeddable
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class Script implements Serializable, Searchable {
+public class Script implements Serializable, Searchable, Mergeable {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
     @Lob
+    @WegasEntityProperty
     private String content = "";
     /**
      *
      */
     @JsonIgnore
-    private String lang = "JavaScript";
+    @WegasEntityProperty
+    @Column(name = "lang")
+    private String language = "JavaScript";
+
+    @Transient
+    @JsonIgnore
+    private Mergeable parent;
+
+
+    @Transient
+    @JsonIgnore
+    private String refId;
+
+
 
     /**
      *
@@ -57,7 +76,7 @@ public class Script implements Serializable, Searchable {
      * @param content
      */
     public Script(String language, String content) {
-        this.lang = language;
+        this.language = language;
         this.content = content;
     }
 
@@ -84,7 +103,7 @@ public class Script implements Serializable, Searchable {
      * @return the language
      */
     public String getLanguage() {
-        return this.lang;
+        return this.language;
     }
 
     /**
@@ -92,11 +111,50 @@ public class Script implements Serializable, Searchable {
      * @param language
      */
     public void setLanguage(String language) {
-        this.lang = language;
+        this.language = language;
+    }
+
+    public Mergeable getParent() {
+        return parent;
+    }
+
+    public void setParent(Mergeable parent, String refId) {
+        this.parent = parent;
+        if (parent != null) {
+            this.setRefId(parent.getRefId() + refId);
+        } else {
+            this.setRefId(refId);
+        }
+    }
+
+    @Override
+    public String getRefId() {
+        return refId;
+    }
+
+    @Override
+    public void setRefId(String refId) {
+        this.refId = refId;
+    }
+
+    @Override
+    public boolean isProtected() {
+        if (this.getParent() != null){
+            return this.getParent().isProtected();
+        }
+        return false;
+    }
+
+    @Override
+    public ModelScoped.Visibility getInheritedVisibility() {
+        if (this.getParent() != null){
+            return this.getParent().getInheritedVisibility();
+        }
+        return ModelScoped.Visibility.PRIVATE; // ???
     }
 
     @Override
     public String toString() {
-        return "ScriptEntity(" + "language:" + this.lang + ", content:{\n" + this.content + "\n})";
+        return "ScriptEntity(" + "language:" + this.language + ", content:{\n" + this.content + "\n})";
     }
 }
