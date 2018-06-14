@@ -1,7 +1,7 @@
 import { Statement, isExpressionStatement } from '@babel/types';
-import generate from 'babel-generator';
+import generate from '@babel/generator';
 import * as React from 'react';
-import { Impact } from './Impact';
+import { ExpressionStatement } from './ExpressionStatement';
 
 interface StatementsProps {
   statements: Statement[];
@@ -13,7 +13,7 @@ export function Statements({ statements, onChange }: StatementsProps) {
       {statements.map(
         (s, i) =>
           isExpressionStatement(s) ? (
-            <Impact
+            <ExpressionStatement
               stmt={s}
               key={i}
               onChange={stmt => {

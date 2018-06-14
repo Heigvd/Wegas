@@ -1,10 +1,10 @@
 import generate from '@babel/generator';
-import { Statement, program } from '@babel/types';
 import { parse } from '@babel/parser';
+import { program, Statement } from '@babel/types';
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
+import { IconButton } from '../../../../Components/Button/IconButton';
 import SrcEditor from '../../SrcEditor';
-import { FontAwesome } from '../../Views/FontAwesome';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { Statements } from './Statements';
@@ -52,7 +52,7 @@ export class Script extends React.Component<ScriptProps, ScriptState> {
   }
   state: ScriptState = {
     oldProps: this.props,
-    srcMode: true,
+    srcMode: false,
     error: undefined,
   };
   toggleSrc = () => {
@@ -74,9 +74,11 @@ export class Script extends React.Component<ScriptProps, ScriptState> {
           {({ labelNode }) => (
             <>
               {labelNode}
-              <button onClick={this.toggleSrc}>
-                <FontAwesome icon="code" />
-              </button>
+              <IconButton
+                icon="code"
+                pressed={this.state.srcMode}
+                onClick={this.toggleSrc}
+              />
               {this.state.srcMode ? (
                 <div
                   style={{
