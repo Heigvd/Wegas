@@ -81,38 +81,34 @@ export default class StringInput extends React.Component<
               return (
                 <>
                   {labelNode}
-                  <div>
-                    <textarea
-                      className={inputStyle}
-                      id={inputId}
-                      value={undefToEmpty(this.state.value)}
-                      rows={view.rows}
-                      onChange={this.onChange}
-                      placeholder={view.placeholder}
-                      onBlur={this.onChange}
-                      disabled={view.disabled}
-                      readOnly={view.readOnly}
-                    />
-                  </div>
-                </>
-              );
-            }
-            return (
-              <>
-                {labelNode}
-                <div>
-                  <input
-                    type="text"
+                  <textarea
                     className={inputStyle}
                     id={inputId}
                     value={undefToEmpty(this.state.value)}
+                    rows={view.rows}
                     onChange={this.onChange}
                     placeholder={view.placeholder}
                     onBlur={this.onChange}
                     disabled={view.disabled}
                     readOnly={view.readOnly}
                   />
-                </div>
+                </>
+              );
+            }
+            return (
+              <>
+                {labelNode}
+                <input
+                  type="text"
+                  className={inputStyle}
+                  id={inputId}
+                  value={undefToEmpty(this.state.value)}
+                  onChange={this.onChange}
+                  placeholder={view.placeholder}
+                  onBlur={this.onChange}
+                  disabled={view.disabled}
+                  readOnly={view.readOnly}
+                />
               </>
             );
           }}

@@ -48,8 +48,6 @@ const html = new HtmlSerial({
 
 const plugins = generated.map(g => g.plugin);
 
-const EMPTY_VALUE = html.deserialize('<p/>');
-
 interface HtmlProps extends WidgetProps.BaseProps<CommonView & LabeledView> {
   value?: string;
 }
@@ -66,7 +64,7 @@ export default class Html extends React.Component<HtmlProps, HtmlState> {
     if (state.rawValue !== nextProps.value) {
       return {
         oldProps: nextProps,
-        value: html.deserialize(nextProps.value || ''),
+        value: html.deserialize(nextProps.value || '<p></p>'),
         rawValue: nextProps.value,
       };
     }
@@ -74,8 +72,8 @@ export default class Html extends React.Component<HtmlProps, HtmlState> {
   }
   state = {
     oldProps: this.props,
-    rawValue: '',
-    value: EMPTY_VALUE,
+    rawValue: this.props.value || '<p></p>',
+    value: html.deserialize(this.props.value || '<p></p>'),
   };
   onChange = ({ value }: Change) => {
     if (this.state.value.document !== value.document) {

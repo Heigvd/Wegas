@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { hasBlock, Generated, ToolbarButtonProps, blockStack } from './tools';
-import { FontAwesome } from '../../../Views/FontAwesome';
+import { IconButton } from '../../../../../Components/Button/IconButton';
 
 export function bulletList(): Generated {
   return {
@@ -37,8 +37,9 @@ export function bulletList(): Generated {
     Button({ value, onChange }: ToolbarButtonProps) {
       const enabled = hasBlock(value, 'list_ul');
       return (
-        <button
-          style={{ opacity: Number(enabled) + 0.5 }}
+        <IconButton
+          icon="list-ul"
+          pressed={enabled}
           onMouseDown={event => {
             event.preventDefault();
             onChange(
@@ -54,9 +55,7 @@ export function bulletList(): Generated {
                 .focus(),
             );
           }}
-        >
-          <FontAwesome icon="list-ul" />
-        </button>
+        />
       );
     },
   };

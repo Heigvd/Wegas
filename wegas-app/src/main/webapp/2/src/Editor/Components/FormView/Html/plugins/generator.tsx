@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Value, Change } from 'slate';
-import { FontAwesome } from '../../../Views/FontAwesome';
 import { IconProp } from '@fortawesome/fontawesome';
 import {
   Generated,
@@ -9,6 +8,7 @@ import {
   ToolbarButtonProps,
   blockStack,
 } from './tools';
+import { IconButton } from '../../../../../Components/Button/IconButton';
 
 export function genMark({
   render,
@@ -54,8 +54,9 @@ export function genMark({
     }) {
       const enabled = hasMark(value, mark);
       return (
-        <button
-          style={{ opacity: Number(enabled) + 0.5 }}
+        <IconButton
+          icon={buttonIcon}
+          pressed={enabled}
           onMouseDown={event => {
             event.preventDefault();
             onChange(
@@ -65,9 +66,7 @@ export function genMark({
                 .focus(),
             );
           }}
-        >
-          <FontAwesome icon={buttonIcon} />
-        </button>
+        />
       );
     },
   };
@@ -122,8 +121,9 @@ export function genBlock({
     }: ToolbarButtonProps) {
       const enabled = hasBlock(value, block);
       return (
-        <button
-          style={{ opacity: Number(enabled) + 0.5 }}
+        <IconButton
+          icon={buttonIcon}
+          pressed={enabled}
           onMouseDown={event => {
             event.preventDefault();
             onChange(
@@ -133,9 +133,7 @@ export function genBlock({
                 .focus(),
             );
           }}
-        >
-          <FontAwesome icon={buttonIcon} />
-        </button>
+        />
       );
     },
   };

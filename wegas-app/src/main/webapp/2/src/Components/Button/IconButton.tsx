@@ -4,15 +4,17 @@ import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { FontAwesomeProps } from '@fortawesome/react-fontawesome';
 
 interface Props extends FontAwesomeProps {
-  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onMouseDown?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   label?: React.ReactNode;
   disabled?: boolean;
   pressed?: boolean;
   id?: string;
   tooltip?: string;
+  tabIndex?: number;
   prefixedLabel?: boolean;
 }
-const activeStyle = css({ textShadow: '0 0 4px' });
+const activeStyle = css({ opacity: 1 });
 
 const shapeStyle = css({
   width: 'auto',
@@ -27,7 +29,7 @@ const shapeStyle = css({
   textAlign: 'center',
   display: 'inline-block',
   color: 'inherit',
-  opacity: 0.7,
+  opacity: 0.5,
   ':hover,:focus': {
     opacity: 1,
     outline: 'none',
@@ -42,8 +44,10 @@ const disabledStyle = css({
 export function IconButton(props: Props) {
   const {
     onClick,
+    onMouseDown,
     disabled,
     tooltip,
+    tabIndex,
     pressed,
     label,
     prefixedLabel,
@@ -54,11 +58,17 @@ export function IconButton(props: Props) {
     <button
       id={id}
       title={tooltip}
+      tabIndex={tabIndex}
       aria-label={tooltip}
       // role="button"
       // tabIndex={0}
       aria-pressed={pressed}
-      onClick={event => !disabled && onClick(event)}
+      onClick={onClick != null ? event => !disabled && onClick(event) : onClick}
+      onMouseDown={
+        onMouseDown != null
+          ? event => !disabled && onMouseDown(event)
+          : onMouseDown
+      }
       className={cx(shapeStyle, {
         [disabledStyle]: Boolean(disabled),
         [activeStyle]: Boolean(pressed),
