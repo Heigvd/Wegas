@@ -22,7 +22,7 @@ const listElementContainerStyle = css({
 const listElementStyle = css({
   flex: 1,
   // Reduce vertical space between array elements:
-  '& div': {
+  '& > div': {
     marginTop: 0,
   },
 });
@@ -86,16 +86,15 @@ function ArrayWidget(props: IArrayProps) {
   function renderChild(child: React.ReactChild, index: number) {
     return (
       <div className={listElementContainerStyle}>
-        <span className={listElementStyle}>{child}</span>
-        <span className={transparentStyle}>
-          {minItems < valueLength && !disabled ? (
-            <IconButton
-              icon="trash"
-              onClick={() => props.onChildRemove(index)}
-              tooltip="Delete this group"
-            />
-          ) : null}
-        </span>
+        <div className={listElementStyle}>{child}</div>
+        {minItems < valueLength && !disabled ? (
+          <IconButton
+            className={transparentStyle}
+            icon="trash"
+            onClick={() => props.onChildRemove(index)}
+            tooltip="Delete this group"
+          />
+        ) : null}
       </div>
     );
   }

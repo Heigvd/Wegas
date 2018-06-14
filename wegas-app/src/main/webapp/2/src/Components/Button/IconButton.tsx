@@ -52,6 +52,7 @@ export function IconButton(props: Props) {
     label,
     prefixedLabel,
     id,
+    className,
     ...other
   } = props;
   return (
@@ -72,7 +73,7 @@ export function IconButton(props: Props) {
       className={cx(shapeStyle, {
         [disabledStyle]: Boolean(disabled),
         [activeStyle]: Boolean(pressed),
-      })}
+      }, className)}
     >
       {prefixedLabel && label}
       <FontAwesome {...other} />
