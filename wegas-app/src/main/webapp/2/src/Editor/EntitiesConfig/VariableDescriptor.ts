@@ -1,5 +1,6 @@
 import { ConfigurationSchema } from '../editionConfig';
 import { config as variableInstanceConfig } from './VariableInstance';
+
 const wegasEntityConfig: ConfigurationSchema<IWegasEntity> = {
   '@class': {
     type: 'string',

@@ -7,7 +7,7 @@ import { entityIs } from '../../data/entities';
 export const config: ConfigurationSchema<IChoiceDescriptor> = {
   ...variableDescriptorConfig,
   description: {
-    type: ['null', 'string'],
+    type: ['null', 'object'],
     view: {
       type: 'i18nhtml',
       label: 'Description',

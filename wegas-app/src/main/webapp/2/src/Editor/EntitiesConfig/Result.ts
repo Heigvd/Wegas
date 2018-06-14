@@ -69,7 +69,7 @@ export const config: ConfigurationSchema<IResult> = {
     index: 11,
   },
   ignorationAnswer: {
-    type: ['string', 'null'],
+    type: ['object', 'null'],
     visible: function(_val: any, formVal: {}, path: string[]) {
       path.pop(); // remove current key
       const result: IResult = path.reduce((prev: any, v) => prev[v], formVal);
