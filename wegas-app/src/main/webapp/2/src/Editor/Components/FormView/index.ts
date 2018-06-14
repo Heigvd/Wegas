@@ -9,6 +9,7 @@ import Select from './Select';
 import ArrayWidget from './Array';
 import Html from './Html';
 import { Script } from './Script';
+import { TreeVariableSelect } from './TreeVariableSelect';
 import translatable from './translatable';
 
 const DEFINED_VIEWS = {
@@ -25,17 +26,17 @@ const DEFINED_VIEWS = {
   html: Html,
   i18nhtml: translatable(Html),
   script: Script,
+  variableselect: TreeVariableSelect,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 
-export type ViewTypes = keyof (typeof DEFINED_VIEWS);
+type ViewTypes = keyof (typeof DEFINED_VIEWS);
 type PropsType<T> = T extends React.ComponentType<infer U>
   ? U
   : T extends (p: infer P) => any ? P : never;
-
-export type View<P extends ViewTypes> = PropsType<
-  (typeof DEFINED_VIEWS)[P]
-> extends { view: infer V }
+type View<P extends ViewTypes> = PropsType<(typeof DEFINED_VIEWS)[P]> extends {
+  view: infer V;
+}
   ? V & { type?: P }
   : { type?: P };
 
