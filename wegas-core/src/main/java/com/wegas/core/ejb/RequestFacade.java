@@ -138,17 +138,19 @@ public class RequestFacade {
      * @param player
      */
     public void commit(Player player) {
-        /*
-         * Flush is required to triggered EntityListener's lifecycles events which populate
-         * requestManager touched (deleted, updated and so on) entities
-         */
-        EntityManager em = requestManager.getEntityManager();
+        if (!requestManager.isTestEnv()){
+            /*
+             * Flush is required to triggered EntityListener's lifecycles events which populate
+             * requestManager touched (deleted, updated and so on) entities
+             */
+            EntityManager em = requestManager.getEntityManager();
 
-        requestManager.getEntityManager().flush();
+            requestManager.getEntityManager().flush(); 
 
-        if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
-            stateMachineFacade.runStateMachines(player);
-            em.flush();
+            if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
+                stateMachineFacade.runStateMachines(player);
+                em.flush();
+            }
         }
     }
 
