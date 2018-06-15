@@ -9,11 +9,11 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
-        "@babel/polyfill": "^7.0.0-beta.47",
+        "@babel/polyfill": "^7.0.0-beta.51",
         "chartist": "^0.11.0",
         "prop-types": "^15.6.1",
-        "react": "^16.3.0",
-        "react-dom": "^16.3.0",
+        "react": "^16.4.1",
+        "react-dom": "^16.4.1",
         "react-redux": "^5.0.7",
         "react-router-dom": "^4.2.2",
         "react-select": "^1.0.0-rc.10",
@@ -24,9 +24,9 @@
         "updeep": "^1.0.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.0.0-beta.47",
-        "@babel/preset-env": "^7.0.0-beta.47",
-        "@babel/preset-react": "^7.0.0-beta.47",
+        "@babel/core": "^7.0.0-beta.51",
+        "@babel/preset-env": "^7.0.0-beta.51",
+        "@babel/preset-react": "^7.0.0-beta.51",
         "babel-eslint": "^8.2.2",
         "babel-loader": "^8.0.0-beta.3",
         "babel-preset-react": "^6.24.1",
@@ -42,8 +42,8 @@
         "less-loader": "^4.1.0",
         "react-hot-loader": "^4.0.1",
         "style-loader": "^0.21.0",
-        "webpack": "^4.8.3",
-        "webpack-cli": "^2.1.3",
+        "webpack": "^4.12.0",
+        "webpack-cli": "^3.0.7",
         "webpack-dev-server": "^3.1.4"
     },
     "description": "",
