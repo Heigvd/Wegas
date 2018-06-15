@@ -40,7 +40,7 @@ export class Combobox<T> extends React.Component<ComboboxProps<T>> {
     super(props);
     this.handleChange = this.handleChange.bind(this);
   }
-  handleChange(item: T | null, stateAndHelpers: ControllerStateAndHelpers) {
+  handleChange(item: T | null, stateAndHelpers: ControllerStateAndHelpers<T>) {
     if (this.props.clearOnSelect) {
       stateAndHelpers.clearSelection();
     }
@@ -52,14 +52,15 @@ export class Combobox<T> extends React.Component<ComboboxProps<T>> {
         isOpen={this.props.isOpen}
         itemToString={this.props.itemToValue}
         onChange={this.handleChange}
-        render={({
+      >
+        {({
           getInputProps,
           getLabelProps,
           isOpen,
           highlightedIndex,
           inputValue,
           getItemProps,
-          getButtonProps,
+          getToggleButtonProps,
           openMenu,
         }) => {
           return (
@@ -72,7 +73,7 @@ export class Combobox<T> extends React.Component<ComboboxProps<T>> {
                     onFocus: () => this.props.openOnFocus && openMenu(),
                   })}
                 />
-                <button {...getButtonProps()}>
+                <button {...getToggleButtonProps()}>
                   <SelectIcon isOpen={isOpen} />
                 </button>
               </span>
@@ -100,7 +101,7 @@ export class Combobox<T> extends React.Component<ComboboxProps<T>> {
             </span>
           );
         }}
-      />
+      </Downshift>
     );
   }
 }
