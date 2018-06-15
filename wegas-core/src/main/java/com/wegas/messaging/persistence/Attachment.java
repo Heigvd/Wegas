@@ -163,7 +163,7 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
                     if (currentToken == JsonToken.VALUE_STRING) {
                         String strItem = p.getText();
                         Attachment item = new Attachment();
-                        item.setFile(TranslatableContent.build("def", strItem));
+                        item.setFile(TranslatableContent.build("en", strItem));
                         items.add(item);
                     } else if (currentToken == JsonToken.START_OBJECT) {
                         Attachment item = JacksonMapperProvider.getMapper().readValue(p, Attachment.class);
@@ -182,7 +182,7 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
                 TypeDeserializer typeDeserializer) throws IOException {
             JsonToken currentToken = p.currentToken();
             if (currentToken == JsonToken.VALUE_STRING) {
-                return TranslatableContent.build("def", p.getText());
+                return TranslatableContent.build("en", p.getText());
             }
             return super.deserializeWithType(p, ctxt, typeDeserializer);
         }

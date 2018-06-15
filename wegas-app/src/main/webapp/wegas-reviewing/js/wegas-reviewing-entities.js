@@ -320,12 +320,18 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             parentDescriptorId: {
                 type: NUMBER,
                 optional: true,
-                _inputex: {
-                    _type: HIDDEN
+                view: {
+                    type: HIDDEN
                 }
             }
         },
         EDITMENU: {
+            editBtn: {
+                index: 0,
+                cfg:{
+                    type: 'EditEntityButton'
+                }
+            },
             addGradeBtn: {
                 index: 1,
                 cfg: {

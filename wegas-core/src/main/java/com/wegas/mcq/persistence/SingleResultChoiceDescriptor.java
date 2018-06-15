@@ -27,7 +27,9 @@ public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
     @PrePersist
     public void prePersist2() {
         if (this.getResults().isEmpty()) {
-            this.addResult(new Result("Default"));                              // When a choice is created, automatically add a result by default
+            Result result = new Result();
+            result.setName("default");
+            this.addResult(result);
         }
     }
 }

@@ -428,7 +428,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     index: 1,
                     cfg: {
                         type: BUTTON,
-                        label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
+                        label: "Add",
                         plugins: [{
                                 fn: "EditEntityArrayFieldAction",
                                 cfg: {

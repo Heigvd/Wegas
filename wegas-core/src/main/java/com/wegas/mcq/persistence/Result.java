@@ -145,24 +145,6 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     public Result() {
     }
 
-    /**
-     * @param name
-     */
-    public Result(String name) {
-        this.label = new TranslatableContent();
-        this.label.getModifiableTranslations().put("def", name);
-        this.name = name;
-    }
-
-    /**
-     * @param name
-     * @param label
-     */
-    public Result(String name, TranslatableContent label) {
-        this.name = name;
-        this.label = label;
-    }
-
     @Override
     public Boolean containsAll(final List<String> criterias) {
         return Helper.insensitiveContainsAll(this.getName(), criterias)

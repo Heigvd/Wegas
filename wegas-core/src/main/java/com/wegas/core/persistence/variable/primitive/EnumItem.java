@@ -233,7 +233,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
                     if (currentToken == JsonToken.VALUE_STRING) {
                         String strItem = p.getText();
                         EnumItem item = new EnumItem();
-                        item.setLabel(TranslatableContent.build("def", strItem));
+                        item.setLabel(TranslatableContent.build("en", strItem));
                         item.setName(strItem);
                         items.add(item);
                     } else if (currentToken == JsonToken.START_OBJECT) {
@@ -253,7 +253,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
                 TypeDeserializer typeDeserializer) throws IOException {
             JsonToken currentToken = p.currentToken();
             if (currentToken == JsonToken.VALUE_STRING) {
-                return TranslatableContent.build("def", p.getText());
+                return TranslatableContent.build("en", p.getText());
             }
             return super.deserializeWithType(p, ctxt, typeDeserializer);
         }

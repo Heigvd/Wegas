@@ -93,7 +93,7 @@ YUI.add('wegas-editable', function(Y) {
             form = form || this.constructor.EDITFORM; // And if no form is defined we check if there is a default one defined in the entity
 
             if (!form) {                                                        // If no edit form could be found, we generate one based on the ATTRS parameter.
-                attrCfgs = JSON.parse(JSON.stringify(this.getAttrCfgs()));
+                attrCfgs = this.getAttrCfgs();
                 for (i in attrCfgs) {
                     // if ("value" in attrCfgs[i]) {
                     //     attrCfgs[i]["defaultValue"] = attrCfgs[i].value; // Use the value as default (useful form json object serialization)
@@ -125,17 +125,24 @@ YUI.add('wegas-editable', function(Y) {
                 return entity.get("visibility");
             } else {
                 if (!defaultVisibility) {
+                    var parent;
                     if (this._isInstanceOf(entity, Y.Wegas.persistence.VariableInstance)) {
                         // Default instance should use descriptor visibility
                         if (entity.getDescriptor().get("defaultInstance").get("id") === entity.get("id")) {
                             // it's the default instance
-                            return entity.getDescriptor().get("visibility");
+                            parent = entity.getDescriptor();
                         }
                     } else if (this._isInstanceOf(entity, Y.Wegas.persistence.Result)) {
                         // Choice descriptor visibility
-                        return entity.getChoiceDescriptor().get("visibility")
+                        parent = entity.getChoiceDescriptor();
                     } else if (this._isInstanceOf(entity, Y.Wegas.persistence.EvaluationDescriptorContainer) || this._isInstanceOf(entity, Y.Wegas.persistence.EvaluationDescriptor)) {
-                        return entity.getParentDescriptor().get("visibility");
+                        parent = entity.getParentDescriptor();
+                    }
+                    if (parent){
+                        return parent.get("visibility");
+                    } else {
+                        Y.log("Create new -> ASSUME PRIVATE");
+                        return "PRIVATE";
                     }
                 }
             }

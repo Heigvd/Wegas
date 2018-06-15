@@ -25,6 +25,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.plug(Y.Plugin.TranslationEditor);
             this.plug(Y.Plugin.Injector);
             this.showTable = {};
+            this.ghostLanguages = {};
             var langs = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"),
                 i, count = 0;
             // show first to languages by default
@@ -211,14 +212,17 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 this.add(this.upgrader, 1);
             } else {
                 if (this.upgrader) {
-                    this.handlers.onGmUpgrad && this.handlers.onGmUpgrad.detach();
+                    this.handlers.onGmUpgrade && this.handlers.onGmUpgrade.detach();
                     this.upgrader.remove(true);
                     this.upgrader = null;
                 }
             }
 
+            this.ghostLanguages = {};
             this.editor.set("content", this.genEditorMarkup(this.tree, this.getLanguagesToEdit()));
             this.editor.syncUI();
+            this.showMessage("warn", "Ghost Translations summary: " + JSON.stringify(this.ghostLanguages));
+            Y.log("GHOSTS: " + JSON.stringify(this.ghostLanguages));
         },
         mapASTObjectProperties: function(node) {
             if (node && node.type && node.type === "ObjectExpression") {
@@ -338,6 +342,15 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             return sub;
 
         },
+        detectGhostLanguages: function(languages) {
+            var code;
+            for (var i in languages) {
+                code = languages[i];
+                if (!I18n.findLanguageByCode(code)) {
+                    this.ghostLanguages[code] = (this.ghostLanguages[code] || 0) + 1;
+                }
+            }
+        },
         genEditorMarkup: function(node, languages, level) {
             level = level || 0;
             var child, tr, markup = [], field, i;
@@ -368,6 +381,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                             }
                             var domNode = (type === "html" ? "div" : "span");
                             markup.push("<div class='translatedcontent'>");
+                            this.detectGhostLanguages(Object.keys(tr.value.translations));
                             for (var l in languages) {
                                 markup.push("<div class='translation'>");
                                 markup.push("<div class='translation-title'>");
@@ -385,7 +399,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     "<span class='inline-editor-validate fa fa-check'></span>" +
                                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                                     "</span>",
-                                    "<", domNode ," class='wegas-translation--toolbar'></", domNode,">" +
+                                    "<", domNode, " class='wegas-translation--toolbar'></", domNode, ">" +
                                     "<", domNode, " tabindex='0'");
 
                                 if (type === "wegasurl") {
@@ -404,6 +418,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         } else {
                             field = tr.label || tr.key;
                             markup.push("<div class='translatedcontent'>");
+                            this.detectGhostLanguages(Object.keys(tr.value.get("translations")));
                             for (var l in languages) {
                                 markup.push("<div class='translation'>");
                                 markup.push("<div class='translation-title'>");
@@ -569,6 +584,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         ATTRS: {}
     });
     Y.Wegas.LanguagesManager = LanguagesManager;
+
+
+
     TranslationEditor = Y.Base.create('wegas-translation-editor', Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
             this.handlers = {};

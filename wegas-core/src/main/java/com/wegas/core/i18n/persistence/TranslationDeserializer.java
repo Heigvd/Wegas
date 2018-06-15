@@ -36,7 +36,7 @@ public class TranslationDeserializer extends StdDeserializer<TranslatableContent
     public TranslatableContent deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonToken currentToken = p.currentToken();
         if (currentToken == JsonToken.VALUE_STRING) {
-            return TranslatableContent.build("def", p.getText());
+            return TranslatableContent.build("en", p.getText());
         }
         return JacksonMapperProvider.getMapper().readValue(p, TranslatableContent.class);
     }
@@ -45,12 +45,7 @@ public class TranslationDeserializer extends StdDeserializer<TranslatableContent
     public TranslatableContent deserialize(JsonParser p, DeserializationContext ctxt, TranslatableContent intoValue) throws IOException, JsonProcessingException {
         JsonToken currentToken = p.currentToken();
         if (currentToken == JsonToken.VALUE_STRING) {
-            for (Translation tr : intoValue.getRawTranslations()) {
-                if (tr.getLang().equals("def")) {
-                    tr.setTranslation(p.getText());
-                    return intoValue;
-                }
-            }
+            intoValue.updateTranslation("en", p.getText());
         }
         return super.deserialize(p, ctxt, intoValue);
     }
@@ -59,7 +54,7 @@ public class TranslationDeserializer extends StdDeserializer<TranslatableContent
     public Object deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws IOException {
         JsonToken currentToken = p.currentToken();
         if (currentToken == JsonToken.VALUE_STRING) {
-            return TranslatableContent.build("def", p.getText());
+            return TranslatableContent.build("en", p.getText());
         }
         return super.deserializeWithType(p, ctxt, typeDeserializer);
     }

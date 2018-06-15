@@ -224,6 +224,7 @@ public class InboxInstance extends VariableInstance implements Searchable {
             } catch (CloneNotSupportedException ex) {
             }
         }
+        msg.setAttachments(atts);
 
         this.sendMessage(msg);
         return msg;
