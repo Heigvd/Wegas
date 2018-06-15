@@ -67,7 +67,6 @@ import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -260,8 +259,11 @@ public class SerializationTest {
         choiceD.setQuestion(questionD);
         questionD.addItem(choiceD);
 
-        Result result11 = new Result("R1.1");
-        Result result12 = new Result("R1.2");
+        Result result11 = new Result();
+        result11.setName("R1.1");
+
+        Result result12 = new Result();
+        result12.setName("R1.1");
 
         choiceD.addResult(result11);
         choiceD.addResult(result12);
@@ -270,7 +272,9 @@ public class SerializationTest {
         ChoiceInstance singleChoiceI = new ChoiceInstance();
         singleChoiceI.setDefaultDescriptor(singleResult);
         singleResult.setDefaultInstance(singleChoiceI);
-        Result result21 = new Result("R2.1");
+        Result result21 = new Result();
+        result21.setName("R2.1");
+
         singleResult.addResult(result21);
 
         Reply reply = new Reply();
