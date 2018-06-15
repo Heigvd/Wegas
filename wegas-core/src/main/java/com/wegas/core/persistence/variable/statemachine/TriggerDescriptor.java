@@ -163,10 +163,11 @@ public class TriggerDescriptor extends StateMachineDescriptor {
             // HACK Restore Version Number
             //Long initialStateVersion = this.getStates().get(1L).getVersion();
             //Long finalStateVersion = this.getStates().get(2L).getVersion();
-            entity.setStates(this.getStates());
+
+            //entity.setStates(this.getStates());
             super.merge(entity);
 
-            entity.buildStateMachine();
+            //entity.buildStateMachine();
             //this.getStates().get(1L).setVersion(initialStateVersion);
             //this.getStates().get(2L).setVersion(finalStateVersion);
         } else {

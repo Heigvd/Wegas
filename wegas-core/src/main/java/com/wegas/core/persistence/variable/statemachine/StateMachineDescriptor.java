@@ -95,7 +95,10 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     public void merge(AbstractEntity a) {
         if (a instanceof StateMachineDescriptor) {
             StateMachineDescriptor smDescriptor = (StateMachineDescriptor) a;
-            this.mergeStates(smDescriptor.getStates());
+            if (smDescriptor instanceof TriggerDescriptor == false) {
+                // do not merge states for trigger since it has its own mechanism
+                this.mergeStates(smDescriptor.getStates());
+            }
             super.merge(smDescriptor);
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");

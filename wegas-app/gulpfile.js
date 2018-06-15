@@ -44,6 +44,7 @@ gulp.task("compress-css", ["submodule"], function () {
         "!target/Wegas/wegas-react-form/**",
         "!target/Wegas/2/**",
         "!target/Wegas/wegas-stats/**/*.css",
+        "!target/**/dist/**",
         "!**/*-min.css"],
         {
             base: "target/Wegas"
@@ -73,6 +74,7 @@ gulp.task("compress-js", ["submodule"], function () {
         "!**/*-min.js",
         "!**/gulpfile.js",
         "!**/node_modules/**",
+        "!target/**/dist/**",
         "!target/Wegas/wegas-lobby/**",
         "!target/Wegas/wegas-react-form/**",
         "!target/Wegas/wegas-stats/**",

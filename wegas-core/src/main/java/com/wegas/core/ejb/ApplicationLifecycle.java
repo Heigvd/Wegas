@@ -224,7 +224,10 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
             logger.error("Log Cluster error: {}", ex);
         }
         try {
-            hzInstance.shutdown();
+            String shutdownHook = System.getProperty("hazelcast.shutdownhook.enabled", "true");
+            if ("false".equals(shutdownHook)) {
+                hzInstance.shutdown();
+            }
         } catch (Exception ex) {
             logger.error("HzShutdown Error: {}", ex);
         }
