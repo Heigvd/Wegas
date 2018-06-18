@@ -22,7 +22,6 @@ const content = css({
   height: 0,
   [`.${vertical} > &`]: {
     height: 'auto',
-    width: 0,
   },
 });
 
