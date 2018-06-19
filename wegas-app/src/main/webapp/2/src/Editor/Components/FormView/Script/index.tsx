@@ -101,7 +101,11 @@ export class Script extends React.Component<ScriptProps, ScriptState> {
               ) : (
                 <ScriptBody script={props.value} onChange={props.onChange}>
                   {({ ast, onChange }) => (
-                    <Statements statements={ast} onChange={onChange} />
+                    <Statements
+                      statements={ast}
+                      onChange={onChange}
+                      mode="SET"
+                    />
                   )}
                 </ScriptBody>
               )}

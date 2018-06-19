@@ -18,7 +18,12 @@ const LAYOUTS = {
   shortInline: css({
     display: 'inline-block',
     marginRight: '2em',
+    verticalAlign: 'top',
     maxWidth: '11em',
+  }),
+  inline: css({
+    display: 'inline-block',
+    verticalAlign: 'top',
   }),
 };
 export type CommonView = {
@@ -40,7 +45,7 @@ export function CommonViewContainer({
   view,
 }: CommonViewProps) {
   const error = errorMessage && errorMessage.join(', ');
-  const layout = view.layout ? String(LAYOUTS[view.layout]) : '';
+  const layout = view.layout ? LAYOUTS[view.layout] : '';
   return (
     <div
       className={cx(containerStyle, layout, {

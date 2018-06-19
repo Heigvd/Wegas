@@ -1,21 +1,23 @@
 import { Statement, isExpressionStatement } from '@babel/types';
 import generate from '@babel/generator';
 import * as React from 'react';
-import { ExpressionStatement } from './ExpressionStatement';
+import { ExprStatement } from './ExpressionStatement';
 
 interface StatementsProps {
   statements: Statement[];
   onChange: (statements: Statement[]) => void;
+  mode: 'SET' | 'GET';
 }
-export function Statements({ statements, onChange }: StatementsProps) {
+export function Statements({ statements, onChange, mode }: StatementsProps) {
   return (
     <>
       {statements.map(
         (s, i) =>
           isExpressionStatement(s) ? (
-            <ExpressionStatement
+            <ExprStatement
               stmt={s}
               key={i}
+              mode={mode}
               onChange={stmt => {
                 const copy = statements.slice();
                 copy.splice(i, 1, stmt);

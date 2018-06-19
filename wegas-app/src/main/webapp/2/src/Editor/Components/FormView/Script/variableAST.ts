@@ -12,6 +12,7 @@ import {
   memberExpression,
   StringLiteral,
   stringLiteral,
+  SpreadElement,
 } from '@babel/types';
 
 interface VariableAST extends CallExpression {
@@ -61,4 +62,15 @@ export function createVariableAST(name: string) {
     memberExpression(identifier('Variable'), identifier('find')),
     [identifier('gameModel'), stringLiteral(name)],
   ) as VariableAST;
+}
+
+export function createVariableCallAST(
+  name: string,
+  method: string,
+  args: (Expression | SpreadElement)[],
+) {
+  return callExpression(
+    memberExpression(createVariableAST(name), identifier(method)),
+    args,
+  );
 }
