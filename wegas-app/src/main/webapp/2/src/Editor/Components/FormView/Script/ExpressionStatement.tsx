@@ -1,10 +1,16 @@
+import generate from '@babel/generator';
 import { parseExpression } from '@babel/parser';
 import {
   booleanLiteral,
+  EmptyStatement,
+  Expression,
   ExpressionStatement,
   expressionStatement,
   identifier,
+  isEmptyStatement,
+  isExpressionStatement,
   numericLiteral,
+  SpreadElement,
   stringLiteral,
 } from '@babel/types';
 import Form from 'jsoninput';
@@ -16,12 +22,9 @@ import {
   isVariableCall,
   variableName,
 } from './variableAST';
-import generate from '@babel/generator';
-import { Expression } from '@babel/types';
-import { SpreadElement } from '@babel/types';
 
 interface ImpactProps {
-  stmt: ExpressionStatement;
+  stmt: ExpressionStatement | EmptyStatement;
   onChange: (stmt: ExpressionStatement) => void;
   mode: 'SET' | 'GET';
 }
@@ -53,21 +56,21 @@ function valueToAST(
   if (value === undefined) {
     return identifier('undefined');
   }
-  switch (type) {
+  if (type === 'identifier') {
+    return identifier(value);
+  }
+  switch (typeof value) {
     case 'string':
       return stringLiteral(value);
     case 'number':
       return numericLiteral(value);
     case 'boolean':
       return booleanLiteral(value);
-    case 'identifier':
-      return identifier(value);
-    case 'array':
     case 'object': {
       return parseExpression(JSON.stringify(value));
     }
     default:
-      throw Error(`Unknown schema.type ${type}`);
+      throw Error(`Unknown type ${type}`);
   }
 }
 
@@ -102,11 +105,10 @@ async function buildDefaultVariableCallAST(
 export class ExprStatement extends React.Component<ImpactProps, ExprState> {
   state: ExprState = { methodsConfig: {} };
   variableChange = async (variable: string) => {
-    const {
-      stmt: { expression },
-    } = this.props;
+    const { stmt } = this.props;
     const newVariable = VariableDescriptor.find('name', variable);
-    if (isVariableCall(expression)) {
+    if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
+      const expression = stmt.expression;
       const oldVariable = this.state.variable;
       if (
         newVariable &&
@@ -126,13 +128,18 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
           ),
         );
       }
+    } else if (isEmptyStatement(stmt) && newVariable) {
+      this.props.onChange(
+        expressionStatement(
+          await buildDefaultVariableCallAST(newVariable, this.props.mode),
+        ),
+      );
     }
   };
   methodChange = (value: string) => {
-    const {
-      stmt: { expression },
-    } = this.props;
-    if (isVariableCall(expression)) {
+    const { stmt } = this.props;
+    if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
+      const expression = stmt.expression;
       const currMethod = expression.callee.property.name;
       const args = expression.arguments;
       const { methodsConfig, variable } = this.state;
@@ -166,11 +173,10 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
     }
   };
   argsChange = (values: any[]) => {
-    const {
-      stmt: { expression },
-    } = this.props;
+    const { stmt } = this.props;
     const { methodsConfig, variable } = this.state;
-    if (isVariableCall(expression)) {
+    if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
+      const expression = stmt.expression;
       const method = expression.callee.property.name;
       this.props.onChange(
         expressionStatement(
@@ -186,10 +192,9 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
     }
   };
   componentDidMount() {
-    const {
-      stmt: { expression },
-    } = this.props;
-    if (isVariableCall(expression)) {
+    const { stmt } = this.props;
+    if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
+      const expression = stmt.expression;
       const newVariable = VariableDescriptor.find(
         'name',
         variableName(expression.callee.object),
@@ -206,10 +211,9 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
     }
   }
   componentDidUpdate() {
-    const {
-      stmt: { expression },
-    } = this.props;
-    if (isVariableCall(expression)) {
+    const { stmt } = this.props;
+    if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
+      const expression = stmt.expression;
       const newVariable = VariableDescriptor.find(
         'name',
         variableName(expression.callee.object),
@@ -217,7 +221,10 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
       if (newVariable == null) {
         throw Error(`Unknown ${variableName(expression.callee.object)}`);
       }
-      if (newVariable['@class'] === this.state.variable!['@class']) {
+      if (
+        this.state.variable &&
+        newVariable['@class'] === this.state.variable['@class']
+      ) {
         return;
       }
       getMethodConfig(newVariable).then(config => {
@@ -229,10 +236,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
     }
   }
   render() {
-    const {
-      mode,
-      stmt: { expression },
-    } = this.props;
+    const { mode, stmt } = this.props;
     const { methodsConfig } = this.state;
     const availableMethods = Object.keys(methodsConfig).filter(
       m =>
@@ -240,7 +244,8 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
           ? methodsConfig[m].returns === undefined
           : methodsConfig[m].returns !== undefined,
     );
-    if (isVariableCall(expression)) {
+    if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
+      const expression = stmt.expression;
       const variable = variableName(expression.callee.object);
       const method = expression.callee.property.name;
       const args = expression.arguments;
@@ -253,7 +258,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
           )
         : [];
       return (
-        <div>
+        <>
           <Form
             value={variable}
             schema={variableSchema}
@@ -283,9 +288,18 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
             value={args.map(a => astToJSONValue(a))}
             onChange={this.argsChange}
           />
-        </div>
+        </>
       );
     }
-    return <pre>{JSON.stringify(expression, null, 2)}</pre>;
+    if (isEmptyStatement(stmt)) {
+      return (
+        <Form
+          value={''}
+          schema={variableSchema}
+          onChange={this.variableChange}
+        />
+      );
+    }
+    return <pre>{JSON.stringify(stmt, null, 2)}</pre>;
   }
 }
