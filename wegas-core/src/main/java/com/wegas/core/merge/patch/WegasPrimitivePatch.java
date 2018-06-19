@@ -73,8 +73,8 @@ public final class WegasPrimitivePatch extends WegasPatch {
     private boolean isProtected(Mergeable target, boolean bypassVisibility) {
         return isField // not yet implemented for primitive lists
                 && !bypassVisibility // target is never protected when bypassing visibilities
-                && target.isProtected() // and target is protected
-                && this.toEntity != null && this.toEntity.isProtected(); // toEntity is also protected (ie allows changes from upstream)
+                && target.belongsToProtectedGameModel() // and target is protected
+                && this.toEntity != null && this.toEntity.belongsToProtectedGameModel(); // toEntity is also protected (ie allows changes from upstream)
     }
 
     @Override
@@ -97,7 +97,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
                     PatchMode myMode = this.updateOrOverride(visibility, null);
                     logger.trace("MyMode: {}", myMode);
 
-                    //if (isProtected(targetEntity, bypassVisibility) && isProtected(, bypassVisibility) && tr ue){
+                    //if (belongsToProtectedGameModel(targetEntity, bypassVisibility) && belongsToProtectedGameModel(, bypassVisibility) && tr ue){
                         // && visibility stands in protected world ?
                     //}
 

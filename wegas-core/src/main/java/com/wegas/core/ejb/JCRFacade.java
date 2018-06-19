@@ -75,7 +75,7 @@ public class JCRFacade {
             ContentConnector connector = this.getContentConnector(gameModel, workspaceType);
             AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             if (descriptor.exist()) {
-                if (!descriptor.isProtected() || descriptor.getVisibility() == ModelScoped.Visibility.PRIVATE) {
+                if (!descriptor.belongsToProtectedGameModel() || descriptor.getVisibility() == ModelScoped.Visibility.PRIVATE) {
                     descriptor.sync();
                     if (descriptor instanceof DirectoryDescriptor && ((DirectoryDescriptor) descriptor).isRootDirectory()) {
                         return Response.notModified("Unable to erase Root Directory").build();
@@ -164,7 +164,7 @@ public class JCRFacade {
 
             AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
 
-            if (!dir.isProtected() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
+            if (!dir.belongsToProtectedGameModel() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
                 FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
 
                 if (!detachedFile.exist()) {
@@ -236,7 +236,7 @@ public class JCRFacade {
         ContentConnector connector = this.getContentConnector(gameModel, wType);
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
         if (dir.exist()) {
-            if (!dir.isProtected() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
+            if (!dir.belongsToProtectedGameModel() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
                 DirectoryDescriptor detachedFile = new DirectoryDescriptor(name, path, connector);
 
                 if (!detachedFile.exist()) {

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Orderable;
-import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
@@ -87,11 +87,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     @Override
     public Long getId() {
         return id;
-    }
-
-    @Override
-    public ModelScoped.Visibility getInheritedVisibility() {
-        return this.gameModel.getInheritedVisibility();
+ 
     }
 
     @Override
@@ -167,7 +163,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getGameModel().isProtected();
+    public WithPermission getMergeableParent() {
+        return this.gameModel;
     }
 }

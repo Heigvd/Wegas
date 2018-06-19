@@ -9,8 +9,6 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;

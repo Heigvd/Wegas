@@ -15,12 +15,12 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
@@ -308,13 +308,8 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getVariableDescriptor().isProtected();
-    }
-
-    @Override
-    public Visibility getInheritedVisibility() {
-        return this.getVariableDescriptor().getVisibility();
+    public WithPermission getMergeableParent() {
+        return this.getVariableDescriptor();
     }
 
     @Override

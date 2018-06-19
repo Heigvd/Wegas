@@ -15,10 +15,9 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -334,26 +333,22 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         return null;
     }
 
-    private Mergeable getParent() {
+    /*@Override
+    public boolean belongsToProtectedGameModel() {
+        Mergeable parent = getParent();
+        if (parent != null) {
+            return parent.belongsToProtectedGameModel();
+        }
+        return false;
+    }*/
+
+    @Override
+    public WithPermission getMergeableParent() {
         if (this.getParentDescriptor() != null) {
             return getParentDescriptor();
         } else {
             return getParentInstance();
         }
-    }
-
-    @Override
-    public boolean isProtected() {
-        Mergeable parent = getParent();
-        if (parent != null) {
-            return parent.isProtected();
-        }
-        return false;
-    }
-
-    @Override
-    public Visibility getInheritedVisibility() {
-        return getParent().getInheritedVisibility();
     }
 
     /**

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import javax.persistence.Transient;
@@ -63,13 +63,8 @@ public abstract class AbstractAssignement extends AbstractEntity {
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getResourceInstance().isProtected();
-    }
-
-    @Override
-    public Visibility getInheritedVisibility() {
-        return getResourceInstance().getInheritedVisibility();
+    public WithPermission getMergeableParent() {
+        return this.getResourceInstance();
     }
 
     @Override

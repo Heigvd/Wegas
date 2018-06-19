@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -45,11 +45,11 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
     private Long id;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "feedback")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "feedback")
     private PeerReviewDescriptor feedbacked;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "fbComments")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "fbComments")
     private PeerReviewDescriptor commented;
 
     /**
@@ -61,14 +61,6 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
     @WegasEntityProperty
     @NotNull
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "feedback")
-    @JsonIgnore
-    private PeerReviewDescriptor fbPeerReviewDescriptor;
-
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "fbComments")
-    @JsonIgnore
-    private PeerReviewDescriptor commentsPeerReviewDescriptor;
 
     /**
      * Empty constructor
@@ -83,6 +75,9 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
 
     public void setFeedbacked(PeerReviewDescriptor feedbacked) {
         this.feedbacked = feedbacked;
+        if (this.feedbacked != null) {
+            this.setEvaluations(evaluations);
+        }
     }
 
     public PeerReviewDescriptor getCommented() {
@@ -91,6 +86,9 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
 
     public void setCommented(PeerReviewDescriptor commented) {
         this.commented = commented;
+        if (this.commented!= null){
+            this.setEvaluations(evaluations);
+        }
     }
 
     @JsonView(Views.IndexI.class)
@@ -107,11 +105,11 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
     }
 
     @JsonIgnore
-    public PeerReviewDescriptor getParent(){
-        if (this.fbPeerReviewDescriptor !=null){
-            return fbPeerReviewDescriptor;
+    public PeerReviewDescriptor getParent() {
+        if (this.feedbacked != null) {
+            return feedbacked;
         } else {
-            return commentsPeerReviewDescriptor;
+            return commented;
         }
     }
 
@@ -155,13 +153,8 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getEffectiveDescriptor().isProtected();
-    }
-
-    @Override
-    public ModelScoped.Visibility getInheritedVisibility() {
-        return this.getEffectiveDescriptor().getVisibility();
+    public WithPermission getMergeableParent() {
+        return this.getEffectiveDescriptor();
     }
 
     @Override
@@ -176,8 +169,8 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
 
     @Override
     public Boolean containsAll(List<String> criterias) {
-        for (EvaluationDescriptor ed : getEvaluations()){
-            if (ed.containsAll(criterias)){
+        for (EvaluationDescriptor ed : getEvaluations()) {
+            if (ed.containsAll(criterias)) {
                 return true;
             }
         }

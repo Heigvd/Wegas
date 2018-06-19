@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.Searchable;
 
 import javax.persistence.Embeddable;
@@ -49,12 +48,9 @@ public class Script implements Serializable, Searchable, Mergeable {
     @JsonIgnore
     private Mergeable parent;
 
-
     @Transient
     @JsonIgnore
     private String refId;
-
-
 
     /**
      *
@@ -114,7 +110,8 @@ public class Script implements Serializable, Searchable, Mergeable {
         this.language = language;
     }
 
-    public Mergeable getParent() {
+    @Override
+    public Mergeable getMergeableParent() {
         return parent;
     }
 
@@ -135,22 +132,6 @@ public class Script implements Serializable, Searchable, Mergeable {
     @Override
     public void setRefId(String refId) {
         this.refId = refId;
-    }
-
-    @Override
-    public boolean isProtected() {
-        if (this.getParent() != null){
-            return this.getParent().isProtected();
-        }
-        return false;
-    }
-
-    @Override
-    public ModelScoped.Visibility getInheritedVisibility() {
-        if (this.getParent() != null){
-            return this.getParent().getInheritedVisibility();
-        }
-        return ModelScoped.Visibility.PRIVATE; // ???
     }
 
     @Override

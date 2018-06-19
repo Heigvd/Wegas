@@ -44,6 +44,14 @@ public class DialogueTransition extends Transition {
         return actionText;
     }
 
+    @Override
+    public void setState(State state) {
+        super.setState(state);
+        if (state != null){
+            this.setActionText(actionText);
+        }
+    }
+
     /**
      * @param actionText the actionText to set
      */

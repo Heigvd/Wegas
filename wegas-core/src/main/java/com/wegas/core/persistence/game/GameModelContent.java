@@ -12,10 +12,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import java.io.Serializable;
 import java.util.Collection;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
@@ -252,12 +251,7 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getGameModel().isProtected();
-    }
-
-    @Override
-    public Visibility getInheritedVisibility() {
-        return Visibility.INHERITED;
+    public WithPermission getMergeableParent() {
+        return this.getGameModel();
     }
 }

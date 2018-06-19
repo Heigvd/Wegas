@@ -21,6 +21,7 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -1111,7 +1112,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @Override
-    public boolean isProtected() {
+    public boolean belongsToProtectedGameModel() {
         // only scenarios which are based on a model are protected
         // but do no protect a gameModel when the propagation process is ongoing
         return (this.getType().equals(GmType.SCENARIO) && this.getBasedOn() != null && !this.onGoingPropagation);
@@ -1129,6 +1130,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @JsonIgnore
     public boolean isModel() {
         return this.getType().equals(GmType.MODEL);
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return null;
     }
 
     @JsonIgnore

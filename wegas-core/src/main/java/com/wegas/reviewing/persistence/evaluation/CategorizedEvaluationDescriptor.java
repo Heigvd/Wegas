@@ -72,7 +72,18 @@ public class CategorizedEvaluationDescriptor
     }
 
     @Override
+    public void setContainer(EvaluationDescriptorContainer container) {
+        super.setContainer(container);
+        if (container !=null){
+            this.setCategories(categories);
+        }
+    }
+
+    @Override
     public void registerItem(EnumItem item) {
+        if (item.getLabel() != null && this.getContainer() != null){
+            item.getLabel().setParentDescriptor(this.getContainer().getParent());
+        }
         item.setParentEvaluation(this);
     }
 

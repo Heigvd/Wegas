@@ -39,6 +39,21 @@ public class DialogueState extends State {
                 || super.containsAll(criterias);
     }
 
+
+    @Override
+    public void setStateMachine(StateMachineDescriptor stateMachine) {
+        super.setStateMachine(stateMachine);
+        if (this.getStateMachine() != null){
+            this.setText(this.text);
+            for (Transition t : this.getTransitions()){
+                if (t instanceof DialogueTransition){
+                    DialogueTransition dt = (DialogueTransition) t;
+                    dt.setActionText(dt.getActionText());
+                }
+            }
+        }
+    }
+
     public TranslatableContent getText() {
         return text;
     }

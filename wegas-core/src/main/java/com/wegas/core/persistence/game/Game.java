@@ -18,6 +18,7 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -529,7 +530,12 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @Override
-    public boolean isProtected() {
+    public WithPermission getMergeableParent() {
+        return this.getGameModel();
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
         return false;
     }
 

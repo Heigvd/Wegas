@@ -458,8 +458,18 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     }
 
     @Override
-    public boolean isProtected() {
-        return this.connector.getGameModel().isProtected();
+    public boolean belongsToProtectedGameModel() {
+        return this.connector.getGameModel().belongsToProtectedGameModel();
+    }
+
+    @Override
+    public Mergeable getMergeableParent() {
+        try {
+            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, connector);
+            return descriptor;
+        } catch (RepositoryException ex) {
+            return this.connector.getGameModel();
+        }
     }
 
     @Override

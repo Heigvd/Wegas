@@ -13,8 +13,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.ejb.ReviewingFacade;
@@ -250,13 +250,8 @@ public abstract class EvaluationInstance extends AbstractEntity {
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getEffectiveReview().isProtected();
-    }
-
-    @Override
-    public ModelScoped.Visibility getInheritedVisibility(){
-        return this.getEffectiveReview().getInheritedVisibility();
+    public WithPermission getMergeableParent() {
+        return this.getEffectiveReview();
     }
 
     @Override

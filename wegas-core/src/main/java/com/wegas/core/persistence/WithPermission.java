@@ -15,7 +15,7 @@ import java.util.Collection;
  *
  * @author maxence
  */
-public interface WithPermission {
+public interface WithPermission extends Mergeable {
 
     /**
      * Comma-separated list of permission, only one is required to grant the permission
@@ -39,4 +39,7 @@ public interface WithPermission {
     @JsonIgnore
     Collection<WegasPermission> getRequieredUpdatePermission();
 
+
+    @Override
+    WithPermission getMergeableParent();
 }

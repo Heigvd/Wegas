@@ -12,13 +12,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -191,6 +191,7 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
             for (String strA : attachments) {
                 Attachment a = new Attachment();
                 a.setFile(TranslatableContent.build(lang, strA));
+                a.setMessage(this);
                 this.attachments.add(a);
             }
         }
@@ -382,13 +383,8 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getInboxInstance().isProtected();
-    }
-
-    @Override
-    public Visibility getInheritedVisibility() {
-        return getInboxInstance().getInheritedVisibility();
+    public WithPermission getMergeableParent() {
+        return this.getInboxInstance();
     }
 
     @Override

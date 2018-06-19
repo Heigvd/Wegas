@@ -7,6 +7,7 @@
  */
 package com.wegas.core.merge.utils;
 
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -37,17 +38,6 @@ public class MergeHelper {
     public interface MergeableVisitor {
 
         public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field);
-    }
-
-    private static boolean isProtected(ProtectionLevel level, Visibility visibility) {
-        //             all, protected, internal
-        // internal    t        t         t
-        // protected   t        t         f
-        // inherited   t        f         f
-        // private     t        f         f
-
-        return (level == ProtectionLevel.ALL || visibility == Visibility.INTERNAL
-                || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED));
     }
 
     /**
@@ -272,7 +262,7 @@ public class MergeHelper {
 
                 if (trTarget.getTranslation(languageCode) != null) {
                     Visibility visibility = target.getInheritedVisibility();
-                    if (!isProtected(protectionLevel, visibility)) {
+                    if (!Helper.isProtected(protectionLevel, visibility)) {
                         // targret is not prodected, keep target translation
                         return;
                     }

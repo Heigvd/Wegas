@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasConflictException;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -27,6 +28,7 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
@@ -823,8 +825,20 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getGameModel() != null && this.getGameModel().isProtected();
+    public boolean belongsToProtectedGameModel() {
+        return this.getGameModel() != null && this.getGameModel().belongsToProtectedGameModel();
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        DescriptorListI<? extends VariableDescriptor> parent = this.getParent();
+        if (parent instanceof VariableDescriptor){
+            return (VariableDescriptor)parent;
+        } else if (parent instanceof GameModel){
+            return (GameModel) parent;
+        } else{
+            throw WegasErrorMessage.error("Orphan descriptor !!!");
+        }
     }
 
     public void revive(GameModel gameModel, Beanjection beans) {

@@ -19,9 +19,9 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
@@ -183,6 +183,17 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     public void setChoiceDescriptor(ChoiceDescriptor choiceDescriptor) {
         this.choiceDescriptor = choiceDescriptor;
+        if (this.choiceDescriptor !=null){
+            if (this.getLabel() != null){
+            this.getLabel().setParentDescriptor(choiceDescriptor);
+            }
+            if (this.getAnswer() != null){
+                this.getAnswer().setParentDescriptor(choiceDescriptor);
+            }
+            if (this.getIgnorationAnswer() != null){
+                this.getIgnorationAnswer().setParentDescriptor(choiceDescriptor);
+            }
+        }
     }
 
     /**
@@ -405,13 +416,8 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getChoiceDescriptor().isProtected();
-    }
-
-    @Override
-    public Visibility getInheritedVisibility() {
-        return getChoiceDescriptor().getVisibility();
+    public WithPermission getMergeableParent() {
+        return getChoiceDescriptor();
     }
 
     @Override

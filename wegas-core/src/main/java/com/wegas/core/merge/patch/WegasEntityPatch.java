@@ -301,21 +301,28 @@ public final class WegasEntityPatch extends WegasPatch {
                                                 cb.postUpdate(target, this.toEntity, identifier);
                                             }
 
+                                            if (setter != null) {
+                                                setter.invoke(oTarget, target);
+                                            }
+
                                         } else {
 
                                             target = this.getFactory().newInstance(targetGameModel, toEntity);
 
                                             WegasEntityPatch clone = new WegasEntityPatch(target, toEntity, true);
-                                            clone.apply(targetGameModel, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                             for (WegasCallback cb : callbacks) {
                                                 cb.add(target, null, identifier);
                                             }
+
+                                            if (setter != null) {
+                                                setter.invoke(oTarget, target);
+                                            }
+
+                                            clone.apply(targetGameModel, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
+
                                             collector.getCreated().put(target.getRefId(), new LifecycleCollector.CollectedEntity(target, toEntity, callbacks, targetObject, identifier));
 
-                                        }
-                                        if (setter != null) {
-                                            setter.invoke(oTarget, target);
                                         }
                                     } else {
                                         logger.debug("SKIP CREATION DURING 1st pass");

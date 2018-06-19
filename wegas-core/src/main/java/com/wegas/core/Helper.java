@@ -16,6 +16,8 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
@@ -948,7 +950,6 @@ public class Helper {
         return sb.toString();
     }
 
-
     public static Level setLoggerLevel(Class klass, Level level) {
         return Helper.setLoggerLevel(LoggerFactory.getLogger(klass), level);
     }
@@ -995,4 +996,24 @@ public class Helper {
         }
         return ip;
     }
+
+    /**
+     * Check if current visibility imply read only access for scenarist under given protection level.
+     *
+     * @param level      protection level
+     * @param visibility visibility to check
+     *
+     * @return true if a scenarist is not allowed to perform an update
+     */
+    public static boolean isProtected(ProtectionLevel level, Visibility visibility) {
+        //             all, protected, internal
+        // internal    t        t         t
+        // protected   t        t         f
+        // inherited   t        f         f
+        // private     t        f         f
+
+        return (level == ProtectionLevel.ALL || visibility == Visibility.INTERNAL
+                || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED));
+    }
+
 }

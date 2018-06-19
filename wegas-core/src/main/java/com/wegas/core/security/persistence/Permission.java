@@ -12,6 +12,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -200,7 +201,12 @@ public class Permission extends AbstractEntity {
     }
 
     @Override
-    public boolean isProtected() {
+    public WithPermission getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
         return false;
     }
 

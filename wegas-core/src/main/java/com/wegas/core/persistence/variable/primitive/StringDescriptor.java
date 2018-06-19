@@ -116,6 +116,9 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
     @Override
     public void registerItem(EnumItem item) {
         item.setParentString(this);
+        if (item.getLabel()!= null){
+            item.getLabel().setParentDescriptor(this);
+        }
     }
 
     /*

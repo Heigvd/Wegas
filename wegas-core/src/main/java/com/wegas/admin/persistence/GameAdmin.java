@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -314,10 +315,14 @@ public class GameAdmin extends AbstractEntity {
     }
 
     @Override
-    public boolean isProtected() {
+    public boolean belongsToProtectedGameModel() {
         return false;
     }
 
+    @Override
+    public WithPermission getMergeableParent() {
+        return null;
+    }
 
     @Override
     public Visibility getInheritedVisibility() {

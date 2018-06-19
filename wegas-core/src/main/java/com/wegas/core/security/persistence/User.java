@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -265,7 +266,12 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     }
 
     @Override
-    public boolean isProtected() {
+    public WithPermission getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
         return false;
     }
 

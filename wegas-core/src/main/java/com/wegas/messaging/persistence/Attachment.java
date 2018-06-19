@@ -21,7 +21,7 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -116,17 +116,17 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
         return null;
     }
 
-    @Override
+    /*@Override
     public boolean isProtected() {
         if (this.getMessage() != null) {
             return this.getMessage().isProtected();
         }
         return false;
-    }
+    }*/
 
     @Override
-    public ModelScoped.Visibility getInheritedVisibility() {
-        return this.getMessage().getInheritedVisibility();
+    public WithPermission getMergeableParent() {
+        return this.getMessage();
     }
 
     @Override

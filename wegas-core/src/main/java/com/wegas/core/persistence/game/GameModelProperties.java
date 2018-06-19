@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
@@ -232,7 +233,12 @@ public class GameModelProperties implements Serializable, Mergeable {
     }
 
     @Override
-    public boolean isProtected() {
+    public <T extends Mergeable> T getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
         return false;
     }
 

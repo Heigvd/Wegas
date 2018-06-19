@@ -22,7 +22,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.Orderable;
-import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -158,22 +158,13 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
         }
     }
 
-    private Mergeable getParent() {
+    @Override
+    public WithPermission getMergeableParent() {
         if (this.getParentString() != null) {
             return getParentString();
         } else {
             return getParentEvaluation();
         }
-    }
-
-    @Override
-    public ModelScoped.Visibility getInheritedVisibility() {
-        return getParent().getInheritedVisibility();
-    }
-
-    @Override
-    public boolean isProtected() {
-        return getParent().isProtected();
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -484,9 +485,19 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         this.gameModelScope = gameModelScope;
     }
 
+
     @Override
-    public boolean isProtected() {
-        return this.isDefaultInstance() && this.getDefaultDescriptor() != null && this.getDefaultDescriptor().isProtected();
+    public WithPermission getMergeableParent() {
+        if (this.isDefaultInstance() && this.getDefaultDescriptor() != null) {
+            return this.getDefaultDescriptor();
+        } else {
+            return this.getScope();
+        }
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return this.isDefaultInstance() && this.getDefaultDescriptor() != null && this.getDefaultDescriptor().belongsToProtectedGameModel();
     }
 
     @Override

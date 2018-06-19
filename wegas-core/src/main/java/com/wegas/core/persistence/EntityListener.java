@@ -92,7 +92,7 @@ public class EntityListener {
         if (o instanceof Mergeable) {
             Mergeable m = (Mergeable) o;
             // new entities in a protected gameModel and an INTERNAL visibility scope is prohibited
-            if (m.isProtected() && m.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
+            if (m.belongsToProtectedGameModel() && m.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
                 throw WegasErrorMessage.error("Not authorized to create " + o);
             }
         }

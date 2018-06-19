@@ -15,8 +15,8 @@ import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
@@ -254,15 +254,9 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
     }
 
     @Override
-    public boolean isProtected() {
-        return this.getStateMachine().isProtected();
+    public WithPermission getMergeableParent() {
+        return this.getStateMachine();
     }
-
-    @Override
-    public Visibility getInheritedVisibility() {
-        return this.getStateMachine().getInheritedVisibility();
-    }
-
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {

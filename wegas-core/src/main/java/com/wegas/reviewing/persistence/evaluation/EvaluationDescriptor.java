@@ -19,6 +19,7 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
@@ -198,6 +199,11 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      */
     public void setContainer(EvaluationDescriptorContainer container) {
         this.container = container;
+        if (this.container != null){
+            // revive translatable content link
+            this.setLabel(label);
+            this.setDescription(description);
+        }
     }
 
     /**
@@ -248,28 +254,19 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
         this.evaluationInstances.remove(instance);
     }
 
-    private WithPermission getEffectiveContainer() {
-        return this.getContainer();
-    }
-
     @Override
-    public boolean isProtected() {
-        return this.getContainer().isProtected();
-    }
-
-    @Override
-    public Visibility getInheritedVisibility(){
-        return this.getContainer().getInheritedVisibility();
+    public WithPermission getMergeableParent(){
+        return getContainer();
     }
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getEffectiveContainer().getRequieredUpdatePermission();
+        return this.getMergeableParent().getRequieredUpdatePermission();
     }
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getEffectiveContainer().getRequieredReadPermission();
+        return this.getMergeableParent().getRequieredReadPermission();
     }
 
     @Override

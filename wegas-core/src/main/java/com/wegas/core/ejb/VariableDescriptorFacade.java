@@ -321,7 +321,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
         // reset reference id for all new entites within newEntity
         MergeHelper.resetRefIds(newEntity, null);
-        if (oldEntity.isProtected()) {
+        if (oldEntity.belongsToProtectedGameModel()) {
             MergeHelper.resetVisibility(newEntity, Visibility.PRIVATE);
         }
 
@@ -580,8 +580,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
         Visibility targetVisibility = targetListDescriptor instanceof ModelScoped ? ((ModelScoped) targetListDescriptor).getVisibility() : Visibility.INHERITED;
 
-        if (!vd.isProtected() || (vd.getVisibility() == ModelScoped.Visibility.PRIVATE)) {
-            if (!vd.isProtected() || targetVisibility == Visibility.INHERITED || targetVisibility == Visibility.PRIVATE) {
+        if (!vd.belongsToProtectedGameModel() || (vd.getVisibility() == ModelScoped.Visibility.PRIVATE)) {
+            if (!vd.belongsToProtectedGameModel() || targetVisibility == Visibility.INHERITED || targetVisibility == Visibility.PRIVATE) {
                 from.localRemove(vd);
                 targetListDescriptor.addItem(index, vd);
             } else {
