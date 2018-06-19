@@ -1,8 +1,7 @@
 import { shallowIs } from './shallowIs';
 
-const empty: any[] = [];
-
-(test as any).each([
+const empty: never[] = [];
+test.each([
   [true, 1, 1],
   [true, 'hello', 'hello'],
   [true, NaN, NaN],
