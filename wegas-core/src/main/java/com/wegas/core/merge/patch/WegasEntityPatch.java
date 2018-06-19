@@ -210,9 +210,7 @@ public final class WegasEntityPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(GameModel targetGameModel, Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
-        Mergeable target = (Mergeable) targetObject;
-
+    public LifecycleCollector apply(GameModel targetGameModel, Mergeable target, Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         /**
          * Two pass patch
          * First pass update and delete
@@ -291,7 +289,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                             // Force update
                                             WegasEntityPatch createPatch = new WegasEntityPatch(null, 0, null, null, null, remove.getPayload(), toEntity, true, false, false, false, this.protectionLevel);
-                                            createPatch.apply(targetGameModel, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
+                                            createPatch.apply(targetGameModel, target, null, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                             for (WegasCallback cb : callbacks) {
                                                 cb.add(target, null, identifier);
@@ -319,9 +317,9 @@ public final class WegasEntityPatch extends WegasPatch {
                                                 setter.invoke(oTarget, target);
                                             }
 
-                                            clone.apply(targetGameModel, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
+                                            clone.apply(targetGameModel, target, null, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
-                                            collector.getCreated().put(target.getRefId(), new LifecycleCollector.CollectedEntity(target, toEntity, callbacks, targetObject, identifier));
+                                            collector.getCreated().put(target.getRefId(), new LifecycleCollector.CollectedEntity(target, toEntity, callbacks, oTarget, identifier));
 
                                         }
                                     } else {
@@ -336,12 +334,12 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                             // DELETE CHILDREN TOO TO COLLECT THEM
                                             for (WegasPatch patch : patches) {
-                                                patch.apply(targetGameModel, target, new OrphanCollector(collector, target, patch.getIdentifier()), myMode, visibility, collector, numPass, bypassVisibility);
+                                                patch.apply(targetGameModel, target, null, new OrphanCollector(collector, target, patch.getIdentifier()), myMode, visibility, collector, numPass, bypassVisibility);
                                             }
 
                                             String refId = fromEntity.getRefId();
                                             // Should include all Mergeable contained within target, so they can be reused by CREATE case
-                                            collector.getDeleted().put(refId, new LifecycleCollector.CollectedEntity(target, fromEntity, callbacks, targetObject, identifier));
+                                            collector.getDeleted().put(refId, new LifecycleCollector.CollectedEntity(target, fromEntity, callbacks, oTarget, identifier));
 
                                             for (WegasCallback cb : callbacks) {
                                                 cb.remove(target, null, identifier);
@@ -367,7 +365,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                         }
 
                                         for (WegasPatch patch : patches) {
-                                            patch.apply(targetGameModel, target, null, myMode, visibility, collector, numPass, bypassVisibility);
+                                            patch.apply(targetGameModel, target, null, null, myMode, visibility, collector, numPass, bypassVisibility);
                                         }
 
                                         if (numPass > 1) {

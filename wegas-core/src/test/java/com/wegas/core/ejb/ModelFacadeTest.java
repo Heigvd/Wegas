@@ -88,7 +88,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         reflections = new Reflections("com.wegas");
     }
 
-    //@BeforeClass
+    @BeforeClass
     public static void setLoggerLevels() {
         Helper.setLoggerLevel(logger, Level.INFO);
         mfLevel = Helper.setLoggerLevel(ModelFacade.class, Level.DEBUG);

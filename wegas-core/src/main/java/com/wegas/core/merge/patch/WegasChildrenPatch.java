@@ -63,7 +63,7 @@ public final class WegasChildrenPatch extends WegasPatch {
 
             // this patch handles delete and update cases
             if (primitive) {
-                patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, fromEntity, toEntity, false, false, false, this.protectionLevel));
+                patches.add(new WegasPrimitivePatch(key, 0, null, referenceEntity, null, null, fromEntity, toEntity, false, false, false, this.protectionLevel));
             } else {
                 patches.add(new WegasEntityPatch(key, 0, null, null, null,
                         (Mergeable) fromEntity,
@@ -137,17 +137,13 @@ public final class WegasChildrenPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(GameModel targetGameModel, Object target, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
-        Mergeable targetEntity = null;
-        if (target instanceof Mergeable) {
-            targetEntity = (Mergeable) target;
-        }
+    public LifecycleCollector apply(GameModel targetGameModel, Mergeable target, Object payload, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
 
         logger.debug("Apply {} {}", this.getClass().getSimpleName(), identifier);
         logger.indent();
         try {
-            if (shouldApplyPatch(targetEntity, referenceEntity)) {
-                Object children = getter.invoke(targetEntity);
+            if (shouldApplyPatch(target, referenceEntity)) {
+                Object children = getter.invoke(target);
 
                 if (!ignoreNull || to != null) {
                     if (!initOnly || children == null) {
@@ -221,7 +217,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                             };
 
                             for (WegasCallback cb : callbacks) {
-                                cb.preUpdate(targetEntity, to, identifier);
+                                cb.preUpdate(target, to, identifier);
                             }
 
                             /*
@@ -258,8 +254,12 @@ public final class WegasChildrenPatch extends WegasPatch {
                             for (WegasPatch patch : patches) {
                                 Object key = patch.getIdentifier();
                                 Object child = tmpMap.get(key);
+                                if (patch instanceof WegasPrimitivePatch){
+                                    patch.apply(targetGameModel, target, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
+                                } else {
+                                    patch.apply(targetGameModel, (Mergeable) child, null, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
+                                }
 
-                                patch.apply(targetGameModel, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                             }
 
                             logger.info("Post Patch: target: {} from: {} to: {}", children, from, to);
@@ -338,10 +338,10 @@ public final class WegasChildrenPatch extends WegasPatch {
                                 }
                             }
 
-                            setter.invoke(targetEntity, children);
+                            setter.invoke(target, children);
 
                             for (WegasCallback cb : callbacks) {
-                                cb.postUpdate(targetEntity, to, identifier);
+                                cb.postUpdate(target, to, identifier);
                             }
                         } else {
                             logger.debug("SKIP: no need to delete primitives");

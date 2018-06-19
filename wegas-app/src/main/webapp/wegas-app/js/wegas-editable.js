@@ -93,7 +93,7 @@ YUI.add('wegas-editable', function(Y) {
             form = form || this.constructor.EDITFORM; // And if no form is defined we check if there is a default one defined in the entity
 
             if (!form) {                                                        // If no edit form could be found, we generate one based on the ATTRS parameter.
-                attrCfgs = this.getAttrCfgs();
+                attrCfgs = Y.clone(this.getAttrCfgs());
                 for (i in attrCfgs) {
                     // if ("value" in attrCfgs[i]) {
                     //     attrCfgs[i]["defaultValue"] = attrCfgs[i].value; // Use the value as default (useful form json object serialization)

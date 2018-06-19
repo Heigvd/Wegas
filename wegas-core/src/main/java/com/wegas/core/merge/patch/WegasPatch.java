@@ -165,7 +165,7 @@ public abstract class WegasPatch {
      * @param target
      */
     public void apply(GameModel gameModel, Mergeable target) {
-        this.apply(gameModel, target, null, PatchMode.UPDATE, null, null, null, false);
+        this.apply(gameModel, target, null, null, PatchMode.UPDATE, null, null, null, false);
     }
 
     /**
@@ -175,10 +175,10 @@ public abstract class WegasPatch {
      * @param target
      */
     public void applyForce(GameModel gameModel, Mergeable target) {
-        this.apply(gameModel, target, null, PatchMode.UPDATE, null, null, null, true);
+        this.apply(gameModel, target, null, null, PatchMode.UPDATE, null, null, null, true);
     }
 
-    protected abstract LifecycleCollector apply(GameModel targetGameModel, Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
+    protected abstract LifecycleCollector apply(GameModel targetGameModel, Mergeable entity, Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
 
     /**
      * Guess current mode according to protectionLevel, current visibility, and parent mode and visibility
