@@ -472,15 +472,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 properties: {
                     "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
                     content: {
-                        errored: function(val) {
-                            if (!val) {
-                                return "Required";
-                            }
-                        },
-                        type: STRING
+                        type: STRING,
+                        value: ""
                     }
                 },
-                required: true,
                 index: 4,
                 view: {
                     type: SCRIPT,

@@ -74,12 +74,16 @@ interface ICommonViewProps {
         [propName: string]: undefined | {};
     };
 }
+const nullRx = /null,|,null/;
 export default function commonView<E>(
     Comp: React.SFC<E> | React.ComponentClass<E>
 ): React.SFC<E & ICommonViewProps> {
     function CommonView(props: E & ICommonViewProps) {
         const { errorMessage = [], view = {} } = props;
-        const errors = errorMessage.map(v => <span key={v}>{v}</span>);
+        const errors = errorMessage.map(v => {
+            const cleanError = v.replace(nullRx, '');
+            return <span key={v}>{cleanError}</span>;
+        });
         const layout = view.layout;
         const schema = props.schema;
         const isLiteralNumberInput =
