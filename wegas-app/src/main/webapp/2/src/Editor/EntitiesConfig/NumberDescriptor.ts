@@ -1,4 +1,4 @@
-import { ConfigurationSchema } from '../editionConfig';
+import { ConfigurationSchema, MethodConfig, SELFARG } from '../editionConfig';
 import { config as VariableDescriptorConfig } from './VariableDescriptor';
 import { config as NumberInstanceConfig } from './NumberInstance';
 
@@ -66,5 +66,36 @@ export const config: ConfigurationSchema<INumberDescriptor> = {
   defaultInstance: {
     type: 'object',
     properties: NumberInstanceConfig,
+  },
+};
+export const methods: MethodConfig = {
+  add: {
+    label: 'add',
+    arguments: [
+      SELFARG,
+      {
+        type: 'number',
+        view: {
+          layout: 'shortInline',
+        },
+      },
+    ],
+  },
+  setValue: {
+    label: 'set',
+    arguments: [
+      SELFARG,
+      {
+        type: 'number',
+        view: {
+          layout: 'shortInline',
+        },
+      },
+    ],
+  },
+  getValue: {
+    label: 'value',
+    returns: 'number',
+    arguments: [SELFARG],
   },
 };
