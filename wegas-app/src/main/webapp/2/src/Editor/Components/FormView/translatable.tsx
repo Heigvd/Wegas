@@ -3,7 +3,7 @@ import { Schema } from 'jsoninput';
 import { LangConsumer } from '../../../Components/LangContext';
 
 interface TranslatableProps {
-  value: ITranslatableContent;
+  value?: ITranslatableContent;
   onChange: (value: ITranslatableContent) => void;
   view: Schema['view'] & { label?: string };
 }
@@ -21,10 +21,6 @@ export default function translatable<P extends EndProps>(
   Comp: React.ComponentType<P>,
 ): React.SFC<TranslatableProps & P> {
   function Translated(props: TranslatableProps) {
-    if (!props.value) {
-      return null;
-    }
-
     return (
       <LangConsumer>
         {({ lang, availableLang }) => {
@@ -42,16 +38,20 @@ export default function translatable<P extends EndProps>(
               </span>
             ),
           };
+          const pvalue: ITranslatableContent =
+            props.value == null
+              ? { '@class': 'TranslatableContent', translations: {} }
+              : props.value;
           return (
             <Comp
               {...props}
-              value={props.value.translations[lang]}
+              value={pvalue.translations[lang]}
               view={view}
               onChange={value => {
                 const v: ITranslatableContent = {
-                  ...props.value,
+                  ...pvalue,
                   translations: {
-                    ...props.value.translations,
+                    ...pvalue.translations,
                     [lang]: value,
                   },
                 };
