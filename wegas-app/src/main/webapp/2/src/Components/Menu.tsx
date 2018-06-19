@@ -56,8 +56,8 @@ export class Menu extends React.Component<MenuProps> {
     return (
       <Downshift
         onSelect={onSelect}
-        itemToString={() => ''}
-        render={({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
+        itemToString={() => ''}>
+        {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
           <div className={String(container)}>
             <div className={itemStyle} onClick={() => toggleMenu()}>
               {label}
@@ -115,7 +115,7 @@ export class Menu extends React.Component<MenuProps> {
             )}
           </div>
         )}
-      />
+      </Downshift>
     );
   }
 }
