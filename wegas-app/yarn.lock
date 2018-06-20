@@ -813,9 +813,9 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.4.0":
-  version "16.4.0"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.0.tgz#f7f639837bf1f8635f57616b12a1b0d193b6343a"
+"@types/react@*", "@types/react@^16.4.1":
+  version "16.4.1"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.1.tgz#c53bbfb4a78933db587da085ac60dbf5fcf73f8f"
   dependencies:
     csstype "^2.2.0"
 
@@ -3128,8 +3128,8 @@ cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
     cssom "0.3.x"
 
 csstype@^2.2.0, csstype@^2.5.2:
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.5.4.tgz#93850187209b6d0a71d30a85abc95a6ae3f3e8cd"
+  version "2.5.5"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.5.5.tgz#4125484a3d42189a863943f23b9e4b80fedfa106"
 
 ctype@0.5.3:
   version "0.5.3"
@@ -3503,8 +3503,8 @@ dom-serializer@0:
     entities "~1.1.1"
 
 dom-testing-library@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/dom-testing-library/-/dom-testing-library-2.6.0.tgz#8bc38c63b41b10830e6a5034f9fc0ed78c8ba484"
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/dom-testing-library/-/dom-testing-library-2.6.1.tgz#ec97192d3ddbc026809d1377eafc22eabdc372d3"
   dependencies:
     jest-dom "^1.0.0"
     mutationobserver-shim "^0.3.2"
@@ -3571,9 +3571,9 @@ domutils@^1.5.1:
     dom-serializer "0"
     domelementtype "1"
 
-downshift@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/downshift/-/downshift-2.0.2.tgz#185f10b9958bbe01e4c57547fd18490f305a6286"
+downshift@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/downshift/-/downshift-2.0.4.tgz#7b80ee4716ac40e625c8d024c6f34679a004860b"
   dependencies:
     prop-types "^15.6.0"
 
@@ -4911,8 +4911,8 @@ global@^4.3.0:
     process "~0.5.1"
 
 globals@^11.0.1, globals@^11.1.0:
-  version "11.5.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-11.5.0.tgz#6bc840de6771173b191f13d3a9c94d441ee92642"
+  version "11.6.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-11.6.0.tgz#7e4d12ffd6b8d174851ff5a246bfb2b8b002a6c7"
 
 globals@^9.18.0:
   version "9.18.0"
@@ -6009,8 +6009,8 @@ is-arrayish@^0.2.1:
   resolved "https://registry.yarnpkg.com/is-arrayish/-/is-arrayish-0.2.1.tgz#77c99840527aa8ecb1a8ba697b80645a7a926a9d"
 
 is-arrayish@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/is-arrayish/-/is-arrayish-0.3.1.tgz#c2dfc386abaa0c3e33c48db3fe87059e69065efd"
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/is-arrayish/-/is-arrayish-0.3.2.tgz#4574a2ae56f7ab206896fb431eaeed066fdf8f03"
 
 is-binary-path@^1.0.0:
   version "1.0.1"
@@ -7015,8 +7015,7 @@ jsonify@~0.0.0:
 
 "jsoninput@github:cigit/JSONInput":
   version "0.0.12"
-  uid "6992aeca804b429c8a5491a38a1667da752696d7"
-  resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/6992aeca804b429c8a5491a38a1667da752696d7"
+  resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/42f15fbe0a93e0ed3f211742ebfff8734378d3c8"
   dependencies:
     immer "^1.3.1"
     jsonschema "^1.2.4"
@@ -7024,7 +7023,7 @@ jsonify@~0.0.0:
 
 "jsoninput@github:cigit/jsoninput":
   version "0.0.12"
-  resolved "https://codeload.github.com/cigit/jsoninput/tar.gz/6992aeca804b429c8a5491a38a1667da752696d7"
+  resolved "https://codeload.github.com/cigit/jsoninput/tar.gz/42f15fbe0a93e0ed3f211742ebfff8734378d3c8"
   dependencies:
     immer "^1.3.1"
     jsonschema "^1.2.4"
@@ -7950,10 +7949,6 @@ mkdirp@^0.3.5:
 mktemp@~0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/mktemp/-/mktemp-0.4.0.tgz#6d0515611c8a8c84e484aa2000129b98e981ff0b"
-
-modern-normalize@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/modern-normalize/-/modern-normalize-0.4.0.tgz#1ccbc52861e1bce258144d28e890dc709b120ed2"
 
 monaco-editor-webpack-plugin@^1.3.0:
   version "1.3.0"
@@ -9479,10 +9474,9 @@ prop-types-extra@^1.0.1:
     warning "^3.0.0"
 
 prop-types@15.x, prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1:
-  version "15.6.1"
-  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
+  version "15.6.2"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   dependencies:
-    fbjs "^0.8.16"
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
@@ -10796,9 +10790,9 @@ slash@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-1.0.0.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
 
-slate-base64-serializer@^0.2.34:
-  version "0.2.34"
-  resolved "https://registry.yarnpkg.com/slate-base64-serializer/-/slate-base64-serializer-0.2.34.tgz#8a310672bf2f1b00dd469bc5e5247c20bb1ecd40"
+slate-base64-serializer@^0.2.35:
+  version "0.2.35"
+  resolved "https://registry.yarnpkg.com/slate-base64-serializer/-/slate-base64-serializer-0.2.35.tgz#6a967daf073df8615979af8e484213580f5df596"
   dependencies:
     isomorphic-base64 "^1.0.2"
 
@@ -10819,28 +10813,28 @@ slate-hotkeys@^0.1.2:
     is-hotkey "^0.1.1"
     slate-dev-environment "^0.1.2"
 
-slate-html-serializer@^0.6.6:
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/slate-html-serializer/-/slate-html-serializer-0.6.6.tgz#62df9cc8e7540ce4e424c99d568ea9a5f418bb1e"
+slate-html-serializer@^0.6.7:
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/slate-html-serializer/-/slate-html-serializer-0.6.7.tgz#90cc928b6a99da259b35460c0129a8e9e7413598"
   dependencies:
     slate-dev-logger "^0.1.39"
     type-of "^2.0.1"
 
-slate-plain-serializer@^0.5.15:
-  version "0.5.15"
-  resolved "https://registry.yarnpkg.com/slate-plain-serializer/-/slate-plain-serializer-0.5.15.tgz#a1a306ae2f395ae90bf0f618799d886a4f0ce499"
+slate-plain-serializer@^0.5.16:
+  version "0.5.16"
+  resolved "https://registry.yarnpkg.com/slate-plain-serializer/-/slate-plain-serializer-0.5.16.tgz#ce8a4d33e7d9eb9dd1cc6cc54d0a5193c3398b0d"
   dependencies:
     slate-dev-logger "^0.1.39"
 
-slate-prop-types@^0.4.32:
-  version "0.4.32"
-  resolved "https://registry.yarnpkg.com/slate-prop-types/-/slate-prop-types-0.4.32.tgz#3d39a6db4b61a416ea54af6512f5ffa5542095d2"
+slate-prop-types@^0.4.33:
+  version "0.4.33"
+  resolved "https://registry.yarnpkg.com/slate-prop-types/-/slate-prop-types-0.4.33.tgz#9e6a84d3dc1e47b6d5fe934252522d6c6c38a213"
   dependencies:
     slate-dev-logger "^0.1.39"
 
-slate-react@^0.12.9:
-  version "0.12.9"
-  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.12.9.tgz#6cb6f1fa86c868f56b5dce064146520545884351"
+slate-react@^0.12.10:
+  version "0.12.10"
+  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.12.10.tgz#9adf38a97821927cbedf5b795e1eb2f17209c25c"
   dependencies:
     debug "^3.1.0"
     get-window "^1.1.1"
@@ -10851,20 +10845,20 @@ slate-react@^0.12.9:
     react-immutable-proptypes "^2.1.0"
     react-portal "^3.1.0"
     selection-is-backward "^1.0.0"
-    slate-base64-serializer "^0.2.34"
+    slate-base64-serializer "^0.2.35"
     slate-dev-environment "^0.1.2"
     slate-dev-logger "^0.1.39"
     slate-hotkeys "^0.1.2"
-    slate-plain-serializer "^0.5.15"
-    slate-prop-types "^0.4.32"
+    slate-plain-serializer "^0.5.16"
+    slate-prop-types "^0.4.33"
 
-slate-schema-violations@^0.1.13:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/slate-schema-violations/-/slate-schema-violations-0.1.13.tgz#0b6133ff8e1c0237714249ef6d6adf7b97908985"
+slate-schema-violations@^0.1.14:
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/slate-schema-violations/-/slate-schema-violations-0.1.14.tgz#b5e9015cc54922185098b7329b84eca92aefd982"
 
-slate@^0.34.0:
-  version "0.34.0"
-  resolved "https://registry.yarnpkg.com/slate/-/slate-0.34.0.tgz#967d24460f2caf32e409251d042e25f789420d6b"
+slate@^0.34.1:
+  version "0.34.1"
+  resolved "https://registry.yarnpkg.com/slate/-/slate-0.34.1.tgz#ca096702de314df80f8821aa997a010c0ceb3947"
   dependencies:
     debug "^3.1.0"
     direction "^0.1.5"
@@ -10873,7 +10867,7 @@ slate@^0.34.0:
     is-plain-object "^2.0.4"
     lodash "^4.17.4"
     slate-dev-logger "^0.1.39"
-    slate-schema-violations "^0.1.13"
+    slate-schema-violations "^0.1.14"
     type-of "^2.0.1"
 
 slice-ansi@1.0.0:
@@ -11362,8 +11356,8 @@ stylis-rule-sheet@^0.0.10:
   resolved "https://registry.yarnpkg.com/stylis-rule-sheet/-/stylis-rule-sheet-0.0.10.tgz#44e64a2b076643f4b52e5ff71efc04d8c3c4a430"
 
 stylis@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.5.0.tgz#016fa239663d77f868fef5b67cf201c4b7c701e1"
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.5.1.tgz#fd341d59f57f9aeb412bc14c9d8a8670b438e03b"
 
 subarg@^1.0.0:
   version "1.0.0"
