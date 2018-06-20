@@ -11,6 +11,9 @@ import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
 import { getEntityActions } from '../../editionConfig';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { TranslatableContent } from '../../../data/i18n';
+import { State } from '../../../data/Reducer/reducers';
+import { css, cx } from 'emotion';
+import { shallowIs } from '../../../Helper/shallowIs';
 // import { Tree } from '../Views/Tree';
 
 interface TreeProps {
@@ -88,7 +91,13 @@ function TreeView({ variables, dispatch }: TreeProps) {
     </Toolbar>
   );
 }
-
+const SELECTED_STYLE_WIDTH = 4;
+const editingStyle = css({
+  borderLeft: `${SELECTED_STYLE_WIDTH}px solid`,
+});
+const headerStyle = css({
+  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
+});
 function CTree(props: {
   variableId: number;
   subPath?: (string | number)[];
@@ -99,9 +108,18 @@ function CTree(props: {
   ) => () => void;
 }): JSX.Element {
   return (
-    <StoreConsumer selector={() => VariableDescriptor.select(props.variableId)}>
+    <StoreConsumer
+      selector={(state: State) => ({
+        variable: VariableDescriptor.select(props.variableId),
+        editing:
+          state.global.editing != null &&
+          state.global.editing.type === 'Variable' &&
+          props.variableId === state.global.editing.id &&
+          shallowIs(props.subPath || [], state.global.editing.path),
+      })}
+    >
       {({ state }) => {
-        let variable = state;
+        let { variable } = state;
         if (Array.isArray(props.subPath) && props.subPath.length > 0) {
           variable = get(variable, props.subPath) as IVariableDescriptor;
         }
@@ -110,7 +128,10 @@ function CTree(props: {
             <Node
               {...props.nodeProps()}
               header={
-                <span onClick={props.onSelectCreator(variable)}>
+                <span
+                  className={cx(headerStyle, { [editingStyle]: state.editing })}
+                  onClick={props.onSelectCreator(variable)}
+                >
                   {`${variable['@class']}: ${TranslatableContent.toString(
                     variable.label,
                   )}`}
