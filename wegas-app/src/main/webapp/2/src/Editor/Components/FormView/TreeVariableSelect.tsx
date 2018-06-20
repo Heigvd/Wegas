@@ -34,6 +34,7 @@ interface Item {
   value: string;
   selectable: boolean;
   items?: Item[];
+  className?: string;
 }
 function genVarItems(
   items: number[],
@@ -101,7 +102,7 @@ function labelForValue(items: Item[], value?: string) {
   return '';
 }
 interface TreeVariableSelectProps
-  extends WidgetProps.BaseProps<CommonView & LabeledView> {
+  extends WidgetProps.BaseProps<CommonView & LabeledView & { items?: Item[] }> {
   value?: string;
 }
 export class TreeVSelect extends React.Component<
@@ -195,7 +196,7 @@ export function TreeVariableSelect(
       selector={() => ({ items: GameModel.selectCurrent().itemsIds, props })}
     >
       {({ state }) => {
-        const items = genVarItems(state.items);
+        const items = genVarItems(state.items).concat(props.view.items || []);
         return <TreeVSelect {...props} items={items} />;
       }}
     </StoreConsumer>

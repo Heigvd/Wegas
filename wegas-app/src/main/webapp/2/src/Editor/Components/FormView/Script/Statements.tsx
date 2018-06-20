@@ -39,7 +39,7 @@ export function Statements({ statements, onChange, mode }: StatementsProps) {
                 }}
               />
             ) : (
-              generate(s).code
+              <code>{generate(s).code}</code>
             )}
           </div>
           <IconButton

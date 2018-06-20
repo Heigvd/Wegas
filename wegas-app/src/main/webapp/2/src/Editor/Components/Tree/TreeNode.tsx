@@ -173,7 +173,7 @@ export default function TreeNode(props: TreeNodeProps): JSX.Element {
   }
 
   return (
-    <li className={cx(className, `${treeNodeContainerStyle}`)}>
+    <li className={`${className || ''} ${treeNodeContainerStyle}`}>
       {items ? (
         <IconButton
           icon={expanded ? 'caret-down' : 'caret-right'}

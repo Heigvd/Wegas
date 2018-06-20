@@ -2,11 +2,13 @@ import generate from '@babel/generator';
 import { parseExpression } from '@babel/parser';
 import {
   booleanLiteral,
+  callExpression,
   EmptyStatement,
   Expression,
   ExpressionStatement,
   expressionStatement,
   identifier,
+  isCallExpression,
   isEmptyStatement,
   isExpressionStatement,
   numericLiteral,
@@ -17,6 +19,7 @@ import Form from 'jsoninput';
 import * as React from 'react';
 import { VariableDescriptor } from '../../../../data/selectors';
 import { getMethodConfig, MethodConfig } from '../../../editionConfig';
+import { createGlobalCallAST, extractGlobalMethod, getGlobals } from './global';
 import {
   createVariableCallAST,
   isVariableCall,
@@ -28,14 +31,10 @@ interface ImpactProps {
   onChange: (stmt: ExpressionStatement) => void;
   mode: 'SET' | 'GET';
 }
-const variableSchema = {
-  view: {
-    type: 'variableselect',
-    layout: 'inline',
-  },
-};
+
 interface ExprState {
   variable?: IVariableDescriptor;
+  variableSchema: { view: any };
   methodsConfig: MethodConfig;
 }
 function astToJSONValue(ast: Expression | SpreadElement) {
@@ -102,25 +101,60 @@ async function buildDefaultVariableCallAST(
     );
   }
 }
+
+function buildDefaultGlobalCAllAST(method: string, mode: 'SET' | 'GET') {
+  const config = getGlobals(mode === 'GET' ? 'condition' : 'impact')[method];
+  return createGlobalCallAST(method, argsToDefault(config.arguments));
+}
+function genGlobalItems(mode: 'SET' | 'GET') {
+  return Object.entries(
+    getGlobals(mode === 'GET' ? 'condition' : 'impact'),
+  ).map(([k, v]) => ({
+    label: v.label,
+    value: `.${k}`,
+  })); // Global start with a DOT
+}
 export class ExprStatement extends React.Component<ImpactProps, ExprState> {
-  state: ExprState = { methodsConfig: {} };
+  state: ExprState = {
+    methodsConfig: {},
+    variableSchema: {
+      view: {
+        type: 'variableselect',
+        layout: 'inline',
+        items: genGlobalItems(this.props.mode),
+      },
+    },
+  };
   variableChange = async (variable: string) => {
     const { stmt } = this.props;
-    const newVariable = VariableDescriptor.find('name', variable);
-    if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
-      const expression = stmt.expression;
-      const oldVariable = this.state.variable;
-      if (
-        newVariable &&
-        oldVariable &&
-        newVariable['@class'] === oldVariable['@class']
-      ) {
-        // Same Type
-        const method = expression.callee.property.name;
-        const args = expression.arguments;
-        this.props.onChange(
-          expressionStatement(createVariableCallAST(variable, method, args)),
-        );
+    if (variable.startsWith('.')) {
+      //GLOBAL MODE
+      const global = variable.slice(1);
+      const call = buildDefaultGlobalCAllAST(global, this.props.mode);
+      this.props.onChange(expressionStatement(call));
+    } else {
+      const newVariable = VariableDescriptor.find('name', variable);
+      if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
+        const expression = stmt.expression;
+        const oldVariable = this.state.variable;
+        if (
+          newVariable &&
+          oldVariable &&
+          newVariable['@class'] === oldVariable['@class']
+        ) {
+          // Same Type
+          const method = expression.callee.property.name;
+          const args = expression.arguments;
+          this.props.onChange(
+            expressionStatement(createVariableCallAST(variable, method, args)),
+          );
+        } else if (newVariable) {
+          this.props.onChange(
+            expressionStatement(
+              await buildDefaultVariableCallAST(newVariable, this.props.mode),
+            ),
+          );
+        }
       } else if (newVariable) {
         this.props.onChange(
           expressionStatement(
@@ -128,12 +162,6 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
           ),
         );
       }
-    } else if (isEmptyStatement(stmt) && newVariable) {
-      this.props.onChange(
-        expressionStatement(
-          await buildDefaultVariableCallAST(newVariable, this.props.mode),
-        ),
-      );
     }
   };
   methodChange = (value: string) => {
@@ -175,20 +203,35 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
   argsChange = (values: any[]) => {
     const { stmt } = this.props;
     const { methodsConfig, variable } = this.state;
-    if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
-      const expression = stmt.expression;
-      const method = expression.callee.property.name;
-      this.props.onChange(
-        expressionStatement(
-          createVariableCallAST(
-            variable!.name,
-            method,
-            values.map((a, i) =>
-              valueToAST(a, methodsConfig[method].arguments[i].type),
+    if (isExpressionStatement(stmt)) {
+      if (isVariableCall(stmt.expression)) {
+        const expression = stmt.expression;
+        const method = expression.callee.property.name;
+        this.props.onChange(
+          expressionStatement(
+            createVariableCallAST(
+              variable!.name,
+              method,
+              values.map((a, i) =>
+                valueToAST(a, methodsConfig[method].arguments[i].type),
+              ),
             ),
           ),
-        ),
-      );
+        );
+      } else if (isCallExpression(stmt.expression)) {
+        const method = extractGlobalMethod(stmt.expression);
+        const config = getGlobals(
+          this.props.mode === 'GET' ? 'condition' : 'impact',
+        )[method];
+        this.props.onChange(
+          expressionStatement(
+            callExpression(
+              stmt.expression.callee,
+              values.map((a, i) => valueToAST(a, config.arguments[i].type)),
+            ),
+          ),
+        );
+      }
     }
   };
   componentDidMount() {
@@ -244,7 +287,15 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
           ? methodsConfig[m].returns === undefined
           : methodsConfig[m].returns !== undefined,
     );
-    if (isExpressionStatement(stmt) && isVariableCall(stmt.expression)) {
+    if (isEmptyStatement(stmt)) {
+      return (
+        <Form
+          schema={this.state.variableSchema}
+          onChange={this.variableChange}
+        />
+      );
+    }
+    if (isVariableCall(stmt.expression)) {
       const expression = stmt.expression;
       const variable = variableName(expression.callee.object);
       const method = expression.callee.property.name;
@@ -261,7 +312,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
         <>
           <Form
             value={variable}
-            schema={variableSchema}
+            schema={this.state.variableSchema}
             onChange={this.variableChange}
           />
           <Form
@@ -291,13 +342,43 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
         </>
       );
     }
-    if (isEmptyStatement(stmt)) {
+
+    if (isCallExpression(stmt.expression)) {
+      const expression = stmt.expression;
+      const method = extractGlobalMethod(stmt.expression);
+      const args = expression.arguments;
+      const config = getGlobals(mode === 'GET' ? 'condition' : 'impact')[
+        method
+      ];
+      if (config == null) {
+        throw Error(`Unknown [${method}]`);
+      }
+      const formItems: MethodConfig['1']['arguments'] = config
+        ? config.arguments.map(
+            a =>
+              a.type === 'identifier'
+                ? { ...a, type: 'string' as 'string' }
+                : a,
+          )
+        : [];
       return (
-        <Form
-          value={''}
-          schema={variableSchema}
-          onChange={this.variableChange}
-        />
+        <>
+          <Form
+            value={'.' + extractGlobalMethod(stmt.expression)}
+            onChange={this.variableChange}
+            schema={this.state.variableSchema}
+          />
+          <Form
+            schema={{
+              type: 'array',
+              minItems: formItems.length,
+              maxItems: formItems.length,
+              items: formItems,
+            }}
+            value={args.map(a => astToJSONValue(a))}
+            onChange={this.argsChange}
+          />
+        </>
       );
     }
     return <pre>{JSON.stringify(stmt, null, 2)}</pre>;

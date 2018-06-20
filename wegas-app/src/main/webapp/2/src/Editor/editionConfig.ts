@@ -11,9 +11,12 @@ export type MethodConfig = {
     arguments: {
       type: 'string' | 'number' | 'boolean' | 'identifier' | 'array' | 'object';
       value?: {};
+      properties?: {};
+      additionalProperties?: {};
+      items?: {};
       const?: string;
       required?: boolean;
-      view: AvailableViews;
+      view?: AvailableViews;
     }[];
     returns?: 'number' | 'string' | 'boolean';
   };
