@@ -31,6 +31,7 @@ interface IAsyncSelectProps extends WidgetProps.BaseProps {
 const selectStyle = css({
   padding: '2px 4px',
   border: '1px solid lightgray',
+  backgroundColor: 'lightgray',
   minWidth: '5em',
 });
 
@@ -67,9 +68,23 @@ function SelectView(props: ISelectProps) {
   ) {
     props.onChange(JSON.parse(event.target.value));
   };
-  const choices: (Choice | string)[] = ([title] as (Choice | string)[]).concat(
-    props.view.choices || [],
-  );
+  const choices =
+    props.value != undefined
+      ? props.view.choices.some(c => {
+          if ('string' === typeof c) {
+            return props.value === c;
+          }
+          return props.value === c.value;
+        })
+        ? props.view.choices
+        : [
+            {
+              label: props.value,
+              value: props.value,
+              disabled: true,
+            } as Choice | string,
+          ].concat(props.view.choices)
+      : ([title] as (Choice | string)[]).concat(props.view.choices || []);
   const menuItems = choices.map(genItems);
   const value = JSON.stringify(props.value) || JSON.stringify(title.value);
   return (
@@ -79,14 +94,22 @@ function SelectView(props: ISelectProps) {
           <>
             {labelNode}
             <div>
-              <select
-                id={inputId}
-                className={selectStyle}
-                value={value}
-                onChange={onChange}
-              >
-                {menuItems}
-              </select>
+              {menuItems.length > 1 ? (
+                <select
+                  id={inputId}
+                  className={selectStyle}
+                  value={value}
+                  onChange={onChange}
+                >
+                  {menuItems}
+                </select>
+              ) : (
+                <span className={selectStyle}>
+                  {'string' === typeof choices[0]
+                    ? choices[0]
+                    : (choices[0] as Choice).label}
+                </span>
+              )}
             </div>
           </>
         )}
