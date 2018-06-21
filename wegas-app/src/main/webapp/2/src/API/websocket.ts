@@ -65,8 +65,9 @@ function Uint8ArrayToStr(array: Uint8Array) {
 function processEvent(event: string, data: string | {}): [string, {}] {
   if (event.endsWith('.gz') && typeof data === 'string') {
     const ba = [];
-    for (let i = 0; i < data.length; i += 1) {
-      ba.push(data.charCodeAt(i));
+    const d = atob(data);
+    for (let i = 0; i < d.length; i += 1) {
+      ba.push(d.charCodeAt(i));
     }
     const compressed = new Uint8Array(ba);
 
