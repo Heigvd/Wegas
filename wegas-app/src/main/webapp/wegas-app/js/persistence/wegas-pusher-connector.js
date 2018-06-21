@@ -136,8 +136,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
 
             return out;
         },
-        gunzip: function(data) {
-            var ba, i, compressed, zlib, inflated;
+        gunzip: function(b64Data) {
+            var data, ba, i, compressed, zlib, inflated;
+            data = atob(b64Data);
             ba = [];
             for (i = 0; i < data.length; i += 1) {
                 ba.push(data.charCodeAt(i));

@@ -34,8 +34,7 @@ YUI.add('wegas-widget', function(Y) {
                 .toggleClass(this.get('cssClass'), this.get('cssClass')); // Add cssClass atrribute if the widget has one
 
             Y.later(0, this, function() {
-                this.get(BOUNDING_BOX)
-                    .toggleClass('wegas-widget-editable', this.isEditable());
+                this.get(BOUNDING_BOX)._node && this.get(BOUNDING_BOX).toggleClass('wegas-widget-editable', this.isEditable());
             });
         });
         this._cssPrefix = this.constructor.CSS_PREFIX =

@@ -799,7 +799,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 visible: function(val, formVal) {
                     var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                    return parent ? parent.get("@class") === "ChoiceDescriptor" : false;
+                    return parent ? parent.get("@class") === "ChoiceDescriptor" : true;
                 }
             }),
             name: {
