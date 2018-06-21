@@ -864,6 +864,18 @@ YUI().use(function(Y) {
                     "wegas-number-input", "wegas-layout-list"],
                 ws_provides: ["MCQView", "WhView"]
             },
+            "wegas-mcq-dialogview": {
+                requires: ["wegas-layout-absolute", "wegas-alerts",
+                    "wegas-mcq-entities", "wegas-i18n-mcq",
+                    "wegas-alerts", "wegas-tooltip",
+                    "wegas-layout-list", "wegas-dialogcss"],
+                ws_provides: ["MCQDialogView"]
+            },
+            "wegas-mcq-selector": {
+                requires: ["wegas-simpledialogue", "wegas-mcq-dialogview", "wegas-dialogcss", "wegas-tooltip",
+                    "wegas-helper", "event-valuechange"],
+                ws_provides: ["MCQSelector"]
+            },
             "wegas-mcq-viewcss": {
                 type: CSS
             },

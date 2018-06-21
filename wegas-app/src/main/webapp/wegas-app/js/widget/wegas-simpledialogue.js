@@ -36,7 +36,10 @@ YUI.add("wegas-simpledialogue", function(Y) {
         syncUI: function() {
             this.currentDialogue = this.get("dialogueVariable.evaluated");
             this.set("disabled", !this.currentDialogue.getInstance().get("enabled"));
-            this.get(CONTENTBOX).one('.dialogue .response .responseElements').empty();
+            var responseElements = this.get(CONTENTBOX).one('.dialogue .response .responseElements');
+            if (responseElements) {
+                responseElements.empty();
+            }
             if (!this.currentDialogue) {
                 this.get(CONTENTBOX).one('.dialogue .talk').insert("Dialog variable could not be found");
                 return;
