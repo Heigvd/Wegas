@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Value, Change } from 'slate';
-import { IconProp } from '@fortawesome/fontawesome';
+import { Props } from '@fortawesome/react-fontawesome';
 import {
   Generated,
   hasMark,
@@ -19,7 +19,7 @@ export function genMark({
   render: (props: { children: React.ReactNode }) => JSX.Element;
   mark: string;
   htmlIsMark: (el: Element) => boolean;
-  buttonIcon: IconProp;
+  buttonIcon: Props['icon'];
 }): Generated {
   return {
     name: `Mark_${mark}`,
@@ -82,7 +82,7 @@ export function genBlock({
   ) => JSX.Element;
   block: string;
   htmlIsBlock: (el: Element) => boolean;
-  buttonIcon: IconProp;
+  buttonIcon: Props['icon'];
 }): Generated {
   return {
     name: `Block_${block}`,

@@ -2,7 +2,7 @@ import * as React from 'react';
 import Downshift from 'downshift';
 import { css } from 'emotion';
 import { IconButton } from './Button/IconButton';
-import { IconProp } from '@fortawesome/fontawesome';
+import { Props } from '@fortawesome/react-fontawesome';
 interface KV {
   [key: string]: any;
 }
@@ -54,15 +54,13 @@ export class Menu extends React.Component<MenuProps> {
   render(): JSX.Element {
     const { onSelect, direction, label } = this.props;
     return (
-      <Downshift
-        onSelect={onSelect}
-        itemToString={() => ''}>
+      <Downshift onSelect={onSelect} itemToString={() => ''}>
         {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
           <div className={String(container)}>
             <div className={itemStyle} onClick={() => toggleMenu()}>
               {label}
               <IconButton
-                icon={`caret-${direction}` as IconProp}
+                icon={`caret-${direction}` as Props['icon']}
                 onClick={ev => {
                   ev.stopPropagation();
                   toggleMenu();

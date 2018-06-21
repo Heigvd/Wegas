@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
-import { FontAwesomeProps } from '@fortawesome/react-fontawesome';
+import { Props } from '@fortawesome/react-fontawesome';
 
-interface Props extends FontAwesomeProps {
+interface IconButtonProps extends Props {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseDown?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   label?: React.ReactNode;
@@ -41,7 +41,7 @@ const disabledStyle = css({
   backgroundColor: 'darkslategrey',
 });
 
-export function IconButton(props: Props) {
+export function IconButton(props: IconButtonProps) {
   const {
     onClick,
     onMouseDown,
