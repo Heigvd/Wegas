@@ -29,10 +29,11 @@ interface IAsyncSelectProps extends WidgetProps.BaseProps {
     LabeledView;
 }
 const selectStyle = css({
+  display: 'inline-block',
   padding: '2px 4px',
   border: '1px solid lightgray',
   backgroundColor: 'lightgray',
-  minWidth: '5em',
+  minWidth: '4em',
 });
 
 function genItems(o: string | Choice) {
@@ -85,7 +86,6 @@ function SelectView(props: ISelectProps) {
             } as Choice | string,
           ].concat(props.view.choices)
       : ([title] as (Choice | string)[]).concat(props.view.choices || []);
-  const menuItems = choices.map(genItems);
   const value = JSON.stringify(props.value) || JSON.stringify(title.value);
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
@@ -94,14 +94,14 @@ function SelectView(props: ISelectProps) {
           <>
             {labelNode}
             <div>
-              {menuItems.length > 1 ? (
+              {choices.length > 1 ? (
                 <select
                   id={inputId}
                   className={selectStyle}
                   value={value}
                   onChange={onChange}
                 >
-                  {menuItems}
+                  {choices.map(genItems)}
                 </select>
               ) : (
                 <span className={selectStyle}>
