@@ -30,6 +30,7 @@ export const config: ConfigurationSchema<IFSMDescriptor.Transition> = {
     view: {
       type: 'script',
       label: 'Condition',
+      mode: 'GET',
     },
   },
   preStateImpact: {
