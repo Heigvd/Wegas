@@ -4,7 +4,6 @@ import { Actions } from '../../../data';
 import { Toolbar } from '../../../Components/Toolbar';
 import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
-import { Combobox } from '../Views/Combobox';
 import { children } from '../../EntitiesConfig/ListDescriptor';
 import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
@@ -14,7 +13,7 @@ import { TranslatableContent } from '../../../data/i18n';
 import { State } from '../../../data/Reducer/reducers';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
-// import { Tree } from '../Views/Tree';
+import { Menu } from '../../../Components/Menu';
 
 interface TreeProps {
   variables: number[];
@@ -35,17 +34,12 @@ function TreeView({ variables, dispatch }: TreeProps) {
   return (
     <Toolbar>
       <Toolbar.Header>
-        <Combobox
+        <Menu
           items={items}
-          searchKeys={['label']}
-          itemToMenuItem={i => i.label}
-          itemToValue={i => (i ? i.value : '')}
-          clearOnSelect
-          openOnFocus
-          onChange={i =>
+          icon="plus"
+          onSelect={i =>
             i && dispatch(Actions.EditorActions.createVariable(i.value))
           }
-          placeholder={'Create variable'}
         />
       </Toolbar.Header>
       <Toolbar.Content>

@@ -15,6 +15,7 @@ interface MenuProps {
   onSelect: (item: Item) => void;
   items: Item[];
   label?: React.ReactNode;
+  icon?: Props['icon'];
   direction?: 'left' | 'down' | 'right' | 'top';
 }
 const itemStyle = css({
@@ -31,9 +32,10 @@ const container = css({
 const subMenuContainer = css({
   position: 'absolute',
   display: 'inline-block',
-  padding: '3px',
-  backgroundColor: 'white',
-  boxShadow: '1px 1px 3px black',
+  padding: '5px',
+  margin: '2px',
+  backgroundColor: 'rgba(255,255,255,0.95)',
+  boxShadow: '0px 0px 4px 1px black',
   [`& .${container}`]: {
     width: '100%',
   },
@@ -52,7 +54,7 @@ export class Menu extends React.Component<MenuProps> {
     direction: 'down',
   };
   render(): JSX.Element {
-    const { onSelect, direction, label } = this.props;
+    const { onSelect, direction, label, icon } = this.props;
     return (
       <Downshift onSelect={onSelect} itemToString={() => ''}>
         {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
@@ -60,7 +62,9 @@ export class Menu extends React.Component<MenuProps> {
             <div className={itemStyle} onClick={() => toggleMenu()}>
               {label}
               <IconButton
-                icon={`caret-${direction}` as Props['icon']}
+                icon={
+                  icon != null ? icon : (`caret-${direction}` as Props['icon'])
+                }
                 onClick={ev => {
                   ev.stopPropagation();
                   toggleMenu();
