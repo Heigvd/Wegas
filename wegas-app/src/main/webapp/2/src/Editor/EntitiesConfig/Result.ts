@@ -1,6 +1,19 @@
 import { ConfigurationSchema } from '../editionConfig';
 import { VariableDescriptor } from '../../data/selectors';
 
+function cbxMode(_val: any, formVal: {}, path: string[]) {
+  path.pop(); // remove current key
+  const result: IResult = path.reduce((prev: any, v) => prev[v], formVal);
+  const choice = VariableDescriptor.select(result.choiceDescriptorId);
+  if (choice != null) {
+    const question = VariableDescriptor.select(
+      choice.parentDescriptorId,
+    ) as IQuestionDescriptor;
+    return question.cbx;
+  }
+  return false;
+}
+
 export const config: ConfigurationSchema<IResult> = {
   '@class': {
     value: 'Result',
@@ -25,7 +38,7 @@ export const config: ConfigurationSchema<IResult> = {
     type: 'object',
     index: -1,
     view: {
-      type:"i18nstring",
+      type: 'i18nstring',
       label: 'Name',
     },
   },
@@ -70,18 +83,7 @@ export const config: ConfigurationSchema<IResult> = {
   },
   ignorationAnswer: {
     type: ['object', 'null'],
-    visible: function(_val: any, formVal: {}, path: string[]) {
-      path.pop(); // remove current key
-      const result: IResult = path.reduce((prev: any, v) => prev[v], formVal);
-      const choice = VariableDescriptor.select(result.choiceDescriptorId);
-      if (choice != null) {
-        const question = VariableDescriptor.select(
-          choice.parentDescriptorId,
-        ) as IQuestionDescriptor;
-        return question.cbx;
-      }
-      return false;
-    },
+    visible: cbxMode,
     view: {
       type: 'i18nhtml',
       label: 'Feedback when ignored',
@@ -101,18 +103,7 @@ export const config: ConfigurationSchema<IResult> = {
         type: 'string',
       },
     },
-    visible: function(__val: any, formVal: {}, path: string[]) {
-      path.pop(); // remove current key
-      const result: IResult = path.reduce((prev: any, v) => prev[v], formVal);
-      const choice = VariableDescriptor.select(result.choiceDescriptorId);
-      if (choice != null) {
-        const question = VariableDescriptor.select(
-          choice.parentDescriptorId,
-        ) as IQuestionDescriptor;
-        return question.cbx;
-      }
-      return false;
-    },
+    visible: cbxMode,
     view: {
       label: 'Impact on variables when ignored',
       type: 'script',
