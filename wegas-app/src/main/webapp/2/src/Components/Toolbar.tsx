@@ -39,11 +39,22 @@ export const Toolbar = Object.assign(
     );
   },
   {
-    Header(props: { children?: React.ReactNode[] | React.ReactNode }) {
-      return <div className={toolbar}>{props.children}</div>;
+    Header(props: {
+      children?: React.ReactNode[] | React.ReactNode;
+      className?: string;
+    }) {
+      return (
+        <div className={`${toolbar} ${props.className || ''}`}>
+          {props.children}
+        </div>
+      );
     },
-    Content(props: { children?: React.ReactNode }) {
-      return <div className={content}>{props.children}</div>;
+    Content(props: { children?: React.ReactNode; className?: string }) {
+      return (
+        <div className={`${content} ${props.className || ''}`}>
+          {props.children}
+        </div>
+      );
     },
   },
 );

@@ -417,6 +417,8 @@ class State extends React.Component<{
       stop: params => {
         this.props.moveState(this.props.id, params.pos);
       },
+      //@ts-ignore
+      handle: '.content',
     });
     plumb.makeSource(this.container!, { filter: `.${sourceStyle}` });
     plumb.makeTarget(this.container!, {});
@@ -435,7 +437,7 @@ class State extends React.Component<{
       delete plumb.getManagedElements()[this.props.id];
     }
   }
-  onClick = () => this.props.editState(this.props.id);
+  onClickEdit = () => this.props.editState(this.props.id);
   render() {
     const { state, initialState } = this.props;
     return (
@@ -452,9 +454,9 @@ class State extends React.Component<{
         }}
       >
         <Toolbar vertical>
-          <Toolbar.Content>{state.label}</Toolbar.Content>
+          <Toolbar.Content className="content">{state.label}</Toolbar.Content>
           <Toolbar.Header>
-            <IconButton icon="edit" onClick={this.onClick} />
+            <IconButton icon="edit" onClick={this.onClickEdit} />
             <div className={sourceStyle}>
               <FontAwesome icon="project-diagram" />
             </div>
