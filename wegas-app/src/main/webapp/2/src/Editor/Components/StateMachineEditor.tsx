@@ -23,6 +23,7 @@ const editorStyle = css({
     zIndex: 2,
     ':hover': {
       color: 'tomato',
+      zIndex: 10,
     },
   },
   '& .jtk-overlay': {
@@ -44,14 +45,8 @@ const JS_PLUMB_OPTIONS: Defaults = {
   //                    Anchor: ["Perimeter", {shape: "Rectangle", anchorCount: 120}],
   ConnectionsDetachable: true,
   ReattachConnections: false,
-  Endpoint: [
-    'Dot',
-    {
-      radius: 7,
-    },
-  ],
-  // @ts-ignore
-  EndpointStyle: { fill: 'currentColor' },
+  Endpoint: 'Dot',
+  EndpointStyle: { fill: 'currentColor', radius: 8 },
   Connector: ['Flowchart'],
   ConnectionOverlays: [
     [
@@ -67,6 +62,7 @@ const JS_PLUMB_OPTIONS: Defaults = {
   PaintStyle: {
     strokeWidth: 4,
     stroke: 'darkgray',
+    //@ts-ignore
     outlineStroke: 'white',
     outlineWidth: 2,
   },
