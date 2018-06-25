@@ -46,4 +46,12 @@ export const config: ConfigurationSchema<IListDescriptor> = {
     },
   },
 };
-export const children = ['NumberDescriptor', 'ListDescriptor', 'FSMDescriptor'];
+
+export const children = [
+  'NumberDescriptor',
+  'ListDescriptor',
+  'FSMDescriptor',
+  'TextDescriptor',
+  'StringDescriptor',
+  'QuestionDescriptor',
+];

@@ -4,6 +4,10 @@ import { config as TextInstanceConfig } from './TextInstance';
 
 export const config: ConfigurationSchema<ITextDescriptor> = {
   ...VariableDescriptorConfig,
+  '@class': {
+    value: 'TextDescriptor',
+    view: { type: 'hidden' },
+  },
   defaultInstance: {
     type: 'object',
     properties: TextInstanceConfig,

@@ -29,13 +29,20 @@ interface INumberDescriptor extends IVariableDescriptor<INumberInstance> {
   maxValue: number | null;
   historySize: number;
 }
-
+interface IEnumItem extends IWegasEntity {
+  label: ITranslatableContent;
+  name: string;
+}
 interface ITextDescriptor extends IVariableDescriptor<ITextInstance> {
   '@class': 'TextDescriptor';
 }
 interface IStringDescriptor extends IVariableDescriptor<IStringInstance> {
   '@class': 'StringDescriptor';
-  allowedValues: string[];
+  allowedValues: IEnumItem[];
+  /**
+   * Unused?
+   */
+  validationPattern?: string | null;
 }
 interface IQuestionDescriptor
   extends IVariableDescriptor<IQuestionInstance>,
