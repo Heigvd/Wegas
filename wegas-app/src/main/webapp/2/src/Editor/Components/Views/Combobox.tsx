@@ -105,5 +105,3 @@ export class Combobox<T> extends React.Component<ComboboxProps<T>> {
     );
   }
 }
-
-export type Specialization<T> = new () => Combobox<T>;

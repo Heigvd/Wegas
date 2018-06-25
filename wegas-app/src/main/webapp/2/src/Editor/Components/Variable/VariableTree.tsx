@@ -4,7 +4,7 @@ import { Actions } from '../../../data';
 import { Toolbar } from '../../../Components/Toolbar';
 import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
-import { Combobox, Specialization } from '../Views/Combobox';
+import { Combobox } from '../Views/Combobox';
 import { children } from '../../EntitiesConfig/ListDescriptor';
 import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
@@ -25,11 +25,6 @@ const items = children.map(v => ({
   label: v.slice(0, -10),
 }));
 
-const VariableCreate = Combobox as Specialization<{
-  value: string;
-  label: string;
-}>;
-
 function TreeView({ variables, dispatch }: TreeProps) {
   function onSelectCreator(variable: IVariableDescriptor, path?: string[]) {
     return () =>
@@ -40,7 +35,7 @@ function TreeView({ variables, dispatch }: TreeProps) {
   return (
     <Toolbar>
       <Toolbar.Header>
-        <VariableCreate
+        <Combobox
           items={items}
           searchKeys={['label']}
           itemToMenuItem={i => i.label}
