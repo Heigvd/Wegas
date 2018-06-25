@@ -3,12 +3,14 @@ import {
   isExpressionStatement,
   emptyStatement,
   isEmptyStatement,
+  isCallExpression,
 } from '@babel/types';
 import generate from '@babel/generator';
 import * as React from 'react';
 import { ExprStatement } from './ExpressionStatement';
 import { IconButton } from '../../../../Components/Button/IconButton';
 import { css } from 'emotion';
+import { isBinaryExpression } from '@babel/types';
 
 interface StatementsProps {
   statements: Statement[];
@@ -22,13 +24,21 @@ const contentStyle = css({
 const flexGrow = css({
   flexGrow: 1,
 });
+const codeStyle = css({
+  display: 'inline-block',
+  margin: '0.4em 0',
+  whiteSpace: 'pre',
+});
 export function Statements({ statements, onChange, mode }: StatementsProps) {
   return (
     <>
       {statements.map((s, i) => (
         <div key={i} className={contentStyle}>
           <div className={flexGrow}>
-            {isExpressionStatement(s) || isEmptyStatement(s) ? (
+            {(isExpressionStatement(s) &&
+              (isCallExpression(s.expression) ||
+                isBinaryExpression(s.expression))) ||
+            isEmptyStatement(s) ? (
               <ExprStatement
                 stmt={s}
                 mode={mode}
@@ -39,7 +49,7 @@ export function Statements({ statements, onChange, mode }: StatementsProps) {
                 }}
               />
             ) : (
-              <code>{generate(s).code}</code>
+              <code className={codeStyle}>{generate(s).code}</code>
             )}
           </div>
           <IconButton
