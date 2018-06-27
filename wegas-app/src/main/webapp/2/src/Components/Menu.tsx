@@ -3,17 +3,15 @@ import Downshift from 'downshift';
 import { css } from 'emotion';
 import { IconButton } from './Button/IconButton';
 import { Props } from '@fortawesome/react-fontawesome';
-interface KV {
-  [key: string]: any;
-}
-interface Item extends KV {
+
+interface Item<T> {
   label: React.ReactNode;
   disabled?: true;
-  children?: Item[];
+  children?: T[];
 }
-interface MenuProps {
-  onSelect: (item: Item) => void;
-  items: Item[];
+interface MenuProps<T extends Item<T>> {
+  onSelect: (item: T) => void;
+  items: T[];
   label?: React.ReactNode;
   icon?: Props['icon'];
   direction?: 'left' | 'down' | 'right' | 'top';
@@ -30,9 +28,11 @@ const container = css({
   position: 'relative',
 });
 const subMenuContainer = css({
-  position: 'absolute',
+  position: 'fixed',
   display: 'inline-block',
   padding: '5px',
+  zIndex: 1,
+  whiteSpace: 'nowrap',
   margin: '2px',
   backgroundColor: 'rgba(255,255,255,0.95)',
   boxShadow: '0px 0px 4px 1px black',
@@ -49,7 +49,7 @@ const DIR = {
 function stopPropagation(ev: React.MouseEvent<HTMLElement>) {
   ev.stopPropagation();
 }
-export class Menu extends React.Component<MenuProps> {
+export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
   static defaultProps = {
     direction: 'down',
   };
@@ -73,7 +73,7 @@ export class Menu extends React.Component<MenuProps> {
             </div>
 
             {isOpen && (
-              <div className={String(DIR[direction!])}>
+              <div className={DIR[direction!]}>
                 {this.props.items.map((item, index) => {
                   if (Array.isArray(item.children)) {
                     return (

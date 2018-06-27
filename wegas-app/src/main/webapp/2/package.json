@@ -73,10 +73,10 @@
     "@types/babel-generator": "^6.25.2",
     "@types/babel-traverse": "^6.25.4",
     "@types/babylon": "^6.16.3",
-    "@types/jest": "^23.1.1",
+    "@types/jest": "^23.1.2",
     "@types/lodash-es": "^4.17.0",
     "@types/pako": "^1.0.0",
-    "@types/react": "^16.4.1",
+    "@types/react": "^16.4.2",
     "@types/react-dnd": "^2.0.36",
     "@types/react-dnd-html5-backend": "^2.1.9",
     "@types/react-dom": "^16.0.6",
@@ -96,7 +96,7 @@
     "ts-jest": "^22.4.6",
     "ts-loader": "^4.4.1",
     "typescript": "2.9.2",
-    "webpack": "^4.12.1",
+    "webpack": "^4.12.2",
     "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.4"
   }

@@ -30,7 +30,7 @@ const listElementStyle = css({
 interface IArrayProps
   extends WidgetProps.ArrayProps<
       {
-        choices?: { label: React.ReactNode }[];
+        choices?: { label: React.ReactNode; value: string }[];
         tooltip?: string;
         disabled?: boolean;
       } & CommonView &
