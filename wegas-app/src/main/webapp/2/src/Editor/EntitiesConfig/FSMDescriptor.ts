@@ -34,3 +34,5 @@ export const config: ConfigurationSchema<IFSMDescriptor> = {
 export const actions: EActions<IFSMDescriptor> = {
   edit: Actions.EditorActions.editStateMachine,
 };
+export const label = 'State-machine';
+export const icon = 'project-diagram';

@@ -1,6 +1,8 @@
 import { ConfigurationSchema } from '../editionConfig';
 import { config as variableDescriptorConfig } from './VariableDescriptor';
 import { config as questionInstanceConfig } from './QuestionInstance';
+
+export const children = ['SingleResultChoiceDescriptor', 'ChoiceDescriptor'];
 export const config: ConfigurationSchema<IQuestionDescriptor> = {
   ...variableDescriptorConfig,
   defaultInstance: {
@@ -103,3 +105,5 @@ export const config: ConfigurationSchema<IQuestionDescriptor> = {
     view: { type: 'hidden' },
   },
 };
+export const label = 'Question';
+export const icon = 'question-circle';

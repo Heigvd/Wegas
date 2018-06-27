@@ -80,7 +80,7 @@ const global = u<GlobalState>(
           type: 'VariableCreate',
           '@class': action.payload['@class'],
           parentId: action.payload.parentId,
-          actions: {},
+          actions: action.payload.actions,
         };
         return;
       case ActionType.PAGE_EDIT:
@@ -159,10 +159,15 @@ export function editStateMachine(
  * @param {string} cls class
  * @returns
  */
-export function createVariable(cls: string, parent?: IParentDescriptor) {
+export function createVariable(
+  cls: string,
+  parent?: IParentDescriptor,
+  actions: EditorAction = { delete: undefined },
+) {
   return ActionCreator.VARIABLE_CREATE({
     '@class': cls,
     parentId: parent ? parent.id : undefined,
+    actions,
   });
 }
 

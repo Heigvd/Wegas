@@ -16,3 +16,5 @@ export const config: ConfigurationSchema<ISingleResultChoiceDescriptor> = {
     maxItems: 1,
   },
 };
+export const label = 'Single result';
+export const icon = 'check-square';

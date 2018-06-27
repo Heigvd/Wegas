@@ -17,6 +17,7 @@ function cbxMode(_val: any, formVal: {}, path: string[]) {
 export const config: ConfigurationSchema<IResult> = {
   '@class': {
     value: 'Result',
+    view: { type: 'hidden' },
   },
   id: {
     type: ['number', 'null'],
@@ -132,3 +133,5 @@ export const config: ConfigurationSchema<IResult> = {
     },
   },
 };
+export const label = 'Result';
+export const icon = 'cog';

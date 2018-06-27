@@ -54,3 +54,6 @@ export const config: ConfigurationSchema<IChoiceDescriptor> = {
     view: { type: 'hidden' },
   },
 };
+export const children = ['Result'];
+export const label = 'Conditional result';
+export const icon = 'check-square';

@@ -7,23 +7,41 @@ import { get } from 'lodash-es';
 import { children } from '../../EntitiesConfig/ListDescriptor';
 import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
-import { getEntityActions } from '../../editionConfig';
+import { getEntityActions, getIcon, getLabel } from '../../editionConfig';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { TranslatableContent } from '../../../data/i18n';
 import { State } from '../../../data/Reducer/reducers';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
+import { FontAwesome } from '../Views/FontAwesome';
+import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { AddMenuParent, AddMenuChoice } from './AddMenu';
+
+const items = children.map(i => {
+  const Label = asyncSFC(async () => {
+    const entity = { '@class': i };
+    const [icon = 'question', label = ''] = await Promise.all([
+      getIcon(entity),
+      getLabel(entity),
+    ]);
+    return (
+      <>
+        <FontAwesome icon={icon} fixedWidth />
+        {label}
+      </>
+    );
+  });
+  return {
+    label: <Label />,
+    value: i,
+  };
+});
 
 interface TreeProps {
   variables: number[];
   dispatch: StoreDispatch;
 }
-const items = children.map(v => ({
-  value: v,
-  label: v.slice(0, -10),
-}));
-
 function TreeView({ variables, dispatch }: TreeProps) {
   function onSelectCreator(variable: IVariableDescriptor, path?: string[]) {
     return () =>
@@ -38,7 +56,7 @@ function TreeView({ variables, dispatch }: TreeProps) {
           items={items}
           icon="plus"
           onSelect={i =>
-            i && dispatch(Actions.EditorActions.createVariable(i.value))
+            dispatch(Actions.EditorActions.createVariable(i.value))
           }
         />
       </Toolbar.Header>
@@ -107,12 +125,16 @@ function CTree(props: {
           shallowIs(props.subPath || [], state.global.editing.path),
       })}
     >
-      {({ state }) => {
+      {({ state, dispatch }) => {
         let { variable } = state;
         if (Array.isArray(props.subPath) && props.subPath.length > 0) {
           variable = get(variable, props.subPath) as IVariableDescriptor;
         }
         if (variable) {
+          const Title = asyncSFC(async () => {
+            const icon = await getIcon(variable!);
+            return <FontAwesome icon={icon || 'question'} fixedWidth />;
+          });
           return (
             <Node
               {...props.nodeProps()}
@@ -121,9 +143,20 @@ function CTree(props: {
                   className={cx(headerStyle, { [editingStyle]: state.editing })}
                   onClick={props.onSelectCreator(variable)}
                 >
-                  {`${variable['@class']}: ${TranslatableContent.toString(
-                    variable.label,
-                  )}`}
+                  <Title />
+                  {TranslatableContent.toString(variable.label)}
+                  {entityIs<IListDescriptor>(variable, 'ListDescriptor') ||
+                  entityIs<IQuestionDescriptor>(
+                    variable,
+                    'QuestionDescriptor',
+                  ) ? (
+                    <AddMenuParent variable={variable} dispatch={dispatch} />
+                  ) : entityIs<IChoiceDescriptor>(
+                    variable,
+                    'ChoiceDescriptor',
+                  ) ? (
+                    <AddMenuChoice variable={variable} dispatch={dispatch} />
+                  ) : null}
                 </span>
               }
               id={variable}

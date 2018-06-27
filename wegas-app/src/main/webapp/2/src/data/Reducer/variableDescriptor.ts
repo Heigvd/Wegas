@@ -53,7 +53,7 @@ export function getAll(): ThunkResult {
 
 export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
-): ThunkResult {
+): ThunkResult<Promise<StateActions>> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(

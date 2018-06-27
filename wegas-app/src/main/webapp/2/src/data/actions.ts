@@ -27,8 +27,14 @@ export const ActionCreator = {
     config?: ConfigurationSchema<IVariableDescriptor>;
     path?: string[];
   }) => createAction(ActionType.FSM_EDIT, data),
-  VARIABLE_CREATE: (data: { '@class': string; parentId?: number }) =>
-    createAction(ActionType.VARIABLE_CREATE, data),
+  VARIABLE_CREATE: <T extends IWegasEntity>(data: {
+    '@class': string;
+    parentId?: number;
+    actions: {
+      save?: (entity: T) => void;
+      delete?: (entity: T) => void;
+    };
+  }) => createAction(ActionType.VARIABLE_CREATE, data),
   MANAGED_MODE: (data: {
     deletedEntities: NormalizedData;
     updatedEntities: NormalizedData;

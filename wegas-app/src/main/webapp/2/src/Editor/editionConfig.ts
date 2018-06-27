@@ -2,6 +2,7 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from './Components/FormView';
 import { Actions } from '../data';
 import { StateActions } from '../data/actions';
+import { Props } from '@fortawesome/react-fontawesome';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
@@ -63,4 +64,25 @@ export async function getMethodConfig<T extends IWegasEntity>(
 ): Promise<MethodConfig> {
   return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
     entity['@class']).then(res => ({ ...res.methods }));
+}
+
+export async function getIcon<T extends IWegasEntity>(
+  entity: T,
+): Promise<Props['icon'] | undefined> {
+  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
+    entity['@class']).then(({ icon }) => icon);
+}
+
+export async function getLabel<T extends IWegasEntity>(
+  entity: T,
+): Promise<string | undefined> {
+  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
+    entity['@class']).then(({ label }) => label);
+}
+
+export async function getChildren<T extends IWegasEntity>(
+  entity: T,
+): Promise<string[]> {
+  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
+    entity['@class']).then(({ children }) => children || []);
 }

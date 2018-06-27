@@ -33,3 +33,5 @@ export const methods: MethodConfig = {
     arguments: [SELFARG],
   },
 };
+export const label = 'Text';
+export const icon = 'paragraph';

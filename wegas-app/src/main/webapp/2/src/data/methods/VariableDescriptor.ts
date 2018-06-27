@@ -9,9 +9,11 @@ export function editorLabel(vd: IVariableDescriptor) {
   return vd.editorTag || label;
 }
 
-export function getParent(vd: IVariableDescriptor) {
+export function getParent(vd: IVariableDescriptor): IParentDescriptor {
   if (vd.parentDescriptorType === 'VariableDescriptor') {
-    return VariableDescriptor.select(vd.parentDescriptorId);
+    return (VariableDescriptor.select(
+      vd.parentDescriptorId,
+    ) as any) as IParentDescriptor;
   }
   return GameModel.select(vd.parentDescriptorId);
 }

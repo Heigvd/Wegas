@@ -70,3 +70,5 @@ export const methods: MethodConfig = {
     arguments: [SELFARG],
   },
 };
+export const label = 'String';
+export const icon = 'font';

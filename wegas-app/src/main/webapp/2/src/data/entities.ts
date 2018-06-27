@@ -1,21 +1,3 @@
-const base = [
-  'Number',
-  'String',
-  'List',
-  'Text',
-  'Boolean',
-  'Object',
-  'Trigger',
-  'Question',
-];
-export const rootDescriptors: string[] = base.map(b => b + 'Descriptor');
-export const descriptors: string[] = rootDescriptors.concat([
-  'ChoiceDescriptor',
-  'SingleResultChoiceDescriptor',
-]);
-export const instances = base
-  .map(b => b + 'Instance')
-  .concat(['ChoiceInstance']);
 /**
  * Check if variable has children
  * @param variable Variable to test

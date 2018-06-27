@@ -99,3 +99,5 @@ export const methods: MethodConfig = {
     arguments: [SELFARG],
   },
 };
+export const label = 'Number';
+export const icon = 'chart-line';
