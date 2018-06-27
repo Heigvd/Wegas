@@ -788,7 +788,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     targetArray = container.get(this.get("attributeKey"));
                     Y.Array.find(targetArray, function(e, i, a) {
                         if (e.get(ID) === entity.get(ID)) {
-                            newEntity = new entity.constructor(entity.toObject(ID));
+                            newEntity = new entity.constructor(entity.toObject(ID, "refId"));
                             a.push(newEntity);
                             return true;
                         }
