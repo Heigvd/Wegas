@@ -27,8 +27,13 @@ const container = css({
   display: 'inline-block',
   position: 'relative',
 });
-const subMenuContainer = css({
+const position = css({
   position: 'fixed',
+  '& &': {
+    position: 'absolute',
+  },
+});
+const subMenuContainer = css({
   display: 'inline-block',
   padding: '5px',
   zIndex: 1,
@@ -73,7 +78,7 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
             </div>
 
             {isOpen && (
-              <div className={DIR[direction!]}>
+              <div className={`${position} ${DIR[direction!]}`}>
                 {this.props.items.map((item, index) => {
                   if (Array.isArray(item.children)) {
                     return (
