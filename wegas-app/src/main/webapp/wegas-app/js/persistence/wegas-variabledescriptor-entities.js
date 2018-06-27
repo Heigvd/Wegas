@@ -1186,7 +1186,16 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 return this.getChildByKey('name', name, true);
             },
             getChildByLabel: function(label) {
-                return this.getChildByKey('label', label, true);
+                var needle,
+                    filterFn = function(it) {
+                        if (it.get("label") instanceof Y.Wegas.persistence.TranslatableContent && I18n.t(it.get("label")) === label) {
+                            needle = it;
+                            return false;
+                        }
+                        return true;
+                    };
+                Y.Array.every(this.get(ITEMS), filterFn);
+                return needle;
             },
             find: function(id) {
                 return this.getChildByKey('id', +id, false);

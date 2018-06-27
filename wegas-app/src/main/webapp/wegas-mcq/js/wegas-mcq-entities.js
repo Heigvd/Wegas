@@ -184,7 +184,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 },
                 view: {
-                    className: 'wegas-advanced-feature'
+                    className: 'wegas-advanced-feature',
+                    label: "pictures"
                 }
             }
         },
