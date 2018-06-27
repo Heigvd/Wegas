@@ -507,6 +507,17 @@ YUI.add('wegas-mcq-view', function(Y) {
         bindUI: function() {
             this.after("variableChange", this.plugLockable, this);
 
+            this.handlers.rmDescriptorListener = Y.Wegas.Facade.Variable.after("delete", function(e) {
+                var choice = e.entity;
+                if (choice instanceof Y.Wegas.persistence.ChoiceDescriptor) {
+                    if (this.choices[choice.get("id")]) {
+                        // destroy choice widget
+                        this.choices[choice.get("id")].remove(true);
+                        this.choices[choice.get("id")] = undefined;
+                    }
+                }
+            }, this);
+
             this.handlers.descriptorListener = Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
                 var question = this.get("variable.evaluated");
                 if (question && question.get("id") === e.entity.get("id")) {
@@ -539,12 +550,17 @@ YUI.add('wegas-mcq-view', function(Y) {
 
             this.get("boundingBox").delegate("click", this.validateQuestion, ".cbx.answerable .mcq-view__submit span", this);
         },
+        beforeRequest: function() {
+            this.lockable.lock();
+        },
         onSuccess: function() {
+            this.lockable.unlock();
         },
         onFailure: function() {
+            this.lockable.unlock();
         },
         selectChoice: function(e) {
-            if (this.get("disabled")){
+            if (this.get("disabled")) {
                 return;
             }
             var choiceWidget = Y.Widget.getByNode(e.target.ancestor(".wegas-mcqchoice")),
@@ -555,6 +571,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 var replies = choice.getInstance().get("replies");
                 if (replies.length > 0) {
                     for (var i in replies) {
+                        this.beforeRequest();
                         Y.Wegas.Facade.Variable.sendRequest({
                             request: "/QuestionDescriptor/CancelReply/" + replies[i].get('id')
                                 + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
@@ -568,6 +585,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         });
                     }
                 } else {
+                    this.beforeRequest();
                     Y.Wegas.Facade.Variable.sendRequest({
                         request: "/QuestionDescriptor/SelectChoice/" + choice.get('id')
                             + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
@@ -584,6 +602,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
 
             } else {
+                this.beforeRequest();
                 Y.Wegas.Facade.Variable.sendRequest({
                     request: "/QuestionDescriptor/SelectAndValidateChoice/" + choice.get('id') + "/Player/" +
                         Wegas.Facade.Game.get('currentPlayerId'),
@@ -598,7 +617,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
         },
         validateQuestion: function(e) {
-            if (this.get("disabled")){
+            if (this.get("disabled")) {
                 return;
             }
             var questionDescriptor = this.get("variable.evaluated"),
@@ -621,6 +640,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                     }
                     return;
                 }
+
+                this.beforeRequest();
                 Y.Wegas.Facade.Variable.sendRequest({
                     request: "/QuestionDescriptor/ValidateQuestion/" + questionInstance.get('id')
                         + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
@@ -678,7 +699,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         choiceInstance = choice.getInstance();
                     if (this.choices[choice.get("id")]) {
                         if (!choiceInstance.get("active")) {
-                            // deativate choice
+                            // deativate choice by removing its widget
                             this.choices[choice.get("id")].remove(true);
                             this.choices[choice.get("id")] = undefined;
                         }
