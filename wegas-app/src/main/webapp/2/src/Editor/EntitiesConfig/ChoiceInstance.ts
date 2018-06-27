@@ -3,6 +3,13 @@ import { config as variableInstanceConfig } from './VariableInstance';
 
 export const config: ConfigurationSchema<IChoiceInstance> = {
   ...variableInstanceConfig,
+  '@class': {
+    type: 'string',
+    value: 'ChoiceInstance',
+    view: {
+      type: 'hidden',
+    },
+  },
   active: {
     type: 'boolean',
     view: {
