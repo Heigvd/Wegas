@@ -557,9 +557,9 @@ YUI.add('wegas-widget', function(Y) {
                                     label: 'Lock',
                                     value: {fn: 'Lockable'}
                                 }, {
-                                    type: BUTTON,
                                     label: "Event Logger",
-                                    data: "EventLogger"
+                                    value: {fn: "EventLogger"},
+                                    className: "wegas-advanced-feature"
                                 }
                             ]
                         }
