@@ -24,7 +24,6 @@
     "jsoninput": "github:cigit/JSONInput",
     "lodash-es": "^4.17.8",
     "prop-types": "^15.6.1",
-    "rc-menu": "^6.2.10",
     "react": "^16.4.1",
     "react-ace": "^6.0.0",
     "react-color": "^2.14.1",
