@@ -377,7 +377,7 @@ YUI.add('wegas-react-form', Y => {
                 }
             );
         },
-        getGlobals: function r(value: string){
+        getGlobals: function r(value: string) {
              return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
                 ({getGlobals}) => {
                     return getGlobals(value);

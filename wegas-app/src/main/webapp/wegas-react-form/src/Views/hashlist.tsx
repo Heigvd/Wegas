@@ -67,7 +67,7 @@ class HashlistView extends React.Component<
             const readOnly = restProps.view.readOnly;
 
             return (
-                <div {...flex}>
+                <div {...flex} key={c.props.editKey}>
                     <div
                         style={{position: 'relative', flex: 1}}
                         ref={node => {
@@ -79,6 +79,7 @@ class HashlistView extends React.Component<
                         <TextField
                             id={id}
                             value={c.props.editKey}
+                            blurOnly
                             onChange={onKeyChange}
                             view={{
                                 label: this.props.view.keyLabel || 'Key',

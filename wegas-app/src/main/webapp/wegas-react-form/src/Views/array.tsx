@@ -61,8 +61,13 @@ const optionLabelStyle = css(FormStyles.labelStyle, {
     paddingRight: '5px',
     verticalAlign: '1px',
 });
+interface Item {
+    label: string;
+    value?: {};
+    children?: Item[];
+}
 interface IArrayView {
-    choices?: {}[];
+    choices?: Item[];
     tooltip?: string;
     label?: string | boolean;
     disabled?: boolean;
@@ -103,11 +108,13 @@ class Adder extends React.Component<IArrayProps, {open: boolean}> {
                 >
                     <Menu
                         menu={this.props.view.choices}
-                        onChange={(value: {}) =>
-                            this.setState({open: false}, () =>
-                                this.props.onChildAdd(value)
-                            )
-                        }
+                        onChange={value => {
+                            if (value.value !== undefined) {
+                                this.setState({ open: false }, () =>
+                                    this.props.onChildAdd(value.value)
+                                );
+                            }
+                        }}
                     />
                 </Cover>
             ) : (
