@@ -9,10 +9,7 @@ export class TabLayout extends React.Component<
   TabLayoutProps,
   { active: number }
 > {
-  constructor(props: TabLayoutProps) {
-    super(props);
-    this.state = { active: props.active || 0 };
-  }
+  readonly state = { active: this.props.active || 0 };
   render() {
     const active = React.Children.map(this.props.children, (c, i) => {
       return i === this.state.active ? c : null;

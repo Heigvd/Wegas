@@ -141,17 +141,14 @@ class PageLoader extends React.Component<
       json,
     };
   }
-  constructor(props: PageLoaderProps) {
-    super(props);
-    this.state = {
-      json: props.page,
-      oldProps: props,
-    };
-    this.update = this.update.bind(this);
-  }
-  update(json: Page) {
+  readonly state = {
+    json: this.props.page,
+    oldProps: this.props,
+  };
+
+  update = (json: Page) => {
     this.setState({ json });
-  }
+  };
   componentDidCatch(e: any) {
     console.warn(e);
   }

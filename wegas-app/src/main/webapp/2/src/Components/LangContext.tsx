@@ -23,17 +23,14 @@ export class LangHandler extends React.Component<LangProviderProps, Context> {
     }
     return null;
   }
-  constructor(props: LangProviderProps) {
-    super(props);
-    this.state = {
-      lang: props.lang,
-      toggleLang: this.toggleLang,
-      availableLang: props.availableLang,
-    };
-  }
 
   toggleLang = (lang: string) => {
     this.setState(() => ({ lang }));
+  };
+  readonly state: Readonly<Context> = {
+    lang: this.props.lang,
+    toggleLang: this.toggleLang,
+    availableLang: this.props.availableLang,
   };
 
   render() {

@@ -28,14 +28,11 @@ export function asyncSFC<T>(
       return null;
     }
     mount: boolean = true;
-    constructor(props: T) {
-      super(props);
-      this.state = {
-        oldProps: props,
-        loaded: false,
-        el: Loader({}),
-      };
-    }
+    readonly state = {
+      oldProps: this.props,
+      loaded: false,
+      el: Loader({}),
+    };
     loadComp() {
       PComp(this.props)
         .then(el => {
