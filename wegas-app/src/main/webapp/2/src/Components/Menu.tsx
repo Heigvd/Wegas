@@ -27,13 +27,8 @@ const container = css({
   display: 'inline-block',
   position: 'relative',
 });
-const position = css({
-  position: 'fixed',
-  '& &': {
-    position: 'absolute',
-  },
-});
 const subMenuContainer = css({
+  position: 'absolute',
   display: 'inline-block',
   padding: '5px',
   zIndex: 1,
@@ -59,7 +54,7 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
     direction: 'down',
   };
   render(): JSX.Element {
-    const { onSelect, direction, label, icon } = this.props;
+    const { onSelect, direction = 'down', label, icon } = this.props;
     return (
       <Downshift onSelect={onSelect} itemToString={() => ''}>
         {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
@@ -78,7 +73,20 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
             </div>
 
             {isOpen && (
-              <div className={`${position} ${DIR[direction!]}`}>
+              <div
+                className={DIR[direction]}
+                ref={n => {
+                  if (
+                    n != null &&
+                    n.style.getPropertyValue('position') !== 'fixed'
+                  ) {
+                    const { left, top } = n.getBoundingClientRect();
+                    n.style.setProperty('left', `${left}px`);
+                    n.style.setProperty('top', `${top}px`);
+                    n.style.setProperty('position', 'fixed');
+                  }
+                }}
+              >
                 {this.props.items.map((item, index) => {
                   if (Array.isArray(item.children)) {
                     return (
