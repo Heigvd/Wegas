@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { Cover } from '../../../Components/Cover';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { Menu } from '../../../Components/Menu';
 import { CommonViewContainer, CommonView } from './commonView';
@@ -39,45 +38,24 @@ interface IArrayProps
   value?: {}[];
 }
 
-class Adder extends React.Component<
-  WidgetProps.ArrayProps & IArrayProps & { id: string },
-  { open: boolean }
-> {
-  constructor(props: WidgetProps.ArrayProps & IArrayProps & { id: string }) {
-    super(props);
-    this.state = {
-      open: false,
-    };
-  }
-  render() {
-    if (Array.isArray(this.props.view.choices)) {
-      return this.state.open ? (
-        <Cover onClick={() => this.setState({ open: false })} zIndex={100}>
-          <Menu
-            items={this.props.view.choices}
-            onSelect={({ value }) =>
-              this.setState({ open: false }, () => this.props.onChildAdd(value))
-            }
-          />
-        </Cover>
-      ) : (
-        <IconButton
-          id={this.props.id}
-          icon="plus-circle"
-          onClick={() => this.setState({ open: true })}
-          tooltip={this.props.view.tooltip}
-        />
-      );
-    }
+function Adder(props: WidgetProps.ArrayProps & IArrayProps & { id: string }) {
+  if (Array.isArray(props.view.choices)) {
     return (
-      <IconButton
-        id={this.props.id}
+      <Menu
+        items={props.view.choices}
         icon="plus-circle"
-        onClick={() => this.props.onChildAdd()}
-        tooltip={this.props.view.tooltip}
+        onSelect={({ value }) => props.onChildAdd(value)}
       />
     );
   }
+  return (
+    <IconButton
+      id={props.id}
+      icon="plus-circle"
+      onClick={() => props.onChildAdd()}
+      tooltip={props.view.tooltip}
+    />
+  );
 }
 function ArrayWidget(props: IArrayProps) {
   const valueLength = Array.isArray(props.value) ? props.value.length : 0;
