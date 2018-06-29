@@ -3,6 +3,7 @@ import Combobox from 'react-widgets/lib/Combobox';
 import { getY } from '../../index';
 import labeled from '../../HOC/labeled';
 import commonView from '../../HOC/commonView';
+// tslint:disable-next-line:no-implicit-dependencies
 import '!style-loader!css-loader!react-widgets/dist/css/react-widgets.css';
 
 const PREVIEW_PAGELOADER_ID = 'previewPageLoader';

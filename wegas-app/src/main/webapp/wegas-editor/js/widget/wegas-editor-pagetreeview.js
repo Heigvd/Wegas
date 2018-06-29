@@ -28,8 +28,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
 
             if (DATASOURCE.editable) {
                 this.plug(PageTreeviewToolbarMenu);
-                // @TODO Reactivate this once the new editor FORM2 is ready for production
-                //this.plug(PageTreeViewContextMenu);
+                this.plug(PageTreeViewContextMenu);
                 this.treeView.plug(Plugin.TreeViewSortable, {
                     nodeGroups: [{
                             nodeClass: "widget-node",
@@ -441,16 +440,14 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                      }, */
                         {
                             type: "Button",
-                            label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
-                            cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                            label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                             on: {
                                 click: Y.bind(host.duplicatePage, host, data.page)
                             }
                         },
                         {
                             type: "Button",
-                            label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                            cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                            label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
                             on: {
                                 click: Y.bind(host.deletePage, host, data.page)
                             }
