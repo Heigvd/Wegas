@@ -10,6 +10,7 @@ package com.wegas.core.jcr.content;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.Helper;
 import com.wegas.core.jcr.tools.JCRDescriptorCallback;
 import com.wegas.core.jcr.tools.JCRDescriptorFactory;
 import com.wegas.core.merge.annotations.WegasEntity;
@@ -465,8 +466,12 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @Override
     public Mergeable getMergeableParent() {
         try {
-            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, connector);
-            return descriptor;
+            if (path.equals("/") && Helper.isNullOrEmpty(name)) {
+                return this.connector.getGameModel();
+            } else {
+                AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, connector);
+                return descriptor;
+            }
         } catch (RepositoryException ex) {
             return this.connector.getGameModel();
         }
