@@ -102,7 +102,7 @@
 
 
 /*
- * MCQ 
+ * MCQ
  */
 .wegas-mcqview.wegas-mcqview-disabled {
     opacity: 1;/* revert default disabled behaviour from wegas-app */
@@ -130,7 +130,7 @@
 }
 
 
-/* Choice without description are displayed on one line only 
+/* Choice without description are displayed on one line only
  * create space for submit
  */
 .wegas-mcqview-content:not(.cbx) .wegas-mcqchoice.noDescription .mcqchoice__title,
@@ -235,6 +235,7 @@
     content: "\f00c";
     font-family: "FontAwesome";
     padding-left: 2px;
+    padding-right: 4px;
 }
 
 .wegas-mcqview-content:not(.answerable) .mcq-view__submit,
@@ -283,19 +284,19 @@
     opacity: 0.4;
 }
 
-.wegas-mcqview .answerable:not(.cbx) .selectable .mcqchoice__submit, 
-.wegas-mcqview .answerable.cbx .mcq-view__submit, 
-.wegas-mcqview .answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit, 
-.wegas-mcqview .answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit, 
+.wegas-mcqview .answerable:not(.cbx) .selectable .mcqchoice__submit,
+.wegas-mcqview .answerable.cbx .mcq-view__submit,
+.wegas-mcqview .answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit,
+.wegas-mcqview .answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit,
 .wegas-mcqview .answerable.cbx.checkbox.maximumReached .hasReplies .mcqchoice__submit {
     cursor: pointer;
     opacity: 1;
 }
 
-.wegas-mcqview .locked.answerable:not(.cbx) .selectable .mcqchoice__submit, 
-.wegas-mcqview .locked.answerable.cbx .mcq-view__submit, 
-.wegas-mcqview .locked.answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit, 
-.wegas-mcqview .locked.answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit, 
+.wegas-mcqview .locked.answerable:not(.cbx) .selectable .mcqchoice__submit,
+.wegas-mcqview .locked.answerable.cbx .mcq-view__submit,
+.wegas-mcqview .locked.answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit,
+.wegas-mcqview .locked.answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit,
 .wegas-mcqview .locked.answerable.cbx.checkbox.maximumReached .hasReplies .mcqchoice__submit {
     cursor: wait;
 }
