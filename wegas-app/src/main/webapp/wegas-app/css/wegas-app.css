@@ -825,3 +825,8 @@ font {
     border-top: none;
     color: black;
 }
+
+.wegas-light-picture img[height],
+.wegas-light-picture img[width] {
+    cursor: zoom-in;
+}

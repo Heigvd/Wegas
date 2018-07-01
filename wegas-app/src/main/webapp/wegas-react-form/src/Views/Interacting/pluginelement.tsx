@@ -53,7 +53,7 @@ function friendlyName(label: string) {
         case 'wegas-showinboxlistonclick':
             return 'Show inbox list on click';
         default:
-            return 'internal error: ' + label;
+            return label;
     }
 }
 

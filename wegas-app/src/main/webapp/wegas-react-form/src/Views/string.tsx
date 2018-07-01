@@ -39,6 +39,7 @@ function fromNotToEmpty(value?: void | string | number) {
 interface IStringProps {
     id: string;
     value?: string | number;
+    blurOnly?: boolean;
     view: {
         rows?: number;
         disabled?: boolean;
@@ -78,7 +79,9 @@ class StringView extends React.Component<
         const eventType = event.type;
         this.setState({ value }, () => {
             if (eventType === 'change') {
-                this.debouncedOnChange(value);
+                if (!this.props.blurOnly) {
+                    this.debouncedOnChange(value);
+                }
             } else {
                 this.props.onChange(value);
             }

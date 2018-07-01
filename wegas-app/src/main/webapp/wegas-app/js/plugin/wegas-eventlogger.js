@@ -69,12 +69,7 @@ YUI.add('wegas-eventlogger', function(Y) {
         }
     }, {
         NS: "eventlogger",
-        ATTRS: {
-            eventLogger: {
-                value: "EventLogger",
-                type: "string"
-            }
-        }
+        ATTRS: {}
     });
     Y.Plugin.EventLogger = EventLogger;
 });
