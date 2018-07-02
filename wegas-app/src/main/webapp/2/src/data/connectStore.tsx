@@ -2,6 +2,9 @@ import * as React from 'react';
 import { Store } from 'redux';
 import { shallowIs } from '../Helper/shallowIs';
 
+function id<T>(x: T) {
+  return x;
+}
 export function createReduxContext<S extends Store>(store: S) {
   type State = ReturnType<S['getState']>;
   type Dispatch = S['dispatch'];
@@ -74,7 +77,7 @@ export function createReduxContext<S extends Store>(store: S) {
     }
   }
 
-  class ReduxConsumer<R = State> extends React.Component<{
+  function ReduxConsumer<R = State>(props: {
     selector?: ((state: State) => R);
     children: (
       store: {
@@ -82,20 +85,15 @@ export function createReduxContext<S extends Store>(store: S) {
         dispatch: Dispatch;
       },
     ) => React.ReactNode;
-  }> {
-    static defaultProps = {
-      selector: (state: State) => state,
-    };
-    render() {
-      const { selector, children } = this.props;
-      return (
-        <Consumer>
-          {({ state }) => {
-            return <Indirection state={selector!(state)} children={children} />;
-          }}
-        </Consumer>
-      );
-    }
+  }) {
+    const { selector = id as (s: State) => State, children } = props;
+    return (
+      <Consumer>
+        {({ state }) => {
+          return <Indirection state={selector(state)} children={children} />;
+        }}
+      </Consumer>
+    );
   }
   return { StoreProvider: ReduxStore, StoreConsumer: ReduxConsumer };
 }
