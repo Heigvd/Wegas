@@ -155,7 +155,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
         );
       }
     } else {
-      const newVariable = VariableDescriptor.find('name', variable);
+      const newVariable = VariableDescriptor.first('name', variable);
       if (
         isExpressionStatement(stmt) &&
         isVariableCall(stmt.expression) &&
@@ -288,7 +288,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
     if (expression == null || !isVariableCall(expression)) {
       return;
     }
-    const newVariable = VariableDescriptor.find(
+    const newVariable = VariableDescriptor.first(
       'name',
       variableName(expression.callee.object),
     );

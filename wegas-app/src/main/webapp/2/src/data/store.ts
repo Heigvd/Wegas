@@ -2,7 +2,7 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunk, { ThunkMiddleware, ThunkAction } from 'redux-thunk';
 import reducers, { State } from './Reducer/reducers';
 // import { update } from './Reducer/actions';
-import { Actions } from './index';
+import { Actions } from '.';
 import WebSocketListener from '../API/websocket';
 import { StateActions } from './actions';
 import { createReduxContext } from './connectStore';

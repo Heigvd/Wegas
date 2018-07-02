@@ -37,10 +37,10 @@ const scopeConfig: ConfigurationSchema<IScope> = {
           value: 'PlayerScope',
           label: 'different for each user',
         },
-        {
-          value: 'GameScope',
-          label: 'different for each game',
-        },
+        // {
+        //   value: 'GameScope',
+        //   label: 'different for each game',
+        // },
         {
           value: 'GameModelScope',
           label: 'the same for everybody',

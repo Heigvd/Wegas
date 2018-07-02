@@ -2,7 +2,6 @@ import { Reducer } from 'redux';
 import u from 'immer';
 import { ActionType, StateActions } from '../actions';
 import { omit } from 'lodash-es';
-// import normalizeData from '../normalize/index';
 
 export interface GameModelState {
   [id: string]: Readonly<IGameModel>;

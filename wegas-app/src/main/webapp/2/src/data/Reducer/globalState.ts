@@ -34,6 +34,9 @@ type Edition =
     };
 export interface GlobalState {
   currentGameModelId: number;
+  currentGameId: number;
+  currentPlayerId: number;
+  currentTeamId: number;
   currentUser: Readonly<IUser>;
   editing?: Readonly<Edition>;
   stateMachineEditor?: {
@@ -105,6 +108,9 @@ const global = u<GlobalState>(
   },
   {
     currentGameModelId: CurrentGM.id!,
+    currentGameId: CurrentGame.id!,
+    currentPlayerId: CurrentPlayerId,
+    currentTeamId: CurrentTeamId,
     currentUser: CurrentUser,
     pusherStatus: { status: 'disconnected' },
     pageEdit: false,

@@ -1,6 +1,6 @@
 interface IScope {
-  '@class': 'TeamScope' | 'GameModelScope' | 'GameScope' | 'PlayerScope';
-  broadcastScope: 'TeamScope' | 'GameModelScope' | 'GameScope' | 'PlayerScope';
+  '@class': 'TeamScope' | 'GameModelScope' /* | 'GameScope' */ | 'PlayerScope';
+  broadcastScope: 'TeamScope' /* | 'GameModelScope' */ | 'GameScope' | 'PlayerScope';
 }
 interface IVariableDescriptor<T extends IVariableInstance = IVariableInstance>
   extends IWegasEntity,
