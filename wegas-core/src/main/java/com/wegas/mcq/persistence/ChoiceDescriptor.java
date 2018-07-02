@@ -112,7 +112,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * @param r
      */
     public void addResult(Result r) {
-        this.results.add(r);
+        if (!this.results.contains(r)) {
+            this.results.add(r);
+        }
         r.setChoiceDescriptor(this);
     }
 
@@ -492,7 +494,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     public static class ResultMergeCallback implements WegasCallback {
 
         @Override
-        public Object remove(Object entity, Object container, Object identifier) {
+        public void add(Object child, Mergeable container, Object identifier) {
+            if (child instanceof Result && container instanceof ChoiceDescriptor) {
+                ((ChoiceDescriptor)container).addResult((Result) child);
+            }
+        }
+
+        @Override
+        public Object remove(Object entity, Mergeable container, Object identifier) {
             if (entity instanceof Result) {
                 Result resultToRemove = (Result) entity;
                 resultToRemove.updateCacheOnDelete(resultToRemove.getChoiceDescriptor().beans);

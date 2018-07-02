@@ -16,10 +16,12 @@ import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -197,7 +199,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "scriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, callback = RegisterSeverScript.class)
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
@@ -205,7 +207,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "csslibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, callback = RegisterStyleSheet.class)
     private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
@@ -213,7 +215,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "clientscriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, callback = RegisterClientScript.class)
     private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
@@ -1246,5 +1248,33 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getType() + ", " + getName() + ")";
+    }
+
+
+    public static class RegisterSeverScript implements WegasCallback {
+        @Override
+        public void add(Object child, Mergeable container, Object identifier) {
+            if (child instanceof GameModelContent && container instanceof GameModel) {
+                ((GameModelContent) child).setScriptlibrary_GameModel((GameModel) container);
+            }
+        }
+    }
+
+    public static class RegisterClientScript implements WegasCallback {
+        @Override
+        public void add(Object child, Mergeable container, Object identifier) {
+            if (child instanceof GameModelContent && container instanceof GameModel) {
+                ((GameModelContent) child).setClientscriptlibrary_GameModel((GameModel) container);
+            }
+        }
+    }
+
+    public static class RegisterStyleSheet implements WegasCallback {
+        @Override
+        public void add(Object child, Mergeable container, Object identifier) {
+            if (child instanceof GameModelContent && container instanceof GameModel) {
+                ((GameModelContent) child).setClientscriptlibrary_GameModel((GameModel) container);
+            }
+        }
     }
 }
