@@ -130,6 +130,17 @@
 }
 
 
+
+.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice:not(.noDescription) .mcqchoice__description {
+    width: 100%;
+    max-width: 100%;
+}
+
+.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice:not(.noDescription) .mcqchoice__submit {
+    min-width: calc(100% - 36px);
+    text-align: right;
+}
+
 /* Choice without description are displayed on one line only
  * create space for submit
  */

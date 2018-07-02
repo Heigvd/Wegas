@@ -132,7 +132,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     } else { // Find the last selected replies
                         choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
                         label = I18n.t(choiceDescriptor.get("label"));
-                        label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
+                        //label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
                     }
                 }
             }
@@ -145,7 +145,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     // Find the last selected replies
                     choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
                     label = I18n.t(choiceDescriptor.get("label"));
-                    label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
+                    //label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
                 } else {
                     label = questionInstance.get("replies").length + "x";
                 }
