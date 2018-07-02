@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.NodeIterator;
@@ -135,7 +136,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
          * @return refId of the removed child
          */
         @Override
-        public Object remove(Object child, Object container, Object identifier) {
+        public Object remove(Object child, Mergeable container, Object identifier) {
             if (child instanceof AbstractContentDescriptor) {
                 try {
                     AbstractContentDescriptor theChild = (AbstractContentDescriptor) child;

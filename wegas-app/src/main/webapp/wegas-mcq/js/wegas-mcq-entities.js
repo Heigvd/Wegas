@@ -194,7 +194,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: 1,
                 cfg: {
                     type: BUTTON,
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
+                    label: "Add",
                     plugins: [{
                             fn: "WidgetMenu",
                             cfg: {
@@ -1088,7 +1088,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: 1,
                 cfg: {
                     type: BUTTON,
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
+                    label: "Add",
                     plugins: [{
                             fn: "WidgetMenu",
                             cfg: {

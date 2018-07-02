@@ -82,7 +82,7 @@ public final class WegasChildrenPatch extends WegasPatch {
             Object key = entry.getKey();
             Object toEntity = entry.getValue();
             if (primitive) {
-                patches.add(new WegasPrimitivePatch(key, 0, null, null, null, null, null, toEntity, false, false, false, this.protectionLevel));
+                patches.add(new WegasPrimitivePatch(key, 0, null, referenceEntity, null, null, null, toEntity, false, false, false, this.protectionLevel));
             } else {
                 patches.add(new WegasEntityPatch(key, 0, userCallback, null, null,
                         null, (Mergeable) toEntity, // from null to no null  -> CREATE
@@ -112,8 +112,8 @@ public final class WegasChildrenPatch extends WegasPatch {
                         primitive = !Mergeable.class.isAssignableFrom(get.getClass());
                     }
                     if (primitive) {
-                        theMap.put("" + i + ":" + get, get);
-                        // theMap.put(i, get);
+                        //theMap.put("" + i + ":" + get, get);
+                        theMap.put(i, get);
                     } else {
                         theMap.put(((Mergeable) get).getRefId(), get);
 
@@ -176,7 +176,7 @@ public final class WegasChildrenPatch extends WegasPatch {
 
                             WegasCallback registerChild = new WegasCallback() {
                                 @Override
-                                public void add(Object child, Object container, Object identifier) {
+                                public void add(Object child, Mergeable container, Object identifier) {
 
                                     if (childrenList != null) {
                                         logger.info("Add child {}", child);
@@ -190,12 +190,12 @@ public final class WegasChildrenPatch extends WegasPatch {
                                     }
 
                                     for (WegasCallback cb : callbacks) {
-                                        cb.add(child, finalChildren, identifier);
+                                        cb.add(child, target, identifier);
                                     }
                                 }
 
                                 @Override
-                                public Object remove(Object child, Object container, Object identifier) {
+                                public Object remove(Object child, Mergeable container, Object identifier) {
                                     Object key = null;
                                     if (childrenList != null) {
                                         logger.info("remove child {}", child);
@@ -210,7 +210,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                                     }
 
                                     for (WegasCallback cb : callbacks) {
-                                        cb.remove(child, finalChildren, identifier);
+                                        cb.remove(child, target, identifier);
                                     }
                                     return key;
                                 }

@@ -21,10 +21,10 @@ public interface WegasCallback {
      * Called when an entity is created or when a child is added to its parent
      *
      * @param child      added entity
-     * @param container  entity parent
+     * @param container  list/map which contains the new entity
      * @param identifier entity identifier (map key or position in list)
      */
-    default public void add(Object child, Object container, Object identifier) {
+    default public void add(Object child, Mergeable container, Object identifier) {
 
     }
 
@@ -59,7 +59,7 @@ public interface WegasCallback {
      *
      * @return child key (key for map and idx for list), null if nothing was removed
      */
-    default public Object remove(Object child, Object container, Object identifier) {
+    default public Object remove(Object child, Mergeable container, Object identifier) {
         return null;
     }
 

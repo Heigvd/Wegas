@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
@@ -114,13 +115,17 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      * @param item  the new child to add
      */
     default void addItem(Integer index, T item) {
+        List<T> items = this.getItems();
+
         if (this.getGameModel() != null) {
             this.getGameModel().addToVariableDescriptors(item);
         }
-        if (index != null) {
-            this.getItems().add(index, item);
-        } else {
-            this.getItems().add(item);
+        if (!items.contains(item)) {
+            if (index != null) {
+                items.add(index, item);
+            } else {
+                items.add(item);
+            }
         }
         this.setChildParent(item);
     }
@@ -169,7 +174,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
     public static class UpdateChild implements WegasCallback {
 
         @Override
-        public void add(Object entity, Object container, Object identifier) {
+        public void add(Object entity, Mergeable container, Object identifier) {
             if (container instanceof DescriptorListI && entity instanceof VariableDescriptor) {
                 DescriptorListI parent = (DescriptorListI) container;
                 parent.addItem((VariableDescriptor) entity);
@@ -177,7 +182,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
         }
 
         @Override
-        public Object remove(Object entity, Object container, Object identifier) {
+        public Object remove(Object entity, Mergeable container, Object identifier) {
             //DescriptorListI list = (DescriptorListI) entity;
             if (container instanceof DescriptorListI && entity instanceof VariableDescriptor) {
                 DescriptorListI parent = (DescriptorListI) container;

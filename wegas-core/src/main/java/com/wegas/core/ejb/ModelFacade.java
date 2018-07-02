@@ -176,7 +176,7 @@ public class ModelFacade {
                         model.getLanguageByCode(languageCode).setRefId(lang.getRefId());
                     }
 
-                    // make sure all language sharing the same code share the same refId
+                    // make sure all languages sharing the same code share the same refId
                     String refId = model.getLanguageByCode(languageCode).getRefId();
 
                     for (GameModel gameModel : translationSources.get(languageCode)) {
@@ -756,11 +756,27 @@ public class ModelFacade {
                     // avoid propagating to game's scenarios or to the model
                     if (scenario.getType().equals(GmType.SCENARIO)) {
                         scenario.setOnGoingPropagation(Boolean.TRUE);
+
+                        // Integrate which have creating in the model and in the scenario
+                        // detect languages which share the same code having different refId
+                        for (GameModelLanguage langScen : scenario.getRawLanguages()) {
+                            GameModelLanguage langModel = gameModel.getLanguageByCode(langScen.getCode());
+                            if (langModel != null && !langModel.getRefId().equals(langScen.getRefId())) {
+                                // set scenario language refId to model one
+                                langScen.forceRefId(langModel.getRefId());
+                            }
+                        }
+
                         patch.apply(scenario, scenario);
 
                         logger.info("Revive {}", scenario);
                         //scenario.propagateGameModel();
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
+
+                        for (GameModelLanguage lang : gameModel.getRawLanguages()) {
+                            MergeHelper.importTranslations(scenario, gameModel, lang.getCode(), i18nFacade);
+                        }
+
                         gameModelFacade.reset(scenario);
 
                         this.registerPagesPropagates(scenario);
@@ -768,8 +784,10 @@ public class ModelFacade {
                 }
 
                 patch.apply(reference, reference);
-                //reference.propagateGameModel();
+                variableDescriptorFacade.reviveItems(reference, reference, false);
+                gameModelFacade.reset(reference);
 
+                //reference.propagateGameModel();
                 this.syncRepository(gameModel);
 
                 for (GameModel scenario : implementations) {

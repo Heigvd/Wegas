@@ -287,13 +287,13 @@ public final class WegasEntityPatch extends WegasPatch {
                                                 cb.preUpdate(target, this.toEntity, identifier);
                                             }
 
-                                            // Force update
-                                            WegasEntityPatch createPatch = new WegasEntityPatch(null, 0, null, null, null, remove.getPayload(), toEntity, true, false, false, false, this.protectionLevel);
-                                            createPatch.apply(targetGameModel, target, null, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
-
                                             for (WegasCallback cb : callbacks) {
                                                 cb.add(target, null, identifier);
                                             }
+
+                                            // Force update
+                                            WegasEntityPatch createPatch = new WegasEntityPatch(null, 0, null, null, null, remove.getPayload(), toEntity, true, false, false, false, this.protectionLevel);
+                                            createPatch.apply(targetGameModel, target, null, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                             for (WegasCallback cb : callbacks) {
                                                 cb.postUpdate(target, this.toEntity, identifier);

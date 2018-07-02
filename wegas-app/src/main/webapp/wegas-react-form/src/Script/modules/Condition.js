@@ -5,7 +5,7 @@ import Impact, { ErrorCatcher } from './Impact';
 import { methodDescriptor, extractMethod } from './method';
 import { methodDescriptor as globalMethodDescriptor } from './globalMethod';
 import ConditionOperator from './ConditionOperator';
-import { renderForm, valueToAST } from './args';
+import { renderForm, valueToAST, getReadOnlySchema } from './args';
 import { containerStyle } from '../Views/conditionImpactStyle';
 
 const b = types.builders;
@@ -169,6 +169,20 @@ class Condition extends React.Component {
                     layout: 'extraShortInline',
                 },
             };
+            let argsForm = renderForm(
+                    node.right,
+                    schema,
+                    v =>
+                        this.setState(
+                            ({ node: n }) => ({ node: { ...n, right: v } }),
+                            this.check
+                        ),
+                    undefined,
+                    'right'
+                );
+            if (this.props.view.readOnly){
+                argsForm = getReadOnlySchema(argsForm);
+            }
             container = [
                 <div key="operator" className={containerStyle}>
                     <ConditionOperator
@@ -182,19 +196,10 @@ class Condition extends React.Component {
                             )
                         }
                         type={descr.returns}
+                        readOnly={this.props.view.readOnly}
                     />
                 </div>,
-                renderForm(
-                    node.right,
-                    schema,
-                    v =>
-                        this.setState(
-                            ({ node: n }) => ({ node: { ...n, right: v } }),
-                            this.check
-                        ),
-                    undefined,
-                    'right'
-                ),
+                argsForm
             ];
         }
         const isBoolCall =

@@ -14,6 +14,7 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AcceptInjection;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
@@ -305,7 +306,7 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
     public static class ResourceInstanceMergeCallback implements WegasCallback {
 
         @Override
-        public Object remove(Object entity, Object container, Object identifier) {
+        public Object remove(Object entity, Mergeable container, Object identifier) {
             if (entity instanceof Assignment) {
                 Assignment assignment = (Assignment) entity;
                 TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());

@@ -110,7 +110,9 @@ YUI.add('wegas-editable', function(Y) {
                 };
                 if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
-                    this._overrideFormConfig(schemaMap, this, "PRIVATE");
+                    if (!Y.one("body.wegas-internalmode")) {
+                        this._overrideFormConfig(schemaMap, this, "PRIVATE");
+                    }
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
                 }
                 return schemaMap;
@@ -138,7 +140,7 @@ YUI.add('wegas-editable', function(Y) {
                     } else if (this._isInstanceOf(entity, Y.Wegas.persistence.EvaluationDescriptorContainer) || this._isInstanceOf(entity, Y.Wegas.persistence.EvaluationDescriptor)) {
                         parent = entity.getParentDescriptor();
                     }
-                    if (parent){
+                    if (parent) {
                         return parent.get("visibility");
                     } else {
                         Y.log("Create new -> ASSUME PRIVATE");
@@ -235,9 +237,12 @@ YUI.add('wegas-editable', function(Y) {
             visibility = this._getVisibility(this, "PRIVATE");
 
             // filter unhauthoried buttons
-            menu = menu.filter(function(item) {
-                return this._getMode("EDITABLE", visibility, item.maxVisibility) === "EDITABLE";
-            }, this);
+
+            if (!Y.one("body.wegas-internalmode")) {
+                menu = menu.filter(function(item) {
+                    return this._getMode("EDITABLE", visibility, item.maxVisibility) === "EDITABLE";
+                }, this);
+            }
 
             // only keep configs
             menu = menu.map(function(item) {

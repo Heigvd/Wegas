@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
@@ -43,7 +44,7 @@ import javax.persistence.UniqueConstraint;
             @Index(columnList = "gamemodel_id")
         }
 )
-public class GameModelLanguage extends AbstractEntity implements Orderable {
+public class GameModelLanguage extends AbstractEntity implements Orderable, NamedEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -88,6 +89,18 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     public Long getId() {
         return id;
  
+    }
+
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return this.getCode();
+    }
+
+    @Override
+    @JsonIgnore
+    public void setName(String name) {
+        this.setCode(name);
     }
 
     @Override

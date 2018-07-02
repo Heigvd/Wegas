@@ -25,14 +25,15 @@ const NUMBERBINARYOPERATORS = BINARYOPERATORS.concat([{
 /**
  * Binary operator form.
  */
-function ConditionOperator({ type, operator, onChange }) {
+function ConditionOperator({ type, operator, onChange, readOnly }) {
     const choices = type === 'number' ? NUMBERBINARYOPERATORS : BINARYOPERATORS;
     const schema = {
         type: 'string',
         errored: v => choices.some(c => c.value === v),
         view: {
             type: 'select',
-            choices
+            choices,
+            readOnly: readOnly
         }
     };
     return (

@@ -427,7 +427,7 @@ public class WebsocketFacade {
                 }
 
             } else {
-                logger.error("413 MESSAGE TOO BIG");
+                logger.error("413 MESSAGE TOO BIG (Detected)");
                 this.fallback(clientEvent, audience, socketId);
             }
             //}

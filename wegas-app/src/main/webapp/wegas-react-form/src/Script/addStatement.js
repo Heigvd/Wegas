@@ -40,6 +40,11 @@ export default function addStatement(Comp) {
             });
         }
         render() {
+            if (this.props.view.readOnly){
+                return (
+                    <Comp {...this.props} code={this.state.code} />
+                    );
+            } else {
             return (
                 <span>
                     <AddStatementButton
@@ -59,8 +64,9 @@ export default function addStatement(Comp) {
                     <Comp {...this.props} code={this.state.code} />
                 </span>
             );
-        }
     }
+            }
+        }
     AddStatement.propTypes = {
         code: PropTypes.arrayOf(PropTypes.object),
         type: PropTypes.oneOf(['condition', 'getter']),
@@ -69,16 +75,26 @@ export default function addStatement(Comp) {
 }
 export const removeStatement = Comp => {
     function RemoveStatement(props) {
-        return (
-            <div className={removeContainerStyle}>
-                <Statement>
-                    <Comp {...props} />
-                </Statement>
-                <div className={removeButtonStyle}>
-                    <RemoveStatementButton onClick={props.onRemove} />
+        if (props.view && props.view.readOnly){
+            return (
+                <div className={removeContainerStyle}>
+                    <Statement>
+                        <Comp {...props} />
+                    </Statement>
                 </div>
-            </div>
-        );
+            );
+        } else {
+            return (
+                <div className={removeContainerStyle}>
+                    <Statement>
+                        <Comp {...props} />
+                    </Statement>
+                    <div className={removeButtonStyle}>
+                        <RemoveStatementButton onClick={props.onRemove} />
+                    </div>
+                </div>
+            );
+        }
     }
     RemoveStatement.propTypes = {
         onRemove: PropTypes.func,

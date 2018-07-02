@@ -73,11 +73,27 @@ public final class WegasPrimitivePatch extends WegasPatch {
     }
 
     private boolean isProtected(Mergeable target, boolean bypassVisibility) {
+        AbstractEntity effectiveAbstractEntity;
+
+        if (toEntity instanceof AbstractEntity || toEntity == null) {
+            effectiveAbstractEntity = (AbstractEntity) toEntity;
+        } else {
+            Mergeable mergeableParent = toEntity;
+            do {
+                mergeableParent = mergeableParent.getMergeableParent();
+            } while (mergeableParent != null && mergeableParent instanceof AbstractEntity == false);
+            if (mergeableParent instanceof AbstractEntity) {
+                effectiveAbstractEntity = (AbstractEntity) mergeableParent;
+            } else {
+                effectiveAbstractEntity = null;
+            }
+        }
+
         return !bypassVisibility // target is never protected when bypassing visibilities
                 && target.belongsToProtectedGameModel() // and target is protected
                 && this.toEntity != null
-                && ((this.toEntity instanceof AbstractEntity && !((AbstractEntity) this.toEntity).isPersisted())
-                   || this.toEntity.belongsToProtectedGameModel() // toEntity is also protected (ie allows changes from upstream)
+                && (effectiveAbstractEntity != null && !effectiveAbstractEntity.isPersisted()
+                || this.toEntity.belongsToProtectedGameModel() // toEntity is also protected (ie allows changes from upstream)
                 );
     }
 
@@ -129,7 +145,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
                                                 key = identifier;
                                             }
                                             if (toValue != null) {
-                                                cb.add(toValue, null, key);
+                                                cb.add(toValue, target, key);
                                             }
                                         }
                                     }

@@ -535,7 +535,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         getEditorLabel: function() {
             var trLabel = this.getLabel(),
                 index = this.get("index");
-            if (index){
+            if (index) {
                 index += ". ";
             } else {
                 index = "";
@@ -561,13 +561,19 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             index: {
                 type: STRING,
-                index: -1,
+                index: -11,
                 required: true,
                 view: {
                     label: "Task number",
                     layout: "extraShort"
                 }
             },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                index: -10,
+                description: "Displayed to players",
+                type: STRING
+            }),
             predecessors: {
                 type: ARRAY,
                 items: {
@@ -620,7 +626,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     requirements: {
                         type: ARRAY,
                         view: {
-                            label: "Resource requirements"
+                            label: "Resource requirements",
+                            highlight:true
                         },
                         items: {
                             type: OBJECT,

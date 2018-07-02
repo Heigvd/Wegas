@@ -284,7 +284,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     type: NULLSTRING,
                     optional: false,
                     value: "",
-                    index: -9,
+                    index: -15,
                     view: {
                         label: "Tag",
                         description: "Never displayed to players"
@@ -292,7 +292,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 label: Y.Wegas.Helper.getTranslationAttr({
                     label: "Label",
-                    index: -8,
+                    index: -10,
                     description: "Displayed to players",
                     type: STRING
                 }),

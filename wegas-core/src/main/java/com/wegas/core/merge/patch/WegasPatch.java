@@ -161,6 +161,7 @@ public abstract class WegasPatch {
 
     /**
      * Apply patch with default behaviour (following visibility restriction)
+     *
      * @param gameModel
      * @param target
      */
@@ -289,8 +290,26 @@ public abstract class WegasPatch {
                     }
                 }
             } else {
+                // from is null
+                // target is not
+
                 //should create but already exists !
-                throw new WegasConflictException();
+                if (to != null) {
+                    if (to instanceof ModelScoped) {
+                        Visibility toVisibility = ((ModelScoped) to).getVisibility();
+                        if (toVisibility.equals(Visibility.PRIVATE)) {
+                            mode = PatchMode.DELETE;
+                        } else {
+                            mode = updateOrOverride(inheritedVisibility, visibility);
+
+                        }
+                    } else {
+                        mode = PatchMode.OVERRIDE;
+                    }
+                } else {
+                    // FROM NULL TO NULL !!!
+                    throw new WegasConflictException();
+                }
             }
         }
 
