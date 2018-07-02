@@ -72,11 +72,11 @@ var i18nOrdinate = (function(module) {
         function foreach(callback, mode) {
             mode = mode || "match";
 
-            var lang, code;
+            var lang;
             if (mode === "internal" || mode === "match") {
                 for (lang in i18nTable) {
                     if (i18nTable.hasOwnProperty(lang)) {
-                        var gmLang = self.getGameModel().getLanguageByCode(code);
+                        var gmLang = self.getGameModel().getLanguageByCode(lang);
                         if (gmLang || mode === "internal") {
                             callback(lang);
                         }
