@@ -14,12 +14,14 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -89,16 +91,38 @@ public class MergeHelper {
 
                                 if (children instanceof List) {
                                     List childrenList = (List) children;
-                                    List refList = (List) referenceChildren;
+                                    List refList = new ArrayList<>();
+                                    if (referenceChildren instanceof List) {
+                                        refList.addAll((List) referenceChildren);
+                                    }
 
                                     if (!childrenList.isEmpty()) {
                                         for (int i = 0; i < childrenList.size(); i++) {
                                             Object get = childrenList.get(i);
                                             if (get instanceof Mergeable) {
                                                 Mergeable refGet = null;
-                                                if (refList != null && i < refList.size()) {
-                                                    refGet = (Mergeable) refList.get(i);
+
+                                                // first try to fetch item with same refId
+                                                for (Object other : refList) {
+                                                    if (other instanceof Mergeable && ((Mergeable) other).getRefId().equals(((Mergeable) get).getRefId())) {
+                                                        refGet = (Mergeable) other;
+                                                        break;
+                                                    }
                                                 }
+                                                if (refGet == null && get instanceof NamedEntity) {
+                                                    // no reference with same refId, try to fetch by name
+                                                    for (Object other : refList) {
+                                                        if (other instanceof NamedEntity && ((NamedEntity) other).getName().equals(((NamedEntity) get).getName())) {
+                                                            refGet = (Mergeable) other;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                if (refGet != null) {
+                                                    // make sure to fetch refGet only once
+                                                    refList.remove(refGet);
+                                                }
+
                                                 MergeHelper.visitMergeable((Mergeable) get, refGet, fieldProtectionLevel, forceRecursion, visitor, level + 1, field);
                                             } else {
                                                 // children are not mergeable: skip all
