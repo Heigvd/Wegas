@@ -152,6 +152,16 @@ const _turnSchemaReadOnly = (args) =>{
             };
         }
 
+        if (args.view){
+            args.view.readOnly = true;
+        }
+
+        if (args && args.props && args.props.schema.type === "array"  && args.props.schema.items){
+            for (let k  in args.props.schema.items){
+                _turnSchemaReadOnly(args.props.schema.items[k]);
+            }
+        }
+
         if (args && args.props && args.props.schema.type === "object"  && args.props.schema.properties){
             for (let k  in args.props.schema.properties){
                 _turnSchemaReadOnly(args.props.schema.properties[k]);

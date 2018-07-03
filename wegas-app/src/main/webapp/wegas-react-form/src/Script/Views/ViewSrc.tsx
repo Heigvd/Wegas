@@ -8,6 +8,7 @@ import { css } from 'glamor';
 interface IViewSrcProps {
     value: string;
     error: string;
+    readOnly: boolean;
     onChange: (value: string) => void;
 }
 const runButton = css({
@@ -81,6 +82,7 @@ class ViewSrc extends React.Component<
                     width="100%"
                     height="200px"
                     focus
+                    readOnly={this.props.readOnly}
                     onChange={this.handleChange}
                 />,
                 <div key="error">{this.props.error || <br />}</div>,

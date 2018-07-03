@@ -564,12 +564,14 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         },
         showForm: function(state) {
             Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
-                var form;
+                var form, entity, cfg;
                 state = state || this.get(ENTITY);
                 Plugin.EditEntityAction.destroyEditionTab();
                 this.editionHighlight();
 
-                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
+                entity = this.get(ENTITY);
+                cfg = entity.getFormCfg(undefined, this.get("parent").get(ENTITY));
+                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this), undefined, cfg);
                 form.toolbar.add(new Y.Wegas.Button({
                     label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                     cssClass: Plugin.EditEntityAction.getStackedIconClass(),
@@ -805,13 +807,14 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         },
         showForm: function(transition) {
             Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
-                var form;
+                var form, stateMachine, cfg;
                 Plugin.EditEntityAction.destroyEditionTab();
                 this.editionHighlight();
 
                 transition = transition || this.get(ENTITY);
-
-                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
+                stateMachine = this.get("parent").get("parent").get("entity");
+                cfg = transition.getFormCfg(undefined, stateMachine);
+                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this), undefined, cfg);
                 form.toolbar.add(new Y.Wegas.Button({
                     label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                     cssClass: Plugin.EditEntityAction.getStackedIconClass(),

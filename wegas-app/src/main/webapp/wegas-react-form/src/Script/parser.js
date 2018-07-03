@@ -23,7 +23,7 @@ function parsed(Comp) {
             ast = types.builders.file(types.builders.program([]));
         }
         return (
-            <ViewSrc value={value} onChange={onChange} error={error}>
+            <ViewSrc value={value} onChange={onChange} error={error} readOnly={props.view.readOnly}>
                 <ErrorCatch code={value} onChange={onChange}>
                     <Comp
                         {...restProps}

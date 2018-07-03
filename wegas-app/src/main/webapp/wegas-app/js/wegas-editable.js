@@ -84,7 +84,7 @@ YUI.add('wegas-editable', function(Y) {
          * Returns the form configuration associated to this object, to be used a Form schema.
          * @param {Array} fieldsToIgnore (optional), don't create these inputs.
          */
-        getFormCfg: function(fieldsToIgnore) {
+        getFormCfg: function(fieldsToIgnore, parent) {
             var i, form, schemaMap, attrCfgs, builder,
                 gameModelType;
             gameModelType = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type");
@@ -111,7 +111,12 @@ YUI.add('wegas-editable', function(Y) {
                 if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
                     if (!Y.one("body.wegas-internalmode")) {
-                        this._overrideFormConfig(schemaMap, this, "PRIVATE");
+                        if (parent) {
+                            var parentCfg = parent.getFormCfg();
+                            this._overrideFormConfig(schemaMap, this, "PRIVATE", parent.get("visibility"), parentCfg.maxWritableVisibility); // inheritedVisibility, inheritedMaxWritableVisibility
+                        } else {
+                            this._overrideFormConfig(schemaMap, this, "PRIVATE");
+                        }
                     }
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
                 }
