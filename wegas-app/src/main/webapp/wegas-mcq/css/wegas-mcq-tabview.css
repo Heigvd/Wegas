@@ -20,14 +20,23 @@
     font-weight:bold;
 }
 
+.yui3-skin-sam .wegas-mcqtabview a > div {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .yui3-skin-sam .wegas-mcqtabview  .index-label {
-    float:left;
     padding-left:8px;
 }
 
 .yui3-skin-sam .wegas-mcqtabview .index-status {
-    float:right;
-    padding-right:8px;
+    flex-grow: 1;
+    text-align: right;
+    padding-right: 8px;
+    text-overflow: ellipsis;
+    padding-left: 20px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 .yui3-skin-sam .wegas-mcqtabview .horizontal-tabview,
 .yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content{
