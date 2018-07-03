@@ -244,7 +244,6 @@ YUI.add('wegas-button', function(Y) {
          * @private
          * @description call function 'getUnreadCount' to set the number of
          * unread on the host.
-         * The "increasing" class name is added when an increase of unread items is noticed.
          */
         syncUI: function() {
             this.updateCounter();
