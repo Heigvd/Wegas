@@ -1,25 +1,7 @@
 import * as React from 'react';
-import { State } from '../data/Reducer/reducers';
-import { css } from 'emotion';
-import { Actions } from '../data/index';
 import { StoreConsumer } from '../data/store';
+import { importComponent } from '.';
 
-/**
- * Test Widget to be removed
- * @param props
- */
-function Print(props: any) {
-  return (
-    <div>
-      <span>Print:</span> {props.message}
-      <span>{props.children}</span>
-    </div>
-  );
-}
-
-const AVAILABLE: { [key: string]: React.ComponentType } = {
-  Print: editable(Print, 'Print'),
-};
 // function inferComponenent(type: string | React.ComponentType) {
 //     if (typeof type == 'string') {
 //         return type;
@@ -47,64 +29,64 @@ const AVAILABLE: { [key: string]: React.ComponentType } = {
 
 //     return acc;
 // }
-const maskRoot = css({
-  position: 'relative',
-  display: 'inline-block',
-  boxShadow: '0 0 1px 1px ',
-});
-const mask = css({
-  position: 'absolute',
-  display: 'inline-block',
-  zIndex: 1,
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  cursor: 'pointer',
-});
-function editable<T>(Comp: React.ComponentType<T>, name?: string) {
-  type EditProps = {
-    __path: string[];
-  } & T;
-  class EditableComponent extends React.Component<EditProps> {
-    static displayName = name || Comp.displayName;
-    componentDidCatch(e: any) {
-      console.warn(e);
-    }
-    render() {
-      const cleanedProps = Object.assign({}, this.props, {
-        __path: undefined,
-      });
-      return (
-        <StoreConsumer selector={(s: State) => s.global.pageEdit}>
-          {({ state, dispatch }) => {
-            if (state) {
-              return (
-                <div
-                  className={maskRoot}
-                  onClick={event => {
-                    event.stopPropagation();
-                    dispatch(
-                      Actions.EditorActions.editComponent(
-                        '1',
-                        this.props.__path,
-                      ),
-                    );
-                  }}
-                >
-                  <div className={mask} />
-                  <Comp {...cleanedProps} />
-                </div>
-              );
-            }
-            return <Comp {...cleanedProps} />;
-          }}
-        </StoreConsumer>
-      );
-    }
-  }
-  return EditableComponent;
-}
+// const maskRoot = css({
+//   position: 'relative',
+//   display: 'inline-block',
+//   boxShadow: '0 0 1px 1px ',
+// });
+// const mask = css({
+//   position: 'absolute',
+//   display: 'inline-block',
+//   zIndex: 1,
+//   top: 0,
+//   left: 0,
+//   width: '100%',
+//   height: '100%',
+//   cursor: 'pointer',
+// });
+// function editable<T>(Comp: React.ComponentType<T>, name?: string) {
+//   type EditProps = {
+//     __path: string[];
+//   } & T;
+//   class EditableComponent extends React.Component<EditProps> {
+//     static displayName = name || Comp.displayName;
+//     componentDidCatch(e: any) {
+//       console.warn(e);
+//     }
+//     render() {
+//       const cleanedProps = Object.assign({}, this.props, {
+//         __path: undefined,
+//       });
+//       return (
+//         <StoreConsumer selector={(s: State) => s.global.pageEdit}>
+//           {({ state, dispatch }) => {
+//             if (state) {
+//               return (
+//                 <div
+//                   className={maskRoot}
+//                   onClick={event => {
+//                     event.stopPropagation();
+//                     dispatch(
+//                       Actions.EditorActions.editComponent(
+//                         '1',
+//                         this.props.__path,
+//                       ),
+//                     );
+//                   }}
+//                 >
+//                   <div className={mask} />
+//                   <Comp {...cleanedProps} />
+//                 </div>
+//               );
+//             }
+//             return <Comp {...cleanedProps} />;
+//           }}
+//         </StoreConsumer>
+//       );
+//     }
+//   }
+//   return EditableComponent;
+// }
 
 function deserialize(
   json: WegasComponent,
@@ -112,7 +94,8 @@ function deserialize(
   path: string[] = [],
 ): JSX.Element {
   const { children = [], ...restProps } = json.props || {};
-  const type = AVAILABLE[json.type];
+  // Should await all children as well.
+  const type = importComponent(json.type);
   if (type == null) {
     return <span>Unkown "{json.type}"</span>;
   }

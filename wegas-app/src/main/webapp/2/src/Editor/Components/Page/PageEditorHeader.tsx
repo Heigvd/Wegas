@@ -1,7 +1,7 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { State } from '../../../data/Reducer/reducers';
-import { Actions } from '../../../data/index';
+import { Actions } from '../../../data';
 import { Page } from '../../../data/selectors';
 import { StoreConsumer } from '../../../data/store';
 
