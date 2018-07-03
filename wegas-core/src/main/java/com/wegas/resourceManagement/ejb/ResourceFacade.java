@@ -27,7 +27,8 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -320,7 +321,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
     @Override
     public TaskInstance plan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
-        List<Integer> plannedPeriods = ti.getPlannification();
+        Collection<Integer> plannedPeriods = ti.getPlannification();
         if (!plannedPeriods.contains(period)) {
             plannedPeriods.add(period);
         }
@@ -403,7 +404,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
              * New predecessor's names : be sure they're registered
              */
             if (task.getImportedPredecessorNames() != null) {
-                List<String> predecessorNames = task.getImportedPredecessorNames();
+                Set<String> predecessorNames = task.getImportedPredecessorNames();
                 /**
                  * New predecessor's names : be sure they're registered
                  */

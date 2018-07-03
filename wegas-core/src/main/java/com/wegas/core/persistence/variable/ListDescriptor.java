@@ -17,7 +17,9 @@ import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      */
     @ElementCollection
     @WegasEntityProperty
-    private List<String> allowedTypes = new ArrayList<>();
+    private Set<String> allowedTypes = new HashSet<>();
 
     /**
      * shortcut to show within (+) treeview button, must match allowedTypes
@@ -140,16 +142,16 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      *
      * @return allowed types
      */
-    public List<String> getAllowedTypes() {
+    public Set<String> getAllowedTypes() {
         return this.allowedTypes;
     }
 
     /**
-     * set the list of allowed types
+     * set the Set of allowed types
      *
      * @param types allowed types
      */
-    public void setAllowedTypes(List<String> types) {
+    public void setAllowedTypes(Set<String> types) {
         this.allowedTypes = types;
     }
 

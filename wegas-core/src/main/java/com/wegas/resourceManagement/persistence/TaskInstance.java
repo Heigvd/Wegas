@@ -17,8 +17,10 @@ import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -55,7 +57,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     @WegasEntityProperty
-    private List<Integer> plannification = new ArrayList<>();
+    private Set<Integer> plannification = new HashSet<>();
 
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonIgnore
@@ -128,16 +130,16 @@ public class TaskInstance extends VariableInstance implements Propertable {
     }
 
     /**
-     * @return the plannification
+     * @return the planning
      */
-    public List<Integer> getPlannification() {
+    public Set<Integer> getPlannification() {
         return plannification;
     }
 
     /**
-     * @param plannification the plannification to set
+     * @param plannification the planning to set
      */
-    public void setPlannification(List<Integer> plannification) {
+    public void setPlannification(Set<Integer> plannification) {
         this.plannification = plannification;
     }
 

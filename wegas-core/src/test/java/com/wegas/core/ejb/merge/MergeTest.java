@@ -91,7 +91,7 @@ public class MergeTest extends AbstractArquillianTest {
     @Test
     public void testListDescriptorMerge() {
 
-        List<String> allowed = new ArrayList<>();
+        Set<String> allowed = new HashSet<>();
 
         ListDescriptor listD = new ListDescriptor();
         listD.setName("myList");
@@ -216,7 +216,7 @@ public class MergeTest extends AbstractArquillianTest {
         Assert.assertEquals(0, errors.size());
     }
 
-    //@Test
+    @Test
     public void printEntityChildren() {
         Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
 
@@ -242,7 +242,7 @@ public class MergeTest extends AbstractArquillianTest {
         }
     }
 
-    //@Test
+    @Test
     public void printEntity() {
         Set<Class<? extends Mergeable>> classes = reflections.getSubTypesOf(Mergeable.class);
 

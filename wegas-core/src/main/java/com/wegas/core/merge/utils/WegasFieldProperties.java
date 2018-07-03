@@ -14,6 +14,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class represent all properties linked to an {@link Mergeable} {@link WegasEntityProperty} field
@@ -64,7 +65,7 @@ public class WegasFieldProperties {
          * guess field type
          */
         // Which case ?
-        if (List.class.isAssignableFrom(fieldClass) || Map.class.isAssignableFrom(fieldClass)) {
+        if (List.class.isAssignableFrom(fieldClass) || Map.class.isAssignableFrom(fieldClass) || Set.class.isAssignableFrom(fieldClass)) {
             /*
              * current property is a list or a map of abstract entities
              */

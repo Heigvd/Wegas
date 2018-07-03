@@ -21,7 +21,9 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -97,7 +99,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty
-    private List<String> pictures = new ArrayList<>();
+    private Set<String> pictures = new HashSet<>();
 
 // ~~~ Sugar for scripts ~~~
 
@@ -224,14 +226,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      * @return the pictures
      */
-    public List<String> getPictures() {
+    public Set<String> getPictures() {
         return pictures;
     }
 
     /**
      * @param pictures the pictures to set
      */
-    public void setPictures(List<String> pictures) {
+    public void setPictures(Set<String> pictures) {
         this.pictures = pictures;
     }
 

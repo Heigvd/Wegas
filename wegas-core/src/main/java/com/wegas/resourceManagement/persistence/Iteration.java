@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,7 +53,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     //@JsonIgnore
     @Transient
     @WegasEntityProperty
-    private List<String> taskNames;
+    private Set<String> taskNames;
 
     /**
      *
@@ -120,7 +121,6 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      * indicates the total remaining workload for the corresponding period.
      */
     @OneToMany(mappedBy = "iteration", cascade = CascadeType.ALL, orphanRemoval = true)
-
     @WegasEntityProperty
     private List<Workload> workloads = new ArrayList<>();
 
@@ -402,8 +402,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     public void setWorkloads(List<Workload> workloads) {
         this.workloads = workloads;
-        for (Workload wl : workloads) {
-            wl.setIteration(this);
+        if (this.workloads != null) {
+            for (Workload wl : workloads) {
+                wl.setIteration(this);
+            }
         }
     }
 
@@ -492,13 +494,13 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         this.setTaskNames(null);
     }
 
-    public List<String> getDeserialisedTaskNames() {
+    public Set<String> getDeserialisedTaskNames() {
         return taskNames;
     }
 
-    public List<String> getTaskNames() {
+    public Set<String> getTaskNames() {
         if (taskNames == null) {
-            List<String> names = new ArrayList<>();
+            Set<String> names = new HashSet<>();
             for (TaskInstance ti : getTasks()) {
                 names.add(ti.findDescriptor().getName());
             }
@@ -508,7 +510,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         }
     }
 
-    public void setTaskNames(List<String> names) {
+    public void setTaskNames(Set<String> names) {
         this.taskNames = names;
     }
 

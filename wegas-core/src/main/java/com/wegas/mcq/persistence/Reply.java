@@ -24,7 +24,9 @@ import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -241,11 +243,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
         // Make Jackson happy
     }
 
-    public List<String> getFiles() {
+    public Set<String> getFiles() {
         if (result != null) {
             return result.getFiles();
         } else {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
     }
 

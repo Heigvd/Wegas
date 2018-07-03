@@ -556,7 +556,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                         break;
                     }
                 default:
-                    throw new WegasIncompatibleType("Couldn not create a new scenatrio from " + srcGameModel);
+                    throw new WegasIncompatibleType("Couldn not create a new scenario from " + srcGameModel);
             }
 
             if (newGameModel != null) {

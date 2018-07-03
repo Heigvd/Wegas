@@ -24,7 +24,9 @@ import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -98,7 +100,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     @Transient
     @WegasEntityProperty
-    private List<String> predecessorNames/*
+    private Set<String> predecessorNames/*
              * = new ArrayList<>()
              */;
 
@@ -375,9 +377,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     /**
      * @return the exportedPredecessors
      */
-    public List<String> getPredecessorNames() {
+    public Set<String> getPredecessorNames() {
         if (predecessorNames == null){
-            List<String> names = new ArrayList<>();
+            Set<String> names = new HashSet<>();
             for (TaskDescriptor t : this.getPredecessors()) {
                 names.add(t.getName());
             }
@@ -393,14 +395,14 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @return names of predecessors, as imported from such a JSON
      */
     @JsonIgnore
-    public List<String> getImportedPredecessorNames() {
+    public Set<String> getImportedPredecessorNames() {
         return this.predecessorNames;
     }
 
     /**
      * @param exportedPredecessors the exportedPredecessors to set
      */
-    public void setPredecessorNames(List<String> exportedPredecessors) {
+    public void setPredecessorNames(Set<String> exportedPredecessors) {
         this.predecessorNames = exportedPredecessors;
     }
 

@@ -28,7 +28,9 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -111,7 +113,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     @ElementCollection
     @WegasEntityProperty
-    private List<String> files = new ArrayList<>();
+    private Set<String> files = new HashSet<>();
     /**
      *
      */
@@ -324,18 +326,18 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /**
      * @return the files
      */
-    public List<String> getFiles() {
+    public Set<String> getFiles() {
         return files;
     }
 
     /**
      * @param files the files to set
      */
-    public void setFiles(List<String> files) {
+    public void setFiles(Set<String> files) {
         this.files = files;
     }
 
-    /**
+    /*
      * @return the choiceInstances
      *
      * @JsonIgnore

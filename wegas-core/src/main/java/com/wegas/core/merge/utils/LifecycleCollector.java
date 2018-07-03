@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,8 @@ public class LifecycleCollector {
             container.addAll((List<Object>) orphans);
         } else if (orphans instanceof Map) {
             container.addAll((Map<Object, Object>) orphans);
+        } else if (orphans instanceof Set) {
+            container.addAll((List<Object>) orphans);
         } else {
             throw WegasErrorMessage.error("Unknown Type: " + orphans);
         }

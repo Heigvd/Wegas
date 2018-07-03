@@ -22,9 +22,11 @@ import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +132,46 @@ public class MergeHelper {
                                             }
                                         }
                                     }
+                                } else if (children instanceof Set) {
+                                    Set childrenSet = (Set) children;
+                                    Set refSet = new HashSet<>();
+                                    if (referenceChildren instanceof Set) {
+                                        refSet.addAll((Set) referenceChildren);
+                                    }
 
+                                    if (!childrenSet.isEmpty()) {
+                                        for (Object get : childrenSet) {
+                                            if (get instanceof Mergeable) {
+                                                Mergeable refGet = null;
+
+                                                // first try to fetch item with same refId
+                                                for (Object other : refSet) {
+                                                    if (other instanceof Mergeable && ((Mergeable) other).getRefId().equals(((Mergeable) get).getRefId())) {
+                                                        refGet = (Mergeable) other;
+                                                        break;
+                                                    }
+                                                }
+                                                if (refGet == null && get instanceof NamedEntity) {
+                                                    // no reference with same refId, try to fetch by name
+                                                    for (Object other : refSet) {
+                                                        if (other instanceof NamedEntity && ((NamedEntity) other).getName().equals(((NamedEntity) get).getName())) {
+                                                            refGet = (Mergeable) other;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                if (refGet != null) {
+                                                    // make sure to fetch refGet only once
+                                                    refSet.remove(refGet);
+                                                }
+
+                                                MergeHelper.visitMergeable((Mergeable) get, refGet, fieldProtectionLevel, forceRecursion, visitor, level + 1, field);
+                                            } else {
+                                                // children are not mergeable: skip all
+                                                break;
+                                            }
+                                        }
+                                    }
                                 } else if (children instanceof Map) {
                                     Map<Object, Object> childrenMap = (Map) children;
                                     Map<Object, Object> refMap = (Map) referenceChildren;

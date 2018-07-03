@@ -23,6 +23,8 @@ import com.wegas.resourceManagement.persistence.WRequirement;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import javax.ejb.EJB;
 import org.junit.Assert;
 import static org.junit.Assert.*;
@@ -1008,7 +1010,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // and duplicate it
         task2.getPredecessors().clear();
-        task2.setPredecessorNames(Arrays.asList("task3"));
+        Set<String> preds = new HashSet<>();
+        preds.addAll(Arrays.asList("task3"));
+        task2.setPredecessorNames(preds);
         TaskDescriptor updated = (TaskDescriptor) variableDescriptorFacade.update(task2.getId(), task2);
         assertEquals("task3", updated.getPredecessor(0).getLabel().translateOrEmpty(gameModel));
         assertEquals(1, updated.getPredecessors().size());

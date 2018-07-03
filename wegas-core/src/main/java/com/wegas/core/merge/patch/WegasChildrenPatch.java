@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Patch List or Map of AbstrctEntities
@@ -112,15 +113,26 @@ public final class WegasChildrenPatch extends WegasPatch {
                         primitive = !Mergeable.class.isAssignableFrom(get.getClass());
                     }
                     if (primitive) {
-                        //theMap.put("" + i + ":" + get, get);
-                        theMap.put(i, get);
+                        theMap.put("" + i + ":" + get, get);
+                        // theMap.put(i, get);
                     } else {
                         theMap.put(((Mergeable) get).getRefId(), get);
-
                     }
                 }
             }
-
+        } else if (children instanceof Set) {
+            for (Object get : (Set<Object>) children) {
+                if (get != null) {
+                    if (primitive == null) {
+                        primitive = !Mergeable.class.isAssignableFrom(get.getClass());
+                    }
+                    if (primitive) {
+                        theMap.put(get, get);
+                    } else {
+                        theMap.put(((Mergeable) get).getRefId(), get);
+                    }
+                }
+            }
         } else if (children instanceof Map) {
             Map<Object, Object> map = (Map<Object, Object>) children;
 
@@ -151,24 +163,29 @@ public final class WegasChildrenPatch extends WegasPatch {
 
                         final Map<Object, Object> childrenMap;
 
+                        final Set<Object> childrenSet;
+
                         if (children instanceof Map) {
                             childrenMap = new HashMap<>();
                             // add extra key identifier like parentRefId->
                             childrenMap.putAll((Map<? extends Object, ? extends Object>) children);
                             childrenList = null;
+                            childrenSet = null;
                             children = childrenMap;
                         } else if (children instanceof List) {
                             //childrenList = new ArrayList<>();
                             //childrenList.addAll((List<? extends Object>) children);
                             //children = childrenList;
                             childrenList = (List<Object>) children;
-
+                            childrenSet = null;
                             childrenMap = null;
+                        } else if (children instanceof Set) {
+                            childrenSet = (Set<Object>) children;
+                            childrenMap = null;
+                            childrenList = null;
                         } else {
                             throw WegasErrorMessage.error("Incompatible type");
                         }
-
-                        final Object finalChildren = children;
 
                         Map<Object, Object> tmpMap = asMap(children);
                         if ((this.primitive != null && !this.primitive) || parentMode != PatchMode.DELETE) { // no need to delete primitive collections
@@ -187,6 +204,8 @@ public final class WegasChildrenPatch extends WegasPatch {
                                         }
                                     } else if (childrenMap != null) {
                                         childrenMap.put(identifier, child);
+                                    } else if (childrenSet != null) {
+                                        childrenSet.add(child);
                                     }
 
                                     for (WegasCallback cb : callbacks) {
@@ -207,6 +226,13 @@ public final class WegasChildrenPatch extends WegasPatch {
                                     } else if (childrenMap != null) {
                                         childrenMap.remove(identifier);
                                         key = identifier;
+                                    } else if (childrenSet != null) {
+                                        childrenSet.remove(child);
+                                        if (child instanceof Mergeable) {
+                                            key = ((Mergeable) child).getRefId();
+                                        } else {
+                                            key = child;
+                                        }
                                     }
 
                                     for (WegasCallback cb : callbacks) {
@@ -220,41 +246,11 @@ public final class WegasChildrenPatch extends WegasPatch {
                                 cb.preUpdate(target, to, identifier);
                             }
 
-                            /*
-                        if (parentMode == PatchMode.OVERRIDE) {
-
-                            // effective children keys from patches
-                            Set<Object> effectiveChildrenKeys = new HashSet<>();
-
-                            for (WegasPatch patch : patches) {
-                                effectiveChildrenKeys.add(patch.getIdentifier());
-                            }
-
-                            // delete all children which does not exist any longer in the new children list
-                            for (Entry<Object, Object> entry : tmpMap.entrySet()) {
-                                WegasPatch patch;
-                                Object key = entry.getKey();
-
-                                if (!effectiveChildrenKeys.contains(key)) {
-                                    Object toBeDeleted = entry.getValue();
-                                    if (primitive) {
-                                        patch = new WegasPrimitivePatch(key, 0, null, null, null, null, toBeDeleted, null, false, false, false, this.protectionLevel);
-                                    } else {
-                                        // DELETE and COLLECT toBeDeleted and all its children but register them within the collector with payload =
-
-                                        patch = new WegasEntityPatch(key, 0, null, null, null, (Mergeable) toBeDeleted, null, recursive, false, false, false, this.protectionLevel);
-                                    }
-                                    patch.apply(targetGameModel, toBeDeleted, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
-                                }
-                            }
-
-                            // force sub-patches to create nodes
-                        }*/
                             logger.info("Pre Patch: target: {} from: {} to: {}", children, from, to);
                             for (WegasPatch patch : patches) {
                                 Object key = patch.getIdentifier();
                                 Object child = tmpMap.get(key);
-                                if (patch instanceof WegasPrimitivePatch){
+                                if (patch instanceof WegasPrimitivePatch) {
                                     patch.apply(targetGameModel, target, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                                 } else {
                                     patch.apply(targetGameModel, (Mergeable) child, null, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
@@ -328,8 +324,11 @@ public final class WegasChildrenPatch extends WegasPatch {
                             }
 
                             if (parentMode == PatchMode.DELETE
-                                    && ((childrenList != null && childrenList.size() > 0)
-                                    || (childrenMap != null && childrenMap.size() > 0))) {
+                                    && (
+                                    (childrenList != null && childrenList.size() > 0)
+                                    || (childrenMap != null && childrenMap.size() > 0)
+                                    || (childrenSet != null && childrenSet.size() > 0)
+                                    )) {
                                 // children
                                 logger.info("orphans: {}", children);
 
