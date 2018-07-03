@@ -137,7 +137,7 @@
 }
 
 .wegas-mcqview-content:not(.cbx) .wegas-mcqchoice:not(.noDescription) .mcqchoice__submit {
-    min-width: calc(100% - 36px);
+    min-width: calc(100% - 31px);
     text-align: right;
 }
 
