@@ -761,8 +761,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     content: '<div class="mcq-reply-title">' + I18n.t(choiceD.get("label")) + '</div>' +
                                         '<div class="mcq-reply-content">' + toDisplay + '</div>'
                                 });
-                                // Insert the latest reply at the top of the list:
-                                this.resultList.add(this.results[reply.get("id")], 0);
+                                // Insert the latest reply at the top of the list, but not for cbx question:
+                                this.resultList.add(this.results[reply.get("id")], !cbx ? 0 : undefined);
                             }
                         }
                     }
