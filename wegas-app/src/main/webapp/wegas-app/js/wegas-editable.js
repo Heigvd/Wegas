@@ -156,8 +156,7 @@ YUI.add('wegas-editable', function(Y) {
             return defaultVisibility;
         },
         _getMode: function(defaultMode, visibility, maxVisibility) {
-            var visibilities = ["NONE", "PRIVATE", "INHERITED", "PROTECTED", "INTERNAL"],
-                maxVisibility;
+            var visibilities = ["NONE", "PRIVATE", "INHERITED", "PROTECTED", "INTERNAL"];
             switch (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type")) {
                 case "MODEL":
                 case "PLAY":

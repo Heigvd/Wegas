@@ -201,6 +201,8 @@ YUI.add("wegas-i18n", function(Y) {
                     "</span>" +
                     "<span class='wegas-translation--toolbar'></span>" +
                     "<span tabindex='0' class='wegas-translation--value'>" + text + "</span></span>";
+            } else if (inlineEditor === "FORBIDDEN") {
+                return "<span class='wegas-readonly-translation'>" + text + "</span>";
             } else {
                 return text;
             }
@@ -222,7 +224,7 @@ YUI.add("wegas-i18n", function(Y) {
                 if (trContent.get) {
                     klass = trContent.get("@class");
                     translations = trContent.get("translations");
-                    trId = trContent && trContent.get("id");
+                    trId = trContent.get("id");
                 } else {
                     klass = trContent["@class"];
                     translations = trContent.translations;
@@ -230,7 +232,8 @@ YUI.add("wegas-i18n", function(Y) {
                 }
 
                 if (klass === "TranslatableContent" && translations) {
-                    langs = Y.Array.map(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
+                    var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+                    langs = Y.Array.map(gameModel.get("languages"), function(item) {
                         return {
                             lang: item.get("lang"),
                             code: item.get("code")
@@ -261,6 +264,36 @@ YUI.add("wegas-i18n", function(Y) {
                             }
                         }
                     }
+
+                    if (inlineEditor && Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
+
+                        // the current scenario may depends on a model.
+                        // do not let scenrists update protected translations
+                        var variableDescriptorId = trContent.get("parentDescriptorId"),
+                            variableInstanceId = trContent.get("parentInstanceId");
+
+                        if (variableDescriptorId) {
+                            var variableDescriptor = Y.Wegas.Facade.Variable.cache.find("id", variableDescriptorId),
+                                visibility = variableDescriptor._getVisibility(variableDescriptor);
+                            if (visibility === 'INTERNAL' || visibility === "PROTECTED") {
+                                // this translation is not editable
+                                inlineEditor = "FORBIDDEN";
+                            }
+                        } else if (variableInstanceId) {
+                            var visibility,
+                                variableDescriptor = Y.Wegas.Facade.Variable.cache.findByFn(function(item) {
+                                    return item.get("defaultInstance").get("id") === variableInstanceId;
+                                });
+                            if (variableDescriptor) {
+                                visibility = variableDescriptor._getVisibility(variableDescriptor);
+
+                                if (visibility === "INTERNAL") {
+                                    inlineEditor = "FORBIDDEN";
+                                }
+                            }
+                        }
+                    }
+
                     if (theOne) {
                         return genTranslationMarkup(translations[theOne.code], inlineEditor, theOne, trId, theOne.code === favoriteCode);
                     } else {

@@ -89,6 +89,18 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         }
     }
 
+    public Long getParentDescriptorId() {
+        if (parentDescriptor != null) {
+            return parentDescriptor.getId();
+        }
+        return null;
+    }
+
+    public void setParentDescriptorId(Long id) {
+        // Jackson happy
+    }
+
+
     public VariableInstance getParentInstance() {
         return parentInstance;
     }
@@ -98,6 +110,17 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         if (this.parentInstance != null) {
             this.parentDescriptor = null;
         }
+    }
+
+    public Long getParentInstanceId() {
+        if (parentInstance != null) {
+            return parentInstance.getId();
+        }
+        return null;
+    }
+
+    public void setParentInstanceId(Long id) {
+        // Jackson happy
     }
 
     /**
@@ -341,7 +364,6 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         }
         return false;
     }*/
-
     @Override
     public WithPermission getMergeableParent() {
         if (this.getParentDescriptor() != null) {

@@ -6,8 +6,10 @@ load("nashorn:parser.js");
 var I18nHelper = (function() {
     "use strict";
 
-    function fetchTranslations(node, code) {
+    function fetchTranslations(node, code, path) {
         var key, child, keys, i, j, results = [], result;
+
+        path = path || "";
 
         if (node.type === 'ObjectExpression') {
             var i, p, properties = {};
@@ -28,14 +30,16 @@ var I18nHelper = (function() {
                                     keyLoc: p.key.loc,
                                     key: p.key.value,
                                     valueLoc: p.value.loc,
-                                    value: p.value.value
+                                    value: p.value.value,
+                                    path: path
                                 }];
                         }
                     }
 
                     return [{
                             status: 'missingCode',
-                            loc: properties["translations"].loc
+                            loc: properties["translations"].loc,
+                            path: path
                         }];
                 }
             }
@@ -49,14 +53,14 @@ var I18nHelper = (function() {
                 if (Array.isArray(child)) {
                     // process all items in arry
                     for (j = 0; j < child.length; j++) {
-                        result = fetchTranslations(child[j], code);
+                        result = fetchTranslations(child[j], code, path + "/" + key + "[" + j + "]");
                         if (result && result.length > 0) {
                             results = results.concat(result);
                         }
                     }
                 } else if (child instanceof Object && typeof child.type === "string") {
                     // the child is an object which contains a type property
-                    result = fetchTranslations(child, code);
+                    result = fetchTranslations(child, code, path + "/" + key);
                     if (result && result.length > 0) {
                         results = results.concat(result);
                     }

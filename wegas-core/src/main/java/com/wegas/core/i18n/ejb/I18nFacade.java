@@ -25,7 +25,9 @@ import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
@@ -185,6 +187,7 @@ public class I18nFacade extends WegasAbstractFacade {
             newLang.setCode(realCode);
 
             rawLanguages.add(newLang);
+            this.getEntityManager().persist(newLang);
 
             return gameModel;
         } else {
@@ -289,6 +292,22 @@ public class I18nFacade extends WegasAbstractFacade {
 
     public TranslatableContent updateTranslation(Long trId, String code, String newValue) {
         TranslatableContent content = this.findTranslatableContent(trId);
+
+        if (content.belongsToProtectedGameModel()) {
+            if (content.getParentDescriptor() != null) {
+                ModelScoped.Visibility visibility = content.getParentDescriptor().getVisibility();
+                if (visibility == ModelScoped.Visibility.INTERNAL
+                        || visibility == ModelScoped.Visibility.PROTECTED) {
+                    // translation belongs to a variable readonly variable descriptor
+                    return content;
+                }
+            } else if (content.getParentInstance() != null) {
+                if (content.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
+                    // translation belongs to a variable readonly variableInstance
+                    return content;
+                }
+            }
+        }
 
         content.updateTranslation(code, newValue);
 
@@ -434,12 +453,31 @@ public class I18nFacade extends WegasAbstractFacade {
         return impact;
     }
 
+    private boolean doesPathLocationsMatches(JSObject inTarget, JSObject inRef) {
+        if (inTarget.keySet().size() == inRef.keySet().size()) {
+            for (String k : inTarget.keySet()) {
+                JSObject trTarget = (JSObject) inTarget.getMember(k);
+                JSObject trRef = (JSObject) inTarget.getMember(k);
+                if (!trTarget.hasMember("path") || !trRef.hasMember("path") || !trTarget.getMember("path").equals(trRef.getMember("path"))) {
+                    // as soon as one path does not match, return false
+                    logger.error("Script paths differs");
+                    return false;
+                }
+            }
+        } else {
+            logger.debug("Number of translations does not match");
+            return false;
+        }
+        // nothing wrong has been detected, return true
+        return true;
+    }
+
     public void importTranslations(Script target, Script reference, String languageCode) {
         try {
             JSObject inTarget = (JSObject) fishTranslationsByCode(target.getContent(), languageCode);
             JSObject inRef = (JSObject) fishTranslationsByCode(reference.getContent(), languageCode);
             if (inTarget != null && inRef != null) {
-                if (inTarget.keySet().size() == inRef.keySet().size()) {
+                if (doesPathLocationsMatches(inTarget, inRef)) {
                     int index = 0;
                     String script = target.getContent();
                     for (String key : inTarget.keySet()) {
@@ -449,19 +487,20 @@ public class I18nFacade extends WegasAbstractFacade {
                         if (trRef.getMember("status").equals("found")) {
 
                             if (trTarget.getMember("status").equals("found")) {
-                                logger.error("Target already contains a translation");
+                                logger.debug("Target already contains a translation");
                             } else {
                                 String translation = (String) trRef.getMember("value");
+                                logger.debug("Import {}::{} from {} in {}", languageCode, translation, reference, target);
                                 script = this.updateScriptWithNewTranslation(script, index, languageCode, translation);
                             }
                         } else {
-                            logger.error("Missing translation in ref");
+                            logger.debug("Missing translation in ref");
                         }
                         index++;
                     }
                     target.setContent(script);
                 } else {
-                    logger.error("Number of translation does not match");
+                    logger.error("Structure does not match; {} VS {}", target, reference);
                 }
             }
 
@@ -482,7 +521,7 @@ public class I18nFacade extends WegasAbstractFacade {
         scriptFacade.nakedEval(getI18nJsHelper(), null, ctx);
         ScriptObjectMirror nakedEval = (ScriptObjectMirror) scriptFacade.nakedEval("I18nHelper.getTranslatableContents()", args, ctx);
 
-        for (String key : nakedEval.keySet()){
+        for (String key : nakedEval.keySet()) {
             list.add((TranslatableContent) nakedEval.getMember(key));
         }
         return list;
@@ -560,11 +599,11 @@ public class I18nFacade extends WegasAbstractFacade {
         return null;
     }
 
-    private AbstractEntity getToReturn(String className, AbstractEntity theParent) {
+    private VariableDescriptor getToReturn(String className, AbstractEntity theParent) {
         if (theParent != null) {
             switch (className) {
                 case "TriggerDescriptor":
-                    return theParent;
+                    return (TriggerDescriptor) theParent;
                 case "Result":
                     return ((Result) theParent).getChoiceDescriptor();
                 case "Transition":
@@ -590,27 +629,36 @@ public class I18nFacade extends WegasAbstractFacade {
     public AbstractEntity updateInScriptTranslation(ScriptUpdate scriptUpdate) throws ScriptException {
         AbstractEntity theParent = this.getParent(scriptUpdate);
         if (theParent != null) {
-            AbstractEntity toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
+            VariableDescriptor toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
+            if (toReturn != null) {
+                if (toReturn.belongsToProtectedGameModel()) {
+                    // theParent is a variableDescriptor
+                    ModelScoped.Visibility visibility = toReturn.getVisibility();
+                    if (visibility == ModelScoped.Visibility.PROTECTED || visibility == ModelScoped.Visibility.INTERNAL) {
+                        return null;
+                    }
+                }
 
-            try {
-                // fetch impact getter and setter
-                PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
-                Method getter = property.getReadMethod();
+                try {
+                    // fetch impact getter and setter
+                    PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
+                    Method getter = property.getReadMethod();
 
-                // Fetch script to update
-                Script theScript = (Script) getter.invoke(theParent);
-                String source = theScript.getContent();
+                    // Fetch script to update
+                    Script theScript = (Script) getter.invoke(theParent);
+                    String source = theScript.getContent();
 
-                String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue());
-                theScript.setContent(updatedSource);
+                    String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue());
+                    theScript.setContent(updatedSource);
 
-                Method setter = property.getWriteMethod();
-                setter.invoke(theParent, theScript);
+                    Method setter = property.getWriteMethod();
+                    setter.invoke(theParent, theScript);
 
-                return toReturn;
+                    return toReturn;
 
-            } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
-                logger.error("Error while setting {}({})#{}.{} to {}", scriptUpdate.getFieldName(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getIndex(), scriptUpdate.getValue());
+                } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
+                    logger.error("Error while setting {}({})#{}.{} to {}", scriptUpdate.getFieldName(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getIndex(), scriptUpdate.getValue());
+                }
             }
         }
         return null;
@@ -621,25 +669,39 @@ public class I18nFacade extends WegasAbstractFacade {
         for (ScriptUpdate scriptUpdate : updates) {
             AbstractEntity theParent = this.getParent(scriptUpdate);
             if (theParent != null) {
-                try {
-                    AbstractEntity toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
+                VariableDescriptor toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
 
-                    // fetch impact getter and setter
-                    PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
-                    Method getter = property.getReadMethod();
+                if (toReturn != null) {
 
-                    Script theScript = (Script) getter.invoke(theParent);
-
-                    theScript.setContent(scriptUpdate.getValue());
-
-                    Method setter = property.getWriteMethod();
-                    setter.invoke(theParent, theScript);
-
-                    if (toReturn != null) {
-                        ret.add(toReturn);
+                    Boolean process = true;
+                    if (toReturn.belongsToProtectedGameModel()) {
+                        // theParent is a variableDescriptor
+                        ModelScoped.Visibility visibility = toReturn.getVisibility();
+                        if (visibility == ModelScoped.Visibility.PROTECTED || visibility == ModelScoped.Visibility.INTERNAL) {
+                            process = false;
+                        }
                     }
-                } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
-                    logger.error("Error while setting {}({})#{} to {}", scriptUpdate.getFieldName(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getIndex(), scriptUpdate.getValue());
+                    if (process) {
+                        try {
+
+                            // fetch impact getter and setter
+                            PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
+                            Method getter = property.getReadMethod();
+
+                            Script theScript = (Script) getter.invoke(theParent);
+
+                            theScript.setContent(scriptUpdate.getValue());
+
+                            Method setter = property.getWriteMethod();
+                            setter.invoke(theParent, theScript);
+
+                            if (toReturn != null) {
+                                ret.add(toReturn);
+                            }
+                        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
+                            logger.error("Error while setting {}({})#{} to {}", scriptUpdate.getFieldName(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getIndex(), scriptUpdate.getValue());
+                        }
+                    }
                 }
             }
         }
@@ -702,7 +764,7 @@ public class I18nFacade extends WegasAbstractFacade {
             } else if (target instanceof Script) {
                 try {
                     List<TranslatableContent> inscript = i18nFacade.getInScriptTranslations(((Script) target).getContent());
-                    for (TranslatableContent trc : inscript){
+                    for (TranslatableContent trc : inscript) {
                         process(trc, level);
                     }
                     // hum ...

@@ -133,7 +133,12 @@ YUI.add('wegas-entity', function(Y) {
                             "translations": {}
                         };
                         o.translations[I18n.getCode()] = value;
-                        return o;
+                        value = o;
+                    } else if (!value){
+                        value = {
+                            "@class": "TranslatableContent",
+                            "translations": {}
+                        };
                     }
                     return value;
                 },
@@ -154,12 +159,7 @@ YUI.add('wegas-entity', function(Y) {
      * @augments Y.Wegas.Editable
      * @constructor
      */
-    Entity = Base.create(
-        'Entity',
-        Base,
-        [Wegas.Editable],
-        {},
-        {
+    Entity = Base.create( 'Entity', Base, [Wegas.Editable], {}, {
             ATTRS: {
                 initialized: {
                     transient: true
@@ -418,6 +418,14 @@ YUI.add('wegas-entity', function(Y) {
              }
              },*/
             refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+            parentInstanceId: {
+                type: "number",
+                "transient": true
+            },
+            parentDescriptorId: {
+                type: "number",
+                "transient": true
+            },
             translations: {
                 type: "object",
                 additionalProperties: {

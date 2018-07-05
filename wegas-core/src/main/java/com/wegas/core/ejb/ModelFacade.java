@@ -173,7 +173,6 @@ public class ModelFacade {
                         GameModelLanguage lang = translationSources.get(languageCode).get(0).getLanguageByCode(languageCode);
                         logger.info("Create missing language in model : {}", lang);
                         i18nFacade.createLanguage(model, lang.getCode(), lang.getLang());
-                        model.getLanguageByCode(languageCode).setRefId(lang.getRefId());
                     }
 
                     // make sure all languages sharing the same code share the same refId

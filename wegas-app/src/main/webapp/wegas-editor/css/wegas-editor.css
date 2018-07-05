@@ -936,6 +936,7 @@
 }
 
 
+.wegas-i18n-manager .wegas-readonly-translation,
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value {
     min-height: 1.2em;
     min-width: 5em;
@@ -943,6 +944,12 @@
     cursor: text;
     border:1px solid #BFBFBF;
     margin-right: 10px;
+}
+
+.wegas-i18n-manager .wegas-readonly-translation{
+    cursor: not-allowed;
+    width: calc(100% - 11px);
+    color: #888bad;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value:focus,

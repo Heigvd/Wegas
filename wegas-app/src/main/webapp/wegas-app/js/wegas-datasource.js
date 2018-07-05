@@ -654,10 +654,13 @@ YUI.add('wegas-datasource', function(Y) {
                     onFindFn(found, val);
                 }
             } else {
-                found = this.doFind(key, val, onFindFn, this.getCache());
+                found = this.doFind(key, val, onFindFn);
             }
 
             return found;
+        },
+        findByFn: function(fn) {
+            return this.doFind(null, null, null, fn);
         },
         /**
          * Retrieves an entity from the cache
@@ -693,9 +696,9 @@ YUI.add('wegas-datasource', function(Y) {
          *  @param {function(Object, any):void} onFindFn callback function with found entity and needle
          *  @return {Object} Found entity if any
          */
-        doFind: function doFind(key, needle, onFindFn) {
+        doFind: function doFind(key, needle, onFindFn, testFunction) {
             var ret,
-                testFn = this.get("testFn"),
+                testFn = testFunction || this.get("testFn"),
                 walkEntity = this.walkEntity.bind(this),
                 findFn = function findFn(stack) {
                     Y.Array.find(stack, function find(item) { // @fixme speedup
@@ -1455,7 +1458,7 @@ YUI.add('wegas-datasource', function(Y) {
             this.publish("forcePageUpdate");
             this.publish("forceIndexUpdate");
         },
-        arePagesHardcoded: function(){
+        arePagesHardcoded: function() {
             return !!Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.pagesUri");
         },
         isEditable: function() {
