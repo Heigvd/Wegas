@@ -1273,7 +1273,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         @Override
         public void add(Object child, Mergeable container, Object identifier) {
             if (child instanceof GameModelContent && container instanceof GameModel) {
-                ((GameModelContent) child).setClientscriptlibrary_GameModel((GameModel) container);
+                ((GameModelContent) child).setCsslibrary_GameModel((GameModel) container);
             }
         }
     }
