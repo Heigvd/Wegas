@@ -512,7 +512,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 if (choice instanceof Y.Wegas.persistence.ChoiceDescriptor) {
                     if (this.choices[choice.get("id")]) {
                         // destroy choice widget
-                        this.choices[choice.get("id")].remove(true);
+                        this.choices[choice.get("id")].remove();
                         this.choices[choice.get("id")] = undefined;
                     }
                 }
@@ -542,7 +542,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
 
             this.get("boundingBox").delegate("click", this.selectChoice,
-                ".answerable:not(.cbx) .selectable .mcqchoice__submit, " + // standard selectable choices from still answerable question
+                ".answerable:not(.cbx) .selectable .mcqchoice__submit span, " + // standard selectable choices from still answerable question
                 ".answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit, " + // not selected radio options
                 ".answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit, " + // checkboxes when maximum not reached yet
                 ".answerable.cbx.checkbox.maximumReached .hasReplies .mcqchoice__submit"  // unselect checkboxes even if maximum reached
@@ -678,7 +678,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 this.description.syncUI();
 
                 if (this.gallery) {
-                    this.gallery.remove(true);
+                    this.gallery.remove();
                     this.gallery = null;
                     this._gallery.remove();
                     this._gallery = null;
@@ -700,7 +700,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     if (this.choices[choice.get("id")]) {
                         if (!choiceInstance.get("active")) {
                             // deativate choice by removing its widget
-                            this.choices[choice.get("id")].remove(true);
+                            this.choices[choice.get("id")].remove();
                             this.choices[choice.get("id")] = undefined;
                         }
                     } else {
@@ -737,8 +737,10 @@ YUI.add('wegas-mcq-view', function(Y) {
                             }
                         }
                     }
+                    var repliesIds = {};
                     for (var i in replies) {
                         var reply = replies[i];
+                        repliesIds[reply.get("id")] = true;
                         if (!this.results[reply.get("id")]) {
                             var choiceD = reply.getChoiceDescriptor(),
                                 choiceI = choiceD.getInstance(),
@@ -765,6 +767,21 @@ YUI.add('wegas-mcq-view', function(Y) {
                                 this.resultList.add(this.results[reply.get("id")], !cbx ? 0 : undefined);
                             }
                         }
+                    }
+                    for (var i in this.results) {
+                        if (!repliesIds[i]) {
+                            // reply no longer exists
+                            this.results[i].destroy();
+                            delete this.results[i];
+                        }
+                    }
+                } else {
+                    // make sure reply list is empty
+                    this.resultTitle.set("content", "");
+                    this.resultTitle.syncUI();
+                    for (var i in this.results) {
+                        this.results[i].destroy();
+                        delete this.results[i];
                     }
                 }
 
