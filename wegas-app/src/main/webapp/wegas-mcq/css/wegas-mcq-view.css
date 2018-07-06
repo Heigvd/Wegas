@@ -30,6 +30,11 @@
     font-weight: 600;
 }
 
+.wegas-mcqview .wegas-mcqview-content .mcq-view__choices {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
 .wegas-mcqview .answerable.cbx:not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
 .wegas-mcqview .answerable .selectable .wegas-mcqchoice-content:hover .mcqchoice__title {
     background-color: #c7c7c7;
@@ -137,7 +142,7 @@
 }
 
 .wegas-mcqview-content:not(.cbx) .wegas-mcqchoice:not(.noDescription) .mcqchoice__submit {
-    min-width: calc(100% - 36px);
+    min-width: calc(100% - 31px);
     text-align: right;
 }
 

@@ -567,7 +567,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 choice = choiceWidget.get("choice.evaluated"),
                 question = choiceWidget.get("question.evaluated");
             if (question.get("cbx")) {
-                //select or cancel ? 
+                //select or cancel ?
                 var replies = choice.getInstance().get("replies");
                 if (replies.length > 0) {
                     for (var i in replies) {
@@ -761,7 +761,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     content: '<div class="mcq-reply-title">' + I18n.t(choiceD.get("label")) + '</div>' +
                                         '<div class="mcq-reply-content">' + toDisplay + '</div>'
                                 });
-                                this.resultList.add(this.results[reply.get("id")]);
+                                // Insert the latest reply at the top of the list, but not for cbx question:
+                                this.resultList.add(this.results[reply.get("id")], !cbx ? 0 : undefined);
                             }
                         }
                     }
