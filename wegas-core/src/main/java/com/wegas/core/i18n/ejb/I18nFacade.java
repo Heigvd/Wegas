@@ -187,7 +187,6 @@ public class I18nFacade extends WegasAbstractFacade {
             newLang.setCode(realCode);
 
             rawLanguages.add(newLang);
-            this.getEntityManager().persist(newLang);
 
             return gameModel;
         } else {

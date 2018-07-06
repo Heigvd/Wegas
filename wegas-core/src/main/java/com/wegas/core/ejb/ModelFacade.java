@@ -177,6 +177,11 @@ public class ModelFacade {
 
                     // make sure all languages sharing the same code share the same refId
                     String refId = model.getLanguageByCode(languageCode).getRefId();
+                    if (refId == null) {
+                        /* hack: need brandNew refId now but std process to assign one requires a persisted entity.  */
+                        refId = "GameModelLanguage:" + Helper.genToken(10);
+                        model.getLanguageByCode(languageCode).forceRefId(refId);
+                    }
 
                     for (GameModel gameModel : translationSources.get(languageCode)) {
                         gameModel.getLanguageByCode(languageCode).forceRefId(refId);

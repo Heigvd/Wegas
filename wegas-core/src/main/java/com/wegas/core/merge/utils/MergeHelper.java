@@ -204,7 +204,7 @@ public class MergeHelper {
                     }
                 } catch (Exception ex) {
                     logger.error(ex.toString());
-                    throw new WegasErrorMessage("error", "Invocation Failure: should never appends");
+                    throw new WegasErrorMessage("error", "Invocation Failure: should never appends: " + ex);
                 }
             }
         }
