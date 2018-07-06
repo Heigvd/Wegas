@@ -19,11 +19,11 @@ YUI.add('wegas-alerts', function(Y) {
     Alerts = {
 
         // Displays the given message to the player (the trainer dashboard is not targeted here).
-        showMessage: function(level, message) {
-            Y.log("Wegas.Alerts.showMessage(" + level + ", " + message + ")");
+        showMessage: function(level, message, timeout) {
+            Y.log("Wegas.Alerts.showMessage(" + level + ", " + message + ", " + timeout + ")");
             var node = this.getDisplayNode();
             if (node) {
-                node.showMessage(level, message);
+                node.showMessage(level, message, timeout);
             } else {
                 if (Y.Wegas.Panel) {
                     Y.Wegas.Panel.alert(message);

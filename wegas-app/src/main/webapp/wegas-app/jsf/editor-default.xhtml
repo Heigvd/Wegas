@@ -180,28 +180,6 @@
                             loadedPlayers = [Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id")];
                         Y.all(".wegas-title").setContent(gm.get("name"));       // Update the title
                         //
-
-                        if (gm.get("type") === "MODEL") {
-                            var advMenuNode = Y.one(".editor-scenarist-advanced-button"),
-                                advMenu = Y.Widget.getByNode(advMenuNode).menu,
-                                propagateButton;
-                            propagateButton = new Y.Wegas.Button({
-                                label: "Propagate model to scenario"
-                            });
-                            propagateButton.plug(Y.Plugin.FireAndForgetRequestAction, {
-                                url: "rest/GameModel/propagateModel/" + gm.get("id"),
-                                method: "PUT",
-                                headers: {
-                                    "managed-mode": true
-                                }
-                            });
-                            advMenu.add(propagateButton);
-
-                            Y.one("body").addClass("wegas-modeler-mode");
-                        }
-
-
-                        //
                         // Handle player change event
                         Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function(e) {// Whenever the current player id changes
                             var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),

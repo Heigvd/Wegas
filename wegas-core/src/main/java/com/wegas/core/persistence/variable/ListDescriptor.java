@@ -117,7 +117,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         if (isAuthorized(child)) {
             child.setParentList(this);
         } else {
-            throw WegasErrorMessage.error(child.getClass().getSimpleName() + " not allowed in this folder");
+            throw WegasErrorMessage.error(child.getClass().getSimpleName() + " not allowed in the folder " + this);
         }
     }
 

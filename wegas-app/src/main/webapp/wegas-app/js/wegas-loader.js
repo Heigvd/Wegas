@@ -771,6 +771,11 @@ YUI().use(function(Y) {
                 requires: ["wegas-modal", "wegas-plugin"],
                 ws_provides: ["GmExtractorAction", "GmDefaulterAction"]
             },
+            "wegas-model-propagator": {
+                path: "js/widget/wegas-model-propagator-min.js",
+                requires: ["wegas-modal", "wegas-plugin"],
+                ws_provides: ["ModelPropagator", "WegasPropagatorModel", "WegasPropagatorAction"]
+            },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",
                 requires: ["wegas-statemachineviewercss", "wegas-inputex-wysiwygscript", "wegas-statemachine-entities",

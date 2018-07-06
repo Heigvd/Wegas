@@ -8,6 +8,7 @@
 package com.wegas.core.merge.patch;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
@@ -169,7 +170,12 @@ public final class WegasPrimitivePatch extends WegasPatch {
                     logger.debug("REJECT {}: SAME_ENTITY_ONLY FAILED {} ->  {}", this, target, toEntity);
                 }
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                throw new RuntimeException(ex);
+                Throwable cause = ex.getCause();
+                if (cause instanceof WegasRuntimeException) {
+                    throw (WegasRuntimeException) cause;
+                } else {
+                    throw new RuntimeException(cause);
+                }
             }
         }
         return collector;

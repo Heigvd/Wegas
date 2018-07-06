@@ -8,6 +8,7 @@
 package com.wegas.core.merge.patch;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
@@ -22,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Patch List or Map of AbstrctEntities
@@ -324,11 +327,9 @@ public final class WegasChildrenPatch extends WegasPatch {
                             }
 
                             if (parentMode == PatchMode.DELETE
-                                    && (
-                                    (childrenList != null && childrenList.size() > 0)
+                                    && ((childrenList != null && childrenList.size() > 0)
                                     || (childrenMap != null && childrenMap.size() > 0)
-                                    || (childrenSet != null && childrenSet.size() > 0)
-                                    )) {
+                                    || (childrenSet != null && childrenSet.size() > 0))) {
                                 // children
                                 logger.info("orphans: {}", children);
 
@@ -355,8 +356,13 @@ public final class WegasChildrenPatch extends WegasPatch {
             } else {
                 logger.debug("REJECT PATCH: SAME_ENTITY_ONLY FAILED");
             }
-        } catch (WegasErrorMessage | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new RuntimeException(ex);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Throwable cause = ex.getCause();
+            if (cause instanceof WegasRuntimeException) {
+                throw (WegasRuntimeException)cause;
+            } else {
+                throw new RuntimeException(cause);
+            }
         }
         logger.debug(" DONE {} {}", this.getClass().getSimpleName(), identifier);
         logger.unindent();

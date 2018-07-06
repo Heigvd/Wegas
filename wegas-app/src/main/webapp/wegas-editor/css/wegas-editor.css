@@ -411,6 +411,10 @@
     font-size:18px;
 }
 
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button.edit-propagatemodel{
+    order: 71;
+}
+
 .yui3-skin-sam .wegas-layout-hd .editor-restart-button {
     order: 31;
 }

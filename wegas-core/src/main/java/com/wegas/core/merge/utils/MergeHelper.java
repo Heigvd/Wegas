@@ -310,6 +310,11 @@ public class MergeHelper {
         MergeHelper.visitMergeable(gameModel, null, ProtectionLevel.PROTECTED, Boolean.TRUE, new LanguageUpgrader(oldCode, newCode, i18nFacade), 0, null);
     }
 
+
+
+    /**
+     * Copy translation from one set of mergeables to another one
+     */
     private static class TranslationsImporter implements MergeableVisitor {
 
         private final String languageCode;

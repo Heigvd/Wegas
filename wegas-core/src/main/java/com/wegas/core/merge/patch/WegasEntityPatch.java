@@ -9,6 +9,7 @@ package com.wegas.core.merge.patch;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
@@ -203,9 +204,13 @@ public final class WegasEntityPatch extends WegasPatch {
                 }
                 Collections.sort(patches, new PatchOrderComparator());
             }
-
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+            Throwable cause = ex.getCause();
+            if (cause instanceof WegasRuntimeException) {
+                throw (WegasRuntimeException) cause;
+            } else {
+                throw new RuntimeException(cause);
+            }
         }
     }
 
