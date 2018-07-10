@@ -31,9 +31,35 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader',
         exclude: /node_modules/,
-        options: { transpileOnly: true },
+        oneOf: [
+          {
+            test: /\.build\.tsx?$/,
+            use: [
+              { loader: 'val-loader' },
+              {
+                loader: 'ts-loader',
+                options: {
+                  compilerOptions: {
+                    target: 'es2018',
+                    module: 'commonjs',
+                  },
+                  transpileOnly: true,
+                  instance: 'node',
+                  onlyCompileBundledFiles: true,
+                },
+              },
+            ],
+          },
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+              instance: 'web',
+              onlyCompileBundledFiles: true,
+            },
+          },
+        ],
       },
       // {
       //   test: /\.tsx?$/,
