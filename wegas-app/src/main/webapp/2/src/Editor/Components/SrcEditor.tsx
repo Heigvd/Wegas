@@ -1,9 +1,10 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { editor } from 'monaco-editor';
-
+import { editor, Uri } from 'monaco-editor';
+import * as t from '../../page-schema.build';
 interface EditorProps {
   value?: string;
+  uri?: 'page.json';
   minimap?: boolean;
   language?: 'javascript' | 'css' | 'json';
   onChange?: (value: string) => void;
@@ -55,10 +56,24 @@ class SrcEditor extends React.Component<EditorProps> {
     this.lastValue = this.props.value;
     import('monaco-editor').then(monaco => {
       if (this.container != null) {
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+          validate: true,
+          schemas: [
+            {
+              fileMatch: ['page.json'],
+              uri: 'internal://page-schema.json',
+              schema: (t as any).schema,
+            },
+          ],
+        });
+        const model = monaco.editor.createModel(
+          this.props.value || '',
+          this.props.language,
+          Uri.parse(this.props.uri || 'Unamed'),
+        );
         this.editor = monaco.editor.create(this.container, {
           theme: 'vs-dark',
-          language: this.props.language,
-          value: this.props.value,
+          model: model,
           minimap: { enabled: this.props.minimap },
         });
         this.editor.onDidBlurEditor(() => {
@@ -82,6 +97,7 @@ class SrcEditor extends React.Component<EditorProps> {
   }
   componentWillUnmount() {
     if (this.editor != null) {
+      this.editor.getModel().dispose();
       this.editor.dispose();
     }
   }

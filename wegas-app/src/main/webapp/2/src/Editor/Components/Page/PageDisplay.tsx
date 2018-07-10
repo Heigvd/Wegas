@@ -63,6 +63,7 @@ class PageDisplay extends React.Component<
                     null,
                     2,
                   )}
+                  uri="page.json"
                   language="json"
                 />
               </Toolbar.Content>
