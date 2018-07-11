@@ -65,6 +65,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          * When datasource is updated, do syncUI;
          */
         bindUI: function() {
+            this.get("contentBox").delegate("click", this.toggleSmallMenu, ".smallscreen li, .smallscreen .menutitle", this);
+            this.handlers.layoutResize = this.on("resize", Y.bind(this.checkSize, this)); //< --- TODO 
             this.tabView.after("selectionChange", this.onTabSelected, this);
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
             /*
@@ -224,11 +226,15 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }
 
             if (this.tabView.size()) { // There might be no active question to select
-                lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
-                if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
-                    lastSelection = 0;
+                lastSelection = (selectedTab) ? selectedTab.get('index') : (this.get("contentBox").one(".smallscreen") ? -1 : 0);
+                if (lastSelection < 0 && this.get("contentBox").one(".smallscreen")) {
+                    this.toggleSmallMenu();
+                } else {
+                    if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
+                        lastSelection = 0;
+                    }
+                    this.tabView.selectChild(lastSelection);
                 }
-                this.tabView.selectChild(lastSelection);
             }
 
         },
@@ -243,6 +249,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             var questions = this.get("variable.evaluated"),
                 selectedTab, lastSelection;
 
+            this.checkSize();
             this.updateTabs(questions);
 
             this.hideOverlay();
@@ -256,6 +263,27 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.tabView.selectChild(0);
             } else {
                 this.get("contentBox").removeClass("empty");
+            }
+        },
+        checkSize: function() {
+            var cb = this.tabView.get("contentBox");
+            cb.toggleClass("smallscreen", cb._node.getBoundingClientRect().width < 700);
+        },
+        toggleSmallMenu: function() {
+            var tvCb = this.tabView.get("contentBox");
+            if (tvCb.hasClass("smallscreen")) {
+                tvCb.toggleClass("open");
+                if (tvCb.hasClass("open")) {
+                    // add title
+                    var selectedTab = tvCb.one(".yui3-tab-selected a");
+                    tvCb.prepend("<div class='menutitle'>" + (selectedTab ? selectedTab.getContent() : "") + "</div>");
+                    //tvCb.prepend("<div class='menutitle'><div>" +  tvCb.one(".yui3-tab-selected .index-label").getContent() + "</div></div>");
+                } else {
+                    // remove title
+                    tvCb.all(".menutitle").each(function(item) {
+                        item.remove();
+                    });
+                }
             }
         },
         /**
