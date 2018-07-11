@@ -48,7 +48,7 @@ interface Definition {
   const?: any;
   typeof?: 'function';
 }
-module.exports = function() {
+export default function() {
   const files: string[] = globby.sync('src/Components/AutoImport/**/*.tsx');
   log(files);
   const program = ts.createProgram(files, compilerOptions);
