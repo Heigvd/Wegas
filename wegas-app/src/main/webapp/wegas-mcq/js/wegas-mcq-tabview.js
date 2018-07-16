@@ -66,7 +66,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          */
         bindUI: function() {
             this.get("contentBox").delegate("click", this.toggleSmallMenu, ".smallscreen li, .smallscreen .menutitle", this);
-            this.handlers.layoutResize = this.on("resize", Y.bind(this.checkSize, this)); //< --- TODO 
+            this.handlers.layoutResize = Y.Wegas.app.on("layout:resize", Y.bind(this.checkSize, this));
+
             this.tabView.after("selectionChange", this.onTabSelected, this);
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
             /*
@@ -267,7 +268,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         },
         checkSize: function() {
             var cb = this.tabView.get("contentBox");
-            cb.toggleClass("smallscreen", cb._node.getBoundingClientRect().width < 700);
+            if (cb._node) {
+                cb.toggleClass("smallscreen", cb._node.getBoundingClientRect().width < 700);
+            }
         },
         toggleSmallMenu: function() {
             var tvCb = this.tabView.get("contentBox");
