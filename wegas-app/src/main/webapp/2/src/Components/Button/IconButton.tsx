@@ -31,7 +31,7 @@ const shapeStyle = css({
   color: 'inherit',
   opacity: 0.5,
   ':hover,:focus': {
-    opacity: 1,
+    opacity: 0.8,
     outline: 'none',
   },
 });

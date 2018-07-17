@@ -5,6 +5,7 @@ import '../css/global.css';
 import { GameModel } from '../data/selectors';
 import Layout from './Components/Layout';
 import { StoreProvider } from '../data/store';
+import { Theme } from '../Components/Theme';
 
 function mount() {
   render(
@@ -17,7 +18,9 @@ function mount() {
           label: l.lang,
         }))}
       >
-        <Layout />
+        <Theme>
+          <Layout />
+        </Theme>
       </LangHandler>
     </StoreProvider>,
     document.getElementById('root'),

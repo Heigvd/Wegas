@@ -27,14 +27,14 @@ export default function PageEditorHeader(props: PageEditorHeaderProps) {
           state.page !== undefined ? state.page['@name'] : props.pageId;
         return (
           <div>
-            <button
+            {/* <button
               className={press(state.edition)}
               onClick={() =>
                 dispatch(Actions.EditorActions.pageEditMode(!state.edition))
               }
             >
               Edit
-            </button>
+            </button> */}
             <button
               className={press(state.src)}
               onClick={() =>

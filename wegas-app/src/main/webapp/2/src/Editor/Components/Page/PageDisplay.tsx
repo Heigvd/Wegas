@@ -7,6 +7,7 @@ import PageEditorHeader from './PageEditorHeader';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
+import { Theme } from '../../../Components/Theme';
 
 interface PageDisplayProps {
   srcMode: boolean;
@@ -69,7 +70,11 @@ class PageDisplay extends React.Component<
               </Toolbar.Content>
             </Toolbar>
           ) : (
-            <PageLoader id={this.state.currentPageId} key="pageloader" />
+            <Theme
+            // @TODO Load user theme!
+            >
+              <PageLoader id={this.state.currentPageId} key="pageloader" />
+            </Theme>
           )}
         </Toolbar.Content>
       </Toolbar>
