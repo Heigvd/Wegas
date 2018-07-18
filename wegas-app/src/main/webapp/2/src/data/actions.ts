@@ -1,4 +1,4 @@
-import { normalizeDatas, NormalizedData } from './normalize/index';
+import { normalizeDatas, NormalizedData } from './normalize';
 import { ManagedMode } from '../API/rest';
 import * as ActionType from './actionTypes';
 import { ConfigurationSchema } from '../Editor/editionConfig';

@@ -7,6 +7,8 @@ interface ThemeProps {
   primaryColor?: string;
   lightTextColor?: string;
   darkTextColor?: string;
+  warningColor?: string;
+  errorColor?: string;
 }
 
 export const themeVar = {
@@ -16,6 +18,8 @@ export const themeVar = {
   primaryDarkerTextColor: 'var(--primary-darker-text-color)',
   primaryLighterColor: 'var(--primary-lighter-color)',
   primaryLighterTextColor: 'var(--primary-lighter-text-color)',
+  warningColor: 'var(--warning-color)',
+  errorColor: 'var(--error-color)',
 };
 export const primary = css({
   backgroundColor: themeVar.primaryColor,
@@ -36,6 +40,8 @@ export class Theme extends React.PureComponent<ThemeProps> {
     primaryColor: 'blue',
     lightTextColor: 'white',
     darkTextColor: '#222',
+    warningColor: '#ff9d00',
+    errorColor: 'red',
   };
   render() {
     const {
@@ -44,6 +50,8 @@ export class Theme extends React.PureComponent<ThemeProps> {
       primaryColor,
       lightTextColor,
       darkTextColor,
+      warningColor,
+      errorColor,
     } = this.props;
     const bgColor = Color(backgroundColor);
     const textColor = bgColor.isLight() ? darkTextColor : lightTextColor;
@@ -67,6 +75,8 @@ export class Theme extends React.PureComponent<ThemeProps> {
           '--primary-darker-text-color': primDarkText,
           '--primary-lighter-color': primLight.string(),
           '--primary-lighter-text-color': primLightText,
+          '--warning-color': warningColor,
+          '--error-color': errorColor,
         })}
       >
         {children}

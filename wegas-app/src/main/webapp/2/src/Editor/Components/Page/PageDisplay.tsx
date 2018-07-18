@@ -1,5 +1,5 @@
 import * as React from 'react';
-import PageLoader from '../../../Components/PageLoader';
+import PageLoader from '../../../Components/AutoImport/PageLoader';
 import { State } from '../../../data/Reducer/reducers';
 import SrcEditor from '../SrcEditor';
 import { Page } from '../../../data/selectors';

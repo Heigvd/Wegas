@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { StoreConsumer } from '../data/store';
-import { importComponent } from '.';
+import { StoreConsumer } from '../../data/store';
+import { importComponent } from '..';
+import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
+import { themeVar } from '../Theme';
 
 // function inferComponenent(type: string | React.ComponentType) {
 //     if (typeof type == 'string') {
@@ -110,6 +112,16 @@ interface PageLoaderProps {
   id?: string;
 }
 
+const PageLoaderTracker = new Set<PageLoader>();
+function countLoaded(id?: string) {
+  let count = 0;
+  PageLoaderTracker.forEach(pl => {
+    if (pl.props.id === id) {
+      count += 1;
+    }
+  });
+  return count;
+}
 class PageLoader extends React.Component<
   PageLoaderProps,
   { json?: Page; oldProps: PageLoaderProps }
@@ -128,18 +140,31 @@ class PageLoader extends React.Component<
     json: this.props.page,
     oldProps: this.props,
   };
-
-  update = (json: Page) => {
-    this.setState({ json });
-  };
+  constructor(props: PageLoaderProps) {
+    super(props);
+    PageLoaderTracker.add(this);
+  }
   componentDidCatch(e: any) {
     console.warn(e);
   }
+  componentWillUnmount() {
+    PageLoaderTracker.delete(this);
+  }
   render() {
-    if (this.state.json == null) {
+    if (this.props.page == null) {
       return <span>Loading...</span>;
     }
-    const tree = deserialize(this.state.json);
+    if (countLoaded(this.props.id) > 1) {
+      return (
+        <span>
+          <FontAwesome
+            style={{ color: themeVar.warningColor }}
+            icon="exclamation-triangle"
+          />Page {this.props.id} loaded more than once
+        </span>
+      );
+    }
+    const tree = deserialize(this.props.page);
     return <div>{tree}</div>;
   }
 }
@@ -149,7 +174,7 @@ export default function ConnectedPageLoader({ id }: { id?: string }) {
       selector={s => (id ? s.pages[id] : undefined)}
     >
       {({ state }) => {
-        return <PageLoader page={state} />;
+        return <PageLoader id={id} page={state} />;
       }}
     </StoreConsumer>
   );
