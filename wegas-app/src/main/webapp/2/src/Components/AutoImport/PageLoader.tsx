@@ -122,24 +122,7 @@ function countLoaded(id?: string) {
   });
   return count;
 }
-class PageLoader extends React.Component<
-  PageLoaderProps,
-  { json?: Page; oldProps: PageLoaderProps }
-> {
-  static getDerivedStateFromProps(
-    nextProps: PageLoaderProps,
-    state: { json?: Page; oldProps: PageLoaderProps },
-  ) {
-    const json = state.oldProps !== nextProps ? nextProps.page : state.json;
-    return {
-      oldProps: nextProps,
-      json,
-    };
-  }
-  readonly state = {
-    json: this.props.page,
-    oldProps: this.props,
-  };
+class PageLoader extends React.Component<PageLoaderProps> {
   constructor(props: PageLoaderProps) {
     super(props);
     PageLoaderTracker.add(this);
