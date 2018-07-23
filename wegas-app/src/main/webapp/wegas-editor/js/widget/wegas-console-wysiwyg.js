@@ -49,7 +49,17 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                 .MultiVariableMethod(
                     {
                         onChange: Y.bind(function(value) {
-                            this.updateQrCode(value);
+                            try {
+                                this.updateQrCode(value);
+                            } catch (e) {
+                                if (this.qrCode) {
+                                    this.qrCode.clear();
+                                    this.get("contentBox").one('.qrcode-thumbnail').setHTML();
+                                    this.qrCode = null;
+                                }
+                                this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error generating qrcode: ' +
+                                    e + "</div>");
+                            }
                         }, this),
                         value: {'@class': 'Script', content: ';'}},
                     reactContainer.getDOMNode()
@@ -67,10 +77,18 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
         },
         updateQrCode: function(newValue) {
             var script = newValue || this.srcField.getValue();
-            if (!this.qrCode) {
-                this.qrCode = Y.Wegas.QrCodeScanner.generateRunScript(this.get("contentBox").one('.qrcode-thumbnail').getDOMNode(), script);
+            if (newValue && newValue.content) {
+                if (!this.qrCode) {
+                    this.qrCode = Y.Wegas.QrCodeScanner.generateRunScript(this.get("contentBox").one('.qrcode-thumbnail').getDOMNode(), script);
+                } else {
+                    Y.Wegas.QrCodeScanner.updateRunScript(this.qrCode, script);
+                }
             } else {
-                Y.Wegas.QrCodeScanner.updateRunScript(this.qrCode, script);
+                if (this.qrCode) {
+                    this.qrCode.clear();
+                    this.get("contentBox").one('.qrcode-thumbnail').setHTML()
+                    this.qrCode = null;
+                }
             }
         },
         renderClearButton: function() {
