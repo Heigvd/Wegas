@@ -296,16 +296,24 @@ YUI().use(function(Y) {
             },
             "wegas-inbox": {
                 path: "js/widget/wegas-inbox-min.js",
-                requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss",
-                    "wegas-widgettoolbar", "template-micro", "wegas-i18n-global"],
+                requires: ["wegas-responsive-tabview", "wegas-inboxcss"],
                 ws_provides: "InboxDisplay"
+            },
+            "wegas-responsive-tabview": {
+                path: "js/widget/wegas-responsive-tabview-min.js",
+                requires: ["wegas-tabview", "wegas-tabviewcss",
+                    "wegas-widgettoolbar", "wegas-responsive-tabviewcss", "wegas-i18n-global"],
+                ws_provides: ["ReponsiveTabView"]
+            },
+            "wegas-responsive-tabviewcss": {
+                type: CSS
             },
             "wegas-inboxcss": {
                 type: CSS
             },
             "wegas-inbox-list": {
                 path: "js/widget/wegas-inbox-list-min.js",
-                requires: ["template-micro", "wegas-inboxcss", "promise"],
+                requires: ["wegas-inbox", "wegas-inboxcss", "promise"],
                 ws_provides: "InboxList"
             },
             "wegas-form": {
@@ -721,7 +729,7 @@ YUI().use(function(Y) {
             },
             "wegas-console-wysiwyg": {
                 path: "js/widget/wegas-console-wysiwyg-min.js",
-                requires: ["wegas-console", "wegas-inputex-wysiwygscript", "inputex-hidden", "wegas-widgettoolbar"],
+                requires: ["wegas-console", "wegas-inputex-wysiwygscript", "inputex-hidden", "wegas-widgettoolbar", "wegas-qrcode-scanner"],
                 ws_provides: "WysiwygConsole"
             },
             "wegas-console-custom": {
@@ -852,7 +860,7 @@ YUI().use(function(Y) {
                     "WhQuestionDescriptor", "WhQuestionInstance"]
             },
             "wegas-mcq-tabview": {
-                requires: ["wegas-tabview", "wegas-gallery",
+                requires: ["wegas-responsive-tabview", "wegas-gallery",
                     "wegas-mcq-tabviewcss", "wegas-mcq-printcss", "wegas-mcq-view",
                     "wegas-mcq-entities", "wegas-i18n-mcq"],
                 ws_provides: "MCQTabView"
@@ -1038,6 +1046,23 @@ YUI().use(function(Y) {
             //}
         }
     });
+    /**
+     * QRCode
+     */
+    YUI.addGroup("wegas-qrcode", {
+        base: "./wegas-qrcode/",
+        root: "/wegas-qrcode/",
+        modules: {
+            'wegas-qrcode-css': {
+                type: CSS
+            },
+            'wegas-qrcode-scanner': {
+                path: "js/wegas-qrcode-scanner.js",
+                requires: ['wegas-widget', 'qrcode', 'qr-scanner', 'instascan', 'wegas-qrcode-css'],
+                ws_provides: "QrCodeScanner"
+            }
+        }
+    });
     /* Other libraries */
     YUI.addGroup("wegas-libraries", {
         base: "./lib/",
@@ -1054,7 +1079,23 @@ YUI().use(function(Y) {
             },
             wikEdDiff: {
                 path: "wikEdDiff-min.js"
+            },
+            // https://github.com/nimiq/qr-scanner, MIT
+            "qr-scanner": {
+                path: "qrcode/qr-scanner.min.js"
+            },
+            adapter: {
+                path: "qrcode/adapter.min.js"
+            },
+            instascan: {
+                path: "qrcode/instascan.min.js",
+                //requires: "adapter"
+            },
+            //https://github.com/davidshimjs/qrcodejs, Apache 2
+            qrcode: {
+                path: "qrcode/qrcode.min.js"
             }
+
         }
     });
     /* Other libraries (that should not be combined) */
@@ -1075,7 +1116,7 @@ YUI().use(function(Y) {
             },
             tinymce: {
                 path: "tinymce/tinymce.min.js"
-                //fullpath: "//unpkg.com/tinymce@4.7.12/tinymce.js"
+                    //fullpath: "//unpkg.com/tinymce@4.7.12/tinymce.js"
             },
             excanvas: {
                 path: "excanvas/excanvas.compiled.js"

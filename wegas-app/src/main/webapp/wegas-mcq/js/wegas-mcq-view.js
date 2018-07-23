@@ -48,7 +48,8 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.mainList = new Y.Wegas.List({
                 cssClass: "wegas-whview__main-list",
                 direction: "vertical",
-                editable: false
+                editable: false,
+                "transient" : true
             });
             this.hList = new Y.Wegas.List({
                 cssClass: "wegas-whview__main",

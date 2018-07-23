@@ -19,7 +19,7 @@ const subMenuContainer = css({
     whiteSpace: 'nowrap',
     margin: '2px',
     backgroundColor: 'rgba(255,255,255,0.95)',
-    boxShadow: '0px 0px 4px 1px black',
+    boxShadow: '0px 0px 1px 0px black',
     [`& .${container}`]: {
         width: '100%',
     },
@@ -32,7 +32,8 @@ const itemStyle = css({
     border: 'none',
     width: '100%',
     ':hover': {
-        textShadow: '0 0 1px',
+        backgroundColor: 'whitesmoke'
+        /*textShadow: '0 0 1px',*/
     },
     '& > span': {
         marginLeft: '0.5em',

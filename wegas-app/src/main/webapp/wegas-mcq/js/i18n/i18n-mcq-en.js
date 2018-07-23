@@ -17,6 +17,7 @@ YUI.add("wegas-i18n-mcq-en", function(Y) {
         mcq: {
             result: "Result",
             results: "Results",
+            noQuestionSelected: "Select an item on the left",
             empty: "No questions available yet",
             submit: "submit",
             answered : "answered",
