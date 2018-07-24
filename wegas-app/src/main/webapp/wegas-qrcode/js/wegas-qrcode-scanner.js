@@ -41,10 +41,6 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
             this.get("contentBox").delegate("click", this.flip, ".mirror", this);
             this.get("contentBox").delegate("click", this.changeCamera, ".cameras li", this);
         },
-
-        toggleScanner: function() {
-            this.toggleScanner_instascan();
-        },
         changeCamera: function(e) {
             this.startScanner(e.target.getData("cameraId"));
         },
@@ -77,7 +73,8 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                 this.scanner = scanner;
             }
         },
-        toggleScanner_instascan: function() {
+        toggleScanner: function() {
+            console.log("StartScanning");
             var cb = this.get("contentBox");
             if (!this.scanner) {
                 var scanner = new Instascan.Scanner({

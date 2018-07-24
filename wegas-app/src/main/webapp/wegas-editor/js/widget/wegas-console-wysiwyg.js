@@ -86,7 +86,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             } else {
                 if (this.qrCode) {
                     this.qrCode.clear();
-                    this.get("contentBox").one('.qrcode-thumbnail').setHTML()
+                    this.get("contentBox").one('.qrcode-thumbnail').setHTML();
                     this.qrCode = null;
                 }
             }

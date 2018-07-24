@@ -1058,7 +1058,7 @@ YUI().use(function(Y) {
             },
             'wegas-qrcode-scanner': {
                 path: "js/wegas-qrcode-scanner.js",
-                requires: ['wegas-widget', 'qrcode', 'qr-scanner', 'instascan', 'wegas-qrcode-css'],
+                requires: ['wegas-widget', 'qrcode', 'instascan', 'wegas-qrcode-css'],
                 ws_provides: "QrCodeScanner"
             }
         }
