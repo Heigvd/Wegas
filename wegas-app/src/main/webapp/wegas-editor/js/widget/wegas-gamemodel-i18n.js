@@ -259,7 +259,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     nodeLabel: label,
                     hasTranslations: false,
                     containsOutdated: false,
-                    mode:mode,
+                    mode: mode,
                     translations: [],
                     children: []
                 };
@@ -604,6 +604,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
 
     TranslationEditor = Y.Base.create('wegas-translation-editor', Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+        onClick: function(e) {
+            console.log("Click target: " + e.target);
+        },
         initializer: function() {
             this.handlers = {};
             var hostCB = this.get("host").get("contentBox");
@@ -627,28 +630,32 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 node = Y.one("#" + e.target.id).ancestor(".wegas-translation");
             }
 
-            code = node.getAttribute("lang");
-            if (node.hasClass("wegas-translation-inscript")) {
-                var cfg = {
-                    type: "inscript",
-                    node: node,
-                    code: code,
-                    parentClass: node.getData('parentClass'),
-                    parentId: node.getData('parentId'),
-                    index: node.getData('index'),
-                    fieldName: node.getData('fieldName')
-                };
-                cfg.key = cfg.parentClass + "-" + cfg.parentId + "-" + cfg.fieldName + "#" + cfg.index + ":" + code;
-                return cfg;
+            if (node) {
+                code = node.getAttribute("lang");
+                if (node.hasClass("wegas-translation-inscript")) {
+                    var cfg = {
+                        type: "inscript",
+                        node: node,
+                        code: code,
+                        parentClass: node.getData('parentClass'),
+                        parentId: node.getData('parentId'),
+                        index: node.getData('index'),
+                        fieldName: node.getData('fieldName')
+                    };
+                    cfg.key = cfg.parentClass + "-" + cfg.parentId + "-" + cfg.fieldName + "#" + cfg.index + ":" + code;
+                    return cfg;
+                } else {
+                    trId = node.getData("trid");
+                    return {
+                        type: 'std',
+                        node: node,
+                        trId: trId,
+                        code: code,
+                        key: code + "-" + trId
+                    };
+                }
             } else {
-                trId = node.getData("trid");
-                return {
-                    type: 'std',
-                    node: node,
-                    trId: trId,
-                    code: code,
-                    key: code + "-" + trId
-                };
+                return null;
             }
         },
         _onHtmlChange: function(e) {
@@ -658,9 +665,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             cfg.node.toggleClass("unsaved", updated);
         },
         _onHtmlBlur: function(e) {
-            /*if (this.editor) {
-             //this.removeEditor();
-             }*/
+            this.removeEditor();
         },
         ctrlSave: function(e) {
             e.halt(true);
@@ -809,116 +814,120 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         setupEditor: function(e) {
             var cfg = this._getCfgFromEvent(e);
-            if (this.editor) {
-                if (cfg.key === this.currentEditorKey) {
-                    return;
-                }
-                this.removeEditor();
-            }
-
-            if (!cfg.node.hasClass("wegas-translation-wegasurl")) {
-                Y.log("SetupEditor for " + cfg.key);
-                this.currentEditorKey = cfg.key;
-                if (this.contents[cfg.key] === undefined) {
-                    // save initial values
-                    this.contents[cfg.key] = this.toInjectorStyle(cfg.node.one(".wegas-translation--value").getHTML());
+            if (cfg) {
+                if (this.editor) {
+                    if (cfg.key === this.currentEditorKey) {
+                        return;
+                    }
+                    this.removeEditor();
                 }
 
-                var tinyConfig = {
-                    inline: true,
-                    selector: "#" + cfg.node.get("id") + " .wegas-translation--value",
-                    browser_spellcheck: true,
-                    plugins: [
-                        'autolink link image lists code media table',
-                        'paste advlist textcolor',
-                            // textcolor wordcount autosave contextmenu
-                            // advlist charmap print preview hr anchor pagebreak spellchecker
-                            // directionality
-                    ],
-                    external_plugins: {
-                        "dynamic_toolbar": Y.Wegas.app.get("base") +
-                            "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
-                    },
-                    toolbar1: 'bold italic bullist | link image media  addToolbarButton', /* 'code' not working!!! */
-                    toolbar2: 'forecolor backcolor underline alignleft aligncenter alignright alignjustify table',
-                    toolbar3: 'fontsizeselect styleselect',
-                    //selection_toolbar: 'bold italic bullist | quicklink quickimage media ',
-                    fixed_toolbar_container: "#" + cfg.node.get("id") + " .wegas-translation--toolbar",
-                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect
-                    // fontsizeselect styleselect spellchecker template
-                    // contextmenu: 'link image inserttable | cell row
-                    // column deletetable | formatselect forecolor',
-                    paste_preprocess: function(plugin, args) {
-                        var root = document.createElement('div'),
-                            editorContainer;
-                        root.innerHTML = args.content;
-                        editorContainer = root.querySelector("[contenteditable=\"true\"]");
-                        if (editorContainer) {
-                            args.content = editorContainer.innerHTML;
-                        }
+                if (!cfg.node.hasClass("wegas-translation-wegasurl")) {
+                    Y.log("SetupEditor for " + cfg.key);
+                    this.currentEditorKey = cfg.key;
+                    if (this.contents[cfg.key] === undefined) {
+                        // save initial values
+                        this.contents[cfg.key] = this.toInjectorStyle(cfg.node.one(".wegas-translation--value").getHTML());
+                    }
 
-                    },
-                    paste_postprocess: function(plugin, args) {
-                    },
-                    menubar: false,
-                    resize: 'both',
-                    max_height: 500,
-                    statusbar: true,
-                    branding: false,
-                    relative_urls: false,
-                    toolbar_items_size: 'small',
-                    hidden_tootlbar: [2, 3],
-                    file_browser_callback: Y.bind(this.onFileBrowserClick, this),
-                    setup: Y.bind(function(editor) {
-                        this.editor = editor;
-                        editor.on('change', Y.bind(this._onHtmlChange, this));
-                        editor.on('keyUp', Y.bind(this._onHtmlChange, this));
-                        editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
-                        editor.on('init', Y.bind(function() {
+                    var tinyConfig = {
+                        inline: true,
+                        selector: "#" + cfg.node.get("id") + " .wegas-translation--value",
+                        browser_spellcheck: true,
+                        plugins: [
+                            'autolink link image lists code media table',
+                            'paste advlist textcolor',
+                                // textcolor wordcount autosave contextmenu
+                                // advlist charmap print preview hr anchor pagebreak spellchecker
+                                // directionality
+                        ],
+                        external_plugins: {
+                            "dynamic_toolbar": Y.Wegas.app.get("base") +
+                                "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
+                        },
+                        toolbar1: 'bold italic bullist | link image media  addToolbarButton', /* 'code' not working!!! */
+                        toolbar2: 'forecolor backcolor underline alignleft aligncenter alignright alignjustify table',
+                        toolbar3: 'fontsizeselect styleselect',
+                        //selection_toolbar: 'bold italic bullist | quicklink quickimage media ',
+                        fixed_toolbar_container: "#" + cfg.node.get("id") + " .wegas-translation--toolbar",
+                        // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect
+                        // fontsizeselect styleselect spellchecker template
+                        // contextmenu: 'link image inserttable | cell row
+                        // column deletetable | formatselect forecolor',
+                        paste_preprocess: function(plugin, args) {
+                            var root = document.createElement('div'),
+                                editorContainer;
+                            root.innerHTML = args.content;
+                            editorContainer = root.querySelector("[contenteditable=\"true\"]");
+                            if (editorContainer) {
+                                args.content = editorContainer.innerHTML;
+                            }
+
+                        },
+                        paste_postprocess: function(plugin, args) {
+                        },
+                        menubar: false,
+                        resize: 'both',
+                        max_height: 500,
+                        statusbar: true,
+                        branding: false,
+                        relative_urls: false,
+                        toolbar_items_size: 'small',
+                        hidden_tootlbar: [2, 3],
+                        file_browser_callback: Y.bind(this.onFileBrowserClick, this),
+                        setup: Y.bind(function(editor) {
                             this.editor = editor;
-                            this.editor.fire("focus");
-                            this.editor.focus();
-                        }, this));
-                        //this.editor.focus();
+                            editor.on('change', Y.bind(this._onHtmlChange, this));
+                            editor.on('keyUp', Y.bind(this._onHtmlChange, this));
+                            editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
+                            editor.on('init', Y.bind(function() {
+                                this.editor = editor;
+                                this.editor.fire("focus");
+                                this.editor.focus();
+                                }, this));
+                            //this.editor.focus();
                         //this.editor.targetElm.click();
-                    }, this),
-                    image_advtab: true,
-                    content_css: [
-                        '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
-                        Y.Wegas.app.get('base') + "wegas-editor/css/wegas-tinymce-editor.css",
-                    ],
-                    style_formats: [
-                        {
-                            // Style formats
-                            title: 'Title 1',
-                            block: 'h1',
-                        },
-                        {
-                            title: 'Title 2',
-                            block: 'h2',
-                            // styles : {
-                            //    color : '#ff0000'
-                            // }
-                        },
-                        {
-                            title: 'Title 3',
-                            block: 'h3',
-                        },
-                        {
-                            title: 'Normal',
-                            inline: 'span',
-                        },
-                        {
-                            title: 'Code',
-                            // icon: 'code',
-                            block: 'code',
-                        },
-                    ],
-                };
-                if (cfg.node.hasClass("wegas-translation-string")) {
-                    tinyConfig.theme = 'inlite';
+                        }, this),
+                        image_advtab: true,
+                        content_css: [
+                            '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
+                            Y.Wegas.app.get('base') + "wegas-editor/css/wegas-tinymce-editor.css",
+                        ],
+                        style_formats: [
+                            {
+                                // Style formats
+                                title: 'Title 1',
+                                block: 'h1',
+                            },
+                            {
+                                title: 'Title 2',
+                                block: 'h2',
+                                // styles : {
+                                //    color : '#ff0000'
+                                // }
+                            },
+                            {
+                                title: 'Title 3',
+                                block: 'h3',
+                            },
+                            {
+                                title: 'Normal',
+                                inline: 'span',
+                            },
+                            {
+                                title: 'Code',
+                                // icon: 'code',
+                                block: 'code',
+                            },
+                        ],
+                    };
+                    if (cfg.node.hasClass("wegas-translation-string")) {
+                        tinyConfig.theme = 'inlite';
+                    }
+                    tinyMCE.init(tinyConfig);
                 }
-                tinyMCE.init(tinyConfig);
+            } else {
+                this.removeEditor();
             }
         },
         onFileBrowserClick: function(field_name, url, type, win) {
