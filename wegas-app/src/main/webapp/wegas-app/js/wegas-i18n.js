@@ -581,8 +581,8 @@ YUI.add("wegas-i18n", function(Y) {
             loadModule: function(moduleName) {
                 return loadModule(moduleName);
             },
-            setCurrentPlayerLang: function(code, cb) {
-                return setCurrentPlayerLang(code, cb);
+            setCurrentPlayerCode: function(code, cb) {
+                return setCurrentPlayerCode(code, cb);
             },
             findLanguageByCode: function(code) {
                 return findLanguageByCode(code);
