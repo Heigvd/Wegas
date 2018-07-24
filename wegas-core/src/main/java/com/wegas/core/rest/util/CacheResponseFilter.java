@@ -13,12 +13,16 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class CacheResponseFilter implements ContainerResponseFilter {
+
+    final Logger logger = LoggerFactory.getLogger(CacheResponseFilter.class);
 
     /**
      *
@@ -53,6 +57,7 @@ public class CacheResponseFilter implements ContainerResponseFilter {
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
         List<Object> cc = response.getHeaders().get(HttpHeaders.CACHE_CONTROL);
         if (cc == null || cc.isEmpty()) {
+            logger.trace("Set CacheControl to {}", headers);
             response.getHeaders().putSingle(HttpHeaders.CACHE_CONTROL, headers);
         }
     }
