@@ -2,6 +2,7 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { editor, Uri } from 'monaco-editor';
 import * as t from '../../page-schema.build';
+import { SizedDiv } from '../../Components/SizedDiv';
 interface EditorProps {
   value?: string;
   uri?: 'page.json';
@@ -51,6 +52,7 @@ class SrcEditor extends React.Component<EditorProps> {
         );
       });
     }
+    this.editor!.layout();
   }
   componentDidMount() {
     this.lastValue = this.props.value;
@@ -69,7 +71,7 @@ class SrcEditor extends React.Component<EditorProps> {
         const model = monaco.editor.createModel(
           this.props.value || '',
           this.props.language,
-          Uri.parse(this.props.uri || 'Unamed'),
+          this.props.uri ? Uri.parse(this.props.uri) : undefined,
         );
         this.editor = monaco.editor.create(this.container, {
           theme: 'vs-dark',
@@ -89,6 +91,11 @@ class SrcEditor extends React.Component<EditorProps> {
       }
     });
   }
+  private layout = (size: { width: number; height: number }) => {
+    if (this.editor != undefined) {
+      this.editor.layout(size);
+    }
+  };
   getValue() {
     if (this.editor != null) {
       return this.editor.getValue();
@@ -105,7 +112,16 @@ class SrcEditor extends React.Component<EditorProps> {
     this.container = n;
   };
   render() {
-    return <div className={overflowHide} ref={this.refContainer} />;
+    return (
+      <SizedDiv className={overflowHide}>
+        {size => {
+          if (size !== undefined) {
+            this.layout(size);
+          }
+          return <div className={overflowHide} ref={this.refContainer} />;
+        }}
+      </SizedDiv>
+    );
   }
 }
 export default SrcEditor;

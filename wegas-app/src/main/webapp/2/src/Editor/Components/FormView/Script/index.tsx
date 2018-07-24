@@ -175,9 +175,7 @@ export class Script extends React.Component<ScriptProps, ScriptState> {
               {this.state.srcMode ? (
                 <div
                   style={{
-                    position: 'relative',
                     height: '5em',
-                    minWidth: '33em',
                   }}
                 >
                   <SrcEditor
