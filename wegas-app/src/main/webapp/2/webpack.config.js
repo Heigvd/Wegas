@@ -43,6 +43,7 @@ module.exports = {
                   compilerOptions: {
                     target: 'es2018',
                     module: 'commonjs',
+                    noEmit: false,
                   },
                   transpileOnly: true,
                   instance: 'node',
@@ -54,6 +55,9 @@ module.exports = {
           {
             loader: 'ts-loader',
             options: {
+              compilerOptions: {
+                noEmit: false,
+              },
               transpileOnly: true,
               instance: 'web',
               onlyCompileBundledFiles: true,
