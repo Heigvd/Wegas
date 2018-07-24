@@ -813,7 +813,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 }
 
                 if (showReplies) {
-                    List<Reply> replies = qi.getReplies();
+                    List<Reply> replies = qi.getReplies(self);
                     String title;
                     if (replies.size() > 1) {
                         title = (String) translate.call(i18n, "question.results", null, code);
@@ -830,7 +830,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                     bd.append("</div>");
                 }
             } else {
-                List<Reply> replies = qi.getReplies();
+                List<Reply> replies = qi.getReplies(self);
                 String title;
                 if (replies.size() > 1) {
                     title = (String) translate.call(i18n, "question.results", null, code);

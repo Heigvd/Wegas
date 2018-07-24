@@ -1,0 +1,89 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+/**
+ * @author Maxence Laurent (maxence.laurent gmail.com)
+ */
+
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen:not(.open) .yui3-tabview-list .yui3-tab,
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen > .yui3-tabview-list {
+    width: 100%;
+    min-height: 10px;
+}
+
+/*
+ * hide panel when small menu is open
+ */
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .yui3-tabview-panel{
+    display: none;
+}
+
+/* reset padding */
+.yui3-skin-sam .yui3-wegas-responsive-tabview .yui3-tab-label,
+.yui3-skin-sam .yui3-wegas-responsive-tabview .yui3-tab-label:focus,
+.yui3-skin-sam .yui3-wegas-responsive-tabview .yui3-tab-label:hover {
+    padding: 0;
+}
+
+/* flex the tab label */
+.yui3-skin-sam .yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tab-selected,
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .menutitle,
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content .yui3-tab-label{
+    background: #d8d9dd;
+    align-items: center;
+    display: flex;
+}
+
+/* and let the effective label fill all the space */
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .menutitle .tablabel,
+.yui3-wegas-responsive-tabview .yui3-tab-label .tablabel {
+    flex-grow: 1;
+    padding: 10px 5px;
+}
+
+/*  */
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .menutitle > div {
+    font-size: 13px;
+}
+
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen > .yui3-tabview-list li,
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open ul .menubutton {
+    display: none;
+}
+
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen > .yui3-tabview-list li.yui3-tab-selected,
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open > .yui3-tabview-list li{
+    display: block;
+}
+
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open > .yui3-tabview-list li.yui3-tab-selected {
+    background-color: grey;
+}
+
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .menutitle .menubutton:before,
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen:not(.open) > .yui3-tabview-list li.yui3-tab-selected .menubutton:before{
+    font-family: "FontAwesome";
+    content: "\f0c9";
+    font-size: 28px;
+    font-weight: normal;
+    color: #4e525e;
+    line-height: 37px;
+}
+
+.yui3-wegas-responsive-tabview .horizontal-tabview > .yui3-tabview-content.smallscreen > .yui3-tabview-panel {
+    width: 100%;
+}
+
+.yui3-skin-sam .wegas-panel-invite {
+    text-align: center;
+    font-style: italic;
+    padding-top: 30px;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .empty .horizontal-tabview .yui3-tab {
+    display: none;
+}

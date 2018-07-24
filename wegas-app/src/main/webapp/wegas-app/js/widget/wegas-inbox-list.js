@@ -7,187 +7,126 @@
  */
 /**
  * @fileoverview
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Maxence 
  */
 YUI.add('wegas-inbox-list', function(Y) {
     'use strict';
     var CONTENTBOX = 'contentBox',
-        Micro = Y.Template.Micro,
-        Wegas = Y.Wegas,
         InboxList;
-    /**
-     * @name Y.Wegas.InboxList
-     * @extends Y.Widget
-     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
-     * @class  class to manage e-mail
-     * @constructor
-     * @description Display and allow to manage e-mail sent to the current player
-     */
+
+
     InboxList = Y.Base.create(
         'wegas-inbox-list',
         Y.Widget,
-        [Y.WidgetChild, Wegas.Widget, Wegas.Editable],
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent],
         {
-            /** @lends Y.Wegas.InboxList# */
-            // ** Private fields ** //
-            /**
-             * Holds compiled templates. Add templates in scope variable TEMPLATES
-             *
-             * define tab and content Templates, add new ones :
-             * TEMPLATES:{TEMPLATE_NAME:{tab:'template', content:'template'}}
-             *
-             * specify the one to use in "template" ATTRS
-             * !!COMPILED!! Template may be added after initialization in
-             * Y.Wegas.InboxList.prototype.TEMPLATES['name'] =
-             * {tab: Y.Template.Micro.compile(tab_text_template),
-             * content: Y.Template.Micro.compile(content_text_template)}
-             */
-            TEMPLATES: {
-                "default": Micro.compile("<div class='msg msg-toggled'><div class='msg-header'>"
-                    + "<div class='msg-subject'><%= I18n.t(this.get('subject')) %></div>"
-                    + "<% var date =I18n.t(this.get('date')); if (date) { %><div class='msg-date'><%= date %></div><% } %>"
-                    + "<div style=\"clear: both;\"></div>"
-                    + "<% var from = I18n.t(this.get('from')); if (from) { %><div class='msg-from'><%= from %></div><% } %>"
-                    + "<% if (this.get('attachments') && this.get('attachments').length) {%>"
-                    + "<div class='msg-attachment'><% Y.Array.each(this.get('attachments'), function(a){ var file=I18n.t(a.get('file')); %><a href='<%= file %>' data-file='<%= file %>' target='_blank'><%= file.split('/').pop() %></a>;<% }); %></div>"
-                    + "<% } %><div style=\"clear: both;\"></div></div>"
-                    + "<div class='msg-body'><div class='msg-body-content'><%== I18n.t(this.get('body')) %></div></div>"
-                    + "<a href='#' class='msg-showmore'>More...</a>"
-                    + "</div>"),
-
-                clean: Micro.compile("<div class='msg-cleanlist'>"
-                    + "<div class='msg-icon'><i class='fa fa-2x fa-envelope<%= this.get('unread') ? '' : '-open'%>-o'></i></div>"
-                    + "<div class='msg-clean--header'>"
-                    + "<div class='msg-firstLine'>"
-                    + "<span class='msg-subject'><%== I18n.t(this.get('subject')) %></span>"
-                    + "<% var date =I18n.t(this.get('date')); if (date) { %><span class='msg-date'><%= date %></span><% } %>"
-                    + "</div>"
-                    + "<div style=\"clear: both;\"></div>"
-                    + "<% var from = I18n.t(this.get('from')); if (from) { %><div class='msg-from'><%= from %></div><% } %>"
-                    + "</div>"
-                    + "<% if (this.get('attachments') && this.get('attachments').length) {%>"
-                    + "<div class='msg-attachment'><% Y.Array.each(this.get('attachments'), function(a){ var file=I18n.t(a.get('file'));%><a href='<%= file %>' data-file='<%= file %>' target='_blank'><%= file.split('/').pop() %></a>;<% }); %></div>"
-                    + "<% } %>"
-                    + "<div style=\"clear: both;\"></div>"
-                    + "<div class='msg-body'> <%== I18n.t(this.get('body')) %></div>"
-                    + "</div>"
-                )
+            initializer: function() {
+                this.handlers = {};
+                this.messages = {};
+                this.errorMessage;
             },
-            // *** Lifecycle Methods *** //
-            /**
-             * @function
-             * @private
-             * @description bind function to events.
-             * When dataSource is updated, do syncUI
-             */
+            destructor: function() {
+                for (var k in this.handlers) {
+                    this.handlers[k].detach();
+                }
+            },
+            renderUI: function() {
+                this.destroyAll();
+            },
             bindUI: function() {
-                this.dataUpdatedHandler = Wegas.Facade.Instance.after(
-                    'updatedInstance',
-                    this.onUpdatedInstance,
-                    this
-                ); // Sync view on cache update
-
-                this.get(CONTENTBOX).delegate(
-                    'click',
-                    function(e) {
-                        // Whenever a collapsed message is clicked,
-                        e.currentTarget.toggleClass('msg-toggled'); // open it
-                    },
-                    '.msg-toggled'
-                );
+                this.handlers.onUpdatedInstance = Y.Wegas.Facade.Instance.after('updatedInstance', this.onUpdatedInstance, this); // Sync view on cache update
+                this.get(CONTENTBOX).delegate('click', this.toggleExpand, '.wegas-message__collapsed', this);
+            },
+            toggleExpand: function(e) {
+                // Whenever a collapsed message is clicked,
+                e.currentTarget.toggleClass('wegas-message__collapsed'); // open it
+                e.currentTarget.toggleClass('wegas-message__expanded'); // open it
             },
             onUpdatedInstance: function(e) {
-                if (
-                    e.entity.get('id') ===
-                    this.get('variable.evaluated').getInstance().get('id')
-                ) {
+                if (e.entity.get('id') === this.get('variable.evaluated').getInstance().get('id')) {
                     this.syncUI();
                 }
             },
-            /**
-             * @function
-             * @private
-             * Re-select the current selected msg;
-             */
+            removeErrorMessage: function() {
+                this.errorMessage && this.errorMessage.destroy();
+                this.errorMessage = null;
+            },
+            setErrorMessage: function(message) {
+                this.removeErrorMessage();
+                this.errorMessage = new Y.Wegas.Text({
+                    content: '<center><em>' + message + '</em></center>',
+                    editable: false
+                });
+                this.add(this.errorMessage);
+            },
             syncUI: function() {
-                var inboxDescriptor = this.get('variable.evaluated'),
+                var cb = this.get("contentBox"),
+                    inboxDescriptor = this.get('variable.evaluated'),
                     inboxInstance = inboxDescriptor.getInstance();
-                if (!inboxDescriptor) {
-                    this.get(CONTENTBOX).setHTML(
-                        '<center><em>Unable to find inbox variable</em></center>'
-                    );
+
+                if (this.get('destroyed')) {
                     return;
                 }
-                this.get("contentBox").addClass("wegas-inbox-list--" + this.get("template"));
-                this.showOverlay();
+                // toggle template classes
+                for (var k in Y.Wegas.InboxList.ATTRS.template.view.choices) {
+                    var template = Y.Wegas.InboxList.ATTRS.template.view.choices[k].value;
+                    this.get("contentBox").toggleClass("wegas-inbox-list--" + template, this.get("template") === template);
+                }
 
-                Wegas.Facade.Variable.cache.getWithView(inboxInstance, "Extended", {
-                    on: {
-                        success: Y.bind(function(e) {
-                            if (this.get('destroyed')) {
-                                return;
-                            }
-                            this._updateView(e.response.entity, e.response.entity.get("messages"));
-                            this.hideOverlay();
-                        }, this)
-                    }
-                });
-            },
-            /**
-             * @function
-             * @private
-             * @description Destroy all eventHandlers created by this widget
-             */
-            destructor: function() {
-                this.dataUpdatedHandler.detach();
-            },
-            // *** Private Methods *** //
-            /**
-             * @private
-             * @param {Array of entity} entities
-             * @returns {undefined}
-             */
-            _updateView: function(inboxInstance, entities) {
-                var cb = this.get(CONTENTBOX), readMessages = false;
-                cb.setContent("");
-                if (entities.length === 0) {
-                    cb.setHTML('<center><em>Empty</em></center>');
-                }
-                if (this.get("chronological")) {
-                    entities.reverse();
-                }
-                Y.Array.each(entities, function(entity) {
-                    cb.append(this.TEMPLATES[this.get("template")](entity));
-                    if (entity.get('unread')) {
-                        readMessages = true;
-                    }
-                }, this);
-                if (readMessages) {
-                    Y.Wegas.Facade.Variable.sendRequest({// Send reqest to mark as read
-                        request: "/Inbox/" + inboxInstance.get("id") + "/ReadAll",
-                        cfg: {
-                            method: 'PUT'
+
+                if (!inboxDescriptor) {
+                    this.setErrorMessage('Unable to find inbox variable');
+                } else {
+                    var readMessages = false,
+                        messages = inboxInstance.get("messages").slice(0);
+
+                    if (messages.length === 0) {
+                        cb.setHTML('<center><em>Empty</em></center>');
+                    } else {
+                        this.removeErrorMessage();
+                        if (this.get("chronological")) {
+                            messages.reverse();
                         }
-                    });
-                }
+                        for (var i in messages) {
+                            var message = messages[i];
+                            if (this.messages[message.get("id")]) {
+                                if (this.item(i) !== this.messages[message.get("id")]) {
+                                    this.remove(this.messages[message.get("id")]);
+                                    this.add(this.messages[message.get("id")], i);
+                                }
+                            } else {
+                                this.messages[message.get("id")] = new Y.Wegas.MessageDisplay({
+                                    variable: this.get("variable"),
+                                    messageId: message.get("id"),
+                                    editable: false
+                                });
+                                this.add(this.messages[message.get("id")]);
+                            }
+                            readMessages = readMessages || message.get("unread");
+                        }
 
-                cb.all('.msg').each(function(m) {
-                    /*
-                     * If the content is bigger than the available height (max-height style)
-                     *  add msg-body-toggled class and content of the read more menu
-                     */
-                    if (
-                        parseInt(m.one('.msg-body').getStyle('maxHeight')) >
-                        parseInt(
-                            m
-                                .one('.msg-body-content')
-                                .getComputedStyle('height')
-                        )
-                    ) {
-                        m.removeClass('msg-toggled');
+                        if (readMessages) {
+                            Y.Wegas.Facade.Variable.sendRequest({// Send reqest to mark as read
+                                request: "/Inbox/" + inboxInstance.get("id") + "/ReadAll",
+                                cfg: {
+                                    method: 'PUT'
+                                }
+                            });
+                        }
+
+                        cb.all('.wegas-message').each(function(m) {
+                            /*
+                             * If the content is bigger than the available height (max-height style)
+                             *  add msg-body-toggled class and content of the read more menu
+                             */
+                            var maxHeight = parseInt(m.one('.wegas-message-body').getStyle('maxHeight')),
+                                effectiveHeight = parseInt(m.one('.wegas-message-body').getDOMNode().getBoundingClientRect().height);
+                            m.toggleClass("wegas-message__collapsed", maxHeight < effectiveHeight);
+                        });
                     }
-                });
-            },
+                }
+            }
+            ,
             getEditorLabel: function() {
                 var variable = this.get('variable.evaluated');
                 if (variable) {
@@ -218,7 +157,7 @@ YUI.add('wegas-inbox-list', function(Y) {
                  */
                 variable: {
                     type: 'object',
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
                         label: 'variable',
@@ -237,7 +176,7 @@ YUI.add('wegas-inbox-list', function(Y) {
                         choices: [
                             {
                                 value: 'default'
-                            },{
+                            }, {
                                 value: 'clean'
                             }
                         ],
@@ -256,5 +195,5 @@ YUI.add('wegas-inbox-list', function(Y) {
             }
         }
     );
-    Wegas.InboxList = InboxList;
+    Y.Wegas.InboxList = InboxList;
 });

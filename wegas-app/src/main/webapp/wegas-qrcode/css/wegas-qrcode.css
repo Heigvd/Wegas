@@ -1,0 +1,21 @@
+
+.wegas-qrcode-scanner .cameras li {
+    margin: 10px;
+}
+
+.wegas-qrcode-scanner video {
+    max-width: 100%;
+    max-height:100%;
+}
+
+.wegas-qrcode-scanner :not(.scanning) .the_scanner {
+    display: none;
+}
+
+.wegas-qrcode-scanner .scanning .the_scanner {
+    display: block;
+}
+
+.wegas-qrcode-scanner .scanning .initiator:before {
+    content : "\f28e";
+}

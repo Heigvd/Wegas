@@ -46,7 +46,7 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
         },
         inbox: {
             deleteEmailConfirmation: "Êtes-vous sûr de vouloir supprimer le message {{subject}} de manière définitive ?",
-            noMessages: "Nous n'avez pas de messages",
+            noMessages: "Vous n'avez pas de messages",
             noMessageSelected: "Sélectionnez un message sur la gauche"
         }
     }, {base: {

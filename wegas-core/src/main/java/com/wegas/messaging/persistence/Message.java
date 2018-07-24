@@ -106,7 +106,7 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
      */
     @OneToMany(mappedBy = "message", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = Attachment.ListDeserializer.class)
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     @WegasEntityProperty
     private List<Attachment> attachments = new ArrayList<>();
     /**

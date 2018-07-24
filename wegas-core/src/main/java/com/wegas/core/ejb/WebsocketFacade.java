@@ -409,7 +409,7 @@ public class WebsocketFacade {
 
             int computedLength = computeLength(gzip);
 
-            logger.error("computedLength: " + computedLength);
+            logger.trace("computedLength: " + computedLength);
             if (computedLength < MAX_PUSHER_BODY_SIZE) {
 
                 //if (computedLength > 10240) {

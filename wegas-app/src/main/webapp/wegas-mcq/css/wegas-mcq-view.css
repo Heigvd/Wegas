@@ -288,6 +288,7 @@
     flex-grow: 1;
     text-align: right;
     padding-right: 10px;
+    height: 24px;
 }
 
 .wegas-mcqview-content:not(.showSummary) .wegas-mcqchoice .mcqchoice__summary,
@@ -300,7 +301,7 @@
     opacity: 0.4;
 }
 
-.wegas-mcqview .answerable:not(.cbx) .selectable .mcqchoice__submit,
+.wegas-mcqview .answerable:not(.cbx) .selectable .mcqchoice__submit span,
 .wegas-mcqview .answerable.cbx .mcq-view__submit,
 .wegas-mcqview .answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit,
 .wegas-mcqview .answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit,
