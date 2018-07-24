@@ -24,7 +24,7 @@ angular
 
                 ctrl.updateScenario = function() {
                     // Searching for current scenario
-                    ScenariosModel.getScenario("LIVE", $stateParams.scenarioId).then(function(response) {
+                    ScenariosModel.getModels("LIVE", $stateParams.scenarioId).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {

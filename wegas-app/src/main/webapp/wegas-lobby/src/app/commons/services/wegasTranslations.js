@@ -693,7 +693,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': startSentence(keywords.scenario.singular.fr) + " trouvé"
                         },
                         'COMMONS-SCENARIOS-GET-FLASH-ERROR': {
-                            'en': "No  " + keywords.scenario.singular.en + " found",
+                            'en': "No " + keywords.scenario.singular.en + " found",
                             'fr': "Aucun " + keywords.scenario.singular.fr + " trouvé"
                         },
                         'COMMONS-SCENARIOS-CREATE-FLASH-SUCCESS': {
@@ -1558,6 +1558,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'MODELER-MODALE-USERS-DUPLICATE-CHECKBOX': {
                             'en': "Duplicate " + keywords.model.singular.en,
                             'fr': "Dupliquer le " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-VERSIONS-AVAILABLE-VERSIONS': {
+                            'en': "Scenarios based on this model",
+                            'fr': "Scénario basé sur ce modèle"
                         },
                         'MODELER-MODALE-VERSIONS-NEW-TITLE-BTN': {
                             'en': "This action will store a new version of the " + keywords.model.singular.en +
