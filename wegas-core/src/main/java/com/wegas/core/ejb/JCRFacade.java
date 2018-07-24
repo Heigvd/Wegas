@@ -133,6 +133,28 @@ public class JCRFacade {
         return this.createFile(gameModelFacade.find(gameModelId), wType, name, path, mediaType, note, description, file, override);
     }
 
+    private boolean isPathAvailable(GameModel gameModel, WorkspaceType wType, String path, String name) throws RepositoryException {
+        if (gameModel.isModel()) {
+            for (GameModel scen : gameModelFacade.getImplementations(gameModel)) {
+                ContentConnector connector = jCRConnectorProvider.getContentConnector(gameModel, wType);
+                AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path + "/" + name, connector);
+                if (descriptor.exist()) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (gameModel.isScenarioBasedOnModel()) {
+            // Path should not exists in the model
+            GameModel model = gameModel.getBasedOn();
+            ContentConnector contentConnector = jCRConnectorProvider.getContentConnector(model, wType);
+            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path + "/" + name, contentConnector);
+
+            return !descriptor.exist();
+        } else {
+            return true;
+        }
+    }
+
     /**
      * @param gameModel
      * @param wType
@@ -168,8 +190,12 @@ public class JCRFacade {
                 FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
 
                 if (!detachedFile.exist()) {
-                    // new file
+                    // new file, set visibility to private
                     detachedFile.setVisibility(gameModel.isModel() ? ModelScoped.Visibility.INHERITED : ModelScoped.Visibility.PRIVATE);
+                    if (!isPathAvailable(gameModel, wType, path, name)) {
+                        throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists in the model cluster");
+                    }
+                    // check name
                 }
 
                 if (!detachedFile.exist() || override) { //Node should not exist
@@ -234,25 +260,31 @@ public class JCRFacade {
             throw WegasErrorMessage.error(name + " is not a valid filename.");
         }
         ContentConnector connector = this.getContentConnector(gameModel, wType);
+
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
         if (dir.exist()) {
             if (!dir.belongsToProtectedGameModel() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
-                DirectoryDescriptor detachedFile = new DirectoryDescriptor(name, path, connector);
 
-                if (!detachedFile.exist()) {
-                    detachedFile.setNote(note == null ? "" : note);
-                    detachedFile.setDescription(description);
-                    detachedFile.sync();
-                    logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
-                    return detachedFile;
+                if (isPathAvailable(gameModel, wType, path, name)) {
+                    DirectoryDescriptor detachedFile = new DirectoryDescriptor(name, path, connector);
+
+                    if (!detachedFile.exist()) {
+                        detachedFile.setNote(note == null ? "" : note);
+                        detachedFile.setDescription(description);
+                        detachedFile.sync();
+                        logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
+                        return detachedFile;
+                    } else {
+                        throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
+                    }
                 } else {
-                    throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
+                    throw WegasErrorMessage.error(path + "/" + name + " already exists in the model cluster");
                 }
             } else {
                 throw WegasErrorMessage.error("Path " + path + "is readonly");
             }
         } else {
-            throw WegasErrorMessage.error(path + " directory does not exist already exists");
+            throw WegasErrorMessage.error(path + " directory does not exists");
         }
     }
 
