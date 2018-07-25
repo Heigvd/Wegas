@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Downshift from 'downshift';
+import Downshift, { StateChangeOptions } from 'downshift';
 import { css } from 'emotion';
 import { IconButton } from './Button/IconButton';
 import { Props } from '@fortawesome/react-fontawesome';
@@ -11,10 +11,17 @@ interface Item<T> {
 }
 interface MenuProps<T extends Item<T>> {
   onSelect: (item: T) => void;
+  onOpen?: () => void;
   items: T[];
   label?: React.ReactNode;
   icon?: Props['icon'];
   direction?: 'left' | 'down' | 'right' | 'top';
+}
+/**
+ * returns an empty string
+ */
+function emtpyStr(): '' {
+  return '';
 }
 const itemStyle = css({
   width: '100%',
@@ -53,10 +60,19 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
   static defaultProps = {
     direction: 'down',
   };
+  onStateChange = (changes: StateChangeOptions<any>) => {
+    if (changes.isOpen != null && changes.isOpen) {
+      this.props.onOpen && this.props.onOpen();
+    }
+  };
   render(): JSX.Element {
     const { onSelect, direction = 'down', label, icon } = this.props;
     return (
-      <Downshift onSelect={onSelect} itemToString={() => ''}>
+      <Downshift
+        onStateChange={this.onStateChange}
+        onSelect={onSelect}
+        itemToString={emtpyStr}
+      >
         {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
           <div className={String(container)}>
             <div className={itemStyle} onClick={() => toggleMenu()}>
