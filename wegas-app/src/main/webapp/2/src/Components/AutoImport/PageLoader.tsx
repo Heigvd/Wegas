@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StoreConsumer } from '../../data/store';
-import { importComponent } from '..';
+import { importComponent } from '../AutoImport';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../Theme';
 import { Actions } from '../../data';
