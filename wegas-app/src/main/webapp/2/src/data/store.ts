@@ -6,6 +6,7 @@ import { Actions } from '.';
 import WebSocketListener from '../API/websocket';
 import { StateActions } from './actions';
 import { createReduxContext } from './connectStore';
+import { Page } from './selectors';
 
 // Used by redux dev tool extension
 const composeEnhancers: typeof compose =
@@ -20,7 +21,12 @@ function storeInit() {
   // store.dispatch(update([CurrentGM]));
   store.dispatch(Actions.VariableDescriptorActions.getAll());
   store.dispatch(Actions.VariableInstanceActions.getAll());
-  store.dispatch(Actions.PageActions.getDefault());
+  store.dispatch(Actions.PageActions.getDefault()).then(() => {
+    const defaultId = Page.selectDefaultId();
+    if (defaultId) {
+      store.dispatch(Actions.EditorActions.pageLoadId(defaultId));
+    }
+  });
 }
 storeInit();
 new WebSocketListener(

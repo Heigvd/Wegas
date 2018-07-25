@@ -39,6 +39,7 @@ export interface GlobalState {
   currentTeamId: number;
   currentUser: Readonly<IUser>;
   editing?: Readonly<Edition>;
+  currentPageId?: string;
   stateMachineEditor?: {
     id: number;
   };
@@ -93,6 +94,20 @@ const global = u<GlobalState>(
           path: action.payload.path,
           actions: {},
         };
+        return;
+      case ActionType.PAGE_LOAD_ID:
+        state.currentPageId = action.payload;
+        return;
+      case ActionType.PAGE_INDEX:
+        // if current page doesn't exist
+        if (!action.payload.some(meta => meta.id === state.currentPageId)) {
+          if (action.payload.length > 0) {
+            // there is at lease 1 page
+            state.currentPageId = action.payload[0].id;
+          } else {
+            state.currentPageId = undefined;
+          }
+        }
         return;
       case ActionType.PAGE_SRC_MODE:
         state.pageSrc = action.payload;
@@ -220,6 +235,15 @@ export function saveEditor(value: IWegasEntity): ThunkResult {
  */
 export function pageEditMode(payload: boolean) {
   return ActionCreator.PAGE_EDIT_MODE(payload);
+}
+/**
+ * Set or unset page edit mode
+ *
+ * @export
+ * @param {boolean} payload set it or not.
+ */
+export function pageLoadId(payload?: string) {
+  return ActionCreator.PAGE_LOAD_ID(payload);
 }
 /**
  * Set or unset page src mode

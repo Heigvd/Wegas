@@ -3,6 +3,7 @@ import { StoreConsumer } from '../../data/store';
 import { importComponent } from '..';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../Theme';
+import { Actions } from '../../data';
 
 // function inferComponenent(type: string | React.ComponentType) {
 //     if (typeof type == 'string') {
@@ -122,9 +123,12 @@ function countLoaded(id?: string) {
   });
   return count;
 }
-class PageLoader extends React.Component<PageLoaderProps> {
+class PageLoader extends React.Component<PageLoaderProps, { load: boolean }> {
   constructor(props: PageLoaderProps) {
     super(props);
+    this.state = {
+      load: true,
+    };
     PageLoaderTracker.add(this);
   }
   componentDidCatch(e: any) {
@@ -133,11 +137,25 @@ class PageLoader extends React.Component<PageLoaderProps> {
   componentWillUnmount() {
     PageLoaderTracker.delete(this);
   }
+  componentDidMount() {
+    if (countLoaded(this.props.id) > 1 && this.state.load) {
+      this.setState({
+        load: false,
+      });
+    }
+  }
+  componentDidUpdate() {
+    if (countLoaded(this.props.id) > 1 && this.state.load) {
+      this.setState({
+        load: false,
+      });
+    }
+  }
   render() {
     if (this.props.page == null) {
       return <span>Loading...</span>;
     }
-    if (countLoaded(this.props.id) > 1) {
+    if (!this.state.load) {
       return (
         <span>
           <FontAwesome
@@ -156,7 +174,10 @@ export default function ConnectedPageLoader({ id }: { id?: string }) {
     <StoreConsumer<Readonly<Page> | undefined>
       selector={s => (id ? s.pages[id] : undefined)}
     >
-      {({ state }) => {
+      {({ state, dispatch }) => {
+        if (state == null && id != null) {
+          dispatch(Actions.PageActions.get(id));
+        }
         return <PageLoader id={id} page={state} />;
       }}
     </StoreConsumer>

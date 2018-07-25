@@ -2,6 +2,7 @@ import { normalizeDatas, NormalizedData } from './normalize';
 import { ManagedMode } from '../API/rest';
 import * as ActionType from './actionTypes';
 import { ConfigurationSchema } from '../Editor/editionConfig';
+import { PageIndex } from '../API/pages.api';
 
 export { ActionType };
 function createAction<T extends string, P>(type: T, payload: P) {
@@ -41,6 +42,8 @@ export const ActionCreator = {
   }) => createAction(ActionType.MANAGED_MODE, data),
   PAGE_EDIT_MODE: (data: boolean) =>
     createAction(ActionType.PAGE_EDIT_MODE, data),
+  PAGE_LOAD_ID: (data?: string) => createAction(ActionType.PAGE_LOAD_ID, data),
+  PAGE_INDEX: (data: PageIndex) => createAction(ActionType.PAGE_INDEX, data),
   PAGE_SRC_MODE: (data: boolean) =>
     createAction(ActionType.PAGE_SRC_MODE, data),
   PAGE_EDIT: (data: { page: string; path: string[] }) =>

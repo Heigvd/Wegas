@@ -14,7 +14,7 @@ async function extractPage(res: Response): Promise<Pages> {
   return j;
 }
 
-type PageIndex = Array<{
+export type PageIndex = Array<{
   id: string;
   index: number;
   name: string;
@@ -50,7 +50,7 @@ export const PageAPI = {
    * @param page
    * @param id optional id. Create a new page if omitted
    */
-  setPage(gameModelId: number, page: Page, id: string = '') {
+  setPage(gameModelId: number, page: WegasComponent, id: string = '') {
     return rest(PAGE_BASE(gameModelId) + id, {
       method: 'PUT',
       body: JSON.stringify(page),
@@ -82,5 +82,16 @@ export const PageAPI = {
       undefined,
       'text/plain',
     ).then(extractPage);
+  },
+  /**
+   * Move a page to a given index
+   * @param gameModelId 
+   * @param index position to put the page to
+   * @param id page to move
+   */
+  move(gameModelId: number, index: number, id: string): Promise<PageIndex> {
+    return rest(PAGE_BASE(gameModelId) + id + '/move/' + index, {
+      method: 'PUT',
+    }).then(res => res.json());
   },
 };
