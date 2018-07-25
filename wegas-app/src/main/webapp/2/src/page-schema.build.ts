@@ -22,6 +22,15 @@ const compilerOptions: ts.CompilerOptions = {
   moduleResolution: ts.ModuleResolutionKind.NodeJs,
 };
 type PrimitiveType = number | boolean | string | null;
+interface MonacoSnippet {
+  label: string;
+  description?: string;
+  /**
+   * This is the pre-filled object, $1, $2, ... can be
+   * used as tab index
+   */
+  body: object;
+}
 interface Definition {
   $ref?: string;
   $schema?: string;
@@ -31,6 +40,9 @@ interface Definition {
   anyOf?: Definition[];
   title?: string;
   type?: string | string[];
+  minimum?: number;
+  maximum?: number;
+  pattern?: string;
   definitions?: { [key: string]: any };
   format?: string;
   items?: Definition | Definition[];
@@ -43,10 +55,14 @@ interface Definition {
   additionalProperties?: Definition | boolean;
   required?: string[];
   propertyOrder?: string[];
-  properties?: { [key: string]: any };
+  properties?: { [key: string]: Definition };
   defaultProperties?: string[];
   const?: any;
   typeof?: 'function';
+  /**
+   * Specific to VSCode / Monaco's json editor
+   */
+  defaultSnippets?: MonacoSnippet[];
 }
 export default function() {
   const files: string[] = globby.sync('src/Components/AutoImport/**/*.tsx');
@@ -119,36 +135,70 @@ export default function() {
   */
   function oneOf(types: { type: ts.Type; fileName: string }[]): Definition {
     const defs: { [k: string]: Definition } = {};
-    defs.___self = {
-      allOf: [
-        {
+    defs.components = {
+      oneOf: types.map(t => {
+        return {
           type: 'object',
+          required: ['type', 'props'],
           properties: {
             type: {
-              enum: types.map(t => t.fileName),
+              type: 'string',
+              enum: [t.fileName],
             },
+            props: serializeType(t.type),
           },
-        },
+        };
+      }),
+      defaultSnippets: [
         {
-          oneOf: types.map(t => {
-            return {
-              type: 'object',
-              documentation:"Nnaa",
-              required: ['type', 'props'],
-              properties: {
-                type: {
-                  type: 'string',
-                  const: t.fileName,
-                },
-                props: serializeType(t.type),
-              },
-            };
-          }),
+          label: 'New Component',
+          body: { type: '$1' },
         },
       ],
     };
-    const root = {
-      $ref: '#/definitions/___self',
+    defs.___self = {
+      allOf: [
+        {
+          $ref: '#/definitions/components',
+        },
+        {
+          type: 'object',
+          properties: {
+            type: {},
+            props: {},
+          },
+          additionalProperties: false,
+        },
+      ],
+    };
+    const root: Definition = {
+      allOf: [
+        {
+          $ref: '#/definitions/components',
+        },
+        {
+          type: 'object',
+          additionalProperties: false,
+          required: ['@index'],
+          properties: {
+            '@name': {
+              description: 'Name the page',
+              type: ['string', 'null'],
+            },
+            type: {},
+            props: {},
+
+            '@index': {
+              description:
+                'Position in the page index. Positive integer, smaller than page count',
+              oneOf: [
+                { type: 'integer', minimum: 0 },
+                { type: 'string', pattern: '^\\d+$' },
+              ],
+            },
+          },
+        },
+      ],
       definitions: defs,
     };
     for (const d of symbol_cache.entries()) {
@@ -243,6 +293,7 @@ export default function() {
         ...doc(typ.getSymbol()),
         type: 'object',
         required,
+        additionalProperties: false,
         properties: props.reduce(
           (all, p) => {
             if (!(p.getFlags() & ts.SymbolFlags.Optional)) {
@@ -273,4 +324,4 @@ export default function() {
         undefined,
     };
   }
-};
+}
