@@ -37,6 +37,11 @@ export function rest(
   return fetch(`${API_ENDPOINT}${v}${url}`, {
     ...COMMON_CONFIG(contentType),
     ...options,
+  }).then(res => {
+    if (res.ok) {
+      return res;
+    }
+    throw Error(res.statusText);
   });
 }
 export function managedModeRequest(
