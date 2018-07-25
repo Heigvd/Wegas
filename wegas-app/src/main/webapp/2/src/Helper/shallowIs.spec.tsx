@@ -12,6 +12,7 @@ test.each([
   [true, { a: empty }, { a: empty }],
   [false, { a: undefined }, { b: undefined }],
   [false, [], [1]],
+  [false, [1, 2], [2, 3]],
   [false, undefined, null],
   [false, { a: undefined }, {}],
   [false, { a: 1 }, { a: 2 }],
