@@ -41,7 +41,11 @@ class SrcEditor extends React.Component<EditorProps> {
     if (this.lastValue !== this.props.value) {
       this.lastValue = this.props.value;
       this.outsideChange = true;
-      this.editor!.setValue(this.props.value!);
+      if ('string' === typeof this.props.value) {
+        this.editor!.setValue(this.props.value);
+      } else {
+        this.editor!.setValue('');
+      }
       this.outsideChange = false;
     }
     if (this.props.language !== prevProps.language) {
