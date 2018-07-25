@@ -1044,9 +1044,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     newContent = {
                         "@class": "TranslatableContent",
                         "translations": {
-                            def: JSON.parse(content.substring(node.range[0], node.range[1]))
                         }
                     };
+                    newContent.translations[this.defaultCode] = JSON.parse(content.substring(node.range[0], node.range[1]));
                     if (toUpgrade[i].type === "Attachment") {
                         newContent = {
                             "@class": "Attachment",
@@ -1097,6 +1097,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         execute: function() {
             var globals = [Y.Wegas.RForm.Script.getGlobals('getter'),
                 Y.Wegas.RForm.Script.getGlobals('condition')];
+            this.defaultCode = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages")[0].get("code");
             Promise.all(globals).then(Y.bind(function(globals) {
                 var scriptToUpdate = this.extractScripts(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                     Y.mix(Y.mix({}, globals[0]), globals[1]));
