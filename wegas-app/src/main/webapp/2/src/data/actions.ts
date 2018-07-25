@@ -51,11 +51,9 @@ export const ActionCreator = {
     createAction(ActionType.PUSHER_SOCKET, data),
 };
 
-type ActionsUnion<
-  A extends { [key: string]: (...args: any[]) => any }
-> = ReturnType<A[keyof A]>;
-
-export type StateActions = ActionsUnion<typeof ActionCreator>;
+export type StateActions<
+  A extends keyof typeof ActionCreator = keyof typeof ActionCreator
+> = ReturnType<typeof ActionCreator[A]>;
 
 export function managedMode(payload: ManagedMode) {
   return ActionCreator.MANAGED_MODE({
