@@ -22,7 +22,8 @@ YUI.add('wegas-model-propagator', function(Y) {
             Y.Wegas.Facade.GameModel.sendRequest({
                 request: "/propagateModel/" + this.get("gameModel").get("id"),
                 cfg: {
-                    method: "PUT"
+                    method: "PUT",
+                    updateCache: false
                 },
                 on: {
                     success: Y.bind(function(e) {
