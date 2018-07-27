@@ -1,5 +1,22 @@
 import * as React from 'react';
 
+export function deserialize(
+  json: WegasComponent,
+  key?: string | number,
+  path: string[] = [],
+): JSX.Element {
+  const { children = [], ...restProps } = json.props || {};
+  // Should await all children as well.
+  const type = importComponent(json.type);
+  if (type == null) {
+    return <span>Unkown "{json.type}"</span>;
+  }
+  return React.createElement(
+    type,
+    { key, __path: path, ...restProps } as any,
+    children.map((c, i) => deserialize(c, i, path.concat([String(i)]))),
+  );
+}
 function Loader() {
   return <span>...</span>;
 }
@@ -8,7 +25,7 @@ function Loader() {
  * It loads it's default export as a Component
  * @param type Component type. File path under ./AutoImport
  */
-export function importComponent(type: string) {
+function importComponent(type: string) {
   class AutoLoadedComponent extends React.Component {
     static displayName = `Loaded(${type})`;
     state: { Comp: React.ComponentType<any> } = { Comp: Loader };

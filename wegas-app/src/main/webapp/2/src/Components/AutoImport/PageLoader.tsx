@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StoreConsumer } from '../../data/store';
-import { importComponent } from '../AutoImport';
+import { deserialize } from '../AutoImport';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../Theme';
 import { Actions } from '../../data';
@@ -91,23 +91,6 @@ import { Actions } from '../../data';
 //   return EditableComponent;
 // }
 
-function deserialize(
-  json: WegasComponent,
-  key?: string | number,
-  path: string[] = [],
-): JSX.Element {
-  const { children = [], ...restProps } = json.props || {};
-  // Should await all children as well.
-  const type = importComponent(json.type);
-  if (type == null) {
-    return <span>Unkown "{json.type}"</span>;
-  }
-  return React.createElement(
-    type,
-    { key, __path: path, ...restProps } as any,
-    children.map((c, i) => deserialize(c, i, path.concat([String(i)]))),
-  );
-}
 interface PageLoaderProps {
   page?: Page;
   id?: string;
@@ -166,7 +149,7 @@ class PageLoader extends React.Component<PageLoaderProps, { load: boolean }> {
       );
     }
     const tree = deserialize(this.props.page);
-    return <div>{tree}</div>;
+    return tree;
   }
 }
 export default function ConnectedPageLoader({ id }: { id?: string }) {

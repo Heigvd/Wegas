@@ -65,8 +65,8 @@ export class Theme extends React.PureComponent<ThemeProps> {
     return (
       <div
         className={css({
-          width: 'inherit',
-          height: 'inherit',
+          width: '100%',
+          height: '100%',
           backgroundColor: backgroundColor,
           color: textColor,
           '--primary-color': primaryColor,
