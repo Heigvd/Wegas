@@ -8,9 +8,6 @@ export function deserialize(
   const { children = [], ...restProps } = json.props || {};
   // Should await all children as well.
   const type = importComponent(json.type);
-  if (type == null) {
-    return <span>Unkown "{json.type}"</span>;
-  }
   return React.createElement(
     type,
     { key, __path: path, ...restProps } as any,
@@ -26,12 +23,13 @@ function Loader() {
  * @param type Component type. File path under ./AutoImport
  */
 function importComponent(type: string) {
+  const load = import(/* webpackChunkName: "Component/[request]" */ `./AutoImport/${type}`);
   class AutoLoadedComponent extends React.Component {
     static displayName = `Loaded(${type})`;
     state: { Comp: React.ComponentType<any> } = { Comp: Loader };
     mounted: boolean = true;
     componentDidMount() {
-      import(/* webpackChunkName: "Component/[request]" */ `./AutoImport/${type}`)
+      load
         .then(exp => {
           this.mounted && this.setState({ Comp: exp.default });
         })
