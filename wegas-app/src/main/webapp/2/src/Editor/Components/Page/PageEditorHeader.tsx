@@ -33,7 +33,13 @@ class PageSelector extends React.Component<
       .dispatch(
         Actions.PageActions.createPage({
           type: 'Layout/List',
-          props: { children: [] },
+          props: {
+            children: [],
+            style: {
+              width: '100%',
+              height: '100%',
+            },
+          },
         }),
       )
       .then(res => {
