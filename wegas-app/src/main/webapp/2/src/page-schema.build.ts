@@ -78,7 +78,7 @@ export default function() {
   const symbol_cache = new Map<ts.Symbol, Definition>();
   // const t_cache = new WeakSet();
 
-  const types: { type: ts.Type; fileName: string }[] = [];
+  const types: { type: ts.Type | null; fileName: string }[] = [];
   for (const sourceFile of program.getSourceFiles()) {
     if (
       !sourceFile.isDeclarationFile &&
@@ -114,7 +114,9 @@ export default function() {
     const sign = checker.getSignaturesOfType(t, ts.SignatureKind.Call);
     sign.forEach(s => {
       types.push({
-        type: checker.getTypeAtLocation(s.parameters[0].valueDeclaration!),
+        type: s.parameters[0]
+          ? checker.getTypeAtLocation(s.parameters[0].valueDeclaration!)
+          : null,
         fileName: typeName,
       });
     });
@@ -139,7 +141,9 @@ export default function() {
   /*
   Types to Schema
   */
-  function oneOf(types: { type: ts.Type; fileName: string }[]): Definition {
+  function oneOf(
+    types: { type: ts.Type | null; fileName: string }[],
+  ): Definition {
     const defs: { [k: string]: Definition } = {};
     defs.components = {
       oneOf: types.map(t => {
@@ -151,7 +155,10 @@ export default function() {
               type: 'string',
               enum: [t.fileName],
             },
-            props: serializeType(t.type),
+            props:
+              t.type !== null
+                ? serializeType(t.type)
+                : { type: 'object', additionalProperties: false },
           },
         };
       }),
