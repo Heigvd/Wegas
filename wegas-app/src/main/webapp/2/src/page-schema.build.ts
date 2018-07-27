@@ -64,13 +64,19 @@ interface Definition {
    */
   defaultSnippets?: MonacoSnippet[];
 }
+/**
+ * Special case WegasComponent, to be replaced by our Components.
+ */
+const OUR_ELEMENT_TYPE_NAME = 'WegasComponent';
 export default function() {
   const files: string[] = globby.sync('src/Components/AutoImport/**/*.tsx');
+
   log(files);
-  const program = ts.createProgram(files, compilerOptions);
+  const lib = globby.sync('types/**/*.d.ts');
+  const program = ts.createProgram(files.concat(lib), compilerOptions);
   const checker = program.getTypeChecker();
   const symbol_cache = new Map<ts.Symbol, Definition>();
-  const t_cache = new WeakSet();
+  // const t_cache = new WeakSet();
 
   const types: { type: ts.Type; fileName: string }[] = [];
   for (const sourceFile of program.getSourceFiles()) {
@@ -202,47 +208,62 @@ export default function() {
       definitions: defs,
     };
     for (const d of symbol_cache.entries()) {
-      defs[checker.getFullyQualifiedName(d[0])] = d[1];
+      defs[symbolUniqueName(d[0])] = d[1];
     }
     return root;
   }
-  function serialize(symbol?: ts.Symbol): Definition {
+  function symbolUniqueName(symbol: ts.Symbol) {
+    return checker.getFullyQualifiedName(symbol) + (symbol as any).id;
+  }
+  function serialize(symbol: ts.Symbol | undefined, ref: ts.Type): Definition {
     if (symbol === undefined) {
-      return {};
+      return serializeType(ref, true);
     }
-    // Special casing ReactElement. Replaced by our elements
-    if (checker.getFullyQualifiedName(symbol) === 'React.ReactElement') {
+    if (checker.getFullyQualifiedName(symbol) === OUR_ELEMENT_TYPE_NAME) {
       return {
         $ref: '#/definitions/___self',
       };
     }
-    log(checker.getFullyQualifiedName(symbol));
+    const name = symbolUniqueName(symbol);
+    log(name);
     if (symbol_cache.has(symbol)) {
-      return { $ref: `#/definitions/${checker.getFullyQualifiedName(symbol)}` };
+      return { $ref: `#/definitions/${name}` };
     }
 
     symbol_cache.set(symbol, {});
-    const decl = symbol.declarations ? symbol.declarations[0] : undefined;
-    const typ = checker.getTypeOfSymbolAtLocation(symbol, decl!);
+    // const decl = symbol.declarations ? symbol.declarations[0] : undefined;
+    // const typ = checker.getTypeOfSymbolAtLocation(symbol, decl!);
     const def = {
-      ...serializeType(typ),
+      ...serializeType(ref, true),
       ...doc(symbol),
     };
     symbol_cache.set(symbol, def);
-    return { $ref: `#/definitions/${checker.getFullyQualifiedName(symbol)}` };
+    return { $ref: `#/definitions/${name}` };
   }
 
-  function serializeType(typ: ts.Type): Definition {
+  function serializeType(typ: ts.Type, skipSymbol?: true): Definition {
     log('Type', checker.typeToString(typ), ts.TypeFlags[typ.getFlags()]);
 
     if (
       typ.getFlags() &
-      (ts.TypeFlags.NumberLike |
-        ts.TypeFlags.StringLike |
-        ts.TypeFlags.BooleanLike |
+      (ts.TypeFlags.Number |
+        ts.TypeFlags.String |
+        ts.TypeFlags.Boolean |
         ts.TypeFlags.Null)
     ) {
       return { ...doc(typ.getSymbol()), type: checker.typeToString(typ) };
+    }
+    if (typ.getFlags() & ts.TypeFlags.StringOrNumberLiteral) {
+      return {
+        ...doc(typ.getSymbol()),
+        enum: [(typ as ts.StringLiteralType | ts.NumberLiteralType).value],
+      };
+    }
+    if (typ.getFlags() & ts.TypeFlags.BooleanLiteral) {
+      return {
+        ...doc(typ.getSymbol()),
+        enum: [(typ as any).intrinsicName === 'true'],
+      };
     }
     if (typ.getFlags() & ts.TypeFlags.Any) {
       return doc(typ.getSymbol());
@@ -263,12 +284,12 @@ export default function() {
         }),
       };
     }
-    if (t_cache.has(typ)) {
-      if (typ.getSymbol() != undefined) {
-        return serialize(typ.getSymbol());
-      }
-    }
-    t_cache.add(typ);
+    // if (t_cache.has(typ)) {
+    //   if (typ.getSymbol() != undefined) {
+    //     return serialize(typ.getSymbol());
+    //   }
+    // }
+    // t_cache.add(typ);
     const arrayType = checker.getIndexTypeOfType(typ, ts.IndexKind.Number);
     if (arrayType) {
       const sym = arrayType.getSymbol();
@@ -276,7 +297,7 @@ export default function() {
         return {
           ...doc(typ.getSymbol()),
           type: 'array',
-          items: serialize(sym),
+          items: serialize(sym, arrayType),
         };
       }
       return {
@@ -286,6 +307,13 @@ export default function() {
       };
     }
 
+    const sym = typ.getSymbol();
+    if (
+      sym != undefined &&
+      !skipSymbol /* && checker.getFullyQualifiedName(sym) === OUR_ELEMENT_TYPE_NAME */
+    ) {
+      return serialize(sym, typ);
+    }
     const props = checker.getPropertiesOfType(typ);
     if (props.length) {
       const required: string[] = [];

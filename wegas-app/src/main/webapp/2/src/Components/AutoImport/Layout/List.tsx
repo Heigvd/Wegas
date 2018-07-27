@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 
-const style = css({
+const listStyle = css({
   display: 'flex',
   flexWrap: 'wrap',
   flexDirection: 'column',
@@ -12,7 +12,8 @@ const horizontalStyle = css({
 });
 
 interface Props {
-  children: React.ReactElement<any>[];
+  children: WegasComponent[];
+  style?: React.CSSProperties;
   /**
    * List direction, default vertical
    */
@@ -21,9 +22,12 @@ interface Props {
 /**
  * Flex list.
  */
-export default function List({ children, horizontal = false }: Props) {
+export default function List({ children, horizontal = false, style }: Props) {
   return (
-    <div className={cx(style, { [horizontalStyle]: horizontal })}>
+    <div
+      style={style}
+      className={cx(listStyle, { [horizontalStyle]: horizontal })}
+    >
       {children}
     </div>
   );
