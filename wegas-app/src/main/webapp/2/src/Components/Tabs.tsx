@@ -3,7 +3,7 @@ import { Toolbar } from './Toolbar';
 import { css } from 'emotion';
 interface TabLayoutProps {
   active?: number;
-  tabs: React.ReactChild[];
+  tabs: (React.ReactChild | null)[];
 }
 export class TabLayout extends React.Component<
   TabLayoutProps,
@@ -51,9 +51,12 @@ const activeTabStyle = css(tabStyle, {
 });
 function Tab(props: {
   active: boolean;
-  children: React.ReactChild;
+  children: React.ReactChild | null;
   onClick: () => void;
 }) {
+  if (props.children === null) {
+    return null;
+  }
   return (
     <div
       className={`${props.active ? activeTabStyle : tabStyle}`}
