@@ -494,7 +494,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     newGameModel.setName(this.findUniqueName(srcGameModel.getName(), MODEL));
 
                     // new refIds
-                    MergeHelper.resetRefIds(newGameModel, null);
+                    MergeHelper.resetRefIds(newGameModel, null, true);
 
                     // persist
                     this.create(newGameModel);

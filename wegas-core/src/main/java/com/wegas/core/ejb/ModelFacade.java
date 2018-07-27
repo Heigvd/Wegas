@@ -29,6 +29,7 @@ import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -111,6 +112,14 @@ public class ModelFacade {
             scenarios.add(gameModelFacade.find(id));
         }
         return scenarios;
+    }
+
+    private void resetVariableDescriptorRefIds(VariableDescriptor vd, VariableDescriptor ref) {
+        MergeHelper.resetRefIds(vd, ref, false);
+        VariableInstance defaultInstance = ref.getDefaultInstance();
+        for (VariableInstance instance : variableDescriptorFacade.getInstances(vd).values()) {
+            MergeHelper.resetRefIds(instance, defaultInstance, false);
+        }
     }
 
     /**
@@ -259,23 +268,7 @@ public class ModelFacade {
                         vdQueue.addAll(list.getItems());
                     }
 
-                    if (exists) {
-                        logger.debug("Descriptor {} exists in all scenarios", vd);
-                        // vd exists is all scenarios -> keep
-                        // change visibility from PRIVATE TO INHERITED
-                        vd.setVisibility(ModelScoped.Visibility.INHERITED);
-
-                        // make sure corresponding descriptors share the same refId
-                        for (GameModel other : scenarios) {
-                            try {
-                                VariableDescriptor find = variableDescriptorFacade.find(other, vd.getName());
-                                MergeHelper.resetRefIds(find, vd);
-
-                            } catch (WegasNoResultException ex) {
-                            }
-                        }
-
-                    } else {
+                    if (!exists) {
                         logger.debug("Descriptor {} does NOT exists in all scenarios", vd);
                         if (vd instanceof DescriptorListI) {
                             //vd does not exists in all scenarios but may contains a child which is
@@ -315,16 +308,6 @@ public class ModelFacade {
                     }
                 } while (restart);
 
-                //
-                for (Entry<String, List<GameModel>> entry : translationSources.entrySet()) {
-                    String languageCode = entry.getKey();
-                    List<GameModel> gms = entry.getValue();
-
-                    if (!gms.isEmpty() && !gms.contains(model)) {
-                        // this language was not in the model: import translations
-                        MergeHelper.importTranslations(model, gms.get(0), languageCode, i18nFacade);
-                    }
-                }
 
                 /*
                  * Persist GameModel
@@ -333,12 +316,48 @@ public class ModelFacade {
                 model.setBasedOn(null);
                 gameModelFacade.createWithDebugGame(model);
 
+                /*
+                 * Selection Process is over.
+                 *  -> reset refId
+                 *  -> import missing translations
+                 */
+                for (VariableDescriptor vd : model.getVariableDescriptors()) {
+                    logger.debug("Descriptor {} exists in all scenarios", vd);
+                    // vd exists is all scenarios -> keep
+                    // change visibility from PRIVATE TO INHERITED
+                    vd.setVisibility(ModelScoped.Visibility.INHERITED);
+
+                    // make sure corresponding descriptors share the same refId
+                    for (GameModel other : scenarios) {
+                        try {
+                            VariableDescriptor find = variableDescriptorFacade.find(other, vd.getName());
+                            this.resetVariableDescriptorRefIds(find, vd);
+                        } catch (WegasNoResultException ex) {
+                        }
+                    }
+
+                    // import other languge
+                    for (Entry<String, List<GameModel>> entry : translationSources.entrySet()) {
+                        String languageCode = entry.getKey();
+                        List<GameModel> gms = entry.getValue();
+
+                        if (!gms.isEmpty() && !gms.contains(model)) {
+                            // this language was not in the model: import translations
+                            GameModel other = gms.get(0);
+                            try {
+                                VariableDescriptor find = variableDescriptorFacade.find(other, vd.getName());
+                                MergeHelper.importTranslations(vd, find, languageCode, i18nFacade);
+                            } catch (WegasNoResultException ex) {
+                            }
+                        }
+                    }
+                }
+
                 for (GameModel scenario : allScenarios) {
                     logger.info("Register Implementation {} to {}", scenario, model);
                     //model.getImplementations().add(scenario);
                     scenario.setBasedOn(model);
                 }
-
 
                 /*
                  * JCR REPOSITORY
@@ -475,7 +494,9 @@ public class ModelFacade {
                         try {
                             // get corresponding descriptor in the scenrio
                             VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
-                            MergeHelper.resetRefIds(vd, modelVd); // make sure corresponding descriptors share the same refId
+                            // make sure corresponding descriptors share the same refId
+                            this.resetVariableDescriptorRefIds(vd, modelVd);
+
                             String parentRef = this.getParentRef(vd);
                             if (!parentRef.equals(modelParentRef)) {
                                 logger.info("Descriptor {} will be moved from {} to {}", vd, vd.getParent(), modelVd.getParent());
@@ -543,6 +564,9 @@ public class ModelFacade {
                     //key : the descriptor to move; value: corresponding descriptor within the model
                     this.move(entry.getKey(), entry.getValue());
                 }
+
+
+                // should reset refid here
 
                 // flush to have new descriptors and correct refId in database
                 variableDescriptorFacade.flush();

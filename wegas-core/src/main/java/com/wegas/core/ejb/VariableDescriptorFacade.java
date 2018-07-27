@@ -320,7 +320,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         final VariableDescriptor newEntity = (VariableDescriptor) oldEntity.duplicate();
 
         // reset reference id for all new entites within newEntity
-        MergeHelper.resetRefIds(newEntity, null);
+        MergeHelper.resetRefIds(newEntity, null, true);
         if (oldEntity.belongsToProtectedGameModel()) {
             MergeHelper.resetVisibility(newEntity, Visibility.PRIVATE);
         }

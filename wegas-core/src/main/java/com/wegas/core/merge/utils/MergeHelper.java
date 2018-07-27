@@ -238,6 +238,12 @@ public class MergeHelper {
 
     private static class RefidResetter implements MergeableVisitor {
 
+        private final Boolean clear;
+
+        private RefidResetter(Boolean clear) {
+            this.clear = clear;
+        }
+
         @Override
         public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field) {
 
@@ -246,9 +252,10 @@ public class MergeHelper {
                 if (reference != null) {
                     entity.forceRefId(reference.getRefId());
                 } else {
-                    ((AbstractEntity) target).forceRefId(null);
-                    entity.forceRefId(null);
-                    entity.assertRefId();
+                    if (clear) {
+                        entity.forceRefId(null);
+                        entity.assertRefId();
+                    }
                 }
             }
         }
@@ -258,9 +265,10 @@ public class MergeHelper {
      *
      * @param target
      * @param reference
+     * @param clear     if true, clear resetId when there is no reference
      */
-    public static void resetRefIds(AbstractEntity target, AbstractEntity reference) {
-        MergeHelper.visitMergeable(target, reference, ProtectionLevel.PROTECTED, Boolean.FALSE, new RefidResetter(), 0, null);
+    public static void resetRefIds(AbstractEntity target, AbstractEntity reference, Boolean clear) {
+        MergeHelper.visitMergeable(target, reference, ProtectionLevel.PROTECTED, Boolean.TRUE, new RefidResetter(clear), 0, null);
     }
 
     private static class LanguageUpgrader implements MergeableVisitor {
@@ -310,8 +318,6 @@ public class MergeHelper {
         MergeHelper.visitMergeable(gameModel, null, ProtectionLevel.PROTECTED, Boolean.TRUE, new LanguageUpgrader(oldCode, newCode, i18nFacade), 0, null);
     }
 
-
-
     /**
      * Copy translation from one set of mergeables to another one
      */
@@ -358,7 +364,7 @@ public class MergeHelper {
         }
     }
 
-    public static void importTranslations(GameModel target, GameModel source, String languageCode, I18nFacade i18nFacade) {
+    public static void importTranslations(Mergeable target, Mergeable source, String languageCode, I18nFacade i18nFacade) {
         MergeHelper.visitMergeable(target, source, ProtectionLevel.PROTECTED, Boolean.TRUE, new TranslationsImporter(languageCode, i18nFacade), 0, null);
     }
 

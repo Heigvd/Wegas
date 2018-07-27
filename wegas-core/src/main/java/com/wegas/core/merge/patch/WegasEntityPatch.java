@@ -517,7 +517,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                     VariableDescriptor substituteParent = (VariableDescriptor) p.shallowClone();
 
                                     // Privatise substitue parent
-                                    MergeHelper.resetRefIds(substituteParent, null);
+                                    MergeHelper.resetRefIds(substituteParent, null, true);
                                     // and make sure it and all its children are private
                                     MergeHelper.resetVisibility(substituteParent, Visibility.PRIVATE);
 

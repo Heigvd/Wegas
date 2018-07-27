@@ -24,6 +24,7 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.resourceManagement.persistence.WRequirement;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -102,6 +103,9 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
 
     public void forceRefId(String refId) {
         logger.trace("ForceRefId {} => {}", this, refId);
+        if (this instanceof WRequirement){
+            logger.error("FUCKBIATCH");
+        }
         this.refId = refId;
     }
 

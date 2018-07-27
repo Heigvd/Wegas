@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -42,7 +43,7 @@ import javax.validation.constraints.NotNull;
             @Index(columnList = "taskinstance_id")
         }
 )
-public class WRequirement extends AbstractEntity {
+public class WRequirement extends AbstractEntity implements NamedEntity {
 
     private static final long serialVersionUID = 1L;
     /**

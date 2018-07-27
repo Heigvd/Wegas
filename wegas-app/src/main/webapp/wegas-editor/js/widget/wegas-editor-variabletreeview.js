@@ -286,7 +286,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity),
                 selected = (this.currentSelection === entity.get(ID)) ? 1 : 0,
-                text = entity.getEditorLabel(),
+                text = entity.getEditorLabel() + "<i class='scriptalias wegas-internal-feature'> (" + entity.get("name") + ")</i>",
                 node,
                 /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"
                  tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel(),*/
@@ -379,6 +379,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     children = Y.Array.map(entity.get("results"), function(result) {
                         return {
                             label: result.getEditorLabel(),
+
                             selected: (result.get(ID) === this.currentSelection) ? 2 : 0,
                             data: {
                                 entity: result,
@@ -420,7 +421,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         var container = entity.get(category),
                             children = Y.Array.map(container.get("evaluations"), function(ev) {
                                 return {
-                                    label: ev.getEditorLabel(),
+                                    label: ev.getEditorLabel() ,
                                     selected: (ev.get(ID) === this.currentSelection) ? 2 : 0,
                                     data: {
                                         entity: ev,
