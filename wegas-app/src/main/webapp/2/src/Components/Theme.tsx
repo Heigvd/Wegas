@@ -9,6 +9,8 @@ interface ThemeProps {
   darkTextColor?: string;
   warningColor?: string;
   errorColor?: string;
+  successColor?: string;
+  disabledColor?: string;
 }
 
 export const themeVar = {
@@ -20,6 +22,8 @@ export const themeVar = {
   primaryLighterTextColor: 'var(--primary-lighter-text-color)',
   warningColor: 'var(--warning-color)',
   errorColor: 'var(--error-color)',
+  successColor: 'var(--success-color)',
+  disabledColor: 'var(--disabled-color)',
 };
 export const primary = css({
   backgroundColor: themeVar.primaryColor,
@@ -35,13 +39,15 @@ export const primaryLight = css({
 });
 
 export class Theme extends React.PureComponent<ThemeProps> {
-  static defaultProps: Partial<ThemeProps> = {
+  static defaultProps = {
     backgroundColor: 'white',
     primaryColor: 'blue',
     lightTextColor: 'white',
     darkTextColor: '#222',
     warningColor: '#ff9d00',
     errorColor: 'red',
+    successColor: '#25f325',
+    disabledColor: 'lightgrey',
   };
   render() {
     const {
@@ -52,6 +58,8 @@ export class Theme extends React.PureComponent<ThemeProps> {
       darkTextColor,
       warningColor,
       errorColor,
+      successColor,
+      disabledColor,
     } = this.props;
     const bgColor = Color(backgroundColor);
     const textColor = bgColor.isLight() ? darkTextColor : lightTextColor;
@@ -77,6 +85,8 @@ export class Theme extends React.PureComponent<ThemeProps> {
           '--primary-lighter-text-color': primLightText,
           '--warning-color': warningColor,
           '--error-color': errorColor,
+          '--success-color': successColor,
+          '--disabled-color': disabledColor,
         })}
       >
         {children}
