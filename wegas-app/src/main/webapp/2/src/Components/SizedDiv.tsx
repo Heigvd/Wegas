@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
+type DOMRectReadOnly = ResizeObserverEntry['contentRect'];
 interface child {
   /**
    * @param size DOMReact undefined on first mount.

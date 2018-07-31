@@ -134,7 +134,9 @@ export default function() {
 
   function isNodeDefaultExported(node: ts.Node): boolean {
     return (
-      (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.ExportDefault) !== 0
+      (ts.getCombinedModifierFlags(node as ts.Declaration) &
+        ts.ModifierFlags.ExportDefault) !==
+      0
     );
   }
 

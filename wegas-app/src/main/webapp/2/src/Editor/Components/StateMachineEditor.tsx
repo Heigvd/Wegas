@@ -46,8 +46,12 @@ const JS_PLUMB_OPTIONS: Defaults = {
   ConnectionsDetachable: true,
   ReattachConnections: false,
   Endpoint: 'Dot',
-  EndpointStyle: { fill: 'currentColor', radius: 8 },
-  Connector: ['Flowchart'],
+  EndpointStyle: {
+    fill: 'currentColor',
+    // @ts-ignore
+    radius: 8,
+  },
+  Connector: ['Flowchart', {}],
   ConnectionOverlays: [
     [
       'Arrow',
