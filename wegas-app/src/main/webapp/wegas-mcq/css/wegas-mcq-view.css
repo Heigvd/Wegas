@@ -176,11 +176,11 @@
 }
 
 .wegas-mcqview .cbx.horizontal .wegas-mcqchoice > div{
-    height: 100%;
+    /*height: 100%;*/
 }
 
 .wegas-mcqview .cbx.horizontal .wegas-mcqchoice .mcqchoice__description{
-    min-height: calc(100% - 55px) !important;
+    /*min-height: calc(100% - 55px) !important;*/
 }
 
 .wegas-mcqview .cbx.horizontal .wegas-mcqchoice.noDescription:not(.noTitle) .mcqchoice__description{

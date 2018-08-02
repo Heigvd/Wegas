@@ -121,6 +121,11 @@ YUI.add('wegas-entity', function(Y) {
                             };
                             o.translations[I18n.getCode()] = value.value;
                             return tools.valueToAST(o, argDesc);
+                        } else if (value.value === undefined && value.type === "Identifier") {
+                            return tools.valueToAST({
+                                "@class": "TranslatableContent",
+                                "translations": {}
+                            }, argDesc);
                         }
                     }
                     return value;
